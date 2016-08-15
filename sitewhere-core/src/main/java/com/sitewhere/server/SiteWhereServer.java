@@ -15,7 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
@@ -85,7 +86,7 @@ import com.sitewhere.version.VersionHelper;
 public class SiteWhereServer extends LifecycleComponent implements ISiteWhereServer {
 
 	/** Private logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Spring context for server */
 	public static ApplicationContext SERVER_SPRING_CONTEXT;

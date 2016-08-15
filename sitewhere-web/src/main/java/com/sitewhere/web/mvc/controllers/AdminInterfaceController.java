@@ -15,7 +15,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ import com.sitewhere.web.mvc.NoTenantException;
 public class AdminInterfaceController extends MvcController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AdminInterfaceController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Display the "login" page.

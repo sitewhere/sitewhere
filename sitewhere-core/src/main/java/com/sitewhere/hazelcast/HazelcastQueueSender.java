@@ -7,7 +7,8 @@
  */
 package com.sitewhere.hazelcast;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
 import com.sitewhere.device.event.processor.InboundEventProcessor;
@@ -33,7 +34,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 public class HazelcastQueueSender extends InboundEventProcessor implements ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastQueueSender.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected Hazelcast configuration */
 	private ITenantHazelcastConfiguration hazelcastConfiguration;
@@ -61,14 +62,13 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.InboundEventProcessor#onRegistrationRequest
-	 * (java.lang.String, java.lang.String,
+	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+	 * onRegistrationRequest (java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(String hardwareId, String originator,
-			IDeviceRegistrationRequest request) throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+			throws SiteWhereException {
 		queueEvent(new DecodedDeviceRequest<IDeviceRegistrationRequest>(hardwareId, originator, request));
 	}
 
@@ -77,13 +77,13 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	 * 
 	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
 	 * onDeviceCommandResponseRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-		queueEvent(new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId, originator,
-				request));
+		queueEvent(new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -96,8 +96,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
-		queueEvent(
-				new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId, originator, request));
+		queueEvent(new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -121,8 +120,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
-			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
 		queueEvent(new DecodedDeviceRequest<IDeviceAlertCreateRequest>(hardwareId, originator, request));
 	}
 
@@ -134,8 +133,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
 	 */
 	@Override
-	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
 		queueEvent(new DecodedDeviceRequest<IDeviceStreamCreateRequest>(hardwareId, originator, request));
 	}
 
@@ -196,8 +195,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {

@@ -26,7 +26,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
@@ -53,7 +54,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class FileSystemResourceManager extends LifecycleComponent implements IResourceManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(FileSystemResourceManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Folder name for global resources */
 	private static final String GLOBAL_FOLDER_NAME = "global";

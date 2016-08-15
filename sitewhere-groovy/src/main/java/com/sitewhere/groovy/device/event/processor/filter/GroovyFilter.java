@@ -7,11 +7,8 @@
  */
 package com.sitewhere.groovy.device.event.processor.filter;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.event.processor.filter.DeviceEventFilter;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -21,17 +18,22 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
 
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
+
 /**
- * Implementatoin of {@link IDeviceEventFilter} that uses a Groovy script to determine
- * whether events should be included or filtered. If the script returns true, the event is
- * included. If the script return false, the event is filtered.
+ * Implementatoin of {@link IDeviceEventFilter} that uses a Groovy script to
+ * determine whether events should be included or filtered. If the script
+ * returns true, the event is included. If the script return false, the event is
+ * filtered.
  * 
  * @author Derek
  */
 public class GroovyFilter extends DeviceEventFilter {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyFilter.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected global Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -42,7 +44,8 @@ public class GroovyFilter extends DeviceEventFilter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.filter.DeviceEventFilter#start()
+	 * @see
+	 * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -57,8 +60,9 @@ public class GroovyFilter extends DeviceEventFilter {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(com.sitewhere
-	 * .spi.device.event.IDeviceEvent, com.sitewhere.spi.device.IDevice,
+	 * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
+	 * com.sitewhere .spi.device.event.IDeviceEvent,
+	 * com.sitewhere.spi.device.IDevice,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
@@ -86,7 +90,8 @@ public class GroovyFilter extends DeviceEventFilter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.filter.DeviceEventFilter#getLogger()
+	 * @see
+	 * com.sitewhere.device.event.processor.filter.DeviceEventFilter#getLogger()
 	 */
 	@Override
 	public Logger getLogger() {

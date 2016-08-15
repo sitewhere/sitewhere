@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
 import org.wso2.carbon.databridge.commons.Attribute;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(Wso2CepEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Measurements stream id */
 	private static final String MEAUREMENTS_STREAM_ID = "com.sitewhere.Measurements";
@@ -127,7 +128,9 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop()
+	 * @see
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
+	 * )
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -169,22 +172,17 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
 		Map<String, Double> mxs = measurements.getMeasurements();
 		for (String key : mxs.keySet()) {
-			Event event =
-					new Event(streamMeasurements, System.currentTimeMillis(), null, null, new Object[] {
-							measurements.getId(),
-							measurements.getSiteToken(),
-							measurements.getDeviceAssignmentToken(),
-							measurements.getAssetModuleId(),
-							measurements.getAssetId(),
-							measurements.getEventDate().getTime(),
-							key,
-							mxs.get(key) });
+			Event event = new Event(streamMeasurements, System.currentTimeMillis(), null, null,
+					new Object[] { measurements.getId(), measurements.getSiteToken(),
+							measurements.getDeviceAssignmentToken(), measurements.getAssetModuleId(),
+							measurements.getAssetId(), measurements.getEventDate().getTime(), key, mxs.get(key) });
 			try {
 				getPublisher().publish(event);
 			} catch (AgentException e) {
@@ -201,17 +199,10 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	 */
 	@Override
 	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
-		Event event =
-				new Event(streamLocations, System.currentTimeMillis(), null, null, new Object[] {
-						location.getId(),
-						location.getSiteToken(),
-						location.getDeviceAssignmentToken(),
-						location.getAssetModuleId(),
-						location.getAssetId(),
-						location.getEventDate().getTime(),
-						location.getLatitude(),
-						location.getLongitude(),
-						location.getElevation() });
+		Event event = new Event(streamLocations, System.currentTimeMillis(), null, null,
+				new Object[] { location.getId(), location.getSiteToken(), location.getDeviceAssignmentToken(),
+						location.getAssetModuleId(), location.getAssetId(), location.getEventDate().getTime(),
+						location.getLatitude(), location.getLongitude(), location.getElevation() });
 		try {
 			getPublisher().publish(event);
 		} catch (AgentException e) {
@@ -222,24 +213,15 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
-		Event event =
-				new Event(streamAlerts, System.currentTimeMillis(), null, null, new Object[] {
-						alert.getId(),
-						alert.getSiteToken(),
-						alert.getDeviceAssignmentToken(),
-						alert.getAssetModuleId(),
-						alert.getAssetId(),
-						alert.getEventDate().getTime(),
-						alert.getSource(),
-						alert.getLevel(),
-						alert.getType(),
-						alert.getMessage() });
+		Event event = new Event(streamAlerts, System.currentTimeMillis(), null, null,
+				new Object[] { alert.getId(), alert.getSiteToken(), alert.getDeviceAssignmentToken(),
+						alert.getAssetModuleId(), alert.getAssetId(), alert.getEventDate().getTime(), alert.getSource(),
+						alert.getLevel(), alert.getType(), alert.getMessage() });
 		try {
 			getPublisher().publish(event);
 		} catch (AgentException e) {
@@ -254,9 +236,8 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	 * @throws MalformedStreamDefinitionException
 	 */
 	protected StreamDefinition createMeasurementsStreamDefinition() throws MalformedStreamDefinitionException {
-		StreamDefinition definition =
-				new StreamDefinition(MEAUREMENTS_STREAM_ID,
-						SiteWhere.getServer().getVersion().getVersionIdentifier());
+		StreamDefinition definition = new StreamDefinition(MEAUREMENTS_STREAM_ID,
+				SiteWhere.getServer().getVersion().getVersionIdentifier());
 		definition.setNickName("SiteWhere Measurements");
 		definition.setDescription("SiteWhere Measurements");
 		List<Attribute> attributes = new ArrayList<Attribute>();
@@ -279,9 +260,8 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	 * @throws MalformedStreamDefinitionException
 	 */
 	protected StreamDefinition createLocationsStreamDefinition() throws MalformedStreamDefinitionException {
-		StreamDefinition definition =
-				new StreamDefinition(LOCATIONS_STREAM_ID,
-						SiteWhere.getServer().getVersion().getVersionIdentifier());
+		StreamDefinition definition = new StreamDefinition(LOCATIONS_STREAM_ID,
+				SiteWhere.getServer().getVersion().getVersionIdentifier());
 		definition.setNickName("SiteWhere Locations");
 		definition.setDescription("SiteWhere Locations");
 		List<Attribute> attributes = new ArrayList<Attribute>();
@@ -305,9 +285,8 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 	 * @throws MalformedStreamDefinitionException
 	 */
 	protected StreamDefinition createAlertsStreamDefinition() throws MalformedStreamDefinitionException {
-		StreamDefinition definition =
-				new StreamDefinition(ALERTS_STREAM_ID,
-						SiteWhere.getServer().getVersion().getVersionIdentifier());
+		StreamDefinition definition = new StreamDefinition(ALERTS_STREAM_ID,
+				SiteWhere.getServer().getVersion().getVersionIdentifier());
 		definition.setNickName("SiteWhere Alerts");
 		definition.setDescription("SiteWhere Alerts");
 		List<Attribute> attributes = new ArrayList<Attribute>();

@@ -10,7 +10,8 @@ package com.sitewhere.server.asset.filesystem;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,7 +31,7 @@ public class FileSystemDeviceAssetModule extends FileSystemAssetModule<HardwareA
 	private static final long serialVersionUID = -4973584728643353788L;
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(FileSystemDeviceAssetModule.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Module id */
 	public static final String MODULE_ID = "fs-devices";

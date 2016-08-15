@@ -24,7 +24,8 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -60,7 +61,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	private static final long serialVersionUID = 1382873664520089825L;
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(Wso2ScimAssetModule.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Module id */
 	private static final String DEFAULT_MODULE_ID = "wso2scim";
@@ -117,10 +118,8 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		LOGGER.info("Connecting to WSO2 Identity Server instance at: " + getScimUsersUrl());
 
 		// Set up the REST client.
-		this.client =
-				isIgnoreBadCertificate()
-						? new RestTemplate(createSecureTransport(getUsername(), getPassword()))
-						: new RestTemplate();
+		this.client = isIgnoreBadCertificate() ? new RestTemplate(createSecureTransport(getUsername(), getPassword()))
+				: new RestTemplate();
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		converters.add(new MappingJackson2HttpMessageConverter());
 		converters.add(new ByteArrayHttpMessageConverter());
@@ -309,12 +308,10 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 			}
 		};
 
-		HttpClient client =
-				HttpClientBuilder.create().setSSLHostnameVerifier(nullHostnameVerifier).setSSLContext(
-						createContext()).build();
+		HttpClient client = HttpClientBuilder.create().setSSLHostnameVerifier(nullHostnameVerifier)
+				.setSSLContext(createContext()).build();
 
-		HttpComponentsClientHttpRequestFactory requestFactory =
-				new HttpComponentsClientHttpRequestFactory(client);
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(client);
 
 		return requestFactory;
 	}

@@ -8,7 +8,8 @@
 package com.sitewhere.hbase.asset;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class HBaseAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(HBaseAssetManagement.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
@@ -111,9 +112,8 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetManagement#createAssetCategory(com.sitewhere.spi.
-	 * asset.request.IAssetCategoryCreateRequest)
+	 * @see com.sitewhere.spi.asset.IAssetManagement#createAssetCategory(com.
+	 * sitewhere.spi. asset.request.IAssetCategoryCreateRequest)
 	 */
 	@Override
 	public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
@@ -123,7 +123,8 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#getAssetCategory(java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetManagement#getAssetCategory(java.lang.
+	 * String)
 	 */
 	@Override
 	public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException {
@@ -133,8 +134,9 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.String,
-	 * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
+	 * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
 	 */
 	@Override
 	public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
@@ -145,20 +147,20 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetManagement#listAssetCategories(com.sitewhere.spi.
-	 * search.ISearchCriteria)
+	 * @see com.sitewhere.spi.asset.IAssetManagement#listAssetCategories(com.
+	 * sitewhere.spi. search.ISearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseAssetCategory.listAssetCategories(context, criteria);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
+	 * String)
 	 */
 	@Override
 	public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
@@ -168,8 +170,9 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.String,
-	 * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
+	 * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
 	 */
 	@Override
 	public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
@@ -180,8 +183,10 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.String,
-	 * java.lang.String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
+	 * String, java.lang.String,
+	 * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
 	 */
 	@Override
 	public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
@@ -192,8 +197,9 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.String,
-	 * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
+	 * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
 	 */
 	@Override
 	public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
@@ -204,20 +210,23 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.String,
-	 * java.lang.String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
+	 * String, java.lang.String,
+	 * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
 	 */
 	@Override
-	public IHardwareAsset updateHardwareAsset(String categoryId, String assetId,
-			IHardwareAssetCreateRequest request) throws SiteWhereException {
+	public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
+			throws SiteWhereException {
 		return HBaseAsset.createOrUpdateHardwareAsset(context, categoryId, assetId, request);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.String,
-	 * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
+	 * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
 	 */
 	@Override
 	public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
@@ -228,12 +237,14 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.String,
-	 * java.lang.String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
+	 * String, java.lang.String,
+	 * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
 	 */
 	@Override
-	public ILocationAsset updateLocationAsset(String categoryId, String assetId,
-			ILocationAssetCreateRequest request) throws SiteWhereException {
+	public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
+			throws SiteWhereException {
 		return HBaseAsset.createOrUpdateLocationAsset(context, categoryId, assetId, request);
 	}
 
@@ -251,7 +262,8 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -262,12 +274,12 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
 	 * com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseAsset.listAssets(context, categoryId, criteria);
 	}
 

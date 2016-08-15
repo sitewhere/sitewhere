@@ -25,7 +25,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
@@ -33,15 +34,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that creates multiple ActiveMQ consumer
- * threads to ingest remote data.
+ * Implementation of {@link IInboundEventReceiver} that creates multiple
+ * ActiveMQ consumer threads to ingest remote data.
  * 
  * @author Derek
  */
 public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ActiveMQClientEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Number of consumers reading messages from the queue */
 	private static final int DEFAULT_NUM_CONSUMERS = 3;
@@ -129,7 +130,8 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -143,14 +145,13 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r,
-					"SiteWhere ActiveMQ(" + getQueueName() + ") Consumer " + counter.incrementAndGet());
+			return new Thread(r, "SiteWhere ActiveMQ(" + getQueueName() + ") Consumer " + counter.incrementAndGet());
 		}
 	}
 
 	/**
-	 * Reads messages from the ActiveMQ queue and puts the binary content on a queue for
-	 * SiteWhere to use.
+	 * Reads messages from the ActiveMQ queue and puts the binary content on a
+	 * queue for SiteWhere to use.
 	 * 
 	 * @author Derek
 	 */
@@ -213,8 +214,7 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
-						EventProcessingLogic.processRawPayload(ActiveMQClientEventReceiver.this, buffer,
-								null);
+						EventProcessingLogic.processRawPayload(ActiveMQClientEventReceiver.this, buffer, null);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}

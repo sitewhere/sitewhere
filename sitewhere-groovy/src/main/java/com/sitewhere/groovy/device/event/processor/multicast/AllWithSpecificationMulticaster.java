@@ -7,16 +7,13 @@
  */
 package com.sitewhere.groovy.device.event.processor.multicast;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -32,19 +29,23 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
+
 /**
- * Routes events to all devices that use a given specification. The list of devices is
- * cached and refreshed at an interval to improve performance.
+ * Routes events to all devices that use a given specification. The list of
+ * devices is cached and refreshed at an interval to improve performance.
  * 
  * @author Derek
  *
  * @param <T>
  */
-public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent implements
-		IDeviceEventMulticaster<T> {
+public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
+		implements IDeviceEventMulticaster<T> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AllWithSpecificationMulticaster.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Interval between refreshing list of devices with specification */
 	private static final long REFRESH_INTERVAL_SECS = 60;
@@ -94,7 +95,8 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster#
+	 * @see com.sitewhere.spi.device.event.processor.multicast.
+	 * IDeviceEventMulticaster#
 	 * calculateRoutes(com.sitewhere.spi.device.event.IDeviceEvent)
 	 */
 	@Override
@@ -104,8 +106,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 		IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
 		for (IDevice targetDevice : matches) {
 			if (getScriptPath() != null) {
-				IDeviceAssignment targetAssignment =
-						dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
+				IDeviceAssignment targetAssignment = dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
 				Binding binding = new Binding();
 				binding.setVariable("logger", getLogger());
 				binding.setVariable("event", event);
@@ -187,10 +188,9 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 				try {
 					ITenant tenant = AllWithSpecificationMulticaster.this.getTenant();
 					String token = AllWithSpecificationMulticaster.this.getSpecificationToken();
-					DeviceSearchCriteria criteria =
-							new DeviceSearchCriteria(token, null, false, 1, 0, null, null);
-					ISearchResults<IDevice> results =
-							SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, criteria);
+					DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, null, false, 1, 0, null, null);
+					ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(tenant)
+							.listDevices(false, criteria);
 					matches = results.getResults();
 					LOGGER.debug("Found " + matches.size() + " matches for routing.");
 				} catch (SiteWhereException e) {

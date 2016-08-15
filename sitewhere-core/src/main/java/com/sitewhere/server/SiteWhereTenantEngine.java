@@ -20,7 +20,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
@@ -89,7 +90,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class SiteWhereTenantEngine extends TenantLifecycleComponent implements ISiteWhereTenantEngine {
 
 	/** Private logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereTenantEngine.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Spring context for tenant */
 	private ApplicationContext tenantContext;

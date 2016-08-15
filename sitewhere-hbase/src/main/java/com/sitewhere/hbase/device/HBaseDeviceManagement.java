@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.HBaseContext;
@@ -75,7 +76,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 		implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(HBaseDeviceManagement.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;

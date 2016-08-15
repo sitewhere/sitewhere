@@ -9,7 +9,8 @@ package com.sitewhere.device.communication.mqtt;
 
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.Callback;
@@ -25,15 +26,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that uses the Fuse MQTT callback APIs.
- * This implementation is not working yet.
+ * Implementation of {@link IInboundEventReceiver} that uses the Fuse MQTT
+ * callback APIs. This implementation is not working yet.
  * 
  * @author Derek
  */
 public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default hostname if not set via Spring */
 	public static final String DEFAULT_HOSTNAME = "localhost";
@@ -121,13 +122,14 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.fusesource.mqtt.client.Listener#onPublish(org.fusesource.hawtbuf
-			 * .UTF8Buffer, org.fusesource.hawtbuf.Buffer, java.lang.Runnable)
+			 * @see
+			 * org.fusesource.mqtt.client.Listener#onPublish(org.fusesource.
+			 * hawtbuf .UTF8Buffer, org.fusesource.hawtbuf.Buffer,
+			 * java.lang.Runnable)
 			 */
 			public void onPublish(UTF8Buffer topic, Buffer payload, Runnable ack) {
 				ack.run();
-				EventProcessingLogic.processRawPayload(MqttCallbackInboundEventReceiver.this, payload.data,
-						null);
+				EventProcessingLogic.processRawPayload(MqttCallbackInboundEventReceiver.this, payload.data, null);
 			}
 
 			public void onFailure(Throwable value) {
@@ -159,7 +161,8 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
@@ -47,7 +48,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DevicePresenceManager extends TenantLifecycleComponent implements IDevicePresenceManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DevicePresenceManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default presence check interval (10 min) */
 	private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
@@ -56,11 +57,10 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 	private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "8h";
 
 	/** Used to format durations for output */
-	private static final PeriodFormatter PERIOD_FORMATTER =
-			new PeriodFormatterBuilder().appendWeeks().appendSuffix("w").appendSeparator(
-					" ").appendDays().appendSuffix("d").appendSeparator(" ").appendHours().appendSuffix(
-							"h").appendSeparator(" ").appendMinutes().appendSuffix("m").appendSeparator(
-									" ").appendSeconds().appendSuffix("s").toFormatter();
+	private static final PeriodFormatter PERIOD_FORMATTER = new PeriodFormatterBuilder().appendWeeks().appendSuffix("w")
+			.appendSeparator(" ").appendDays().appendSuffix("d").appendSeparator(" ").appendHours().appendSuffix("h")
+			.appendSeparator(" ").appendMinutes().appendSuffix("m").appendSeparator(" ").appendSeconds()
+			.appendSuffix("s").toFormatter();
 
 	/** Presence check interval */
 	private String presenceCheckInterval = DEFAULT_PRESENCE_CHECK_INTERVAL;
@@ -68,9 +68,10 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 	/** Presence missing interval */
 	private String presenceMissingInterval = DEFAULT_PRESENCE_MISSING_INTERVAL;
 
-	/** Chooses how presence state is stored and how often notifications are sent */
-	private IPresenceNotificationStrategy presenceNotificationStrategy =
-			new PresenceNotificationStrategies.SendOnceNotificationStrategy();
+	/**
+	 * Chooses how presence state is stored and how often notifications are sent
+	 */
+	private IPresenceNotificationStrategy presenceNotificationStrategy = new PresenceNotificationStrategies.SendOnceNotificationStrategy();
 
 	/** Executor service for threading */
 	private ExecutorService executor;
@@ -160,9 +161,8 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 
 			LOGGER.info("Presence manager for '" + site.getName() + "' checking every "
 					+ PERIOD_FORMATTER.print(checkInterval) + " (" + checkIntervalSecs + " seconds) "
-					+ "for devices with last interaction date of more than "
-					+ PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) "
-					+ ".");
+					+ "for devices with last interaction date of more than " + PERIOD_FORMATTER.print(missingInterval)
+					+ " (" + missingIntervalSecs + " seconds) " + ".");
 
 			while (true) {
 
@@ -170,22 +170,20 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 					// Calculate time window for presence calculation.
 					Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
 					DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
-					ISearchResults<IDeviceAssignment> missing =
-							devices.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
-					LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
-							+ missing.getNumResults() + " events for non-present devices.");
+					ISearchResults<IDeviceAssignment> missing = devices
+							.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
+					LOGGER.debug("Presence manager for '" + site.getName() + "' creating " + missing.getNumResults()
+							+ " events for non-present devices.");
 					for (IDeviceAssignment assignment : missing.getResults()) {
-						DeviceStateChangeCreateRequest create =
-								new DeviceStateChangeCreateRequest(StateChangeCategory.Presence,
-										StateChangeType.Presence_Updated, PresenceState.PRESENT.name(),
-										PresenceState.NOT_PRESENT.name());
+						DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
+								StateChangeCategory.Presence, StateChangeType.Presence_Updated,
+								PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
 						create.setUpdateState(true);
 
 						// Only send an event if the strategy permits it.
 						if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
-							IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded =
-									new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
-											assignment.getDeviceHardwareId(), null, create);
+							IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
+									assignment.getDeviceHardwareId(), null, create);
 							inbound.processDeviceStateChange(decoded);
 						}
 					}

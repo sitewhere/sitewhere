@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
@@ -41,7 +42,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class AssetModuleManager extends TenantLifecycleComponent implements IAssetModuleManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AssetModuleManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** List of asset modules */
 	private List<IAssetModule<?>> modules;
@@ -75,14 +76,14 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModuleManager#refreshDatastoreModules()
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetModuleManager#refreshDatastoreModules()
 	 */
 	public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException {
 		List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 		dsModulesById.clear();
-		ISearchResults<IAssetCategory> categories =
-				SiteWhere.getServer().getAssetManagement(getTenant()).listAssetCategories(
-						new SearchCriteria(1, 0));
+		ISearchResults<IAssetCategory> categories = SiteWhere.getServer().getAssetManagement(getTenant())
+				.listAssetCategories(new SearchCriteria(1, 0));
 		for (IAssetCategory category : categories.getResults()) {
 			switch (category.getAssetType()) {
 			case Device:
@@ -118,8 +119,8 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 			List<ICommandResponse> responses) throws SiteWhereException {
 		startNestedComponent(module, true);
 		dsModulesById.put(category.getId(), module);
-		responses.add(new CommandResponse(CommandResult.Successful, "Asset module " + category.getId()
-				+ " refreshed."));
+		responses
+				.add(new CommandResponse(CommandResult.Successful, "Asset module " + category.getId() + " refreshed."));
 	}
 
 	/*
@@ -149,7 +150,8 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
 	 */
 	@Override
 	public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
@@ -177,8 +179,8 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModuleManager#getAssetById(java.lang.String,
-	 * java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModuleManager#getAssetById(java.lang.
+	 * String, java.lang.String)
 	 */
 	public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException {
 		IAssetModule<?> match = assertAssetModule(assetModuleId);

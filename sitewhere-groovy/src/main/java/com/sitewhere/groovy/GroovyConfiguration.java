@@ -9,7 +9,8 @@ package com.sitewhere.groovy;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,7 +27,7 @@ import groovy.util.GroovyScriptEngine;
 public class GroovyConfiguration extends TenantLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyConfiguration.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Bean name where global Groovy configuration is expected */
 	public static final String GROOVY_CONFIGURATION_BEAN = "swGroovyConfiguration";

@@ -9,7 +9,8 @@ package com.sitewhere.device.communication;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -33,11 +34,10 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent implements
-		ICommandProcessingStrategy {
+public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent implements ICommandProcessingStrategy {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultCommandProcessingStrategy.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Configured command target resolver */
 	private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
@@ -52,8 +52,8 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandProcessingStrategy#deliverCommand
+	 * @see com.sitewhere.spi.device.communication.ICommandProcessingStrategy#
+	 * deliverCommand
 	 * (com.sitewhere.spi.device.communication.IDeviceCommunication,
 	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
@@ -61,23 +61,20 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 	public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
 			throws SiteWhereException {
 		LOGGER.debug("Command processing strategy handling invocation.");
-		IDeviceCommand command =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceCommandByToken(
-						invocation.getCommandToken());
+		IDeviceCommand command = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.getDeviceCommandByToken(invocation.getCommandToken());
 		if (command != null) {
-			IDeviceCommandExecution execution =
-					getCommandExecutionBuilder().createExecution(command, invocation);
+			IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
 			List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
 			for (IDeviceAssignment assignment : assignments) {
-				IDevice device =
-						SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceForAssignment(
-								assignment);
+				IDevice device = SiteWhere.getServer().getDeviceManagement(getTenant())
+						.getDeviceForAssignment(assignment);
 				if (device == null) {
 					throw new SiteWhereException("Targeted assignment references device that does not exist.");
 				}
 
-				IDeviceNestingContext nesting =
-						NestedDeviceSupport.calculateNestedDeviceInformation(device, getTenant());
+				IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
+						getTenant());
 				communication.getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
 			}
 		} else {
@@ -88,22 +85,21 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandProcessingStrategy#deliverSystemCommand
-	 * (com.sitewhere.spi.device.communication.IDeviceCommunication, java.lang.String,
-	 * com.sitewhere.spi.device.command.ISystemCommand)
+	 * @see com.sitewhere.spi.device.communication.ICommandProcessingStrategy#
+	 * deliverSystemCommand
+	 * (com.sitewhere.spi.device.communication.IDeviceCommunication,
+	 * java.lang.String, com.sitewhere.spi.device.command.ISystemCommand)
 	 */
 	@Override
-	public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId,
-			ISystemCommand command) throws SiteWhereException {
+	public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId, ISystemCommand command)
+			throws SiteWhereException {
 		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant());
 		IDevice device = management.getDeviceByHardwareId(hardwareId);
 		if (device == null) {
 			throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 		IDeviceAssignment assignment = management.getCurrentDeviceAssignment(device);
-		IDeviceNestingContext nesting =
-				NestedDeviceSupport.calculateNestedDeviceInformation(device, getTenant());
+		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device, getTenant());
 		communication.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
 	}
 

@@ -9,7 +9,8 @@ package com.sitewhere.groovy.device.communication.socket;
 
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.IGroovyVariables;
@@ -25,15 +26,15 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link ISocketInteractionHandler} that defers processing logic to a
- * Groovy script.
+ * Implementation of {@link ISocketInteractionHandler} that defers processing
+ * logic to a Groovy script.
  * 
  * @author Derek
  */
 public class GroovySocketInteractionHandler implements ISocketInteractionHandler<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovySocketInteractionHandler.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Variable that holds the socket */
 	public static final String VAR_SOCKET = "socket";
@@ -56,8 +57,9 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#process(
-	 * java.net.Socket, com.sitewhere.spi.device.communication.IInboundEventReceiver)
+	 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
+	 * process( java.net.Socket,
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver)
 	 */
 	@Override
 	public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
@@ -96,11 +98,10 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	 * 
 	 * @author Derek
 	 */
-	public static class Factory extends LifecycleComponent
-			implements ISocketInteractionHandlerFactory<byte[]> {
+	public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 		/** Static logger instance */
-		private static Logger LOGGER = Logger.getLogger(Factory.class);
+		private static Logger LOGGER = LogManager.getLogger();
 
 		/** Injected global Groovy configuration */
 		private GroovyConfiguration configuration;
@@ -138,9 +139,8 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory
-		 * #newInstance()
+		 * @see com.sitewhere.spi.device.communication.socket.
+		 * ISocketInteractionHandlerFactory #newInstance()
 		 */
 		@Override
 		public ISocketInteractionHandler<byte[]> newInstance() {

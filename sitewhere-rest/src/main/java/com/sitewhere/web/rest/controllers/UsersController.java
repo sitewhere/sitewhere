@@ -13,7 +13,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -67,7 +68,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class UsersController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(UsersController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new user.
@@ -86,8 +87,8 @@ public class UsersController extends RestController {
 	public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
 		try {
-			if ((input.getUsername() == null) || (input.getPassword() == null)
-					|| (input.getFirstName() == null) || (input.getLastName() == null)) {
+			if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
+					|| (input.getLastName() == null)) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 			}
 			if (input.getStatus() == null) {
@@ -114,8 +115,7 @@ public class UsersController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
 			@Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
-	public User updateUser(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@RequestBody UserCreateRequest input) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
 		try {
@@ -139,14 +139,12 @@ public class UsersController extends RestController {
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
-	public User getUserByUsername(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+	public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 		try {
-			IUser user =
-					SiteWhere.getServer().getUserManagement().getUserByUsername(
-							StringEscapeUtils.unescapeHtml(username));
+			IUser user = SiteWhere.getServer().getUserManagement()
+					.getUserByUsername(StringEscapeUtils.unescapeHtml(username));
 			if (user == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -202,8 +200,7 @@ public class UsersController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 		try {
-			List<IGrantedAuthority> matches =
-					SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
+			List<IGrantedAuthority> matches = SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
 			List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
 			for (IGrantedAuthority auth : matches) {
 				converted.add(GrantedAuthority.copy(auth));

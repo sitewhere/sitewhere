@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.BlockingQueueInboundProcessingStrategy;
 import com.sitewhere.device.communication.BlockingQueueOutboundProcessingStrategy;
@@ -27,22 +28,19 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @author Derek
  */
-public class EventProcessing extends TenantLifecycleComponent
-		implements IEventProcessing, ITenantHazelcastAware {
+public class EventProcessing extends TenantLifecycleComponent implements IEventProcessing, ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(EventProcessing.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Configured inbound processing strategy */
-	private IInboundProcessingStrategy inboundProcessingStrategy =
-			new BlockingQueueInboundProcessingStrategy();
+	private IInboundProcessingStrategy inboundProcessingStrategy = new BlockingQueueInboundProcessingStrategy();
 
 	/** Configured inbound event processor chain */
 	private IInboundEventProcessorChain inboundEventProcessorChain;
 
 	/** Configured outbound processing strategy */
-	private IOutboundProcessingStrategy outboundProcessingStrategy =
-			new BlockingQueueOutboundProcessingStrategy();
+	private IOutboundProcessingStrategy outboundProcessingStrategy = new BlockingQueueOutboundProcessingStrategy();
 
 	/** Configured outbound event processor chain */
 	private IOutboundEventProcessorChain outboundEventProcessorChain;
@@ -61,28 +59,24 @@ public class EventProcessing extends TenantLifecycleComponent
 
 		// Enable outbound processor chain.
 		if (getOutboundEventProcessorChain() != null) {
-			startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.",
-					true);
+			startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.", true);
 			getOutboundEventProcessorChain().setProcessingEnabled(true);
 		}
 
 		// Enable inbound processor chain.
 		if (getInboundEventProcessorChain() != null) {
-			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.",
-					true);
+			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.", true);
 		}
 
 		// Start outbound processing strategy.
 		if (getOutboundProcessingStrategy() == null) {
-			throw new SiteWhereException(
-					"No outbound processing strategy configured for communication subsystem.");
+			throw new SiteWhereException("No outbound processing strategy configured for communication subsystem.");
 		}
 		startNestedComponent(getOutboundProcessingStrategy(), true);
 
 		// Start inbound processing strategy.
 		if (getInboundProcessingStrategy() == null) {
-			throw new SiteWhereException(
-					"No inbound processing strategy configured for communication subsystem.");
+			throw new SiteWhereException("No inbound processing strategy configured for communication subsystem.");
 		}
 		startNestedComponent(getInboundProcessingStrategy(), true);
 	}
@@ -118,19 +112,17 @@ public class EventProcessing extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	@Override
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
 		if (getOutboundEventProcessorChain() instanceof ITenantHazelcastAware) {
-			((ITenantHazelcastAware) getOutboundEventProcessorChain()).setHazelcastConfiguration(
-					configuration);
+			((ITenantHazelcastAware) getOutboundEventProcessorChain()).setHazelcastConfiguration(configuration);
 		}
 		if (getInboundEventProcessorChain() instanceof ITenantHazelcastAware) {
-			((ITenantHazelcastAware) getInboundEventProcessorChain()).setHazelcastConfiguration(
-					configuration);
+			((ITenantHazelcastAware) getInboundEventProcessorChain()).setHazelcastConfiguration(configuration);
 		}
 	}
 

@@ -13,7 +13,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -27,15 +28,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
- * {@link IOutboundEventProcessor} implementation that takes saved events and indexes them
- * in Apache Solr for advanced analytics processing.
+ * {@link IOutboundEventProcessor} implementation that takes saved events and
+ * indexes them in Apache Solr for advanced analytics processing.
  * 
  * @author Derek
  */
 public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SolrDeviceEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Number of documents to buffer before blocking calls */
 	private static final int BUFFER_SIZE = 1000;
@@ -91,7 +92,8 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -122,9 +124,8 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {

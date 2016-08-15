@@ -7,12 +7,8 @@
  */
 package com.sitewhere.ehcache;
 
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.Configuration;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -25,16 +21,21 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
+
 /**
- * Implementation of {@link IDeviceManagementCacheProvider} that uses EHCache for caching.
+ * Implementation of {@link IDeviceManagementCacheProvider} that uses EHCache
+ * for caching.
  * 
  * @author Derek
  */
-public class DeviceManagementCacheProvider extends TenantLifecycleComponent implements
-		IDeviceManagementCacheProvider {
+public class DeviceManagementCacheProvider extends TenantLifecycleComponent implements IDeviceManagementCacheProvider {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(DeviceManagementCacheProvider.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Cache id for site cache */
 	public static final String SITE_CACHE_ID = "site-cache";
@@ -105,26 +106,22 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 		CacheManager manager = CacheManager.create(config);
 
 		// Create site cache.
-		siteCache =
-				createCache(manager, ISite.class, addTenantPrefix(SITE_CACHE_ID), CacheType.SiteCache,
-						getSiteCacheMaxEntries(), getSiteCacheTtl());
+		siteCache = createCache(manager, ISite.class, addTenantPrefix(SITE_CACHE_ID), CacheType.SiteCache,
+				getSiteCacheMaxEntries(), getSiteCacheTtl());
 
 		// Create device specification cache.
-		deviceSpecificationCache =
-				createCache(manager, IDeviceSpecification.class,
-						addTenantPrefix(DEVICE_SPECIFICATION_CACHE_ID), CacheType.DeviceSpecificationCache,
-						getDeviceSpecificationCacheMaxEntries(), getDeviceSpecificationCacheTtl());
+		deviceSpecificationCache = createCache(manager, IDeviceSpecification.class,
+				addTenantPrefix(DEVICE_SPECIFICATION_CACHE_ID), CacheType.DeviceSpecificationCache,
+				getDeviceSpecificationCacheMaxEntries(), getDeviceSpecificationCacheTtl());
 
 		// Create device cache.
-		deviceCache =
-				createCache(manager, IDevice.class, addTenantPrefix(DEVICE_CACHE_ID), CacheType.DeviceCache,
-						getDeviceCacheMaxEntries(), getDeviceCacheTtl());
+		deviceCache = createCache(manager, IDevice.class, addTenantPrefix(DEVICE_CACHE_ID), CacheType.DeviceCache,
+				getDeviceCacheMaxEntries(), getDeviceCacheTtl());
 
 		// Create device assignment cache.
-		deviceAssignmentCache =
-				createCache(manager, IDeviceAssignment.class, addTenantPrefix(DEVICE_ASSIGNMENT_CACHE_ID),
-						CacheType.DeviceAssignmentCache, getDeviceAssignmentCacheMaxEntries(),
-						getDeviceAssignmentCacheTtl());
+		deviceAssignmentCache = createCache(manager, IDeviceAssignment.class,
+				addTenantPrefix(DEVICE_ASSIGNMENT_CACHE_ID), CacheType.DeviceAssignmentCache,
+				getDeviceAssignmentCacheMaxEntries(), getDeviceAssignmentCacheTtl());
 	}
 
 	/**
@@ -180,7 +177,8 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
 	 */
 	@Override
 	public ICache<String, ISite> getSiteCache() throws SiteWhereException {
@@ -190,9 +188,8 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceSpecificationCache
-	 * ()
+	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+	 * getDeviceSpecificationCache ()
 	 */
 	@Override
 	public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException {
@@ -202,7 +199,8 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
 	 */
 	@Override
 	public ICache<String, IDevice> getDeviceCache() throws SiteWhereException {
@@ -212,8 +210,8 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceAssignmentCache()
+	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+	 * getDeviceAssignmentCache()
 	 */
 	@Override
 	public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException {

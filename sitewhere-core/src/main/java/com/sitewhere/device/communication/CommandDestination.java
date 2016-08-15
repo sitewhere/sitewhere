@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -31,7 +32,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class CommandDestination<T, P> extends TenantLifecycleComponent implements ICommandDestination<T, P> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(CommandDestination.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Unique destination id */
 	private String destinationId;
@@ -53,8 +54,8 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDestination#deliverCommand(com.sitewhere
-	 * .spi.device.command.IDeviceCommandExecution,
+	 * com.sitewhere.spi.device.communication.ICommandDestination#deliverCommand
+	 * (com.sitewhere .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
@@ -62,18 +63,15 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment) throws SiteWhereException {
 		T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignment);
-		P params =
-				getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment,
-						execution);
+		P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, execution);
 		getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDestination#deliverSystemCommand
-	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * @see com.sitewhere.spi.device.communication.ICommandDestination#
+	 * deliverSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
@@ -81,8 +79,7 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment) throws SiteWhereException {
 		T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignment);
-		P params =
-				getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
+		P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
 		getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
 	}
 
@@ -104,8 +101,7 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 
 		// Start command execution encoder.
 		if (getCommandDeliveryParameterExtractor() == null) {
-			throw new SiteWhereException(
-					"No command delivery parameter extractor configured for destination.");
+			throw new SiteWhereException("No command delivery parameter extractor configured for destination.");
 		}
 
 		// Start command delivery provider.
@@ -156,7 +152,8 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDestination#getDestinationId()
+	 * @see com.sitewhere.spi.device.communication.ICommandDestination#
+	 * getDestinationId()
 	 */
 	public String getDestinationId() {
 		return destinationId;
@@ -169,9 +166,8 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDestination#getCommandExecutionEncoder
-	 * ()
+	 * @see com.sitewhere.spi.device.communication.ICommandDestination#
+	 * getCommandExecutionEncoder ()
 	 */
 	public ICommandExecutionEncoder<T> getCommandExecutionEncoder() {
 		return commandExecutionEncoder;
@@ -199,9 +195,8 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDestination#getCommandDeliveryProvider
-	 * ()
+	 * @see com.sitewhere.spi.device.communication.ICommandDestination#
+	 * getCommandDeliveryProvider ()
 	 */
 	public ICommandDeliveryProvider<T, P> getCommandDeliveryProvider() {
 		return commandDeliveryProvider;

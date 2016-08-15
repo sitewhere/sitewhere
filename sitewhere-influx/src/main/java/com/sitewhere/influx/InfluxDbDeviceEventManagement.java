@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDB.LogLevel;
 import org.influxdb.InfluxDBFactory;
@@ -70,7 +71,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent implements IDeviceEventManagement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(InfluxDbDeviceEventManagement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Device management implementation */
 	private IDeviceManagement deviceManagement;

@@ -12,7 +12,8 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.sms.SmsParameters;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -28,16 +29,16 @@ import com.twilio.sdk.resource.factory.MessageFactory;
 import com.twilio.sdk.resource.instance.Account;
 
 /**
- * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message via
- * Twilio.
+ * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message
+ * via Twilio.
  * 
  * @author Derek
  */
-public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent implements
-		ICommandDeliveryProvider<String, SmsParameters> {
+public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent
+		implements ICommandDeliveryProvider<String, SmsParameters> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(TwilioCommandDeliveryProvider.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Account SID */
 	private String accountSid;
@@ -73,8 +74,7 @@ public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent impl
 		}
 		this.twilio = new TwilioRestClient(getAccountSid(), getAuthToken());
 		this.account = twilio.getAccount();
-		LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber()
-				+ ".");
+		LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber() + ".");
 	}
 
 	/*
@@ -100,15 +100,15 @@ public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent impl
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(com.sitewhere
-	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
-	 * java.lang.Object)
+	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
+	 * com.sitewhere .spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution,
+	 * java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, String encoded, SmsParameters params)
-			throws SiteWhereException {
+	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
+			String encoded, SmsParameters params) throws SiteWhereException {
 		LOGGER.info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
 		sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
 	}
@@ -116,14 +116,14 @@ public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliverSystemCommand
-	 * (com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object, java.lang.Object)
+	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
+	 * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+	 * java.lang.Object)
 	 */
 	@Override
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			String encoded, SmsParameters params) throws SiteWhereException {
+	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, String encoded,
+			SmsParameters params) throws SiteWhereException {
 		throw new UnsupportedOperationException();
 	}
 

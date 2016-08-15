@@ -16,7 +16,8 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
@@ -46,7 +47,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseDeviceStream {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceStream.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new {@link IDeviceStream}.
@@ -69,8 +70,7 @@ public class HBaseDeviceStream {
 			}
 
 			// Verify that the device stream does not exist.
-			DeviceStream stream =
-					HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
+			DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
 			if (stream != null) {
 				throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
 			}
@@ -145,8 +145,8 @@ public class HBaseDeviceStream {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context,
-			String assignmentToken, ISearchCriteria criteria) throws SiteWhereException {
+	public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context, String assignmentToken,
+			ISearchCriteria criteria) throws SiteWhereException {
 		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
@@ -167,8 +167,8 @@ public class HBaseDeviceStream {
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 
 				if ((payloadType != null) && (payload != null)) {
-					pager.process((IDeviceStream) PayloadMarshalerResolver.getInstance().getMarshaler(
-							payloadType).decodeDeviceStream(payload));
+					pager.process((IDeviceStream) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+							.decodeDeviceStream(payload));
 				}
 			}
 			return new SearchResults<IDeviceStream>(pager.getResults(), pager.getTotal());

@@ -9,11 +9,11 @@ package com.sitewhere.spi.server.debug;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Pluggable debug facility that allows hierarchical data execution information to be
- * stored for later analysis.
+ * Pluggable debug facility that allows hierarchical data execution information
+ * to be stored for later analysis.
  * 
  * @author Derek
  */

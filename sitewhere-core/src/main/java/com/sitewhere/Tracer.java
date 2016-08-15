@@ -9,7 +9,8 @@ package com.sitewhere;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.spi.server.debug.ITracer;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class Tracer {
 
 	/** Private logger instance */
-	private static Logger LOGGER = Logger.getLogger(Tracer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Fallback tracer implementation */
 	private static ITracer FALLBACK = new NullTracer();

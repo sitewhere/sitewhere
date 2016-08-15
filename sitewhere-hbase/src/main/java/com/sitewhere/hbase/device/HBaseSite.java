@@ -25,7 +25,8 @@ import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
@@ -62,7 +63,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseSite {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseSite.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of site identifier (subset of 8 byte long) */
 	public static final int SITE_IDENTIFIER_LENGTH = 2;

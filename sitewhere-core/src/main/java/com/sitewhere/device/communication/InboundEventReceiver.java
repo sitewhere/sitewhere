@@ -9,7 +9,8 @@ package com.sitewhere.device.communication;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class InboundEventReceiver<T> extends TenantLifecycleComponent implements IInboundEventReceiver<T> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(InboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Parent event source */
 	private IInboundEventSource<T> eventSource;
@@ -68,7 +69,8 @@ public class InboundEventReceiver<T> extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -78,9 +80,8 @@ public class InboundEventReceiver<T> extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * onEventPayloadReceived (java.lang.Object, java.util.Map)
 	 */
 	@Override
 	public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException {
@@ -90,7 +91,8 @@ public class InboundEventReceiver<T> extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getEventSource()
 	 */
 	public IInboundEventSource<T> getEventSource() {
 		return eventSource;
@@ -99,8 +101,8 @@ public class InboundEventReceiver<T> extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com.
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * setEventSource(com.
 	 * sitewhere.spi.device.communication.IInboundEventSource)
 	 */
 	public void setEventSource(IInboundEventSource<T> eventSource) {

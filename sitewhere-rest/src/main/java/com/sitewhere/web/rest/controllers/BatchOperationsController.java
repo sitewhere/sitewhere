@@ -13,7 +13,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -71,7 +72,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class BatchOperationsController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BatchOperationsController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	@RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
 	@ResponseBody
@@ -84,9 +85,8 @@ public class BatchOperationsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getBatchOperationByToken", LOGGER);
 		try {
-			IBatchOperation batch =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getBatchOperation(
-							batchToken);
+			IBatchOperation batch = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.getBatchOperation(batchToken);
 			if (batch == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 			}
@@ -112,9 +112,8 @@ public class BatchOperationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IBatchOperation> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listBatchOperations(
-							includeDeleted, criteria);
+			ISearchResults<IBatchOperation> results = SiteWhere.getServer()
+					.getDeviceManagement(getTenant(servletRequest)).listBatchOperations(includeDeleted, criteria);
 			List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
 			for (IBatchOperation op : results.getResults()) {
 				opsConv.add(BatchOperation.copy(op));
@@ -141,9 +140,8 @@ public class BatchOperationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
 		try {
 			BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
-			ISearchResults<IBatchElement> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listBatchElements(
-							operationToken, criteria);
+			ISearchResults<IBatchElement> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.listBatchElements(operationToken, criteria);
 			return results;
 		} finally {
 			Tracer.stop(LOGGER);
@@ -161,9 +159,8 @@ public class BatchOperationsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandInvocation", LOGGER);
 		try {
-			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).createBatchCommandInvocation(request);
+			IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.createBatchCommandInvocation(request);
 			return BatchOperation.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -171,8 +168,8 @@ public class BatchOperationsController extends RestController {
 	}
 
 	/**
-	 * Create a batch operation that invokes a command for all devices that match the
-	 * given criteria.
+	 * Create a batch operation that invokes a command for all devices that
+	 * match the given criteria.
 	 * 
 	 * @param request
 	 * @param servletRequest
@@ -202,9 +199,8 @@ public class BatchOperationsController extends RestController {
 			invoke.setParameterValues(request.getParameterValues());
 			invoke.setHardwareIds(hardwareIds);
 
-			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).createBatchCommandInvocation(invoke);
+			IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.createBatchCommandInvocation(invoke);
 			return BatchOperation.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -212,8 +208,8 @@ public class BatchOperationsController extends RestController {
 	}
 
 	/**
-	 * Schedule job that will create a new batch command invocation based on the given
-	 * criteria.
+	 * Schedule job that will create a new batch command invocation based on the
+	 * given criteria.
 	 * 
 	 * @param request
 	 * @param scheduleToken
@@ -232,11 +228,9 @@ public class BatchOperationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "scheduleBatchCommandByCriteria", LOGGER);
 		try {
 			assureDeviceCommand(request.getCommandToken(), servletRequest);
-			IScheduledJobCreateRequest job =
-					ScheduledJobHelper.createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
-							request, scheduleToken);
-			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(
-					job);
+			IScheduledJobCreateRequest job = ScheduledJobHelper
+					.createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(), request, scheduleToken);
+			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -252,9 +246,8 @@ public class BatchOperationsController extends RestController {
 	 */
 	protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
 			throws SiteWhereException {
-		IDeviceCommand command =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
-						token);
+		IDeviceCommand command = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+				.getDeviceCommandByToken(token);
 		if (command == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 		}

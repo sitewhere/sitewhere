@@ -9,7 +9,7 @@ package com.sitewhere.spi.server.lifecycle;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 
@@ -107,15 +107,14 @@ public interface ILifecycleComponent {
 	public void stop() throws SiteWhereException;
 
 	/**
-	 * Find components (including this component and nested components) that are of the
-	 * given type.
+	 * Find components (including this component and nested components) that are
+	 * of the given type.
 	 * 
 	 * @param type
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
-			throws SiteWhereException;
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type) throws SiteWhereException;
 
 	/**
 	 * Get component logger.

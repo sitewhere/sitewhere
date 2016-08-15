@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class RegistrationManager extends TenantLifecycleComponent implements IRegistrationManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RegistrationManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Indicates if new devices can register with the system */
 	private boolean allowNewDevices = true;

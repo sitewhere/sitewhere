@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fusesource.hawtdispatch.Dispatch;
 import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
@@ -29,15 +30,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Extends {@link TenantLifecycleComponent} with base functionality for connecting to
- * MQTT.
+ * Extends {@link TenantLifecycleComponent} with base functionality for
+ * connecting to MQTT.
  * 
  * @author Derek
  */
 public class MqttLifecycleComponent extends TenantLifecycleComponent implements IMqttComponent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MqttLifecycleComponent.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default protocol if not set via Spring */
 	public static final String DEFAULT_PROTOCOL = "tcp";
@@ -132,8 +133,8 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 			if ((component.getTrustStorePath() != null) && (component.getTrustStorePassword() != null)) {
 				try {
 					SSLContext sslContext = SSLContext.getInstance("TLS");
-					TrustManagerFactory tmf =
-							TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+					TrustManagerFactory tmf = TrustManagerFactory
+							.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 					KeyStore ks = KeyStore.getInstance("JKS");
 					File trustFile = new File(component.getTrustStorePath());
 					ks.load(new FileInputStream(trustFile), component.getTrustStorePassword().toCharArray());
@@ -155,8 +156,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 			mqtt.setPassword(component.getPassword());
 		}
 		try {
-			mqtt.setHost(
-					component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
+			mqtt.setHost(component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
 			return mqtt;
 		} catch (URISyntaxException e) {
 			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
@@ -210,7 +210,8 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
 	 */
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
@@ -263,7 +264,9 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath()
+	 * @see
+	 * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
+	 * )
 	 */
 	public String getTrustStorePath() {
 		return trustStorePath;
@@ -276,7 +279,8 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePassword()
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
+	 * getTrustStorePassword()
 	 */
 	public String getTrustStorePassword() {
 		return trustStorePassword;

@@ -9,7 +9,8 @@ package com.sitewhere.web.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -52,7 +53,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class ZonesController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ZonesController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	@RequestMapping(value = "/{zoneToken}", method = RequestMethod.GET)
 	@ResponseBody
@@ -65,8 +66,7 @@ public class ZonesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getZone", LOGGER);
 		try {
-			IZone found =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getZone(zoneToken);
+			IZone found = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getZone(zoneToken);
 			return Zone.copy(found);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -89,13 +89,11 @@ public class ZonesController extends RestController {
 			@Example(stage = Stage.Response, json = Zones.UpdateZoneResponse.class, description = "updateZoneResponse.md") })
 	public Zone updateZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
-			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest)
-			throws SiteWhereException {
+			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateZone", LOGGER);
 		try {
-			IZone zone =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateZone(zoneToken,
-							request);
+			IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateZone(zoneToken,
+					request);
 			return Zone.copy(zone);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -121,9 +119,8 @@ public class ZonesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteZone", LOGGER);
 		try {
-			IZone deleted =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteZone(zoneToken,
-							force);
+			IZone deleted = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteZone(zoneToken,
+					force);
 			return Zone.copy(deleted);
 		} finally {
 			Tracer.stop(LOGGER);

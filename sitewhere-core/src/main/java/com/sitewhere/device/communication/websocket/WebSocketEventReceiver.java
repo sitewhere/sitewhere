@@ -21,7 +21,8 @@ import javax.websocket.Endpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -36,7 +37,7 @@ import com.sitewhere.spi.SiteWhereException;
 public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger */
-	private static Logger LOGGER = Logger.getLogger(WebSocketEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** User property that references the event reciever */
 	public static final String PROP_EVENT_RECEIVER = "sw.event.receiver";
@@ -65,13 +66,11 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
 	@Override
 	public void start() throws SiteWhereException {
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-		ClientEndpointConfig config =
-				ClientEndpointConfig.Builder.create().configurator(new WebSocketConfigurator()).build();
+		ClientEndpointConfig config = ClientEndpointConfig.Builder.create().configurator(new WebSocketConfigurator())
+				.build();
 		config.getUserProperties().put(PROP_EVENT_RECEIVER, this);
 		try {
-			session =
-					container.connectToServer(getWebSocketClientClass(), config,
-							URI.create(getWebSocketUrl()));
+			session = container.connectToServer(getWebSocketClientClass(), config, URI.create(getWebSocketUrl()));
 		} catch (DeploymentException e) {
 			throw new SiteWhereException("Unable to connect to web socket.", e);
 		} catch (IOException e) {
@@ -106,7 +105,8 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

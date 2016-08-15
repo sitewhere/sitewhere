@@ -7,7 +7,8 @@
  */
 package com.sitewhere.groovy.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -39,7 +40,7 @@ import groovy.util.ScriptException;
 public class GroovyEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -78,7 +79,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -111,7 +113,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceStateChange)
 	 */
 	@Override
 	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
@@ -126,8 +129,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	 * IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		processEvent(invocation);
 	}
 
@@ -144,8 +146,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	 */
 	protected void processEvent(IDeviceEvent event) throws SiteWhereException {
 		// These should be cached, so no performance hit.
-		IDeviceAssignment assignment =
-				getDeviceManagement().getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+		IDeviceAssignment assignment = getDeviceManagement()
+				.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
 		IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
 
 		// Create Groovy binding with handles to everything.
@@ -184,8 +186,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {

@@ -9,7 +9,7 @@ package com.sitewhere.server.debug;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.debug.TracerCategory;
@@ -27,8 +27,9 @@ public class NullTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#start(com.sitewhere.spi.server.debug.
-	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
+	 * @see
+	 * com.sitewhere.spi.server.debug.ITracer#start(com.sitewhere.spi.server.
+	 * debug. TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void start(TracerCategory category, String message, Logger logger) {
@@ -74,8 +75,9 @@ public class NullTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.debug.
-	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
+	 * @see
+	 * com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.
+	 * debug. TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void push(TracerCategory category, String message, Logger logger) {
@@ -133,8 +135,8 @@ public class NullTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#timing(java.lang.String, long,
-	 * java.util.concurrent.TimeUnit, org.apache.log4j.Logger)
+	 * @see com.sitewhere.spi.server.debug.ITracer#timing(java.lang.String,
+	 * long, java.util.concurrent.TimeUnit, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void timing(String message, long delta, TimeUnit unit, Logger logger) {

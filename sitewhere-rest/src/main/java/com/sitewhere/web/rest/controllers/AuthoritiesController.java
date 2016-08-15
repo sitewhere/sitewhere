@@ -12,7 +12,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -62,7 +63,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class AuthoritiesController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AuthoritiesController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new authority.
@@ -103,12 +104,10 @@ public class AuthoritiesController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
 	public GrantedAuthority getAuthorityByName(
-			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
-			throws SiteWhereException {
+			@ApiParam(value = "Authority name", required = true) @PathVariable String name) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthorityByName", LOGGER);
 		try {
-			IGrantedAuthority auth =
-					SiteWhere.getServer().getUserManagement().getGrantedAuthorityByName(name);
+			IGrantedAuthority auth = SiteWhere.getServer().getUserManagement().getGrantedAuthorityByName(name);
 			if (auth == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -138,8 +137,7 @@ public class AuthoritiesController extends RestController {
 		try {
 			List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
 			GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-			List<IGrantedAuthority> auths =
-					SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
+			List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
 			for (IGrantedAuthority auth : auths) {
 				authsConv.add(GrantedAuthority.copy(auth));
 			}
@@ -163,8 +161,7 @@ public class AuthoritiesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
 		try {
 			GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-			List<IGrantedAuthority> auths =
-					SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
+			List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
 			return GrantedAuthorityHierarchyBuilder.build(auths);
 		} finally {
 			Tracer.stop(LOGGER);

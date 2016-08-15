@@ -10,7 +10,8 @@ package com.sitewhere.siddhi;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
@@ -24,15 +25,15 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.server.tenant.ITenantAware;
 
 /**
- * Implementation of {@link IOutboundEventProcessor} that injects events into Siddhi for
- * complex event processing.
+ * Implementation of {@link IOutboundEventProcessor} that injects events into
+ * Siddhi for complex event processing.
  * 
  * @author Derek
  */
 public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiddhiEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Defines the measurement event stream */
 	private static String DEFINE_MEASUREMENT_STREAM = "define stream MeasurementStream ("
@@ -111,7 +112,8 @@ public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -119,16 +121,10 @@ public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 			Double mxvalue = measurements.getMeasurement(mxname);
 			try {
 				// Send a separate stream event per individual measurement.
-				getMxInputHandler().send(
-						new Object[] {
-								measurements.getId(),
-								measurements.getSiteToken(),
-								measurements.getDeviceAssignmentToken(),
-								measurements.getAssetModuleId(),
-								measurements.getAssetId(),
-								measurements.getEventDate().getTime(),
-								mxname,
-								mxvalue.floatValue() });
+				getMxInputHandler().send(new Object[] { measurements.getId(), measurements.getSiteToken(),
+						measurements.getDeviceAssignmentToken(), measurements.getAssetModuleId(),
+						measurements.getAssetId(), measurements.getEventDate().getTime(), mxname,
+						mxvalue.floatValue() });
 			} catch (InterruptedException e) {
 				throw new SiteWhereException("Unable to process measurement in Siddhi.", e);
 			}
@@ -144,17 +140,10 @@ public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 	@Override
 	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		try {
-			getLocationInputHandler().send(
-					new Object[] {
-							location.getId(),
-							location.getSiteToken(),
-							location.getDeviceAssignmentToken(),
-							location.getAssetModuleId(),
-							location.getAssetId(),
-							location.getEventDate().getTime(),
-							location.getLatitude().floatValue(),
-							location.getLongitude().floatValue(),
-							location.getElevation().floatValue() });
+			getLocationInputHandler().send(new Object[] { location.getId(), location.getSiteToken(),
+					location.getDeviceAssignmentToken(), location.getAssetModuleId(), location.getAssetId(),
+					location.getEventDate().getTime(), location.getLatitude().floatValue(),
+					location.getLongitude().floatValue(), location.getElevation().floatValue() });
 		} catch (InterruptedException e) {
 			throw new SiteWhereException("Unable to process alert in Siddhi.", e);
 		}
@@ -163,25 +152,16 @@ public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
 		try {
-			getAlertInputHandler().send(
-					new Object[] {
-							alert.getId(),
-							alert.getSiteToken(),
-							alert.getDeviceAssignmentToken(),
-							alert.getAssetModuleId(),
-							alert.getAssetId(),
-							alert.getEventDate().getTime(),
-							alert.getSource().name(),
-							alert.getLevel().name(),
-							alert.getType(),
-							alert.getMessage() });
+			getAlertInputHandler()
+					.send(new Object[] { alert.getId(), alert.getSiteToken(), alert.getDeviceAssignmentToken(),
+							alert.getAssetModuleId(), alert.getAssetId(), alert.getEventDate().getTime(),
+							alert.getSource().name(), alert.getLevel().name(), alert.getType(), alert.getMessage() });
 		} catch (InterruptedException e) {
 			throw new SiteWhereException("Unable to process alert in Siddhi.", e);
 		}

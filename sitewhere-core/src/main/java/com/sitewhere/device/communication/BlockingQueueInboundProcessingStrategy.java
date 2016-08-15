@@ -15,7 +15,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.server.SiteWhereServer;
@@ -45,7 +46,7 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 		implements IInboundProcessingStrategy {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Maximum size of queues */
 	private static final int MAX_QUEUE_SIZE = 10000;

@@ -11,14 +11,15 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
- * Default implementation of {@link ITracer} that writes information to a {@link Logger}.
+ * Default implementation of {@link ITracer} that writes information to a
+ * {@link Logger}.
  * 
  * @author Derek
  */
@@ -36,8 +37,9 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#start(com.sitewhere.spi.server.debug.
-	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
+	 * @see
+	 * com.sitewhere.spi.server.debug.ITracer#start(com.sitewhere.spi.server.
+	 * debug. TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void start(TracerCategory category, String message, Logger logger) {
@@ -88,8 +90,9 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.debug.
-	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
+	 * @see
+	 * com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.
+	 * debug. TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void push(TracerCategory category, String message, Logger logger) {
@@ -169,8 +172,8 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.debug.ITracer#timing(java.lang.String, long,
-	 * java.util.concurrent.TimeUnit, org.apache.log4j.Logger)
+	 * @see com.sitewhere.spi.server.debug.ITracer#timing(java.lang.String,
+	 * long, java.util.concurrent.TimeUnit, org.apache.log4j.Logger)
 	 */
 	@Override
 	public void timing(String message, long delta, TimeUnit unit, Logger logger) {

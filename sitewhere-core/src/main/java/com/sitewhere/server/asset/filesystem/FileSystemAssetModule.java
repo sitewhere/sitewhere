@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.Asset;
@@ -39,7 +40,7 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
 	private static final long serialVersionUID = 8266923437767568336L;
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(FileSystemAssetModule.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Map of assets by unique id */
 	protected Map<String, T> assetsById;

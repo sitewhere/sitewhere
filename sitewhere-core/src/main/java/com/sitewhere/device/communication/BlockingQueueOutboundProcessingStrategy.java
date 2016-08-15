@@ -14,7 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
@@ -43,7 +44,7 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 		implements IOutboundProcessingStrategy {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BlockingQueueOutboundProcessingStrategy.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Maximum size of queues */
 	private static final int MAX_QUEUE_SIZE = 1000;
@@ -75,13 +76,12 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	@Override
 	public void start() throws SiteWhereException {
 		this.queue = new ArrayBlockingQueue<IDeviceEvent>(getMaxQueueSize());
-		processorPool =
-				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
+		processorPool = Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
 		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingDeviceEventProcessor(queue));
 		}
-		LOGGER.info("Started blocking queue outbound processing strategy with queue size of "
-				+ getMaxQueueSize() + " and " + getEventProcessorThreadCount() + " threads.");
+		LOGGER.info("Started blocking queue outbound processing strategy with queue size of " + getMaxQueueSize()
+				+ " and " + getEventProcessorThreadCount() + " threads.");
 	}
 
 	/*
@@ -101,8 +101,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere BlockingQueueOutboundProcessingStrategy Processor "
-					+ counter.incrementAndGet());
+			return new Thread(r,
+					"SiteWhere BlockingQueueOutboundProcessingStrategy Processor " + counter.incrementAndGet());
 		}
 	}
 
@@ -121,9 +121,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onMeasurements (com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -133,9 +132,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
-	 * .sitewhere.spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onLocation(com .sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
 	public void onLocation(IDeviceLocation location) throws SiteWhereException {
@@ -145,8 +143,9 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
-	 * sitewhere .spi.device.event.IDeviceAlert)
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(
+	 * com. sitewhere .spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
@@ -157,7 +156,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * onCommandInvocation
+	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
@@ -167,9 +167,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
-	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onCommandResponse (com.sitewhere.spi.device.event.IDeviceCommandResponse)
 	 */
 	@Override
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
@@ -179,9 +178,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
-	 * sitewhere.spi.device.event.IDeviceStateChange)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onStateChange(com. sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
 	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
@@ -205,7 +203,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	}
 
 	/**
-	 * Blocking thread that processes {@link IDeviceEvent} messages from a queue.
+	 * Blocking thread that processes {@link IDeviceEvent} messages from a
+	 * queue.
 	 * 
 	 * @author Derek
 	 * 
@@ -222,18 +221,20 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 
 		@Override
 		public void run() {
-			// Event creation APIs expect an authenticated user in order to check
-			// permissions and log who creates events. When called in this context, the
+			// Event creation APIs expect an authenticated user in order to
+			// check
+			// permissions and log who creates events. When called in this
+			// context, the
 			// authenticated user will always be 'system'.
 			//
-			// TODO: Alternatively, we may want the client to authenticate on registration
+			// TODO: Alternatively, we may want the client to authenticate on
+			// registration
 			// and pass a token on each request.
 			try {
-				SecurityContextHolder.getContext().setAuthentication(
-						SiteWhereServer.getSystemAuthentication());
+				SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			} catch (SiteWhereException e) {
-				throw new RuntimeException("Unable to use system authentication for outbound device "
-						+ " event processor thread.", e);
+				throw new RuntimeException(
+						"Unable to use system authentication for outbound device " + " event processor thread.", e);
 			}
 			while (true) {
 				try {
@@ -264,8 +265,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 						break;
 					}
 					default: {
-						throw new RuntimeException("Unknown device event type in outbound processing: "
-								+ event.getClass().getName());
+						throw new RuntimeException(
+								"Unknown device event type in outbound processing: " + event.getClass().getName());
 					}
 					}
 				} catch (SiteWhereException e) {

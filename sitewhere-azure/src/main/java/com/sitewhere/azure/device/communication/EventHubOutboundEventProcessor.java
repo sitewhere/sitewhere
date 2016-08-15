@@ -25,7 +25,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
@@ -39,15 +40,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
- * Implementation of {@link IOutboundEventProcessor} that sends events to an EventHub
- * running on Azure.
+ * Implementation of {@link IOutboundEventProcessor} that sends events to an
+ * EventHub running on Azure.
  * 
  * @author Derek
  */
 public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(EventHubOutboundEventProcessor.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** SAS identity name */
 	private String sasName;
@@ -144,7 +145,8 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -165,9 +167,8 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
@@ -190,7 +191,8 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceCommandResponse)
 	 */
 	@Override
 	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {

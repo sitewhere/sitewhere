@@ -7,7 +7,8 @@
  */
 package com.sitewhere.cloud.providers.dweetio;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
@@ -22,15 +23,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
- * Implmentation of {@link IOutboundEventProcessor} that sends events to the cloud
- * provider at dweet.io.
+ * Implmentation of {@link IOutboundEventProcessor} that sends events to the
+ * cloud provider at dweet.io.
  * 
  * @author Derek
  */
 public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DweetIoEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Base URI for REST calls */
 	private static final String API_BASE = "https://dweet.io:443/dweet/for/";
@@ -55,7 +56,8 @@ public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -76,9 +78,8 @@ public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
@@ -99,8 +100,7 @@ public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 			if (response.getStatusCode() == HttpStatus.OK) {
 				return true;
 			}
-			throw new SiteWhereException("Unable to create dweet. Status code was: "
-					+ response.getStatusCode());
+			throw new SiteWhereException("Unable to create dweet. Status code was: " + response.getStatusCode());
 		} catch (ResourceAccessException e) {
 			throw new SiteWhereException(e);
 		}

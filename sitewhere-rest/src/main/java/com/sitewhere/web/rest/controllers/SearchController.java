@@ -13,7 +13,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -57,7 +58,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class SearchController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SearchController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -65,13 +66,11 @@ public class SearchController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
-	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest)
-			throws SiteWhereException {
+	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
 		try {
-			List<ISearchProvider> providers =
-					SiteWhere.getServer().getSearchProviderManager(
-							getTenant(servletRequest)).getSearchProviders();
+			List<ISearchProvider> providers = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
+					.getSearchProviders();
 			List<SearchProvider> retval = new ArrayList<SearchProvider>();
 			for (ISearchProvider provider : providers) {
 				retval.add(SearchProvider.copy(provider));
@@ -93,9 +92,8 @@ public class SearchController extends RestController {
 			HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "searchDeviceEvents", LOGGER);
 		try {
-			ISearchProvider provider =
-					SiteWhere.getServer().getSearchProviderManager(
-							getTenant(servletRequest)).getSearchProvider(providerId);
+			ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
+					.getSearchProvider(providerId);
 			if (provider == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);

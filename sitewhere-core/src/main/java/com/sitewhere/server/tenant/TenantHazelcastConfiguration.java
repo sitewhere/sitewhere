@@ -9,7 +9,8 @@ package com.sitewhere.server.tenant;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -36,7 +37,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 		implements ITenantHazelcastConfiguration, LifecycleListener {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(TenantHazelcastConfiguration.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Hazelcast configuration file name */
 	public static final String CONFIG_FILE_NAME = "hazelcast.xml";

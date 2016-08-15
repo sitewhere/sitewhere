@@ -8,7 +8,8 @@
 package com.sitewhere.hbase.scheduling;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class HBaseScheduleManagement extends TenantLifecycleComponent implements IScheduleManagement {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(HBaseScheduleManagement.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
@@ -106,9 +107,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#createSchedule(com.sitewhere.spi
-	 * .scheduling.request.IScheduleCreateRequest)
+	 * @see com.sitewhere.spi.scheduling.IScheduleManagement#createSchedule(com.
+	 * sitewhere.spi .scheduling.request.IScheduleCreateRequest)
 	 */
 	@Override
 	public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
@@ -119,8 +119,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateSchedule(java.lang.String,
-	 * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateSchedule(java.lang
+	 * .String, com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
 	 */
 	@Override
 	public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException {
@@ -131,8 +131,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduleByToken(java.lang.String
-	 * )
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduleByToken(java.
+	 * lang.String )
 	 */
 	@Override
 	public ISchedule getScheduleByToken(String token) throws SiteWhereException {
@@ -142,9 +142,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#listSchedules(com.sitewhere.spi
-	 * .search.ISearchCriteria)
+	 * @see com.sitewhere.spi.scheduling.IScheduleManagement#listSchedules(com.
+	 * sitewhere.spi .search.ISearchCriteria)
 	 */
 	@Override
 	public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
@@ -155,8 +154,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.String,
-	 * boolean)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang
+	 * .String, boolean)
 	 */
 	@Override
 	public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
@@ -167,8 +166,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.sitewhere
-	 * .spi.scheduling.request.IScheduledJobCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
+	 * sitewhere .spi.scheduling.request.IScheduledJobCreateRequest)
 	 */
 	@Override
 	public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
@@ -179,8 +178,9 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateScheduledJob(java.lang.String
-	 * , com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateScheduledJob(java.
+	 * lang.String ,
+	 * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
 	 */
 	@Override
 	public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
@@ -192,8 +192,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(java.lang
-	 * .String)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
+	 * java.lang .String)
 	 */
 	@Override
 	public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException {
@@ -204,12 +204,11 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.sitewhere
-	 * .spi.search.ISearchCriteria)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
+	 * sitewhere .spi.search.ISearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseScheduledJob.listScheduledJobs(context, false, criteria);
 	}
 
@@ -217,8 +216,8 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang.String
-	 * , boolean)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.
+	 * lang.String , boolean)
 	 */
 	@Override
 	public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {

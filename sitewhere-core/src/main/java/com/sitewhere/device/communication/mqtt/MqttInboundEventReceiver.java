@@ -13,7 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
@@ -29,16 +30,15 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT topic and
- * pulls the message contents into SiteWhere for processing.
+ * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT
+ * topic and pulls the message contents into SiteWhere for processing.
  * 
  * @author Derek
  */
-public class MqttInboundEventReceiver extends MqttLifecycleComponent
-		implements IInboundEventReceiver<byte[]> {
+public class MqttInboundEventReceiver extends MqttLifecycleComponent implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default subscribed topic name */
 	public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
@@ -81,8 +81,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 
 			LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
 		} catch (Exception e) {
-			throw new SiteWhereException(
-					"Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
+			throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 		}
 
 		// Handle message processing in separate thread.
@@ -102,7 +101,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -116,26 +116,25 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
-					+ ") Receiver " + counter.incrementAndGet());
+			return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
+					+ counter.incrementAndGet());
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * onEventPayloadReceived (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
 		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
 	}
 
 	/**
-	 * Pulls messages from the MQTT topic and puts them on the queue for this receiver.
+	 * Pulls messages from the MQTT topic and puts them on the queue for this
+	 * receiver.
 	 * 
 	 * @author Derek
 	 */
@@ -149,8 +148,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 					Future<Message> future = connection.receive();
 					Message message = future.await();
 					message.ack();
-					EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this,
-							message.getPayload(), null);
+					EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {
@@ -186,7 +184,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getEventSource()
 	 */
 	public IInboundEventSource<byte[]> getEventSource() {
 		return eventSource;
@@ -195,8 +194,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * setEventSource(com
 	 * .sitewhere.spi.device.communication.IInboundEventSource)
 	 */
 	public void setEventSource(IInboundEventSource<byte[]> eventSource) {

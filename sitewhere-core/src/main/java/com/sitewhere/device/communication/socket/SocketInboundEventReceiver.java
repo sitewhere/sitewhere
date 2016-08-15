@@ -13,7 +13,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,15 +23,15 @@ import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
- * threads to service requests.
+ * Implementation of {@link IInboundEventReceiver} that creates a server socket
+ * and spawns threads to service requests.
  * 
  * @author Derek
  */
 public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SocketInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default number of threads used to service requests */
 	private static final int DEFAULT_NUM_THREADS = 5;
@@ -106,7 +107,8 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

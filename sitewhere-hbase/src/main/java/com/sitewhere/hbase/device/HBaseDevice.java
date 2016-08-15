@@ -23,7 +23,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
@@ -56,7 +57,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseDevice {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDevice.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of device identifier (subset of 8 byte long) */
 	public static final int DEVICE_IDENTIFIER_LENGTH = 4;
@@ -78,8 +79,7 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice createDevice(IHBaseContext context, IDeviceCreateRequest request)
-			throws SiteWhereException {
+	public static IDevice createDevice(IHBaseContext context, IDeviceCreateRequest request) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createDevice (HBase)", LOGGER);
 		try {
 			Long existing = context.getDeviceIdManager().getDeviceKeys().getValue(request.getHardwareId());
@@ -251,20 +251,16 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Device getDeviceByHardwareId(IHBaseContext context, String hardwareId)
-			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceByHardwareId (HBase) " + hardwareId,
-				LOGGER);
+	public static Device getDeviceByHardwareId(IHBaseContext context, String hardwareId) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceByHardwareId (HBase) " + hardwareId, LOGGER);
 		try {
 			if (context.getCacheProvider() != null) {
 				IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
 				if (result != null) {
 					Tracer.info("Returning cached device.", LOGGER);
-					DeviceMarshalHelper helper =
-							new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(
-									false).setIncludeAssignment(false).setIncludeSpecification(false);
-					return helper.convert(result,
-							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
+					DeviceMarshalHelper helper = new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(false)
+							.setIncludeAssignment(false).setIncludeSpecification(false);
+					return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
 			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
@@ -289,8 +285,7 @@ public class HBaseDevice {
 					return null;
 				}
 
-				Device found =
-						PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDevice(payload);
+				Device found = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDevice(payload);
 				if ((context.getCacheProvider() != null) && (found != null)) {
 					context.getCacheProvider().getDeviceCache().put(hardwareId, found);
 				}
@@ -306,10 +301,10 @@ public class HBaseDevice {
 	}
 
 	/**
-	 * Delete a device based on hardware id. Depending on 'force' the record will be
-	 * physically deleted or a marker qualifier will be added to mark it as deleted. Note:
-	 * Physically deleting a device can leave orphaned references and should not be done
-	 * in a production system!
+	 * Delete a device based on hardware id. Depending on 'force' the record
+	 * will be physically deleted or a marker qualifier will be added to mark it
+	 * as deleted. Note: Physically deleting a device can leave orphaned
+	 * references and should not be done in a production system!
 	 * 
 	 * @param context
 	 * @param hardwareId
@@ -382,10 +377,8 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static String getCurrentAssignmentId(IHBaseContext context, String hardwareId)
-			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "getCurrentAssignmentId (HBase) " + hardwareId,
-				LOGGER);
+	public static String getCurrentAssignmentId(IHBaseContext context, String hardwareId) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getCurrentAssignmentId (HBase) " + hardwareId, LOGGER);
 		try {
 			if (context.getCacheProvider() != null) {
 				IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
@@ -434,8 +427,7 @@ public class HBaseDevice {
 	 */
 	public static void setDeviceAssignment(IHBaseContext context, String hardwareId, String assignmentToken)
 			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase) " + hardwareId,
-				LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase) " + hardwareId, LOGGER);
 		try {
 			String existing = getCurrentAssignmentId(context, hardwareId);
 			if (existing != null) {
@@ -484,10 +476,8 @@ public class HBaseDevice {
 	 * @param hardwareId
 	 * @throws SiteWhereException
 	 */
-	public static void removeDeviceAssignment(IHBaseContext context, String hardwareId)
-			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase) " + hardwareId,
-				LOGGER);
+	public static void removeDeviceAssignment(IHBaseContext context, String hardwareId) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase) " + hardwareId, LOGGER);
 		try {
 			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -534,10 +524,9 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context,
-			String hardwareId, ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall,
-				"getDeviceAssignmentHistory (HBase) " + hardwareId, LOGGER);
+	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context, String hardwareId,
+			ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase) " + hardwareId, LOGGER);
 		try {
 			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -576,8 +565,8 @@ public class HBaseDevice {
 	}
 
 	/**
-	 * Get the unique device identifier based on the long value associated with the device
-	 * UUID. This will be a subset of the full 8-bit long value.
+	 * Get the unique device identifier based on the long value associated with
+	 * the device UUID. This will be a subset of the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return
@@ -603,8 +592,8 @@ public class HBaseDevice {
 	}
 
 	/**
-	 * Creates key with an indicator byte followed by the inverted timestamp to order
-	 * assignments in most recent to least recent order.
+	 * Creates key with an indicator byte followed by the inverted timestamp to
+	 * order assignments in most recent to least recent order.
 	 * 
 	 * @return
 	 */
@@ -627,8 +616,7 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context)
-			throws SiteWhereException {
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

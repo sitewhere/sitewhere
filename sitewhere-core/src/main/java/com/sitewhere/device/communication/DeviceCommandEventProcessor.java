@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
@@ -20,15 +21,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
- * Event processor that hands off {@link IDeviceCommandInvocation} events after they have
- * been saved so that the communication subsystem can process them.
+ * Event processor that hands off {@link IDeviceCommandInvocation} events after
+ * they have been saved so that the communication subsystem can process them.
  * 
  * @author Derek
  */
 public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceCommandEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Number of invocations to buffer before blocking calls */
 	private static final int DEFAULT_NUM_THREADS = 10;
@@ -42,7 +43,9 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -66,7 +69,9 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#stop()
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -82,8 +87,7 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		executor.execute(new CommandInvocationProcessor(invocation));
 	}
 

@@ -7,7 +7,8 @@
  */
 package com.sitewhere.aws;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SqsOutboundEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** SQS client */
 	private AmazonSQSClient sqs;
@@ -52,7 +53,9 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start()
+	 * @see
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+	 * ()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -79,7 +82,8 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -112,7 +116,8 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceStateChange)
 	 */
 	@Override
 	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
@@ -127,8 +132,7 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 * IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		sendSqsMessage(invocation);
 	}
 
@@ -136,7 +140,8 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceCommandResponse)
 	 */
 	@Override
 	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {

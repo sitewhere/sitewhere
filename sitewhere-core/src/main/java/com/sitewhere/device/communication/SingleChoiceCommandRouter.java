@@ -9,7 +9,8 @@ package com.sitewhere.device.communication;
 
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -28,7 +29,7 @@ import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SingleChoiceCommandRouter.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Destinations that will deliver all commands */
 	private ICommandDestination<?, ?> destination;
@@ -36,9 +37,8 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IOutboundCommandRouter#routeCommand(com.
-	 * sitewhere.spi.device.command.IDeviceCommandExecution,
+	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+	 * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
@@ -51,15 +51,14 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IOutboundCommandRouter#routeSystemCommand
-	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+	 * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException {
+	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+			throws SiteWhereException {
 		destination.deliverSystemCommand(command, nesting, assignment);
 	}
 
@@ -72,8 +71,8 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	public void start() throws SiteWhereException {
 		LOGGER.info("Starting single choice command router...");
 		if (getDestinations().size() != 1) {
-			throw new SiteWhereException("Expected exactly one destination for command routing but found "
-					+ getDestinations().size() + ".");
+			throw new SiteWhereException(
+					"Expected exactly one destination for command routing but found " + getDestinations().size() + ".");
 		}
 		Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
 		this.destination = it.next();

@@ -10,7 +10,8 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -21,8 +22,8 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Uses information in an {@link IDeviceCommandInvocation} to determine a list of target
- * {@link IDeviceAssignment} objects. This implementation returns the
+ * Uses information in an {@link IDeviceCommandInvocation} to determine a list
+ * of target {@link IDeviceAssignment} objects. This implementation returns the
  * {@link IDeviceAssignment} associated with the invocation.
  * 
  * @author Derek
@@ -30,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DefaultCommandTargetResolver extends TenantLifecycleComponent implements ICommandTargetResolver {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultCommandTargetResolver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	public DefaultCommandTargetResolver() {
 		super(LifecycleComponentType.CommandTargetResolver);
@@ -39,17 +40,14 @@ public class DefaultCommandTargetResolver extends TenantLifecycleComponent imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandTargetResolver#resolveTargets(com
-	 * .sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * @see com.sitewhere.spi.device.communication.ICommandTargetResolver#
+	 * resolveTargets(com .sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		LOGGER.debug("Resolving target for invocation.");
-		IDeviceAssignment assignment =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceAssignmentByToken(
-						invocation.getDeviceAssignmentToken());
+		IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
 		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 		results.add(assignment);
 		return results;

@@ -9,7 +9,8 @@ package com.sitewhere.mongodb.scheduling;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MongoScheduleManagement extends TenantLifecycleComponent implements IScheduleManagement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MongoScheduleManagement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected with global SiteWhere Mongo client */
 	private IScheduleManagementMongoClient mongoClient;
@@ -88,18 +89,17 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * @throws SiteWhereException
 	 */
 	protected void ensureIndexes() throws SiteWhereException {
-		getMongoClient().getSchedulesCollection(getTenant()).createIndex(
-				new BasicDBObject(MongoSchedule.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getScheduledJobsCollection(getTenant()).createIndex(
-				new BasicDBObject(MongoScheduledJob.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getSchedulesCollection(getTenant()).createIndex(new BasicDBObject(MongoSchedule.PROP_TOKEN, 1),
+				new BasicDBObject("unique", true));
+		getMongoClient().getScheduledJobsCollection(getTenant())
+				.createIndex(new BasicDBObject(MongoScheduledJob.PROP_TOKEN, 1), new BasicDBObject("unique", true));
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#createSchedule(com.sitewhere.spi
-	 * .scheduling.request.IScheduleCreateRequest)
+	 * @see com.sitewhere.spi.scheduling.IScheduleManagement#createSchedule(com.
+	 * sitewhere.spi .scheduling.request.IScheduleCreateRequest)
 	 */
 	@Override
 	public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
@@ -124,15 +124,16 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateSchedule(java.lang.String,
-	 * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateSchedule(java.lang
+	 * .String, com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
 	 */
 	@Override
 	public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException {
 		DBObject match = assertSchedule(token);
 		Schedule schedule = MongoSchedule.fromDBObject(match);
 
-		// Use common update logic so that backend implemetations act the same way.
+		// Use common update logic so that backend implemetations act the same
+		// way.
 		SiteWherePersistence.scheduleUpdateLogic(schedule, request);
 		DBObject updated = MongoSchedule.toDBObject(schedule);
 
@@ -147,8 +148,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduleByToken(java.lang.String
-	 * )
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduleByToken(java.
+	 * lang.String )
 	 */
 	@Override
 	public ISchedule getScheduleByToken(String token) throws SiteWhereException {
@@ -162,9 +163,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#listSchedules(com.sitewhere.spi
-	 * .search.ISearchCriteria)
+	 * @see com.sitewhere.spi.scheduling.IScheduleManagement#listSchedules(com.
+	 * sitewhere.spi .search.ISearchCriteria)
 	 */
 	@Override
 	public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
@@ -179,8 +179,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.String,
-	 * boolean)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang
+	 * .String, boolean)
 	 */
 	@Override
 	public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
@@ -201,8 +201,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.sitewhere
-	 * .spi.scheduling.request.IScheduledJobCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
+	 * sitewhere .spi.scheduling.request.IScheduledJobCreateRequest)
 	 */
 	@Override
 	public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
@@ -227,8 +227,9 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateScheduledJob(java.lang.String
-	 * , com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#updateScheduledJob(java.
+	 * lang.String ,
+	 * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
 	 */
 	@Override
 	public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
@@ -236,7 +237,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 		DBObject match = assertScheduledJob(token);
 		ScheduledJob job = MongoScheduledJob.fromDBObject(match);
 
-		// Use common update logic so that backend implemetations act the same way.
+		// Use common update logic so that backend implemetations act the same
+		// way.
 		SiteWherePersistence.scheduledJobUpdateLogic(job, request);
 		DBObject updated = MongoScheduledJob.toDBObject(job);
 
@@ -251,8 +253,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(java.lang
-	 * .String)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
+	 * java.lang .String)
 	 */
 	@Override
 	public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException {
@@ -267,12 +269,11 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.sitewhere
-	 * .spi.search.ISearchCriteria)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
+	 * sitewhere .spi.search.ISearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
 		DBCollection jobs = getMongoClient().getScheduledJobsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject();
 		MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -284,8 +285,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang.String
-	 * , boolean)
+	 * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.
+	 * lang.String , boolean)
 	 */
 	@Override
 	public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
@@ -303,8 +304,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	/**
-	 * Return the {@link DBObject} for the schedule with the given token. Throws an
-	 * exception if the token is not valid.
+	 * Return the {@link DBObject} for the schedule with the given token. Throws
+	 * an exception if the token is not valid.
 	 * 
 	 * @param token
 	 * @return
@@ -319,8 +320,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	/**
-	 * Returns the {@link DBObject} for the schedule with the given token. Returns null if
-	 * not found.
+	 * Returns the {@link DBObject} for the schedule with the given token.
+	 * Returns null if not found.
 	 * 
 	 * @param token
 	 * @return
@@ -338,8 +339,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	/**
-	 * Return the {@link DBObject} for the scheduled job with the given token. Throws an
-	 * exception if the token is not valid.
+	 * Return the {@link DBObject} for the scheduled job with the given token.
+	 * Throws an exception if the token is not valid.
 	 * 
 	 * @param token
 	 * @return
@@ -354,8 +355,8 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	/**
-	 * Returns the {@link DBObject} for the scheduled job with the given token. Returns
-	 * null if not found.
+	 * Returns the {@link DBObject} for the scheduled job with the given token.
+	 * Returns null if not found.
 	 * 
 	 * @param token
 	 * @return

@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -32,15 +33,15 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
 /**
- * Implementation of {@link IInboundEventProcessor} that attempts to store the inbound
- * event request using device management APIs.
+ * Implementation of {@link IInboundEventProcessor} that attempts to store the
+ * inbound event request using device management APIs.
  * 
  * @author Derek
  */
 public class DefaultEventStorageProcessor extends InboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultEventStorageProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Cached device management implementation */
 	private IDeviceManagement deviceManagement;
@@ -51,9 +52,11 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
 	 * onDeviceCommandResponseRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
@@ -65,7 +68,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
 	 * onDeviceMeasurementsCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
@@ -73,15 +77,16 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		IDeviceMeasurements measurements =
-				getDeviceEventManagement().addDeviceMeasurements(assignment.getToken(), request);
+		IDeviceMeasurements measurements = getDeviceEventManagement().addDeviceMeasurements(assignment.getToken(),
+				request);
 		handleLinkResponseToInvocation(originator, measurements.getId(), assignment);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
 	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
@@ -89,21 +94,21 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		IDeviceLocation location =
-				getDeviceEventManagement().addDeviceLocation(assignment.getToken(), request);
+		IDeviceLocation location = getDeviceEventManagement().addDeviceLocation(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, location.getId(), assignment);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
 	 * onDeviceAlertCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
-			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceAlert alert = getDeviceEventManagement().addDeviceAlert(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, alert.getId(), assignment);
@@ -120,8 +125,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceStateChangeCreateRequest(String hardwareId, String originator,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		IDeviceStateChange state =
-				getDeviceEventManagement().addDeviceStateChange(assignment.getToken(), request);
+		IDeviceStateChange state = getDeviceEventManagement().addDeviceStateChange(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, state.getId(), assignment);
 	}
 
@@ -145,15 +149,16 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 
 	/**
 	 * If an originator was assocaited with the event, create a
-	 * {@link IDeviceCommandResponse} that links back to the original invocation.
+	 * {@link IDeviceCommandResponse} that links back to the original
+	 * invocation.
 	 * 
 	 * @param originator
 	 * @param eventId
 	 * @param assignment
 	 * @throws SiteWhereException
 	 */
-	protected void handleLinkResponseToInvocation(String originator, String eventId,
-			IDeviceAssignment assignment) throws SiteWhereException {
+	protected void handleLinkResponseToInvocation(String originator, String eventId, IDeviceAssignment assignment)
+			throws SiteWhereException {
 		if ((originator != null) && (!originator.isEmpty())) {
 			DeviceCommandResponseCreateRequest response = new DeviceCommandResponseCreateRequest();
 			response.setOriginatingEventId(originator);
@@ -173,7 +178,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	}
 
 	/**
-	 * Cache the device management implementation rather than looking it up each time.
+	 * Cache the device management implementation rather than looking it up each
+	 * time.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
@@ -186,8 +192,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	}
 
 	/**
-	 * Cache the device event management implementation rather than looking it up each
-	 * time.
+	 * Cache the device event management implementation rather than looking it
+	 * up each time.
 	 * 
 	 * @return
 	 * @throws SiteWhereException

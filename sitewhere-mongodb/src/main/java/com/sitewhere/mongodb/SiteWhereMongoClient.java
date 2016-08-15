@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -39,7 +40,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 		IAssetManagementMongoClient, IScheduleManagementMongoClient, IInternetConnected {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default hostname for Mongo */
 	private static final String DEFAULT_HOSTNAME = "localhost";

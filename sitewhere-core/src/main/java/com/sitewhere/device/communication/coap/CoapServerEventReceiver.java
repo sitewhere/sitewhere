@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication.coap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.device.communication.InboundEventReceiver;
@@ -15,15 +16,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that starts a CoAP server using the
- * Eclipse Californium implementation.
+ * Implementation of {@link IInboundEventReceiver} that starts a CoAP server
+ * using the Eclipse Californium implementation.
  * 
  * @author Derek
  */
 public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(CoapServerEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Supplies standard CoAP port */
 	private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
@@ -76,7 +77,8 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

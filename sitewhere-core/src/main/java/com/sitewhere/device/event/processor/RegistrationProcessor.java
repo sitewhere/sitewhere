@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,7 +25,7 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 public class RegistrationProcessor extends InboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RegistrationProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Cached registration manager */
 	private IRegistrationManager registration;

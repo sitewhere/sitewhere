@@ -10,7 +10,8 @@ package com.sitewhere.rabbitmq;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -34,8 +35,8 @@ import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaste
 import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
 
 /**
- * Extension of {@link FilteredOutboundEventProcessor} that sends messages to RabbitMQ via
- * AMQP.
+ * Extension of {@link FilteredOutboundEventProcessor} that sends messages to
+ * RabbitMQ via AMQP.
  * 
  * @author Derek
  */
@@ -43,7 +44,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 		implements IMulticastingOutboundEventProcessor<String> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RabbitMqOutboundEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default connection URI */
 	private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
@@ -78,7 +79,9 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start()
+	 * @see
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+	 * ()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -99,7 +102,9 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop()
+	 * @see
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
+	 * )
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -120,7 +125,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -153,7 +159,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceStateChange)
 	 */
 	@Override
 	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
@@ -168,8 +175,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		sendEvent(invocation);
 	}
 
@@ -177,7 +183,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceCommandResponse)
 	 */
 	@Override
 	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
@@ -236,8 +243,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor#
-	 * getMulticaster()
+	 * @see com.sitewhere.spi.device.event.processor.
+	 * IMulticastingOutboundEventProcessor# getMulticaster()
 	 */
 	@Override
 	public IDeviceEventMulticaster<String> getMulticaster() {
@@ -247,8 +254,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor#
-	 * getRouteBuilder()
+	 * @see com.sitewhere.spi.device.event.processor.
+	 * IMulticastingOutboundEventProcessor# getRouteBuilder()
 	 */
 	@Override
 	public IRouteBuilder<String> getRouteBuilder() {

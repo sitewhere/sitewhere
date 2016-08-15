@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor.filter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,7 +23,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public abstract class DeviceEventFilter extends TenantLifecycleComponent implements IDeviceEventFilter {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteFilter.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	public DeviceEventFilter() {
 		super(LifecycleComponentType.OutboundEventProcessorFilter);

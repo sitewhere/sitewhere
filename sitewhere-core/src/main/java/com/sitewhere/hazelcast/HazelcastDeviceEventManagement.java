@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hazelcast.timeseries.EventBucket.Scope;
@@ -54,9 +55,9 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
- * Implementation of {@link IDeviceEventManagement} that stores data in a Hazelcast
- * in-memory data grid. This implementation works on ephemeral data and does not offer
- * long-term peristence.
+ * Implementation of {@link IDeviceEventManagement} that stores data in a
+ * Hazelcast in-memory data grid. This implementation works on ephemeral data
+ * and does not offer long-term peristence.
  * 
  * @author Derek
  */
@@ -64,7 +65,7 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 		implements IDeviceEventManagement, ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastDeviceEventManagement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default expiration period in minutes */
 	private static final long DEFAULT_EXPIRATION_IN_MIN = 120;
@@ -97,9 +98,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 		}
 
 		LOGGER.info("Cache entries will expire in " + getExpirationInMin() + " minutes.");
-		this.timeSeriesManager =
-				new TimeSeriesManager(getTenant(), getHazelcastConfiguration().getHazelcastInstance(),
-						getExpirationInMin() * 60);
+		this.timeSeriesManager = new TimeSeriesManager(getTenant(), getHazelcastConfiguration().getHazelcastInstance(),
+				getExpirationInMin() * 60);
 		timeSeriesManager.start();
 	}
 
@@ -128,8 +128,9 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement(com.
-	 * sitewhere.spi.device.IDeviceManagement)
+	 * @see
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement
+	 * (com. sitewhere.spi.device.IDeviceManagement)
 	 */
 	@Override
 	public void setDeviceManagement(IDeviceManagement deviceManagement) throws SiteWhereException {
@@ -139,7 +140,9 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement()
+	 * @see
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
+	 * ()
 	 */
 	@Override
 	public IDeviceManagement getDeviceManagement() throws SiteWhereException {
@@ -150,8 +153,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceEventBatch(java.lang
-	 * .String, com.sitewhere.spi.device.event.IDeviceEventBatch)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceEventBatch
+	 * (java.lang .String, com.sitewhere.spi.device.event.IDeviceEventBatch)
 	 */
 	@Override
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
@@ -163,8 +166,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java.lang.
-	 * String)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(
+	 * java.lang. String)
 	 */
 	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
@@ -175,22 +178,20 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(java.lang.
-	 * String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+	 * java.lang. String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, null, criteria,
-				IDeviceEvent.class);
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, null, criteria, IDeviceEvent.class);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(java.
-	 * lang.String,
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * addDeviceMeasurements(java. lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
 	@Override
@@ -206,23 +207,23 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceMeasurements(java.
-	 * lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceMeasurements(java. lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Measurements,
-				criteria, IDeviceMeasurements.class);
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Measurements, criteria,
+				IDeviceMeasurements.class);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceMeasurementsForSite
-	 * (java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceMeasurementsForSite (java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
@@ -235,8 +236,9 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(java.lang.
-	 * String, com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+	 * java.lang. String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
@@ -252,22 +254,22 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations(java.lang
-	 * .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
+	 * (java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Location,
-				criteria, IDeviceLocation.class);
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Location, criteria,
+				IDeviceLocation.class);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocationsForSite(
-	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceLocationsForSite( java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
@@ -280,8 +282,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations(java.util
-	 * .List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
+	 * (java.util .List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
@@ -293,8 +295,9 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java.lang.
-	 * String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
+	 * .lang. String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
@@ -310,26 +313,26 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(java.lang.
-	 * String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+	 * java.lang. String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Alert,
-				criteria, IDeviceAlert.class);
+	public ISearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.Alert, criteria,
+				IDeviceAlert.class);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlertsForSite(java.
-	 * lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceAlertsForSite(java. lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
 		return getTimeSeriesManager().search(Scope.Site, siteToken, DeviceEventType.Alert, criteria,
 				IDeviceAlert.class);
 	}
@@ -338,12 +341,13 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(java.lang
-	 * .String, com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData
+	 * (java.lang .String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
 	 */
 	@Override
-	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
-			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken, IDeviceStreamDataCreateRequest request)
+			throws SiteWhereException {
 		throw new SiteWhereException("Streaming data not supported.");
 	}
 
@@ -351,8 +355,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(java.lang
-	 * .String, java.lang.String, long)
+	 * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData
+	 * (java.lang .String, java.lang.String, long)
 	 */
 	@Override
 	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
@@ -363,9 +367,9 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceStreamData(java.
-	 * lang.String, java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceStreamData(java. lang.String, java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
@@ -376,17 +380,18 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceCommandInvocation(
-	 * java.lang.String, com.sitewhere.spi.device.command.IDeviceCommand,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * addDeviceCommandInvocation( java.lang.String,
+	 * com.sitewhere.spi.device.command.IDeviceCommand,
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
 	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
 			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-		DeviceCommandInvocation ci =
-				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
+		DeviceCommandInvocation ci = SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command,
+				request);
 		ci.setId(UUID.randomUUID().toString());
 		getTimeSeriesManager().addEvent(ci);
 		return ci;
@@ -395,15 +400,15 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceCommandInvocations(
-	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceCommandInvocations( java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken,
-				DeviceEventType.CommandInvocation, criteria, IDeviceCommandInvocation.class);
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.CommandInvocation,
+				criteria, IDeviceCommandInvocation.class);
 	}
 
 	/*
@@ -416,8 +421,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Site, siteToken, DeviceEventType.CommandInvocation,
-				criteria, IDeviceCommandInvocation.class);
+		return getTimeSeriesManager().search(Scope.Site, siteToken, DeviceEventType.CommandInvocation, criteria,
+				IDeviceCommandInvocation.class);
 	}
 
 	/*
@@ -435,10 +440,10 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceCommandResponse(java
-	 * .lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * addDeviceCommandResponse(java .lang.String,
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
 	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
@@ -453,15 +458,15 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceCommandResponses(
-	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceCommandResponses( java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken,
-				DeviceEventType.CommandResponse, criteria, IDeviceCommandResponse.class);
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.CommandResponse,
+				criteria, IDeviceCommandResponse.class);
 	}
 
 	/*
@@ -481,14 +486,13 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChange(java.
-	 * lang.String,
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * addDeviceStateChange(java. lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
 	 */
 	@Override
-	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
-			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken, IDeviceStateChangeCreateRequest request)
+			throws SiteWhereException {
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 		DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
 		state.setId(UUID.randomUUID().toString());
@@ -499,23 +503,23 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceStateChanges(java.
-	 * lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceStateChanges(java. lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.StateChange,
-				criteria, IDeviceStateChange.class);
+		return getTimeSeriesManager().search(Scope.Assignment, assignmentToken, DeviceEventType.StateChange, criteria,
+				IDeviceStateChange.class);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceStateChangesForSite
-	 * (java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceStateChangesForSite (java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
@@ -531,8 +535,8 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {

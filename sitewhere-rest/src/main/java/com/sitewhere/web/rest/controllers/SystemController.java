@@ -7,7 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,7 +45,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 public class SystemController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SystemController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Get version information about the server.

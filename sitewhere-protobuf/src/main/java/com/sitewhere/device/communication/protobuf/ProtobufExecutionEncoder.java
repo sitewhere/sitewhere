@@ -10,7 +10,8 @@ package com.sitewhere.device.communication.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.common.MarshalUtils;
@@ -46,7 +47,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class ProtobufExecutionEncoder extends TenantLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	public ProtobufExecutionEncoder() {
 		super(LifecycleComponentType.CommandExecutionEncoder);

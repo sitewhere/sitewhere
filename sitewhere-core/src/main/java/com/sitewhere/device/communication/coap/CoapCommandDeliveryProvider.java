@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication.coap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -30,7 +31,7 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 		implements ICommandDeliveryProvider<byte[], CoapParameters> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(CoapCommandDeliveryProvider.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	public CoapCommandDeliveryProvider() {
 		super(LifecycleComponentType.CommandDeliveryProvider);

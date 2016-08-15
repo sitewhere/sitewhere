@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -21,14 +22,15 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Manages a list of {@link ISearchProvider} that are available for querying device events
+ * Manages a list of {@link ISearchProvider} that are available for querying
+ * device events
  * 
  * @author Derek
  */
 public class SearchProviderManager extends LifecycleComponent implements ISearchProviderManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SearchProviderManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** List of available search providers */
 	private List<ISearchProvider> searchProviders = new ArrayList<ISearchProvider>();
@@ -78,7 +80,8 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.search.external.ISearchProviderManager#getSearchProviders()
+	 * @see com.sitewhere.spi.search.external.ISearchProviderManager#
+	 * getSearchProviders()
 	 */
 	public List<ISearchProvider> getSearchProviders() {
 		return searchProviders;
@@ -91,9 +94,8 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.search.external.ISearchProviderManager#getSearchProvider(java
-	 * .lang.String)
+	 * @see com.sitewhere.spi.search.external.ISearchProviderManager#
+	 * getSearchProvider(java .lang.String)
 	 */
 	@Override
 	public ISearchProvider getSearchProvider(String id) {

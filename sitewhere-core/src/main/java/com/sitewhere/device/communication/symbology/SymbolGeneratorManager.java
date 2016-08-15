@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class SymbolGeneratorManager extends TenantLifecycleComponent implements ISymbolGeneratorManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SymbolGeneratorManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** List of symbol generators */
 	private List<ISymbolGenerator> symbolGenerators = new ArrayList<ISymbolGenerator>();
@@ -91,8 +92,8 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#getSymbolGenerators()
+	 * @see com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#
+	 * getSymbolGenerators()
 	 */
 	public List<ISymbolGenerator> getSymbolGenerators() {
 		return symbolGenerators;
@@ -105,9 +106,8 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#getSymbolGenerator(java
-	 * .lang.String)
+	 * @see com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#
+	 * getSymbolGenerator(java .lang.String)
 	 */
 	@Override
 	public ISymbolGenerator getSymbolGenerator(String id) throws SiteWhereException {
@@ -117,9 +117,8 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#getDefaultSymbolGenerator
-	 * ()
+	 * @see com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#
+	 * getDefaultSymbolGenerator ()
 	 */
 	@Override
 	public ISymbolGenerator getDefaultSymbolGenerator() throws SiteWhereException {

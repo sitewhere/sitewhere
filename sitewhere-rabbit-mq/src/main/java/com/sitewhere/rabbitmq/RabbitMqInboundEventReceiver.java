@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -32,7 +33,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RabbitMqInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default connection URI */
 	private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
@@ -82,15 +83,14 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 			channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
 
-			LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: "
-					+ getQueueName());
+			LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: " + getQueueName());
 
 			// Add consumer callback for channel.
 			Consumer consumer = new DefaultConsumer(channel) {
 
 				@Override
-				public void handleDelivery(String consumerTag, Envelope envelope,
-						AMQP.BasicProperties properties, byte[] body) throws IOException {
+				public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+						byte[] body) throws IOException {
 					EventProcessingLogic.processRawPayload(RabbitMqInboundEventReceiver.this, body, null);
 				}
 			};
@@ -133,7 +133,8 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

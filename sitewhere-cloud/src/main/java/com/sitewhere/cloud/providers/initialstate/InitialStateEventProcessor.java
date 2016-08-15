@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -34,15 +35,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
- * Implmentation of {@link IOutboundEventProcessor} that sends events to the cloud
- * provider at InitialState.com.
+ * Implmentation of {@link IOutboundEventProcessor} that sends events to the
+ * cloud provider at InitialState.com.
  * 
  * @author Derek
  */
 public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(InitialStateEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Base URI for REST calls */
 	private static final String API_BASE = "https://groker.initialstate.com/api/";
@@ -79,7 +80,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -99,7 +101,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
@@ -119,7 +122,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
@@ -148,9 +152,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 		if (cached != null) {
 			return cached;
 		}
-		IDeviceAssignment assignment =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceAssignmentByToken(
-						assignmentToken);
+		IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.getDeviceAssignmentByToken(assignmentToken);
 		if (assignment == null) {
 			throw new SiteWhereException("Assignment not found.");
 		}
@@ -159,18 +162,18 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 		helper.setIncludeAsset(false);
 		helper.setIncludeDevice(true);
 		helper.setIncludeSite(false);
-		DeviceAssignment converted =
-				helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant()));
+		DeviceAssignment converted = helper.convert(assignment,
+				SiteWhere.getServer().getAssetModuleManager(getTenant()));
 
-		createBucket(converted.getToken(), converted.getAssetName() + " ("
-				+ converted.getDevice().getAssetName() + ")");
+		createBucket(converted.getToken(),
+				converted.getAssetName() + " (" + converted.getDevice().getAssetName() + ")");
 		assignmentsByToken.put(assignmentToken, converted);
 		return converted;
 	}
 
 	/**
-	 * Create a new InitialState bucket. Returns true if created, false if it already
-	 * existed, and throws and exception on error.
+	 * Create a new InitialState bucket. Returns true if created, false if it
+	 * already existed, and throws and exception on error.
 	 * 
 	 * @param bucketKey
 	 * @param bucketName
@@ -188,16 +191,14 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 			HttpEntity<BucketCreateRequest> entity = new HttpEntity<BucketCreateRequest>(request, headers);
 			String url = API_BASE + "buckets";
 			Map<String, String> vars = new HashMap<String, String>();
-			ResponseEntity<String> response =
-					getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
+			ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
 			if (response.getStatusCode() == HttpStatus.CREATED) {
 				return true;
 			}
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				return false;
 			}
-			throw new SiteWhereException("Unable to create bucket. Status code was: "
-					+ response.getStatusCode());
+			throw new SiteWhereException("Unable to create bucket. Status code was: " + response.getStatusCode());
 		} catch (ResourceAccessException e) {
 			if (e.getCause() instanceof SiteWhereSystemException) {
 				throw (SiteWhereSystemException) e.getCause();
@@ -214,23 +215,19 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected boolean createEvents(String bucketKey, List<EventCreateRequest> events)
-			throws SiteWhereException {
+	protected boolean createEvents(String bucketKey, List<EventCreateRequest> events) throws SiteWhereException {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HEADER_ACCESS_KEY, getStreamingAccessKey());
 			headers.add(HEADER_BUCKET_KEY, bucketKey);
-			HttpEntity<List<EventCreateRequest>> entity =
-					new HttpEntity<List<EventCreateRequest>>(events, headers);
+			HttpEntity<List<EventCreateRequest>> entity = new HttpEntity<List<EventCreateRequest>>(events, headers);
 			String url = API_BASE + "events";
 			Map<String, String> vars = new HashMap<String, String>();
-			ResponseEntity<String> response =
-					getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
+			ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				return true;
 			}
-			throw new SiteWhereException("Unable to create event. Status code was: "
-					+ response.getStatusCode());
+			throw new SiteWhereException("Unable to create event. Status code was: " + response.getStatusCode());
 		} catch (ResourceAccessException e) {
 			throw new SiteWhereException(e);
 		}

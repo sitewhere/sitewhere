@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -23,17 +24,17 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Default implementation of the {@link ICommandExecutionBuilder} interface that handles
- * the basic task of merging {@link IDeviceCommand} and {@link IDeviceCommandInvocation}
- * information to produce an {@link IDeviceCommandExecution} that can be encoded and sent
- * to a target.
+ * Default implementation of the {@link ICommandExecutionBuilder} interface that
+ * handles the basic task of merging {@link IDeviceCommand} and
+ * {@link IDeviceCommandInvocation} information to produce an
+ * {@link IDeviceCommandExecution} that can be encoded and sent to a target.
  * 
  * @author Derek
  */
 public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultCommandExecutionBuilder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	public DefaultCommandExecutionBuilder() {
 		super(LifecycleComponentType.CommandExecutionBuilder);
@@ -42,9 +43,8 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandExecutionBuilder#createExecution
-	 * (com.sitewhere.spi.device.command.IDeviceCommand,
+	 * @see com.sitewhere.spi.device.communication.ICommandExecutionBuilder#
+	 * createExecution (com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
@@ -59,7 +59,8 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 	}
 
 	/**
-	 * Generate a parameters map based on information from the command and invocation.
+	 * Generate a parameters map based on information from the command and
+	 * invocation.
 	 * 
 	 * @param execution
 	 * @throws SiteWhereException
@@ -69,8 +70,7 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 		for (ICommandParameter parameter : execution.getCommand().getParameters()) {
 			String paramValue = execution.getInvocation().getParameterValues().get(parameter.getName());
 			if (parameter.isRequired() && (paramValue == null)) {
-				throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing,
-						ErrorLevel.ERROR);
+				throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
 			}
 			Object converted = null;
 			switch (parameter.getType()) {
@@ -90,8 +90,8 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 				try {
 					converted = Double.parseDouble(paramValue);
 				} catch (NumberFormatException e) {
-					throw new SiteWhereException("Field '" + parameter.getName()
-							+ "' contains a value that can not be parsed as a double.");
+					throw new SiteWhereException(
+							"Field '" + parameter.getName() + "' contains a value that can not be parsed as a double.");
 				}
 				break;
 			}
@@ -99,8 +99,8 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 				try {
 					converted = Float.parseFloat(paramValue);
 				} catch (NumberFormatException e) {
-					throw new SiteWhereException("Field '" + parameter.getName()
-							+ "' contains a value that can not be parsed as a float.");
+					throw new SiteWhereException(
+							"Field '" + parameter.getName() + "' contains a value that can not be parsed as a float.");
 				}
 				break;
 			}
@@ -125,8 +125,8 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 				try {
 					converted = Long.parseLong(paramValue);
 				} catch (NumberFormatException e) {
-					throw new SiteWhereException("Field '" + parameter.getName()
-							+ "' contains a value that can not be parsed as an long.");
+					throw new SiteWhereException(
+							"Field '" + parameter.getName() + "' contains a value that can not be parsed as an long.");
 				}
 				break;
 			}

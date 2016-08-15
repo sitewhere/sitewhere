@@ -9,7 +9,8 @@ package com.sitewhere.web.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -55,7 +56,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class SchedulesController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SchedulesController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a schedule.
@@ -70,8 +71,8 @@ public class SchedulesController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Schedules.CreateScheduleRequest.class, description = "createScheduleRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "createScheduleResponse.md") })
-	public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request,
-			HttpServletRequest servletRequest) throws SiteWhereException {
+	public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createSchedule", LOGGER);
 		try {
 			return getScheduleManagement(servletRequest).createSchedule(request);
@@ -94,8 +95,7 @@ public class SchedulesController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "getScheduleByTokenResponse.md") })
-	public ISchedule getScheduleByToken(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
+	public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getScheduleByToken", LOGGER);
 		try {
@@ -122,8 +122,8 @@ public class SchedulesController extends RestController {
 			@Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduleRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduleResponse.md") })
 	public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletRequest servletRequest) throws SiteWhereException {
+			@ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateSchedule", LOGGER);
 		try {
 			return getScheduleManagement(servletRequest).updateSchedule(token, request);
@@ -195,8 +195,7 @@ public class SchedulesController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest)
-			throws SiteWhereException {
+	protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
 		return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
 	}
 }

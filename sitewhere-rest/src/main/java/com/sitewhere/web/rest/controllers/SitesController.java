@@ -13,7 +13,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -88,7 +89,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class SitesController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SitesController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new site.

@@ -9,7 +9,7 @@ package com.sitewhere.server.lifecycle;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -34,7 +34,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
 	 */
 	@Override
 	public String getComponentId() {
@@ -44,7 +45,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
 	 */
 	@Override
 	public String getComponentName() {
@@ -54,7 +56,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
 	 */
 	@Override
 	public LifecycleComponentType getComponentType() {
@@ -64,7 +67,9 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus
+	 * ()
 	 */
 	@Override
 	public LifecycleStatus getLifecycleStatus() {
@@ -74,7 +79,9 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError(
+	 * )
 	 */
 	@Override
 	public SiteWhereException getLifecycleError() {
@@ -84,8 +91,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+	 * getLifecycleComponents()
 	 */
 	@Override
 	public List<ILifecycleComponent> getLifecycleComponents() {
@@ -95,7 +102,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
 	 */
 	@Override
 	public void lifecycleStart() {
@@ -115,7 +123,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
 	 */
 	@Override
 	public void lifecyclePause() {
@@ -145,7 +154,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop()
 	 */
 	@Override
 	public void lifecycleStop() {
@@ -165,13 +175,12 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+	 * findComponentsOfType(com
 	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
 	 */
 	@Override
-	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
-			throws SiteWhereException {
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type) throws SiteWhereException {
 		return delegate.findComponentsOfType(type);
 	}
 

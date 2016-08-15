@@ -15,7 +15,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -95,7 +96,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected with global SiteWhere Mongo client */
 	private IDeviceManagementMongoClient mongoClient;

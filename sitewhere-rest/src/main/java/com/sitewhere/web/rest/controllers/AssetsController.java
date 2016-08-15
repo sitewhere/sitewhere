@@ -12,7 +12,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -75,7 +76,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class AssetsController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AssetsController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Search for assets in an {@link IAssetModule} that meet the given

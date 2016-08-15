@@ -15,7 +15,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -88,7 +89,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class DevicesController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DevicesController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a device.
@@ -107,14 +108,11 @@ public class DevicesController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDevice", LOGGER);
 		try {
-			IDevice result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDevice(
-							request);
+			IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDevice(request);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(false);
 			helper.setIncludeAssignment(false);
-			return helper.convert(result,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -149,8 +147,7 @@ public class DevicesController extends RestController {
 			helper.setIncludeAssignment(includeAssignment);
 			helper.setIncludeSite(includeSite);
 			helper.setIncludeNested(includeNested);
-			return helper.convert(result,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -159,8 +156,10 @@ public class DevicesController extends RestController {
 	/**
 	 * Update device information.
 	 * 
-	 * @param hardwareId unique hardware id
-	 * @param request updated information
+	 * @param hardwareId
+	 *            unique hardware id
+	 * @param request
+	 *            updated information
 	 * @return the updated device
 	 * @throws SiteWhereException
 	 */
@@ -171,20 +170,16 @@ public class DevicesController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Devices.UpdateDeviceRequest.class, description = "updateDeviceRequest.md"),
 			@Example(stage = Stage.Response, json = Devices.UpdateDeviceResponse.class, description = "updateDeviceResponse.md") })
-	public IDevice updateDevice(
-			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-			@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
-			throws SiteWhereException {
+	public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateDevice", LOGGER);
 		try {
-			IDevice result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDevice(
-							hardwareId, request);
+			IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.updateDevice(hardwareId, request);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeAssignment(true);
-			return helper.convert(result,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -202,20 +197,17 @@ public class DevicesController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Devices.CreateDeviceResponse.class, description = "deleteDeviceResponse.md") })
-	public IDevice deleteDevice(
-			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDevice", LOGGER);
 		try {
-			IDevice result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDevice(
-							hardwareId, force);
+			IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.deleteDevice(hardwareId, force);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeAssignment(true);
-			return helper.convert(result,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -243,20 +235,17 @@ public class DevicesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceCurrentAssignment", LOGGER);
 		try {
 			IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
-			IDeviceAssignment assignment =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).getCurrentDeviceAssignment(device);
+			IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.getCurrentDeviceAssignment(device);
 			if (assignment == null) {
 				throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.INFO,
 						HttpServletResponse.SC_NOT_FOUND);
 			}
-			DeviceAssignmentMarshalHelper helper =
-					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(includeAsset);
 			helper.setIncludeDevice(includeDevice);
 			helper.setIncludeSite(includeSite);
-			return helper.convert(assignment,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -288,11 +277,9 @@ public class DevicesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceAssignmentHistory", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IDeviceAssignment> history =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).getDeviceAssignmentHistory(hardwareId, criteria);
-			DeviceAssignmentMarshalHelper helper =
-					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+			ISearchResults<IDeviceAssignment> history = SiteWhere.getServer()
+					.getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentHistory(hardwareId, criteria);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(includeAsset);
 			helper.setIncludeDevice(includeDevice);
 			helper.setIncludeSite(includeSite);
@@ -322,18 +309,15 @@ public class DevicesController extends RestController {
 			@Example(stage = Stage.Response, json = Devices.AddMappingResponse.class, description = "addDeviceElementMappingResponse.md") })
 	public IDevice addDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-			@RequestBody DeviceElementMapping request, HttpServletRequest servletRequest)
-			throws SiteWhereException {
+			@RequestBody DeviceElementMapping request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "addDeviceElementMapping", LOGGER);
 		try {
-			IDevice updated =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).createDeviceElementMapping(hardwareId, request);
+			IDevice updated = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.createDeviceElementMapping(hardwareId, request);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(false);
 			helper.setIncludeAssignment(false);
-			return helper.convert(updated,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -351,14 +335,12 @@ public class DevicesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceElementMapping", LOGGER);
 		try {
-			IDevice updated =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).deleteDeviceElementMapping(hardwareId, path);
+			IDevice updated = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.deleteDeviceElementMapping(hardwareId, path);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(false);
 			helper.setIncludeAssignment(false);
-			return helper.convert(updated,
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -383,9 +365,8 @@ public class DevicesController extends RestController {
 		try {
 			IDevice device = assertDeviceWithoutUserValidation(hardwareId, servletRequest);
 			IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-			ISymbolGeneratorManager symbols =
-					SiteWhere.getServer().getDeviceCommunication(
-							getTenant(servletRequest, false)).getSymbolGeneratorManager();
+			ISymbolGeneratorManager symbols = SiteWhere.getServer()
+					.getDeviceCommunication(getTenant(servletRequest, false)).getSymbolGeneratorManager();
 			ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
 			if (generator != null) {
 				byte[] image = generator.getDeviceSymbol(device, provider);
@@ -429,20 +410,18 @@ public class DevicesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria =
-					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
-							endDate);
-			ISearchResults<IDevice> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDevices(
-							includeDeleted, criteria);
+			IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page,
+					pageSize, startDate, endDate);
+			ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.listDevices(includeDeleted, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeSpecification(includeSpecification);
 			helper.setIncludeAssignment(includeAssignment);
 			List<IDevice> devicesConv = new ArrayList<IDevice>();
 			for (IDevice device : results.getResults()) {
-				devicesConv.add(helper.convert(device,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+				devicesConv.add(
+						helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			return new SearchResults<IDevice>(devicesConv, results.getNumResults());
 		} finally {
@@ -473,20 +452,18 @@ public class DevicesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria =
-					new DeviceSearchCriteria(token, site, excludeAssigned, page, pageSize, startDate,
-							endDate);
-			ISearchResults<IDevice> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDevices(
-							includeDeleted, criteria);
+			IDeviceSearchCriteria criteria = new DeviceSearchCriteria(token, site, excludeAssigned, page, pageSize,
+					startDate, endDate);
+			ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.listDevices(includeDeleted, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeSpecification(includeSpecification);
 			helper.setIncludeAssignment(includeAssignment);
 			List<IDevice> devicesConv = new ArrayList<IDevice>();
 			for (IDevice device : results.getResults()) {
-				devicesConv.add(helper.convert(device,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+				devicesConv.add(
+						helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			return new SearchResults<IDevice>(devicesConv, results.getNumResults());
 		} finally {
@@ -517,19 +494,17 @@ public class DevicesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroup", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria =
-					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
-							endDate);
-			List<IDevice> matches =
-					DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getTenant(servletRequest));
+			IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page,
+					pageSize, startDate, endDate);
+			List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getTenant(servletRequest));
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeSpecification(includeSpecification);
 			helper.setIncludeAssignment(includeAssignment);
 			List<IDevice> devicesConv = new ArrayList<IDevice>();
 			for (IDevice device : matches) {
-				devicesConv.add(helper.convert(device,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+				devicesConv.add(
+						helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			return new SearchResults<IDevice>(devicesConv, matches.size());
 		} finally {
@@ -560,19 +535,18 @@ public class DevicesController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroupsWithRole", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria =
-					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
-							endDate);
-			Collection<IDevice> matches =
-					DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria, getTenant(servletRequest));
+			IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page,
+					pageSize, startDate, endDate);
+			Collection<IDevice> matches = DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria,
+					getTenant(servletRequest));
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeSpecification(includeSpecification);
 			helper.setIncludeAssignment(includeAssignment);
 			List<IDevice> devicesConv = new ArrayList<IDevice>();
 			for (IDevice device : matches) {
-				devicesConv.add(helper.convert(device,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+				devicesConv.add(
+						helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			return new SearchResults<IDevice>(devicesConv, matches.size());
 		} finally {
@@ -581,9 +555,9 @@ public class DevicesController extends RestController {
 	}
 
 	/**
-	 * Add a batch of events for the current assignment of the given device. Note that the
-	 * hardware id in the URL overrides the one specified in the {@link DeviceEventBatch}
-	 * object.
+	 * Add a batch of events for the current assignment of the given device.
+	 * Note that the hardware id in the URL overrides the one specified in the
+	 * {@link DeviceEventBatch} object.
 	 * 
 	 * @param request
 	 * @return
@@ -597,8 +571,7 @@ public class DevicesController extends RestController {
 			@Example(stage = Stage.Response, json = Devices.AddDeviceEventBatchResponse.class, description = "addDeviceEventBatchResponse.md") })
 	public IDeviceEventBatchResponse addDeviceEventBatch(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-			@RequestBody DeviceEventBatch batch, HttpServletRequest servletRequest)
-			throws SiteWhereException {
+			@RequestBody DeviceEventBatch batch, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "addDeviceEventBatch", LOGGER);
 		try {
 			IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
@@ -623,8 +596,8 @@ public class DevicesController extends RestController {
 				}
 			}
 
-			return SiteWhere.getServer().getDeviceEventManagement(
-					getTenant(servletRequest)).addDeviceEventBatch(device.getAssignmentToken(), batch);
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+					.addDeviceEventBatch(device.getAssignmentToken(), batch);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -640,9 +613,8 @@ public class DevicesController extends RestController {
 	 */
 	protected IDevice assertDeviceByHardwareId(String hardwareId, HttpServletRequest servletRequest)
 			throws SiteWhereException {
-		IDevice result =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceByHardwareId(
-						hardwareId);
+		IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+				.getDeviceByHardwareId(hardwareId);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);
@@ -651,9 +623,9 @@ public class DevicesController extends RestController {
 	}
 
 	/**
-	 * Gets a device by unique hardware id. Does not validate that the current user has
-	 * access to the tenant. This should *only* be used by non-secure REST calls as it can
-	 * be a security risk.
+	 * Gets a device by unique hardware id. Does not validate that the current
+	 * user has access to the tenant. This should *only* be used by non-secure
+	 * REST calls as it can be a security risk.
 	 * 
 	 * @param hardwareId
 	 * @param servletRequest
@@ -662,9 +634,8 @@ public class DevicesController extends RestController {
 	 */
 	protected IDevice assertDeviceWithoutUserValidation(String hardwareId, HttpServletRequest servletRequest)
 			throws SiteWhereException {
-		IDevice result =
-				SiteWhere.getServer().getDeviceManagement(
-						getTenant(servletRequest, false)).getDeviceByHardwareId(hardwareId);
+		IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest, false))
+				.getDeviceByHardwareId(hardwareId);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

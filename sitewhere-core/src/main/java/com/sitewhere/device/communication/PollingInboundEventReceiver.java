@@ -10,13 +10,14 @@ package com.sitewhere.device.communication;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Abstract base class for event receivers that poll an external source at a given
- * interval.
+ * Abstract base class for event receivers that poll an external source at a
+ * given interval.
  * 
  * @author Derek
  *
@@ -25,7 +26,7 @@ import com.sitewhere.spi.SiteWhereException;
 public abstract class PollingInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(PollingInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default polling interval in milliseconds */
 	private static final int DEFAULT_POLL_INTERVAL_MS = 10000;

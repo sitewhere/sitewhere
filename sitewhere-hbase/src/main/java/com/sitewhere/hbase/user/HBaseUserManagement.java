@@ -10,7 +10,8 @@ package com.sitewhere.hbase.user;
 import java.util.List;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -37,7 +38,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class HBaseUserManagement extends LifecycleComponent implements IUserManagement {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(HBaseUserManagement.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
@@ -108,8 +109,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.request
-	 * .IUserCreateRequest)
+	 * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
+	 * request .IUserCreateRequest)
 	 */
 	@Override
 	public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
@@ -120,8 +121,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.IUser,
-	 * boolean)
+	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
+	 * IUser, boolean)
 	 */
 	@Override
 	public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
@@ -131,7 +132,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -153,7 +155,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.String)
+	 * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
+	 * String)
 	 */
 	@Override
 	public IUser getUserByUsername(String username) throws SiteWhereException {
@@ -163,7 +166,9 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+	 * String)
 	 */
 	@Override
 	public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
@@ -173,8 +178,9 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.String,
-	 * java.util.List)
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+	 * String, java.util.List)
 	 */
 	@Override
 	public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
@@ -186,8 +192,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang.String,
-	 * java.util.List)
+	 * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
+	 * .String, java.util.List)
 	 */
 	@Override
 	public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
@@ -198,7 +204,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
 	 * IUserSearchCriteria)
 	 */
 	@Override
@@ -209,7 +216,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String, boolean)
+	 * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
+	 * boolean)
 	 */
 	@Override
 	public IUser deleteUser(String username, boolean force) throws SiteWhereException {
@@ -219,13 +227,11 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.sitewhere.spi
-	 * .user.request.IGrantedAuthorityCreateRequest)
+	 * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
+	 * sitewhere.spi .user.request.IGrantedAuthorityCreateRequest)
 	 */
 	@Override
-	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request)
-			throws SiteWhereException {
+	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 		return HBaseGrantedAuthority.createGrantedAuthority(context, request);
 	}
 
@@ -233,7 +239,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.lang.String)
+	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+	 * lang.String)
 	 */
 	@Override
 	public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
@@ -244,8 +251,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.String,
-	 * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+	 * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+	 * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
 	 */
 	@Override
 	public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
@@ -256,9 +263,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.spi
-	 * .user.IGrantedAuthoritySearchCriteria)
+	 * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
+	 * sitewhere.spi .user.IGrantedAuthoritySearchCriteria)
 	 */
 	@Override
 	public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
@@ -270,7 +276,8 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.String)
+	 * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+	 * String)
 	 */
 	@Override
 	public void deleteGrantedAuthority(String authority) throws SiteWhereException {

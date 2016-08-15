@@ -32,7 +32,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.qpid.amqp_1_0.client.Message;
 
 import com.sitewhere.azure.device.communication.client.Constants;
@@ -45,7 +46,7 @@ import com.sitewhere.spi.SiteWhereException;
 
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-	private static final Logger logger = Logger.getLogger(EventHubInboundEventReceiver.class);
+	private static final Logger logger = LogManager.getLogger();
 	private static String username = "";
 	private static String password = "";
 	private static String namespace = "";
@@ -70,8 +71,8 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere EventHub(" + namespace + " - " + entityPath + ") Receiver "
-					+ counter.incrementAndGet());
+			return new Thread(r,
+					"SiteWhere EventHub(" + namespace + " - " + entityPath + ") Receiver " + counter.incrementAndGet());
 		}
 	}
 
@@ -82,9 +83,8 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		config =
-				new EventHubReceiverTaskConfig(username, password, namespace, entityPath, partitionCount,
-						zkStateStore);
+		config = new EventHubReceiverTaskConfig(username, password, namespace, entityPath, partitionCount,
+				zkStateStore);
 		config.setTargetAddress(targetFqn);
 
 		for (int i = 0; i < partitionCount; i++) {
@@ -141,8 +141,9 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 				try {
 					task.open(context);
 				} catch (Exception e) {
-					logger.warn("Task " + taskIndex + " failed to open, retry in " + EH_RETRY_SLEEP_SECONDS
-							+ "seconds.", e);
+					logger.warn(
+							"Task " + taskIndex + " failed to open, retry in " + EH_RETRY_SLEEP_SECONDS + "seconds.",
+							e);
 					try {
 						task.close();
 						Thread.sleep(EH_RETRY_SLEEP_SECONDS * 1000);
@@ -161,23 +162,22 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 						if (p == null || p.getApplicationProperties() == null
 								|| p.getApplicationProperties().getValue() == null
-								|| p.getApplicationProperties().getValue().get(
-										Constants.AmqpPayloadKey) == null) {
+								|| p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey) == null) {
 							logger.warn("Skipped message without a valid payload received.");
 							continue;
 						}
-						byte[] payload =
-								p.getApplicationProperties().getValue().get(
-										Constants.AmqpPayloadKey).toString().getBytes();
+						byte[] payload = p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey)
+								.toString().getBytes();
 						// Map eventContext = new HashMap();
-						// eventContext.put("enqueueTime", data.getEnqueueTime());
-						EventProcessingLogic.processRawPayload(EventHubInboundEventReceiver.this, payload,
-								null);
+						// eventContext.put("enqueueTime",
+						// data.getEnqueueTime());
+						EventProcessingLogic.processRawPayload(EventHubInboundEventReceiver.this, payload, null);
 
 					} catch (Exception e) {
 						e.printStackTrace();
-						logger.warn("Task " + taskIndex + " exception, restart in " + EH_RETRY_SLEEP_SECONDS
-								+ " seconds", e);
+						logger.warn(
+								"Task " + taskIndex + " exception, restart in " + EH_RETRY_SLEEP_SECONDS + " seconds",
+								e);
 						try {
 							task.close();
 						} catch (Exception ignored) {
@@ -234,7 +234,8 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

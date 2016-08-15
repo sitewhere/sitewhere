@@ -9,7 +9,8 @@ package com.sitewhere.hazelcast;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IMap;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -26,8 +27,8 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
- * Implements {@link IDeviceManagementCacheProvider} using Hazelcast as a distributed
- * cache.
+ * Implements {@link IDeviceManagementCacheProvider} using Hazelcast as a
+ * distributed cache.
  * 
  * @author Derek
  */
@@ -39,7 +40,7 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	}
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastDistributedCacheProvider.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Name of site cache */
 	private static final String SITE_CACHE = "siteCache";
@@ -76,13 +77,11 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	@Override
 	public void start() throws SiteWhereException {
 		this.siteCache = new HazelcastCache<ISite>(addTenantPrefix(SITE_CACHE), CacheType.SiteCache);
-		this.specificationCache =
-				new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
-						CacheType.DeviceSpecificationCache);
+		this.specificationCache = new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
+				CacheType.DeviceSpecificationCache);
 		this.deviceCache = new HazelcastCache<IDevice>(addTenantPrefix(DEVICE_CACHE), CacheType.DeviceCache);
-		this.assignmentCache =
-				new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
-						CacheType.DeviceAssignmentCache);
+		this.assignmentCache = new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
+				CacheType.DeviceAssignmentCache);
 	}
 
 	/*
@@ -117,7 +116,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
 	 */
 	@Override
 	public ICache<String, ISite> getSiteCache() throws SiteWhereException {
@@ -127,9 +127,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceSpecificationCache
-	 * ()
+	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+	 * getDeviceSpecificationCache ()
 	 */
 	@Override
 	public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException {
@@ -139,7 +138,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
 	 */
 	@Override
 	public ICache<String, IDevice> getDeviceCache() throws SiteWhereException {
@@ -149,8 +149,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceAssignmentCache()
+	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+	 * getDeviceAssignmentCache()
 	 */
 	@Override
 	public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException {
@@ -164,8 +164,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
@@ -224,7 +224,8 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object, java.lang.Object)
+		 * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object,
+		 * java.lang.Object)
 		 */
 		@Override
 		public void put(String key, T value) throws SiteWhereException {

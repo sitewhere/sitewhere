@@ -9,7 +9,8 @@ package com.sitewhere.device.communication.symbology;
 
 import java.net.URI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -25,15 +26,15 @@ import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
 
 /**
- * Implementation of {@link ISymbolGenerator} that generates QR-Codes for SiteWhere
- * entities.
+ * Implementation of {@link ISymbolGenerator} that generates QR-Codes for
+ * SiteWhere entities.
  * 
  * @author Derek
  */
 public class QrCodeSymbolGenerator extends TenantLifecycleComponent implements ISymbolGenerator {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(QrCodeSymbolGenerator.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Generator id */
 	private String id;
@@ -79,21 +80,22 @@ public class QrCodeSymbolGenerator extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getSiteSymbol(com.sitewhere
-	 * .spi.device.ISite, com.sitewhere.spi.device.symbology.IEntityUriProvider)
+	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getSiteSymbol(com.
+	 * sitewhere .spi.device.ISite,
+	 * com.sitewhere.spi.device.symbology.IEntityUriProvider)
 	 */
 	@Override
 	public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException {
 		URI uri = provider.getSiteIdentifier(site);
-		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight()).withColor(getForegroundColor(),
-				getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+				.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceSpecificationSymbol
+	 * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#
+	 * getDeviceSpecificationSymbol
 	 * (com.sitewhere.spi.device.IDeviceSpecification,
 	 * com.sitewhere.spi.device.symbology.IEntityUriProvider)
 	 */
@@ -101,38 +103,38 @@ public class QrCodeSymbolGenerator extends TenantLifecycleComponent implements I
 	public byte[] getDeviceSpecificationSymbol(IDeviceSpecification specification, IEntityUriProvider provider)
 			throws SiteWhereException {
 		URI uri = provider.getDeviceSpecificationIdentifier(specification);
-		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight()).withColor(getForegroundColor(),
-				getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+				.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceSymbol(com.sitewhere
-	 * .spi.device.IDevice, com.sitewhere.spi.device.symbology.IEntityUriProvider)
+	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceSymbol(com.
+	 * sitewhere .spi.device.IDevice,
+	 * com.sitewhere.spi.device.symbology.IEntityUriProvider)
 	 */
 	@Override
 	public byte[] getDeviceSymbol(IDevice device, IEntityUriProvider provider) throws SiteWhereException {
 		URI uri = provider.getDeviceIdentifier(device);
-		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight()).withColor(getForegroundColor(),
-				getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+				.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceAssigmentSymbol(com
-	 * .sitewhere.spi.device.IDeviceAssignment,
+	 * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#
+	 * getDeviceAssigmentSymbol(com .sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.symbology.IEntityUriProvider)
 	 */
 	@Override
 	public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
 			throws SiteWhereException {
 		URI uri = provider.getDeviceAssignmentIdentifier(assignment);
-		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight()).withColor(getForegroundColor(),
-				getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+		return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+				.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
 	}
 
 	/*

@@ -16,7 +16,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -48,7 +49,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class AssignmentStateManager extends TenantLifecycleComponent implements IAssignmentStateManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AssignmentStateManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Number of milliseconds between flushes to persistence */
 	private static final int FLUSH_INTERVAL = 250;

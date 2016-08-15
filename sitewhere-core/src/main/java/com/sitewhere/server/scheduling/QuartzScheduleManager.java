@@ -10,7 +10,8 @@ package com.sitewhere.server.scheduling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -33,15 +34,15 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Implementation of {@link IScheduleManager} that uses Quartz to handle schedule
- * management.
+ * Implementation of {@link IScheduleManager} that uses Quartz to handle
+ * schedule management.
  * 
  * @author Derek
  */
 public class QuartzScheduleManager extends TenantLifecycleComponent implements IScheduleManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(QuartzScheduleManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Instance id common to all schedulers */
 	private static final String INSTANCE_ID = "sitewhere";
@@ -67,8 +68,8 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.server.lifecycle.TenantLifecycleComponent#setTenant(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.server.lifecycle.TenantLifecycleComponent#setTenant(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public void setTenant(ITenant tenant) {
@@ -118,8 +119,7 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected void scheduleJobs() throws SiteWhereException {
-		ISearchResults<IScheduledJob> jobs =
-				getScheduleManagement().listScheduledJobs(new SearchCriteria(1, 0));
+		ISearchResults<IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(new SearchCriteria(1, 0));
 		for (IScheduledJob job : jobs.getResults()) {
 			scheduleJob(job);
 		}
@@ -142,8 +142,9 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.IScheduleManager#scheduleAdded(com.sitewhere.spi.
-	 * scheduling.ISchedule)
+	 * @see
+	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleAdded(com.sitewhere
+	 * .spi. scheduling.ISchedule)
 	 */
 	@Override
 	public void scheduleAdded(ISchedule schedule) throws SiteWhereException {
@@ -153,9 +154,8 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleRemoved(com.sitewhere.spi
-	 * .scheduling.ISchedule)
+	 * @see com.sitewhere.spi.scheduling.IScheduleManager#scheduleRemoved(com.
+	 * sitewhere.spi .scheduling.ISchedule)
 	 */
 	@Override
 	public void scheduleRemoved(ISchedule schedule) throws SiteWhereException {
@@ -166,8 +166,8 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleJob(com.sitewhere.spi.scheduling
-	 * .IScheduledJob)
+	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleJob(com.sitewhere.
+	 * spi.scheduling .IScheduledJob)
 	 */
 	@Override
 	public void scheduleJob(IScheduledJob job) throws SiteWhereException {
@@ -189,8 +189,9 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.IScheduleManager#unscheduleJob(com.sitewhere.spi.
-	 * scheduling.IScheduledJob)
+	 * @see
+	 * com.sitewhere.spi.scheduling.IScheduleManager#unscheduleJob(com.sitewhere
+	 * .spi. scheduling.IScheduledJob)
 	 */
 	@Override
 	public void unscheduleJob(IScheduledJob job) throws SiteWhereException {

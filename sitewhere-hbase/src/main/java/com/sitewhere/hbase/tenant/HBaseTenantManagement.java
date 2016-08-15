@@ -10,7 +10,8 @@ package com.sitewhere.hbase.tenant;
 import java.util.List;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -41,7 +42,7 @@ import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 public class HBaseTenantManagement extends LifecycleComponent implements ITenantManagement {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(HBaseTenantManagement.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;

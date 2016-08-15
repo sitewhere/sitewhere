@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
@@ -26,15 +27,16 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Implementation of {@link IOutboundEventProcessor} that performs a series of tests for
- * whether a location is inside or outside of zones, firing alerts if the criteria is met.
+ * Implementation of {@link IOutboundEventProcessor} that performs a series of
+ * tests for whether a location is inside or outside of zones, firing alerts if
+ * the criteria is met.
  * 
  * @author Derek
  */
 public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ZoneTestEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Map of polygons by zone token */
 	private Map<String, Polygon> zoneMap = new HashMap<String, Polygon>();
@@ -75,9 +77,8 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		for (ZoneTest test : zoneTests) {
 			Polygon poly = getZonePolygon(test.getZoneToken());
-			ZoneContainment containment =
-					(poly.contains(GeoUtils.createPointForLocation(location))) ? ZoneContainment.Inside
-							: ZoneContainment.Outside;
+			ZoneContainment containment = (poly.contains(GeoUtils.createPointForLocation(location)))
+					? ZoneContainment.Inside : ZoneContainment.Outside;
 			if (test.getCondition() == containment) {
 				DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 				alert.setType(test.getAlertType());
@@ -85,8 +86,8 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 				alert.setMessage(test.getAlertMessage());
 				alert.setUpdateState(false);
 				alert.setEventDate(new Date());
-				SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceAlert(
-						location.getDeviceAssignmentToken(), alert);
+				SiteWhere.getServer().getDeviceEventManagement(getTenant())
+						.addDeviceAlert(location.getDeviceAssignmentToken(), alert);
 			}
 		}
 	}
@@ -109,8 +110,7 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 			zoneMap.put(token, poly);
 			return poly;
 		}
-		throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": "
-				+ token);
+		throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": " + token);
 	}
 
 	public List<ZoneTest> getZoneTests() {

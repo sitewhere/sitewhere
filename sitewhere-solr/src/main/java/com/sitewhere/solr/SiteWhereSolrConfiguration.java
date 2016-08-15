@@ -7,7 +7,8 @@
  */
 package com.sitewhere.solr;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -20,11 +21,11 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class SiteWhereSolrConfiguration extends TenantLifecycleComponent implements
-		IDiscoverableTenantLifecycleComponent {
+public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
+		implements IDiscoverableTenantLifecycleComponent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereSolrConfiguration.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Bean name where global Solr configuration is expected */
 	public static final String SOLR_CONFIGURATION_BEAN = "swSolrConfiguration";

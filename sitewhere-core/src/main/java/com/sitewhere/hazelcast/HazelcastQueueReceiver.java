@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
 import com.sitewhere.device.communication.EventProcessingLogic;
@@ -25,8 +26,8 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that reads events from a Hazelcast
- * queue and pushes them into the processing pipeline.
+ * Implementation of {@link IInboundEventReceiver} that reads events from a
+ * Hazelcast queue and pushes them into the processing pipeline.
  * 
  * @author Derek
  */
@@ -34,7 +35,7 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 		implements ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastQueueReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Queue of events to be processed */
 	private IQueue<DecodedDeviceRequest<?>> eventQueue;
@@ -90,8 +91,7 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 				try {
 					DecodedDeviceRequest<?> payload = getEventQueue().take();
 					EventProcessingLogic.processRawPayload(HazelcastQueueReceiver.this, payload, null);
-					LOGGER.debug("Processed event from " + payload.getHardwareId()
-							+ " from Hazelcast event queue.");
+					LOGGER.debug("Processed event from " + payload.getHardwareId() + " from Hazelcast event queue.");
 				} catch (InterruptedException e) {
 					LOGGER.warn("Hazelcast queue processor interrupted.");
 					return;
@@ -113,7 +113,8 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -147,8 +148,8 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {

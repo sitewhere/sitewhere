@@ -12,7 +12,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -60,7 +61,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class ScheduledJobsController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ScheduledJobsController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new scheduled job.
@@ -93,8 +94,7 @@ public class ScheduledJobsController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
-	public IScheduledJob getScheduledJobByToken(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
+	public IScheduledJob getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getScheduledJobByToken", LOGGER);
 		try {
@@ -121,8 +121,8 @@ public class ScheduledJobsController extends RestController {
 			@Example(stage = Stage.Request, json = Schedules.UpdateScheduledJobRequest.class, description = "updateScheduledJobRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.UpdateScheduledJobResponse.class, description = "updateScheduledJobResponse.md") })
 	public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletRequest servletRequest) throws SiteWhereException {
+			@ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateScheduledJob", LOGGER);
 		try {
 			return getScheduleManagement(servletRequest).updateScheduledJob(token, request);
@@ -157,14 +157,12 @@ public class ScheduledJobsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listScheduledJobs", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IScheduledJob> results =
-					getScheduleManagement(servletRequest).listScheduledJobs(criteria);
+			ISearchResults<IScheduledJob> results = getScheduleManagement(servletRequest).listScheduledJobs(criteria);
 			if (!includeContext) {
 				return results;
 			} else {
 				List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
-				ScheduledJobMarshalHelper helper =
-						new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
+				ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
 				for (IScheduledJob job : results.getResults()) {
 					converted.add(helper.convert(job));
 				}
@@ -190,8 +188,7 @@ public class ScheduledJobsController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "deleteScheduledJobResponse.md") })
-	public IScheduledJob deleteScheduledJob(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
+	public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteScheduledJob", LOGGER);
@@ -209,8 +206,7 @@ public class ScheduledJobsController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest)
-			throws SiteWhereException {
+	protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
 		return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
 	}
 }

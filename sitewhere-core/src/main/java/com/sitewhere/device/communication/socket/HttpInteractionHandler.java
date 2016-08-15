@@ -22,7 +22,8 @@ import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.message.BasicHttpResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -33,8 +34,8 @@ import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFa
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Handles interactions where a remote client sends an HTTP request to be processed by
- * SiteWhere.
+ * Handles interactions where a remote client sends an HTTP request to be
+ * processed by SiteWhere.
  * 
  * @author Derek
  */
@@ -44,8 +45,9 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#process(
-	 * java.net.Socket, com.sitewhere.spi.device.communication.IInboundEventReceiver)
+	 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
+	 * process( java.net.Socket,
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver)
 	 */
 	@Override
 	public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
@@ -89,11 +91,10 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 	 * 
 	 * @author Derek
 	 */
-	public static class Factory extends LifecycleComponent
-			implements ISocketInteractionHandlerFactory<byte[]> {
+	public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 		/** Static logger instance */
-		private static Logger LOGGER = Logger.getLogger(Factory.class);
+		private static Logger LOGGER = LogManager.getLogger();
 
 		public Factory() {
 			super(LifecycleComponentType.Other);
@@ -125,9 +126,8 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory
-		 * #newInstance()
+		 * @see com.sitewhere.spi.device.communication.socket.
+		 * ISocketInteractionHandlerFactory #newInstance()
 		 */
 		@Override
 		public ISocketInteractionHandler<byte[]> newInstance() {

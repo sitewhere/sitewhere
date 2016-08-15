@@ -10,7 +10,8 @@ package com.sitewhere.device.communication;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -21,15 +22,15 @@ import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 
 /**
- * Implementation of {@link IOutboundCommandRouter} that maps specification ids to
- * {@link ICommandDestination} ids and routes accordingly.
+ * Implementation of {@link IOutboundCommandRouter} that maps specification ids
+ * to {@link ICommandDestination} ids and routes accordingly.
  * 
  * @author Derek
  */
 public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SpecificationMappingCommandRouter.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Map of specification tokens to command destination ids */
 	private Map<String, String> mappings = new HashMap<String, String>();
@@ -68,9 +69,8 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IOutboundCommandRouter#routeCommand(com.
-	 * sitewhere.spi.device.command.IDeviceCommandExecution,
+	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+	 * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
@@ -84,22 +84,21 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IOutboundCommandRouter#routeSystemCommand
-	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+	 * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException {
+	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+			throws SiteWhereException {
 		ICommandDestination<?, ?> destination = getDestinationForDevice(nesting);
 		destination.deliverSystemCommand(command, nesting, assignment);
 	}
 
 	/**
-	 * Get {@link ICommandDestination} for device based on specification token associated
-	 * with the device.
+	 * Get {@link ICommandDestination} for device based on specification token
+	 * associated with the device.
 	 * 
 	 * @param nesting
 	 * @return
@@ -113,8 +112,7 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 			if (getDefaultDestination() != null) {
 				destinationId = getDefaultDestination();
 			} else {
-				throw new SiteWhereException(
-						"No command destination mapping for specification: " + specToken);
+				throw new SiteWhereException("No command destination mapping for specification: " + specToken);
 			}
 		}
 		ICommandDestination<?, ?> destination = getDestinations().get(destinationId);

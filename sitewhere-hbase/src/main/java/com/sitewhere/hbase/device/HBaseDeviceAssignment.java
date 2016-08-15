@@ -17,7 +17,8 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
@@ -50,7 +51,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseDeviceAssignment {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceAssignment.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of device identifier (subset of 8 byte long) */
 	public static final int ASSIGNMENT_IDENTIFIER_LENGTH = 4;
@@ -98,8 +99,7 @@ public class HBaseDeviceAssignment {
 			byte[] primary = getPrimaryRowkey(assnKey);
 
 			// Create device assignment for JSON.
-			DeviceAssignment newAssignment =
-					SiteWherePersistence.deviceAssignmentCreateLogic(request, device, uuid);
+			DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device, uuid);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(newAssignment);
 
 			HTableInterface sites = null;
@@ -107,8 +107,7 @@ public class HBaseDeviceAssignment {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
-						DeviceAssignmentStatus.Active.name().getBytes());
+				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, DeviceAssignmentStatus.Active.name().getBytes());
 				sites.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to create device assignment.", e);
@@ -116,7 +115,8 @@ public class HBaseDeviceAssignment {
 				HBaseUtils.closeCleanly(sites);
 			}
 
-			// Set the back reference from the device that indicates it is currently
+			// Set the back reference from the device that indicates it is
+			// currently
 			// assigned.
 			HBaseDevice.setDeviceAssignment(context, request.getDeviceHardwareId(), uuid);
 
@@ -134,19 +134,16 @@ public class HBaseDeviceAssignment {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceAssignment getDeviceAssignment(IHBaseContext context, String token)
-			throws SiteWhereException {
+	public static DeviceAssignment getDeviceAssignment(IHBaseContext context, String token) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignment (HBase) " + token, LOGGER);
 		try {
 			if (context.getCacheProvider() != null) {
 				IDeviceAssignment result = context.getCacheProvider().getDeviceAssignmentCache().get(token);
 				if (result != null) {
 					Tracer.info("Returning cached device assignment.", LOGGER);
-					DeviceAssignmentMarshalHelper helper =
-							new DeviceAssignmentMarshalHelper(context.getTenant()).setIncludeAsset(
-									false).setIncludeDevice(false).setIncludeSite(false);
-					return helper.convert(result,
-							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
+					DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(context.getTenant())
+							.setIncludeAsset(false).setIncludeDevice(false).setIncludeSite(false);
+					return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
 			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
@@ -170,13 +167,11 @@ public class HBaseDeviceAssignment {
 					return null;
 				}
 
-				DeviceAssignment found =
-						PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceAssignment(
-								payload);
+				DeviceAssignment found = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+						.decodeDeviceAssignment(payload);
 				if (state != null) {
-					DeviceAssignmentState assnState =
-							PayloadMarshalerResolver.getInstance().getMarshaler(
-									type).decodeDeviceAssignmentState(state);
+					DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+							.decodeDeviceAssignmentState(state);
 					found.setState(assnState);
 				}
 				if ((context.getCacheProvider() != null) && (found != null)) {
@@ -204,8 +199,7 @@ public class HBaseDeviceAssignment {
 	 */
 	public static DeviceAssignment updateDeviceAssignmentMetadata(IHBaseContext context, String token,
 			IMetadataProvider metadata) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentMetadata (HBase) " + token,
-				LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentMetadata (HBase) " + token, LOGGER);
 		try {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.clearMetadata();
@@ -249,8 +243,7 @@ public class HBaseDeviceAssignment {
 	 */
 	public static DeviceAssignment updateDeviceAssignmentState(IHBaseContext context, String token,
 			IDeviceAssignmentState state) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentState (HBase) " + token,
-				LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentState (HBase) " + token, LOGGER);
 		try {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.setState(DeviceAssignmentState.copy(state));
@@ -292,8 +285,7 @@ public class HBaseDeviceAssignment {
 	 */
 	public static DeviceAssignment updateDeviceAssignmentStatus(IHBaseContext context, String token,
 			DeviceAssignmentStatus status) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentStatus (HBase) " + token,
-				LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentStatus (HBase) " + token, LOGGER);
 		try {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.setStatus(status);
@@ -334,8 +326,7 @@ public class HBaseDeviceAssignment {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceAssignment endDeviceAssignment(IHBaseContext context, String token)
-			throws SiteWhereException {
+	public static DeviceAssignment endDeviceAssignment(IHBaseContext context, String token) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "endDeviceAssignment (HBase) " + token, LOGGER);
 		try {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
@@ -376,10 +367,10 @@ public class HBaseDeviceAssignment {
 	}
 
 	/**
-	 * Delete a device assignmant based on token. Depending on 'force' the record will be
-	 * physically deleted or a marker qualifier will be added to mark it as deleted. Note:
-	 * Physically deleting an assignment can leave orphaned references and should not be
-	 * done in a production system!
+	 * Delete a device assignmant based on token. Depending on 'force' the
+	 * record will be physically deleted or a marker qualifier will be added to
+	 * mark it as deleted. Note: Physically deleting an assignment can leave
+	 * orphaned references and should not be done in a production system!
 	 * 
 	 * @param context
 	 * @param token
@@ -389,8 +380,7 @@ public class HBaseDeviceAssignment {
 	 */
 	public static IDeviceAssignment deleteDeviceAssignment(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token,
-				LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token, LOGGER);
 		try {
 			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			if (assnKey == null) {
@@ -403,7 +393,8 @@ public class HBaseDeviceAssignment {
 			try {
 				HBaseDevice.removeDeviceAssignment(context, existing.getDeviceHardwareId());
 			} catch (SiteWhereSystemException e) {
-				// Ignore missing reference to handle case where device was deleted
+				// Ignore missing reference to handle case where device was
+				// deleted
 				// underneath
 				// assignment.
 			}
@@ -484,8 +475,8 @@ public class HBaseDeviceAssignment {
 	}
 
 	/**
-	 * Truncate assignment id value to expected length. This will be a subset of the full
-	 * 8-bit long value.
+	 * Truncate assignment id value to expected length. This will be a subset of
+	 * the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return
@@ -493,8 +484,7 @@ public class HBaseDeviceAssignment {
 	public static byte[] getAssignmentIdentifier(Long value) {
 		byte[] bytes = Bytes.toBytes(value);
 		byte[] result = new byte[ASSIGNMENT_IDENTIFIER_LENGTH];
-		System.arraycopy(bytes, bytes.length - ASSIGNMENT_IDENTIFIER_LENGTH, result, 0,
-				ASSIGNMENT_IDENTIFIER_LENGTH);
+		System.arraycopy(bytes, bytes.length - ASSIGNMENT_IDENTIFIER_LENGTH, result, 0, ASSIGNMENT_IDENTIFIER_LENGTH);
 		return result;
 	}
 

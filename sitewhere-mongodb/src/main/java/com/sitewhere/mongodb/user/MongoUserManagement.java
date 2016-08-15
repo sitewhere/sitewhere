@@ -13,7 +13,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -49,7 +50,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class MongoUserManagement extends LifecycleComponent implements IUserManagement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MongoUserManagement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected with global SiteWhere Mongo client */
 	private IGlobalManagementMongoClient mongoClient;
@@ -103,8 +104,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.request
-	 * .IUserCreateRequest)
+	 * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
+	 * request .IUserCreateRequest)
 	 */
 	public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
 		IUser existing = getUserByUsername(request.getUsername());
@@ -124,8 +125,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.IUser,
-	 * boolean)
+	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
+	 * IUser, boolean)
 	 */
 	@Override
 	public IUser importUser(IUser imported, boolean overwrite) throws SiteWhereException {
@@ -148,7 +149,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
 	 * java.lang.String)
 	 */
 	public IUser authenticate(String username, String password) throws SiteWhereException {
@@ -198,7 +200,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.String)
+	 * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
+	 * String)
 	 */
 	public IUser getUserByUsername(String username) throws SiteWhereException {
 		DBObject dbUser = getUserObjectByUsername(username);
@@ -211,7 +214,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+	 * String)
 	 */
 	public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
 		IUser user = getUserByUsername(username);
@@ -229,8 +234,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.String,
-	 * java.util.List)
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+	 * String, java.util.List)
 	 */
 	public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
 			throws SiteWhereException {
@@ -241,8 +247,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang.String,
-	 * java.util.List)
+	 * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
+	 * .String, java.util.List)
 	 */
 	public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
 			throws SiteWhereException {
@@ -253,8 +259,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.request
-	 * .IUserSearchCriteria)
+	 * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+	 * request .IUserSearchCriteria)
 	 */
 	public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 		try {
@@ -282,7 +288,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String, boolean)
+	 * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
+	 * boolean)
 	 */
 	public IUser deleteUser(String username, boolean force) throws SiteWhereException {
 		DBObject existing = assertUser(username);
@@ -303,12 +310,10 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.sitewhere.spi
-	 * .user.request. IGrantedAuthorityCreateRequest)
+	 * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
+	 * sitewhere.spi .user.request. IGrantedAuthorityCreateRequest)
 	 */
-	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request)
-			throws SiteWhereException {
+	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 		IGrantedAuthority existing = getGrantedAuthorityByName(request.getAuthority());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
@@ -325,7 +330,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.lang.String)
+	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+	 * lang.String)
 	 */
 	public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
 		DBObject dbAuth = getGrantedAuthorityObjectByName(name);
@@ -339,8 +345,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.String,
-	 * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+	 * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+	 * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
 	 */
 	public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
 			throws SiteWhereException {
@@ -350,9 +356,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.spi
-	 * .user. IGrantedAuthoritySearchCriteria)
+	 * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
+	 * sitewhere.spi .user. IGrantedAuthoritySearchCriteria)
 	 */
 	public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 			throws SiteWhereException {
@@ -378,15 +383,16 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.String)
+	 * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+	 * String)
 	 */
 	public void deleteGrantedAuthority(String authority) throws SiteWhereException {
 		throw new SiteWhereException("Not implemented.");
 	}
 
 	/**
-	 * Get the {@link DBObject} for a User given username. Throw an exception if not
-	 * found.
+	 * Get the {@link DBObject} for a User given username. Throw an exception if
+	 * not found.
 	 * 
 	 * @param username
 	 * @return
@@ -419,8 +425,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	}
 
 	/**
-	 * Get the {@link DBObject} for a GrantedAuthority given name. Throw an exception if
-	 * not found.
+	 * Get the {@link DBObject} for a GrantedAuthority given name. Throw an
+	 * exception if not found.
 	 * 
 	 * @param name
 	 * @return

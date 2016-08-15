@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
@@ -37,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleComponent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DataStoreAssetModule.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Asset category */
 	private IAssetCategory category;
@@ -126,17 +127,15 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
 	@SuppressWarnings("unchecked")
 	protected ICommandResponse doLoadAssets() {
 		try {
-			ISearchResults<IAsset> assets =
-					SiteWhere.getServer().getAssetManagement(getTenant()).listAssets(category.getId(),
-							new SearchCriteria(1, 0));
+			ISearchResults<IAsset> assets = SiteWhere.getServer().getAssetManagement(getTenant())
+					.listAssets(category.getId(), new SearchCriteria(1, 0));
 			assetCache.clear();
 			for (IAsset asset : assets.getResults()) {
 				assetCache.put(asset.getId(), (T) asset);
 			}
 			return new CommandResponse(CommandResult.Successful, "Asset module refreshed.");
 		} catch (SiteWhereException e) {
-			return new CommandResponse(CommandResult.Failed,
-					"Asset module refreshed failed. " + e.getMessage());
+			return new CommandResponse(CommandResult.Failed, "Asset module refreshed failed. " + e.getMessage());
 		}
 	}
 

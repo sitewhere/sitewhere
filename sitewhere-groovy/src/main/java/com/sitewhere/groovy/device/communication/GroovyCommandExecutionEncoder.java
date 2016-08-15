@@ -1,6 +1,7 @@
 package com.sitewhere.groovy.device.communication;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -38,7 +39,7 @@ public class GroovyCommandExecutionEncoder extends TenantLifecycleComponent
 	}
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyCommandExecutionEncoder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)

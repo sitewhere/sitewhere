@@ -7,7 +7,8 @@
  */
 package com.sitewhere.hazelcast;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
@@ -36,7 +37,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 public class HazelcastEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastEventProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected tenant Hazelcast configuration */
 	private ITenantHazelcastConfiguration hazelcastConfiguration;
@@ -73,21 +74,16 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
 		this.invocationHelper = new DeviceCommandInvocationMarshalHelper(getTenant(), true);
-		this.measurementsTopic =
-				getHazelcastConfiguration().getHazelcastInstance().getTopic(
-						ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
-		this.locationsTopic =
-				getHazelcastConfiguration().getHazelcastInstance().getTopic(
-						ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
-		this.alertsTopic =
-				getHazelcastConfiguration().getHazelcastInstance().getTopic(
-						ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
-		this.commandInvocationsTopic =
-				getHazelcastConfiguration().getHazelcastInstance().getTopic(
-						ISiteWhereHazelcast.TOPIC_COMMAND_INVOCATION_ADDED);
-		this.commandResponsesTopic =
-				getHazelcastConfiguration().getHazelcastInstance().getTopic(
-						ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
+		this.measurementsTopic = getHazelcastConfiguration().getHazelcastInstance()
+				.getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
+		this.locationsTopic = getHazelcastConfiguration().getHazelcastInstance()
+				.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
+		this.alertsTopic = getHazelcastConfiguration().getHazelcastInstance()
+				.getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
+		this.commandInvocationsTopic = getHazelcastConfiguration().getHazelcastInstance()
+				.getTopic(ISiteWhereHazelcast.TOPIC_COMMAND_INVOCATION_ADDED);
+		this.commandResponsesTopic = getHazelcastConfiguration().getHazelcastInstance()
+				.getTopic(ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
 	}
 
 	/*
@@ -104,7 +100,8 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceMeasurements)
 	 */
 	@Override
 	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -116,7 +113,8 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
@@ -129,7 +127,8 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
@@ -143,24 +142,25 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceStateChange)
 	 */
 	@Override
 	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
-		LOGGER.debug("Hazelcast received state change of type: " + state.getCategory().name() + ":"
-				+ state.getNewState());
+		LOGGER.debug(
+				"Hazelcast received state change of type: " + state.getCategory().name() + ":" + state.getNewState());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onCommandInvocationNotFiltered
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		DeviceCommandInvocation converted = invocationHelper.convert(invocation);
 		commandInvocationsTopic.publish(converted);
 		LOGGER.debug("Published command invocation event to Hazelcast (id=" + invocation.getId() + ")");
@@ -169,8 +169,10 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
-	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
+	 * IDeviceCommandResponse)
 	 */
 	@Override
 	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
@@ -182,8 +184,8 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {

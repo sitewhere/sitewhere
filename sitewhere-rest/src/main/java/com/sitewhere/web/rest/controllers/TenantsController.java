@@ -16,7 +16,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -75,7 +76,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class TenantsController extends RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(TenantsController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create a new tenant.

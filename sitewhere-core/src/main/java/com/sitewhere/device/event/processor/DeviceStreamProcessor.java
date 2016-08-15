@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 public class DeviceStreamProcessor extends InboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceStreamProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
@@ -33,10 +34,10 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
 	 */
 	@Override
-	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamRequest(
-				hardwareId, request);
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+				.handleDeviceStreamRequest(hardwareId, request);
 	}
 
 	/*
@@ -50,8 +51,8 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	@Override
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamDataRequest(
-				hardwareId, request);
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+				.handleDeviceStreamDataRequest(hardwareId, request);
 	}
 
 	/*
@@ -64,8 +65,8 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	@Override
 	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
 			ISendDeviceStreamDataRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleSendDeviceStreamDataRequest(
-				hardwareId, request);
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+				.handleSendDeviceStreamDataRequest(hardwareId, request);
 	}
 
 	/*
