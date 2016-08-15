@@ -325,7 +325,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	 */
 	protected void writeResourceFile(IResourceCreateRequest request, String qualifier,
 			MultiResourceCreateResponse response) {
-		String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : "";
+		String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : File.separator;
 		File rfile = new File(getRootFolder().getAbsolutePath() + middle + request.getPath());
 		FileOutputStream fileOut = null;
 		try {
