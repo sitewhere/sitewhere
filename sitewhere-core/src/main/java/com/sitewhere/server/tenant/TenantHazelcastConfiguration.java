@@ -68,7 +68,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 			config.setInstanceName(getTenant().getId());
 			performGroupOverrides(config);
 			performSerializationOverrides(config);
-			config.setProperty("hazelcast.logging.type", "log4j");
+			config.setProperty("hazelcast.logging.type", "log4j2");
 
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			try {
