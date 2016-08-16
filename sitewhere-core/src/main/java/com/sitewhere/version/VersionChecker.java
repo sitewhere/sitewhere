@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,15 +30,15 @@ import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.system.IVersionChecker;
 
 /**
- * Attempts to connect to a website to check for information about the latest version of
- * SiteWhere.
+ * Attempts to connect to a website to check for information about the latest
+ * version of SiteWhere.
  * 
  * @author Derek
  */
 public class VersionChecker implements IVersionChecker {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(VersionChecker.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** URL accessed for latest version information */
 	private static final String VERSION_URL = "http://www.sitewhere.org/version.php";
@@ -77,8 +78,7 @@ public class VersionChecker implements IVersionChecker {
 			LatestVersion.Product product = getProductVersion(latest);
 			int[] currentParts = getVersionParts(current.getVersionIdentifier());
 			int[] latestParts = getVersionParts(product.getCurrentVersion());
-			int matchLength =
-					(currentParts.length > latestParts.length) ? currentParts.length : latestParts.length;
+			int matchLength = (currentParts.length > latestParts.length) ? currentParts.length : latestParts.length;
 			for (int i = 0; i < matchLength; i++) {
 				if (currentParts[i] < latestParts[i]) {
 					LOGGER.info("A newer version of SiteWhere is available: " + product.getName() + " "
@@ -152,8 +152,8 @@ public class VersionChecker implements IVersionChecker {
 	}
 
 	/**
-	 * Writes a message to the log if the remote site for checking latest version is not
-	 * available.
+	 * Writes a message to the log if the remote site for checking latest
+	 * version is not available.
 	 * 
 	 * @author Derek
 	 */
@@ -166,8 +166,8 @@ public class VersionChecker implements IVersionChecker {
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * org.springframework.web.client.ResponseErrorHandler#handleError(org.springframework
-		 * .http.client.ClientHttpResponse)
+		 * org.springframework.web.client.ResponseErrorHandler#handleError(org.
+		 * springframework .http.client.ClientHttpResponse)
 		 */
 		@Override
 		public void handleError(ClientHttpResponse response) throws IOException {
@@ -182,8 +182,8 @@ public class VersionChecker implements IVersionChecker {
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * org.springframework.web.client.ResponseErrorHandler#hasError(org.springframework
-		 * .http.client.ClientHttpResponse)
+		 * org.springframework.web.client.ResponseErrorHandler#hasError(org.
+		 * springframework .http.client.ClientHttpResponse)
 		 */
 		@Override
 		public boolean hasError(ClientHttpResponse response) throws IOException {

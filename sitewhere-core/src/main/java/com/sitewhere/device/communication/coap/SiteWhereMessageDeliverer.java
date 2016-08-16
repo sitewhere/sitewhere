@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.OptionSet;
 import org.eclipse.californium.core.coap.Response;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class SiteWhereMessageDeliverer implements MessageDeliverer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereMessageDeliverer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Indicates type of event (detected from URI) */
 	private static final String META_EVENT_TYPE = "eventType";

@@ -7,7 +7,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.resource.IResource;
@@ -33,7 +34,7 @@ import com.sitewhere.spi.resource.IResource;
 public class ResourceUrlConnection extends URLConnection {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ResourceUrlConnection.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Protocol that specifies a SiteWhere URL */
 	public static final String PROTO_SITEWHERE = "sitewhere";

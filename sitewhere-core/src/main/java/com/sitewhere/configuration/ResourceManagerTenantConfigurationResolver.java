@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class ResourceManagerTenantConfigurationResolver implements ITenantConfigurationResolver {
 
 	/** Static logger instance */
-	public static Logger LOGGER = Logger.getLogger(ResourceManagerTenantConfigurationResolver.class);
+	public static Logger LOGGER = LogManager.getLogger();
 
 	/** Folder containing tenant asset resources */
 	public static final String ASSETS_FOLDER = "assets";

@@ -12,7 +12,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -41,11 +42,11 @@ import com.sitewhere.spi.user.SiteWhereRoles;
 public class RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RestController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
-	 * Get a tenant based on the authentication token passed. Assume that the current user
-	 * should be validated for access to the given tenant.
+	 * Get a tenant based on the authentication token passed. Assume that the
+	 * current user should be validated for access to the given tenant.
 	 * 
 	 * @param request
 	 * @return
@@ -91,7 +92,8 @@ public class RestController {
 	}
 
 	/**
-	 * Verify that the current user is authorized to interact with the given tenant id.
+	 * Verify that the current user is authorized to interact with the given
+	 * tenant id.
 	 * 
 	 * @param tenantId
 	 * @throws SiteWhereException
@@ -105,7 +107,8 @@ public class RestController {
 	}
 
 	/**
-	 * Verify that the current user is authorized to interact with the given tenant.
+	 * Verify that the current user is authorized to interact with the given
+	 * tenant.
 	 * 
 	 * @param tenant
 	 * @return
@@ -114,7 +117,8 @@ public class RestController {
 	protected ITenant assureAuthorizedTenant(ITenant tenant) throws SiteWhereException {
 		IUser user = LoginManager.getCurrentlyLoggedInUser();
 
-		// Tenant administrators do not have to be in the list of authorized users.
+		// Tenant administrators do not have to be in the list of authorized
+		// users.
 		if (user.getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
 			return tenant;
 		}
@@ -160,7 +164,8 @@ public class RestController {
 	}
 
 	/**
-	 * Handles a system exception by setting the HTML response code and response headers.
+	 * Handles a system exception by setting the HTML response code and response
+	 * headers.
 	 * 
 	 * @param e
 	 * @param response
@@ -215,8 +220,8 @@ public class RestController {
 	}
 
 	/**
-	 * Handles exception thrown when a tenant operation is requested on an unavailable
-	 * tenant.
+	 * Handles exception thrown when a tenant operation is requested on an
+	 * unavailable tenant.
 	 * 
 	 * @param e
 	 * @param response
@@ -225,15 +230,15 @@ public class RestController {
 	protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
 		LOGGER.error("Operation invoked on unavailable tenant.", e);
 		try {
-			response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-					"The requested tenant is not available.");
+			response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The requested tenant is not available.");
 		} catch (IOException e1) {
 			LOGGER.error(e1);
 		}
 	}
 
 	/**
-	 * Handles exceptions generated if {@link Secured} annotations are not satisfied.
+	 * Handles exceptions generated if {@link Secured} annotations are not
+	 * satisfied.
 	 * 
 	 * @param e
 	 * @param response
@@ -258,8 +263,7 @@ public class RestController {
 	protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
 		try {
 			LOGGER.error("Error handling REST request..", e);
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-					"No body content passed for POST request.");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No body content passed for POST request.");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

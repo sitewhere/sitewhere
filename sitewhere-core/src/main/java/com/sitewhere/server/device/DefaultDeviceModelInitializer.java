@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
@@ -86,15 +87,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 /**
- * Used to load a default site/devices/assignments/events so that there is demo data in
- * the system. The server only offers this functionality if no sites already exist.
+ * Used to load a default site/devices/assignments/events so that there is demo
+ * data in the system. The server only offers this functionality if no sites
+ * already exist.
  * 
  * @author Derek
  */
 public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultDeviceModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Prefix for create site log message */
 	public static final String PREFIX_CREATE_SITE = "[Create Site]";
@@ -142,8 +144,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final double CRITICAL_TEMP = 190;
 
 	/** Image URL assocaited with sites */
-	public static final String SITE_IMAGE_URL =
-			"https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg";
+	public static final String SITE_IMAGE_URL = "https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg";
 
 	/** Namespace for common core commands */
 	public static final String SITEWHERE_COMMON_NAMESPACE = "http://sitewhere/common";
@@ -179,53 +180,42 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final String SITE_TOKEN = "bb105f8d-3150-41f5-b9d1-db04965668d3";
 
 	/** Available choices for devices/assignments that track heavy equipment */
-	protected static AssignmentChoice[] HEAVY_EQUIPMENT =
-			{
-					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
-					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
-					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
-					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
-					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID,
-							"304") };
+	protected static AssignmentChoice[] HEAVY_EQUIPMENT = {
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
 	/** Available choices for devices/assignments that track people */
-	protected static AssignmentChoice[] PERSONNEL =
-			{
-					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "1"),
-					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "2"),
-					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "3") };
+	protected static AssignmentChoice[] PERSONNEL = {
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "1"),
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "2"),
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "3") };
 
 	/** Available choices for devices/assignments that track tools */
-	protected static AssignmentChoice[] TOOLS =
-			{
-					new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "1"),
-					new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "2") };
+	protected static AssignmentChoice[] TOOLS = {
+			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "1"),
+			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "2") };
 
 	/** Information for available device specifications */
-	public static final SpecificationDetails[] SPECIFICATION_INFO =
-			{
-					new SpecificationDetails("173", "Android Tablet", "d2604433-e4eb-419b-97c7-88efe9b2cd41",
-							PERSONNEL),
-					new SpecificationDetails("181", "Arduino High Memory",
-							"417b36a8-21ef-4196-a8fe-cc756f994d0b", TOOLS),
-					new SpecificationDetails("174", "Raspberry Pi", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb",
-							TOOLS),
-					new SpecificationDetails("175", "MeiTrack GPS", MEITRACK_SPEC_TOKEN, HEAVY_EQUIPMENT),
-					new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b",
-							TOOLS),
-					new SpecificationDetails("190", "openHAB", OPENHAB_SPEC_TOKEN, TOOLS),
-					new SpecificationDetails("195", "Node-RED", NODERED_SPEC_TOKEN, TOOLS),
-					new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN,
-							PERSONNEL),
-					new SpecificationDetails("400", "Apple iPhone", IPHONE_SPEC_TOKEN, PERSONNEL),
-					new SpecificationDetails("405", "Apple iPad", IPAD_SPEC_TOKEN, PERSONNEL) };
+	public static final SpecificationDetails[] SPECIFICATION_INFO = {
+			new SpecificationDetails("173", "Android Tablet", "d2604433-e4eb-419b-97c7-88efe9b2cd41", PERSONNEL),
+			new SpecificationDetails("181", "Arduino High Memory", "417b36a8-21ef-4196-a8fe-cc756f994d0b", TOOLS),
+			new SpecificationDetails("174", "Raspberry Pi", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb", TOOLS),
+			new SpecificationDetails("175", "MeiTrack GPS", MEITRACK_SPEC_TOKEN, HEAVY_EQUIPMENT),
+			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b", TOOLS),
+			new SpecificationDetails("190", "openHAB", OPENHAB_SPEC_TOKEN, TOOLS),
+			new SpecificationDetails("195", "Node-RED", NODERED_SPEC_TOKEN, TOOLS),
+			new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN, PERSONNEL),
+			new SpecificationDetails("400", "Apple iPhone", IPHONE_SPEC_TOKEN, PERSONNEL),
+			new SpecificationDetails("405", "Apple iPad", IPAD_SPEC_TOKEN, PERSONNEL) };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
 
 	/** Map of commands for each specification token */
-	protected Map<String, List<IDeviceCommand>> commandsBySpecToken =
-			new HashMap<String, List<IDeviceCommand>>();
+	protected Map<String, List<IDeviceCommand>> commandsBySpecToken = new HashMap<String, List<IDeviceCommand>>();
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -240,7 +230,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	protected IAssetModuleManager assetModuleManager;
 
 	/**
-	 * Indiates whether model should be initialized if no console is available for input
+	 * Indiates whether model should be initialized if no console is available
+	 * for input
 	 */
 	private boolean initializeIfNoConsole = false;
 
@@ -281,12 +272,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		List<ISite> sites = createSites();
 		for (ISite site : sites) {
 			List<DeviceAssignment> assignments = createAssignments(site, specMap);
-			List<IDeviceGroupElementCreateRequest> heavyRequests =
-					new ArrayList<IDeviceGroupElementCreateRequest>();
-			List<IDeviceGroupElementCreateRequest> personnelRequests =
-					new ArrayList<IDeviceGroupElementCreateRequest>();
-			List<IDeviceGroupElementCreateRequest> toolsRequests =
-					new ArrayList<IDeviceGroupElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> heavyRequests = new ArrayList<IDeviceGroupElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> personnelRequests = new ArrayList<IDeviceGroupElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> toolsRequests = new ArrayList<IDeviceGroupElementCreateRequest>();
 
 			for (DeviceAssignment assignment : assignments) {
 				DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
@@ -317,8 +305,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @throws SiteWhereException
 	 */
 	protected void testListAndRemoveNetworkElements(IDeviceGroup group) throws SiteWhereException {
-		ISearchResults<IDeviceGroupElement> groupElements =
-				getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 10));
+		ISearchResults<IDeviceGroupElement> groupElements = getDeviceManagement()
+				.listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 10));
 		LOGGER.info("Matched " + groupElements.getResults().size() + " group elements.");
 
 		List<IDeviceGroupElementCreateRequest> delete = new ArrayList<IDeviceGroupElementCreateRequest>();
@@ -328,12 +316,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			delElm.setElementId(current.getElementId());
 			delete.add(delElm);
 		}
-		List<IDeviceGroupElement> deleted =
-				getDeviceManagement().removeDeviceGroupElements(group.getToken(), delete);
+		List<IDeviceGroupElement> deleted = getDeviceManagement().removeDeviceGroupElements(group.getToken(), delete);
 		LOGGER.info("Deleted " + deleted.size() + " group elements.");
 
-		groupElements =
-				getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 100));
+		groupElements = getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 100));
 		LOGGER.info("Remaining was " + groupElements.getResults().size() + " group elements.");
 	}
 
@@ -603,8 +589,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
 		request.setToken(UUID.randomUUID().toString());
 		request.setName("Heavy Equipment Tracking");
-		request.setDescription(
-				"Device group that contains devices for tracking location of heavy equipment.");
+		request.setDescription("Device group that contains devices for tracking location of heavy equipment.");
 		request.setRoles(new ArrayList<String>());
 		request.getRoles().add("heavy-equipment-tracking");
 		request.getRoles().add("tracking");
@@ -644,8 +629,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			throws SiteWhereException {
 		Date before = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
 		List<DeviceAssignment> results = new ArrayList<DeviceAssignment>();
-		DeviceAssignmentMarshalHelper helper =
-				new DeviceAssignmentMarshalHelper(getDeviceManagement().getTenant());
+		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement().getTenant());
 		helper.setIncludeDevice(true);
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			IDeviceSpecification specification = getRandomDeviceSpecification();
@@ -754,8 +738,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 			current += (long) Math.floor(Math.random() * 30000.0);
 		}
-		LOGGER.info(
-				PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount + " alerts.");
+		LOGGER.info(PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount + " alerts.");
 		return results;
 	}
 
@@ -811,8 +794,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					request.setLongitude(end.x);
 					request.setElevation(0.0);
 					request.setEventDate(new Date(current));
-					IDeviceLocation created =
-							getDeviceEventManagement().addDeviceLocation(assignment.getToken(), request);
+					IDeviceLocation created = getDeviceEventManagement().addDeviceLocation(assignment.getToken(),
+							request);
 					results.add(created);
 
 					cx = cx + deltaX;
@@ -841,8 +824,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected List<IDeviceCommandInvocation> createDeviceCommandInvocations(IDeviceAssignment assignment,
-			Date date, List<IDeviceCommand> commands) throws SiteWhereException {
+	protected List<IDeviceCommandInvocation> createDeviceCommandInvocations(IDeviceAssignment assignment, Date date,
+			List<IDeviceCommand> commands) throws SiteWhereException {
 		long current = date.getTime();
 		List<IDeviceCommandInvocation> invocations = new ArrayList<IDeviceCommandInvocation>();
 		for (IDeviceCommand command : commands) {
@@ -859,8 +842,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				values.put(param.getName(), getSampleValue(param.getType()));
 			}
 			request.setParameterValues(values);
-			invocations.add(getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(),
-					command, request));
+			invocations.add(
+					getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), command, request));
 			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		return invocations;
@@ -875,8 +858,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected List<IDeviceCommandResponse> createDeviceCommandResponses(IDeviceAssignment assignment,
-			Date date, List<IDeviceCommandInvocation> invocations) throws SiteWhereException {
+	protected List<IDeviceCommandResponse> createDeviceCommandResponses(IDeviceAssignment assignment, Date date,
+			List<IDeviceCommandInvocation> invocations) throws SiteWhereException {
 		long current = date.getTime();
 		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
 		for (IDeviceCommandInvocation invocation : invocations) {
@@ -884,8 +867,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setOriginatingEventId(invocation.getId());
 			request.setResponse("ACK");
 			request.setEventDate(new Date(current));
-			responses.add(
-					getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
+			responses.add(getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
 			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		return responses;
@@ -957,8 +939,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		private AssignmentChoice[] assignmentChoices;
 
-		public SpecificationDetails(String assetId, String name, String uuid,
-				AssignmentChoice[] assignmentChoices) {
+		public SpecificationDetails(String assetId, String name, String uuid, AssignmentChoice[] assignmentChoices) {
 			this.assetId = assetId;
 			this.name = name;
 			this.uuid = uuid;

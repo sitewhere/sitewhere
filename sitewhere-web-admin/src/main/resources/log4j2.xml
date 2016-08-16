@@ -2,12 +2,17 @@
 <Configuration status="WARN">
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p [%c{1}] %m%n" />
 		</Console>
+		<File name="SiteWhere" fileName="${sys:sitewhere.home}/logs/sitewhere.log"
+			append="false">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p [%c{1}] %m%n" />
+		</File>
 	</Appenders>
 	<Loggers>
-		<Root level="info">
+		<Root level="INFO">
 			<AppenderRef ref="Console" />
+			<AppenderRef ref="SiteWhere" />
 		</Root>
 	</Loggers>
 </Configuration>

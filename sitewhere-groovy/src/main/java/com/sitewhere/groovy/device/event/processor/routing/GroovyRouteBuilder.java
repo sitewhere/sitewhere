@@ -7,11 +7,8 @@
  */
 package com.sitewhere.groovy.device.event.processor.routing;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
@@ -19,6 +16,10 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 /**
  * Uses Groovy script to build routes for event processor routing.
@@ -28,7 +29,7 @@ import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
 public class GroovyRouteBuilder implements IRouteBuilder<String> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyRouteBuilder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected global Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -40,13 +41,13 @@ public class GroovyRouteBuilder implements IRouteBuilder<String> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.routing.IRouteBuilder#build(com.sitewhere
-	 * .spi.device.event.IDeviceEvent, com.sitewhere.spi.device.IDevice,
+	 * com.sitewhere.spi.device.event.processor.routing.IRouteBuilder#build(com.
+	 * sitewhere .spi.device.event.IDeviceEvent,
+	 * com.sitewhere.spi.device.IDevice,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public String build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException {
+	public String build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment) throws SiteWhereException {
 		Binding binding = new Binding();
 		binding.setVariable("logger", LOGGER);
 		binding.setVariable("event", event);

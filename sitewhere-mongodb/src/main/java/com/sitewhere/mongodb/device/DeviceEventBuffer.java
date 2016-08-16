@@ -13,7 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBCollection;
@@ -30,7 +31,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceEventBuffer implements IDeviceEventBuffer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceEventBuffer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Max number of puts that can be stored in the queue */
 	private static final int MAX_QUEUE_SIZE = 10000;
@@ -77,7 +78,8 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.device.IDeviceEventBuffer#add(com.mongodb.DBObject)
+	 * @see
+	 * com.sitewhere.mongodb.device.IDeviceEventBuffer#add(com.mongodb.DBObject)
 	 */
 	public void add(DBObject record) {
 		try {
@@ -113,8 +115,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 						return;
 					}
 
-					if ((count >= maxChunkSize)
-							|| ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
+					if ((count >= maxChunkSize) || ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
 						if (count > 0) {
 							try {
 								LOGGER.debug("Executing bulk insert of " + count + " event records.");

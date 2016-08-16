@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -53,15 +54,15 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
 
 /**
- * Parses the list of {@link IInboundEventSource} elements used in the communication
- * subsystem.
+ * Parses the list of {@link IInboundEventSource} elements used in the
+ * communication subsystem.
  * 
  * @author Derek
  */
 public class EventSourcesParser extends SiteWhereBeanListParser {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(EventSourcesParser.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
@@ -70,17 +71,16 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.Element,
-	 * org.springframework.beans.factory.xml.ParserContext)
+	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
+	 * Element, org.springframework.beans.factory.xml.ParserContext)
 	 */
 	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
+				NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+						.resolve(child.getNamespaceURI());
 				if (nested != null) {
 					nested.parse(child, context);
 					continue;
@@ -185,8 +185,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for MQTT event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for MQTT event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -208,8 +207,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createMqttEventReceiver(Element element) {
-		BeanDefinitionBuilder mqtt =
-				BeanDefinitionBuilder.rootBeanDefinition(getMqttEventReceiverImplementation());
+		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(getMqttEventReceiverImplementation());
 
 		Attr protocol = element.getAttributeNode("protocol");
 		if (protocol != null) {
@@ -284,8 +282,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for RabbitMQ event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for RabbitMQ event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -307,8 +304,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createRabbitMqEventReceiver(Element element) {
-		BeanDefinitionBuilder mqtt =
-				BeanDefinitionBuilder.rootBeanDefinition(getRabbitMqEventReceiverImplementation());
+		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(getRabbitMqEventReceiverImplementation());
 
 		Attr connectionUri = element.getAttributeNode("connectionUri");
 		if (connectionUri != null) {
@@ -360,8 +356,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for EvenHub event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for EvenHub event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -374,8 +369,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createEventHubEventReceiver(Element element) {
-		BeanDefinitionBuilder eh =
-				BeanDefinitionBuilder.rootBeanDefinition(EventHubInboundEventReceiver.class);
+		BeanDefinitionBuilder eh = BeanDefinitionBuilder.rootBeanDefinition(EventHubInboundEventReceiver.class);
 
 		Attr targetFqn = element.getAttributeNode("targetFqn");
 		if (targetFqn == null) {
@@ -449,8 +443,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for ActiveMQ event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for ActiveMQ event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -472,8 +465,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createActiveMQEventReceiver(Element element) {
-		BeanDefinitionBuilder mq =
-				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventReceiverImplementation());
+		BeanDefinitionBuilder mq = BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventReceiverImplementation());
 
 		Attr sourceId = element.getAttributeNode("sourceId");
 		if (sourceId == null) {
@@ -507,8 +499,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse an event source that uses ActiveMQ to connect to a remote broker and ingest
-	 * messages.
+	 * Parse an event source that uses ActiveMQ to connect to a remote broker
+	 * and ingest messages.
 	 * 
 	 * @param element
 	 * @param context
@@ -557,8 +549,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createActiveMQClientEventReceiver(Element element) {
-		BeanDefinitionBuilder mq =
-				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQClientEventReceiverImplementation());
+		BeanDefinitionBuilder mq = BeanDefinitionBuilder
+				.rootBeanDefinition(getActiveMQClientEventReceiverImplementation());
 
 		Attr remoteUri = element.getAttributeNode("remoteUri");
 		if (remoteUri == null) {
@@ -607,8 +599,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for socket event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -631,8 +622,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createSocketEventReceiver(Element element, ParserContext context) {
-		BeanDefinitionBuilder socket =
-				BeanDefinitionBuilder.rootBeanDefinition(getSocketEventReceiverImplementation());
+		BeanDefinitionBuilder socket = BeanDefinitionBuilder.rootBeanDefinition(getSocketEventReceiverImplementation());
 
 		Attr port = element.getAttributeNode("port");
 		if (port != null) {
@@ -651,7 +641,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse a socket interaction handler factory from the list of possibilities.
+	 * Parse a socket interaction handler factory from the list of
+	 * possibilities.
 	 * 
 	 * @param decoder
 	 * @param context
@@ -663,9 +654,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
+				NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+						.resolve(child.getNamespaceURI());
 				if (nested != null) {
 					BeanDefinition factoryBean = nested.parse(child, context);
 					String factoryName = nameGenerator.generateBeanName(factoryBean, context.getRegistry());
@@ -676,8 +666,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 					continue;
 				}
 			}
-			BinarySocketInteractionHandlers type =
-					BinarySocketInteractionHandlers.getByLocalName(child.getLocalName());
+			BinarySocketInteractionHandlers type = BinarySocketInteractionHandlers.getByLocalName(child.getLocalName());
 			if (type == null) {
 				continue;
 			}
@@ -704,15 +693,16 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse reference to an external {@link ISocketInteractionHandlerFactory} bean.
+	 * Parse reference to an external {@link ISocketInteractionHandlerFactory}
+	 * bean.
 	 * 
 	 * @param parent
 	 * @param decoder
 	 * @param context
 	 * @param source
 	 */
-	protected void parseInteractionHandlerFactoryReference(Element parent, Element decoder,
-			ParserContext context, BeanDefinitionBuilder source) {
+	protected void parseInteractionHandlerFactoryReference(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
 		Attr factoryRef = decoder.getAttributeNode("ref");
 		if (factoryRef == null) {
 			throw new RuntimeException("Socket interaction handler factory 'ref' attribute is required.");
@@ -722,7 +712,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse configuration for {@link ReadAllInteractionHandler} factory implementation.
+	 * Parse configuration for {@link ReadAllInteractionHandler} factory
+	 * implementation.
 	 * 
 	 * @param parent
 	 * @param decoder
@@ -731,10 +722,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 */
 	protected void parseReadAllFactory(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
-		LOGGER.debug(
-				"Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(ReadAllInteractionHandler.Factory.class);
+		LOGGER.debug("Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder
+				.rootBeanDefinition(ReadAllInteractionHandler.Factory.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -742,7 +732,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse configuration for {@link HttpInteractionHandler} factory implementation.
+	 * Parse configuration for {@link HttpInteractionHandler} factory
+	 * implementation.
 	 * 
 	 * @param parent
 	 * @param decoder
@@ -752,8 +743,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	protected void parseHttpFactory(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring HTTP socket interaction handler factory for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(HttpInteractionHandler.Factory.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(HttpInteractionHandler.Factory.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -772,8 +762,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	protected void parseGroovyFactory(Element parent, Element element, ParserContext context,
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring Groovy socket interaction handler factory for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(GroovySocketInteractionHandler.Factory.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder
+				.rootBeanDefinition(GroovySocketInteractionHandler.Factory.class);
 		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 		Attr scriptPath = element.getAttributeNode("scriptPath");
@@ -814,8 +804,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException(
-					"No event decoder specified for socket event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -880,8 +869,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		} else if ("binary".equals(type)) {
 			source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 		} else {
-			throw new RuntimeException(
-					"Invalid 'payloadType' attribute specified for web socket event source.");
+			throw new RuntimeException("Invalid 'payloadType' attribute specified for web socket event source.");
 		}
 
 		// Verify that a sourceId was provided and set it on the bean.
@@ -922,16 +910,14 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition createWebSocketEventReceiver(String type, Element element,
-			ParserContext context) {
+	protected AbstractBeanDefinition createWebSocketEventReceiver(String type, Element element, ParserContext context) {
 		BeanDefinitionBuilder receiver;
 		if ("string".equals(type)) {
 			receiver = BeanDefinitionBuilder.rootBeanDefinition(StringWebSocketEventReceiver.class);
 		} else if ("binary".equals(type)) {
 			receiver = BeanDefinitionBuilder.rootBeanDefinition(BinaryWebSocketEventReceiver.class);
 		} else {
-			throw new RuntimeException(
-					"Invalid 'payloadType' attribute specified for web socket event source.");
+			throw new RuntimeException("Invalid 'payloadType' attribute specified for web socket event source.");
 		}
 
 		Attr webSocketUrl = element.getAttributeNode("webSocketUrl");
@@ -1019,8 +1005,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseHazelcastQueueEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(DecodedInboundEventSource.class);
+		BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(DecodedInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -1046,10 +1031,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element,
-			ParserContext context) {
-		BeanDefinitionBuilder receiver =
-				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
+	protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder receiver = BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
 		return receiver.getBeanDefinition();
 	}
 
@@ -1061,14 +1044,12 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @param source
 	 * @return
 	 */
-	protected boolean parseBinaryDecoder(Element parent, ParserContext context,
-			BeanDefinitionBuilder source) {
+	protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
+				NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+						.resolve(child.getNamespaceURI());
 				if (nested != null) {
 					BeanDefinition decoderBean = nested.parse(child, context);
 					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
@@ -1118,14 +1099,12 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 * @param source
 	 * @return
 	 */
-	protected boolean parseStringDecoder(Element parent, ParserContext context,
-			BeanDefinitionBuilder source) {
+	protected boolean parseStringDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
+				NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+						.resolve(child.getNamespaceURI());
 				if (nested != null) {
 					BeanDefinition decoderBean = nested.parse(child, context);
 					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
@@ -1168,10 +1147,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 */
 	protected void parseProtobufDecoder(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
-		LOGGER.debug(
-				"Configuring SiteWhere Google Protocol Buffer event decoder for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(ProtobufDeviceEventDecoder.class);
+		LOGGER.debug("Configuring SiteWhere Google Protocol Buffer event decoder for " + parent.getLocalName());
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ProtobufDeviceEventDecoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -1189,8 +1166,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	protected void parseJsonDeviceRequestDecoder(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring SiteWhere JSON device request decoder for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(JsonDeviceRequestDecoder.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonDeviceRequestDecoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -1270,8 +1246,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	protected void parseGroovyStringDecoder(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring Groovy String decoder for " + parent.getLocalName());
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(GroovyStringEventDecoder.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyStringEventDecoder.class);
 		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 		Attr scriptPath = decoder.getAttributeNode("scriptPath");
@@ -1313,8 +1288,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	protected void parseEventSourceId(Element element, BeanDefinitionBuilder builder) {
 		Attr sourceId = element.getAttributeNode("sourceId");
 		if (sourceId == null) {
-			throw new RuntimeException(
-					"No 'sourceId' attribute specified for event source: " + element.toString());
+			throw new RuntimeException("No 'sourceId' attribute specified for event source: " + element.toString());
 		}
 		builder.addPropertyValue("sourceId", sourceId.getValue());
 	}
@@ -1398,7 +1372,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		JsonDeviceRequestDecoder("json-device-request-decoder"),
 
 		/** SiteWhere JSON batch decoder */
-		@Deprecated JsonEventDecoder("json-event-decoder"),
+		@Deprecated
+		JsonEventDecoder("json-event-decoder"),
 
 		/** SiteWhere JSON batch decoder */
 		JsonBatchEventDecoder("json-batch-event-decoder"),
@@ -1482,13 +1457,22 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	 */
 	public static enum BinarySocketInteractionHandlers {
 
-		/** Reference to a socket interaction handler factory defined in a Spring bean */
+		/**
+		 * Reference to a socket interaction handler factory defined in a Spring
+		 * bean
+		 */
 		InteractionHandlerFactoryReference("interaction-handler-factory"),
 
-		/** Produces interaction handler that reads all data from the client socket */
+		/**
+		 * Produces interaction handler that reads all data from the client
+		 * socket
+		 */
 		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory"),
 
-		/** Produces interaction handler that reads HTTP data from the client socket */
+		/**
+		 * Produces interaction handler that reads HTTP data from the client
+		 * socket
+		 */
 		HttpInteractionHandlerFactory("http-interaction-handler-factory"),
 
 		/** Produces interaction handler uses Groovy to interact with socket */

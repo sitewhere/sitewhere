@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -24,15 +25,15 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a JsonNode
- * payload to a Groovy script.
+ * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a
+ * JsonNode payload to a Groovy script.
  * 
  * @author Derek
  */
 public class GroovyJsonDecoder implements IDeviceEventDecoder<JsonNode> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyStringEventDecoder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected global Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -44,8 +45,8 @@ public class GroovyJsonDecoder implements IDeviceEventDecoder<JsonNode> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
-	 * java.util.Map)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+	 * lang.Object, java.util.Map)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

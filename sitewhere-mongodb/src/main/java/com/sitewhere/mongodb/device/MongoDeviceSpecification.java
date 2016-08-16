@@ -7,7 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,7 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecification> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MongoDeviceSpecification.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Property for unique token */
 	public static final String PROP_TOKEN = "token";

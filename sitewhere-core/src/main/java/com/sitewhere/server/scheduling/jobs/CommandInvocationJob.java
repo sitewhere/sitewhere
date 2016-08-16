@@ -11,7 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -31,14 +32,15 @@ import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Creates an {@link IDeviceCommandInvocation} as the result of a Quarz schedule.
+ * Creates an {@link IDeviceCommandInvocation} as the result of a Quarz
+ * schedule.
  * 
  * @author Derek
  */
 public class CommandInvocationJob implements Job {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(CommandInvocationJob.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Assignment token */
 	private String assignmentToken;
@@ -64,9 +66,8 @@ public class CommandInvocationJob implements Job {
 			throw new JobExecutionException("Command token not provided.");
 		}
 		try {
-			ITenant tenant =
-					SiteWhere.getServer().getTenantManagement().getTenantById(
-							context.getScheduler().getSchedulerName());
+			ITenant tenant = SiteWhere.getServer().getTenantManagement()
+					.getTenantById(context.getScheduler().getSchedulerName());
 			IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceEventManagement events = SiteWhere.getServer().getDeviceEventManagement(tenant);
 			IDeviceCommand command = devices.getDeviceCommandByToken(getCommandToken());

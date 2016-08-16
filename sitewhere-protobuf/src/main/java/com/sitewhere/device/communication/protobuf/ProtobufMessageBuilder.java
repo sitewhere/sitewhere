@@ -10,7 +10,8 @@ package com.sitewhere.device.communication.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
@@ -32,10 +33,11 @@ import com.sitewhere.spi.tenant.ITenant;
 public class ProtobufMessageBuilder {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ProtobufMessageBuilder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
-	 * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at the
+	 * Create a protobuf message for an {@link IDeviceCommandExecution} targeted
+	 * at the
 	 * 
 	 * @param execution
 	 * @param nested
@@ -46,17 +48,16 @@ public class ProtobufMessageBuilder {
 	 */
 	public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 			IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
-		IDeviceSpecification specification =
-				SiteWhere.getServer().getDeviceManagement(tenant).getDeviceSpecificationByToken(
-						execution.getCommand().getSpecificationToken());
+		IDeviceSpecification specification = SiteWhere.getServer().getDeviceManagement(tenant)
+				.getDeviceSpecificationByToken(execution.getCommand().getSpecificationToken());
 		DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification, tenant);
 		LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
 		Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			Descriptors.FileDescriptor filedesc = Descriptors.FileDescriptor.buildFrom(fdproto, fdescs);
-			Descriptors.Descriptor mdesc =
-					filedesc.findMessageTypeByName(ProtobufNaming.getSpecificationIdentifier(specification));
+			Descriptors.Descriptor mdesc = filedesc
+					.findMessageTypeByName(ProtobufNaming.getSpecificationIdentifier(specification));
 
 			// Create the header message.
 			Descriptors.Descriptor header = mdesc.findNestedTypeByName(ProtobufNaming.HEADER_MSG_NAME);
@@ -64,19 +65,18 @@ public class ProtobufMessageBuilder {
 
 			// Set enum value based on command.
 			Descriptors.EnumDescriptor enumDesc = mdesc.findEnumTypeByName(ProtobufNaming.COMMAND_TYPES_ENUM);
-			Descriptors.EnumValueDescriptor enumValue =
-					enumDesc.findValueByName(ProtobufNaming.getCommandEnumName(execution.getCommand()));
+			Descriptors.EnumValueDescriptor enumValue = enumDesc
+					.findValueByName(ProtobufNaming.getCommandEnumName(execution.getCommand()));
 			if (enumValue == null) {
-				throw new SiteWhereException("No enum value found for command: "
-						+ execution.getCommand().getName());
+				throw new SiteWhereException("No enum value found for command: " + execution.getCommand().getName());
 			}
 			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_COMMAND_FIELD_NAME), enumValue);
 			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME),
 					execution.getInvocation().getId());
 
 			if (nested.getNested() != null) {
-				LOGGER.debug("Targeting nested device with specification: "
-						+ nested.getNested().getSpecificationToken() + " at path " + nested.getPath());
+				LOGGER.debug("Targeting nested device with specification: " + nested.getNested().getSpecificationToken()
+						+ " at path " + nested.getPath());
 				headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME),
 						nested.getPath());
 				headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME),
@@ -96,14 +96,14 @@ public class ProtobufMessageBuilder {
 				Object value = execution.getParameters().get(name);
 				Descriptors.FieldDescriptor field = command.findFieldByName(name);
 				if (field == null) {
-					throw new SiteWhereException("Command parameter '" + name
-							+ "' not found in specification: ");
+					throw new SiteWhereException("Command parameter '" + name + "' not found in specification: ");
 				}
 				try {
 					cbuilder.setField(field, value);
 				} catch (IllegalArgumentException iae) {
-					LOGGER.error("Error setting field '" + name + "' with object of type: "
-							+ value.getClass().getName(), iae);
+					LOGGER.error(
+							"Error setting field '" + name + "' with object of type: " + value.getClass().getName(),
+							iae);
 				}
 			}
 			DynamicMessage cmessage = cbuilder.build();
@@ -119,15 +119,16 @@ public class ProtobufMessageBuilder {
 	}
 
 	/**
-	 * Gets a file descriptor for protobuf representation of {@link IDeviceSpecification}.
+	 * Gets a file descriptor for protobuf representation of
+	 * {@link IDeviceSpecification}.
 	 * 
 	 * @param specification
 	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(
-			IDeviceSpecification specification, ITenant tenant) throws SiteWhereException {
+	protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceSpecification specification,
+			ITenant tenant) throws SiteWhereException {
 		return ProtobufSpecificationBuilder.createFileDescriptor(specification, tenant);
 	}
 }

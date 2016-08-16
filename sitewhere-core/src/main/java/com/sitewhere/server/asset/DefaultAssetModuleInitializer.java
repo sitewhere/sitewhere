@@ -10,7 +10,8 @@ package com.sitewhere.server.asset;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
@@ -37,7 +38,7 @@ import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultAssetModuleInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Indiates whether model should be initialized if no console is available

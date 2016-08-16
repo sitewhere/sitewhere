@@ -9,25 +9,26 @@ package com.sitewhere.device.communication;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Handlers for event processing logic. These methods will eventually be refactored into
- * framework handlers.
+ * Handlers for event processing logic. These methods will eventually be
+ * refactored into framework handlers.
  * 
  * @author Derek
  */
 public class EventProcessingLogic {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(EventProcessingLogic.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
-	 * Common processing logic for delivering a raw payload to event receiver to be
-	 * decoded. This version logs an error if decoding fails.
+	 * Common processing logic for delivering a raw payload to event receiver to
+	 * be decoded. This version logs an error if decoding fails.
 	 * 
 	 * @param receiver
 	 * @param payload
@@ -43,16 +44,17 @@ public class EventProcessingLogic {
 	}
 
 	/**
-	 * Common processing logic for delivering a raw payload to event receiver to be
-	 * decoded. This version bubbles decoder exceptions to allow handling in the caller.
+	 * Common processing logic for delivering a raw payload to event receiver to
+	 * be decoded. This version bubbles decoder exceptions to allow handling in
+	 * the caller.
 	 * 
 	 * @param receiver
 	 * @param payload
 	 * @param metadata
 	 * @throws EventDecodeException
 	 */
-	public static <T> void processRawPayloadWithExceptionHandling(IInboundEventReceiver<T> receiver,
-			T payload, Map<String, String> metadata) throws EventDecodeException {
+	public static <T> void processRawPayloadWithExceptionHandling(IInboundEventReceiver<T> receiver, T payload,
+			Map<String, String> metadata) throws EventDecodeException {
 		receiver.onEventPayloadReceived(payload, metadata);
 	}
 }

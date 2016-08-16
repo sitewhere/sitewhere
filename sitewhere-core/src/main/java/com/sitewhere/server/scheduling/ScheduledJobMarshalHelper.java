@@ -10,7 +10,8 @@ package com.sitewhere.server.scheduling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionException;
 
 import com.sitewhere.SiteWhere;
@@ -36,8 +37,8 @@ import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows {@link ScheduledJob} model objects to be created
- * from {@link IScheduledJob} SPI objects.
+ * Configurable helper class that allows {@link ScheduledJob} model objects to
+ * be created from {@link IScheduledJob} SPI objects.
  * 
  * @author dadams
  */
@@ -45,7 +46,7 @@ public class ScheduledJobMarshalHelper {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(ScheduledJobMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
@@ -66,14 +67,13 @@ public class ScheduledJobMarshalHelper {
 	public ScheduledJobMarshalHelper(ITenant tenant, boolean includeContextInfo) {
 		this.tenant = tenant;
 		this.includeContextInfo = includeContextInfo;
-		this.assignmentHelper =
-				new DeviceAssignmentMarshalHelper(tenant).setIncludeDevice(true).setIncludeAsset(false);
+		this.assignmentHelper = new DeviceAssignmentMarshalHelper(tenant).setIncludeDevice(true).setIncludeAsset(false);
 		this.specificationHelper = new DeviceSpecificationMarshalHelper(tenant).setIncludeAsset(false);
 	}
 
 	/**
-	 * Convert an {@link IScheduledJob} to a {@link ScheduledJob} using the specified
-	 * marshaling parameters.
+	 * Convert an {@link IScheduledJob} to a {@link ScheduledJob} using the
+	 * specified marshaling parameters.
 	 * 
 	 * @param source
 	 * @return
@@ -112,8 +112,8 @@ public class ScheduledJobMarshalHelper {
 	}
 
 	/**
-	 * Includes contextual information specific to a command invocation. This data is
-	 * useful for displaying the job in a user interface.
+	 * Includes contextual information specific to a command invocation. This
+	 * data is useful for displaying the job in a user interface.
 	 * 
 	 * @param job
 	 * @throws SiteWhereException
@@ -122,8 +122,7 @@ public class ScheduledJobMarshalHelper {
 		String assnToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN);
 		String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 		if (assnToken != null) {
-			IDeviceAssignment assignment =
-					getDeviceManagement(getTenant()).getDeviceAssignmentByToken(assnToken);
+			IDeviceAssignment assignment = getDeviceManagement(getTenant()).getDeviceAssignmentByToken(assnToken);
 			if (assignment != null) {
 				job.getContext().put("assignment",
 						getAssignmentHelper().convert(assignment, getAssetModuleManager(getTenant())));
@@ -135,8 +134,7 @@ public class ScheduledJobMarshalHelper {
 				Map<String, String> paramValues = new HashMap<String, String>();
 				for (String key : job.getJobConfiguration().keySet()) {
 					if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
-						String paramKey =
-								key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
+						String paramKey = key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
 						paramValues.put(paramKey, job.getJobConfiguration().get(key));
 					}
 				}
@@ -154,25 +152,23 @@ public class ScheduledJobMarshalHelper {
 	}
 
 	/**
-	 * Includes contextual information specific to a batch command invocation. This data
-	 * is useful for displaying the job in a user interface.
+	 * Includes contextual information specific to a batch command invocation.
+	 * This data is useful for displaying the job in a user interface.
 	 * 
 	 * @param job
 	 * @throws SiteWhereException
 	 */
 	protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
-		String specToken =
-				job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN);
+		String specToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN);
 		if (specToken != null) {
-			IDeviceSpecification specification =
-					getDeviceManagement(getTenant()).getDeviceSpecificationByToken(specToken);
+			IDeviceSpecification specification = getDeviceManagement(getTenant())
+					.getDeviceSpecificationByToken(specToken);
 			if (specification != null) {
 				job.getContext().put("specification",
 						getSpecificationHelper().convert(specification, getAssetModuleManager(getTenant())));
 			}
 			try {
-				BatchCommandForCriteriaRequest criteria =
-						BatchCommandInvocationJob.parse(job.getJobConfiguration());
+				BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJob.parse(job.getJobConfiguration());
 				String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(getTenant()), "..");
 				job.getContext().put("criteriaHtml", html);
 			} catch (JobExecutionException e) {
@@ -186,8 +182,7 @@ public class ScheduledJobMarshalHelper {
 				Map<String, String> paramValues = new HashMap<String, String>();
 				for (String key : job.getJobConfiguration().keySet()) {
 					if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
-						String paramKey =
-								key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
+						String paramKey = key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
 						paramValues.put(paramKey, job.getJobConfiguration().get(key));
 					}
 				}

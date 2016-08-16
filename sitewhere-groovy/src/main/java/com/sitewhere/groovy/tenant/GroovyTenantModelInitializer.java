@@ -7,7 +7,8 @@
  */
 package com.sitewhere.groovy.tenant;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -22,15 +23,15 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link ITenantModelInitializer} that delegates creation logic to a
- * Groovy script.
+ * Implementation of {@link ITenantModelInitializer} that delegates creation
+ * logic to a Groovy script.
  * 
  * @author Derek
  */
 public class GroovyTenantModelInitializer implements ITenantModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyTenantModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -42,8 +43,8 @@ public class GroovyTenantModelInitializer implements ITenantModelInitializer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.sitewhere.
-	 * spi.tenant.ITenantManagement)
+	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
+	 * sitewhere. spi.tenant.ITenantManagement)
 	 */
 	@Override
 	public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
@@ -52,7 +53,8 @@ public class GroovyTenantModelInitializer implements ITenantModelInitializer {
 		binding.setVariable("tenantBuilder", new TenantManagementRequestBuilder(tenantManagement));
 
 		try {
-			// Use the system account for logging "created by" on created elements.
+			// Use the system account for logging "created by" on created
+			// elements.
 			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 		} catch (ResourceException e) {

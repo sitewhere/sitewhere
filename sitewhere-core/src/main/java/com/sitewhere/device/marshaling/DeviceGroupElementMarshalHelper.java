@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.Device;
@@ -21,20 +22,23 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows {@link DeviceGroupElement} model objects to be
- * created from {@link IDeviceGroupElement} SPI objects.
+ * Configurable helper class that allows {@link DeviceGroupElement} model
+ * objects to be created from {@link IDeviceGroupElement} SPI objects.
  * 
  * @author dadams
  */
 public class DeviceGroupElementMarshalHelper {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceGroupElementMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
 
-	/** Indicates whether detailed device or device group information is to be included */
+	/**
+	 * Indicates whether detailed device or device group information is to be
+	 * included
+	 */
 	private boolean includeDetails = false;
 
 	/** Helper class for enriching device information */
@@ -42,9 +46,8 @@ public class DeviceGroupElementMarshalHelper {
 
 	public DeviceGroupElementMarshalHelper(ITenant tenant) {
 		this.tenant = tenant;
-		this.deviceHelper =
-				new DeviceMarshalHelper(tenant).setIncludeSpecification(true).setIncludeAsset(true).setIncludeAssignment(
-						true);
+		this.deviceHelper = new DeviceMarshalHelper(tenant).setIncludeSpecification(true).setIncludeAsset(true)
+				.setIncludeAssignment(true);
 	}
 
 	/**
@@ -66,9 +69,8 @@ public class DeviceGroupElementMarshalHelper {
 		if (isIncludeDetails()) {
 			switch (source.getType()) {
 			case Device: {
-				IDevice device =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(
-								source.getElementId());
+				IDevice device = SiteWhere.getServer().getDeviceManagement(tenant)
+						.getDeviceByHardwareId(source.getElementId());
 				if (device != null) {
 					Device inflated = deviceHelper.convert(device, manager);
 					result.setDevice(inflated);
@@ -78,9 +80,8 @@ public class DeviceGroupElementMarshalHelper {
 				break;
 			}
 			case Group: {
-				IDeviceGroup group =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceGroup(
-								source.getElementId());
+				IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(tenant)
+						.getDeviceGroup(source.getElementId());
 				if (group != null) {
 					DeviceGroup inflated = DeviceGroup.copy(group);
 					result.setDeviceGroup(inflated);

@@ -21,7 +21,8 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -45,7 +46,7 @@ public class HBaseUtils {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static final Logger LOGGER = Logger.getLogger(HBaseUtils.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Create or update primary record.
@@ -60,9 +61,8 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T createOrUpdate(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
-			T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
-					throws SiteWhereException {
+	public static <T> T createOrUpdate(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName, T entity,
+			String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
@@ -76,8 +76,7 @@ public class HBaseUtils {
 			}
 			table.put(put);
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create entity data for " + entity.getClass().getName(),
-					e);
+			throw new SiteWhereException("Unable to create entity data for " + entity.getClass().getName(), e);
 		} finally {
 			HBaseUtils.closeCleanly(table);
 		}
@@ -155,8 +154,8 @@ public class HBaseUtils {
 	}
 
 	/**
-	 * Get all matching records, sort them, and get matching pages. TODO: This is not
-	 * efficient since it always processes all records.
+	 * Get all matching records, sort them, and get matching pages. TODO: This
+	 * is not efficient since it always processes all records.
 	 * 
 	 * @param context
 	 * @param tableName
@@ -226,9 +225,8 @@ public class HBaseUtils {
 				}
 
 				if ((shouldAdd) && (payload != null)) {
-					T instance =
-							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload,
-									clazz);
+					T instance = PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload,
+							clazz);
 					if (!filter.isExcluded(instance)) {
 						results.add(instance);
 					}
@@ -257,9 +255,9 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T extends MetadataProviderEntity> T delete(IHBaseContext context,
-			IPayloadMarshaler marshaler, byte[] tableName, String token, boolean force,
-			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+	public static <T extends MetadataProviderEntity> T delete(IHBaseContext context, IPayloadMarshaler marshaler,
+			byte[] tableName, String token, boolean force, IRowKeyBuilder builder, Class<T> type)
+			throws SiteWhereException {
 		T existing = get(context, tableName, token, builder, type);
 		existing.setDeleted(true);
 
@@ -311,8 +309,8 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T forcedDelete(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
-			String token, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+	public static <T> T forcedDelete(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName, String token,
+			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
 		T existing = get(context, tableName, token, builder, type);
 
 		byte[] primary = builder.buildPrimaryKey(context, token);
@@ -338,8 +336,7 @@ public class HBaseUtils {
 	 * @param encoded
 	 * @throws SiteWhereException
 	 */
-	public static void addPayloadFields(PayloadEncoding encoding, Put put, byte[] encoded)
-			throws SiteWhereException {
+	public static void addPayloadFields(PayloadEncoding encoding, Put put, byte[] encoded) throws SiteWhereException {
 		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE, encoding.getIndicator());
 		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, encoded);
 	}
@@ -363,8 +360,7 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static HTableInterface getTableInterface(IHBaseContext context, byte[] tableName)
-			throws SiteWhereException {
+	public static HTableInterface getTableInterface(IHBaseContext context, byte[] tableName) throws SiteWhereException {
 		return (context.getTenant() == null) ? context.getClient().getTableInterface(tableName)
 				: context.getClient().getTableInterface(context.getTenant(), tableName);
 	}

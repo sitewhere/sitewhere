@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -28,15 +29,15 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows DeviceAssignment model objects to be created from
- * IDeviceAssignment SPI objects.
+ * Configurable helper class that allows DeviceAssignment model objects to be
+ * created from IDeviceAssignment SPI objects.
  * 
  * @author dadams
  */
 public class DeviceAssignmentMarshalHelper {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceAssignmentMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
@@ -65,8 +66,7 @@ public class DeviceAssignmentMarshalHelper {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public DeviceAssignment convert(IDeviceAssignment source, IAssetModuleManager manager)
-			throws SiteWhereException {
+	public DeviceAssignment convert(IDeviceAssignment source, IAssetModuleManager manager) throws SiteWhereException {
 		DeviceAssignment result = new DeviceAssignment();
 		result.setToken(source.getToken());
 		result.setActiveDate(source.getActiveDate());

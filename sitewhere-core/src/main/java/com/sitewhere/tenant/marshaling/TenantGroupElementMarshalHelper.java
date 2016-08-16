@@ -1,6 +1,7 @@
 package com.sitewhere.tenant.marshaling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -21,7 +22,7 @@ public class TenantGroupElementMarshalHelper {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(TenantGroupElementMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Indicates full tenant detail should be marshaled */
 	private boolean includeTenantDetails = false;

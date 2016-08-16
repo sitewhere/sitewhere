@@ -19,7 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.HazelcastInstance;
@@ -44,7 +45,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class TimeSeriesManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(TimeSeriesManager.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Map name for device event buckets */
 	private static final String MAP_BUCKETS = "com.sitewhere.events.DeviceEventBucket";

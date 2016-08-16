@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.DeviceAlert;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.DeviceLocation;
@@ -53,22 +54,22 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 
 /**
- * Decodes a message payload that was previously encoded using the Google Protocol Buffers
- * with the SiteWhere proto.
+ * Decodes a message payload that was previously encoded using the Google
+ * Protocol Buffers with the SiteWhere proto.
  * 
  * @author Derek
  */
 public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ProtobufDeviceEventDecoder.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
-	 * java.util.Map)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+	 * lang.Object, java.util.Map)
 	 */
 	@Override
 	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> payloadMetadata)
@@ -95,8 +96,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				}
 				request.setMetadata(metadata);
 
-				DecodedDeviceRequest<IDeviceRegistrationRequest> decoded =
-						new DecodedDeviceRequest<IDeviceRegistrationRequest>();
+				DecodedDeviceRequest<IDeviceRegistrationRequest> decoded = new DecodedDeviceRequest<IDeviceRegistrationRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -112,8 +112,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				request.setOriginatingEventId(header.getOriginator());
 				request.setResponse(ack.getMessage());
 
-				DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();
+				DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded = new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -128,8 +127,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
 				List<Measurement> measurements = dm.getMeasurementList();
 				for (Measurement current : measurements) {
-					request.addOrReplaceMeasurement(current.getMeasurementId(),
-							current.getMeasurementValue());
+					request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
 				}
 
 				List<Metadata> pbmeta = dm.getMetadataList();
@@ -145,8 +143,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 					request.setEventDate(new Date());
 				}
 
-				DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
+				DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -176,8 +173,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 					request.setEventDate(new Date());
 				}
 
-				DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
+				DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -207,8 +203,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 					request.setEventDate(new Date());
 				}
 
-				DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
+				DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -231,8 +226,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				}
 				request.setMetadata(metadata);
 
-				DecodedDeviceRequest<IDeviceStreamCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceStreamCreateRequest>();
+				DecodedDeviceRequest<IDeviceStreamCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStreamCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -262,8 +256,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 					request.setEventDate(new Date());
 				}
 
-				DecodedDeviceRequest<IDeviceStreamDataCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>();
+				DecodedDeviceRequest<IDeviceStreamDataCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}
@@ -279,8 +272,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				send.setStreamId(request.getStreamId());
 				send.setSequenceNumber(request.getSequenceNumber());
 
-				DecodedDeviceRequest<ISendDeviceStreamDataRequest> decoded =
-						new DecodedDeviceRequest<ISendDeviceStreamDataRequest>();
+				DecodedDeviceRequest<ISendDeviceStreamDataRequest> decoded = new DecodedDeviceRequest<ISendDeviceStreamDataRequest>();
 				if (header.hasOriginator()) {
 					decoded.setOriginator(header.getOriginator());
 				}

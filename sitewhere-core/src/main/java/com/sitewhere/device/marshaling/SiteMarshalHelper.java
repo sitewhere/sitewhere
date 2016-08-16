@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.Site;
@@ -28,7 +29,7 @@ public class SiteMarshalHelper {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(SiteMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;

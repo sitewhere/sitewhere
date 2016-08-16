@@ -7,10 +7,6 @@ springBoot {
     mainClass = 'com.sitewhere.web.SiteWhereWebApplication'
 }
 
-configurations {
-    compile.exclude module: 'spring-boot-starter-logging'
-}
-
 dependencies {
     compile project(':sitewhere-web')
 }

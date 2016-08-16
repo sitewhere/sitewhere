@@ -18,7 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -33,7 +34,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceEventBuffer implements IDeviceEventBuffer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceEventBuffer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Max number of puts that can be stored in the queue */
 	private static final int MAX_QUEUE_SIZE = 10000;
@@ -66,8 +67,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	 * @see com.sitewhere.hbase.device.IDeviceEventBuffer#start()
 	 */
 	public void start() throws SiteWhereException {
-		events =
-				context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
+		events = context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(new EventSender());
 	}
@@ -88,8 +88,8 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.hbase.device.IDeviceEventBuffer#add(org.apache.hadoop.hbase.client
-	 * .Put)
+	 * com.sitewhere.hbase.device.IDeviceEventBuffer#add(org.apache.hadoop.hbase
+	 * .client .Put)
 	 */
 	public void add(Put put) {
 		try {

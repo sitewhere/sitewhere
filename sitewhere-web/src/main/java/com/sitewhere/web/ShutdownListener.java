@@ -10,7 +10,8 @@ package com.sitewhere.web;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 
@@ -23,14 +24,13 @@ public class ShutdownListener implements ServletContextListener {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(ShutdownListener.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent
-	 * )
+	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
+	 * ServletContextEvent )
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
@@ -40,7 +40,8 @@ public class ShutdownListener implements ServletContextListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
+	 * @see
+	 * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
 	 * ServletContextEvent)
 	 */
 	@Override

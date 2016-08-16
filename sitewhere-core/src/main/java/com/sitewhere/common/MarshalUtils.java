@@ -7,7 +7,8 @@
  */
 package com.sitewhere.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +19,7 @@ public class MarshalUtils {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(MarshalUtils.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Singleton object mapper for JSON marshaling */
 	private static ObjectMapper MAPPER = new ObjectMapper();
@@ -42,8 +43,7 @@ public class MarshalUtils {
 		try {
 			return MAPPER.writeValueAsBytes(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
-					e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 		}
 	}
 
@@ -58,8 +58,7 @@ public class MarshalUtils {
 		try {
 			return MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
-					e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 		}
 	}
 
@@ -74,8 +73,7 @@ public class MarshalUtils {
 		try {
 			return PRETTY_MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
-					e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 		}
 	}
 

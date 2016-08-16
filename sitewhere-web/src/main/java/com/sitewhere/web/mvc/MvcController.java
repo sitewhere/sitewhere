@@ -14,7 +14,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +38,7 @@ import com.sitewhere.version.VersionHelper;
 public class MvcController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MvcController.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Version information sent in request */
 	public static final String DATA_VERSION = "version";
@@ -90,8 +91,8 @@ public class MvcController {
 	}
 
 	/**
-	 * Create data structure and common objects passed to pages. Require a tenant is
-	 * chosen for the user.
+	 * Create data structure and common objects passed to pages. Require a
+	 * tenant is chosen for the user.
 	 * 
 	 * @param request
 	 * @return

@@ -10,7 +10,8 @@ package com.sitewhere.device.marshaling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -23,15 +24,15 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows {@link DeviceCommandInvocation} model objects to
- * be created from {@link IDeviceCommandInvocation} SPI objects.
+ * Configurable helper class that allows {@link DeviceCommandInvocation} model
+ * objects to be created from {@link IDeviceCommandInvocation} SPI objects.
  * 
  * @author dadams
  */
 public class DeviceCommandInvocationMarshalHelper {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceCommandInvocationMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
@@ -52,8 +53,9 @@ public class DeviceCommandInvocationMarshalHelper {
 	}
 
 	/**
-	 * Convert an {@link IDeviceCommandInvocation} to a {@link DeviceCommandInvocation},
-	 * populating command information if requested so the marshaled data includes it.
+	 * Convert an {@link IDeviceCommandInvocation} to a
+	 * {@link DeviceCommandInvocation}, populating command information if
+	 * requested so the marshaled data includes it.
 	 * 
 	 * @param source
 	 * @return
@@ -76,8 +78,7 @@ public class DeviceCommandInvocationMarshalHelper {
 			}
 			DeviceCommand command = commandsByToken.get(source.getCommandToken());
 			if (command == null) {
-				IDeviceCommand found =
-						getDeviceManagement(tenant).getDeviceCommandByToken(source.getCommandToken());
+				IDeviceCommand found = getDeviceManagement(tenant).getDeviceCommandByToken(source.getCommandToken());
 				if (found == null) {
 					LOGGER.warn("Device invocation references a non-existent command token.");
 					return result;

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.PollingInboundEventReceiver;
@@ -32,7 +33,7 @@ import groovy.util.ScriptException;
 public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(PollingRestInboundEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Groovy variable that contains rest client helper class */
 	private static final String VAR_REST_CLIENT = "rest";
@@ -72,7 +73,8 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.PollingInboundEventReceiver#stop()
+	 * @see
+	 * com.sitewhere.device.communication.PollingInboundEventReceiver#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -82,7 +84,8 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
+	 * @see
+	 * com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -111,20 +114,19 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * onEventPayloadReceived (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
 		getEventSource().onEncodedEventReceived(this, payload, metadata);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {

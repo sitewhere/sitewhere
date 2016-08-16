@@ -7,7 +7,8 @@
  */
 package com.sitewhere.groovy.user;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -22,15 +23,15 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IUserModelInitializer} that delegates creation logic to a
- * Groovy script.
+ * Implementation of {@link IUserModelInitializer} that delegates creation logic
+ * to a Groovy script.
  * 
  * @author Derek
  */
 public class GroovyUserModelInitializer implements IUserModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyUserModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -41,9 +42,8 @@ public class GroovyUserModelInitializer implements IUserModelInitializer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.sitewhere.spi.
-	 * user.IUserManagement)
+	 * @see com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.
+	 * sitewhere.spi. user.IUserManagement)
 	 */
 	@Override
 	public void initialize(IUserManagement userManagement) throws SiteWhereException {
@@ -52,7 +52,8 @@ public class GroovyUserModelInitializer implements IUserModelInitializer {
 		binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
 		try {
-			// Use the system account for logging "created by" on created elements.
+			// Use the system account for logging "created by" on created
+			// elements.
 			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 		} catch (ResourceException e) {

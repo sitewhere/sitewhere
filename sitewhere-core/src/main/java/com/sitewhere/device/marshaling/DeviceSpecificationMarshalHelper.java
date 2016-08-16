@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -22,20 +23,23 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows {@link DeviceSpecification} model objects to be
- * created from {@link IDeviceSpecification} SPI objects.
+ * Configurable helper class that allows {@link DeviceSpecification} model
+ * objects to be created from {@link IDeviceSpecification} SPI objects.
  * 
  * @author dadams
  */
 public class DeviceSpecificationMarshalHelper {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceSpecificationMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
 
-	/** Indicates whether device specification asset information is to be included */
+	/**
+	 * Indicates whether device specification asset information is to be
+	 * included
+	 */
 	private boolean includeAsset = true;
 
 	public DeviceSpecificationMarshalHelper(ITenant tenant) {
@@ -56,8 +60,7 @@ public class DeviceSpecificationMarshalHelper {
 		MetadataProviderEntity.copy(source, spec);
 		spec.setToken(source.getToken());
 		spec.setName(source.getName());
-		HardwareAsset asset =
-				(HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+		HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 		if (asset == null) {
 			LOGGER.warn("Device specification has reference to non-existent asset.");
 			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);

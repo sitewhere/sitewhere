@@ -9,7 +9,8 @@ package com.sitewhere.server.tenant;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
@@ -21,15 +22,15 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
- * Used to load a default tenant into an empty tenant model. This acts as a bootstrap for
- * systems that have just been installed.
+ * Used to load a default tenant into an empty tenant model. This acts as a
+ * bootstrap for systems that have just been installed.
  * 
  * @author Derek
  */
 public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultTenantModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default tenant id */
 	public static final String DEFAULT_TENANT_ID = "default";
@@ -38,8 +39,7 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 	public static final String DEFAULT_TENANT_NAME = "Default Tenant";
 
 	/** Default tenant logo URL */
-	public static final String DEFAULT_TENANT_LOGO =
-			"https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
+	public static final String DEFAULT_TENANT_LOGO = "https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
 
 	/** Default tenant auth token */
 	public static final String DEFAULT_TENANT_TOKEN = "sitewhere1234567890";
@@ -51,8 +51,8 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.sitewhere.
-	 * spi.tenant.ITenantManagement)
+	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
+	 * sitewhere. spi.tenant.ITenantManagement)
 	 */
 	@Override
 	public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
@@ -65,8 +65,7 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 			treq.setId(DEFAULT_TENANT_ID);
 			treq.setName(DEFAULT_TENANT_NAME);
 			treq.setLogoUrl(DEFAULT_TENANT_LOGO);
-			treq.setAuthorizedUserIds(Arrays.asList(new String[] {
-					DefaultUserModelInitializer.DEFAULT_USERNAME,
+			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DefaultUserModelInitializer.DEFAULT_USERNAME,
 					DefaultUserModelInitializer.NOADMIN_CREDENTIAL }));
 			treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
 			tenant = tenantManagement.createTenant(treq);

@@ -26,7 +26,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Base58;
@@ -78,13 +79,14 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 public class HBaseDeviceEvent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceEvent.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Size of a row in milliseconds */
 	private static final long ROW_IN_MS = (1 << 24);
 
 	/**
-	 * List measurements associated with an assignment based on the given criteria.
+	 * List measurements associated with an assignment based on the given
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -107,21 +109,18 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceMeasurements createDeviceMeasurements(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request)
-					throws SiteWhereException {
+	public static IDeviceMeasurements createDeviceMeasurements(IHBaseContext context, IDeviceAssignment assignment,
+			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
 		byte[] rowkey = getRowKey(assnKey, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.Measurement, time, context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.Measurement, time, context.getPayloadMarshaler().getEncoding());
 
 		// Create measurements object and marshal to JSON.
-		DeviceMeasurements measurements =
-				SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
+		DeviceMeasurements measurements = SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
 		String id = getEncodedEventId(rowkey, qualifier);
 		measurements.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceMeasurements(measurements);
@@ -139,7 +138,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * List measurements associated with an assignment based on the given criteria.
+	 * List measurements associated with an assignment based on the given
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -147,10 +147,10 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceMeasurements> listDeviceMeasurements(IHBaseContext context,
-			String assnToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.Measurement, criteria);
+	public static SearchResults<IDeviceMeasurements> listDeviceMeasurements(IHBaseContext context, String assnToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.Measurement,
+				criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -165,8 +165,7 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(IHBaseContext context,
 			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForSite(context, siteToken, EventRecordType.Measurement, criteria);
+		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.Measurement, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -183,8 +182,7 @@ public class HBaseDeviceEvent {
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.Location, time, context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.Location, time, context.getPayloadMarshaler().getEncoding());
 
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 		String id = getEncodedEventId(rowkey, qualifier);
@@ -214,8 +212,7 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceLocation> listDeviceLocations(IHBaseContext context, String assnToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.Location, criteria);
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.Location, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -228,10 +225,9 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceLocation> listDeviceLocationsForSite(IHBaseContext context,
-			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForSite(context, siteToken, EventRecordType.Location, criteria);
+	public static SearchResults<IDeviceLocation> listDeviceLocationsForSite(IHBaseContext context, String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.Location, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -248,8 +244,7 @@ public class HBaseDeviceEvent {
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.Alert, time, context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.Alert, time, context.getPayloadMarshaler().getEncoding());
 
 		// Create alert and marshal to JSON.
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
@@ -280,8 +275,7 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceAlert> listDeviceAlerts(IHBaseContext context, String assnToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.Alert, criteria);
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.Alert, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -309,8 +303,8 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceStreamData createDeviceStreamData(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+	public static IDeviceStreamData createDeviceStreamData(IHBaseContext context, IDeviceAssignment assignment,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 
 		DeviceStreamData sdata = SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
 
@@ -321,8 +315,7 @@ public class HBaseDeviceEvent {
 		// Save event with reference to stream key.
 		long time = getEventTime(request);
 		byte[] eventKey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.StreamData, time, context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.StreamData, time, context.getPayloadMarshaler().getEncoding());
 
 		// Set the unique id.
 		String id = getEncodedEventId(eventKey, qualifier);
@@ -340,9 +333,9 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * List device stream data that meets the given criteria. Note that the actual blob
-	 * data is not stored with the event, so it has to be merged into the results list on
-	 * the fly.
+	 * List device stream data that meets the given criteria. Note that the
+	 * actual blob data is not stored with the event, so it has to be merged
+	 * into the results list on the fly.
 	 * 
 	 * @param context
 	 * @param assignment
@@ -353,13 +346,13 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceStreamData> listDeviceStreamData(IHBaseContext context,
 			IDeviceAssignment assignment, String streamId, IDateRangeSearchCriteria criteria)
-					throws SiteWhereException {
-		// First, get data for all streams since streamId is not in the event key.
-		DateRangeSearchCriteria allCriteria =
-				new DateRangeSearchCriteria(1, 0, criteria.getStartDate(), criteria.getEndDate());
-		Pager<EventMatch> allMatches =
-				getEventRowsForAssignment(context, assignment.getToken(), EventRecordType.StreamData,
-						allCriteria);
+			throws SiteWhereException {
+		// First, get data for all streams since streamId is not in the event
+		// key.
+		DateRangeSearchCriteria allCriteria = new DateRangeSearchCriteria(1, 0, criteria.getStartDate(),
+				criteria.getEndDate());
+		Pager<EventMatch> allMatches = getEventRowsForAssignment(context, assignment.getToken(),
+				EventRecordType.StreamData, allCriteria);
 		SearchResults<IDeviceStreamData> allResults = convertMatches(context, allMatches);
 
 		// Manually match for stream id.
@@ -386,17 +379,16 @@ public class HBaseDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceCommandInvocation createDeviceCommandInvocation(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceCommand command,
-			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+			IDeviceAssignment assignment, IDeviceCommand command, IDeviceCommandInvocationCreateRequest request)
+			throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.CommandInvocation, time,
-						context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.CommandInvocation, time,
+				context.getPayloadMarshaler().getEncoding());
 
 		// Create a command invocation and marshal to JSON.
-		DeviceCommandInvocation ci =
-				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
+		DeviceCommandInvocation ci = SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command,
+				request);
 		String id = getEncodedEventId(rowkey, qualifier);
 		ci.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandInvocation(ci);
@@ -421,7 +413,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * List command invocations associated with an assignment based on the given criteria.
+	 * List command invocations associated with an assignment based on the given
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -431,8 +424,8 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IHBaseContext context,
 			String assnToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.CommandInvocation, criteria);
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.CommandInvocation,
+				criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -445,11 +438,10 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
-			IHBaseContext context, String siteToken, IDateRangeSearchCriteria criteria)
-					throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForSite(context, siteToken, EventRecordType.CommandInvocation, criteria);
+	public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(IHBaseContext context,
+			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.CommandInvocation,
+				criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -462,12 +454,11 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceStateChange createDeviceStateChange(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+	public static IDeviceStateChange createDeviceStateChange(IHBaseContext context, IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.StateChange, time, context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.StateChange, time, context.getPayloadMarshaler().getEncoding());
 
 		// Create a state change and marshal to JSON.
 		DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
@@ -488,7 +479,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * List state changes associated with an assignment based on the given criteria.
+	 * List state changes associated with an assignment based on the given
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -496,10 +488,10 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceStateChange> listDeviceStateChanges(IHBaseContext context,
-			String assnToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.StateChange, criteria);
+	public static SearchResults<IDeviceStateChange> listDeviceStateChanges(IHBaseContext context, String assnToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.StateChange,
+				criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -514,8 +506,7 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceStateChange> listDeviceStateChangesForSite(IHBaseContext context,
 			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForSite(context, siteToken, EventRecordType.StateChange, criteria);
+		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.StateChange, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -529,13 +520,11 @@ public class HBaseDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceCommandResponse createDeviceCommandResponse(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceCommandResponseCreateRequest request)
-					throws SiteWhereException {
+			IDeviceAssignment assignment, IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(context, assignment, time);
-		byte[] qualifier =
-				getQualifier(EventRecordType.CommandResponse, time,
-						context.getPayloadMarshaler().getEncoding());
+		byte[] qualifier = getQualifier(EventRecordType.CommandResponse, time,
+				context.getPayloadMarshaler().getEncoding());
 
 		// Create a state change and marshal to JSON.
 		DeviceCommandResponse cr = SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
@@ -552,17 +541,18 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Creates a link to the command response by incrementing(or creating) a counter and
-	 * sequential entries under the original invocation. TODO: Note that none of this is
-	 * transactional, so it is currently possible for responses not to be correctly linked
-	 * back to the original invocation if the calls in this method fail.
+	 * Creates a link to the command response by incrementing(or creating) a
+	 * counter and sequential entries under the original invocation. TODO: Note
+	 * that none of this is transactional, so it is currently possible for
+	 * responses not to be correctly linked back to the original invocation if
+	 * the calls in this method fail.
 	 * 
 	 * @param context
 	 * @param response
 	 * @throws SiteWhereException
 	 */
-	protected static void linkDeviceCommandResponseToInvocation(IHBaseContext context,
-			IDeviceCommandResponse response) throws SiteWhereException {
+	protected static void linkDeviceCommandResponseToInvocation(IHBaseContext context, IDeviceCommandResponse response)
+			throws SiteWhereException {
 		String originator = response.getOriginatingEventId();
 		if (originator == null) {
 			return;
@@ -604,8 +594,8 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static SearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(
-			IHBaseContext context, String invocationId) throws SiteWhereException {
+	protected static SearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(IHBaseContext context,
+			String invocationId) throws SiteWhereException {
 		byte[][] keys = getDecodedEventId(invocationId);
 		byte[] row = keys[0];
 		byte[] qual = keys[1];
@@ -622,8 +612,7 @@ public class HBaseDeviceEvent {
 			byte[] match = qual;
 			match[3] = EventRecordType.CommandResponseEntry.getType();
 			for (byte[] curr : cells.keySet()) {
-				if ((curr[0] == match[0]) && (curr[1] == match[1]) && (curr[2] == match[2])
-						&& (curr[3] == match[3])) {
+				if ((curr[0] == match[0]) && (curr[1] == match[1]) && (curr[2] == match[2]) && (curr[3] == match[3])) {
 					byte[] value = cells.get(curr);
 					String responseId = new String(value);
 					responses.add(getDeviceCommandResponse(context, responseId));
@@ -638,7 +627,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * List command responses associated with an assignment based on the given criteria.
+	 * List command responses associated with an assignment based on the given
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -648,8 +638,8 @@ public class HBaseDeviceEvent {
 	 */
 	public static SearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IHBaseContext context,
 			String assnToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForAssignment(context, assnToken, EventRecordType.CommandResponse, criteria);
+		Pager<EventMatch> matches = getEventRowsForAssignment(context, assnToken, EventRecordType.CommandResponse,
+				criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -679,11 +669,9 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
-			IHBaseContext context, String siteToken, IDateRangeSearchCriteria criteria)
-					throws SiteWhereException {
-		Pager<EventMatch> matches =
-				getEventRowsForSite(context, siteToken, EventRecordType.CommandResponse, criteria);
+	public static SearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(IHBaseContext context,
+			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.CommandResponse, criteria);
 		return convertMatches(context, matches);
 	}
 
@@ -705,8 +693,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Find all event rows associated with a device assignment and return cells that match
-	 * the search criteria.
+	 * Find all event rows associated with a device assignment and return cells
+	 * that match the search criteria.
 	 * 
 	 * @param context
 	 * @param assnToken
@@ -722,7 +710,8 @@ public class HBaseDeviceEvent {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
 
-		// Note: Because time values are inverted, start and end keys are reversed.
+		// Note: Because time values are inverted, start and end keys are
+		// reversed.
 		byte[] startKey = null, endKey = null;
 		if (criteria.getEndDate() != null) {
 			startKey = getRowKey(assnKey, criteria.getEndDate().getTime());
@@ -753,8 +742,7 @@ public class HBaseDeviceEvent {
 					byte[] value = cells.get(qual);
 					if ((qual.length > 3) && ((eventType == null) || (qual[3] == eventType.getType()))) {
 						Date eventDate = getDateForEventKeyValue(current.getRow(), qual);
-						if ((criteria.getStartDate() != null)
-								&& (eventDate.before(criteria.getStartDate()))) {
+						if ((criteria.getStartDate() != null) && (eventDate.before(criteria.getStartDate()))) {
 							continue;
 						}
 						if ((criteria.getEndDate() != null) && (eventDate.after(criteria.getEndDate()))) {
@@ -804,10 +792,11 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Find all event rows associated with a site and return values that match the search
-	 * criteria. TODO: This is not optimized at all and will take forever in cases where
-	 * there are ton of assignments and events. It has to go through every record
-	 * associated with the site. It works for now though.
+	 * Find all event rows associated with a site and return values that match
+	 * the search criteria. TODO: This is not optimized at all and will take
+	 * forever in cases where there are ton of assignments and events. It has to
+	 * go through every record associated with the site. It works for now
+	 * though.
 	 * 
 	 * @param context
 	 * @param siteToken
@@ -845,8 +834,7 @@ public class HBaseDeviceEvent {
 						byte[] value = cells.get(qual);
 						if ((qual.length > 3) && (qual[3] == eventType.getType())) {
 							Date eventDate = getDateForEventKeyValue(key, qual);
-							if ((criteria.getStartDate() != null)
-									&& (eventDate.before(criteria.getStartDate()))) {
+							if ((criteria.getStartDate() != null) && (eventDate.before(criteria.getStartDate()))) {
 								continue;
 							}
 							if ((criteria.getEndDate() != null) && (eventDate.after(criteria.getEndDate()))) {
@@ -876,8 +864,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Used for ordering events without having to unmarshal all of the byte arrays to do
-	 * it.
+	 * Used for ordering events without having to unmarshal all of the byte
+	 * arrays to do it.
 	 * 
 	 * @author Derek
 	 */
@@ -934,9 +922,8 @@ public class HBaseDeviceEvent {
 		for (EventMatch match : matches.getResults()) {
 			Class<? extends IDeviceEvent> type = getEventClassForIndicator(match.getType().getType());
 			try {
-				results.add(
-						(I) PayloadMarshalerResolver.getInstance().getMarshaler(match.getEncoding()).decode(
-								match.getPayload(), type));
+				results.add((I) PayloadMarshalerResolver.getInstance().getMarshaler(match.getEncoding())
+						.decode(match.getPayload(), type));
 			} catch (Throwable e) {
 				LOGGER.error("Unable to read payload value into event object.", e);
 			}
@@ -945,8 +932,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Gets the absolute first possible event key for cases where a start timestamp is not
-	 * specified.
+	 * Gets the absolute first possible event key for cases where a start
+	 * timestamp is not specified.
 	 * 
 	 * @param assnKey
 	 * @return
@@ -962,8 +949,8 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Gets the absolute first possible event key for cases where a start timestamp is not
-	 * specified.
+	 * Gets the absolute first possible event key for cases where a start
+	 * timestamp is not specified.
 	 * 
 	 * @param assnKey
 	 * @return
@@ -1055,16 +1042,15 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Decodes an event id into a {@link KeyValue} that can be used to access the data in
-	 * HBase.
+	 * Decodes an event id into a {@link KeyValue} that can be used to access
+	 * the data in HBase.
 	 * 
 	 * @param id
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static byte[][] getDecodedEventId(String id) throws SiteWhereException {
-		int rowLength =
-				HBaseSite.SITE_IDENTIFIER_LENGTH + 1 + HBaseDeviceAssignment.ASSIGNMENT_IDENTIFIER_LENGTH + 5;
+		int rowLength = HBaseSite.SITE_IDENTIFIER_LENGTH + 1 + HBaseDeviceAssignment.ASSIGNMENT_IDENTIFIER_LENGTH + 5;
 		try {
 			byte[] decoded = Base58.decode(id);
 			byte[] row = Bytes.head(decoded, rowLength);
@@ -1118,8 +1104,7 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static Class<? extends IDeviceEvent> getEventClassForIndicator(byte indicator)
-			throws SiteWhereException {
+	protected static Class<? extends IDeviceEvent> getEventClassForIndicator(byte indicator) throws SiteWhereException {
 		EventRecordType eventType = EventRecordType.decode(indicator);
 		switch (eventType) {
 		case Measurement: {
@@ -1156,8 +1141,7 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getEventsTableInterface(IHBaseContext context)
-			throws SiteWhereException {
+	protected static HTableInterface getEventsTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 	}
 }

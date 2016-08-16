@@ -12,7 +12,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -31,7 +32,7 @@ import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 public class HBaseTenantGroupElement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseTenantGroupElement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of element index info (subset of 8 byte long) */
 	public static final int INDEX_LENGTH = 4;

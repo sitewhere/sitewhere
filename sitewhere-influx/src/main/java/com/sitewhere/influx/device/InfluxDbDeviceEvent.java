@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class InfluxDbDeviceEvent {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(InfluxDbDeviceEvent.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Collection for events */
 	public static final String COLLECTION_EVENTS = "events";
@@ -90,9 +91,8 @@ public class InfluxDbDeviceEvent {
 	 */
 	public static IDeviceEvent getEventById(String eventId, InfluxDB influx, String database)
 			throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where eid='" + eventId
-						+ "'", database);
+		Query query = new Query(
+				"SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where eid='" + eventId + "'", database);
 		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
 		if (results.size() > 0) {
@@ -114,17 +114,14 @@ public class InfluxDbDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	public static <T> SearchResults<T> searchByAssignment(String assignmentToken, DeviceEventType type,
-			ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz)
-					throws SiteWhereException {
-		Query query =
-				InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentToken, criteria, database);
+			ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz) throws SiteWhereException {
+		Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentToken, criteria, database);
 		LOGGER.debug("Query: " + query.getCommand());
 		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-		Query countQuery =
-				InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignmentToken, criteria,
-						database);
+		Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignmentToken, criteria,
+				database);
 		LOGGER.debug("Count: " + countQuery.getCommand());
 		QueryResult countResponse = influx.query(countQuery);
 		long count = parseCount(countResponse);
@@ -143,16 +140,14 @@ public class InfluxDbDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> SearchResults<T> searchBySite(String siteToken, DeviceEventType type,
-			ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz)
-					throws SiteWhereException {
+	public static <T> SearchResults<T> searchBySite(String siteToken, DeviceEventType type, ISearchCriteria criteria,
+			InfluxDB influx, String database, Class<T> clazz) throws SiteWhereException {
 		Query query = InfluxDbDeviceEvent.queryEventsOfTypeForSite(type, siteToken, criteria, database);
 		LOGGER.debug("Query: " + query.getCommand());
 		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-		Query countQuery =
-				InfluxDbDeviceEvent.queryEventsOfTypeForSiteCount(type, siteToken, criteria, database);
+		Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForSiteCount(type, siteToken, criteria, database);
 		LOGGER.debug("Count: " + countQuery.getCommand());
 		QueryResult countResponse = influx.query(countQuery);
 		long count = parseCount(countResponse);
@@ -160,8 +155,8 @@ public class InfluxDbDeviceEvent {
 	}
 
 	/**
-	 * Get a query for events of a given type associated with an assignment and that meet
-	 * the search criteria.
+	 * Get a query for events of a given type associated with an assignment and
+	 * that meet the search criteria.
 	 * 
 	 * @param type
 	 * @param assignmentToken
@@ -172,15 +167,15 @@ public class InfluxDbDeviceEvent {
 	 */
 	public static Query queryEventsOfTypeForAssignment(DeviceEventType type, String assignmentToken,
 			ISearchCriteria criteria, String database) throws SiteWhereException {
-		return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-				+ type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentToken + "'"
+		return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
+				+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentToken + "'"
 				+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC"
 				+ buildPagingCriteria(criteria), database);
 	}
 
 	/**
-	 * Get a query for counting events of a given type associated with an assignment and
-	 * that meet the search criteria.
+	 * Get a query for counting events of a given type associated with an
+	 * assignment and that meet the search criteria.
 	 * 
 	 * @param type
 	 * @param assignmentToken
@@ -193,30 +188,11 @@ public class InfluxDbDeviceEvent {
 			ISearchCriteria criteria, String database) throws SiteWhereException {
 		return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
 				+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='"
-				+ assignmentToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT,
-				database);
+				+ assignmentToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
 	}
 
 	/**
-	 * Get a query for events of a given type associated with a site and meeting the
-	 * search criteria.
-	 * 
-	 * @param type
-	 * @param siteToken
-	 * @param criteria
-	 * @param database
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static Query queryEventsOfTypeForSite(DeviceEventType type, String siteToken,
-			ISearchCriteria criteria, String database) throws SiteWhereException {
-		return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
-				+ EVENT_SITE + "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
-				+ EVENT_SITE + " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
-	}
-
-	/**
-	 * Get a query for counting events of a given type associated with a site and meeting
+	 * Get a query for events of a given type associated with a site and meeting
 	 * the search criteria.
 	 * 
 	 * @param type
@@ -226,11 +202,29 @@ public class InfluxDbDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Query queryEventsOfTypeForSiteCount(DeviceEventType type, String siteToken,
-			ISearchCriteria criteria, String database) throws SiteWhereException {
-		return new Query("SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='"
-				+ type.name() + "' and " + EVENT_SITE + "='" + siteToken + "'"
-				+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_SITE, database);
+	public static Query queryEventsOfTypeForSite(DeviceEventType type, String siteToken, ISearchCriteria criteria,
+			String database) throws SiteWhereException {
+		return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and " + EVENT_SITE
+				+ "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_SITE
+				+ " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
+	}
+
+	/**
+	 * Get a query for counting events of a given type associated with a site
+	 * and meeting the search criteria.
+	 * 
+	 * @param type
+	 * @param siteToken
+	 * @param criteria
+	 * @param database
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Query queryEventsOfTypeForSiteCount(DeviceEventType type, String siteToken, ISearchCriteria criteria,
+			String database) throws SiteWhereException {
+		return new Query("SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='" + type.name()
+				+ "' and " + EVENT_SITE + "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
+				+ EVENT_SITE, database);
 	}
 
 	/**
@@ -255,7 +249,8 @@ public class InfluxDbDeviceEvent {
 	}
 
 	/**
-	 * Build search criteria clause that handles date ranges specified for event queries.
+	 * Build search criteria clause that handles date ranges specified for event
+	 * queries.
 	 * 
 	 * @param criteria
 	 * @return
@@ -266,14 +261,11 @@ public class InfluxDbDeviceEvent {
 		if (criteria instanceof IDateRangeSearchCriteria) {
 			IDateRangeSearchCriteria dates = (IDateRangeSearchCriteria) criteria;
 			if (dates.getStartDate() != null) {
-				dateClause +=
-						" and time >= '" + ISODateTimeFormat.dateTime().print(dates.getStartDate().getTime())
-								+ "'";
+				dateClause += " and time >= '" + ISODateTimeFormat.dateTime().print(dates.getStartDate().getTime())
+						+ "'";
 			}
 			if (dates.getEndDate() != null) {
-				dateClause +=
-						" and time <= '" + ISODateTimeFormat.dateTime().print(dates.getEndDate().getTime())
-								+ "'";
+				dateClause += " and time <= '" + ISODateTimeFormat.dateTime().print(dates.getEndDate().getTime()) + "'";
 			}
 		}
 		return dateClause;
@@ -396,8 +388,7 @@ public class InfluxDbDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static String find(Map<String, Object> values, String field, boolean allowNull)
-			throws SiteWhereException {
+	public static String find(Map<String, Object> values, String field, boolean allowNull) throws SiteWhereException {
 		Object value = values.get(field);
 		if (value == null) {
 			if (allowNull) {

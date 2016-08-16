@@ -15,7 +15,8 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.hbase.common.SiteWhereTables;
@@ -30,7 +31,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClient {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(DefaultHBaseClient.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/** Zookeeper quorum */
 	private String quorum;
@@ -56,7 +57,8 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 * @see
+	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
 		try {
@@ -130,8 +132,8 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
-	 * .ITenant, byte[])
+	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere
+	 * .spi.user .ITenant, byte[])
 	 */
 	@Override
 	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
@@ -142,8 +144,8 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
-	 * .ITenant, byte[], boolean)
+	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere
+	 * .spi.user .ITenant, byte[], boolean)
 	 */
 	@Override
 	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)

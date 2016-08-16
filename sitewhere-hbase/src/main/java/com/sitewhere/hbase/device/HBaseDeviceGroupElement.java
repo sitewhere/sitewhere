@@ -19,7 +19,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -42,7 +43,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class HBaseDeviceGroupElement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceGroupElement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of element index info (subset of 8 byte long) */
 	public static final int INDEX_LENGTH = 4;
@@ -59,8 +60,8 @@ public class HBaseDeviceGroupElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceGroupElement> createDeviceGroupElements(IHBaseContext context,
-			String groupToken, List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
+	public static List<IDeviceGroupElement> createDeviceGroupElements(IHBaseContext context, String groupToken,
+			List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
 		byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(context, groupToken);
 		List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElementCreateRequest request : requests) {
@@ -80,13 +81,13 @@ public class HBaseDeviceGroupElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceGroupElement createDeviceGroupElement(IHBaseContext context, String groupToken,
-			Long index, IDeviceGroupElementCreateRequest request) throws SiteWhereException {
+	public static IDeviceGroupElement createDeviceGroupElement(IHBaseContext context, String groupToken, Long index,
+			IDeviceGroupElementCreateRequest request) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(context, groupToken, index);
 
-		// Use common processing logic so all backend implementations work the same.
-		DeviceGroupElement element =
-				SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
+		// Use common processing logic so all backend implementations work the
+		// same.
+		DeviceGroupElement element = SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceGroupElement(element);
 
@@ -115,8 +116,8 @@ public class HBaseDeviceGroupElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceGroupElement> removeDeviceGroupElements(IHBaseContext context,
-			String groupToken, List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+	public static List<IDeviceGroupElement> removeDeviceGroupElements(IHBaseContext context, String groupToken,
+			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<byte[]> combinedIds = new ArrayList<byte[]>();
 		for (IDeviceGroupElementCreateRequest request : elements) {
 			combinedIds.add(getCombinedIdentifier(request));
@@ -139,12 +140,10 @@ public class HBaseDeviceGroupElement {
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
-			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							DeviceGroupRecordType.DeviceGroupElement.getType());
-			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
+			byte[] primary = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					DeviceGroupRecordType.DeviceGroupElement.getType());
+			byte[] after = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -175,8 +174,8 @@ public class HBaseDeviceGroupElement {
 				try {
 					Delete delete = new Delete(dr.getRowkey());
 					table.delete(delete);
-					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(dr.getPayloadType()).decodeDeviceGroupElement(
-							dr.getPayload()));
+					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(dr.getPayloadType())
+							.decodeDeviceGroupElement(dr.getPayload()));
 				} catch (IOException e) {
 					LOGGER.warn("Group element delete failed for key: " + dr.getRowkey());
 				}
@@ -193,8 +192,9 @@ public class HBaseDeviceGroupElement {
 	}
 
 	/**
-	 * Deletes all elements for a device group. TODO: There is probably a much more
-	 * efficient method of deleting the records than calling a delete for each.
+	 * Deletes all elements for a device group. TODO: There is probably a much
+	 * more efficient method of deleting the records than calling a delete for
+	 * each.
 	 * 
 	 * @param context
 	 * @param groupToken
@@ -205,12 +205,10 @@ public class HBaseDeviceGroupElement {
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
-			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							DeviceGroupRecordType.DeviceGroupElement.getType());
-			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
+			byte[] primary = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					DeviceGroupRecordType.DeviceGroupElement.getType());
+			byte[] after = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -244,8 +242,9 @@ public class HBaseDeviceGroupElement {
 	}
 
 	/**
-	 * Get paged results for listing device group elements. TODO: This is not optimized!
-	 * Getting the correct record count requires a full scan of all elements in the group.
+	 * Get paged results for listing device group elements. TODO: This is not
+	 * optimized! Getting the correct record count requires a full scan of all
+	 * elements in the group.
 	 * 
 	 * @param context
 	 * @param groupToken
@@ -253,18 +252,16 @@ public class HBaseDeviceGroupElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(IHBaseContext context,
-			String groupToken, ISearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(IHBaseContext context, String groupToken,
+			ISearchCriteria criteria) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
-			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							DeviceGroupRecordType.DeviceGroupElement.getType());
-			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
+			byte[] primary = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					DeviceGroupRecordType.DeviceGroupElement.getType());
+			byte[] after = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+					(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -275,8 +272,8 @@ public class HBaseDeviceGroupElement {
 				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 				if ((type != null) && (payload != null)) {
-					pager.process(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceGroupElement(
-							payload));
+					pager.process(PayloadMarshalerResolver.getInstance().getMarshaler(type)
+							.decodeDeviceGroupElement(payload));
 				}
 			}
 			return new SearchResults<IDeviceGroupElement>(pager.getResults());
@@ -301,9 +298,8 @@ public class HBaseDeviceGroupElement {
 	 */
 	public static byte[] getElementRowKey(IHBaseContext context, String groupToken, Long elementId)
 			throws SiteWhereException {
-		byte[] baserow =
-				HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
-						DeviceGroupRecordType.DeviceGroupElement.getType());
+		byte[] baserow = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
+				DeviceGroupRecordType.DeviceGroupElement.getType());
 		byte[] eidBytes = getTruncatedIdentifier(elementId);
 		ByteBuffer buffer = ByteBuffer.allocate(baserow.length + eidBytes.length);
 		buffer.put(baserow);
@@ -312,8 +308,8 @@ public class HBaseDeviceGroupElement {
 	}
 
 	/**
-	 * Truncate element id value to expected length. This will be a subset of the full
-	 * 8-bit long value.
+	 * Truncate element id value to expected length. This will be a subset of
+	 * the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return

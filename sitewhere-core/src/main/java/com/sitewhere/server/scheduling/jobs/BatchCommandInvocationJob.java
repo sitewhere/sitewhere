@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -36,7 +37,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class BatchCommandInvocationJob implements Job {
 
 	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(BatchCommandInvocationJob.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
@@ -60,9 +61,8 @@ public class BatchCommandInvocationJob implements Job {
 			throw new JobExecutionException("Command token not provided.");
 		}
 		try {
-			ITenant tenant =
-					SiteWhere.getServer().getTenantManagement().getTenantById(
-							context.getScheduler().getSchedulerName());
+			ITenant tenant = SiteWhere.getServer().getTenantManagement()
+					.getTenantById(context.getScheduler().getSchedulerName());
 
 			// Resolve hardware ids for devices matching criteria.
 			List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, tenant);
@@ -73,7 +73,8 @@ public class BatchCommandInvocationJob implements Job {
 			invoke.setParameterValues(criteria.getParameterValues());
 			invoke.setHardwareIds(hardwareIds);
 
-			// Use the system account for logging "created by" on created elements.
+			// Use the system account for logging "created by" on created
+			// elements.
 			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
 			SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
@@ -93,8 +94,7 @@ public class BatchCommandInvocationJob implements Job {
 	 * @param data
 	 * @throws JobExecutionException
 	 */
-	public static BatchCommandForCriteriaRequest parse(Map<String, String> data)
-			throws JobExecutionException {
+	public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
 
 		String specificationToken = null;
 		String siteToken = null;

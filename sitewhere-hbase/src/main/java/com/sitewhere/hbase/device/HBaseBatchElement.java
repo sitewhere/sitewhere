@@ -20,7 +20,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 public class HBaseBatchElement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseBatchElement.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Length of element index info (subset of 8 byte long) */
 	public static final int INDEX_LENGTH = 4;
@@ -67,10 +68,10 @@ public class HBaseBatchElement {
 			IBatchElement request) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(context, request.getBatchOperationToken(), request.getIndex());
 
-		// Use common processing logic so all backend implementations work the same.
-		BatchElement element =
-				SiteWherePersistence.batchElementCreateLogic(request.getBatchOperationToken(),
-						request.getHardwareId(), request.getIndex());
+		// Use common processing logic so all backend implementations work the
+		// same.
+		BatchElement element = SiteWherePersistence.batchElementCreateLogic(request.getBatchOperationToken(),
+				request.getHardwareId(), request.getIndex());
 
 		// Encode batch element.
 		byte[] payload = context.getPayloadMarshaler().encodeBatchElement(element);
@@ -125,7 +126,8 @@ public class HBaseBatchElement {
 	}
 
 	/**
-	 * Gets the batch operation element given the parent operation token and unique index.
+	 * Gets the batch operation element given the parent operation token and
+	 * unique index.
 	 * 
 	 * @param context
 	 * @param devices
@@ -134,8 +136,8 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchElement getBatchElement(IHBaseContext context, HTableInterface devices,
-			String operationToken, long index) throws SiteWhereException {
+	public static BatchElement getBatchElement(IHBaseContext context, HTableInterface devices, String operationToken,
+			long index) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(context, operationToken, index);
 		try {
 			Get get = new Get(elementKey);
@@ -169,12 +171,10 @@ public class HBaseBatchElement {
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
-			byte[] primary =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
-							BatchOperationRecordType.BatchElement.getType());
-			byte[] after =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
-							(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
+			byte[] primary = HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
+					BatchOperationRecordType.BatchElement.getType());
+			byte[] after = HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
+					(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -186,9 +186,8 @@ public class HBaseBatchElement {
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 
 				if ((payload != null) && (payloadType != null)) {
-					BatchElement elm =
-							PayloadMarshalerResolver.getInstance().getMarshaler(
-									payloadType).decodeBatchElement(payload);
+					BatchElement elm = PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+							.decodeBatchElement(payload);
 					if ((criteria.getProcessingStatus() == null)
 							|| (criteria.getProcessingStatus() == elm.getProcessingStatus())) {
 						pager.process(elm);
@@ -213,18 +212,15 @@ public class HBaseBatchElement {
 	 * @param batchToken
 	 * @throws SiteWhereException
 	 */
-	public static void deleteBatchElements(IHBaseContext context, String batchToken)
-			throws SiteWhereException {
+	public static void deleteBatchElements(IHBaseContext context, String batchToken) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
-			byte[] primary =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
-							BatchOperationRecordType.BatchElement.getType());
-			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, batchToken,
-							(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
+			byte[] primary = HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
+					BatchOperationRecordType.BatchElement.getType());
+			byte[] after = HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, batchToken,
+					(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -268,9 +264,8 @@ public class HBaseBatchElement {
 	 */
 	public static byte[] getElementRowKey(IHBaseContext context, String batchToken, Long index)
 			throws SiteWhereException {
-		byte[] baserow =
-				HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
-						BatchOperationRecordType.BatchElement.getType());
+		byte[] baserow = HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
+				BatchOperationRecordType.BatchElement.getType());
 		byte[] eidBytes = getTruncatedIdentifier(index);
 		ByteBuffer buffer = ByteBuffer.allocate(baserow.length + eidBytes.length);
 		buffer.put(baserow);
@@ -279,8 +274,8 @@ public class HBaseBatchElement {
 	}
 
 	/**
-	 * Truncate element id value to expected length. This will be a subset of the full
-	 * 8-bit long value.
+	 * Truncate element id value to expected length. This will be a subset of
+	 * the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return
@@ -299,8 +294,7 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context)
-			throws SiteWhereException {
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

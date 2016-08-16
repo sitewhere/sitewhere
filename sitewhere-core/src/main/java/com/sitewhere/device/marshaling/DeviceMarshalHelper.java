@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -26,15 +27,15 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Configurable helper class that allows {@link Device} model objects to be created from
- * {@link IDevice} SPI objects.
+ * Configurable helper class that allows {@link Device} model objects to be
+ * created from {@link IDevice} SPI objects.
  * 
  * @author dadams
  */
 public class DeviceMarshalHelper {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceMarshalHelper.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant */
 	private ITenant tenant;
@@ -51,7 +52,9 @@ public class DeviceMarshalHelper {
 	/** Indicates whether site information is to be copied */
 	private boolean includeSite = false;
 
-	/** Indicates whether device element mappings should include device details */
+	/**
+	 * Indicates whether device element mappings should include device details
+	 */
 	private boolean includeNested = false;
 
 	/** Helper for marshaling device specification information */
@@ -95,8 +98,8 @@ public class DeviceMarshalHelper {
 
 		// Look up specification information.
 		if (source.getSpecificationToken() != null) {
-			IDeviceSpecification spec =
-					getDeviceManagement(tenant).getDeviceSpecificationByToken(source.getSpecificationToken());
+			IDeviceSpecification spec = getDeviceManagement(tenant)
+					.getDeviceSpecificationByToken(source.getSpecificationToken());
 			if (spec == null) {
 				throw new SiteWhereException("Device references non-existent specification.");
 			}
@@ -104,8 +107,7 @@ public class DeviceMarshalHelper {
 				result.setSpecification(getSpecificationHelper().convert(spec, manager));
 			} else {
 				result.setSpecificationToken(source.getSpecificationToken());
-				HardwareAsset asset =
-						(HardwareAsset) manager.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
+				HardwareAsset asset = (HardwareAsset) manager.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
 				if (asset != null) {
 					result.setAssetId(asset.getId());
 					result.setAssetName(asset.getName());
@@ -118,8 +120,7 @@ public class DeviceMarshalHelper {
 		if (source.getAssignmentToken() != null) {
 			if (includeAssignment) {
 				try {
-					IDeviceAssignment assignment =
-							getDeviceManagement(tenant).getCurrentDeviceAssignment(source);
+					IDeviceAssignment assignment = getDeviceManagement(tenant).getCurrentDeviceAssignment(source);
 					if (assignment == null) {
 						throw new SiteWhereException("Device contains an invalid assignment reference.");
 					}

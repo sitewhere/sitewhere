@@ -10,7 +10,8 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -46,14 +47,14 @@ public class MongoPersistence {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(MongoPersistence.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default lookup */
 	private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
 	/**
-	 * Common handler for creating new objects. Assures that errors are handled in a
-	 * consistent way.
+	 * Common handler for creating new objects. Assures that errors are handled
+	 * in a consistent way.
 	 * 
 	 * @param collection
 	 * @param object
@@ -70,8 +71,8 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Insert an event, taking into account whether the device management implementation
-	 * in configured for bulk operations.
+	 * Insert an event, taking into account whether the device management
+	 * implementation in configured for bulk operations.
 	 * 
 	 * @param collection
 	 * @param object
@@ -79,8 +80,8 @@ public class MongoPersistence {
 	 * @param buffer
 	 * @throws SiteWhereException
 	 */
-	public static void insertEvent(DBCollection collection, DBObject object, boolean bulk,
-			IDeviceEventBuffer buffer) throws SiteWhereException {
+	public static void insertEvent(DBCollection collection, DBObject object, boolean bulk, IDeviceEventBuffer buffer)
+			throws SiteWhereException {
 		try {
 			if (bulk) {
 				buffer.add(object);
@@ -95,15 +96,14 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Common handler for updating existing objects. Assures that errors are handled in a
-	 * consistent way.
+	 * Common handler for updating existing objects. Assures that errors are
+	 * handled in a consistent way.
 	 * 
 	 * @param collection
 	 * @param object
 	 * @throws SiteWhereException
 	 */
-	public static void update(DBCollection collection, DBObject query, DBObject object)
-			throws SiteWhereException {
+	public static void update(DBCollection collection, DBObject query, DBObject object) throws SiteWhereException {
 		try {
 			collection.update(query, object);
 		} catch (MongoCommandException e) {
@@ -177,14 +177,14 @@ public class MongoPersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, ISearchCriteria criteria) throws SiteWhereException {
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
+			ISearchCriteria criteria) throws SiteWhereException {
 		return search(api, collection, query, sort, criteria, LOOKUP);
 	}
 
 	/**
-	 * Search the given collection using the provided query and sort. Return the paged
-	 * seaerch results.
+	 * Search the given collection using the provided query and sort. Return the
+	 * paged seaerch results.
 	 * 
 	 * @param api
 	 * @param collection
@@ -195,8 +195,8 @@ public class MongoPersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
+			ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
 		try {
 			DBCursor cursor;
 			if (criteria.getPageSize() == 0) {
@@ -233,8 +233,8 @@ public class MongoPersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort) throws SiteWhereException {
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort)
+			throws SiteWhereException {
 		return search(api, collection, query, sort, LOOKUP);
 	}
 
@@ -249,8 +249,8 @@ public class MongoPersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, IMongoConverterLookup lookup) throws SiteWhereException {
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
+			IMongoConverterLookup lookup) throws SiteWhereException {
 		try {
 			DBCursor cursor = collection.find(query).sort(sort);
 			List<T> matches = new ArrayList<T>();
@@ -323,8 +323,7 @@ public class MongoPersistence {
 	 * @param query
 	 * @param criteria
 	 */
-	public static void addDateSearchCriteria(BasicDBObject query, String dateField,
-			IDateRangeSearchCriteria criteria) {
+	public static void addDateSearchCriteria(BasicDBObject query, String dateField, IDateRangeSearchCriteria criteria) {
 		if ((criteria.getStartDate() == null) && (criteria.getEndDate() == null)) {
 			return;
 		}
@@ -339,8 +338,8 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Given a {@link DBObject} that contains event information, unmarhal it to the
-	 * correct type.
+	 * Given a {@link DBObject} that contains event information, unmarhal it to
+	 * the correct type.
 	 * 
 	 * @param found
 	 * @return

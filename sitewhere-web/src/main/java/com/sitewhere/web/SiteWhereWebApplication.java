@@ -7,7 +7,8 @@
  */
 package com.sitewhere.web;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -32,8 +33,8 @@ import com.sitewhere.web.rest.RestMvcConfiguration;
 import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
 
 /**
- * Spring Boot application that loads SiteWhere with embedded Tomcat container, REST
- * services, and administrative application.
+ * Spring Boot application that loads SiteWhere with embedded Tomcat container,
+ * REST services, and administrative application.
  * 
  * @author Derek
  */
@@ -43,7 +44,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 
 	/** Static logger instance */
 	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(SiteWhereWebApplication.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
@@ -57,12 +58,11 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	@Bean
 	public ServletRegistrationBean sitewhereRestInterface() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		AnnotationConfigWebApplicationContext applicationContext =
-				new AnnotationConfigWebApplicationContext();
+		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.register(RestMvcConfiguration.class, SiteWhereSwaggerConfig.class);
 		dispatcherServlet.setApplicationContext(applicationContext);
-		ServletRegistrationBean registration =
-				new ServletRegistrationBean(dispatcherServlet, RestMvcConfiguration.REST_API_MATCHER);
+		ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+				RestMvcConfiguration.REST_API_MATCHER);
 		registration.setName("sitewhereRestInterface");
 		registration.setLoadOnStartup(1);
 		return registration;
@@ -84,8 +84,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	@Bean
 	public ServletRegistrationBean sitewhereAdminInterface() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		AnnotationConfigWebApplicationContext applicationContext =
-				new AnnotationConfigWebApplicationContext();
+		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.register(MvcConfiguration.class);
 		dispatcherServlet.setApplicationContext(applicationContext);
 		ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/admin/*");
@@ -140,7 +139,8 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	}
 
 	/**
-	 * Acts on shutdown hook to gracefully shut down SiteWhere server components.
+	 * Acts on shutdown hook to gracefully shut down SiteWhere server
+	 * components.
 	 * 
 	 * @return
 	 */

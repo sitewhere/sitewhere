@@ -14,7 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -25,21 +26,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ResponseTimerFilter extends OncePerRequestFilter {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ResponseTimerFilter.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest
-	 * , javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
+	 * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(
+	 * javax.servlet.http.HttpServletRequest ,
+	 * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
 	 */
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-			FilterChain chain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
 		long start = System.currentTimeMillis();
 		chain.doFilter(request, response);
 		long time = System.currentTimeMillis() - start;
-		LOGGER.info("Call for " + request.getMethod() + " to '" + request.getRequestURL() + "' returned in "
-				+ time + " ms.");
+		LOGGER.info("Call for " + request.getMethod() + " to '" + request.getRequestURL() + "' returned in " + time
+				+ " ms.");
 	}
 }

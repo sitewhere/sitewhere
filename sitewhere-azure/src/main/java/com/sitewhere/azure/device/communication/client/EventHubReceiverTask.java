@@ -24,15 +24,16 @@
  *******************************************************************************/
 package com.sitewhere.azure.device.communication.client;
 
-import org.apache.log4j.Logger;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EventHubReceiverTask {
 
-	private static Logger logger = Logger.getLogger(EventHubReceiverTask.class);
+	private static Logger logger = LogManager.getLogger();
 
 	@SuppressWarnings("unused")
 	private final UUID instanceId;
@@ -94,9 +95,8 @@ public class EventHubReceiverTask {
 
 		stateStore.open();
 
-		partitionCoordinator =
-				new StaticPartitionCoordinator(eventHubConfig, taskIndex, totalTasks, stateStore, pmFactory,
-						recvFactory);
+		partitionCoordinator = new StaticPartitionCoordinator(eventHubConfig, taskIndex, totalTasks, stateStore,
+				pmFactory, recvFactory);
 
 		for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
 			partitionManager.open();
@@ -147,28 +147,28 @@ public class EventHubReceiverTask {
 		checkpointIfNeeded();
 		return eventData;
 
-		// We don't need to sleep here because the IPartitionManager.receive() is
+		// We don't need to sleep here because the IPartitionManager.receive()
+		// is
 		// a blocked call so it's fine to call this function in a tight loop.
 	}
 
 	public void ack(Object msgId) {
 		MessageId messageId = (MessageId) msgId;
-		IPartitionManager partitionManager =
-				partitionCoordinator.getPartitionManager(messageId.getPartitionId());
+		IPartitionManager partitionManager = partitionCoordinator.getPartitionManager(messageId.getPartitionId());
 		String offset = messageId.getOffset();
 		partitionManager.ack(offset);
 	}
 
 	public void fail(Object msgId) {
 		MessageId messageId = (MessageId) msgId;
-		IPartitionManager partitionManager =
-				partitionCoordinator.getPartitionManager(messageId.getPartitionId());
+		IPartitionManager partitionManager = partitionCoordinator.getPartitionManager(messageId.getPartitionId());
 		String offset = messageId.getOffset();
 		partitionManager.fail(offset);
 	}
 
 	public void deactivate() {
-		// let's checkpoint so that we can get the last checkpoint when restarting.
+		// let's checkpoint so that we can get the last checkpoint when
+		// restarting.
 		checkpoint();
 	}
 

@@ -9,7 +9,8 @@ package com.sitewhere.server.jvm;
 
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServer;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 public class JvmHistoryMonitor implements Runnable {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(JvmHistoryMonitor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Number of measurements in history */
 	private static final int HISTORY_LENGTH = 300;

@@ -10,7 +10,8 @@ package com.sitewhere.server.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
@@ -26,15 +27,15 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 
 /**
- * Used to load a default user and granted authorities into an empty user model. This acts
- * as a bootstrap for systems that have just been installed.
+ * Used to load a default user and granted authorities into an empty user model.
+ * This acts as a bootstrap for systems that have just been installed.
  * 
  * @author Derek
  */
 public class DefaultUserModelInitializer implements IUserModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultUserModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Default administrator username */
 	public static final String DEFAULT_USERNAME = "admin";
@@ -55,13 +56,14 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	private IUserManagement userManagement;
 
 	/**
-	 * Indiates whether model should be initialized if no console is available for input
+	 * Indiates whether model should be initialized if no console is available
+	 * for input
 	 */
 	private boolean initializeIfNoConsole = false;
 
 	/**
-	 * Initialize the user model with a expected list of granted authorities and default
-	 * user.
+	 * Initialize the user model with a expected list of granted authorities and
+	 * default user.
 	 * 
 	 * @throws SiteWhereException
 	 */

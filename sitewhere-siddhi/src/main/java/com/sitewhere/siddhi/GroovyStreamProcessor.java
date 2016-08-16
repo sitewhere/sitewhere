@@ -7,11 +7,8 @@
  */
 package com.sitewhere.siddhi;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
@@ -24,15 +21,20 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.tenant.ITenantAware;
 import com.sitewhere.spi.tenant.ITenant;
 
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
+
 /**
- * Implementation of {@link StreamCallback} that hands off processing to a groovy script.
+ * Implementation of {@link StreamCallback} that hands off processing to a
+ * groovy script.
  * 
  * @author Derek
  */
 public class GroovyStreamProcessor extends StreamCallback implements ITenantAware {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyStreamProcessor.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Groovy variable used for received events */
 	private static final String VAR_EVENT = "event";
@@ -59,8 +61,8 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.wso2.siddhi.core.stream.output.StreamCallback#receive(org.wso2.siddhi.core.
-	 * event.Event[])
+	 * org.wso2.siddhi.core.stream.output.StreamCallback#receive(org.wso2.siddhi
+	 * .core. event.Event[])
 	 */
 	@Override
 	public void receive(Event[] events) {
@@ -101,7 +103,8 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ITenantAware#setTenant(com.sitewhere.spi.user.ITenant)
+	 * com.sitewhere.spi.server.ITenantAware#setTenant(com.sitewhere.spi.user.
+	 * ITenant)
 	 */
 	public void setTenant(ITenant tenant) {
 		this.tenant = tenant;

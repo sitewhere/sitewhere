@@ -15,20 +15,22 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link WebSocketEventReceiver} that operates on binary payloads.
+ * Implementation of {@link WebSocketEventReceiver} that operates on binary
+ * payloads.
  * 
  * @author Derek
  */
 public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BinaryWebSocketEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
@@ -60,9 +62,8 @@ public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]>
 
 				@SuppressWarnings("unchecked")
 				public void onMessage(ByteBuffer payload) {
-					IInboundEventReceiver<byte[]> receiver =
-							(IInboundEventReceiver<byte[]>) config.getUserProperties().get(
-									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
+					IInboundEventReceiver<byte[]> receiver = (IInboundEventReceiver<byte[]>) config.getUserProperties()
+							.get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
 					EventProcessingLogic.processRawPayload(receiver, payload.array(), null);
 				}
 			});

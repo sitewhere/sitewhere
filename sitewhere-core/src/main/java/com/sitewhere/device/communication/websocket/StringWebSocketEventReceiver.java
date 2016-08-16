@@ -13,20 +13,22 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link WebSocketEventReceiver} that operates on String payloads.
+ * Implementation of {@link WebSocketEventReceiver} that operates on String
+ * payloads.
  * 
  * @author Derek
  */
 public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(StringWebSocketEventReceiver.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/*
 	 * (non-Javadoc)
@@ -58,9 +60,8 @@ public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String>
 
 				@SuppressWarnings("unchecked")
 				public void onMessage(String payload) {
-					IInboundEventReceiver<String> receiver =
-							(IInboundEventReceiver<String>) config.getUserProperties().get(
-									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
+					IInboundEventReceiver<String> receiver = (IInboundEventReceiver<String>) config.getUserProperties()
+							.get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
 					EventProcessingLogic.processRawPayload(receiver, payload, null);
 				}
 			});

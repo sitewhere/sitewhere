@@ -13,7 +13,8 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -29,7 +30,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class SiteWhereTables {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereTables.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Assure that the given table exists and create it if not.

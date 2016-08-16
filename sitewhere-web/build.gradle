@@ -1,5 +1,9 @@
 description = 'SiteWhere Web Components'
 
+configurations {
+    compile.exclude module: 'spring-boot-starter-logging'
+}
+
 dependencies {
     compile project(':sitewhere-activemq')
     compile project(':sitewhere-azure')
@@ -20,7 +24,6 @@ dependencies {
     compile project(':sitewhere-wso2')
     
 	compile ('org.springframework.boot:spring-boot-starter-web')
-	compile ('org.springframework.boot:spring-boot-starter-log4j2')
  	compile ('org.apache.tomcat.embed:tomcat-embed-jasper')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'

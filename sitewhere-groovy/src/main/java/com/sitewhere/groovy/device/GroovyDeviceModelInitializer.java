@@ -7,7 +7,8 @@
  */
 package com.sitewhere.groovy.device;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -25,15 +26,15 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IDeviceModelInitializer} that delegates creation logic to a
- * Groovy script.
+ * Implementation of {@link IDeviceModelInitializer} that delegates creation
+ * logic to a Groovy script.
  * 
  * @author Derek
  */
 public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyDeviceModelInitializer.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -45,8 +46,8 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.sitewhere.
-	 * spi.device.IDeviceManagement,
+	 * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.
+	 * sitewhere. spi.device.IDeviceManagement,
 	 * com.sitewhere.spi.device.event.IDeviceEventManagement,
 	 * com.sitewhere.spi.asset.IAssetModuleManager)
 	 */
@@ -56,11 +57,11 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 		Binding binding = new Binding();
 		binding.setVariable("logger", LOGGER);
 		binding.setVariable("deviceBuilder", new DeviceManagementRequestBuilder(deviceManagement));
-		binding.setVariable("eventBuilder",
-				new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
+		binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 
 		try {
-			// Use the system account for logging "created by" on created elements.
+			// Use the system account for logging "created by" on created
+			// elements.
 			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 		} catch (ResourceException e) {

@@ -5,7 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.server.resource.ResourceStreamHandler;
@@ -25,7 +26,7 @@ import groovy.util.ResourceException;
 public class SiteWhereResourceConnector implements ResourceConnector {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereResourceConnector.class);
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Tenant id if using tenant-specific resources */
 	private String tenantId;

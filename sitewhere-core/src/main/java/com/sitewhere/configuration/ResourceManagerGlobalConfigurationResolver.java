@@ -12,7 +12,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.system.IVersion;
 public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfigurationResolver {
 
 	/** Static logger instance */
-	public static Logger LOGGER = Logger.getLogger(ResourceManagerGlobalConfigurationResolver.class);
+	public static Logger LOGGER = LogManager.getLogger();
 
 	/** File name for SiteWhere global configuration file */
 	public static final String GLOBAL_CONFIG_FILE_NAME = "sitewhere-server.xml";
