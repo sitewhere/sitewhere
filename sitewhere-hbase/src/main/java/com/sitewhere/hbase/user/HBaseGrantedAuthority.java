@@ -16,11 +16,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -52,8 +52,8 @@ public class HBaseGrantedAuthority {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static GrantedAuthority createGrantedAuthority(IHBaseContext context,
-			IGrantedAuthorityCreateRequest request) throws SiteWhereException {
+	public static GrantedAuthority createGrantedAuthority(IHBaseContext context, IGrantedAuthorityCreateRequest request)
+			throws SiteWhereException {
 		GrantedAuthority existing = getGrantedAuthorityByName(context, request.getAuthority());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
@@ -65,7 +65,7 @@ public class HBaseGrantedAuthority {
 		byte[] primary = getGrantedAuthorityRowKey(request.getAuthority());
 		byte[] payload = context.getPayloadMarshaler().encodeGrantedAuthority(auth);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
@@ -92,7 +92,7 @@ public class HBaseGrantedAuthority {
 			throws SiteWhereException {
 		byte[] rowkey = getGrantedAuthorityRowKey(name);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Get get = new Get(rowkey);
@@ -123,7 +123,7 @@ public class HBaseGrantedAuthority {
 	 */
 	public static List<IGrantedAuthority> listGrantedAuthorities(IHBaseContext context,
 			IGrantedAuthoritySearchCriteria criteria) throws SiteWhereException {
-		HTableInterface users = null;
+		Table users = null;
 		ResultScanner scanner = null;
 		try {
 			users = getUsersTableInterface(context);
@@ -148,8 +148,8 @@ public class HBaseGrantedAuthority {
 					}
 				}
 				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(
-							payloadType).decodeGrantedAuthority(payload));
+					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+							.decodeGrantedAuthority(payload));
 				}
 			}
 			return matches;
@@ -184,7 +184,7 @@ public class HBaseGrantedAuthority {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

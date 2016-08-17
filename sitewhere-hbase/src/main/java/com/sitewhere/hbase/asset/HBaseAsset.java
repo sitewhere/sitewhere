@@ -12,11 +12,11 @@ import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -64,11 +64,12 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static PersonAsset createOrUpdatePersonAsset(IHBaseContext context, String categoryId,
-			String originalId, IPersonAssetCreateRequest request) throws SiteWhereException {
+	public static PersonAsset createOrUpdatePersonAsset(IHBaseContext context, String categoryId, String originalId,
+			IPersonAssetCreateRequest request) throws SiteWhereException {
 		IAssetCategory category = HBaseAssetCategory.getAssetCategoryById(context, categoryId);
 
-		// Use common processing logic so all backend implementations work the same.
+		// Use common processing logic so all backend implementations work the
+		// same.
 		PersonAsset asset = SiteWherePersistence.personAssetCreateLogic(category, request);
 		byte[] payload = context.getPayloadMarshaler().encodePersonAsset(asset);
 
@@ -86,11 +87,12 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static HardwareAsset createOrUpdateHardwareAsset(IHBaseContext context, String categoryId,
-			String originalId, IHardwareAssetCreateRequest request) throws SiteWhereException {
+	public static HardwareAsset createOrUpdateHardwareAsset(IHBaseContext context, String categoryId, String originalId,
+			IHardwareAssetCreateRequest request) throws SiteWhereException {
 		IAssetCategory category = HBaseAssetCategory.getAssetCategoryById(context, categoryId);
 
-		// Use common processing logic so all backend implementations work the same.
+		// Use common processing logic so all backend implementations work the
+		// same.
 		HardwareAsset asset = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 		byte[] payload = context.getPayloadMarshaler().encodeHardwareAsset(asset);
 
@@ -108,11 +110,12 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static LocationAsset createOrUpdateLocationAsset(IHBaseContext context, String categoryId,
-			String originalId, ILocationAssetCreateRequest request) throws SiteWhereException {
+	public static LocationAsset createOrUpdateLocationAsset(IHBaseContext context, String categoryId, String originalId,
+			ILocationAssetCreateRequest request) throws SiteWhereException {
 		IAssetCategory category = HBaseAssetCategory.getAssetCategoryById(context, categoryId);
 
-		// Use common processing logic so all backend implementations work the same.
+		// Use common processing logic so all backend implementations work the
+		// same.
 		LocationAsset asset = SiteWherePersistence.locationAssetCreateLogic(category, request);
 		byte[] payload = context.getPayloadMarshaler().encodeLocationAsset(asset);
 
@@ -129,10 +132,9 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Asset getAsset(IHBaseContext context, String categoryId, String assetId)
-			throws SiteWhereException {
+	public static Asset getAsset(IHBaseContext context, String categoryId, String assetId) throws SiteWhereException {
 		byte[] assetKey = getAssetKey(context, categoryId, assetId);
-		HTableInterface assets = null;
+		Table assets = null;
 		try {
 			assets = getAssetsTableInterface(context);
 			Get get = new Get(assetKey);
@@ -201,7 +203,7 @@ public class HBaseAsset {
 			throws SiteWhereException {
 		Asset asset = getAsset(context, categoryId, assetId);
 		byte[] assetKey = getAssetKey(context, categoryId, assetId);
-		HTableInterface assets = null;
+		Table assets = null;
 		try {
 			assets = getAssetsTableInterface(context);
 			Delete delete = new Delete(assetKey);
@@ -223,16 +225,14 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ISearchResults<IAsset> listAssets(IHBaseContext context, String categoryId,
-			ISearchCriteria criteria) throws SiteWhereException {
-		HTableInterface assets = null;
+	public static ISearchResults<IAsset> listAssets(IHBaseContext context, String categoryId, ISearchCriteria criteria)
+			throws SiteWhereException {
+		Table assets = null;
 		ResultScanner scanner = null;
-		byte[] start =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
-						AssetCategorySubtype.Asset.getType());
-		byte[] end =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
-						(byte) (AssetCategorySubtype.Asset.getType() + 1));
+		byte[] start = HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
+				AssetCategorySubtype.Asset.getType());
+		byte[] end = HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
+				(byte) (AssetCategorySubtype.Asset.getType() + 1));
 		try {
 			assets = getAssetsTableInterface(context);
 			Scan scan = new Scan();
@@ -249,9 +249,8 @@ public class HBaseAsset {
 				if ((payloadType != null) && (payload != null)) {
 					Class<?> clazz = getClassForType(typeBytes);
 
-					Asset asset =
-							(Asset) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(
-									payload, clazz);
+					Asset asset = (Asset) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+							.decode(payload, clazz);
 					pager.process(asset);
 				}
 			}
@@ -288,12 +287,12 @@ public class HBaseAsset {
 		String id = (originalId == null) ? request.getId() : originalId;
 		byte[] assetKey = getAssetKey(context, categoryId, id);
 
-		HTableInterface assets = null;
+		Table assets = null;
 		try {
 			assets = getAssetsTableInterface(context);
 			Put put = new Put(assetKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-			put.add(ISiteWhereHBase.FAMILY_ID, ASSET_TYPE_INDICATOR, type.name().getBytes());
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSET_TYPE_INDICATOR, type.name().getBytes());
 			assets.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create person asset.", e);
@@ -313,9 +312,8 @@ public class HBaseAsset {
 	 */
 	public static byte[] getAssetKey(IHBaseContext context, String categoryId, String assetId)
 			throws SiteWhereException {
-		byte[] baseKey =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
-						AssetCategorySubtype.Asset.getType());
+		byte[] baseKey = HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
+				AssetCategorySubtype.Asset.getType());
 		byte[] idBytes = assetId.getBytes();
 		ByteBuffer buffer = ByteBuffer.allocate(baseKey.length + idBytes.length);
 		buffer.put(baseKey);
@@ -330,7 +328,7 @@ public class HBaseAsset {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getAssetsTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getAssetsTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.ASSETS_TABLE_NAME);
 	}
 }

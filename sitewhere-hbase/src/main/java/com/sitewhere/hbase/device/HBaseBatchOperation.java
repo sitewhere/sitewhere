@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -86,8 +86,8 @@ public class HBaseBatchOperation {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchOperation createBatchOperation(IHBaseContext context,
-			IBatchOperationCreateRequest request) throws SiteWhereException {
+	public static IBatchOperation createBatchOperation(IHBaseContext context, IBatchOperationCreateRequest request)
+			throws SiteWhereException {
 		String uuid = null;
 		if (request.getToken() != null) {
 			uuid = KEY_BUILDER.getMap(context).useExistingId(request.getToken());
@@ -99,20 +99,18 @@ public class HBaseBatchOperation {
 		BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
-		qualifiers.put(PROCESSING_STATUS,
-				Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
-		BatchOperation operation =
-				HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
-						ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER, qualifiers);
+		qualifiers.put(PROCESSING_STATUS, Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
+		BatchOperation operation = HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER, qualifiers);
 
 		// Create elements for each device in the operation.
 		long index = 0;
-		HTableInterface devices = null;
+		Table devices = null;
 		try {
 			devices = getDeviceTableInterface(context);
 			for (String hardwareId : request.getHardwareIds()) {
-				BatchElement element =
-						SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+				BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId,
+						++index);
 				HBaseBatchElement.createBatchElement(context, devices, element);
 			}
 		} catch (IOException e) {
@@ -141,11 +139,10 @@ public class HBaseBatchOperation {
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		if (updated.getProcessingStatus() != oldProcessingStatus) {
-			qualifiers.put(PROCESSING_STATUS,
-					Bytes.toBytes(String.valueOf(updated.getProcessingStatus().getCode())));
+			qualifiers.put(PROCESSING_STATUS, Bytes.toBytes(String.valueOf(updated.getProcessingStatus().getCode())));
 		}
-		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
-				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER, qualifiers);
+		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				updated, token, KEY_BUILDER, qualifiers);
 	}
 
 	/**
@@ -158,12 +155,12 @@ public class HBaseBatchOperation {
 	 */
 	public static BatchOperation getBatchOperationByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		return HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
-				BatchOperation.class);
+		return HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER, BatchOperation.class);
 	}
 
 	/**
-	 * Get paged {@link IBatchOperation} results based on the given search criteria.
+	 * Get paged {@link IBatchOperation} results based on the given search
+	 * criteria.
 	 * 
 	 * @param context
 	 * @param includeDeleted
@@ -171,8 +168,8 @@ public class HBaseBatchOperation {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IBatchOperation> listBatchOperations(IHBaseContext context,
-			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<IBatchOperation> listBatchOperations(IHBaseContext context, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
 		Comparator<BatchOperation> comparator = new Comparator<BatchOperation>() {
 
 			public int compare(BatchOperation a, BatchOperation b) {
@@ -186,8 +183,8 @@ public class HBaseBatchOperation {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
+		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER, includeDeleted,
+				IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
 	}
 
 	/**
@@ -205,20 +202,20 @@ public class HBaseBatchOperation {
 		if (force) {
 			HBaseBatchElement.deleteBatchElements(context, token);
 		}
-		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-				token, force, KEY_BUILDER, BatchOperation.class);
+		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
+				force, KEY_BUILDER, BatchOperation.class);
 	}
 
 	/**
-	 * Get a {@link BatchOperation} by token or throw an exception if token is not valid.
+	 * Get a {@link BatchOperation} by token or throw an exception if token is
+	 * not valid.
 	 * 
 	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchOperation assertBatchOperation(IHBaseContext context, String token)
-			throws SiteWhereException {
+	public static BatchOperation assertBatchOperation(IHBaseContext context, String token) throws SiteWhereException {
 		BatchOperation existing = getBatchOperationByToken(context, token);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
@@ -227,8 +224,9 @@ public class HBaseBatchOperation {
 	}
 
 	/**
-	 * Get the unique device identifier based on the long value associated with the batch
-	 * operation UUID. This will be a subset of the full 8-bit long value.
+	 * Get the unique device identifier based on the long value associated with
+	 * the batch operation UUID. This will be a subset of the full 8-bit long
+	 * value.
 	 * 
 	 * @param value
 	 * @return
@@ -261,7 +259,7 @@ public class HBaseBatchOperation {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

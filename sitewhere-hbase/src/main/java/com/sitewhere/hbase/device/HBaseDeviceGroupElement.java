@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,12 +91,12 @@ public class HBaseDeviceGroupElement {
 
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceGroupElement(element);
 
-		HTableInterface devices = null;
+		Table devices = null;
 		try {
 			devices = getDeviceTableInterface(context);
 			Put put = new Put(elementKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-			put.add(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER, getCombinedIdentifier(request));
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER, getCombinedIdentifier(request));
 			devices.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create device group element.", e);
@@ -136,7 +136,7 @@ public class HBaseDeviceGroupElement {
 	 */
 	protected static List<IDeviceGroupElement> deleteElements(IHBaseContext context, String groupToken,
 			List<byte[]> combinedIds) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
@@ -201,7 +201,7 @@ public class HBaseDeviceGroupElement {
 	 * @throws SiteWhereException
 	 */
 	public static void deleteElements(IHBaseContext context, String groupToken) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
@@ -254,7 +254,7 @@ public class HBaseDeviceGroupElement {
 	 */
 	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(IHBaseContext context, String groupToken,
 			ISearchCriteria criteria) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
@@ -354,7 +354,7 @@ public class HBaseDeviceGroupElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

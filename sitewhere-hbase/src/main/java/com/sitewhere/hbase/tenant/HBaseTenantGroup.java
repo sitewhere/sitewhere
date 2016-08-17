@@ -6,9 +6,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -165,7 +165,7 @@ public class HBaseTenantGroup {
 	 * @throws SiteWhereException
 	 */
 	public static Long allocateNextElementId(IHBaseContext context, byte[] primary) throws SiteWhereException {
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUserTableInterface(context);
 			Increment increment = new Increment(primary);
@@ -251,7 +251,7 @@ public class HBaseTenantGroup {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getUserTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getUserTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.hbase.IHBaseContext;
@@ -20,7 +20,8 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Unique id mapper that generates UUIDs as keys and matches them to integer values.
+ * Unique id mapper that generates UUIDs as keys and matches them to integer
+ * values.
  * 
  * @author Derek
  */
@@ -31,7 +32,8 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 	}
 
 	/**
-	 * Create a UUID and add it to the UID table with corresponding numeric value.
+	 * Create a UUID and add it to the UID table with corresponding numeric
+	 * value.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
@@ -57,7 +59,8 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 	}
 
 	/**
-	 * Uses a counter row to keep unique values for the given key indicator type.
+	 * Uses a counter row to keep unique values for the given key indicator
+	 * type.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
@@ -67,11 +70,10 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 		counterRow.put(UniqueIdType.CounterPlaceholder.getIndicator());
 		counterRow.put(getKeyIndicator());
 		byte[] counterKey = counterRow.array();
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
-			return uids.incrementColumnValue(counterKey, ISiteWhereHBase.FAMILY_ID, UniqueIdMap.VALUE_QUAL,
-					1L);
+			return uids.incrementColumnValue(counterKey, ISiteWhereHBase.FAMILY_ID, UniqueIdMap.VALUE_QUAL, 1L);
 		} catch (IOException e) {
 			throw new SiteWhereException("Error scanning user rows.", e);
 		} finally {

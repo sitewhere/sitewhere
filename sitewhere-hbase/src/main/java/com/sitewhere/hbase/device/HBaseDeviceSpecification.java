@@ -13,9 +13,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -283,7 +283,7 @@ public class HBaseDeviceSpecification {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextCommandId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowKey(specId);
-			HTableInterface devices = null;
+			Table devices = null;
 			try {
 				devices = getDeviceTableInterface(context);
 				Increment increment = new Increment(primary);
@@ -379,7 +379,7 @@ public class HBaseDeviceSpecification {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

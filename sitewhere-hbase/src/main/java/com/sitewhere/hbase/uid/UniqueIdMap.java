@@ -16,11 +16,11 @@ import java.util.Map;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.hbase.IHBaseContext;
@@ -60,8 +60,8 @@ public abstract class UniqueIdMap<N, V> {
 	}
 
 	/**
-	 * Create mapping and reverse mapping in UID table. Create value-to-name first, so if
-	 * it fails we do not have names without reverse mappings.
+	 * Create mapping and reverse mapping in UID table. Create value-to-name
+	 * first, so if it fails we do not have names without reverse mappings.
 	 * 
 	 * @param name
 	 * @param value
@@ -98,11 +98,11 @@ public abstract class UniqueIdMap<N, V> {
 		nameBuffer.put(nameBytes);
 		byte[] valueBytes = convertValue(value);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Put put = new Put(nameBuffer.array());
-			put.add(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, valueBytes);
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, valueBytes);
 			uids.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to store value mapping in UID table.", e);
@@ -124,7 +124,7 @@ public abstract class UniqueIdMap<N, V> {
 		nameBuffer.put(keyIndicator);
 		nameBuffer.put(nameBytes);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Delete delete = new Delete(nameBuffer.array());
@@ -151,11 +151,11 @@ public abstract class UniqueIdMap<N, V> {
 		valueBuffer.put(valueBytes);
 		byte[] nameBytes = convertName(name);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Put put = new Put(valueBuffer.array());
-			put.add(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, nameBytes);
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, nameBytes);
 			uids.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to store value mapping in UID table.", e);
@@ -177,7 +177,7 @@ public abstract class UniqueIdMap<N, V> {
 		valueBuffer.put(valueIndicator);
 		valueBuffer.put(valueBytes);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Delete delete = new Delete(valueBuffer.array());
@@ -234,7 +234,7 @@ public abstract class UniqueIdMap<N, V> {
 		byte[] startKey = { startByte };
 		byte[] stopKey = { stopByte };
 
-		HTableInterface uids = null;
+		Table uids = null;
 		ResultScanner scanner = null;
 		try {
 			uids = getUidTableInterface(context);
@@ -290,7 +290,7 @@ public abstract class UniqueIdMap<N, V> {
 		nameBuffer.put(keyIndicator);
 		nameBuffer.put(nameBytes);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Get get = new Get(nameBuffer.array());
@@ -338,7 +338,7 @@ public abstract class UniqueIdMap<N, V> {
 		valueBuffer.put(valueIndicator);
 		valueBuffer.put(valueBytes);
 
-		HTableInterface uids = null;
+		Table uids = null;
 		try {
 			uids = getUidTableInterface(context);
 			Get get = new Get(valueBuffer.array());
@@ -383,7 +383,7 @@ public abstract class UniqueIdMap<N, V> {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getUidTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getUidTableInterface(IHBaseContext context) throws SiteWhereException {
 		return HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
 	}
 }

@@ -16,11 +16,11 @@ import java.util.UUID;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -110,7 +110,7 @@ public class HBaseDeviceCommand {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
 
-		HTableInterface devices = null;
+		Table devices = null;
 		ResultScanner scanner = null;
 
 		try {
@@ -132,8 +132,7 @@ public class HBaseDeviceCommand {
 				}
 
 				if ((shouldAdd) && (type != null) && (payload != null)) {
-					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(
-							payload));
+					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(payload));
 				}
 			}
 			return results;
@@ -155,14 +154,13 @@ public class HBaseDeviceCommand {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand getDeviceCommandByToken(IHBaseContext context, String token)
-			throws SiteWhereException {
+	public static DeviceCommand getDeviceCommandByToken(IHBaseContext context, String token) throws SiteWhereException {
 		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(token);
 		if (rowkey == null) {
 			return null;
 		}
 
-		HTableInterface devices = null;
+		Table devices = null;
 		try {
 			devices = getDeviceTableInterface(context);
 			Get get = new Get(rowkey);
@@ -202,7 +200,8 @@ public class HBaseDeviceCommand {
 	}
 
 	/**
-	 * Delete an existing device command (or mark as deleted if 'force' is not true).
+	 * Delete an existing device command (or mark as deleted if 'force' is not
+	 * true).
 	 * 
 	 * @param context
 	 * @param token
@@ -218,7 +217,7 @@ public class HBaseDeviceCommand {
 		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(token);
 		if (force) {
 			context.getDeviceIdManager().getSpecificationKeys().delete(token);
-			HTableInterface devices = null;
+			Table devices = null;
 			try {
 				Delete delete = new Delete(rowkey);
 				devices = getDeviceTableInterface(context);
@@ -233,12 +232,12 @@ public class HBaseDeviceCommand {
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
 			byte[] updated = context.getPayloadMarshaler().encodeDeviceCommand(existing);
 
-			HTableInterface devices = null;
+			Table devices = null;
 			try {
 				devices = getDeviceTableInterface(context);
 				Put put = new Put(rowkey);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				devices.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to set deleted flag for device command.", e);
@@ -257,8 +256,7 @@ public class HBaseDeviceCommand {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand assertDeviceCommand(IHBaseContext context, String token)
-			throws SiteWhereException {
+	public static DeviceCommand assertDeviceCommand(IHBaseContext context, String token) throws SiteWhereException {
 		DeviceCommand existing = getDeviceCommandByToken(context, token);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
@@ -279,7 +277,7 @@ public class HBaseDeviceCommand {
 		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(command.getToken());
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommand(command);
 
-		HTableInterface devices = null;
+		Table devices = null;
 		try {
 			devices = getDeviceTableInterface(context);
 			Put put = new Put(rowkey);
@@ -301,7 +299,7 @@ public class HBaseDeviceCommand {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

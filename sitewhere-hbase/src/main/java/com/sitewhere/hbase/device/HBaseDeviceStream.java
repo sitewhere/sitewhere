@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +80,7 @@ public class HBaseDeviceStream {
 			DeviceStream newStream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
 			byte[] payload = context.getPayloadMarshaler().encode(newStream);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(streamKey);
@@ -115,7 +115,7 @@ public class HBaseDeviceStream {
 		}
 		byte[] streamKey = getDeviceStreamKey(assnKey, streamId);
 
-		HTableInterface sites = null;
+		Table sites = null;
 		try {
 			sites = getSitesTableInterface(context);
 			Get get = new Get(streamKey);
@@ -152,7 +152,7 @@ public class HBaseDeviceStream {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
 
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			sites = getSitesTableInterface(context);
@@ -205,7 +205,7 @@ public class HBaseDeviceStream {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

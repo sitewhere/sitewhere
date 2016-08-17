@@ -14,13 +14,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,13 +67,13 @@ public class HBaseUtils {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
-		HTableInterface table = null;
+		Table table = null;
 		try {
 			table = getTableInterface(context, tableName);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			for (byte[] key : qualifiers.keySet()) {
-				put.add(ISiteWhereHBase.FAMILY_ID, key, qualifiers.get(key));
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, key, qualifiers.get(key));
 			}
 			table.put(put);
 		} catch (IOException e) {
@@ -101,7 +102,7 @@ public class HBaseUtils {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
-		HTableInterface table = null;
+		Table table = null;
 		try {
 			table = getTableInterface(context, tableName);
 			Put put = new Put(primary);
@@ -131,7 +132,7 @@ public class HBaseUtils {
 			Class<T> type) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 
-		HTableInterface table = null;
+		Table table = null;
 		try {
 			table = getTableInterface(context, tableName);
 			Get get = new Get(primary);
@@ -196,7 +197,7 @@ public class HBaseUtils {
 	 */
 	public static <T> List<T> getRecordList(IHBaseContext context, byte[] tableName, IRowKeyBuilder builder,
 			boolean includeDeleted, Class<T> clazz, IFilter<T> filter) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getTableInterface(context, tableName);
@@ -264,7 +265,7 @@ public class HBaseUtils {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		if (force) {
 			builder.deleteReference(context, token);
-			HTableInterface table = null;
+			Table table = null;
 			try {
 				Delete delete = new Delete(primary);
 				table = getTableInterface(context, tableName);
@@ -279,14 +280,14 @@ public class HBaseUtils {
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
 			byte[] updated = marshaler.encode(existing);
 
-			HTableInterface table = null;
+			Table table = null;
 			try {
 				table = getTableInterface(context, tableName);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 						marshaler.getEncoding().getIndicator());
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				table.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to flag deleted for token: " + token, e);
@@ -315,7 +316,7 @@ public class HBaseUtils {
 
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		builder.deleteReference(context, token);
-		HTableInterface table = null;
+		Table table = null;
 		try {
 			Delete delete = new Delete(primary);
 			table = getTableInterface(context, tableName);
@@ -337,8 +338,8 @@ public class HBaseUtils {
 	 * @throws SiteWhereException
 	 */
 	public static void addPayloadFields(PayloadEncoding encoding, Put put, byte[] encoded) throws SiteWhereException {
-		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE, encoding.getIndicator());
-		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, encoded);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE, encoding.getIndicator());
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, encoded);
 	}
 
 	/**
@@ -360,7 +361,7 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static HTableInterface getTableInterface(IHBaseContext context, byte[] tableName) throws SiteWhereException {
+	public static Table getTableInterface(IHBaseContext context, byte[] tableName) throws SiteWhereException {
 		return (context.getTenant() == null) ? context.getClient().getTableInterface(tableName)
 				: context.getClient().getTableInterface(context.getTenant(), tableName);
 	}
@@ -371,13 +372,29 @@ public class HBaseUtils {
 	 * @param table
 	 * @throws SiteWhereException
 	 */
-	public static void closeCleanly(HTableInterface table) throws SiteWhereException {
+	public static void closeCleanly(Table table) throws SiteWhereException {
 		try {
 			if (table != null) {
 				table.close();
 			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception closing table.", e);
+		}
+	}
+
+	/**
+	 * Prevent having to add custom {@link IOException} handling.
+	 * 
+	 * @param table
+	 * @throws SiteWhereException
+	 */
+	public static void closeCleanly(BufferedMutator mutator) throws SiteWhereException {
+		try {
+			if (mutator != null) {
+				mutator.close();
+			}
+		} catch (IOException e) {
+			throw new SiteWhereException("Exception closing mutator.", e);
 		}
 	}
 }

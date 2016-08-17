@@ -10,9 +10,9 @@ package com.sitewhere.hbase.device;
 import java.io.IOException;
 
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -33,9 +33,9 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 public class HBaseDeviceStreamData {
 
 	/**
-	 * Create device stream data by storing it in both the events table and streams table.
-	 * The version in the streams table has the full payload while the version in the
-	 * events table has a pointer to the streams entry.
+	 * Create device stream data by storing it in both the events table and
+	 * streams table. The version in the streams table has the full payload
+	 * while the version in the events table has a pointer to the streams entry.
 	 * 
 	 * @param context
 	 * @param assignment
@@ -43,8 +43,8 @@ public class HBaseDeviceStreamData {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceStreamData createDeviceStreamData(IHBaseContext context,
-			IDeviceAssignment assignment, IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+	public static DeviceStreamData createDeviceStreamData(IHBaseContext context, IDeviceAssignment assignment,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		// Save a corresponding event.
 		IDeviceStreamData event = HBaseDeviceEvent.createDeviceStreamData(context, assignment, request);
 
@@ -58,11 +58,11 @@ public class HBaseDeviceStreamData {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceStreamData(sdata);
 		byte[] seqnum = Bytes.toBytes(request.getSequenceNumber());
 
-		HTableInterface streams = null;
+		Table streams = null;
 		try {
 			streams = getStreamsTableInterface(context);
 			Put put = new Put(streamKey);
-			put.add(ISiteWhereHBase.FAMILY_ID, seqnum, payload);
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, seqnum, payload);
 			streams.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to store stream data.", e);
@@ -89,7 +89,7 @@ public class HBaseDeviceStreamData {
 		byte[] streamKey = HBaseDeviceStream.getDeviceStreamKey(assnKey, streamId);
 		byte[] seqnum = Bytes.toBytes(sequenceNumber);
 
-		HTableInterface streams = null;
+		Table streams = null;
 		try {
 			streams = getStreamsTableInterface(context);
 			Get get = new Get(streamKey);
@@ -115,8 +115,7 @@ public class HBaseDeviceStreamData {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getStreamsTableInterface(IHBaseContext context)
-			throws SiteWhereException {
+	protected static Table getStreamsTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.STREAMS_TABLE_NAME);
 	}
 }

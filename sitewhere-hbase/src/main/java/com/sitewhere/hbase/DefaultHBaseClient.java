@@ -11,10 +11,12 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,10 +51,10 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	private Configuration configuration;
 
 	/** HBase connection */
-	private HConnection connection;
+	private Connection connection;
 
 	/** Standard admin interface */
-	private HBaseAdmin admin;
+	private Admin admin;
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +69,8 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 			configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(getZookeeperClientPort()));
 			configuration.set("zookeeper.znode.parent", getZookeeperZnodeParent());
 			configuration.set("zookeeper.znode.rootserver", getZookeeperZnodeRootServer());
-			this.admin = new HBaseAdmin(configuration);
-			this.connection = HConnectionManager.createConnection(configuration);
+			this.connection = ConnectionFactory.createConnection(configuration);
+			this.admin = connection.getAdmin();
 		} catch (Exception e) {
 			throw new SiteWhereException(e);
 		}
@@ -98,7 +100,7 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getAdmin()
 	 */
 	@Override
-	public HBaseAdmin getAdmin() {
+	public Admin getAdmin() {
 		return admin;
 	}
 
@@ -118,11 +120,9 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[])
 	 */
 	@Override
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException {
+	public Table getTableInterface(byte[] tableName) throws SiteWhereException {
 		try {
-			HTableInterface hintf = getConnection().getTable(tableName);
-			hintf.setAutoFlushTo(true);
-			return hintf;
+			return getConnection().getTable(TableName.valueOf(tableName));
 		} catch (IOException e) {
 			throw new SiteWhereException("IOException getting HBase table interface.", e);
 		}
@@ -133,10 +133,10 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * 
 	 * @see
 	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere
-	 * .spi.user .ITenant, byte[])
+	 * .spi.tenant.ITenant, byte[])
 	 */
 	@Override
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
+	public Table getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
 		return getTableInterface(tenant, tableName, false);
 	}
 
@@ -148,19 +148,32 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 * .spi.user .ITenant, byte[], boolean)
 	 */
 	@Override
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
-			throws SiteWhereException {
+	public Table getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush) throws SiteWhereException {
 		try {
 			byte[] tablename = SiteWhereTables.getTenantTableName(tenant, tableName);
-			HTableInterface hintf = getConnection().getTable(tablename);
-			hintf.setAutoFlushTo(autoFlush);
-			return hintf;
+			return getConnection().getTable(TableName.valueOf(tablename));
 		} catch (IOException e) {
 			throw new SiteWhereException("IOException getting HBase table interface.", e);
 		}
 	}
 
-	public HConnection getConnection() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getBufferedMutator(com.
+	 * sitewhere.spi.tenant.ITenant, byte[])
+	 */
+	@Override
+	public BufferedMutator getBufferedMutator(ITenant tenant, byte[] tableName) throws SiteWhereException {
+		try {
+			byte[] tablename = SiteWhereTables.getTenantTableName(tenant, tableName);
+			return getConnection().getBufferedMutator(TableName.valueOf(tablename));
+		} catch (IOException e) {
+			throw new SiteWhereException("IOException getting HBase buffered mutator.", e);
+		}
+	}
+
+	public Connection getConnection() {
 		return connection;
 	}
 

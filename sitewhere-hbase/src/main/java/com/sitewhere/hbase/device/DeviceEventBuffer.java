@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +55,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	private ExecutorService executor;
 
 	/** Events table interface */
-	private HTableInterface events;
+	private BufferedMutator events;
 
 	public DeviceEventBuffer(IHBaseContext context) {
 		this.context = context;
@@ -67,7 +67,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	 * @see com.sitewhere.hbase.device.IDeviceEventBuffer#start()
 	 */
 	public void start() throws SiteWhereException {
-		events = context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
+		events = context.getClient().getBufferedMutator(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(new EventSender());
 	}
@@ -127,8 +127,8 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 						|| ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
 					if (puts.size() > 0) {
 						try {
-							events.put(puts);
-							events.flushCommits();
+							events.mutate(puts);
+							events.flush();
 							puts.clear();
 						} catch (IOException e) {
 							LOGGER.error("Unable to save event data.", e);

@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -62,12 +62,13 @@ public class HBaseZone {
 		// Associate new UUID with zone row key.
 		String uuid = context.getDeviceIdManager().getZoneKeys().createUniqueId(rowkey);
 
-		// Use common processing logic so all backend implementations work the same.
+		// Use common processing logic so all backend implementations work the
+		// same.
 		Zone zone = SiteWherePersistence.zoneCreateLogic(request, site.getToken(), uuid);
 
 		byte[] payload = context.getPayloadMarshaler().encodeZone(zone);
 
-		HTableInterface sites = null;
+		Table sites = null;
 		try {
 			sites = getSitesTableInterface(context);
 			Put put = new Put(rowkey);
@@ -95,13 +96,14 @@ public class HBaseZone {
 			throws SiteWhereException {
 		Zone updated = getZone(context, token);
 
-		// Use common update logic so that backend implemetations act the same way.
+		// Use common update logic so that backend implemetations act the same
+		// way.
 		SiteWherePersistence.zoneUpdateLogic(request, updated);
 
 		byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
 		byte[] payload = context.getPayloadMarshaler().encodeZone(updated);
 
-		HTableInterface sites = null;
+		Table sites = null;
 		try {
 			sites = getSitesTableInterface(context);
 			Put put = new Put(zoneId);
@@ -129,7 +131,7 @@ public class HBaseZone {
 			return null;
 		}
 
-		HTableInterface sites = null;
+		Table sites = null;
 		try {
 			sites = getSitesTableInterface(context);
 			Get get = new Get(rowkey);
@@ -159,8 +161,7 @@ public class HBaseZone {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Zone deleteZone(IHBaseContext context, String token, boolean force)
-			throws SiteWhereException {
+	public static Zone deleteZone(IHBaseContext context, String token, boolean force) throws SiteWhereException {
 		byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
 		if (zoneId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
@@ -169,7 +170,7 @@ public class HBaseZone {
 		existing.setDeleted(true);
 		if (force) {
 			context.getDeviceIdManager().getZoneKeys().delete(token);
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				Delete delete = new Delete(zoneId);
 				sites = getSitesTableInterface(context);
@@ -183,12 +184,12 @@ public class HBaseZone {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
 			byte[] payload = context.getPayloadMarshaler().encodeZone(existing);
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(zoneId);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				sites.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to set deleted flag for zone.", e);
@@ -215,8 +216,8 @@ public class HBaseZone {
 	}
 
 	/**
-	 * Truncate zone id value to expected length. This will be a subset of the full 8-bit
-	 * long value.
+	 * Truncate zone id value to expected length. This will be a subset of the
+	 * full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return
@@ -235,7 +236,7 @@ public class HBaseZone {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

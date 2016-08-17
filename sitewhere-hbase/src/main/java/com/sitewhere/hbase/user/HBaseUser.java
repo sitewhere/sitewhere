@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -56,8 +56,7 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User createUser(IHBaseContext context, IUserCreateRequest request)
-			throws SiteWhereException {
+	public static User createUser(IHBaseContext context, IUserCreateRequest request) throws SiteWhereException {
 		User existing = getUserByUsername(context, request.getUsername());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
@@ -69,7 +68,7 @@ public class HBaseUser {
 		byte[] primary = getUserRowKey(request.getUsername());
 		byte[] payload = context.getPayloadMarshaler().encodeUser(user);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
@@ -93,8 +92,7 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User importUser(IHBaseContext context, IUser imported, boolean overwrite)
-			throws SiteWhereException {
+	public static User importUser(IHBaseContext context, IUser imported, boolean overwrite) throws SiteWhereException {
 		if (!overwrite) {
 			User existing = getUserByUsername(context, imported.getUsername());
 			if (existing != null) {
@@ -107,7 +105,7 @@ public class HBaseUser {
 		byte[] primary = getUserRowKey(imported.getUsername());
 		byte[] payload = context.getPayloadMarshaler().encodeUser(user);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
@@ -142,7 +140,7 @@ public class HBaseUser {
 		byte[] primary = getUserRowKey(username);
 		byte[] payload = context.getPayloadMarshaler().encodeUser(updated);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
@@ -165,8 +163,7 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User deleteUser(IHBaseContext context, String username, boolean force)
-			throws SiteWhereException {
+	public static User deleteUser(IHBaseContext context, String username, boolean force) throws SiteWhereException {
 		User existing = getUserByUsername(context, username);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
@@ -174,7 +171,7 @@ public class HBaseUser {
 		existing.setDeleted(true);
 		byte[] primary = getUserRowKey(username);
 		if (force) {
-			HTableInterface users = null;
+			Table users = null;
 			try {
 				users = getUsersTableInterface(context);
 				Delete delete = new Delete(primary);
@@ -188,12 +185,12 @@ public class HBaseUser {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
 			byte[] payload = context.getPayloadMarshaler().encodeUser(existing);
-			HTableInterface users = null;
+			Table users = null;
 			try {
 				users = getUsersTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				users.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to set deleted flag for user.", e);
@@ -216,7 +213,7 @@ public class HBaseUser {
 	public static User getUserByUsername(IHBaseContext context, String username) throws SiteWhereException {
 		byte[] rowkey = getUserRowKey(username);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Get get = new Get(rowkey);
@@ -246,8 +243,7 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User authenticate(IHBaseContext context, String username, String password)
-			throws SiteWhereException {
+	public static User authenticate(IHBaseContext context, String username, String password) throws SiteWhereException {
 		if (password == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 					HttpServletResponse.SC_BAD_REQUEST);
@@ -268,7 +264,7 @@ public class HBaseUser {
 		byte[] primary = getUserRowKey(username);
 		byte[] payload = context.getPayloadMarshaler().encodeUser(existing);
 
-		HTableInterface users = null;
+		Table users = null;
 		try {
 			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
@@ -290,10 +286,9 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IUser> listUsers(IHBaseContext context, IUserSearchCriteria criteria)
-			throws SiteWhereException {
+	public static List<IUser> listUsers(IHBaseContext context, IUserSearchCriteria criteria) throws SiteWhereException {
 
-		HTableInterface users = null;
+		Table users = null;
 		ResultScanner scanner = null;
 		try {
 			users = getUsersTableInterface(context);
@@ -310,8 +305,7 @@ public class HBaseUser {
 				byte[] payloadType = null;
 				byte[] payload = null;
 				for (byte[] qualifier : row.keySet()) {
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier))
-							&& (!criteria.isIncludeDeleted())) {
+					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!criteria.isIncludeDeleted())) {
 						shouldAdd = false;
 					}
 					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
@@ -322,8 +316,7 @@ public class HBaseUser {
 					}
 				}
 				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeUser(
-							payload));
+					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeUser(payload));
 				}
 			}
 			return matches;
@@ -349,8 +342,8 @@ public class HBaseUser {
 			throws SiteWhereException {
 		IUser user = getUserByUsername(context, username);
 		List<String> userAuths = user.getAuthorities();
-		List<IGrantedAuthority> all =
-				HBaseGrantedAuthority.listGrantedAuthorities(context, new GrantedAuthoritySearchCriteria());
+		List<IGrantedAuthority> all = HBaseGrantedAuthority.listGrantedAuthorities(context,
+				new GrantedAuthoritySearchCriteria());
 		List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
 		for (IGrantedAuthority auth : all) {
 			if (userAuths.contains(auth.getAuthority())) {
@@ -381,7 +374,7 @@ public class HBaseUser {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

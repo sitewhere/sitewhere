@@ -14,11 +14,11 @@ import java.util.List;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,8 +64,8 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchElement createBatchElement(IHBaseContext context, HTableInterface devices,
-			IBatchElement request) throws SiteWhereException {
+	public static IBatchElement createBatchElement(IHBaseContext context, Table devices, IBatchElement request)
+			throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(context, request.getBatchOperationToken(), request.getIndex());
 
 		// Use common processing logic so all backend implementations work the
@@ -79,8 +79,8 @@ public class HBaseBatchElement {
 		try {
 			Put put = new Put(elementKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
-			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
 			devices.put(put);
 		} catch (IOException e) {
@@ -102,7 +102,7 @@ public class HBaseBatchElement {
 	 */
 	public static IBatchElement updateBatchElement(IHBaseContext context, String operationToken, long index,
 			IBatchElementUpdateRequest request) throws SiteWhereException {
-		HTableInterface devices = null;
+		Table devices = null;
 		try {
 			devices = getDeviceTableInterface(context);
 			BatchElement element = getBatchElement(context, devices, operationToken, index);
@@ -113,8 +113,8 @@ public class HBaseBatchElement {
 
 			Put put = new Put(elementKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
-			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
 			devices.put(put);
 			return element;
@@ -136,8 +136,8 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchElement getBatchElement(IHBaseContext context, HTableInterface devices, String operationToken,
-			long index) throws SiteWhereException {
+	public static BatchElement getBatchElement(IHBaseContext context, Table devices, String operationToken, long index)
+			throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(context, operationToken, index);
 		try {
 			Get get = new Get(elementKey);
@@ -167,7 +167,7 @@ public class HBaseBatchElement {
 	 */
 	public static SearchResults<IBatchElement> listBatchElements(IHBaseContext context, String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
@@ -213,7 +213,7 @@ public class HBaseBatchElement {
 	 * @throws SiteWhereException
 	 */
 	public static void deleteBatchElements(IHBaseContext context, String batchToken) throws SiteWhereException {
-		HTableInterface table = null;
+		Table table = null;
 		ResultScanner scanner = null;
 		try {
 			table = getDeviceTableInterface(context);
@@ -294,7 +294,7 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

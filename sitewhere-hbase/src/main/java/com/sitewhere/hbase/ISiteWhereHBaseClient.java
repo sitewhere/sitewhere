@@ -8,8 +8,9 @@
 package com.sitewhere.hbase;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.Table;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -33,7 +34,7 @@ public interface ISiteWhereHBaseClient {
 	 * 
 	 * @return
 	 */
-	public HBaseAdmin getAdmin();
+	public Admin getAdmin();
 
 	/**
 	 * Get a table that has global scope.
@@ -42,7 +43,7 @@ public interface ISiteWhereHBaseClient {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException;
+	public Table getTableInterface(byte[] tableName) throws SiteWhereException;
 
 	/**
 	 * Get a table with tenant scope. Auto flush is disabled.
@@ -52,7 +53,7 @@ public interface ISiteWhereHBaseClient {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
+	public Table getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
 
 	/**
 	 * Get a table with tenant scope.
@@ -63,6 +64,16 @@ public interface ISiteWhereHBaseClient {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
-			throws SiteWhereException;
+	@Deprecated
+	public Table getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush) throws SiteWhereException;
+
+	/**
+	 * Get buffered mutator with tenant scope.
+	 * 
+	 * @param tenant
+	 * @param tableName
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public BufferedMutator getBufferedMutator(ITenant tenant, byte[] tableName) throws SiteWhereException;
 }

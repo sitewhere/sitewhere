@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,7 +126,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceMeasurements(measurements);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
@@ -190,7 +190,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceLocation(location);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
@@ -253,7 +253,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceAlert(alert);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
@@ -326,7 +326,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceStreamData(sdata);
 
 		Put put = new Put(eventKey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		return sdata;
@@ -394,7 +394,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandInvocation(ci);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		return ci;
@@ -467,7 +467,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceStateChange(state);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
@@ -533,7 +533,7 @@ public class HBaseDeviceEvent {
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandResponse(cr);
 
 		Put put = new Put(rowkey);
-		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
 		linkDeviceCommandResponseToInvocation(context, cr);
@@ -562,7 +562,7 @@ public class HBaseDeviceEvent {
 		byte[] row = keys[0];
 		byte[] qual = keys[1];
 
-		HTableInterface events = null;
+		Table events = null;
 		try {
 			events = getEventsTableInterface(context);
 			// Increment the result counter.
@@ -577,7 +577,7 @@ public class HBaseDeviceEvent {
 			seqkey.put(counterBytes);
 
 			Put put = new Put(row);
-			put.add(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().getBytes());
+			put.addColumn(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().getBytes());
 			events.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to link command response.", e);
@@ -600,7 +600,7 @@ public class HBaseDeviceEvent {
 		byte[] row = keys[0];
 		byte[] qual = keys[1];
 
-		HTableInterface events = null;
+		Table events = null;
 		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
 		try {
 			events = getEventsTableInterface(context);
@@ -724,7 +724,7 @@ public class HBaseDeviceEvent {
 			endKey = getAbsoluteEndKey(assnKey);
 		}
 
-		HTableInterface events = null;
+		Table events = null;
 		ResultScanner scanner = null;
 		try {
 			events = getEventsTableInterface(context);
@@ -814,7 +814,7 @@ public class HBaseDeviceEvent {
 		byte[] startPrefix = HBaseSite.getAssignmentRowKey(siteId);
 		byte[] afterPrefix = HBaseSite.getAfterAssignmentRowKey(siteId);
 
-		HTableInterface events = null;
+		Table events = null;
 		ResultScanner scanner = null;
 		try {
 			events = getEventsTableInterface(context);
@@ -1073,7 +1073,7 @@ public class HBaseDeviceEvent {
 		byte[][] keys = getDecodedEventId(id);
 		byte[] row = keys[0];
 		byte[] qual = keys[1];
-		HTableInterface events = null;
+		Table events = null;
 		try {
 			events = getEventsTableInterface(context);
 			Get get = new Get(row);
@@ -1141,7 +1141,7 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getEventsTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getEventsTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 	}
 }

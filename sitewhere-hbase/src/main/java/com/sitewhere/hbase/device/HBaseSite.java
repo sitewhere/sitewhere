@@ -13,12 +13,12 @@ import java.util.Date;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 import org.apache.hadoop.hbase.filter.ByteArrayComparable;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
@@ -103,13 +103,13 @@ public class HBaseSite {
 			byte[] payload = context.getPayloadMarshaler().encodeSite(site);
 			byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, maxLong);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, maxLong);
 				sites.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to create site.", e);
@@ -145,7 +145,7 @@ public class HBaseSite {
 				return null;
 			}
 			byte[] primary = getPrimaryRowkey(siteId);
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Get get = new Get(primary);
@@ -199,7 +199,7 @@ public class HBaseSite {
 			byte[] rowkey = getPrimaryRowkey(siteId);
 			byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(rowkey);
@@ -253,7 +253,7 @@ public class HBaseSite {
 			IAssignmentSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) " + siteToken,
 				LOGGER);
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
@@ -321,7 +321,7 @@ public class HBaseSite {
 			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall,
 				"listDeviceAssignmentsWithLastInteraction (HBase) " + siteToken, LOGGER);
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
@@ -394,7 +394,7 @@ public class HBaseSite {
 			ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listMissingDeviceAssignments (HBase) " + siteToken,
 				LOGGER);
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
@@ -490,7 +490,7 @@ public class HBaseSite {
 	public static void locateDeviceAssignmentsForAsset(IHBaseContext context, Pager<IDeviceAssignment> pager,
 			String siteToken, String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
 			throws SiteWhereException {
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
@@ -584,7 +584,7 @@ public class HBaseSite {
 	protected static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
 			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow, Class<T> type,
 			Class<I> iface) throws SiteWhereException {
-		HTableInterface sites = null;
+		Table sites = null;
 		ResultScanner scanner = null;
 		try {
 			sites = getSitesTableInterface(context);
@@ -648,7 +648,7 @@ public class HBaseSite {
 			byte[] rowkey = getPrimaryRowkey(siteId);
 			if (force) {
 				context.getDeviceIdManager().getSiteKeys().delete(token);
-				HTableInterface sites = null;
+				Table sites = null;
 				try {
 					Delete delete = new Delete(rowkey);
 					sites = getSitesTableInterface(context);
@@ -665,12 +665,12 @@ public class HBaseSite {
 				byte[] marker = { (byte) 0x01 };
 				SiteWherePersistence.setUpdatedEntityMetadata(existing);
 				byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
-				HTableInterface sites = null;
+				Table sites = null;
 				try {
 					sites = getSitesTableInterface(context);
 					Put put = new Put(rowkey);
 					HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+					put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 					sites.put(put);
 					if (context.getCacheProvider() != null) {
 						context.getCacheProvider().getSiteCache().remove(token);
@@ -700,7 +700,7 @@ public class HBaseSite {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextZoneId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Increment increment = new Increment(primary);
@@ -730,7 +730,7 @@ public class HBaseSite {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextAssignmentId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Increment increment = new Increment(primary);
@@ -824,7 +824,7 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

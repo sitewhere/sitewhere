@@ -43,7 +43,7 @@ public class SiteWhereTables {
 			throws SiteWhereException {
 		try {
 			String tnameStr = new String(tableName);
-			if (!hbase.getAdmin().tableExists(tableName)) {
+			if (!hbase.getAdmin().tableExists(TableName.valueOf(tableName))) {
 				LOGGER.info("Table '" + tnameStr + "' does not exist. Creating table...");
 				HTableDescriptor table = new HTableDescriptor(TableName.valueOf(tableName));
 				HColumnDescriptor family = new HColumnDescriptor(ISiteWhereHBase.FAMILY_ID);
@@ -72,7 +72,7 @@ public class SiteWhereTables {
 		try {
 			String tnameStr = new String(tableName);
 			byte[] tenantTableName = getTenantTableName(context.getTenant(), tableName);
-			if (!context.getClient().getAdmin().tableExists(tenantTableName)) {
+			if (!context.getClient().getAdmin().tableExists(TableName.valueOf(tenantTableName))) {
 				LOGGER.info("Table '" + tnameStr + "' does not exist. Creating table...");
 				HTableDescriptor table = new HTableDescriptor(TableName.valueOf(tenantTableName));
 				HColumnDescriptor family = new HColumnDescriptor(ISiteWhereHBase.FAMILY_ID);

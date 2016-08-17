@@ -13,9 +13,9 @@ import java.util.Date;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,12 +102,13 @@ public class HBaseDeviceAssignment {
 			DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device, uuid);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(newAssignment);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, DeviceAssignmentStatus.Active.name().getBytes());
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
+						DeviceAssignmentStatus.Active.name().getBytes());
 				sites.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to create device assignment.", e);
@@ -152,7 +153,7 @@ public class HBaseDeviceAssignment {
 			}
 			byte[] primary = getPrimaryRowkey(assnKey);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Get get = new Get(primary);
@@ -210,7 +211,7 @@ public class HBaseDeviceAssignment {
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
@@ -252,11 +253,11 @@ public class HBaseDeviceAssignment {
 			byte[] updatedState = context.getPayloadMarshaler().encodeDeviceAssignmentState(state);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
 				sites.put(put);
 
 				// Make sure that cache is using updated assignment information.
@@ -295,12 +296,12 @@ public class HBaseDeviceAssignment {
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
 				sites.put(put);
 
 				// Make sure that cache is using updated assignment information.
@@ -342,12 +343,12 @@ public class HBaseDeviceAssignment {
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
-			HTableInterface sites = null;
+			Table sites = null;
 			try {
 				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
+				put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
 						DeviceAssignmentStatus.Released.name().getBytes());
 				sites.put(put);
 
@@ -400,7 +401,7 @@ public class HBaseDeviceAssignment {
 			}
 			if (force) {
 				context.getDeviceIdManager().getAssignmentKeys().delete(token);
-				HTableInterface sites = null;
+				Table sites = null;
 				try {
 					Delete delete = new Delete(primary);
 					sites = getSitesTableInterface(context);
@@ -414,14 +415,14 @@ public class HBaseDeviceAssignment {
 				byte[] marker = { (byte) 0x01 };
 				SiteWherePersistence.setUpdatedEntityMetadata(existing);
 				byte[] updated = context.getPayloadMarshaler().encodeDeviceAssignment(existing);
-				HTableInterface sites = null;
+				Table sites = null;
 				try {
 					sites = getSitesTableInterface(context);
 					Put put = new Put(primary);
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
+					put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 							context.getPayloadMarshaler().getEncoding().getIndicator());
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+					put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
+					put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 					sites.put(put);
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to set deleted flag for device assignment.", e);
@@ -495,7 +496,7 @@ public class HBaseDeviceAssignment {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static Table getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }
