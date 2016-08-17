@@ -5,6 +5,7 @@ dependencies {
     compile project(':sitewhere-core')
     compile (group: 'org.apache.curator', name: 'curator-framework', version:'2.5.0') {
 		exclude (module: 'log4j')   
+ 		exclude (module: 'slf4j-log4j12')   
     }
     compile group: 'org.apache.activemq', name: 'activemq-broker'
     compile files('lib/qpid-amqp-1-0-client-all-mod.jar')
