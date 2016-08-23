@@ -18,7 +18,8 @@ import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
- * Default implementation of {@link ITenantCreateRequest} for use in REST services.
+ * Default implementation of {@link ITenantCreateRequest} for use in REST
+ * services.
  * 
  * @author Derek
  */
@@ -42,9 +43,6 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 
 	/** List of users authorized for access */
 	private List<String> authorizedUserIds;
-
-	/** SiteWhere engine configuration */
-	private String engineConfiguration;
 
 	/*
 	 * (non-Javadoc)
@@ -75,7 +73,8 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getAuthenticationToken()
+	 * @see com.sitewhere.spi.user.request.ITenantCreateRequest#
+	 * getAuthenticationToken()
 	 */
 	public String getAuthenticationToken() {
 		return authenticationToken;
@@ -101,7 +100,9 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getAuthorizedUserIds()
+	 * @see
+	 * com.sitewhere.spi.user.request.ITenantCreateRequest#getAuthorizedUserIds(
+	 * )
 	 */
 	public List<String> getAuthorizedUserIds() {
 		return authorizedUserIds;
@@ -109,19 +110,6 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 
 	public void setAuthorizedUserIds(List<String> authorizedUserIds) {
 		this.authorizedUserIds = authorizedUserIds;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getEngineConfiguration()
-	 */
-	public String getEngineConfiguration() {
-		return engineConfiguration;
-	}
-
-	public void setEngineConfiguration(String engineConfiguration) {
-		this.engineConfiguration = engineConfiguration;
 	}
 
 	public static class Builder {

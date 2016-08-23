@@ -52,11 +52,4 @@ public interface ITenantCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public List<String> getAuthorizedUserIds();
-
-	/**
-	 * Get engine configuration details.
-	 * 
-	 * @return
-	 */
-	public String getEngineConfiguration();
 }

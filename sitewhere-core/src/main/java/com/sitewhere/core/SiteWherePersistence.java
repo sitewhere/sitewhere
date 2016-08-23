@@ -1314,7 +1314,6 @@ public class SiteWherePersistence {
 		tenant.setAuthenticationToken(request.getAuthenticationToken());
 
 		tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
-		tenant.setEngineConfiguration(request.getEngineConfiguration());
 
 		MetadataProvider.copy(request.getMetadata(), tenant);
 		SiteWherePersistence.initializeEntityMetadata(tenant);
@@ -1350,10 +1349,6 @@ public class SiteWherePersistence {
 		if (request.getAuthorizedUserIds() != null) {
 			existing.getAuthorizedUserIds().clear();
 			existing.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
-		}
-
-		if (request.getEngineConfiguration() != null) {
-			existing.setEngineConfiguration(request.getEngineConfiguration());
 		}
 
 		if (request.getMetadata() != null) {
