@@ -328,6 +328,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			MultiResourceCreateResponse response) {
 		String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : File.separator;
 		File rfile = new File(getRootFolder().getAbsolutePath() + middle + request.getPath());
+		rfile.toPath().getParent().toFile().mkdirs();
 		FileOutputStream fileOut = null;
 		try {
 			fileOut = new FileOutputStream(rfile);
@@ -342,11 +343,13 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			error.setPath(request.getPath());
 			error.setReason(ResourceCreateFailReason.StorageFailure);
 			response.getErrors().add(error);
+			LOGGER.error("Error creating resource file: " + rfile.getAbsolutePath(), e);
 		} catch (IOException e) {
 			ResourceCreateError error = new ResourceCreateError();
 			error.setPath(request.getPath());
 			error.setReason(ResourceCreateFailReason.StorageFailure);
 			response.getErrors().add(error);
+			LOGGER.error("Error writing resource file: " + rfile.getAbsolutePath(), e);
 		} finally {
 			IOUtils.closeQuietly(fileOut);
 		}
