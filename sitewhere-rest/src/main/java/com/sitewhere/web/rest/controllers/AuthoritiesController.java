@@ -37,6 +37,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -83,7 +84,7 @@ public class AuthoritiesController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
 		try {
-			IGrantedAuthority auth = SiteWhere.getServer().getUserManagement().createGrantedAuthority(input);
+			IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
 			return GrantedAuthority.copy(auth);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -107,7 +108,7 @@ public class AuthoritiesController extends RestController {
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthorityByName", LOGGER);
 		try {
-			IGrantedAuthority auth = SiteWhere.getServer().getUserManagement().getGrantedAuthorityByName(name);
+			IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
 			if (auth == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -137,7 +138,7 @@ public class AuthoritiesController extends RestController {
 		try {
 			List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
 			GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-			List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
+			List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
 			for (IGrantedAuthority auth : auths) {
 				authsConv.add(GrantedAuthority.copy(auth));
 			}
@@ -161,10 +162,20 @@ public class AuthoritiesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
 		try {
 			GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-			List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
+			List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
 			return GrantedAuthorityHierarchyBuilder.build(auths);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * Get user management implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IUserManagement getUserManagement() throws SiteWhereException {
+		return SiteWhere.getServer().getUserManagement();
 	}
 }

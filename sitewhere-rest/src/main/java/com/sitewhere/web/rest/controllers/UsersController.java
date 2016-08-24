@@ -43,6 +43,7 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -94,7 +95,7 @@ public class UsersController extends RestController {
 			if (input.getStatus() == null) {
 				input.setStatus(AccountStatus.Active);
 			}
-			IUser user = SiteWhere.getServer().getUserManagement().createUser(input);
+			IUser user = getUserManagement().createUser(input);
 			return User.copy(user);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -119,7 +120,7 @@ public class UsersController extends RestController {
 			@RequestBody UserCreateRequest input) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
 		try {
-			IUser user = SiteWhere.getServer().getUserManagement().updateUser(username, input);
+			IUser user = getUserManagement().updateUser(username, input);
 			return User.copy(user);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -143,8 +144,7 @@ public class UsersController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 		try {
-			IUser user = SiteWhere.getServer().getUserManagement()
-					.getUserByUsername(StringEscapeUtils.unescapeHtml(username));
+			IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
 			if (user == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -175,7 +175,7 @@ public class UsersController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
 		try {
-			IUser user = SiteWhere.getServer().getUserManagement().deleteUser(username, force);
+			IUser user = getUserManagement().deleteUser(username, force);
 			return User.copy(user);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -200,7 +200,7 @@ public class UsersController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 		try {
-			List<IGrantedAuthority> matches = SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
+			List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
 			List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
 			for (IGrantedAuthority auth : matches) {
 				converted.add(GrantedAuthority.copy(auth));
@@ -232,7 +232,7 @@ public class UsersController extends RestController {
 			List<User> usersConv = new ArrayList<User>();
 			UserSearchCriteria criteria = new UserSearchCriteria();
 			criteria.setIncludeDeleted(includeDeleted);
-			List<IUser> users = SiteWhere.getServer().getUserManagement().listUsers(criteria);
+			List<IUser> users = getUserManagement().listUsers(criteria);
 			for (IUser user : users) {
 				usersConv.add(User.copy(user));
 			}
@@ -260,7 +260,12 @@ public class UsersController extends RestController {
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
 			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
+
+		// TODO: This should be in the system controller since it's not using
+		// the user management implementation, but rather uses the runtime
+		// tenant engine state to build the list.
+
 		try {
 			List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
 			if (includeRuntimeInfo) {
@@ -275,5 +280,15 @@ public class UsersController extends RestController {
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * Get {@link IUserManagement} implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IUserManagement getUserManagement() throws SiteWhereException {
+		return SiteWhere.getServer().getUserManagement();
 	}
 }
