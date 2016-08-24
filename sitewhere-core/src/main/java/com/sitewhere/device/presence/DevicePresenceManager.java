@@ -96,12 +96,8 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 		this.devices = SiteWhere.getServer().getDeviceManagement(getTenant());
 		this.inbound = SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy();
 
-		// Launch a presence checker thread per site.
-		List<ISite> sites = devices.listSites(new SearchCriteria(1, 0)).getResults();
-		this.executor = Executors.newFixedThreadPool(sites.size());
-		for (ISite site : sites) {
-			executor.execute(new PresenceChecker(site));
-		}
+		this.executor = Executors.newSingleThreadExecutor();
+		executor.execute(new PresenceChecker());
 	}
 
 	/*
@@ -133,13 +129,6 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 	 */
 	private class PresenceChecker implements Runnable {
 
-		/** Site whose assignments are checked */
-		private ISite site;
-
-		public PresenceChecker(ISite site) {
-			this.site = site;
-		}
-
 		@Override
 		public void run() {
 
@@ -159,32 +148,37 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 			}
 			int checkIntervalSecs = checkInterval.toStandardSeconds().getSeconds();
 
-			LOGGER.info("Presence manager for '" + site.getName() + "' checking every "
-					+ PERIOD_FORMATTER.print(checkInterval) + " (" + checkIntervalSecs + " seconds) "
-					+ "for devices with last interaction date of more than " + PERIOD_FORMATTER.print(missingInterval)
-					+ " (" + missingIntervalSecs + " seconds) " + ".");
+			LOGGER.info("Presence manager checking every " + PERIOD_FORMATTER.print(checkInterval) + " ("
+					+ checkIntervalSecs + " seconds) " + "for devices with last interaction date of more than "
+					+ PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) " + ".");
 
 			while (true) {
 
 				try {
-					// Calculate time window for presence calculation.
-					Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
-					DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
-					ISearchResults<IDeviceAssignment> missing = devices
-							.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
-					LOGGER.debug("Presence manager for '" + site.getName() + "' creating " + missing.getNumResults()
-							+ " events for non-present devices.");
-					for (IDeviceAssignment assignment : missing.getResults()) {
-						DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
-								StateChangeCategory.Presence, StateChangeType.Presence_Updated,
-								PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
-						create.setUpdateState(true);
+					// Loop through all sites and detect presence changes.
+					List<ISite> sites = devices.listSites(new SearchCriteria(1, 0)).getResults();
+					for (ISite site : sites) {
+						// Calculate time window for presence calculation.
+						Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
+						DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
+						ISearchResults<IDeviceAssignment> missing = devices
+								.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
+						if (missing.getNumResults() > 0) {
+							LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
+									+ missing.getNumResults() + " events for non-present devices.");
+						}
+						for (IDeviceAssignment assignment : missing.getResults()) {
+							DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
+									StateChangeCategory.Presence, StateChangeType.Presence_Updated,
+									PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
+							create.setUpdateState(true);
 
-						// Only send an event if the strategy permits it.
-						if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
-							IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
-									assignment.getDeviceHardwareId(), null, create);
-							inbound.processDeviceStateChange(decoded);
+							// Only send an event if the strategy permits it.
+							if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
+								IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
+										assignment.getDeviceHardwareId(), null, create);
+								inbound.processDeviceStateChange(decoded);
+							}
 						}
 					}
 				} catch (SiteWhereException e) {
