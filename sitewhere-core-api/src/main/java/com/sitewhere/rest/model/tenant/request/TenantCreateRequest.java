@@ -15,6 +15,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
@@ -122,6 +123,15 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 			request.setName(name);
 			request.setAuthenticationToken(authenticationToken);
 			request.setLogoUrl(logoUrl);
+		}
+
+		public Builder(ITenant existing) {
+			request.setId(existing.getId());
+			request.setName(existing.getName());
+			request.setLogoUrl(existing.getLogoUrl());
+			request.setAuthenticationToken(existing.getAuthenticationToken());
+			request.setAuthorizedUserIds(existing.getAuthorizedUserIds());
+			request.setMetadata(existing.getMetadata());
 		}
 
 		public Builder withAuthorizedUserId(String userId) {

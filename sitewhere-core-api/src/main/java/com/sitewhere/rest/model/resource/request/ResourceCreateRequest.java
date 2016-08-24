@@ -1,5 +1,6 @@
 package com.sitewhere.rest.model.resource.request;
 
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.ResourceType;
 import com.sitewhere.spi.resource.request.IResourceCreateRequest;
 
@@ -59,5 +60,21 @@ public class ResourceCreateRequest implements IResourceCreateRequest {
 
 	public void setContent(byte[] content) {
 		this.content = content;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private ResourceCreateRequest request = new ResourceCreateRequest();
+
+		public Builder(IResource existing) {
+			request.setResourceType(existing.getResourceType());
+			request.setPath(existing.getPath());
+			request.setContent(existing.getContent());
+		}
+
+		public ResourceCreateRequest build() {
+			return request;
+		}
 	}
 }

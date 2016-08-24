@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.user.request;
 
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 
 /**
@@ -31,7 +32,8 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getAuthority()
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#
+	 * getAuthority()
 	 */
 	public String getAuthority() {
 		return authority;
@@ -44,7 +46,8 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getDescription()
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#
+	 * getDescription()
 	 */
 	public String getDescription() {
 		return description;
@@ -57,7 +60,8 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getParent()
+	 * @see
+	 * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getParent()
 	 */
 	public String getParent() {
 		return parent;
@@ -70,7 +74,8 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#isGroup()
+	 * @see
+	 * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#isGroup()
 	 */
 	public boolean isGroup() {
 		return group;
@@ -87,6 +92,13 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 
 		public Builder(String authority) {
 			request.setAuthority(authority);
+		}
+
+		public Builder(IGrantedAuthority existing) {
+			request.setAuthority(existing.getAuthority());
+			request.setParent(existing.getParent());
+			request.setGroup(existing.isGroup());
+			request.setDescription(existing.getDescription());
 		}
 
 		public Builder withDescription(String description) {

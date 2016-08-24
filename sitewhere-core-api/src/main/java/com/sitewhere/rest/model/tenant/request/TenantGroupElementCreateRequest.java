@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.tenant.request;
 
 import java.io.Serializable;
 
+import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
@@ -45,6 +46,10 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 
 		public Builder(String tenantId) {
 			request.setTenantId(tenantId);
+		}
+
+		public Builder(ITenantGroupElement existing) {
+			request.setTenantId(existing.getTenantId());
 		}
 
 		public TenantGroupElementCreateRequest build() {

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.user.AccountStatus;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
@@ -135,6 +136,16 @@ public class UserCreateRequest extends MetadataProvider implements IUserCreateRe
 			request.setPassword(password);
 			request.setFirstName(firstName);
 			request.setLastName(lastName);
+		}
+
+		public Builder(IUser existing) {
+			request.setUsername(existing.getUsername());
+			request.setPassword(existing.getHashedPassword());
+			request.setFirstName(existing.getFirstName());
+			request.setLastName(existing.getLastName());
+			request.setStatus(existing.getStatus());
+			request.setAuthorities(existing.getAuthorities());
+			request.setMetadata(existing.getMetadata());
 		}
 
 		public Builder withStatus(AccountStatus status) {

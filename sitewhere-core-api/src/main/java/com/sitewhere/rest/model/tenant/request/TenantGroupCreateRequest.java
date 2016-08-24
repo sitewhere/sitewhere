@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.spi.tenant.ITenantGroup;
 import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
 
 /**
@@ -103,6 +104,14 @@ public class TenantGroupCreateRequest extends MetadataProvider implements ITenan
 		public Builder(String token, String name) {
 			request.setToken(token);
 			request.setName(name);
+		}
+
+		public Builder(ITenantGroup existing) {
+			request.setToken(existing.getToken());
+			request.setName(existing.getName());
+			request.setDescription(existing.getDescription());
+			request.setImageUrl(existing.getImageUrl());
+			request.setMetadata(existing.getMetadata());
 		}
 
 		public Builder withDescription(String description) {
