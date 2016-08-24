@@ -148,8 +148,8 @@ public class Tracer {
 	 * @return
 	 */
 	protected static ITracer getTracer() {
-		if (SiteWhere.getServer() == null) {
-			LOGGER.warn("Tracer called, but server does not exist. Check log file for errors on startup.");
+		if (!SiteWhere.isServerAvailable()) {
+			LOGGER.debug("Tracer called, but server does not exist. Check log file for errors on startup.");
 			return FALLBACK;
 		}
 		if (SiteWhere.getServer().getTracer() == null) {

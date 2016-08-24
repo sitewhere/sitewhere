@@ -70,4 +70,13 @@ public class SiteWhere {
 		}
 		return SERVER;
 	}
+
+	/**
+	 * Determine whether server is available.
+	 * 
+	 * @return
+	 */
+	public static boolean isServerAvailable() {
+		return ((SERVER != null && (SERVER.getLifecycleStatus() == LifecycleStatus.Started)));
+	}
 }
