@@ -157,8 +157,13 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
 	 */
 	@Override
 	public IResource getActiveTenantConfiguration() throws SiteWhereException {
-		return getResourceManager().getTenantResource(getTenant().getId(),
-				DEFAULT_TENANT_CONFIGURATION_FILE + "." + TENANT_SUFFIX_ACTIVE);
+		String path = DEFAULT_TENANT_CONFIGURATION_FILE + "." + TENANT_SUFFIX_ACTIVE;
+		IResource resource = getResourceManager().getTenantResource(getTenant().getId(), path);
+		if (resource == null) {
+			LOGGER.warn("Active tenant configuration resource not found. " + "Searched for tenant: "
+					+ getTenant().getId() + " Path: " + path);
+		}
+		return resource;
 	}
 
 	/*
