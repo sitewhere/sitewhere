@@ -228,7 +228,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	protected void cacheGlobalFile(String relativePath, File file) throws SiteWhereException {
 		IResource resource = createResourceFromFile(relativePath, file);
 		getGlobalResourceMap().put(relativePath, resource);
-		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
@@ -248,7 +248,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		}
 		IResource resource = createResourceFromFile(relativePath, file);
 		tenant.put(relativePath, resource);
-		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
