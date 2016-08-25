@@ -228,8 +228,11 @@ public class TenantsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
-			IResource config = TenantUtils.getActiveTenantConfiguration(tenantId);
-			return ConfigurationContentParser.parse(config.getContent());
+			IResource configuration = TenantUtils.getActiveTenantConfiguration(tenantId);
+			if (configuration != null) {
+				return ConfigurationContentParser.parse(configuration.getContent());
+			}
+			throw new SiteWhereException("Tenant configuration resource not found.");
 		} finally {
 			Tracer.stop(LOGGER);
 		}
