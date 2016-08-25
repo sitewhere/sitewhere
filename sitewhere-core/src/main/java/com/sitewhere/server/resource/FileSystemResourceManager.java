@@ -82,6 +82,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	/** Executor for file watcher */
 	private ExecutorService executor;
 
+	/** Watches for filesystem changes */
+	private FileSystemWatcher watcher;
+
 	public FileSystemResourceManager() {
 		super(LifecycleComponentType.ResourceManager);
 	}
@@ -106,7 +109,8 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
 		// Start watching for filesystem changes in background.
 		executor = Executors.newSingleThreadExecutor();
-		executor.execute(new FileSystemWatcher());
+		watcher = new FileSystemWatcher();
+		executor.execute(watcher);
 	}
 
 	/*
@@ -328,7 +332,15 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			MultiResourceCreateResponse response) {
 		String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : File.separator;
 		File rfile = new File(getRootFolder().getAbsolutePath() + middle + request.getPath());
-		rfile.toPath().getParent().toFile().mkdirs();
+		Path parentPath = rfile.toPath().getParent();
+		parentPath.toFile().mkdirs();
+
+		try {
+			watcher.registerDirectory(parentPath);
+		} catch (IOException e) {
+			LOGGER.error("Unable to watch resource folder.", e);
+		}
+
 		FileOutputStream fileOut = null;
 		try {
 			fileOut = new FileOutputStream(rfile);
@@ -612,6 +624,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		/** Used to determine which path is generating events */
 		private Map<WatchKey, Path> keysToPaths = new HashMap<WatchKey, Path>();
 
+		/** Used to determine whether path is registered */
+		private Map<Path, WatchKey> pathsToKeys = new HashMap<Path, WatchKey>();
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
@@ -668,6 +683,22 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		}
 
 		/**
+		 * Regsiter watcher for a directory path.
+		 * 
+		 * @param path
+		 * @throws IOException
+		 */
+		public void registerDirectory(Path path) throws IOException {
+			if (!pathsToKeys.containsKey(path)) {
+				WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
+						StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+				keysToPaths.put(key, path);
+				pathsToKeys.put(path, key);
+				LOGGER.debug("Listening for changes to: " + path.toFile().getAbsolutePath());
+			}
+		}
+
+		/**
 		 * Recursively register filesystem events for all folders under the
 		 * configuration root.
 		 * 
@@ -683,10 +714,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
 				@Override
 				public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attr) throws IOException {
-					WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
-							StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-					keysToPaths.put(key, path);
-					LOGGER.debug("Listening for changes to: " + path.toFile().getAbsolutePath());
+					registerDirectory(path);
 					return FileVisitResult.CONTINUE;
 				}
 
