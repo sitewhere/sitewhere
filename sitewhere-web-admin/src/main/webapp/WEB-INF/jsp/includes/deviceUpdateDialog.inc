@@ -102,93 +102,69 @@
 	/** Dropdown with list of sites */
 	var duSitesDropdown;
 
-	$(document)
-			.ready(
-					function() {
-						/** Create tab strip for the update dialog */
-						duTabs = $("#du-tabs").kendoTabStrip({
-							animation : false
-						}).data("kendoTabStrip");
+	$(document).ready(
+			function() {
+				/** Create tab strip for the update dialog */
+				duTabs = $("#du-tabs").kendoTabStrip({
+					animation : false
+				}).data("kendoTabStrip");
 
-						duSitesDropdown = $("#du-site-token")
-								.kendoDropDownList(
-										{
-											dataTextField : "name",
-											dataValueField : "token",
-											dataSource : {
-												transport : {
-													read : {
-														url : "${pageContext.request.contextPath}/api/sites",
-														beforeSend : function(
-																req) {
-															req
-																	.setRequestHeader(
-																			'Authorization',
-																			"Basic ${basicAuth}");
-															req
-																	.setRequestHeader(
-																			'X-SiteWhere-Tenant',
-																			"${tenant.authenticationToken}");
-														},
-														dataType : "json",
-													}
-												},
-												schema : {
-													data : "results",
-													total : "numResults",
-												},
-											},
-											dataBound : function(e) {
-												//selectSite();
-											}
-										}).data("kendoDropDownList");
-
-						/** Handle update dialog submit */
-						$('#du-dialog-submit')
-								.click(
-										function(event) {
-											event.preventDefault();
-											if (!duValidate()) {
-												return;
-											}
-											var hardwareId = $(
-													'#du-hardware-id').val();
-											var deviceData = {
-												"hardwareId" : hardwareId,
-												"siteToken" : $(
-														'#du-site-token').val(),
-												"specificationToken" : $(
-														'#du-specification-token')
-														.val(),
-												"comments" : $('#du-comments')
-														.val(),
-												"metadata" : swMetadataAsLookup(duMetadataDS
-														.data()),
-											}
-											$
-													.putAuthJSON(
-															"${pageContext.request.contextPath}/api/devices/"
-																	+ hardwareId,
-															deviceData,
-															"${basicAuth}",
-															"${tenant.authenticationToken}",
-															onUpdateSuccess,
-															onUpdateFail);
-										});
-
-						/** Called on successful update */
-						function onUpdateSuccess() {
-							$('#du-dialog').modal('hide');
-							if (duSubmitCallback != null) {
-								duSubmitCallback();
+				duSitesDropdown = $("#du-site-token").kendoDropDownList({
+					dataTextField : "name",
+					dataValueField : "token",
+					dataSource : {
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/sites",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+								},
+								dataType : "json",
 							}
-						}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+						},
+					},
+					dataBound : function(e) {
+						//selectSite();
+					}
+				}).data("kendoDropDownList");
 
-						/** Handle failed call to update device */
-						function onUpdateFail(jqXHR, textStatus, errorThrown) {
-							handleError(jqXHR, "Unable to update device.");
-						}
-					});
+				/** Handle update dialog submit */
+				$('#du-dialog-submit').click(
+						function(event) {
+							event.preventDefault();
+							if (!duValidate()) {
+								return;
+							}
+							var hardwareId = $('#du-hardware-id').val();
+							var deviceData = {
+								"hardwareId" : hardwareId,
+								"siteToken" : $('#du-site-token').val(),
+								"specificationToken" : $('#du-specification-token').val(),
+								"comments" : $('#du-comments').val(),
+								"metadata" : swMetadataAsLookup(duMetadataDS.data()),
+							}
+							$.putAuthJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId, deviceData,
+									"${basicAuth}", "${tenant.authenticationToken}", onUpdateSuccess, onUpdateFail);
+						});
+
+				/** Called on successful update */
+				function onUpdateSuccess() {
+					$('#du-dialog').modal('hide');
+					if (duSubmitCallback != null) {
+						duSubmitCallback();
+					}
+				}
+
+				/** Handle failed call to update device */
+				function onUpdateFail(jqXHR, textStatus, errorThrown) {
+					handleError(jqXHR, "Unable to update device.");
+				}
+			});
 
 	/** Validate fields for update */
 	function duValidate() {
@@ -211,9 +187,8 @@
 		duSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getAuthJSON("${pageContext.request.contextPath}/api/devices/"
-				+ hardwareId, "${basicAuth}", "${tenant.authenticationToken}",
-				duUpdateGetSuccess, duUpdateGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId, "${basicAuth}",
+				"${tenant.authenticationToken}", duUpdateGetSuccess, duUpdateGetFailed);
 	}
 
 	/** Called on successful device load request */
