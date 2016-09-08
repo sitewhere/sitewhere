@@ -7,12 +7,16 @@
  */
 package com.sitewhere.web;
 
+import org.apache.catalina.Container;
+import org.apache.catalina.Context;
+import org.apache.catalina.Wrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +55,17 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 		tomcat.setContextPath("/sitewhere");
 		tomcat.setPort(8080);
-		tomcat.setTldSkip("*.jar");
+		tomcat.addContextCustomizers(new TomcatContextCustomizer() {
+
+			@Override
+			public void customize(Context context) {
+				Container jsp = context.findChild("jsp");
+				if (jsp instanceof Wrapper) {
+					((Wrapper) jsp).addInitParameter("development", "false");
+				}
+
+			}
+		});
 		return tomcat;
 	}
 
