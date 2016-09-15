@@ -107,20 +107,22 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     private ServerStartupException serverStartupError;
 
     /** Provides hierarchical tracing for debugging */
-    private ITracer tracer = new NullTracer();
+    protected ITracer tracer = new NullTracer();
 
-    /** Resource manager implementation */
-    private IResourceManager resourceManager = new SiteWhereHomeResourceManager();
+    /** Bootstrap resource manager implementation */
+    protected IResourceManager bootstrapResourceManager;
+
+    /** Runtime resource manager implementation */
+    protected IResourceManager runtimeResourceManager;
 
     /** Allows Spring configuration to be resolved */
-    private IGlobalConfigurationResolver configurationResolver = new ResourceManagerGlobalConfigurationResolver(
-	    resourceManager);
+    protected IGlobalConfigurationResolver configurationResolver;
 
     /** Interface to user management implementation */
-    private IUserManagement userManagement;
+    protected IUserManagement userManagement;
 
     /** Interface to tenant management implementation */
-    private ITenantManagement tenantManagement;
+    protected ITenantManagement tenantManagement;
 
     /**
      * List of components registered to participate in SiteWhere server
@@ -248,11 +250,23 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getResourceManager()
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getBootstrapResourceManager()
      */
     @Override
-    public IResourceManager getResourceManager() {
-	return resourceManager;
+    public IResourceManager getBootstrapResourceManager() {
+	return bootstrapResourceManager;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getRuntimeResourceManager()
+     */
+    @Override
+    public IResourceManager getRuntimeResourceManager() {
+	return runtimeResourceManager;
     }
 
     /*
@@ -780,7 +794,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public void initialize() throws SiteWhereException {
 	this.version = VersionHelper.getVersion();
-	getResourceManager().start();
+
+	// Initialize bootstrap resource manager.
+	initializeBootstrapResourceManager();
+	getBootstrapResourceManager().start();
 
 	// Initialize persistent state.
 	initializeServerState();
@@ -799,6 +816,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize management implementations.
 	initializeManagementImplementations();
+
+	// Initialize runtime resource manager.
+	initializeRuntimeResourceManager();
+	getRuntimeResourceManager().start();
 
 	// Show banner containing server information.
 	showServerBanner();
@@ -951,6 +972,27 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No user management implementation configured.");
 	}
+    }
+
+    /**
+     * Initialize bootstrap resource manager.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeBootstrapResourceManager() throws SiteWhereException {
+	this.bootstrapResourceManager = new SiteWhereHomeResourceManager();
+	this.configurationResolver = new ResourceManagerGlobalConfigurationResolver(bootstrapResourceManager);
+    }
+
+    /**
+     * Initialize runtime resource manager and swap configuration resolver to
+     * use it.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeRuntimeResourceManager() throws SiteWhereException {
+	this.runtimeResourceManager = new SiteWhereHomeResourceManager();
+	this.configurationResolver = new ResourceManagerGlobalConfigurationResolver(runtimeResourceManager);
     }
 
     /**

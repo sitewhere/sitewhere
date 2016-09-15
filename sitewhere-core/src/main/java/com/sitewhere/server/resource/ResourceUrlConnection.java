@@ -169,7 +169,7 @@ public class ResourceUrlConnection extends URLConnection {
      */
     protected void handleGlobalResource(String[] parts) throws IOException {
 	String path = buildPathFromParts(parts, 1);
-	this.resource = SiteWhere.getServer().getResourceManager().getGlobalResource(path);
+	this.resource = SiteWhere.getServer().getRuntimeResourceManager().getGlobalResource(path);
 	if (resource == null) {
 	    throw new IOException("Unable to find global resource for path: " + path);
 	}
@@ -184,7 +184,7 @@ public class ResourceUrlConnection extends URLConnection {
     protected void handleTenantResource(String[] parts) throws IOException {
 	String tenantId = parts[1];
 	String path = buildPathFromParts(parts, 2);
-	this.resource = SiteWhere.getServer().getResourceManager().getTenantResource(tenantId, path);
+	this.resource = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(tenantId, path);
 	if (resource == null) {
 	    throw new IOException("Unable to find tenant resource for path: " + path);
 	}

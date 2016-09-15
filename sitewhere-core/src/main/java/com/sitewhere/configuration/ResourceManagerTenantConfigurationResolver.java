@@ -81,7 +81,7 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
 	this.tenant = tenant;
 	this.version = version;
 	this.globalConfigurationResolver = globalConfigurationResolver;
-	this.resourceManager = SiteWhere.getServer().getResourceManager();
+	this.resourceManager = SiteWhere.getServer().getRuntimeResourceManager();
     }
 
     /*
@@ -214,7 +214,14 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
     public IResource createDefaultTenantConfiguration() throws SiteWhereException {
 	String tenantId = getTenant().getId();
 
-	getResourceManager().copyGlobalResourcesToTenant(DEFAULT_TENANT_TEMPLATE_FOLDER, tenantId);
+	IMultiResourceCreateResponse response = getResourceManager()
+		.copyGlobalResourcesToTenant(DEFAULT_TENANT_TEMPLATE_FOLDER, tenantId, ResourceCreateMode.OVERWRITE);
+	if (response.getErrors().size() > 0) {
+	    LOGGER.warn("Errors encountered while copying template to tenant.");
+	    for (IResourceCreateError error : response.getErrors()) {
+		LOGGER.warn("Error copying: " + error.getPath() + ". Reason: " + error.getReason().name());
+	    }
+	}
 	LOGGER.info("Created configuration for '" + tenantId + "' based on default template.");
 
 	return getActiveTenantConfiguration();

@@ -53,11 +53,14 @@ public interface IResourceManager extends ILifecycleComponent {
     /**
      * Copies all global resources with the given prefix to the given tenant.
      * 
-     * @param globalPath
+     * @param prefix
      * @param tenantId
+     * @param mode
+     * @return
      * @throws SiteWhereException
      */
-    public void copyGlobalResourcesToTenant(String prefix, String tenantId) throws SiteWhereException;
+    public IMultiResourceCreateResponse copyGlobalResourcesToTenant(String prefix, String tenantId,
+	    ResourceCreateMode mode) throws SiteWhereException;
 
     /**
      * Create one or more tenant resources.

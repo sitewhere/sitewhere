@@ -106,11 +106,18 @@ public interface ISiteWhereServer extends ILifecycleComponent {
     public ITracer getTracer();
 
     /**
-     * Get resource manager for resolving resource references.
+     * Get resource manager for bootstrapping the system.
      * 
      * @return
      */
-    public IResourceManager getResourceManager();
+    public IResourceManager getBootstrapResourceManager();
+
+    /**
+     * Get resource manager for resolving runtime resource references.
+     * 
+     * @return
+     */
+    public IResourceManager getRuntimeResourceManager();
 
     /**
      * Get class that can be used to location the Spring configuration context.

@@ -500,10 +500,13 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      * 
      * @see
      * com.sitewhere.spi.resource.IResourceManager#copyGlobalResourcesToTenant(
-     * java.lang.String, java.lang.String)
+     * java.lang.String, java.lang.String,
+     * com.sitewhere.spi.resource.ResourceCreateMode)
      */
     @Override
-    public void copyGlobalResourcesToTenant(String prefix, String tenantId) throws SiteWhereException {
+    public IMultiResourceCreateResponse copyGlobalResourcesToTenant(String prefix, String tenantId,
+	    ResourceCreateMode mode) throws SiteWhereException {
+	MultiResourceCreateResponse response = new MultiResourceCreateResponse();
 	File source = new File(getRootFolder().getAbsolutePath() + File.separator + prefix);
 	if (!source.exists()) {
 	    throw new SiteWhereException("No source folder found for: " + source.getAbsolutePath());
@@ -514,6 +517,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to copy global resources to tenant.");
 	}
+	return response;
     }
 
     /**

@@ -150,11 +150,23 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getResourceManager()
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getBootstrapResourceManager()
      */
     @Override
-    public IResourceManager getResourceManager() {
-	return server.getResourceManager();
+    public IResourceManager getBootstrapResourceManager() {
+	return server.getBootstrapResourceManager();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getRuntimeResourceManager()
+     */
+    @Override
+    public IResourceManager getRuntimeResourceManager() {
+	return server.getRuntimeResourceManager();
     }
 
     /*
