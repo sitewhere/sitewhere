@@ -19,41 +19,41 @@ import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
  */
 public class TenantGroupElementCreateRequest implements ITenantGroupElementCreateRequest, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 1931203730982333819L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 1931203730982333819L;
 
-	/** Tenant associated with element */
-	private String tenantId;
+    /** Tenant associated with element */
+    private String tenantId;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#
-	 * getTenantId()
-	 */
-	public String getTenantId() {
-		return tenantId;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#
+     * getTenantId()
+     */
+    public String getTenantId() {
+	return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+	this.tenantId = tenantId;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private TenantGroupElementCreateRequest request = new TenantGroupElementCreateRequest();
+
+	public Builder(String tenantId) {
+	    request.setTenantId(tenantId);
 	}
 
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
+	public Builder(ITenantGroupElement existing) {
+	    request.setTenantId(existing.getTenantId());
 	}
 
-	public static class Builder {
-
-		/** Request being built */
-		private TenantGroupElementCreateRequest request = new TenantGroupElementCreateRequest();
-
-		public Builder(String tenantId) {
-			request.setTenantId(tenantId);
-		}
-
-		public Builder(ITenantGroupElement existing) {
-			request.setTenantId(existing.getTenantId());
-		}
-
-		public TenantGroupElementCreateRequest build() {
-			return request;
-		}
+	public TenantGroupElementCreateRequest build() {
+	    return request;
 	}
+    }
 }

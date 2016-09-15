@@ -18,35 +18,36 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IDeviceManagementCacheProvider extends ITenantLifecycleComponent {
 
-	/**
-	 * Gets cache mapping site tokens to {@link ISite} objects.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ICache<String, ISite> getSiteCache() throws SiteWhereException;
+    /**
+     * Gets cache mapping site tokens to {@link ISite} objects.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICache<String, ISite> getSiteCache() throws SiteWhereException;
 
-	/**
-	 * Gets cache mapping specification tokens for {@link IDeviceSpecification} objects.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException;
+    /**
+     * Gets cache mapping specification tokens for {@link IDeviceSpecification}
+     * objects.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException;
 
-	/**
-	 * Gets cache mapping hardware ids to {@link IDevice} objects.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ICache<String, IDevice> getDeviceCache() throws SiteWhereException;
+    /**
+     * Gets cache mapping hardware ids to {@link IDevice} objects.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICache<String, IDevice> getDeviceCache() throws SiteWhereException;
 
-	/**
-	 * Get cache mapping assignment tokens to {@link IDeviceAssignment} objects.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException;
+    /**
+     * Get cache mapping assignment tokens to {@link IDeviceAssignment} objects.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException;
 }

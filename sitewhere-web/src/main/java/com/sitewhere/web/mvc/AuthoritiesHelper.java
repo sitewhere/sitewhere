@@ -17,54 +17,54 @@ import com.sitewhere.spi.user.SiteWhereRoles;
  */
 public class AuthoritiesHelper {
 
-	/** Wrapped user */
-	private IUser user;
+    /** Wrapped user */
+    private IUser user;
 
-	public AuthoritiesHelper(IUser user) {
-		this.user = user;
-	}
+    public AuthoritiesHelper(IUser user) {
+	this.user = user;
+    }
 
-	/**
-	 * Indicates if user can see global server information.
-	 * 
-	 * @return
-	 */
-	public boolean isViewServerInformation() {
-		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_VIEW_SERVER_INFO);
-	}
+    /**
+     * Indicates if user can see global server information.
+     * 
+     * @return
+     */
+    public boolean isViewServerInformation() {
+	return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_VIEW_SERVER_INFO);
+    }
 
-	/**
-	 * Indicates if user is a user administrator.
-	 * 
-	 * @return
-	 */
-	public boolean isAdministerUsers() {
-		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_USERS);
-	}
+    /**
+     * Indicates if user is a user administrator.
+     * 
+     * @return
+     */
+    public boolean isAdministerUsers() {
+	return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_USERS);
+    }
 
-	/**
-	 * Indicates if user is a tenant administrator.
-	 * 
-	 * @return
-	 */
-	public boolean isAdministerTenants() {
-		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS);
-	}
+    /**
+     * Indicates if user is a tenant administrator.
+     * 
+     * @return
+     */
+    public boolean isAdministerTenants() {
+	return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS);
+    }
 
-	/**
-	 * Indicates if user can administer their own tenant.
-	 * 
-	 * @return
-	 */
-	public boolean isAdministerTenantSelf() {
-		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANT_SELF);
-	}
+    /**
+     * Indicates if user can administer their own tenant.
+     * 
+     * @return
+     */
+    public boolean isAdministerTenantSelf() {
+	return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANT_SELF);
+    }
 
-	public IUser getUser() {
-		return user;
-	}
+    public IUser getUser() {
+	return user;
+    }
 
-	public void setUser(IUser user) {
-		this.user = user;
-	}
+    public void setUser(IUser user) {
+	this.user = user;
+    }
 }

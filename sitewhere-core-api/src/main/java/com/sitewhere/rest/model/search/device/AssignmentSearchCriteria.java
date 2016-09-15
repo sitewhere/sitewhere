@@ -11,18 +11,18 @@ import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
  */
 public class AssignmentSearchCriteria extends SearchCriteria implements IAssignmentSearchCriteria {
 
-	/** Only return results with the given status */
-	private DeviceAssignmentStatus status;
+    /** Only return results with the given status */
+    private DeviceAssignmentStatus status;
 
-	public AssignmentSearchCriteria(int pageNumber, int pageSize) {
-		super(pageNumber, pageSize);
-	}
+    public AssignmentSearchCriteria(int pageNumber, int pageSize) {
+	super(pageNumber, pageSize);
+    }
 
-	public DeviceAssignmentStatus getStatus() {
-		return status;
-	}
+    public DeviceAssignmentStatus getStatus() {
+	return status;
+    }
 
-	public void setStatus(DeviceAssignmentStatus status) {
-		this.status = status;
-	}
+    public void setStatus(DeviceAssignmentStatus status) {
+	this.status = status;
+    }
 }

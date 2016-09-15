@@ -30,54 +30,54 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DefaultCommandTargetResolver extends TenantLifecycleComponent implements ICommandTargetResolver {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public DefaultCommandTargetResolver() {
-		super(LifecycleComponentType.CommandTargetResolver);
-	}
+    public DefaultCommandTargetResolver() {
+	super(LifecycleComponentType.CommandTargetResolver);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandTargetResolver#
-	 * resolveTargets(com .sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		LOGGER.debug("Resolving target for invocation.");
-		IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
-				.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
-		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
-		results.add(assignment);
-		return results;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.ICommandTargetResolver#
+     * resolveTargets(com .sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	LOGGER.debug("Resolving target for invocation.");
+	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
+		.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
+	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
+	results.add(assignment);
+	return results;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 }

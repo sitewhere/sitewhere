@@ -18,18 +18,18 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  */
 public interface ISearchProviderManager extends ILifecycleComponent {
 
-	/**
-	 * Get list of available search providers.
-	 * 
-	 * @return
-	 */
-	public List<ISearchProvider> getSearchProviders();
+    /**
+     * Get list of available search providers.
+     * 
+     * @return
+     */
+    public List<ISearchProvider> getSearchProviders();
 
-	/**
-	 * Get search provider with the given unique id.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public ISearchProvider getSearchProvider(String id);
+    /**
+     * Get search provider with the given unique id.
+     * 
+     * @param id
+     * @return
+     */
+    public ISearchProvider getSearchProvider(String id);
 }

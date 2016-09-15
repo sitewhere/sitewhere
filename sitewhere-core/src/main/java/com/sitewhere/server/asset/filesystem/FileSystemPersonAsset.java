@@ -23,80 +23,80 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemPersonAsset {
 
-	@XmlAttribute
-	private String id;
+    @XmlAttribute
+    private String id;
 
-	@XmlAttribute
-	private String userName;
+    @XmlAttribute
+    private String userName;
 
-	@XmlAttribute
-	private String name;
+    @XmlAttribute
+    private String name;
 
-	@XmlAttribute
-	private String emailAddress;
+    @XmlAttribute
+    private String emailAddress;
 
-	@XmlElement(name = "roles")
-	private FileSystemPersonRoles roles;
+    @XmlElement(name = "roles")
+    private FileSystemPersonRoles roles;
 
-	@XmlElement(name = "photo-url")
-	private String photoUrl;
+    @XmlElement(name = "photo-url")
+    private String photoUrl;
 
-	@XmlElement(name = "property")
-	private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
+    @XmlElement(name = "property")
+    private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public String getUserName() {
+	return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+	this.userName = userName;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+    public String getEmailAddress() {
+	return emailAddress;
+    }
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress;
+    }
 
-	public FileSystemPersonRoles getRoles() {
-		return roles;
-	}
+    public FileSystemPersonRoles getRoles() {
+	return roles;
+    }
 
-	public void setRoles(FileSystemPersonRoles roles) {
-		this.roles = roles;
-	}
+    public void setRoles(FileSystemPersonRoles roles) {
+	this.roles = roles;
+    }
 
-	public String getPhotoUrl() {
-		return photoUrl;
-	}
+    public String getPhotoUrl() {
+	return photoUrl;
+    }
 
-	public void setPhotoUrl(String photoUrl) {
-		this.photoUrl = photoUrl;
-	}
+    public void setPhotoUrl(String photoUrl) {
+	this.photoUrl = photoUrl;
+    }
 
-	public List<FileSystemAssetProperty> getProperties() {
-		return properties;
-	}
+    public List<FileSystemAssetProperty> getProperties() {
+	return properties;
+    }
 
-	public void setProperties(List<FileSystemAssetProperty> properties) {
-		this.properties = properties;
-	}
+    public void setProperties(List<FileSystemAssetProperty> properties) {
+	this.properties = properties;
+    }
 }

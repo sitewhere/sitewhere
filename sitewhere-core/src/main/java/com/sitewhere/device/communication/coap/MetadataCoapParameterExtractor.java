@@ -22,108 +22,108 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor
  */
 public class MetadataCoapParameterExtractor implements ICommandDeliveryParameterExtractor<CoapParameters> {
 
-	/** Default metadata field for remote hostname */
-	public static final String DEFAULT_HOSTNAME_METADATA = "hostname";
+    /** Default metadata field for remote hostname */
+    public static final String DEFAULT_HOSTNAME_METADATA = "hostname";
 
-	/** Default metadata field for remote port */
-	public static final String DEFAULT_PORT_METADATA = "port";
+    /** Default metadata field for remote port */
+    public static final String DEFAULT_PORT_METADATA = "port";
 
-	/** Default metadata field for CoAP URL */
-	public static final String DEFAULT_URL_METADATA = "url";
+    /** Default metadata field for CoAP URL */
+    public static final String DEFAULT_URL_METADATA = "url";
 
-	/** Default metadata field for CoAP invocation method */
-	public static final String DEFAULT_METHOD_METADATA = "method";
+    /** Default metadata field for CoAP invocation method */
+    public static final String DEFAULT_METHOD_METADATA = "method";
 
-	/** Hostname metadata field name */
-	private String hostnameMetadataField = DEFAULT_HOSTNAME_METADATA;
+    /** Hostname metadata field name */
+    private String hostnameMetadataField = DEFAULT_HOSTNAME_METADATA;
 
-	/** Port metadata field name */
-	private String portMetadataField = DEFAULT_PORT_METADATA;
+    /** Port metadata field name */
+    private String portMetadataField = DEFAULT_PORT_METADATA;
 
-	/** CoAP URL metadata field name */
-	private String urlMetadataField = DEFAULT_URL_METADATA;
+    /** CoAP URL metadata field name */
+    private String urlMetadataField = DEFAULT_URL_METADATA;
 
-	/** CoAP invocation method metadata field name */
-	private String methodMetadataField = DEFAULT_METHOD_METADATA;
+    /** CoAP invocation method metadata field name */
+    private String methodMetadataField = DEFAULT_METHOD_METADATA;
 
-	/** Overrides port metadata */
-	private Integer portOverride;
+    /** Overrides port metadata */
+    private Integer portOverride;
 
-	public MetadataCoapParameterExtractor() {
+    public MetadataCoapParameterExtractor() {
+    }
+
+    public MetadataCoapParameterExtractor(int portOverride) {
+	this.portOverride = portOverride;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.
+     * ICommandDeliveryParameterExtractor#
+     * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     */
+    @Override
+    public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+	    IDeviceCommandExecution execution) throws SiteWhereException {
+	Map<String, String> metadata = nesting.getGateway().getMetadata();
+	String hostname = metadata.get(getHostnameMetadataField());
+	String port = metadata.get(getPortMetadataField());
+	String url = metadata.get(getUrlMetadataField());
+	String method = metadata.get(getMethodMetadataField());
+	CoapParameters coap = new CoapParameters();
+	coap.setHostname(hostname);
+	if (port != null) {
+	    coap.setPort(Integer.parseInt(port));
 	}
-
-	public MetadataCoapParameterExtractor(int portOverride) {
-		this.portOverride = portOverride;
+	if (url != null) {
+	    coap.setUrl(url);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.
-	 * ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
-	 */
-	@Override
-	public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution) throws SiteWhereException {
-		Map<String, String> metadata = nesting.getGateway().getMetadata();
-		String hostname = metadata.get(getHostnameMetadataField());
-		String port = metadata.get(getPortMetadataField());
-		String url = metadata.get(getUrlMetadataField());
-		String method = metadata.get(getMethodMetadataField());
-		CoapParameters coap = new CoapParameters();
-		coap.setHostname(hostname);
-		if (port != null) {
-			coap.setPort(Integer.parseInt(port));
-		}
-		if (url != null) {
-			coap.setUrl(url);
-		}
-		if (method != null) {
-			coap.setMethod(method);
-		}
-		return coap;
+	if (method != null) {
+	    coap.setMethod(method);
 	}
+	return coap;
+    }
 
-	public String getHostnameMetadataField() {
-		return hostnameMetadataField;
-	}
+    public String getHostnameMetadataField() {
+	return hostnameMetadataField;
+    }
 
-	public void setHostnameMetadataField(String hostnameMetadataField) {
-		this.hostnameMetadataField = hostnameMetadataField;
-	}
+    public void setHostnameMetadataField(String hostnameMetadataField) {
+	this.hostnameMetadataField = hostnameMetadataField;
+    }
 
-	public String getPortMetadataField() {
-		return portMetadataField;
-	}
+    public String getPortMetadataField() {
+	return portMetadataField;
+    }
 
-	public void setPortMetadataField(String portMetadataField) {
-		this.portMetadataField = portMetadataField;
-	}
+    public void setPortMetadataField(String portMetadataField) {
+	this.portMetadataField = portMetadataField;
+    }
 
-	public String getUrlMetadataField() {
-		return urlMetadataField;
-	}
+    public String getUrlMetadataField() {
+	return urlMetadataField;
+    }
 
-	public void setUrlMetadataField(String urlMetadataField) {
-		this.urlMetadataField = urlMetadataField;
-	}
+    public void setUrlMetadataField(String urlMetadataField) {
+	this.urlMetadataField = urlMetadataField;
+    }
 
-	public String getMethodMetadataField() {
-		return methodMetadataField;
-	}
+    public String getMethodMetadataField() {
+	return methodMetadataField;
+    }
 
-	public void setMethodMetadataField(String methodMetadataField) {
-		this.methodMetadataField = methodMetadataField;
-	}
+    public void setMethodMetadataField(String methodMetadataField) {
+	this.methodMetadataField = methodMetadataField;
+    }
 
-	public Integer getPortOverride() {
-		return portOverride;
-	}
+    public Integer getPortOverride() {
+	return portOverride;
+    }
 
-	public void setPortOverride(Integer portOverride) {
-		this.portOverride = portOverride;
-	}
+    public void setPortOverride(Integer portOverride) {
+	this.portOverride = portOverride;
+    }
 }

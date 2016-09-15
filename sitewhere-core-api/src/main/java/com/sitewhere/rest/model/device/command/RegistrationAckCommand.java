@@ -18,26 +18,26 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class RegistrationAckCommand extends SystemCommand implements IRegistrationAckCommand {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 1831724152286696862L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 1831724152286696862L;
 
-	/** Success reason */
-	private RegistrationSuccessReason reason;
+    /** Success reason */
+    private RegistrationSuccessReason reason;
 
-	public RegistrationAckCommand() {
-		super(SystemCommandType.RegistrationAck);
-	}
+    public RegistrationAckCommand() {
+	super(SystemCommandType.RegistrationAck);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IRegistrationAckCommand#getReason()
-	 */
-	public RegistrationSuccessReason getReason() {
-		return reason;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IRegistrationAckCommand#getReason()
+     */
+    public RegistrationSuccessReason getReason() {
+	return reason;
+    }
 
-	public void setReason(RegistrationSuccessReason reason) {
-		this.reason = reason;
-	}
+    public void setReason(RegistrationSuccessReason reason) {
+	this.reason = reason;
+    }
 }

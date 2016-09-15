@@ -10,18 +10,19 @@ package com.sitewhere.spi.device;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Interface implemented by {@link IDeviceManagement} implementations that can use caching
- * mechanisms.
+ * Interface implemented by {@link IDeviceManagement} implementations that can
+ * use caching mechanisms.
  * 
  * @author Derek
  */
 public interface ICachingDeviceManagement {
 
-	/**
-	 * Set the cache provider to be used by the {@link IDeviceManagement} implementation.
-	 * 
-	 * @param provider
-	 * @throws SiteWhereException
-	 */
-	public void setCacheProvider(IDeviceManagementCacheProvider provider) throws SiteWhereException;
+    /**
+     * Set the cache provider to be used by the {@link IDeviceManagement}
+     * implementation.
+     * 
+     * @param provider
+     * @throws SiteWhereException
+     */
+    public void setCacheProvider(IDeviceManagementCacheProvider provider) throws SiteWhereException;
 }

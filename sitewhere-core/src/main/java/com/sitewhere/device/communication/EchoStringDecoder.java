@@ -26,20 +26,20 @@ import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
  */
 public class EchoStringDecoder implements IDeviceEventDecoder<String> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
-	 * lang.Object, java.util.Map)
-	 */
-	@Override
-	public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		LOGGER.info("Payload: " + payload);
-		return new ArrayList<IDecodedDeviceRequest<?>>();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
+	    throws EventDecodeException {
+	LOGGER.info("Payload: " + payload);
+	return new ArrayList<IDecodedDeviceRequest<?>>();
+    }
 }

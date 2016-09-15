@@ -29,23 +29,23 @@ import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
  */
 public class PayloadLoggerEventDecoder implements IDeviceEventDecoder<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
-	 * lang.Object, java.util.Map)
-	 */
-	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		LOGGER.info("=== EVENT DATA BEGIN ===");
-		LOGGER.info(new String(payload));
-		LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));
-		LOGGER.info("=== EVENT DATA END ===");
-		return new ArrayList<IDecodedDeviceRequest<?>>();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+	    throws EventDecodeException {
+	LOGGER.info("=== EVENT DATA BEGIN ===");
+	LOGGER.info(new String(payload));
+	LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));
+	LOGGER.info("=== EVENT DATA END ===");
+	return new ArrayList<IDecodedDeviceRequest<?>>();
+    }
 }

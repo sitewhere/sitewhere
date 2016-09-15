@@ -14,27 +14,27 @@ package com.sitewhere.spi.device.event;
  */
 public enum DeviceEventType {
 
-	/** Group of measurements */
-	Measurements,
+    /** Group of measurements */
+    Measurements,
 
-	/** Single measurement */
-	Measurement,
+    /** Single measurement */
+    Measurement,
 
-	/** Geospatial location */
-	Location,
+    /** Geospatial location */
+    Location,
 
-	/** Exception condtion alert */
-	Alert,
+    /** Exception condtion alert */
+    Alert,
 
-	/** Single chunk of data from a binary data stream */
-	StreamData,
+    /** Single chunk of data from a binary data stream */
+    StreamData,
 
-	/** Invocation of device command */
-	CommandInvocation,
+    /** Invocation of device command */
+    CommandInvocation,
 
-	/** Response to device command invocation */
-	CommandResponse,
+    /** Response to device command invocation */
+    CommandResponse,
 
-	/** Device state change */
-	StateChange,
+    /** Device state change */
+    StateChange,
 }

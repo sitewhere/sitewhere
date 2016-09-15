@@ -7,17 +7,17 @@ package com.sitewhere.spi.resource;
  */
 public interface IResourceCreateError {
 
-	/**
-	 * Get path being created.
-	 * 
-	 * @return
-	 */
-	public String getPath();
+    /**
+     * Get path being created.
+     * 
+     * @return
+     */
+    public String getPath();
 
-	/**
-	 * Get reason for failure.
-	 * 
-	 * @return
-	 */
-	public ResourceCreateFailReason getReason();
+    /**
+     * Get reason for failure.
+     * 
+     * @return
+     */
+    public ResourceCreateFailReason getReason();
 }

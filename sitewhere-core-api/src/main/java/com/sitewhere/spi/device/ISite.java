@@ -10,45 +10,45 @@ package com.sitewhere.spi.device;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * A construct that groups together related device assignments and provides common
- * settings for them.
+ * A construct that groups together related device assignments and provides
+ * common settings for them.
  * 
  * @author Derek
  */
 public interface ISite extends IMetadataProviderEntity {
 
-	/**
-	 * Get unique token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get the site name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get the site name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get the description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get the image URL.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get the image URL.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
-	/**
-	 * Get map information.
-	 * 
-	 * @return
-	 */
-	public ISiteMapData getMap();
+    /**
+     * Get map information.
+     * 
+     * @return
+     */
+    public ISiteMapData getMap();
 }

@@ -14,18 +14,18 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.tenant.Tenant;
 
 /**
- * Search results that contain tenants. Needed so that JSON marshaling has a concrete
- * class to inflate.
+ * Search results that contain tenants. Needed so that JSON marshaling has a
+ * concrete class to inflate.
  * 
  * @author dadams
  */
 public class TenantSearchResults extends SearchResults<Tenant> {
 
-	public TenantSearchResults() {
-		super(new ArrayList<Tenant>());
-	}
+    public TenantSearchResults() {
+	super(new ArrayList<Tenant>());
+    }
 
-	public TenantSearchResults(List<Tenant> results) {
-		super(results);
-	}
+    public TenantSearchResults(List<Tenant> results) {
+	super(results);
+    }
 }

@@ -11,70 +11,70 @@ import com.sitewhere.spi.resource.request.IResourceCreateRequest;
  */
 public class ResourceCreateRequest implements IResourceCreateRequest {
 
-	/** Resource path */
-	private String path;
+    /** Resource path */
+    private String path;
 
-	/** Resource type */
-	private ResourceType resourceType;
+    /** Resource type */
+    private ResourceType resourceType;
 
-	/** Resource content */
-	private byte[] content;
+    /** Resource content */
+    private byte[] content;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.resource.request.IResourceCreateRequest#getPath()
-	 */
-	public String getPath() {
-		return path;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.resource.request.IResourceCreateRequest#getPath()
+     */
+    public String getPath() {
+	return path;
+    }
+
+    public void setPath(String path) {
+	this.path = path;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.resource.request.IResourceCreateRequest#getResourceType
+     * ()
+     */
+    public ResourceType getResourceType() {
+	return resourceType;
+    }
+
+    public void setResourceType(ResourceType resourceType) {
+	this.resourceType = resourceType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.resource.request.IResourceCreateRequest#getContent()
+     */
+    public byte[] getContent() {
+	return content;
+    }
+
+    public void setContent(byte[] content) {
+	this.content = content;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private ResourceCreateRequest request = new ResourceCreateRequest();
+
+	public Builder(IResource existing) {
+	    request.setResourceType(existing.getResourceType());
+	    request.setPath(existing.getPath());
+	    request.setContent(existing.getContent());
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public ResourceCreateRequest build() {
+	    return request;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.resource.request.IResourceCreateRequest#getResourceType
-	 * ()
-	 */
-	public ResourceType getResourceType() {
-		return resourceType;
-	}
-
-	public void setResourceType(ResourceType resourceType) {
-		this.resourceType = resourceType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.resource.request.IResourceCreateRequest#getContent()
-	 */
-	public byte[] getContent() {
-		return content;
-	}
-
-	public void setContent(byte[] content) {
-		this.content = content;
-	}
-
-	public static class Builder {
-
-		/** Request being built */
-		private ResourceCreateRequest request = new ResourceCreateRequest();
-
-		public Builder(IResource existing) {
-			request.setResourceType(existing.getResourceType());
-			request.setPath(existing.getPath());
-			request.setContent(existing.getContent());
-		}
-
-		public ResourceCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

@@ -18,31 +18,31 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface IDeviceGroup extends IMetadataProviderEntity {
 
-	/**
-	 * Get the unique group token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get the unique group token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get the group name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get the group name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get the group description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the group description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get list of roles associated with element.
-	 * 
-	 * @return
-	 */
-	public List<String> getRoles();
+    /**
+     * Get list of roles associated with element.
+     * 
+     * @return
+     */
+    public List<String> getRoles();
 }

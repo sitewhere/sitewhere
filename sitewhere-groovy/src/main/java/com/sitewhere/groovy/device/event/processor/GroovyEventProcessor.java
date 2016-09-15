@@ -39,174 +39,174 @@ import groovy.util.ScriptException;
  */
 public class GroovyEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Injected Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Injected tenant Hazelcast configuration */
-	private ITenantHazelcastConfiguration hazelcastConfiguration;
+    /** Injected tenant Hazelcast configuration */
+    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
-	/** Relative path to Groovy script */
-	private String scriptPath;
+    /** Relative path to Groovy script */
+    private String scriptPath;
 
-	/** Supports building device management entities */
-	private DeviceManagementRequestBuilder deviceBuilder;
+    /** Supports building device management entities */
+    private DeviceManagementRequestBuilder deviceBuilder;
 
-	/** Supports building various types of device events */
-	private DeviceEventRequestBuilder eventsBuilder;
+    /** Supports building various types of device events */
+    private DeviceEventRequestBuilder eventsBuilder;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		// Required for filters.
-		super.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	// Required for filters.
+	super.start();
 
-		if (getConfiguration() == null) {
-			throw new SiteWhereException("No Groovy configuration provided.");
-		}
-
-		this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
-		this.eventsBuilder = new DeviceEventRequestBuilder(getDeviceManagement(), getEventManagement());
+	if (getConfiguration() == null) {
+	    throw new SiteWhereException("No Groovy configuration provided.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
-		processEvent(measurements);
+	this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
+	this.eventsBuilder = new DeviceEventRequestBuilder(getDeviceManagement(), getEventManagement());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+	processEvent(measurements);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+	processEvent(location);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+	processEvent(alert);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceStateChange)
+     */
+    @Override
+    public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
+	processEvent(state);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceCommandInvocation)
+     */
+    @Override
+    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	processEvent(invocation);
+    }
+
+    @Override
+    public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
+	processEvent(response);
+    }
+
+    /**
+     * Perform custom event processing in a Groovy script.
+     * 
+     * @param event
+     * @throws SiteWhereException
+     */
+    protected void processEvent(IDeviceEvent event) throws SiteWhereException {
+	// These should be cached, so no performance hit.
+	IDeviceAssignment assignment = getDeviceManagement()
+		.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+	IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+
+	// Create Groovy binding with handles to everything.
+	Binding binding = new Binding();
+	binding.setVariable("logger", getLogger());
+	binding.setVariable("event", new DeviceEventSupport(event));
+	binding.setVariable("assignment", assignment);
+	binding.setVariable("device", device);
+	binding.setVariable("deviceManagement", deviceBuilder);
+	binding.setVariable("eventBuilder", eventsBuilder);
+	binding.setVariable("hazelcast", getHazelcastConfiguration().getHazelcastInstance());
+
+	try {
+	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy script.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
-		processEvent(location);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
-		processEvent(alert);
-	}
+    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+	return hazelcastConfiguration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceStateChange)
-	 */
-	@Override
-	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
-		processEvent(state);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+     * setHazelcastConfiguration(com
+     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+     */
+    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+	this.hazelcastConfiguration = hazelcastConfiguration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceCommandInvocation)
-	 */
-	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		processEvent(invocation);
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	@Override
-	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
-		processEvent(response);
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
-	/**
-	 * Perform custom event processing in a Groovy script.
-	 * 
-	 * @param event
-	 * @throws SiteWhereException
-	 */
-	protected void processEvent(IDeviceEvent event) throws SiteWhereException {
-		// These should be cached, so no performance hit.
-		IDeviceAssignment assignment = getDeviceManagement()
-				.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-		IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-		// Create Groovy binding with handles to everything.
-		Binding binding = new Binding();
-		binding.setVariable("logger", getLogger());
-		binding.setVariable("event", new DeviceEventSupport(event));
-		binding.setVariable("assignment", assignment);
-		binding.setVariable("device", device);
-		binding.setVariable("deviceManagement", deviceBuilder);
-		binding.setVariable("eventBuilder", eventsBuilder);
-		binding.setVariable("hazelcast", getHazelcastConfiguration().getHazelcastInstance());
-
-		try {
-			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy script.", e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-		return hazelcastConfiguration;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-	 * setHazelcastConfiguration(com
-	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-	 */
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-		this.hazelcastConfiguration = hazelcastConfiguration;
-	}
-
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
-
-	public String getScriptPath() {
-		return scriptPath;
-	}
-
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 }

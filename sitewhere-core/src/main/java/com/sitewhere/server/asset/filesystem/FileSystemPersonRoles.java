@@ -21,15 +21,15 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemPersonRoles {
 
-	/** List of roles */
-	@XmlElement(name = "role")
-	private List<String> roles;
+    /** List of roles */
+    @XmlElement(name = "role")
+    private List<String> roles;
 
-	public List<String> getRoles() {
-		return roles;
-	}
+    public List<String> getRoles() {
+	return roles;
+    }
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(List<String> roles) {
+	this.roles = roles;
+    }
 }

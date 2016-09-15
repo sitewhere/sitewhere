@@ -14,14 +14,14 @@ package com.sitewhere.web.configuration.content;
  */
 public class AttributeContent extends XmlContent {
 
-	/** Attribute value */
-	private String value;
+    /** Attribute value */
+    private String value;
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+	return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+	this.value = value;
+    }
 }

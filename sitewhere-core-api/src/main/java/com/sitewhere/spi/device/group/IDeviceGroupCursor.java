@@ -14,17 +14,17 @@ package com.sitewhere.spi.device.group;
  */
 public interface IDeviceGroupCursor {
 
-	/**
-	 * Get unique network token.
-	 * 
-	 * @return
-	 */
-	public String getGroupToken();
+    /**
+     * Get unique network token.
+     * 
+     * @return
+     */
+    public String getGroupToken();
 
-	/**
-	 * Get index of current device in list.
-	 * 
-	 * @return
-	 */
-	public long getDeviceIndex();
+    /**
+     * Get index of current device in list.
+     * 
+     * @return
+     */
+    public long getDeviceIndex();
 }

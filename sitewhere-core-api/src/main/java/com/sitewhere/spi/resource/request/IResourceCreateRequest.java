@@ -9,24 +9,24 @@ import com.sitewhere.spi.resource.ResourceType;
  */
 public interface IResourceCreateRequest {
 
-	/**
-	 * Get unique resource path.
-	 * 
-	 * @return
-	 */
-	public String getPath();
+    /**
+     * Get unique resource path.
+     * 
+     * @return
+     */
+    public String getPath();
 
-	/**
-	 * Get type of resource.
-	 * 
-	 * @return
-	 */
-	public ResourceType getResourceType();
+    /**
+     * Get type of resource.
+     * 
+     * @return
+     */
+    public ResourceType getResourceType();
 
-	/**
-	 * Get resource content.
-	 * 
-	 * @return
-	 */
-	public byte[] getContent();
+    /**
+     * Get resource content.
+     * 
+     * @return
+     */
+    public byte[] getContent();
 }

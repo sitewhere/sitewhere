@@ -55,147 +55,147 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Schedules")
 public class SchedulesController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Create a schedule.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new schedule")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Schedules.CreateScheduleRequest.class, description = "createScheduleRequest.md"),
-			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "createScheduleResponse.md") })
-	public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createSchedule", LOGGER);
-		try {
-			return getScheduleManagement(servletRequest).createSchedule(request);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Create a schedule.
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create new schedule")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Schedules.CreateScheduleRequest.class, description = "createScheduleRequest.md"),
+	    @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "createScheduleResponse.md") })
+    public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createSchedule", LOGGER);
+	try {
+	    return getScheduleManagement(servletRequest).createSchedule(request);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get a schedule by token.
-	 * 
-	 * @param token
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get schedule by token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "getScheduleByTokenResponse.md") })
-	public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getScheduleByToken", LOGGER);
-		try {
-			return getScheduleManagement(servletRequest).getScheduleByToken(token);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Get a schedule by token.
+     * 
+     * @param token
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get schedule by token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "getScheduleByTokenResponse.md") })
+    public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getScheduleByToken", LOGGER);
+	try {
+	    return getScheduleManagement(servletRequest).getScheduleByToken(token);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Update an existing schedule.
-	 * 
-	 * @param request
-	 * @param token
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-	@ResponseBody
-	@ApiOperation(value = "Update an existing schedule")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduleRequest.md"),
-			@Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduleResponse.md") })
-	public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
-			@ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "updateSchedule", LOGGER);
-		try {
-			return getScheduleManagement(servletRequest).updateSchedule(token, request);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Update an existing schedule.
+     * 
+     * @param request
+     * @param token
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Update an existing schedule")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduleRequest.md"),
+	    @Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduleResponse.md") })
+    public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
+	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "updateSchedule", LOGGER);
+	try {
+	    return getScheduleManagement(servletRequest).updateSchedule(token, request);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * List schedules that match criteria.
-	 * 
-	 * @param page
-	 * @param pageSize
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List schedules matching criteria")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Schedules.ListSchedulesResponse.class, description = "listSchedulesResponse.md") })
-	public ISearchResults<ISchedule> listSchedules(
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listSchedules", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return getScheduleManagement(servletRequest).listSchedules(criteria);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * List schedules that match criteria.
+     * 
+     * @param page
+     * @param pageSize
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List schedules matching criteria")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Schedules.ListSchedulesResponse.class, description = "listSchedulesResponse.md") })
+    public ISearchResults<ISchedule> listSchedules(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listSchedules", LOGGER);
+	try {
+	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	    return getScheduleManagement(servletRequest).listSchedules(criteria);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Delete a schedule.
-	 * 
-	 * @param token
-	 * @param force
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@ApiOperation(value = "Delete a schedule")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "deleteScheduleResponse.md") })
-	public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "deleteSchedule", LOGGER);
-		try {
-			return getScheduleManagement(servletRequest).deleteSchedule(token, force);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Delete a schedule.
+     * 
+     * @param token
+     * @param force
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Delete a schedule")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "deleteScheduleResponse.md") })
+    public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteSchedule", LOGGER);
+	try {
+	    return getScheduleManagement(servletRequest).deleteSchedule(token, force);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get the schedule management implementation for the current tenant.
-	 * 
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
-		return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
-	}
+    /**
+     * Get the schedule management implementation for the current tenant.
+     * 
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
+	return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
+    }
 }

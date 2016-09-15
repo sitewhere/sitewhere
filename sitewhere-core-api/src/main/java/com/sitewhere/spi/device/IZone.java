@@ -19,52 +19,52 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface IZone extends IMetadataProviderEntity {
 
-	/**
-	 * Get unique zone token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique zone token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get token for associated site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token for associated site.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Get display name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get display name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get list of coordinates that defines the zone.
-	 * 
-	 * @return
-	 */
-	public List<ILocation> getCoordinates();
+    /**
+     * Get list of coordinates that defines the zone.
+     * 
+     * @return
+     */
+    public List<ILocation> getCoordinates();
 
-	/**
-	 * Get the border color.
-	 * 
-	 * @return
-	 */
-	public String getBorderColor();
+    /**
+     * Get the border color.
+     * 
+     * @return
+     */
+    public String getBorderColor();
 
-	/**
-	 * Get the fill color.
-	 * 
-	 * @return
-	 */
-	public String getFillColor();
+    /**
+     * Get the fill color.
+     * 
+     * @return
+     */
+    public String getFillColor();
 
-	/**
-	 * Get the opacity value.
-	 * 
-	 * @return
-	 */
-	public Double getOpacity();
+    /**
+     * Get the opacity value.
+     * 
+     * @return
+     */
+    public Double getOpacity();
 }

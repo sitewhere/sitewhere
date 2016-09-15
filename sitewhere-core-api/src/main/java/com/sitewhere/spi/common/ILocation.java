@@ -16,24 +16,24 @@ import java.io.Serializable;
  */
 public interface ILocation extends Serializable {
 
-	/**
-	 * Get latitude measurement.
-	 * 
-	 * @return
-	 */
-	public Double getLatitude();
+    /**
+     * Get latitude measurement.
+     * 
+     * @return
+     */
+    public Double getLatitude();
 
-	/**
-	 * Get longitude measurement.
-	 * 
-	 * @return
-	 */
-	public Double getLongitude();
+    /**
+     * Get longitude measurement.
+     * 
+     * @return
+     */
+    public Double getLongitude();
 
-	/**
-	 * Get elevation measurement.
-	 * 
-	 * @return
-	 */
-	public Double getElevation();
+    /**
+     * Get elevation measurement.
+     * 
+     * @return
+     */
+    public Double getElevation();
 }

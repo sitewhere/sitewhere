@@ -27,158 +27,158 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class UserCreateRequest extends MetadataProvider implements IUserCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -8552286827982676928L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -8552286827982676928L;
 
-	/** Username */
-	private String username;
+    /** Username */
+    private String username;
 
-	/** Password */
-	private String password;
+    /** Password */
+    private String password;
 
-	/** First name */
-	private String firstName;
+    /** First name */
+    private String firstName;
 
-	/** Last name */
-	private String lastName;
+    /** Last name */
+    private String lastName;
 
-	/** Account status */
-	private AccountStatus status;
+    /** Account status */
+    private AccountStatus status;
 
-	/** List of granted authorities */
-	private List<String> authorities;
+    /** List of granted authorities */
+    private List<String> authorities;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getUsername()
-	 */
-	public String getUsername() {
-		return username;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getUsername()
+     */
+    public String getUsername() {
+	return username;
+    }
+
+    public void setUsername(String username) {
+	this.username = username;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getPassword()
+     */
+    public String getPassword() {
+	return password;
+    }
+
+    public void setPassword(String password) {
+	this.password = password;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getFirstName()
+     */
+    public String getFirstName() {
+	return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getLastName()
+     */
+    public String getLastName() {
+	return lastName;
+    }
+
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getStatus()
+     */
+    public AccountStatus getStatus() {
+	return status;
+    }
+
+    public void setStatus(AccountStatus status) {
+	this.status = status;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.request.IUserCreateRequest#getAuthorities()
+     */
+    public List<String> getAuthorities() {
+	return authorities;
+    }
+
+    public void setAuthorities(List<String> authorities) {
+	this.authorities = authorities;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private UserCreateRequest request = new UserCreateRequest();
+
+	public Builder(String username, String password, String firstName, String lastName) {
+	    request.setUsername(username);
+	    request.setPassword(password);
+	    request.setFirstName(firstName);
+	    request.setLastName(lastName);
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public Builder(IUser existing) {
+	    request.setUsername(existing.getUsername());
+	    request.setPassword(existing.getHashedPassword());
+	    request.setFirstName(existing.getFirstName());
+	    request.setLastName(existing.getLastName());
+	    request.setStatus(existing.getStatus());
+	    request.setAuthorities(existing.getAuthorities());
+	    request.setMetadata(existing.getMetadata());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getPassword()
-	 */
-	public String getPassword() {
-		return password;
+	public Builder withStatus(AccountStatus status) {
+	    request.setStatus(status);
+	    return this;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public Builder withAuthority(String authority) {
+	    if (request.getAuthorities() == null) {
+		request.setAuthorities(new ArrayList<String>());
+	    }
+	    request.getAuthorities().add(authority);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getFirstName()
-	 */
-	public String getFirstName() {
-		return firstName;
+	public Builder withAuthorities(List<String> auths) {
+	    if (request.getAuthorities() == null) {
+		request.setAuthorities(new ArrayList<String>());
+	    }
+	    request.getAuthorities().addAll(auths);
+	    return this;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getLastName()
-	 */
-	public String getLastName() {
-		return lastName;
+	public UserCreateRequest build() {
+	    return request;
 	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getStatus()
-	 */
-	public AccountStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(AccountStatus status) {
-		this.status = status;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.request.IUserCreateRequest#getAuthorities()
-	 */
-	public List<String> getAuthorities() {
-		return authorities;
-	}
-
-	public void setAuthorities(List<String> authorities) {
-		this.authorities = authorities;
-	}
-
-	public static class Builder {
-
-		/** Request being built */
-		private UserCreateRequest request = new UserCreateRequest();
-
-		public Builder(String username, String password, String firstName, String lastName) {
-			request.setUsername(username);
-			request.setPassword(password);
-			request.setFirstName(firstName);
-			request.setLastName(lastName);
-		}
-
-		public Builder(IUser existing) {
-			request.setUsername(existing.getUsername());
-			request.setPassword(existing.getHashedPassword());
-			request.setFirstName(existing.getFirstName());
-			request.setLastName(existing.getLastName());
-			request.setStatus(existing.getStatus());
-			request.setAuthorities(existing.getAuthorities());
-			request.setMetadata(existing.getMetadata());
-		}
-
-		public Builder withStatus(AccountStatus status) {
-			request.setStatus(status);
-			return this;
-		}
-
-		public Builder withAuthority(String authority) {
-			if (request.getAuthorities() == null) {
-				request.setAuthorities(new ArrayList<String>());
-			}
-			request.getAuthorities().add(authority);
-			return this;
-		}
-
-		public Builder withAuthorities(List<String> auths) {
-			if (request.getAuthorities() == null) {
-				request.setAuthorities(new ArrayList<String>());
-			}
-			request.getAuthorities().addAll(auths);
-			return this;
-		}
-
-		public Builder metadata(String name, String value) {
-			if (request.getMetadata() == null) {
-				request.setMetadata(new HashMap<String, String>());
-			}
-			request.getMetadata().put(name, value);
-			return this;
-		}
-
-		public UserCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

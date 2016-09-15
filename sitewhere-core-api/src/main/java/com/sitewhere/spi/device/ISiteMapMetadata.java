@@ -14,12 +14,12 @@ package com.sitewhere.spi.device;
  */
 public interface ISiteMapMetadata {
 
-	/** Latitude value for initial map position */
-	public static String MAP_CENTER_LATITUDE = "centerLatitude";
+    /** Latitude value for initial map position */
+    public static String MAP_CENTER_LATITUDE = "centerLatitude";
 
-	/** Longitude value for initial map position */
-	public static String MAP_CENTER_LONGITUDE = "centerLongitude";
+    /** Longitude value for initial map position */
+    public static String MAP_CENTER_LONGITUDE = "centerLongitude";
 
-	/** Initial zoom level */
-	public static String MAP_ZOOM_LEVEL = "zoomLevel";
+    /** Initial zoom level */
+    public static String MAP_ZOOM_LEVEL = "zoomLevel";
 }

@@ -17,37 +17,38 @@ import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
 /**
- * Implementation of {@link InboundEventSource} where event receivers return decoded
- * events and the decoder just passes the events through without changing them.
+ * Implementation of {@link InboundEventSource} where event receivers return
+ * decoded events and the decoder just passes the events through without
+ * changing them.
  * 
  * @author Derek
  */
 public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceRequest<?>> {
 
-	public DecodedInboundEventSource() {
-		setDeviceEventDecoder(new NoOpDecoder());
-	}
+    public DecodedInboundEventSource() {
+	setDeviceEventDecoder(new NoOpDecoder());
+    }
 
-	/**
-	 * Decoder that just returns the decoded events.
+    /**
+     * Decoder that just returns the decoded events.
+     * 
+     * @author Derek
+     */
+    public class NoOpDecoder implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(
+	 * java.lang. Object, java.util.Map)
 	 */
-	public class NoOpDecoder implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.
-		 * Object, java.util.Map)
-		 */
-		@Override
-		public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload,
-				Map<String, String> metadata) throws EventDecodeException {
-			List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
-			results.add(payload);
-			return results;
-		}
+	@Override
+	public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload, Map<String, String> metadata)
+		throws EventDecodeException {
+	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
+	    results.add(payload);
+	    return results;
 	}
+    }
 }

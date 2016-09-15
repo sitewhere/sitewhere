@@ -19,33 +19,33 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IInboundEventReceiver<T> extends ITenantLifecycleComponent {
 
-	/**
-	 * Get name shown in user interfaces when referencing receiver.
-	 * 
-	 * @return
-	 */
-	public String getDisplayName();
+    /**
+     * Get name shown in user interfaces when referencing receiver.
+     * 
+     * @return
+     */
+    public String getDisplayName();
 
-	/**
-	 * Called when an event payload is received.
-	 * 
-	 * @param payload
-	 * @param metadata
-	 * @throws SiteWhereException
-	 */
-	public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException;
+    /**
+     * Called when an event payload is received.
+     * 
+     * @param payload
+     * @param metadata
+     * @throws SiteWhereException
+     */
+    public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException;
 
-	/**
-	 * Set the parent event source that will process events.
-	 * 
-	 * @param source
-	 */
-	public void setEventSource(IInboundEventSource<T> source);
+    /**
+     * Set the parent event source that will process events.
+     * 
+     * @param source
+     */
+    public void setEventSource(IInboundEventSource<T> source);
 
-	/**
-	 * Get the parent event source.
-	 * 
-	 * @return
-	 */
-	public IInboundEventSource<T> getEventSource();
+    /**
+     * Get the parent event source.
+     * 
+     * @return
+     */
+    public IInboundEventSource<T> getEventSource();
 }

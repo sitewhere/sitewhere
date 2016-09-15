@@ -28,44 +28,43 @@ import org.apache.qpid.amqp_1_0.codec.AbstractDescribedTypeWriter;
 import org.apache.qpid.amqp_1_0.codec.ValueWriter;
 import org.apache.qpid.amqp_1_0.type.UnsignedLong;
 
-public class SelectorFilterWriter extends
-        AbstractDescribedTypeWriter<SelectorFilter> {
+public class SelectorFilterWriter extends AbstractDescribedTypeWriter<SelectorFilter> {
 
     private static final ValueWriter.Factory<SelectorFilter> FACTORY = new ValueWriter.Factory<SelectorFilter>() {
 
-        @Override
-        public ValueWriter<SelectorFilter> newInstance(ValueWriter.Registry registry) {
-            return new SelectorFilterWriter(registry);
-        }
+	@Override
+	public ValueWriter<SelectorFilter> newInstance(ValueWriter.Registry registry) {
+	    return new SelectorFilterWriter(registry);
+	}
     };
 
     private SelectorFilter value;
 
     public SelectorFilterWriter(final ValueWriter.Registry registry) {
-        super(registry);
+	super(registry);
     }
 
     public static void register(ValueWriter.Registry registry) {
-        registry.register(SelectorFilter.class, FACTORY);
+	registry.register(SelectorFilter.class, FACTORY);
     }
 
     @Override
     protected void onSetValue(final SelectorFilter value) {
-        this.value = value;
+	this.value = value;
     }
 
     @Override
     protected void clear() {
-        value = null;
+	value = null;
     }
 
     @Override
     protected Object getDescriptor() {
-        return UnsignedLong.valueOf(0x00000137000000AL);
+	return UnsignedLong.valueOf(0x00000137000000AL);
     }
 
     @Override
     protected ValueWriter<String> createDescribedWriter() {
-        return getRegistry().getValueWriter(value.getValue());
+	return getRegistry().getValueWriter(value.getValue());
     }
 }

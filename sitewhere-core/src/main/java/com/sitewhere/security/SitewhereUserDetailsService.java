@@ -26,86 +26,84 @@ import com.sitewhere.spi.user.IUser;
  */
 public class SitewhereUserDetailsService implements UserDetailsManager {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.userdetails.UserDetailsService#loadUserByUsername(
-	 * java.lang. String)
-	 */
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,
-			DataAccessException {
-		try {
-			IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
-			List<IGrantedAuthority> auths =
-					SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
-			return new SitewhereUserDetails(user, auths);
-		} catch (SiteWhereException e) {
-			throw new UsernameNotFoundException("Unable to load user by username.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.userdetails.UserDetailsService#
+     * loadUserByUsername( java.lang. String)
+     */
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+	try {
+	    IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
+	    List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
+	    return new SitewhereUserDetails(user, auths);
+	} catch (SiteWhereException e) {
+	    throw new UsernameNotFoundException("Unable to load user by username.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.userdetails.UserDetailsManager#createUser(org.
-	 * springframework .security.userdetails .UserDetails)
-	 */
-	public void createUser(UserDetails info) {
-		// User user = new User();
-		// user.setUsername(info.getUsername());
-		// user.setHashedPassword(info.getPassword());
-		// try {
-		// SiteWhereServer.getInstance().getUserManagement().createUser(user);
-		// } catch (SiteWhereException e) {
-		// throw new RuntimeException(e);
-		// }
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.security.userdetails.UserDetailsManager#createUser(
+     * org. springframework .security.userdetails .UserDetails)
+     */
+    public void createUser(UserDetails info) {
+	// User user = new User();
+	// user.setUsername(info.getUsername());
+	// user.setHashedPassword(info.getPassword());
+	// try {
+	// SiteWhereServer.getInstance().getUserManagement().createUser(user);
+	// } catch (SiteWhereException e) {
+	// throw new RuntimeException(e);
+	// }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.userdetails.UserDetailsManager#deleteUser(java.lang
-	 * .String)
-	 */
-	public void deleteUser(String username) {
-		try {
-			SiteWhere.getServer().getUserManagement().deleteUser(username, true);
-		} catch (SiteWhereException e) {
-			throw new RuntimeException("Unable to delete user.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.security.userdetails.UserDetailsManager#deleteUser(
+     * java.lang .String)
+     */
+    public void deleteUser(String username) {
+	try {
+	    SiteWhere.getServer().getUserManagement().deleteUser(username, true);
+	} catch (SiteWhereException e) {
+	    throw new RuntimeException("Unable to delete user.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.userdetails.UserDetailsManager#userExists(java.lang
-	 * .String)
-	 */
-	public boolean userExists(String username) {
-		return (loadUserByUsername(username) != null);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.security.userdetails.UserDetailsManager#userExists(
+     * java.lang .String)
+     */
+    public boolean userExists(String username) {
+	return (loadUserByUsername(username) != null);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.userdetails.UserDetailsManager#updateUser(org.
-	 * springframework .security.userdetails .UserDetails)
-	 */
-	public void updateUser(UserDetails info) {
-		throw new RuntimeException("User updates not supported.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.security.userdetails.UserDetailsManager#updateUser(
+     * org. springframework .security.userdetails .UserDetails)
+     */
+    public void updateUser(UserDetails info) {
+	throw new RuntimeException("User updates not supported.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.userdetails.UserDetailsManager#changePassword(java
-	 * .lang.String, java.lang.String)
-	 */
-	public void changePassword(String oldPassword, String newPassword) {
-		throw new RuntimeException("User updates not supported.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.userdetails.UserDetailsManager#
+     * changePassword(java .lang.String, java.lang.String)
+     */
+    public void changePassword(String oldPassword, String newPassword) {
+	throw new RuntimeException("User updates not supported.");
+    }
 }

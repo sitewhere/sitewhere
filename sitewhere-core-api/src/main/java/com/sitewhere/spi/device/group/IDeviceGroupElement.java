@@ -16,38 +16,38 @@ import java.util.List;
  */
 public interface IDeviceGroupElement {
 
-	/**
-	 * Get token for parent group.
-	 * 
-	 * @return
-	 */
-	public String getGroupToken();
+    /**
+     * Get token for parent group.
+     * 
+     * @return
+     */
+    public String getGroupToken();
 
-	/**
-	 * Get index that corresponds to this entry.
-	 * 
-	 * @return
-	 */
-	public long getIndex();
+    /**
+     * Get index that corresponds to this entry.
+     * 
+     * @return
+     */
+    public long getIndex();
 
-	/**
-	 * Get group element type.
-	 * 
-	 * @return
-	 */
-	public GroupElementType getType();
+    /**
+     * Get group element type.
+     * 
+     * @return
+     */
+    public GroupElementType getType();
 
-	/**
-	 * Get element id (relative to element type).
-	 * 
-	 * @return
-	 */
-	public String getElementId();
+    /**
+     * Get element id (relative to element type).
+     * 
+     * @return
+     */
+    public String getElementId();
 
-	/**
-	 * Get list of roles associated with element.
-	 * 
-	 * @return
-	 */
-	public List<String> getRoles();
+    /**
+     * Get list of roles associated with element.
+     * 
+     * @return
+     */
+    public List<String> getRoles();
 }

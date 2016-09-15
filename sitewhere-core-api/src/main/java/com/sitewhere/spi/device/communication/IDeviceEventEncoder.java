@@ -18,12 +18,14 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IDeviceEventEncoder<T> {
 
-	/**
-	 * Encode an {@link IDecodedDeviceRequest} into another representation.
-	 * 
-	 * @param request device event request to encode
-	 * @return encoded version of the request
-	 * @throws SiteWhereException if request can not be encoded
-	 */
-	public T encode(IDecodedDeviceRequest<?> request) throws SiteWhereException;
+    /**
+     * Encode an {@link IDecodedDeviceRequest} into another representation.
+     * 
+     * @param request
+     *            device event request to encode
+     * @return encoded version of the request
+     * @throws SiteWhereException
+     *             if request can not be encoded
+     */
+    public T encode(IDecodedDeviceRequest<?> request) throws SiteWhereException;
 }

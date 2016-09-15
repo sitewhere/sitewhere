@@ -16,10 +16,10 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public interface IAssetSearchCriteria extends ISearchCriteria {
 
-	/**
-	 * Get the search query.
-	 * 
-	 * @return
-	 */
-	public String getQuery();
+    /**
+     * Get the search query.
+     * 
+     * @return
+     */
+    public String getQuery();
 }

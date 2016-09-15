@@ -44,147 +44,147 @@ import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
  */
 public class HBaseGrantedAuthority {
 
-	/**
-	 * Create a new granted authority.
-	 * 
-	 * @param context
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static GrantedAuthority createGrantedAuthority(IHBaseContext context, IGrantedAuthorityCreateRequest request)
-			throws SiteWhereException {
-		GrantedAuthority existing = getGrantedAuthorityByName(context, request.getAuthority());
-		if (existing != null) {
-			throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
-					HttpServletResponse.SC_CONFLICT);
+    /**
+     * Create a new granted authority.
+     * 
+     * @param context
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GrantedAuthority createGrantedAuthority(IHBaseContext context, IGrantedAuthorityCreateRequest request)
+	    throws SiteWhereException {
+	GrantedAuthority existing = getGrantedAuthorityByName(context, request.getAuthority());
+	if (existing != null) {
+	    throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_CONFLICT);
+	}
+
+	// Create the new granted authority and store it.
+	GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
+	byte[] primary = getGrantedAuthorityRowKey(request.getAuthority());
+	byte[] payload = context.getPayloadMarshaler().encodeGrantedAuthority(auth);
+
+	Table users = null;
+	try {
+	    users = getUsersTableInterface(context);
+	    Put put = new Put(primary);
+	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+	    users.put(put);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to create granted authority.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(users);
+	}
+
+	return auth;
+    }
+
+    /**
+     * Get a granted authority by unique name.
+     * 
+     * @param context
+     * @param name
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GrantedAuthority getGrantedAuthorityByName(IHBaseContext context, String name)
+	    throws SiteWhereException {
+	byte[] rowkey = getGrantedAuthorityRowKey(name);
+
+	Table users = null;
+	try {
+	    users = getUsersTableInterface(context);
+	    Get get = new Get(rowkey);
+	    HBaseUtils.addPayloadFields(get);
+	    Result result = users.get(get);
+
+	    byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+	    byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+	    if ((type == null) || (payload == null)) {
+		return null;
+	    }
+
+	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeGrantedAuthority(payload);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to load granted authority by name.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(users);
+	}
+    }
+
+    /**
+     * List granted authorities that match the given criteria.
+     * 
+     * @param context
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IGrantedAuthority> listGrantedAuthorities(IHBaseContext context,
+	    IGrantedAuthoritySearchCriteria criteria) throws SiteWhereException {
+	Table users = null;
+	ResultScanner scanner = null;
+	try {
+	    users = getUsersTableInterface(context);
+	    Scan scan = new Scan();
+	    scan.setStartRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
+	    scan.setStopRow(new byte[] { (byte) (UserRecordType.GrantedAuthority.getType() + 1) });
+	    scanner = users.getScanner(scan);
+
+	    ArrayList<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
+	    for (Result result : scanner) {
+		boolean shouldAdd = true;
+		Map<byte[], byte[]> row = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
+
+		byte[] payloadType = null;
+		byte[] payload = null;
+		for (byte[] qualifier : row.keySet()) {
+		    if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+			payloadType = row.get(qualifier);
+		    }
+		    if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+			payload = row.get(qualifier);
+		    }
 		}
-
-		// Create the new granted authority and store it.
-		GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
-		byte[] primary = getGrantedAuthorityRowKey(request.getAuthority());
-		byte[] payload = context.getPayloadMarshaler().encodeGrantedAuthority(auth);
-
-		Table users = null;
-		try {
-			users = getUsersTableInterface(context);
-			Put put = new Put(primary);
-			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-			users.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create granted authority.", e);
-		} finally {
-			HBaseUtils.closeCleanly(users);
+		if ((shouldAdd) && (payloadType != null) && (payload != null)) {
+		    matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+			    .decodeGrantedAuthority(payload));
 		}
-
-		return auth;
+	    }
+	    return matches;
+	} catch (IOException e) {
+	    throw new SiteWhereException("Error scanning user rows.", e);
+	} finally {
+	    if (scanner != null) {
+		scanner.close();
+	    }
+	    HBaseUtils.closeCleanly(users);
 	}
+    }
 
-	/**
-	 * Get a granted authority by unique name.
-	 * 
-	 * @param context
-	 * @param name
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static GrantedAuthority getGrantedAuthorityByName(IHBaseContext context, String name)
-			throws SiteWhereException {
-		byte[] rowkey = getGrantedAuthorityRowKey(name);
+    /**
+     * Get row key for a granted authority.
+     * 
+     * @param name
+     * @return
+     */
+    public static byte[] getGrantedAuthorityRowKey(String name) {
+	byte[] gaBytes = Bytes.toBytes(name);
+	ByteBuffer buffer = ByteBuffer.allocate(1 + gaBytes.length);
+	buffer.put(UserRecordType.GrantedAuthority.getType());
+	buffer.put(gaBytes);
+	return buffer.array();
+    }
 
-		Table users = null;
-		try {
-			users = getUsersTableInterface(context);
-			Get get = new Get(rowkey);
-			HBaseUtils.addPayloadFields(get);
-			Result result = users.get(get);
-
-			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
-			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-			if ((type == null) || (payload == null)) {
-				return null;
-			}
-
-			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeGrantedAuthority(payload);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to load granted authority by name.", e);
-		} finally {
-			HBaseUtils.closeCleanly(users);
-		}
-	}
-
-	/**
-	 * List granted authorities that match the given criteria.
-	 * 
-	 * @param context
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static List<IGrantedAuthority> listGrantedAuthorities(IHBaseContext context,
-			IGrantedAuthoritySearchCriteria criteria) throws SiteWhereException {
-		Table users = null;
-		ResultScanner scanner = null;
-		try {
-			users = getUsersTableInterface(context);
-			Scan scan = new Scan();
-			scan.setStartRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
-			scan.setStopRow(new byte[] { (byte) (UserRecordType.GrantedAuthority.getType() + 1) });
-			scanner = users.getScanner(scan);
-
-			ArrayList<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
-			for (Result result : scanner) {
-				boolean shouldAdd = true;
-				Map<byte[], byte[]> row = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
-
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (byte[] qualifier : row.keySet()) {
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = row.get(qualifier);
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = row.get(qualifier);
-					}
-				}
-				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
-							.decodeGrantedAuthority(payload));
-				}
-			}
-			return matches;
-		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning user rows.", e);
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-			HBaseUtils.closeCleanly(users);
-		}
-	}
-
-	/**
-	 * Get row key for a granted authority.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static byte[] getGrantedAuthorityRowKey(String name) {
-		byte[] gaBytes = Bytes.toBytes(name);
-		ByteBuffer buffer = ByteBuffer.allocate(1 + gaBytes.length);
-		buffer.put(UserRecordType.GrantedAuthority.getType());
-		buffer.put(gaBytes);
-		return buffer.array();
-	}
-
-	/**
-	 * Get users table based on context.
-	 * 
-	 * @param context
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected static Table getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
-		return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
-	}
+    /**
+     * Get users table based on context.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static Table getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
+	return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+    }
 }

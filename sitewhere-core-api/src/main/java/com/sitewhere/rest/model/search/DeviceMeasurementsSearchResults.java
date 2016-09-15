@@ -21,29 +21,29 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 public class DeviceMeasurementsSearchResults extends SearchResults<DeviceMeasurements> {
 
-	public DeviceMeasurementsSearchResults() {
-		super(new ArrayList<DeviceMeasurements>());
-	}
+    public DeviceMeasurementsSearchResults() {
+	super(new ArrayList<DeviceMeasurements>());
+    }
 
-	public DeviceMeasurementsSearchResults(List<DeviceMeasurements> results) {
-		super(results);
-	}
+    public DeviceMeasurementsSearchResults(List<DeviceMeasurements> results) {
+	super(results);
+    }
 
-	/**
-	 * Copy the API version of results so they can be marshaled.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurements> source)
-			throws SiteWhereException {
-		DeviceMeasurementsSearchResults result = new DeviceMeasurementsSearchResults();
-		List<DeviceMeasurements> converted = new ArrayList<DeviceMeasurements>();
-		for (IDeviceMeasurements measurement : source.getResults()) {
-			converted.add(DeviceMeasurements.copy(measurement));
-		}
-		result.setNumResults(source.getNumResults());
-		result.setResults(converted);
-		return result;
+    /**
+     * Copy the API version of results so they can be marshaled.
+     * 
+     * @param source
+     * @return
+     */
+    public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurements> source)
+	    throws SiteWhereException {
+	DeviceMeasurementsSearchResults result = new DeviceMeasurementsSearchResults();
+	List<DeviceMeasurements> converted = new ArrayList<DeviceMeasurements>();
+	for (IDeviceMeasurements measurement : source.getResults()) {
+	    converted.add(DeviceMeasurements.copy(measurement));
 	}
+	result.setNumResults(source.getNumResults());
+	result.setResults(converted);
+	return result;
+    }
 }

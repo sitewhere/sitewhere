@@ -14,9 +14,9 @@ package com.sitewhere.spi.device.event.state;
  */
 public enum RegistrationState {
 
-	/** Device is not registered with the system */
-	Unregistered,
+    /** Device is not registered with the system */
+    Unregistered,
 
-	/** Device is registered with the system */
-	Registered,
+    /** Device is registered with the system */
+    Registered,
 }

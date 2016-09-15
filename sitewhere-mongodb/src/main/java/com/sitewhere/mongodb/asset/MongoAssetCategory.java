@@ -21,84 +21,84 @@ import com.sitewhere.spi.asset.IAssetCategory;
  */
 public class MongoAssetCategory implements MongoConverter<IAssetCategory> {
 
-	/** Property for category id */
-	public static final String PROP_ID = "id";
+    /** Property for category id */
+    public static final String PROP_ID = "id";
 
-	/** Property for category name */
-	public static final String PROP_NAME = "name";
+    /** Property for category name */
+    public static final String PROP_NAME = "name";
 
-	/** Property for category asset type */
-	public static final String PROP_ASSET_TYPE = "type";
+    /** Property for category asset type */
+    public static final String PROP_ASSET_TYPE = "type";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
-	 */
-	@Override
-	public BasicDBObject convert(IAssetCategory source) {
-		return MongoAssetCategory.toDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    @Override
+    public BasicDBObject convert(IAssetCategory source) {
+	return MongoAssetCategory.toDBObject(source);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
-	 */
-	@Override
-	public IAssetCategory convert(DBObject source) {
-		return MongoAssetCategory.fromDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     */
+    @Override
+    public IAssetCategory convert(DBObject source) {
+	return MongoAssetCategory.fromDBObject(source);
+    }
 
-	/**
-	 * Copy information from SPI into Mongo DBObject.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void toDBObject(IAssetCategory source, BasicDBObject target) {
-		target.append(PROP_ID, source.getId());
-		target.append(PROP_NAME, source.getName());
-		target.append(PROP_ASSET_TYPE, source.getAssetType().name());
-	}
+    /**
+     * Copy information from SPI into Mongo DBObject.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void toDBObject(IAssetCategory source, BasicDBObject target) {
+	target.append(PROP_ID, source.getId());
+	target.append(PROP_NAME, source.getName());
+	target.append(PROP_ASSET_TYPE, source.getAssetType().name());
+    }
 
-	/**
-	 * Copy information from Mongo DBObject to model object.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void fromDBObject(DBObject source, AssetCategory target) {
-		String id = (String) source.get(PROP_ID);
-		String name = (String) source.get(PROP_NAME);
-		String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
+    /**
+     * Copy information from Mongo DBObject to model object.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void fromDBObject(DBObject source, AssetCategory target) {
+	String id = (String) source.get(PROP_ID);
+	String name = (String) source.get(PROP_NAME);
+	String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
 
-		target.setId(id);
-		target.setName(name);
-		target.setAssetType(AssetType.valueOf(assetTypeStr));
-	}
+	target.setId(id);
+	target.setName(name);
+	target.setAssetType(AssetType.valueOf(assetTypeStr));
+    }
 
-	/**
-	 * Convert SPI object to Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static BasicDBObject toDBObject(IAssetCategory source) {
-		BasicDBObject result = new BasicDBObject();
-		MongoAssetCategory.toDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert SPI object to Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public static BasicDBObject toDBObject(IAssetCategory source) {
+	BasicDBObject result = new BasicDBObject();
+	MongoAssetCategory.toDBObject(source, result);
+	return result;
+    }
 
-	/**
-	 * Convert a DBObject into the SPI equivalent.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static AssetCategory fromDBObject(DBObject source) {
-		AssetCategory result = new AssetCategory();
-		MongoAssetCategory.fromDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert a DBObject into the SPI equivalent.
+     * 
+     * @param source
+     * @return
+     */
+    public static AssetCategory fromDBObject(DBObject source) {
+	AssetCategory result = new AssetCategory();
+	MongoAssetCategory.fromDBObject(source, result);
+	return result;
+    }
 }

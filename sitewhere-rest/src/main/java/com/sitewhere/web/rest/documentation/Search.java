@@ -22,23 +22,23 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class Search {
 
-	public static class ListSearchProvidersResponse {
+    public static class ListSearchProvidersResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<SearchProvider> list = new ArrayList<SearchProvider>();
-			list.add(ExampleData.SEARCH_SOLR);
-			return new SearchResults<SearchProvider>(list, 1);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<SearchProvider> list = new ArrayList<SearchProvider>();
+	    list.add(ExampleData.SEARCH_SOLR);
+	    return new SearchResults<SearchProvider>(list, 1);
 	}
+    }
 
-	public static class ListExternalEventsResponse {
+    public static class ListExternalEventsResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IDeviceEvent> events = new ArrayList<IDeviceEvent>();
-			events.add(ExampleData.EVENT_LOCATION1);
-			events.add(ExampleData.EVENT_MEASUREMENT1);
-			events.add(ExampleData.EVENT_ALERT1);
-			return events;
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IDeviceEvent> events = new ArrayList<IDeviceEvent>();
+	    events.add(ExampleData.EVENT_LOCATION1);
+	    events.add(ExampleData.EVENT_MEASUREMENT1);
+	    events.add(ExampleData.EVENT_ALERT1);
+	    return events;
 	}
+    }
 }

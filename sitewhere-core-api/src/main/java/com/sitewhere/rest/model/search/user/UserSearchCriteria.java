@@ -16,14 +16,14 @@ import com.sitewhere.spi.user.IUserSearchCriteria;
  */
 public class UserSearchCriteria implements IUserSearchCriteria {
 
-	/** Flag for whether deleted devices are included */
-	private boolean includeDeleted = false;
+    /** Flag for whether deleted devices are included */
+    private boolean includeDeleted = false;
 
-	public boolean isIncludeDeleted() {
-		return includeDeleted;
-	}
+    public boolean isIncludeDeleted() {
+	return includeDeleted;
+    }
 
-	public void setIncludeDeleted(boolean includeDeleted) {
-		this.includeDeleted = includeDeleted;
-	}
+    public void setIncludeDeleted(boolean includeDeleted) {
+	this.includeDeleted = includeDeleted;
+    }
 }

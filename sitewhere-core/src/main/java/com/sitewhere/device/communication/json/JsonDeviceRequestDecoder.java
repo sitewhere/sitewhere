@@ -22,51 +22,52 @@ import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
 /**
- * Decodes binary device messages in JSON format into device requests for processing.
+ * Decodes binary device messages in JSON format into device requests for
+ * processing.
  * 
  * @author Derek
  */
 public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
 
-	/** Used to map data into an object based on JSON parsing */
-	private static ObjectMapper MAPPER = getObjectMapper();
+    /** Used to map data into an object based on JSON parsing */
+    private static ObjectMapper MAPPER = getObjectMapper();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
-	 * java.util.Map)
-	 */
-	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		try {
-			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-			DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
-			events.add(decoded);
-			return events;
-		} catch (JsonParseException e) {
-			throw new EventDecodeException(e);
-		} catch (JsonMappingException e) {
-			throw new EventDecodeException(e);
-		} catch (IOException e) {
-			throw new EventDecodeException(e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+	    throws EventDecodeException {
+	try {
+	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
+	    DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
+	    events.add(decoded);
+	    return events;
+	} catch (JsonParseException e) {
+	    throw new EventDecodeException(e);
+	} catch (JsonMappingException e) {
+	    throw new EventDecodeException(e);
+	} catch (IOException e) {
+	    throw new EventDecodeException(e);
 	}
+    }
 
-	/**
-	 * Get configured {@link ObjectMapper}.
-	 * 
-	 * @return
-	 */
-	public static ObjectMapper getObjectMapper() {
-		if (MAPPER == null) {
-			MAPPER = new ObjectMapper();
-			SimpleModule module = new SimpleModule();
-			module.addDeserializer(DecodedDeviceRequest.class, new JsonDeviceRequestMarshaler());
-			MAPPER.registerModule(module);
-		}
-		return MAPPER;
+    /**
+     * Get configured {@link ObjectMapper}.
+     * 
+     * @return
+     */
+    public static ObjectMapper getObjectMapper() {
+	if (MAPPER == null) {
+	    MAPPER = new ObjectMapper();
+	    SimpleModule module = new SimpleModule();
+	    module.addDeserializer(DecodedDeviceRequest.class, new JsonDeviceRequestMarshaler());
+	    MAPPER.registerModule(module);
 	}
+	return MAPPER;
+    }
 }

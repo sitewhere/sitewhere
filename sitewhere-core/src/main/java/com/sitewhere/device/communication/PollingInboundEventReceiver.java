@@ -25,90 +25,90 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public abstract class PollingInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default polling interval in milliseconds */
-	private static final int DEFAULT_POLL_INTERVAL_MS = 10000;
+    /** Default polling interval in milliseconds */
+    private static final int DEFAULT_POLL_INTERVAL_MS = 10000;
 
-	/** Polling interval in milliseconds */
-	private int pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
+    /** Polling interval in milliseconds */
+    private int pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
 
-	/** Handles poller threading */
-	private ExecutorService executor;
+    /** Handles poller threading */
+    private ExecutorService executor;
 
-	/**
-	 * Implemented in subclass to do work when polling occurs.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public abstract void doPoll() throws SiteWhereException;
+    /**
+     * Implemented in subclass to do work when polling occurs.
+     * 
+     * @throws SiteWhereException
+     */
+    public abstract void doPoll() throws SiteWhereException;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		this.executor = Executors.newSingleThreadExecutor();
-		executor.submit(new Poller());
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	this.executor = Executors.newSingleThreadExecutor();
+	executor.submit(new Poller());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	if (executor != null) {
+	    executor.shutdownNow();
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
+    /**
+     * Class that excutes polling code at a given interval.
+     * 
+     * @author Derek
+     */
+    public class Poller implements Runnable {
+
 	@Override
-	public void stop() throws SiteWhereException {
-		if (executor != null) {
-			executor.shutdownNow();
+	public void run() {
+	    while (true) {
+		try {
+		    doPoll();
+		} catch (SiteWhereException e) {
+		    LOGGER.error("Error executing polling logic.", e);
+		} catch (Exception e) {
+		    LOGGER.error("Unhandled exception in polling operation.", e);
 		}
-	}
-
-	/**
-	 * Class that excutes polling code at a given interval.
-	 * 
-	 * @author Derek
-	 */
-	public class Poller implements Runnable {
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					doPoll();
-				} catch (SiteWhereException e) {
-					LOGGER.error("Error executing polling logic.", e);
-				} catch (Exception e) {
-					LOGGER.error("Unhandled exception in polling operation.", e);
-				}
-				try {
-					Thread.sleep(getPollIntervalMs());
-				} catch (InterruptedException e) {
-					LOGGER.warn("Poller thread interrupted.");
-					return;
-				}
-			}
+		try {
+		    Thread.sleep(getPollIntervalMs());
+		} catch (InterruptedException e) {
+		    LOGGER.warn("Poller thread interrupted.");
+		    return;
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public int getPollIntervalMs() {
-		return pollIntervalMs;
-	}
+    public int getPollIntervalMs() {
+	return pollIntervalMs;
+    }
 
-	public void setPollIntervalMs(int pollIntervalMs) {
-		this.pollIntervalMs = pollIntervalMs;
-	}
+    public void setPollIntervalMs(int pollIntervalMs) {
+	this.pollIntervalMs = pollIntervalMs;
+    }
 }

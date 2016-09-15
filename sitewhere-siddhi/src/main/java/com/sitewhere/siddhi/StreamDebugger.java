@@ -21,18 +21,18 @@ import org.wso2.siddhi.core.stream.output.StreamCallback;
  */
 public class StreamDebugger extends StreamCallback {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.wso2.siddhi.core.stream.output.StreamCallback#receive(org.wso2.siddhi
-	 * .core. event.Event[])
-	 */
-	@Override
-	public void receive(Event[] events) {
-		LOGGER.info(Arrays.deepToString(events));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.wso2.siddhi.core.stream.output.StreamCallback#receive(org.wso2.siddhi
+     * .core. event.Event[])
+     */
+    @Override
+    public void receive(Event[] events) {
+	LOGGER.info(Arrays.deepToString(events));
+    }
 }

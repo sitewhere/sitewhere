@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
  */
 public class DeviceAssignmentSearchResults extends SearchResults<DeviceAssignment> {
 
-	public DeviceAssignmentSearchResults() {
-		super(new ArrayList<DeviceAssignment>());
-	}
+    public DeviceAssignmentSearchResults() {
+	super(new ArrayList<DeviceAssignment>());
+    }
 
-	public DeviceAssignmentSearchResults(List<DeviceAssignment> results) {
-		super(results);
-	}
+    public DeviceAssignmentSearchResults(List<DeviceAssignment> results) {
+	super(results);
+    }
 }

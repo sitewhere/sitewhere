@@ -17,13 +17,13 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public interface IScheduleManagementMongoClient {
 
-	/** Default collection name for SiteWhere schedules */
-	public static final String DEFAULT_SCHEDULES_COLLECTION_NAME = "schedules";
+    /** Default collection name for SiteWhere schedules */
+    public static final String DEFAULT_SCHEDULES_COLLECTION_NAME = "schedules";
 
-	/** Default collection name for SiteWhere scheduled jobs */
-	public static final String DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME = "scheduledjobs";
+    /** Default collection name for SiteWhere scheduled jobs */
+    public static final String DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME = "scheduledjobs";
 
-	public DBCollection getSchedulesCollection(ITenant tenant);
+    public DBCollection getSchedulesCollection(ITenant tenant);
 
-	public DBCollection getScheduledJobsCollection(ITenant tenant);
+    public DBCollection getScheduledJobsCollection(ITenant tenant);
 }

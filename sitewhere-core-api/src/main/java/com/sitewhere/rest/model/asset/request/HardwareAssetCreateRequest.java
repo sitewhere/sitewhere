@@ -16,38 +16,39 @@ import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
  */
 public class HardwareAssetCreateRequest extends AssetCreateRequest implements IHardwareAssetCreateRequest {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 3642557287516095012L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 3642557287516095012L;
 
-	/** SKU */
-	private String sku;
+    /** SKU */
+    private String sku;
 
-	/** Asset description */
-	private String description;
+    /** Asset description */
+    private String description;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest#getSku()
-	 */
-	public String getSku() {
-		return sku;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest#getSku()
+     */
+    public String getSku() {
+	return sku;
+    }
 
-	public void setSku(String sku) {
-		this.sku = sku;
-	}
+    public void setSku(String sku) {
+	this.sku = sku;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest#getDescription()
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest#
+     * getDescription()
+     */
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 }

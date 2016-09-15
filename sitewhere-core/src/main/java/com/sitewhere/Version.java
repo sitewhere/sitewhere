@@ -16,69 +16,70 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
 
 /**
- * Gets information about system version from properties generated into the classpath.
+ * Gets information about system version from properties generated into the
+ * classpath.
  * 
  * @author Derek
  */
 public class Version implements IVersion {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 6248127738815445097L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 6248127738815445097L;
 
-	/** Loaded from classpath to get version information */
-	private static Properties properties = new Properties();
+    /** Loaded from classpath to get version information */
+    private static Properties properties = new Properties();
 
-	static {
-		try (final InputStream stream =
-				Version.class.getClassLoader().getResourceAsStream("META-INF/application-build.properties")) {
-			properties.load(stream);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+    static {
+	try (final InputStream stream = Version.class.getClassLoader()
+		.getResourceAsStream("META-INF/application-build.properties")) {
+	    properties.load(stream);
+	} catch (IOException ex) {
+	    ex.printStackTrace();
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getEdition()
-	 */
-	public String getEdition() {
-		return "Community Edition";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getEdition()
+     */
+    public String getEdition() {
+	return "Community Edition";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
-	 */
-	public String getEditionIdentifier() {
-		return "CE";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
+     */
+    public String getEditionIdentifier() {
+	return "CE";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
-	 */
-	public String getVersionIdentifier() {
-		return properties.getProperty("sitewhere.version");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
+     */
+    public String getVersionIdentifier() {
+	return properties.getProperty("sitewhere.version");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
-	 */
-	public String getBuildTimestamp() {
-		return properties.getProperty("build.timestamp");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
+     */
+    public String getBuildTimestamp() {
+	return properties.getProperty("build.timestamp");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getServerClass()
-	 */
-	public Class<? extends ISiteWhereServer> getServerClass() {
-		return SiteWhereServer.class;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getServerClass()
+     */
+    public Class<? extends ISiteWhereServer> getServerClass() {
+	return SiteWhereServer.class;
+    }
 }

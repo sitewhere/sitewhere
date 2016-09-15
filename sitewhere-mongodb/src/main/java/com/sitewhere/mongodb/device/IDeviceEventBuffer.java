@@ -17,25 +17,25 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IDeviceEventBuffer {
 
-	/**
-	 * Start buffer lifecycle.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void start() throws SiteWhereException;
+    /**
+     * Start buffer lifecycle.
+     * 
+     * @throws SiteWhereException
+     */
+    public void start() throws SiteWhereException;
 
-	/**
-	 * Stop buffer lifecycle.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void stop() throws SiteWhereException;
+    /**
+     * Stop buffer lifecycle.
+     * 
+     * @throws SiteWhereException
+     */
+    public void stop() throws SiteWhereException;
 
-	/**
-	 * Add a {@link DBObject} to the queue.
-	 * 
-	 * @param put
-	 * @throws SiteWhereException
-	 */
-	public void add(DBObject put) throws SiteWhereException;
+    /**
+     * Add a {@link DBObject} to the queue.
+     * 
+     * @param put
+     * @throws SiteWhereException
+     */
+    public void add(DBObject put) throws SiteWhereException;
 }

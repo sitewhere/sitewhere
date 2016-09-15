@@ -17,10 +17,10 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ITenantHazelcastConfiguration extends ITenantLifecycleComponent {
 
-	/**
-	 * Get a handle to the Hazelcast instance.
-	 * 
-	 * @return
-	 */
-	public HazelcastInstance getHazelcastInstance();
+    /**
+     * Get a handle to the Hazelcast instance.
+     * 
+     * @return
+     */
+    public HazelcastInstance getHazelcastInstance();
 }

@@ -16,25 +16,25 @@ import java.util.List;
  */
 public class InterpolatedAssignmentHistory {
 
-	/** Device assignment token */
-	private String deviceAssignmentToken;
+    /** Device assignment token */
+    private String deviceAssignmentToken;
 
-	/** List of history entries */
-	private List<DeviceAssignmentHistoryEntry> slots;
+    /** List of history entries */
+    private List<DeviceAssignmentHistoryEntry> slots;
 
-	public String getDeviceAssignmentToken() {
-		return deviceAssignmentToken;
-	}
+    public String getDeviceAssignmentToken() {
+	return deviceAssignmentToken;
+    }
 
-	public void setDeviceAssignmentToken(String deviceAssignmentToken) {
-		this.deviceAssignmentToken = deviceAssignmentToken;
-	}
+    public void setDeviceAssignmentToken(String deviceAssignmentToken) {
+	this.deviceAssignmentToken = deviceAssignmentToken;
+    }
 
-	public List<DeviceAssignmentHistoryEntry> getSlots() {
-		return slots;
-	}
+    public List<DeviceAssignmentHistoryEntry> getSlots() {
+	return slots;
+    }
 
-	public void setSlots(List<DeviceAssignmentHistoryEntry> slots) {
-		this.slots = slots;
-	}
+    public void setSlots(List<DeviceAssignmentHistoryEntry> slots) {
+	this.slots = slots;
+    }
 }

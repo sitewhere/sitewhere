@@ -16,25 +16,25 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
  */
 public class SendDeviceStreamDataRequest implements ISendDeviceStreamDataRequest {
 
-	/** Stream id */
-	private String streamId;
+    /** Stream id */
+    private String streamId;
 
-	/** Sequence number */
-	private long sequenceNumber;
+    /** Sequence number */
+    private long sequenceNumber;
 
-	public String getStreamId() {
-		return streamId;
-	}
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	public long getSequenceNumber() {
-		return sequenceNumber;
-	}
+    public long getSequenceNumber() {
+	return sequenceNumber;
+    }
 
-	public void setSequenceNumber(long sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
-	}
+    public void setSequenceNumber(long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
+    }
 }

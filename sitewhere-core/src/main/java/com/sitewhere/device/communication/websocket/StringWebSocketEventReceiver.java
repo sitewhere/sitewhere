@@ -27,66 +27,66 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
  */
 public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.websocket.WebSocketEventReceiver#
+     * getWebSocketClientClass()
+     */
+    @Override
+    public Class<? extends Endpoint> getWebSocketClientClass() {
+	return StringWebSocketClient.class;
+    }
+
+    /**
+     * Implementation of {@link Endpoint} that operates on String payloads.
+     * 
+     * @author Derek
+     */
+    public static class StringWebSocketClient extends Endpoint {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.websocket.WebSocketEventReceiver#
-	 * getWebSocketClientClass()
+	 * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
+	 * javax.websocket.EndpointConfig)
 	 */
 	@Override
-	public Class<? extends Endpoint> getWebSocketClientClass() {
-		return StringWebSocketClient.class;
+	public void onOpen(Session session, final EndpointConfig config) {
+	    session.addMessageHandler(new MessageHandler.Whole<String>() {
+
+		@SuppressWarnings("unchecked")
+		public void onMessage(String payload) {
+		    IInboundEventReceiver<String> receiver = (IInboundEventReceiver<String>) config.getUserProperties()
+			    .get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
+		    EventProcessingLogic.processRawPayload(receiver, payload, null);
+		}
+	    });
 	}
 
-	/**
-	 * Implementation of {@link Endpoint} that operates on String payloads.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see javax.websocket.Endpoint#onClose(javax.websocket.Session,
+	 * javax.websocket.CloseReason)
 	 */
-	public static class StringWebSocketClient extends Endpoint {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
-		 * javax.websocket.EndpointConfig)
-		 */
-		@Override
-		public void onOpen(Session session, final EndpointConfig config) {
-			session.addMessageHandler(new MessageHandler.Whole<String>() {
-
-				@SuppressWarnings("unchecked")
-				public void onMessage(String payload) {
-					IInboundEventReceiver<String> receiver = (IInboundEventReceiver<String>) config.getUserProperties()
-							.get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-					EventProcessingLogic.processRawPayload(receiver, payload, null);
-				}
-			});
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onClose(javax.websocket.Session,
-		 * javax.websocket.CloseReason)
-		 */
-		@Override
-		public void onClose(Session session, CloseReason closeReason) {
-			LOGGER.info("Web socket closed.");
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onError(javax.websocket.Session,
-		 * java.lang.Throwable)
-		 */
-		@Override
-		public void onError(Session session, Throwable e) {
-			LOGGER.error("Web socket error.", e);
-		}
+	@Override
+	public void onClose(Session session, CloseReason closeReason) {
+	    LOGGER.info("Web socket closed.");
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.websocket.Endpoint#onError(javax.websocket.Session,
+	 * java.lang.Throwable)
+	 */
+	@Override
+	public void onError(Session session, Throwable e) {
+	    LOGGER.error("Web socket error.", e);
+	}
+    }
 }

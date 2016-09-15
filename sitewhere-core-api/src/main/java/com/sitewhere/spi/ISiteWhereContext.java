@@ -26,73 +26,73 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  */
 public interface ISiteWhereContext {
 
-	/**
-	 * Get current assignment for device associated with the request.
-	 * 
-	 * @return
-	 */
-	public IDeviceAssignment getDeviceAssignment();
+    /**
+     * Get current assignment for device associated with the request.
+     * 
+     * @return
+     */
+    public IDeviceAssignment getDeviceAssignment();
 
-	/**
-	 * Get a list of device measurements that have not been persisted.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceMeasurementsCreateRequest> getUnsavedDeviceMeasurements();
+    /**
+     * Get a list of device measurements that have not been persisted.
+     * 
+     * @return
+     */
+    public List<IDeviceMeasurementsCreateRequest> getUnsavedDeviceMeasurements();
 
-	/**
-	 * Get a list of device locations that have not been persisted.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceLocationCreateRequest> getUnsavedDeviceLocations();
+    /**
+     * Get a list of device locations that have not been persisted.
+     * 
+     * @return
+     */
+    public List<IDeviceLocationCreateRequest> getUnsavedDeviceLocations();
 
-	/**
-	 * Get a list of device alerts that have not been persisted.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceAlertCreateRequest> getUnsavedDeviceAlerts();
+    /**
+     * Get a list of device alerts that have not been persisted.
+     * 
+     * @return
+     */
+    public List<IDeviceAlertCreateRequest> getUnsavedDeviceAlerts();
 
-	/**
-	 * Get the {@link IDeviceMeasurements} events.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceMeasurements> getDeviceMeasurements();
+    /**
+     * Get the {@link IDeviceMeasurements} events.
+     * 
+     * @return
+     */
+    public List<IDeviceMeasurements> getDeviceMeasurements();
 
-	/**
-	 * Get the {@link IDeviceLocation} events.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceLocation> getDeviceLocations();
+    /**
+     * Get the {@link IDeviceLocation} events.
+     * 
+     * @return
+     */
+    public List<IDeviceLocation> getDeviceLocations();
 
-	/**
-	 * Get the {@link IDeviceAlert} events.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceAlert> getDeviceAlerts();
+    /**
+     * Get the {@link IDeviceAlert} events.
+     * 
+     * @return
+     */
+    public List<IDeviceAlert> getDeviceAlerts();
 
-	/**
-	 * Get the {@link IDeviceCommandInvocation} events.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceCommandInvocation> getDeviceCommandInvocations();
+    /**
+     * Get the {@link IDeviceCommandInvocation} events.
+     * 
+     * @return
+     */
+    public List<IDeviceCommandInvocation> getDeviceCommandInvocations();
 
-	/**
-	 * Get the {@link IDeviceCommandResponse} events.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceCommandResponse> getDeviceCommandResponses();
+    /**
+     * Get the {@link IDeviceCommandResponse} events.
+     * 
+     * @return
+     */
+    public List<IDeviceCommandResponse> getDeviceCommandResponses();
 
-	/**
-	 * Get information for replying to originator.
-	 * 
-	 * @return
-	 */
-	public String getReplyTo();
+    /**
+     * Get information for replying to originator.
+     * 
+     * @return
+     */
+    public String getReplyTo();
 }

@@ -14,108 +14,108 @@ package com.sitewhere.spi.server.lifecycle;
  */
 public enum LifecycleComponentType {
 
-	/** Includes the entire system */
-	System,
+    /** Includes the entire system */
+    System,
 
-	/** Engine for a single tenant */
-	TenantEngine,
+    /** Engine for a single tenant */
+    TenantEngine,
 
-	/** Data store management */
-	DataStore,
+    /** Data store management */
+    DataStore,
 
-	/** Cache provider */
-	CacheProvider,
+    /** Cache provider */
+    CacheProvider,
 
-	/** Asset module manager */
-	AssetModuleManager,
+    /** Asset module manager */
+    AssetModuleManager,
 
-	/** Asset module */
-	AssetModule,
+    /** Asset module */
+    AssetModule,
 
-	/** Search provider manager */
-	SearchProviderManager,
+    /** Search provider manager */
+    SearchProviderManager,
 
-	/** Search provider */
-	SearchProvider,
+    /** Search provider */
+    SearchProvider,
 
-	/** Outbound processor chain */
-	OutboundProcessorChain,
+    /** Outbound processor chain */
+    OutboundProcessorChain,
 
-	/** Outbound event processor */
-	OutboundEventProcessor,
+    /** Outbound event processor */
+    OutboundEventProcessor,
 
-	/** Outbound event processor filter */
-	OutboundEventProcessorFilter,
+    /** Outbound event processor filter */
+    OutboundEventProcessorFilter,
 
-	/** Inbound processor chain */
-	InboundProcessorChain,
+    /** Inbound processor chain */
+    InboundProcessorChain,
 
-	/** Inbound event processor */
-	InboundEventProcessor,
+    /** Inbound event processor */
+    InboundEventProcessor,
 
-	/** Device communication subsystem */
-	DeviceCommunication,
+    /** Device communication subsystem */
+    DeviceCommunication,
 
-	/** Event processing subsystem */
-	EventProcessing,
+    /** Event processing subsystem */
+    EventProcessing,
 
-	/** Command processing strategy */
-	CommandProcessingStrategy,
+    /** Command processing strategy */
+    CommandProcessingStrategy,
 
-	/** Command destination */
-	CommandDestination,
+    /** Command destination */
+    CommandDestination,
 
-	/** Command execution builder */
-	CommandExecutionBuilder,
+    /** Command execution builder */
+    CommandExecutionBuilder,
 
-	/** Command execution encoder */
-	CommandExecutionEncoder,
+    /** Command execution encoder */
+    CommandExecutionEncoder,
 
-	/** Command target resolver */
-	CommandTargetResolver,
+    /** Command target resolver */
+    CommandTargetResolver,
 
-	/** Command delivery provider */
-	CommandDeliveryProvider,
+    /** Command delivery provider */
+    CommandDeliveryProvider,
 
-	/** Command router */
-	CommandRouter,
+    /** Command router */
+    CommandRouter,
 
-	/** Outbound processing strategy */
-	OutboundProcessingStrategy,
+    /** Outbound processing strategy */
+    OutboundProcessingStrategy,
 
-	/** Registration manager */
-	RegistrationManager,
+    /** Registration manager */
+    RegistrationManager,
 
-	/** Symbol generator manager */
-	SymbolGeneratorManager,
+    /** Symbol generator manager */
+    SymbolGeneratorManager,
 
-	/** Symbol generator */
-	SymbolGenerator,
+    /** Symbol generator */
+    SymbolGenerator,
 
-	/** Batch operation manager */
-	BatchOperationManager,
+    /** Batch operation manager */
+    BatchOperationManager,
 
-	/** Device presence manager */
-	DevicePresenceManager,
+    /** Device presence manager */
+    DevicePresenceManager,
 
-	/** Device stream manager */
-	DeviceStreamManager,
+    /** Device stream manager */
+    DeviceStreamManager,
 
-	/** Schedule manager */
-	ScheduleManager,
+    /** Schedule manager */
+    ScheduleManager,
 
-	/** Inbound processing strategy */
-	InboundProcessingStrategy,
+    /** Inbound processing strategy */
+    InboundProcessingStrategy,
 
-	/** Event source */
-	InboundEventSource,
+    /** Event source */
+    InboundEventSource,
 
-	/** Event receiver */
-	InboundEventReceiver,
+    /** Event receiver */
+    InboundEventReceiver,
 
-	/** Resource manager */
-	ResourceManager,
+    /** Resource manager */
+    ResourceManager,
 
-	/** Unclassified component */
-	Other,
+    /** Unclassified component */
+    Other,
 }

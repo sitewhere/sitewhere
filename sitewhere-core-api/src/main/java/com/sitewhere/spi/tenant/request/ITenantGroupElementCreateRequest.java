@@ -14,10 +14,10 @@ package com.sitewhere.spi.tenant.request;
  */
 public interface ITenantGroupElementCreateRequest {
 
-	/**
-	 * Get id of tenant referenced by element.
-	 * 
-	 * @return
-	 */
-	public String getTenantId();
+    /**
+     * Get id of tenant referenced by element.
+     * 
+     * @return
+     */
+    public String getTenantId();
 }

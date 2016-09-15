@@ -27,73 +27,73 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class SiteMarshalHelper {
 
-	/** Static logger instance */
-	@SuppressWarnings("unused")
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Tenant */
-	private ITenant tenant;
+    /** Tenant */
+    private ITenant tenant;
 
-	/** Indicates whether zones are to be included */
-	private boolean includeZones = false;
+    /** Indicates whether zones are to be included */
+    private boolean includeZones = false;
 
-	public SiteMarshalHelper(ITenant tenant) {
-		this.tenant = tenant;
-	}
+    public SiteMarshalHelper(ITenant tenant) {
+	this.tenant = tenant;
+    }
 
-	/**
-	 * Convert the SPI into a model object based on marshaling parameters.
-	 * 
-	 * @param source
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Site convert(ISite source) throws SiteWhereException {
-		Site site = Site.copy(source);
-		if (isIncludeZones()) {
-			ISearchResults<IZone> matches = getDeviceManagement(getTenant()).listZones(source.getToken(),
-					SearchCriteria.ALL);
-			List<Zone> zones = new ArrayList<Zone>();
-			List<IZone> reordered = matches.getResults();
-			Collections.sort(reordered, new Comparator<IZone>() {
+    /**
+     * Convert the SPI into a model object based on marshaling parameters.
+     * 
+     * @param source
+     * @return
+     * @throws SiteWhereException
+     */
+    public Site convert(ISite source) throws SiteWhereException {
+	Site site = Site.copy(source);
+	if (isIncludeZones()) {
+	    ISearchResults<IZone> matches = getDeviceManagement(getTenant()).listZones(source.getToken(),
+		    SearchCriteria.ALL);
+	    List<Zone> zones = new ArrayList<Zone>();
+	    List<IZone> reordered = matches.getResults();
+	    Collections.sort(reordered, new Comparator<IZone>() {
 
-				@Override
-				public int compare(IZone z0, IZone z1) {
-					return z0.getName().compareTo(z1.getName());
-				}
-			});
-			for (IZone match : matches.getResults()) {
-				zones.add(Zone.copy(match));
-			}
-			site.setZones(zones);
+		@Override
+		public int compare(IZone z0, IZone z1) {
+		    return z0.getName().compareTo(z1.getName());
 		}
-		return site;
+	    });
+	    for (IZone match : matches.getResults()) {
+		zones.add(Zone.copy(match));
+	    }
+	    site.setZones(zones);
 	}
+	return site;
+    }
 
-	/**
-	 * Get device management implementation.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-		return SiteWhere.getServer().getDeviceManagement(tenant);
-	}
+    /**
+     * Get device management implementation.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+	return SiteWhere.getServer().getDeviceManagement(tenant);
+    }
 
-	public ITenant getTenant() {
-		return tenant;
-	}
+    public ITenant getTenant() {
+	return tenant;
+    }
 
-	public void setTenant(ITenant tenant) {
-		this.tenant = tenant;
-	}
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
+    }
 
-	public boolean isIncludeZones() {
-		return includeZones;
-	}
+    public boolean isIncludeZones() {
+	return includeZones;
+    }
 
-	public void setIncludeZones(boolean includeZones) {
-		this.includeZones = includeZones;
-	}
+    public void setIncludeZones(boolean includeZones) {
+	this.includeZones = includeZones;
+    }
 }

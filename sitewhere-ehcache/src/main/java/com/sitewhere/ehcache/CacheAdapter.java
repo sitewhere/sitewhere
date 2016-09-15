@@ -19,8 +19,8 @@ import com.sitewhere.spi.cache.ICache;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 
 /**
- * Wraps {@link Cache} with support for generics and {@link ICache} interface for use in
- * {@link IDeviceManagementCacheProvider} implementation.
+ * Wraps {@link Cache} with support for generics and {@link ICache} interface
+ * for use in {@link IDeviceManagementCacheProvider} implementation.
  * 
  * @author Derek
  * 
@@ -29,112 +29,113 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
  */
 public class CacheAdapter<K, V> implements ICache<K, V> {
 
-	/** Static logger instance */
-	// private static Logger LOGGER = Logger.getLogger(CacheAdapter.class);
+    /** Static logger instance */
+    // private static Logger LOGGER = Logger.getLogger(CacheAdapter.class);
 
-	/** Cache type */
-	private CacheType type;
+    /** Cache type */
+    private CacheType type;
 
-	/** Wrapped cache */
-	private Ehcache cache;
+    /** Wrapped cache */
+    private Ehcache cache;
 
-	/** Counts to number of requests */
-	private AtomicLong requestCount;
+    /** Counts to number of requests */
+    private AtomicLong requestCount;
 
-	/** Counts the number of hits */
-	private AtomicLong hitCount;
+    /** Counts the number of hits */
+    private AtomicLong hitCount;
 
-	public CacheAdapter(CacheType type, Ehcache cache) {
-		this.type = type;
-		this.cache = cache;
-		this.requestCount = new AtomicLong();
-		this.hitCount = new AtomicLong();
+    public CacheAdapter(CacheType type, Ehcache cache) {
+	this.type = type;
+	this.cache = cache;
+	this.requestCount = new AtomicLong();
+	this.hitCount = new AtomicLong();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#getType()
+     */
+    @Override
+    public CacheType getType() {
+	return type;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#get(java.lang.Object)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public V get(K key) throws SiteWhereException {
+	requestCount.incrementAndGet();
+	Element match = cache.get(key);
+	if (match == null) {
+	    return null;
 	}
+	hitCount.incrementAndGet();
+	return (V) match.getObjectValue();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#getType()
-	 */
-	@Override
-	public CacheType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void put(K key, V value) throws SiteWhereException {
+	cache.put(new Element(key, value));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#get(java.lang.Object)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public V get(K key) throws SiteWhereException {
-		requestCount.incrementAndGet();
-		Element match = cache.get(key);
-		if (match == null) {
-			return null;
-		}
-		hitCount.incrementAndGet();
-		return (V) match.getObjectValue();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#remove(java.lang.Object)
+     */
+    @Override
+    public void remove(K key) throws SiteWhereException {
+	cache.remove(key);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public void put(K key, V value) throws SiteWhereException {
-		cache.put(new Element(key, value));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#clear()
+     */
+    @Override
+    public void clear() throws SiteWhereException {
+	cache.removeAll();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#remove(java.lang.Object)
-	 */
-	@Override
-	public void remove(K key) throws SiteWhereException {
-		cache.remove(key);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#getElementCount()
+     */
+    @Override
+    public int getElementCount() throws SiteWhereException {
+	return cache.getSize();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#clear()
-	 */
-	@Override
-	public void clear() throws SiteWhereException {
-		cache.removeAll();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#getRequestCount()
+     */
+    @Override
+    public long getRequestCount() throws SiteWhereException {
+	return requestCount.get();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#getElementCount()
-	 */
-	@Override
-	public int getElementCount() throws SiteWhereException {
-		return cache.getSize();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#getRequestCount()
-	 */
-	@Override
-	public long getRequestCount() throws SiteWhereException {
-		return requestCount.get();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.cache.ICache#getHitCount()
-	 */
-	@Override
-	public long getHitCount() throws SiteWhereException {
-		return hitCount.get();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.cache.ICache#getHitCount()
+     */
+    @Override
+    public long getHitCount() throws SiteWhereException {
+	return hitCount.get();
+    }
 }

@@ -23,133 +23,134 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
  */
 public class DeviceCommand extends MetadataProviderEntity implements IDeviceCommand, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = -9098150828821813365L;
+    /** For Java serialization */
+    private static final long serialVersionUID = -9098150828821813365L;
 
-	/** Unique token for command */
-	private String token;
+    /** Unique token for command */
+    private String token;
 
-	/** Token for parent specification */
-	private String specificationToken;
+    /** Token for parent specification */
+    private String specificationToken;
 
-	/** Command namespace */
-	private String namespace;
+    /** Command namespace */
+    private String namespace;
 
-	/** Command name */
-	private String name;
+    /** Command name */
+    private String name;
 
-	/** Command description */
-	private String description;
+    /** Command description */
+    private String description;
 
-	/** Parameter list */
-	private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
+    /** Parameter list */
+    private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getToken()
-	 */
-	@Override
-	public String getToken() {
-		return token;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.command.IDeviceCommand#getSpecificationToken()
+     */
+    @Override
+    public String getSpecificationToken() {
+	return specificationToken;
+    }
+
+    public void setSpecificationToken(String specificationToken) {
+	this.specificationToken = specificationToken;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getNamespace()
+     */
+    @Override
+    public String getNamespace() {
+	return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+	this.namespace = namespace;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getName()
+     */
+    @Override
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getDescription()
+     */
+    @Override
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getParameters()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<ICommandParameter> getParameters() {
+	return (List<ICommandParameter>) (List<? extends ICommandParameter>) parameters;
+    }
+
+    public void setParameters(List<CommandParameter> parameters) {
+	this.parameters = parameters;
+    }
+
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static DeviceCommand copy(IDeviceCommand input) throws SiteWhereException {
+	DeviceCommand result = new DeviceCommand();
+	MetadataProviderEntity.copy(input, result);
+	result.setToken(input.getToken());
+	result.setSpecificationToken(input.getSpecificationToken());
+	result.setName(input.getName());
+	result.setNamespace(input.getNamespace());
+	result.setDescription(input.getDescription());
+	for (ICommandParameter inparam : input.getParameters()) {
+	    CommandParameter param = new CommandParameter();
+	    param.setName(inparam.getName());
+	    param.setType(inparam.getType());
+	    param.setRequired(inparam.isRequired());
+	    result.getParameters().add(param);
 	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getSpecificationToken()
-	 */
-	@Override
-	public String getSpecificationToken() {
-		return specificationToken;
-	}
-
-	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getNamespace()
-	 */
-	@Override
-	public String getNamespace() {
-		return namespace;
-	}
-
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getParameters()
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<ICommandParameter> getParameters() {
-		return (List<ICommandParameter>) (List<? extends ICommandParameter>) parameters;
-	}
-
-	public void setParameters(List<CommandParameter> parameters) {
-		this.parameters = parameters;
-	}
-
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceCommand copy(IDeviceCommand input) throws SiteWhereException {
-		DeviceCommand result = new DeviceCommand();
-		MetadataProviderEntity.copy(input, result);
-		result.setToken(input.getToken());
-		result.setSpecificationToken(input.getSpecificationToken());
-		result.setName(input.getName());
-		result.setNamespace(input.getNamespace());
-		result.setDescription(input.getDescription());
-		for (ICommandParameter inparam : input.getParameters()) {
-			CommandParameter param = new CommandParameter();
-			param.setName(inparam.getName());
-			param.setType(inparam.getType());
-			param.setRequired(inparam.isRequired());
-			result.getParameters().add(param);
-		}
-		return result;
-	}
+	return result;
+    }
 }

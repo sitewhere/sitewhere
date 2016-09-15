@@ -16,17 +16,17 @@ import java.io.Serializable;
  */
 public interface IRegistrationFailureCommand extends ISystemCommand, Serializable {
 
-	/**
-	 * Get reason for registration failure.
-	 * 
-	 * @return
-	 */
-	public RegistrationFailureReason getReason();
+    /**
+     * Get reason for registration failure.
+     * 
+     * @return
+     */
+    public RegistrationFailureReason getReason();
 
-	/**
-	 * Get error message.
-	 * 
-	 * @return
-	 */
-	public String getErrorMessage();
+    /**
+     * Get error message.
+     * 
+     * @return
+     */
+    public String getErrorMessage();
 }

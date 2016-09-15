@@ -28,71 +28,71 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class JsonCommandExecutionEncoder extends TenantLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public JsonCommandExecutionEncoder() {
-		super(LifecycleComponentType.CommandExecutionEncoder);
-	}
+    public JsonCommandExecutionEncoder() {
+	super(LifecycleComponentType.CommandExecutionEncoder);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
-	 * com.sitewhere .spi.device.command.IDeviceCommandExecution,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
-		LOGGER.debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
-		return MarshalUtils.marshalJson(encoded);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
+     * com.sitewhere .spi.device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
+	LOGGER.debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+	return MarshalUtils.marshalJson(encoded);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#
-	 * encodeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException {
-		EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
-		LOGGER.debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
-		return MarshalUtils.marshalJson(encoded);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#
+     * encodeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
+	LOGGER.debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+	return MarshalUtils.marshalJson(encoded);
+    }
 }

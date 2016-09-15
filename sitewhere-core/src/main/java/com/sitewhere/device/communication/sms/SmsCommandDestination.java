@@ -12,8 +12,9 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 
 /**
- * Implementation of {@link ICommandDestination} that encodes and delivers messages that
- * are strings and {@link ICommandDeliveryProvider} requires {@link SmsParameters}.
+ * Implementation of {@link ICommandDestination} that encodes and delivers
+ * messages that are strings and {@link ICommandDeliveryProvider} requires
+ * {@link SmsParameters}.
  * 
  * @author Derek
  */

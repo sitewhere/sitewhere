@@ -26,120 +26,120 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
 public class DeviceMeasurementsCreateRequest extends DeviceEventCreateRequest
-		implements IDeviceMeasurementsCreateRequest, Serializable {
+	implements IDeviceMeasurementsCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 9193083760712267587L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 9193083760712267587L;
 
-	/** Measurements metadata */
-	private MeasurementsProvider measurements = new MeasurementsProvider();
+    /** Measurements metadata */
+    private MeasurementsProvider measurements = new MeasurementsProvider();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(java.lang
-	 * .String, java.lang.Double)
-	 */
-	@Override
-	public void addOrReplaceMeasurement(String name, Double value) {
-		measurements.addOrReplaceMeasurement(name, value);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(
+     * java.lang .String, java.lang.Double)
+     */
+    @Override
+    public void addOrReplaceMeasurement(String name, Double value) {
+	measurements.addOrReplaceMeasurement(name, value);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.
+     * lang.String)
+     */
+    @Override
+    public Double removeMeasurement(String name) {
+	return measurements.removeMeasurement(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.
+     * String)
+     */
+    @Override
+    public Double getMeasurement(String name) {
+	return measurements.getMeasurement(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurements()
+     */
+    @Override
+    public Map<String, Double> getMeasurements() {
+	return measurements.getMeasurements();
+    }
+
+    /**
+     * Needed for JSON marshaling.
+     * 
+     * @param measurements
+     */
+    public void setMeasurements(Map<String, Double> measurements) {
+	this.measurements = new MeasurementsProvider();
+	this.measurements.setMeasurements(measurements);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#clearMeasurements()
+     */
+    @Override
+    public void clearMeasurements() {
+	measurements.clearMeasurements();
+    }
+
+    public static class Builder extends DeviceEventCreateRequest.Builder<DeviceMeasurementsCreateRequest> {
+
+	private DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+
+	public Builder() {
+	}
+
+	public Builder measurement(String mxName, Double mxValue) {
+	    request.getMeasurements().put(mxName, mxValue);
+	    return this;
+	}
+
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.lang.String)
+	 * @see com.sitewhere.rest.model.device.event.request.
+	 * DeviceEventCreateRequest.Builder# getRequest()
 	 */
 	@Override
-	public Double removeMeasurement(String name) {
-		return measurements.removeMeasurement(name);
+	public DeviceMeasurementsCreateRequest getRequest() {
+	    return request;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.String)
+	 * @see com.sitewhere.rest.model.device.event.request.
+	 * DeviceEventCreateRequest.Builder# build()
 	 */
 	@Override
-	public Double getMeasurement(String name) {
-		return measurements.getMeasurement(name);
+	public DeviceMeasurementsCreateRequest build() {
+	    return request;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurements()
-	 */
-	@Override
-	public Map<String, Double> getMeasurements() {
-		return measurements.getMeasurements();
-	}
-
-	/**
-	 * Needed for JSON marshaling.
-	 * 
-	 * @param measurements
-	 */
-	public void setMeasurements(Map<String, Double> measurements) {
-		this.measurements = new MeasurementsProvider();
-		this.measurements.setMeasurements(measurements);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IMeasurementsProvider#clearMeasurements()
-	 */
-	@Override
-	public void clearMeasurements() {
-		measurements.clearMeasurements();
-	}
-
-	public static class Builder extends DeviceEventCreateRequest.Builder<DeviceMeasurementsCreateRequest> {
-
-		private DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
-
-		public Builder() {
-		}
-
-		public Builder measurement(String mxName, Double mxValue) {
-			request.getMeasurements().put(mxName, mxValue);
-			return this;
-		}
-
-		public Builder metadata(String name, String value) {
-			if (request.getMetadata() == null) {
-				request.setMetadata(new HashMap<String, String>());
-			}
-			request.getMetadata().put(name, value);
-			return this;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
-		 * getRequest()
-		 */
-		@Override
-		public DeviceMeasurementsCreateRequest getRequest() {
-			return request;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
-		 * build()
-		 */
-		@Override
-		public DeviceMeasurementsCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

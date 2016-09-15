@@ -23,38 +23,38 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
  */
 public class EventProcessingLogic {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Common processing logic for delivering a raw payload to event receiver to
-	 * be decoded. This version logs an error if decoding fails.
-	 * 
-	 * @param receiver
-	 * @param payload
-	 * @param metadata
-	 */
-	public static <T> void processRawPayload(IInboundEventReceiver<T> receiver, T payload,
-			Map<String, String> metadata) {
-		try {
-			receiver.onEventPayloadReceived(payload, metadata);
-		} catch (EventDecodeException e) {
-			LOGGER.error("Unable to decode event payload.", e);
-		}
+    /**
+     * Common processing logic for delivering a raw payload to event receiver to
+     * be decoded. This version logs an error if decoding fails.
+     * 
+     * @param receiver
+     * @param payload
+     * @param metadata
+     */
+    public static <T> void processRawPayload(IInboundEventReceiver<T> receiver, T payload,
+	    Map<String, String> metadata) {
+	try {
+	    receiver.onEventPayloadReceived(payload, metadata);
+	} catch (EventDecodeException e) {
+	    LOGGER.error("Unable to decode event payload.", e);
 	}
+    }
 
-	/**
-	 * Common processing logic for delivering a raw payload to event receiver to
-	 * be decoded. This version bubbles decoder exceptions to allow handling in
-	 * the caller.
-	 * 
-	 * @param receiver
-	 * @param payload
-	 * @param metadata
-	 * @throws EventDecodeException
-	 */
-	public static <T> void processRawPayloadWithExceptionHandling(IInboundEventReceiver<T> receiver, T payload,
-			Map<String, String> metadata) throws EventDecodeException {
-		receiver.onEventPayloadReceived(payload, metadata);
-	}
+    /**
+     * Common processing logic for delivering a raw payload to event receiver to
+     * be decoded. This version bubbles decoder exceptions to allow handling in
+     * the caller.
+     * 
+     * @param receiver
+     * @param payload
+     * @param metadata
+     * @throws EventDecodeException
+     */
+    public static <T> void processRawPayloadWithExceptionHandling(IInboundEventReceiver<T> receiver, T payload,
+	    Map<String, String> metadata) throws EventDecodeException {
+	receiver.onEventPayloadReceived(payload, metadata);
+    }
 }

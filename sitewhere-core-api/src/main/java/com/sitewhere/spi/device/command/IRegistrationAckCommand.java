@@ -16,10 +16,10 @@ import java.io.Serializable;
  */
 public interface IRegistrationAckCommand extends ISystemCommand, Serializable {
 
-	/**
-	 * Indicates why registration was successful.
-	 * 
-	 * @return
-	 */
-	public RegistrationSuccessReason getReason();
+    /**
+     * Indicates why registration was successful.
+     * 
+     * @return
+     */
+    public RegistrationSuccessReason getReason();
 }

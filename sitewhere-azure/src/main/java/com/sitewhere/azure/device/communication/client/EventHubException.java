@@ -26,21 +26,21 @@ package com.sitewhere.azure.device.communication.client;
 
 public class EventHubException extends Exception {
 
-	private static final long serialVersionUID = -1835181917856136836L;
+    private static final long serialVersionUID = -1835181917856136836L;
 
-	public EventHubException() {
-        super();
+    public EventHubException() {
+	super();
     }
 
     public EventHubException(String message) {
-        super(message);
+	super(message);
     }
 
     public EventHubException(Throwable cause) {
-        super(cause);
+	super(cause);
     }
 
     public EventHubException(String message, Throwable cause) {
-        super(message, cause);
+	super(message, cause);
     }
 }

@@ -9,17 +9,17 @@ import java.util.List;
  */
 public interface IMultiResourceCreateResponse {
 
-	/**
-	 * Get list of created resources.
-	 * 
-	 * @return
-	 */
-	public List<IResource> getCreatedResources();
+    /**
+     * Get list of created resources.
+     * 
+     * @return
+     */
+    public List<IResource> getCreatedResources();
 
-	/**
-	 * Get list of errors creating resources.
-	 * 
-	 * @return
-	 */
-	public List<IResourceCreateError> getErrors();
+    /**
+     * Get list of errors creating resources.
+     * 
+     * @return
+     */
+    public List<IResourceCreateError> getErrors();
 }

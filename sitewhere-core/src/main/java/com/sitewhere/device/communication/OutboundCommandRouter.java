@@ -24,32 +24,31 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public abstract class OutboundCommandRouter extends LifecycleComponent implements IOutboundCommandRouter {
 
-	/** List of destinations serviced by the router */
-	private Map<String, ICommandDestination<?, ?>> destinations =
-			new HashMap<String, ICommandDestination<?, ?>>();
+    /** List of destinations serviced by the router */
+    private Map<String, ICommandDestination<?, ?>> destinations = new HashMap<String, ICommandDestination<?, ?>>();
 
-	public OutboundCommandRouter() {
-		super(LifecycleComponentType.CommandRouter);
+    public OutboundCommandRouter() {
+	super(LifecycleComponentType.CommandRouter);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IOutboundCommandRouter#initialize(
+     * java.util .List)
+     */
+    @Override
+    public void initialize(List<ICommandDestination<?, ?>> destinationList) throws SiteWhereException {
+	this.destinations.clear();
+
+	// Create map of destinations by id.
+	for (ICommandDestination<?, ?> destination : destinationList) {
+	    destinations.put(destination.getDestinationId(), destination);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IOutboundCommandRouter#initialize(java.util
-	 * .List)
-	 */
-	@Override
-	public void initialize(List<ICommandDestination<?, ?>> destinationList) throws SiteWhereException {
-		this.destinations.clear();
-
-		// Create map of destinations by id.
-		for (ICommandDestination<?, ?> destination : destinationList) {
-			destinations.put(destination.getDestinationId(), destination);
-		}
-	}
-
-	public Map<String, ICommandDestination<?, ?>> getDestinations() {
-		return destinations;
-	}
+    public Map<String, ICommandDestination<?, ?>> getDestinations() {
+	return destinations;
+    }
 }

@@ -16,63 +16,66 @@ import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
  */
 public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 4280270339471220181L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 4280270339471220181L;
 
-	/** Hardware id the request applies to */
-	private String hardwareId;
+    /** Hardware id the request applies to */
+    private String hardwareId;
 
-	/** Originating invocation if available */
-	private String originator;
+    /** Originating invocation if available */
+    private String originator;
 
-	/** Event create request */
-	private T request;
+    /** Event create request */
+    private T request;
 
-	public DecodedDeviceRequest() {
-	}
+    public DecodedDeviceRequest() {
+    }
 
-	public DecodedDeviceRequest(String hardwareId, String originator, T request) {
-		setHardwareId(hardwareId);
-		setOriginator(originator);
-		setRequest(request);
-	}
+    public DecodedDeviceRequest(String hardwareId, String originator, T request) {
+	setHardwareId(hardwareId);
+	setOriginator(originator);
+	setRequest(request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#
+     * getHardwareId()
+     */
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getOriginator()
-	 */
-	public String getOriginator() {
-		return originator;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#
+     * getOriginator()
+     */
+    public String getOriginator() {
+	return originator;
+    }
 
-	public void setOriginator(String originator) {
-		this.originator = originator;
-	}
+    public void setOriginator(String originator) {
+	this.originator = originator;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getRequest()
-	 */
-	public T getRequest() {
-		return request;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getRequest()
+     */
+    public T getRequest() {
+	return request;
+    }
 
-	public void setRequest(T request) {
-		this.request = request;
-	}
+    public void setRequest(T request) {
+	this.request = request;
+    }
 }

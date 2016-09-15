@@ -14,9 +14,9 @@ package com.sitewhere.spi.device.event.state;
  */
 public enum PresenceState {
 
-	/** Device was determined to be present */
-	PRESENT,
+    /** Device was determined to be present */
+    PRESENT,
 
-	/** Device was determined not to be present */
-	NOT_PRESENT;
+    /** Device was determined not to be present */
+    NOT_PRESENT;
 }

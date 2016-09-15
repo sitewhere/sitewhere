@@ -33,253 +33,253 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * @author Derek
  */
 public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
-		implements IDeviceManagementCacheProvider, ITenantHazelcastAware {
+	implements IDeviceManagementCacheProvider, ITenantHazelcastAware {
 
-	public HazelcastDistributedCacheProvider() {
-		super(LifecycleComponentType.CacheProvider);
+    public HazelcastDistributedCacheProvider() {
+	super(LifecycleComponentType.CacheProvider);
+    }
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /** Name of site cache */
+    private static final String SITE_CACHE = "siteCache";
+
+    /** Name of device specification cache */
+    private static final String SPECIFICATION_CACHE = "specificationCache";
+
+    /** Name of device cache */
+    private static final String DEVICE_CACHE = "deviceCache";
+
+    /** Name of assignment cache */
+    private static final String ASSIGNMENT_CACHE = "assignmentCache";
+
+    /** Tenant Hazelcast configuration */
+    private ITenantHazelcastConfiguration hazelcastConfiguration;
+
+    /** Cache for sites */
+    private HazelcastCache<ISite> siteCache;
+
+    /** Cache for device specifications */
+    private HazelcastCache<IDeviceSpecification> specificationCache;
+
+    /** Cache for devices */
+    private HazelcastCache<IDevice> deviceCache;
+
+    /** Cache for device assignments */
+    private HazelcastCache<IDeviceAssignment> assignmentCache;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	this.siteCache = new HazelcastCache<ISite>(addTenantPrefix(SITE_CACHE), CacheType.SiteCache);
+	this.specificationCache = new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
+		CacheType.DeviceSpecificationCache);
+	this.deviceCache = new HazelcastCache<IDevice>(addTenantPrefix(DEVICE_CACHE), CacheType.DeviceCache);
+	this.assignmentCache = new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
+		CacheType.DeviceAssignmentCache);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
+
+    /**
+     * Add prefix so that each tenant has a unique cache.
+     * 
+     * @param cacheName
+     * @return
+     */
+    protected String addTenantPrefix(String cacheName) {
+	return getTenant().getId() + "-" + cacheName;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
+     */
+    @Override
+    public ICache<String, ISite> getSiteCache() throws SiteWhereException {
+	return siteCache;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+     * getDeviceSpecificationCache ()
+     */
+    @Override
+    public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException {
+	return specificationCache;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
+     */
+    @Override
+    public ICache<String, IDevice> getDeviceCache() throws SiteWhereException {
+	return deviceCache;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
+     * getDeviceAssignmentCache()
+     */
+    @Override
+    public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException {
+	return assignmentCache;
+    }
+
+    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+	return hazelcastConfiguration;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+     * setHazelcastConfiguration(com
+     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+     */
+    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+	this.hazelcastConfiguration = hazelcastConfiguration;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unused", "unchecked" })
+    private class HazelcastCache<T> implements ICache<String, T> {
+
+	/** Name of Hazelcast map */
+	private String name;
+
+	/** Cache type */
+	private CacheType type;
+
+	/** Hazelcast map used as cache */
+	private IMap hMap;
+
+	/** Count of total cache requests */
+	private AtomicLong requestCount = new AtomicLong();
+
+	/** Count of total cache hits */
+	private AtomicLong hitCount = new AtomicLong();
+
+	public HazelcastCache(String name, CacheType type) {
+	    this.name = name;
+	    this.type = type;
+	    this.hMap = getHazelcastConfiguration().getHazelcastInstance().getMap(name);
 	}
-
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
-
-	/** Name of site cache */
-	private static final String SITE_CACHE = "siteCache";
-
-	/** Name of device specification cache */
-	private static final String SPECIFICATION_CACHE = "specificationCache";
-
-	/** Name of device cache */
-	private static final String DEVICE_CACHE = "deviceCache";
-
-	/** Name of assignment cache */
-	private static final String ASSIGNMENT_CACHE = "assignmentCache";
-
-	/** Tenant Hazelcast configuration */
-	private ITenantHazelcastConfiguration hazelcastConfiguration;
-
-	/** Cache for sites */
-	private HazelcastCache<ISite> siteCache;
-
-	/** Cache for device specifications */
-	private HazelcastCache<IDeviceSpecification> specificationCache;
-
-	/** Cache for devices */
-	private HazelcastCache<IDevice> deviceCache;
-
-	/** Cache for device assignments */
-	private HazelcastCache<IDeviceAssignment> assignmentCache;
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 * @see com.sitewhere.spi.cache.ICache#getType()
 	 */
 	@Override
-	public void start() throws SiteWhereException {
-		this.siteCache = new HazelcastCache<ISite>(addTenantPrefix(SITE_CACHE), CacheType.SiteCache);
-		this.specificationCache = new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
-				CacheType.DeviceSpecificationCache);
-		this.deviceCache = new HazelcastCache<IDevice>(addTenantPrefix(DEVICE_CACHE), CacheType.DeviceCache);
-		this.assignmentCache = new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
-				CacheType.DeviceAssignmentCache);
+	public CacheType getType() {
+	    return type;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 * @see com.sitewhere.spi.cache.ICache#get(java.lang.Object)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/**
-	 * Add prefix so that each tenant has a unique cache.
-	 * 
-	 * @param cacheName
-	 * @return
-	 */
-	protected String addTenantPrefix(String cacheName) {
-		return getTenant().getId() + "-" + cacheName;
+	public T get(String key) throws SiteWhereException {
+	    T result = (T) hMap.get(key);
+	    requestCount.incrementAndGet();
+	    if (result != null) {
+		hitCount.incrementAndGet();
+	    }
+	    return result;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object,
+	 * java.lang.Object)
 	 */
 	@Override
-	public Logger getLogger() {
-		return LOGGER;
+	public void put(String key, T value) throws SiteWhereException {
+	    hMap.put(key, value);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
+	 * @see com.sitewhere.spi.cache.ICache#remove(java.lang.Object)
 	 */
 	@Override
-	public ICache<String, ISite> getSiteCache() throws SiteWhereException {
-		return siteCache;
+	public void remove(String key) throws SiteWhereException {
+	    hMap.remove(key);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
-	 * getDeviceSpecificationCache ()
+	 * @see com.sitewhere.spi.cache.ICache#clear()
 	 */
 	@Override
-	public ICache<String, IDeviceSpecification> getDeviceSpecificationCache() throws SiteWhereException {
-		return specificationCache;
+	public void clear() throws SiteWhereException {
+	    hMap.clear();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagementCacheProvider#getDeviceCache()
+	 * @see com.sitewhere.spi.cache.ICache#getElementCount()
 	 */
 	@Override
-	public ICache<String, IDevice> getDeviceCache() throws SiteWhereException {
-		return deviceCache;
+	public int getElementCount() throws SiteWhereException {
+	    return hMap.size();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#
-	 * getDeviceAssignmentCache()
+	 * @see com.sitewhere.spi.cache.ICache#getRequestCount()
 	 */
 	@Override
-	public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException {
-		return assignmentCache;
-	}
-
-	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-		return hazelcastConfiguration;
+	public long getRequestCount() throws SiteWhereException {
+	    return requestCount.get();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-	 * setHazelcastConfiguration(com
-	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 * @see com.sitewhere.spi.cache.ICache#getHitCount()
 	 */
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-		this.hazelcastConfiguration = hazelcastConfiguration;
+	@Override
+	public long getHitCount() throws SiteWhereException {
+	    return hitCount.get();
 	}
-
-	@SuppressWarnings({ "rawtypes", "unused", "unchecked" })
-	private class HazelcastCache<T> implements ICache<String, T> {
-
-		/** Name of Hazelcast map */
-		private String name;
-
-		/** Cache type */
-		private CacheType type;
-
-		/** Hazelcast map used as cache */
-		private IMap hMap;
-
-		/** Count of total cache requests */
-		private AtomicLong requestCount = new AtomicLong();
-
-		/** Count of total cache hits */
-		private AtomicLong hitCount = new AtomicLong();
-
-		public HazelcastCache(String name, CacheType type) {
-			this.name = name;
-			this.type = type;
-			this.hMap = getHazelcastConfiguration().getHazelcastInstance().getMap(name);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#getType()
-		 */
-		@Override
-		public CacheType getType() {
-			return type;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#get(java.lang.Object)
-		 */
-		@Override
-		public T get(String key) throws SiteWhereException {
-			T result = (T) hMap.get(key);
-			requestCount.incrementAndGet();
-			if (result != null) {
-				hitCount.incrementAndGet();
-			}
-			return result;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#put(java.lang.Object,
-		 * java.lang.Object)
-		 */
-		@Override
-		public void put(String key, T value) throws SiteWhereException {
-			hMap.put(key, value);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#remove(java.lang.Object)
-		 */
-		@Override
-		public void remove(String key) throws SiteWhereException {
-			hMap.remove(key);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#clear()
-		 */
-		@Override
-		public void clear() throws SiteWhereException {
-			hMap.clear();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#getElementCount()
-		 */
-		@Override
-		public int getElementCount() throws SiteWhereException {
-			return hMap.size();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#getRequestCount()
-		 */
-		@Override
-		public long getRequestCount() throws SiteWhereException {
-			return requestCount.get();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.cache.ICache#getHitCount()
-		 */
-		@Override
-		public long getHitCount() throws SiteWhereException {
-			return hitCount.get();
-		}
-	}
+    }
 }

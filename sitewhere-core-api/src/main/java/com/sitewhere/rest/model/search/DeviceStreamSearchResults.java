@@ -13,18 +13,18 @@ import java.util.List;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 
 /**
- * Search results that contain device streams. Needed so that JSON marshaling has a
- * concrete class to inflate.
+ * Search results that contain device streams. Needed so that JSON marshaling
+ * has a concrete class to inflate.
  * 
  * @author dadams
  */
 public class DeviceStreamSearchResults extends SearchResults<DeviceStream> {
 
-	public DeviceStreamSearchResults() {
-		super(new ArrayList<DeviceStream>());
-	}
+    public DeviceStreamSearchResults() {
+	super(new ArrayList<DeviceStream>());
+    }
 
-	public DeviceStreamSearchResults(List<DeviceStream> results) {
-		super(results);
-	}
+    public DeviceStreamSearchResults(List<DeviceStream> results) {
+	super(results);
+    }
 }

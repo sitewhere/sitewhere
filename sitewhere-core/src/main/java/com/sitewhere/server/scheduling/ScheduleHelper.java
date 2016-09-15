@@ -17,68 +17,68 @@ import com.sitewhere.spi.scheduling.TriggerType;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 
 /**
- * Helper class for building {@link IScheduleCreateRequest} instances based on schedule
- * types.
+ * Helper class for building {@link IScheduleCreateRequest} instances based on
+ * schedule types.
  * 
  * @author Derek
  */
 public class ScheduleHelper {
 
-	/**
-	 * Build request for a simple schedule.
-	 * 
-	 * @param token
-	 * @param name
-	 * @param start
-	 * @param end
-	 * @param interval
-	 * @param count
-	 * @return
-	 */
-	public static IScheduleCreateRequest createSimpleSchedule(String token, String name, Date start,
-			Date end, Long interval, Integer count) {
-		ScheduleCreateRequest schedule = new ScheduleCreateRequest();
-		schedule.setToken(token);
-		schedule.setName(name);
-		schedule.setTriggerType(TriggerType.SimpleTrigger);
-		schedule.setStartDate(start);
-		schedule.setEndDate(end);
+    /**
+     * Build request for a simple schedule.
+     * 
+     * @param token
+     * @param name
+     * @param start
+     * @param end
+     * @param interval
+     * @param count
+     * @return
+     */
+    public static IScheduleCreateRequest createSimpleSchedule(String token, String name, Date start, Date end,
+	    Long interval, Integer count) {
+	ScheduleCreateRequest schedule = new ScheduleCreateRequest();
+	schedule.setToken(token);
+	schedule.setName(name);
+	schedule.setTriggerType(TriggerType.SimpleTrigger);
+	schedule.setStartDate(start);
+	schedule.setEndDate(end);
 
-		Map<String, String> config = new HashMap<String, String>();
-		if (interval != null) {
-			config.put(TriggerConstants.SimpleTrigger.REPEAT_INTERVAL, String.valueOf(interval));
-		}
-		if (count != null) {
-			config.put(TriggerConstants.SimpleTrigger.REPEAT_COUNT, String.valueOf(count));
-		}
-		schedule.setTriggerConfiguration(config);
-
-		return schedule;
+	Map<String, String> config = new HashMap<String, String>();
+	if (interval != null) {
+	    config.put(TriggerConstants.SimpleTrigger.REPEAT_INTERVAL, String.valueOf(interval));
 	}
-
-	/**
-	 * Build request for a cron schedule.
-	 * 
-	 * @param token
-	 * @param name
-	 * @param start
-	 * @param end
-	 * @param expression
-	 * @return
-	 */
-	public static IScheduleCreateRequest createCronSchedule(String token, String name, Date start, Date end,
-			String expression) {
-		ScheduleCreateRequest schedule = new ScheduleCreateRequest();
-		schedule.setToken(token);
-		schedule.setName(name);
-		schedule.setTriggerType(TriggerType.CronTrigger);
-		schedule.setStartDate(start);
-		schedule.setEndDate(end);
-
-		Map<String, String> config = new HashMap<String, String>();
-		config.put(TriggerConstants.CronTrigger.CRON_EXPRESSION, expression);
-		schedule.setTriggerConfiguration(config);
-
-		return schedule;
+	if (count != null) {
+	    config.put(TriggerConstants.SimpleTrigger.REPEAT_COUNT, String.valueOf(count));
 	}
+	schedule.setTriggerConfiguration(config);
+
+	return schedule;
+    }
+
+    /**
+     * Build request for a cron schedule.
+     * 
+     * @param token
+     * @param name
+     * @param start
+     * @param end
+     * @param expression
+     * @return
+     */
+    public static IScheduleCreateRequest createCronSchedule(String token, String name, Date start, Date end,
+	    String expression) {
+	ScheduleCreateRequest schedule = new ScheduleCreateRequest();
+	schedule.setToken(token);
+	schedule.setName(name);
+	schedule.setTriggerType(TriggerType.CronTrigger);
+	schedule.setStartDate(start);
+	schedule.setEndDate(end);
+
+	Map<String, String> config = new HashMap<String, String>();
+	config.put(TriggerConstants.CronTrigger.CRON_EXPRESSION, expression);
+	schedule.setTriggerConfiguration(config);
+
+	return schedule;
+    }
 }

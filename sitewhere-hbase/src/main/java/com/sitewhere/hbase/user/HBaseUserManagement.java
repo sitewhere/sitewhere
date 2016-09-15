@@ -37,266 +37,266 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class HBaseUserManagement extends LifecycleComponent implements IUserManagement {
 
-	/** Static logger instance */
-	private static final Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	/** Used to communicate with HBase */
-	private ISiteWhereHBaseClient client;
+    /** Used to communicate with HBase */
+    private ISiteWhereHBaseClient client;
 
-	/** Injected payload encoder */
-	private IPayloadMarshaler payloadMarshaler = new JsonPayloadMarshaler();
+    /** Injected payload encoder */
+    private IPayloadMarshaler payloadMarshaler = new JsonPayloadMarshaler();
 
-	/** Supplies context to implementation methods */
-	private HBaseContext context;
+    /** Supplies context to implementation methods */
+    private HBaseContext context;
 
-	/** User id manager */
-	private UserIdManager userIdManager;
+    /** User id manager */
+    private UserIdManager userIdManager;
 
-	public HBaseUserManagement() {
-		super(LifecycleComponentType.DataStore);
-	}
+    public HBaseUserManagement() {
+	super(LifecycleComponentType.DataStore);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		ensureTablesExist();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	ensureTablesExist();
 
-		// Create context from configured options.
-		this.context = new HBaseContext();
-		context.setClient(getClient());
-		context.setPayloadMarshaler(getPayloadMarshaler());
+	// Create context from configured options.
+	this.context = new HBaseContext();
+	context.setClient(getClient());
+	context.setPayloadMarshaler(getPayloadMarshaler());
 
-		// Create device id manager instance.
-		userIdManager = new UserIdManager();
-		userIdManager.load(context);
-		context.setUserIdManager(userIdManager);
-	}
+	// Create device id manager instance.
+	userIdManager = new UserIdManager();
+	userIdManager.load(context);
+	context.setUserIdManager(userIdManager);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 
-	/**
-	 * Ensure that the tables this implementation depends on are there.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	protected void ensureTablesExist() throws SiteWhereException {
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.USERS_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
-	}
+    /**
+     * Ensure that the tables this implementation depends on are there.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void ensureTablesExist() throws SiteWhereException {
+	SiteWhereTables.assureTable(client, ISiteWhereHBase.USERS_TABLE_NAME, BloomType.ROW);
+	SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-	 * request .IUserCreateRequest)
-	 */
-	@Override
-	public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
-		return HBaseUser.createUser(context, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
+     * request .IUserCreateRequest)
+     */
+    @Override
+    public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
+	return HBaseUser.createUser(context, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
-	 * IUser, boolean)
-	 */
-	@Override
-	public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
-		return HBaseUser.importUser(context, user, overwrite);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
+     * IUser, boolean)
+     */
+    @Override
+    public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
+	return HBaseUser.importUser(context, user, overwrite);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
-	 * java.lang.String)
-	 */
-	@Override
-	public IUser authenticate(String username, String password) throws SiteWhereException {
-		return HBaseUser.authenticate(context, username, password);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public IUser authenticate(String username, String password) throws SiteWhereException {
+	return HBaseUser.authenticate(context, username, password);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
-	 * com.sitewhere.spi.user.request.IUserCreateRequest)
-	 */
-	@Override
-	public IUser updateUser(String username, IUserCreateRequest request) throws SiteWhereException {
-		return HBaseUser.updateUser(context, username, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
+     * com.sitewhere.spi.user.request.IUserCreateRequest)
+     */
+    @Override
+    public IUser updateUser(String username, IUserCreateRequest request) throws SiteWhereException {
+	return HBaseUser.updateUser(context, username, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
-	 * String)
-	 */
-	@Override
-	public IUser getUserByUsername(String username) throws SiteWhereException {
-		return HBaseUser.getUserByUsername(context, username);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
+     * String)
+     */
+    @Override
+    public IUser getUserByUsername(String username) throws SiteWhereException {
+	return HBaseUser.getUserByUsername(context, username);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
-	 * String)
-	 */
-	@Override
-	public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-		return HBaseUser.getGrantedAuthorities(context, username);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+     * String)
+     */
+    @Override
+    public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
+	return HBaseUser.getGrantedAuthorities(context, username);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
-	 * String, java.util.List)
-	 */
-	@Override
-	public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
-			throws SiteWhereException {
-		throw new SiteWhereException("Not implemented.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+     * String, java.util.List)
+     */
+    @Override
+    public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
+	    throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
-	 * .String, java.util.List)
-	 */
-	@Override
-	public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
-			throws SiteWhereException {
-		throw new SiteWhereException("Not implemented.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
+     * .String, java.util.List)
+     */
+    @Override
+    public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
+	    throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
-	 * IUserSearchCriteria)
-	 */
-	@Override
-	public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-		return HBaseUser.listUsers(context, criteria);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+     * IUserSearchCriteria)
+     */
+    @Override
+    public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
+	return HBaseUser.listUsers(context, criteria);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
-	 * boolean)
-	 */
-	@Override
-	public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-		return HBaseUser.deleteUser(context, username, force);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
+     * boolean)
+     */
+    @Override
+    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
+	return HBaseUser.deleteUser(context, username, force);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
-	 * sitewhere.spi .user.request.IGrantedAuthorityCreateRequest)
-	 */
-	@Override
-	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-		return HBaseGrantedAuthority.createGrantedAuthority(context, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
+     * sitewhere.spi .user.request.IGrantedAuthorityCreateRequest)
+     */
+    @Override
+    public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
+	return HBaseGrantedAuthority.createGrantedAuthority(context, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
-	 * lang.String)
-	 */
-	@Override
-	public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
-		return HBaseGrantedAuthority.getGrantedAuthorityByName(context, name);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+     * lang.String)
+     */
+    @Override
+    public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
+	return HBaseGrantedAuthority.getGrantedAuthorityByName(context, name);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
-	 * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
-	 */
-	@Override
-	public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
-			throws SiteWhereException {
-		throw new SiteWhereException("Not implemented.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+     * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+     */
+    @Override
+    public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
+	    throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
-	 * sitewhere.spi .user.IGrantedAuthoritySearchCriteria)
-	 */
-	@Override
-	public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
-			throws SiteWhereException {
-		return HBaseGrantedAuthority.listGrantedAuthorities(context, criteria);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
+     * sitewhere.spi .user.IGrantedAuthoritySearchCriteria)
+     */
+    @Override
+    public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
+	    throws SiteWhereException {
+	return HBaseGrantedAuthority.listGrantedAuthorities(context, criteria);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
-	 * String)
-	 */
-	@Override
-	public void deleteGrantedAuthority(String authority) throws SiteWhereException {
-		throw new SiteWhereException("Not implemented.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+     * String)
+     */
+    @Override
+    public void deleteGrantedAuthority(String authority) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
+    }
 
-	public ISiteWhereHBaseClient getClient() {
-		return client;
-	}
+    public ISiteWhereHBaseClient getClient() {
+	return client;
+    }
 
-	public void setClient(ISiteWhereHBaseClient client) {
-		this.client = client;
-	}
+    public void setClient(ISiteWhereHBaseClient client) {
+	this.client = client;
+    }
 
-	public IPayloadMarshaler getPayloadMarshaler() {
-		return payloadMarshaler;
-	}
+    public IPayloadMarshaler getPayloadMarshaler() {
+	return payloadMarshaler;
+    }
 
-	public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
-		this.payloadMarshaler = payloadMarshaler;
-	}
+    public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
+	this.payloadMarshaler = payloadMarshaler;
+    }
 }

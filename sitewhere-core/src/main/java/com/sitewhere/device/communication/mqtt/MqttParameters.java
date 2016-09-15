@@ -14,25 +14,25 @@ package com.sitewhere.device.communication.mqtt;
  */
 public class MqttParameters {
 
-	/** MQTT topic for sending commands */
-	private String commandTopic;
+    /** MQTT topic for sending commands */
+    private String commandTopic;
 
-	/** MQTT topic for sending system messages */
-	private String systemTopic;
+    /** MQTT topic for sending system messages */
+    private String systemTopic;
 
-	public String getCommandTopic() {
-		return commandTopic;
-	}
+    public String getCommandTopic() {
+	return commandTopic;
+    }
 
-	public void setCommandTopic(String commandTopic) {
-		this.commandTopic = commandTopic;
-	}
+    public void setCommandTopic(String commandTopic) {
+	this.commandTopic = commandTopic;
+    }
 
-	public String getSystemTopic() {
-		return systemTopic;
-	}
+    public String getSystemTopic() {
+	return systemTopic;
+    }
 
-	public void setSystemTopic(String systemTopic) {
-		this.systemTopic = systemTopic;
-	}
+    public void setSystemTopic(String systemTopic) {
+	this.systemTopic = systemTopic;
+    }
 }

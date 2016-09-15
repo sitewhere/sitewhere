@@ -24,7 +24,6 @@
  *******************************************************************************/
 package com.sitewhere.azure.device.communication.client;
 
-
 public class EventHubReceiverFilter implements IEventHubReceiverFilter {
     String offset = null;
     long enqueueTime = 0;
@@ -34,31 +33,31 @@ public class EventHubReceiverFilter implements IEventHubReceiverFilter {
     }
 
     public EventHubReceiverFilter(String offset) {
-        //Creates offset only filter
-        this.offset = offset;
+	// Creates offset only filter
+	this.offset = offset;
     }
 
     public EventHubReceiverFilter(long enqueueTime) {
-        //Creates enqueue time only filter
-        this.enqueueTime = enqueueTime;
+	// Creates enqueue time only filter
+	this.enqueueTime = enqueueTime;
     }
 
     public void setOffset(String offset) {
-        this.offset = offset;
+	this.offset = offset;
     }
 
     public void setEnqueueTime(long enqueueTime) {
-        this.enqueueTime = enqueueTime;
+	this.enqueueTime = enqueueTime;
     }
 
     @Override
     public String getOffset() {
-        return offset;
+	return offset;
     }
 
     @Override
     public long getEnqueueTime() {
-        return enqueueTime;
+	return enqueueTime;
     }
 
 }

@@ -14,12 +14,12 @@ package com.sitewhere.spi.device;
  */
 public enum DeviceStatus {
 
-	/** Device is ok */
-	Ok,
+    /** Device is ok */
+    Ok,
 
-	/** Device hardware failure */
-	HardwareFailure,
+    /** Device hardware failure */
+    HardwareFailure,
 
-	/** Device not available */
-	Unavailable;
+    /** Device not available */
+    Unavailable;
 }

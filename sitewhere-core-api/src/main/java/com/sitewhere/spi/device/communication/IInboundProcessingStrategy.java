@@ -29,100 +29,100 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IInboundProcessingStrategy extends ITenantLifecycleComponent {
 
-	/**
-	 * Process an {@link IDeviceRegistrationRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceRegistrationRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceCommandResponseCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceCommandResponse(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceCommandResponseCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceCommandResponse(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceMeasurementsCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceMeasurementsCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceLocationCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceLocation(IDecodedDeviceRequest<IDeviceLocationCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceLocationCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceLocation(IDecodedDeviceRequest<IDeviceLocationCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceAlertCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request) throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceAlertCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request) throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceStateChangeCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceStateChange(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceStateChangeCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceStateChange(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceStreamCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceStream(IDecodedDeviceRequest<IDeviceStreamCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceStreamCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceStream(IDecodedDeviceRequest<IDeviceStreamCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceStreamDataCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceStreamDataCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link ISendDeviceStreamDataRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link ISendDeviceStreamDataRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Process an {@link IDeviceMappingCreateRequest}.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void processCreateDeviceMapping(IDecodedDeviceRequest<IDeviceMappingCreateRequest> request)
-			throws SiteWhereException;
+    /**
+     * Process an {@link IDeviceMappingCreateRequest}.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void processCreateDeviceMapping(IDecodedDeviceRequest<IDeviceMappingCreateRequest> request)
+	    throws SiteWhereException;
 
-	/**
-	 * Sends a decoded request to the inbound processing chain.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> request) throws SiteWhereException;
+    /**
+     * Sends a decoded request to the inbound processing chain.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> request) throws SiteWhereException;
 }

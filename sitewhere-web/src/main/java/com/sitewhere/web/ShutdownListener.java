@@ -25,37 +25,37 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class ShutdownListener implements ServletContextListener {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
-	 * ServletContextEvent )
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent event) {
-		SiteWhere.getServer().lifecycleStop();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
+     * ServletContextEvent )
+     */
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+	SiteWhere.getServer().lifecycleStop();
 
-		// Verify shutdown was successful.
-		if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Stopped) {
-			LOGGER.info("Server shut down successfully.");
-		}
-
-		// Shut down Log4J manually.
-		LoggerContext context = (LoggerContext) LogManager.getContext();
-		Configurator.shutdown(context);
+	// Verify shutdown was successful.
+	if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Stopped) {
+	    LOGGER.info("Server shut down successfully.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
-	 * ServletContextEvent)
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent event) {
-	}
+	// Shut down Log4J manually.
+	LoggerContext context = (LoggerContext) LogManager.getContext();
+	Configurator.shutdown(context);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
+     * ServletContextEvent)
+     */
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+    }
 }

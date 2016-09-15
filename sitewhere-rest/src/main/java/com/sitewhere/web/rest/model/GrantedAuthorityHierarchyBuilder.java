@@ -21,70 +21,69 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  */
 public class GrantedAuthorityHierarchyBuilder {
 
-	/**
-	 * Build hierarchy from a list of authorities.
-	 * 
-	 * @param auths
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static List<GrantedAuthorityHierarchyNode> build(List<IGrantedAuthority> auths)
-			throws SiteWhereException {
-		List<GrantedAuthorityHierarchyNode> results = new ArrayList<GrantedAuthorityHierarchyNode>();
-		List<IGrantedAuthority> roots = new ArrayList<IGrantedAuthority>();
-		for (IGrantedAuthority auth : auths) {
-			if (auth.getParent() == null) {
-				roots.add(auth);
-			}
-		}
-		if (roots.size() == 0) {
-			throw new SiteWhereException("No root authorities found.");
-		}
-		for (IGrantedAuthority root : roots) {
-			auths.remove(root);
-			GrantedAuthorityHierarchyNode node = create(root);
-			addChildren(node, auths);
-			results.add(node);
-		}
-		Collections.sort(results);
-		return results;
+    /**
+     * Build hierarchy from a list of authorities.
+     * 
+     * @param auths
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GrantedAuthorityHierarchyNode> build(List<IGrantedAuthority> auths) throws SiteWhereException {
+	List<GrantedAuthorityHierarchyNode> results = new ArrayList<GrantedAuthorityHierarchyNode>();
+	List<IGrantedAuthority> roots = new ArrayList<IGrantedAuthority>();
+	for (IGrantedAuthority auth : auths) {
+	    if (auth.getParent() == null) {
+		roots.add(auth);
+	    }
 	}
+	if (roots.size() == 0) {
+	    throw new SiteWhereException("No root authorities found.");
+	}
+	for (IGrantedAuthority root : roots) {
+	    auths.remove(root);
+	    GrantedAuthorityHierarchyNode node = create(root);
+	    addChildren(node, auths);
+	    results.add(node);
+	}
+	Collections.sort(results);
+	return results;
+    }
 
-	/**
-	 * Add children for the given node.
-	 * 
-	 * @param node
-	 * @param auths
-	 */
-	protected static void addChildren(GrantedAuthorityHierarchyNode node, List<IGrantedAuthority> auths) {
-		List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
-		for (IGrantedAuthority auth : auths) {
-			if (node.getId().equals(auth.getParent())) {
-				matches.add(auth);
-			}
-		}
-		for (IGrantedAuthority match : matches) {
-			auths.remove(match);
-		}
-		for (IGrantedAuthority match : matches) {
-			GrantedAuthorityHierarchyNode child = create(match);
-			addChildren(child, auths);
-			node.getItems().add(child);
-		}
-		Collections.sort(node.getItems());
+    /**
+     * Add children for the given node.
+     * 
+     * @param node
+     * @param auths
+     */
+    protected static void addChildren(GrantedAuthorityHierarchyNode node, List<IGrantedAuthority> auths) {
+	List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
+	for (IGrantedAuthority auth : auths) {
+	    if (node.getId().equals(auth.getParent())) {
+		matches.add(auth);
+	    }
 	}
+	for (IGrantedAuthority match : matches) {
+	    auths.remove(match);
+	}
+	for (IGrantedAuthority match : matches) {
+	    GrantedAuthorityHierarchyNode child = create(match);
+	    addChildren(child, auths);
+	    node.getItems().add(child);
+	}
+	Collections.sort(node.getItems());
+    }
 
-	/**
-	 * Create a node from an authority.
-	 * 
-	 * @param auth
-	 * @return
-	 */
-	protected static GrantedAuthorityHierarchyNode create(IGrantedAuthority auth) {
-		GrantedAuthorityHierarchyNode node = new GrantedAuthorityHierarchyNode();
-		node.setId(auth.getAuthority());
-		node.setText(auth.getDescription());
-		node.setGroup(auth.isGroup());
-		return node;
-	}
+    /**
+     * Create a node from an authority.
+     * 
+     * @param auth
+     * @return
+     */
+    protected static GrantedAuthorityHierarchyNode create(IGrantedAuthority auth) {
+	GrantedAuthorityHierarchyNode node = new GrantedAuthorityHierarchyNode();
+	node.setId(auth.getAuthority());
+	node.setText(auth.getDescription());
+	node.setGroup(auth.isGroup());
+	return node;
+    }
 }

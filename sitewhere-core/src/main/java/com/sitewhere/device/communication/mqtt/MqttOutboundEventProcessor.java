@@ -42,336 +42,336 @@ import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
  * @author Derek
  */
 public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
-		implements IMulticastingOutboundEventProcessor<String>, IMqttComponent {
+	implements IMulticastingOutboundEventProcessor<String>, IMqttComponent {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
+    private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
 
-	/** Host name */
-	private String hostname = MqttLifecycleComponent.DEFAULT_HOSTNAME;
+    /** Host name */
+    private String hostname = MqttLifecycleComponent.DEFAULT_HOSTNAME;
 
-	/** Port */
-	private int port = MqttLifecycleComponent.DEFAULT_PORT;
+    /** Port */
+    private int port = MqttLifecycleComponent.DEFAULT_PORT;
 
-	/** TrustStore path */
-	private String trustStorePath;
+    /** TrustStore path */
+    private String trustStorePath;
 
-	/** TrustStore password */
-	private String trustStorePassword;
+    /** TrustStore password */
+    private String trustStorePassword;
 
-	/** Topic events are posted to */
-	private String topic;
+    /** Topic events are posted to */
+    private String topic;
 
-	/** Broker username */
-	private String username;
+    /** Broker username */
+    private String username;
 
-	/** Broker password */
-	private String password;
+    /** Broker password */
+    private String password;
 
-	/** MQTT client */
-	private MQTT mqtt;
+    /** MQTT client */
+    private MQTT mqtt;
 
-	/** Hawtdispatch queue */
-	private DispatchQueue queue;
+    /** Hawtdispatch queue */
+    private DispatchQueue queue;
 
-	/** Shared MQTT connection */
-	private FutureConnection connection;
+    /** Shared MQTT connection */
+    private FutureConnection connection;
 
-	/** Multicaster for events */
-	private IDeviceEventMulticaster<String> multicaster;
+    /** Multicaster for events */
+    private IDeviceEventMulticaster<String> multicaster;
 
-	/** Route builder for generating topics */
-	private IRouteBuilder<String> routeBuilder;
+    /** Route builder for generating topics */
+    private IRouteBuilder<String> routeBuilder;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		if ((topic == null) && ((multicaster == null) && (routeBuilder == null))) {
-			throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
-		}
-
-		// Required for filters.
-		super.start();
-
-		// Start the multicaster implementation.
-		if (multicaster != null) {
-			startNestedComponent(multicaster, true);
-		}
-
-		// Use common MQTT configuration setup.
-		this.queue = Dispatch.createQueue(getComponentId());
-		this.mqtt = MqttLifecycleComponent.configure(this, queue);
-
-		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-		connection = mqtt.futureConnection();
-		try {
-			Future<Void> future = connection.connect();
-			future.await(MqttLifecycleComponent.DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
-		}
-		LOGGER.info("Connected to MQTT broker.");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	if ((topic == null) && ((multicaster == null) && (routeBuilder == null))) {
+	    throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-	 * )
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		if (connection != null) {
-			try {
-				connection.disconnect();
-				connection.kill();
-			} catch (Exception e) {
-				LOGGER.error("Error shutting down MQTT device event receiver.", e);
-			}
-		}
-		if (queue != null) {
-			queue.suspend();
-		}
-		super.stop();
+	// Required for filters.
+	super.start();
+
+	// Start the multicaster implementation.
+	if (multicaster != null) {
+	    startNestedComponent(multicaster, true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
-		sendEvent(measurements);
-	}
+	// Use common MQTT configuration setup.
+	this.queue = Dispatch.createQueue(getComponentId());
+	this.mqtt = MqttLifecycleComponent.configure(this, queue);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
-		sendEvent(location);
+	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	connection = mqtt.futureConnection();
+	try {
+	    Future<Void> future = connection.connect();
+	    future.await(MqttLifecycleComponent.DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 	}
+	LOGGER.info("Connected to MQTT broker.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
-		sendEvent(alert);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
+     * )
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	if (connection != null) {
+	    try {
+		connection.disconnect();
+		connection.kill();
+	    } catch (Exception e) {
+		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+	    }
 	}
+	if (queue != null) {
+	    queue.suspend();
+	}
+	super.stop();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandInvocationNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		sendEvent(invocation);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+	sendEvent(measurements);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceCommandResponse)
-	 */
-	@Override
-	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
-		sendEvent(response);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+	sendEvent(location);
+    }
 
-	/**
-	 * Send an {@link IDeviceEvent} to the configured topic.
-	 * 
-	 * @param event
-	 * @throws SiteWhereException
-	 */
-	protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-		IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
-		IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-		IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
-		if (getMulticaster() != null) {
-			List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
-			for (String route : routes) {
-				publish(event, route);
-			}
-		} else {
-			if (getRouteBuilder() != null) {
-				publish(event, getRouteBuilder().build(event, device, assignment));
-			} else {
-				publish(event, getTopic());
-			}
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+	sendEvent(alert);
+    }
 
-	/**
-	 * Publish an event to an MQTT topic.
-	 * 
-	 * @param event
-	 * @throws SiteWhereException
-	 */
-	protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
-		connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
-		LOGGER.info("Publishing event " + event.getId() + " to route: " + topic);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onCommandInvocationNotFiltered
+     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	sendEvent(invocation);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceCommandResponse)
+     */
+    @Override
+    public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
+	sendEvent(response);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.
-	 * IMulticastingOutboundEventProcessor# getMulticaster()
-	 */
-	public IDeviceEventMulticaster<String> getMulticaster() {
-		return multicaster;
+    /**
+     * Send an {@link IDeviceEvent} to the configured topic.
+     * 
+     * @param event
+     * @throws SiteWhereException
+     */
+    protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
+	IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
+	IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+	IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
+	if (getMulticaster() != null) {
+	    List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
+	    for (String route : routes) {
+		publish(event, route);
+	    }
+	} else {
+	    if (getRouteBuilder() != null) {
+		publish(event, getRouteBuilder().build(event, device, assignment));
+	    } else {
+		publish(event, getTopic());
+	    }
 	}
+    }
 
-	public void setMulticaster(IDeviceEventMulticaster<String> multicaster) {
-		this.multicaster = multicaster;
-	}
+    /**
+     * Publish an event to an MQTT topic.
+     * 
+     * @param event
+     * @throws SiteWhereException
+     */
+    protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
+	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
+	LOGGER.info("Publishing event " + event.getId() + " to route: " + topic);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.
-	 * IMulticastingOutboundEventProcessor# getRouteBuilder()
-	 */
-	public IRouteBuilder<String> getRouteBuilder() {
-		return routeBuilder;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public void setRouteBuilder(IRouteBuilder<String> routeBuilder) {
-		this.routeBuilder = routeBuilder;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.
+     * IMulticastingOutboundEventProcessor# getMulticaster()
+     */
+    public IDeviceEventMulticaster<String> getMulticaster() {
+	return multicaster;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
-	 */
-	public String getProtocol() {
-		return protocol;
-	}
+    public void setMulticaster(IDeviceEventMulticaster<String> multicaster) {
+	this.multicaster = multicaster;
+    }
 
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.
+     * IMulticastingOutboundEventProcessor# getRouteBuilder()
+     */
+    public IRouteBuilder<String> getRouteBuilder() {
+	return routeBuilder;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+    public void setRouteBuilder(IRouteBuilder<String> routeBuilder) {
+	this.routeBuilder = routeBuilder;
+    }
 
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
+     */
+    public String getProtocol() {
+	return protocol;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#getPort()
-	 */
-	public int getPort() {
-		return port;
-	}
+    public void setProtocol(String protocol) {
+	this.protocol = protocol;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
+     */
+    public String getHostname() {
+	return hostname;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
-	 */
-	public String getUsername() {
-		return username;
-	}
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IInternetConnected#getPort()
+     */
+    public int getPort() {
+	return port;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
-	 */
-	public String getPassword() {
-		return password;
-	}
+    public void setPort(int port) {
+	this.port = port;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
+     */
+    public String getUsername() {
+	return username;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
-	 * )
-	 */
-	public String getTrustStorePath() {
-		return trustStorePath;
-	}
+    public void setUsername(String username) {
+	this.username = username;
+    }
 
-	public void setTrustStorePath(String trustStorePath) {
-		this.trustStorePath = trustStorePath;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
+     */
+    public String getPassword() {
+	return password;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
-	 * getTrustStorePassword()
-	 */
-	public String getTrustStorePassword() {
-		return trustStorePassword;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	public void setTrustStorePassword(String trustStorePassword) {
-		this.trustStorePassword = trustStorePassword;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
+     * )
+     */
+    public String getTrustStorePath() {
+	return trustStorePath;
+    }
 
-	public String getTopic() {
-		return topic;
-	}
+    public void setTrustStorePath(String trustStorePath) {
+	this.trustStorePath = trustStorePath;
+    }
 
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
+     * getTrustStorePassword()
+     */
+    public String getTrustStorePassword() {
+	return trustStorePassword;
+    }
+
+    public void setTrustStorePassword(String trustStorePassword) {
+	this.trustStorePassword = trustStorePassword;
+    }
+
+    public String getTopic() {
+	return topic;
+    }
+
+    public void setTopic(String topic) {
+	this.topic = topic;
+    }
 }

@@ -14,18 +14,18 @@ package com.sitewhere.spi.device.command;
  */
 public enum SystemCommandType {
 
-	/** Acknowledges successful registration */
-	RegistrationAck,
+    /** Acknowledges successful registration */
+    RegistrationAck,
 
-	/** Indicates failed registration */
-	RegistrationFailure,
+    /** Indicates failed registration */
+    RegistrationFailure,
 
-	/** Acknowledges device stream creation */
-	DeviceStreamAck,
+    /** Acknowledges device stream creation */
+    DeviceStreamAck,
 
-	/** Sends a chunk of device stream data */
-	SendDeviceStreamData,
+    /** Sends a chunk of device stream data */
+    SendDeviceStreamData,
 
-	/** Acknowledges response of device mapping operation */
-	DeviceMappingAck;
+    /** Acknowledges response of device mapping operation */
+    DeviceMappingAck;
 }

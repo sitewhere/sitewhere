@@ -16,18 +16,17 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class AllWithSpecificationStringMulticaster extends AllWithSpecificationMulticaster<String> {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.groovy.device.communication.multicaster.AllWithSpecificationMulticaster
-	 * #convertRoute(java.lang.Object)
-	 */
-	@Override
-	public String convertRoute(Object scriptResult) throws SiteWhereException {
-		if (!(scriptResult instanceof String)) {
-			throw new SiteWhereException("Multicaster script result expected to be of type String.");
-		}
-		return (String) scriptResult;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.groovy.device.communication.multicaster.
+     * AllWithSpecificationMulticaster #convertRoute(java.lang.Object)
+     */
+    @Override
+    public String convertRoute(Object scriptResult) throws SiteWhereException {
+	if (!(scriptResult instanceof String)) {
+	    throw new SiteWhereException("Multicaster script result expected to be of type String.");
 	}
+	return (String) scriptResult;
+    }
 }

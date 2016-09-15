@@ -20,15 +20,15 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IDeviceEventFilter extends ITenantLifecycleComponent {
 
-	/**
-	 * Indicates if an event should be filtered.
-	 * 
-	 * @param event
-	 * @param device
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException;
+    /**
+     * Indicates if an event should be filtered.
+     * 
+     * @param event
+     * @param device
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
+	    throws SiteWhereException;
 }

@@ -22,9 +22,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Documented {
 
-	/** Method description markdown relative path */
-	String description() default "";
+    /** Method description markdown relative path */
+    String description() default "";
 
-	/** Array of examples */
-	Example[] examples() default {};
+    /** Array of examples */
+    Example[] examples() default {};
 }

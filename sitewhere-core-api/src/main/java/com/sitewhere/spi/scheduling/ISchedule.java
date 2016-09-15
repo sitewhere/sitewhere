@@ -20,45 +20,45 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface ISchedule extends IMetadataProviderEntity, Serializable {
 
-	/**
-	 * Unique token for schedule.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Unique token for schedule.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Schedule name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Schedule name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get type of trigger for schedule.
-	 * 
-	 * @return
-	 */
-	public TriggerType getTriggerType();
+    /**
+     * Get type of trigger for schedule.
+     * 
+     * @return
+     */
+    public TriggerType getTriggerType();
 
-	/**
-	 * Get trigger configuration values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getTriggerConfiguration();
+    /**
+     * Get trigger configuration values.
+     * 
+     * @return
+     */
+    public Map<String, String> getTriggerConfiguration();
 
-	/**
-	 * Get date schedule takes effect.
-	 * 
-	 * @return
-	 */
-	public Date getStartDate();
+    /**
+     * Get date schedule takes effect.
+     * 
+     * @return
+     */
+    public Date getStartDate();
 
-	/**
-	 * Get date schedule is no longer in effect.
-	 * 
-	 * @return
-	 */
-	public Date getEndDate();
+    /**
+     * Get date schedule is no longer in effect.
+     * 
+     * @return
+     */
+    public Date getEndDate();
 }

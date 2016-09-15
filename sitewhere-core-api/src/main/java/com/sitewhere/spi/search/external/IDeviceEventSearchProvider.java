@@ -21,25 +21,26 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
  */
 public interface IDeviceEventSearchProvider extends ISearchProvider {
 
-	/**
-	 * Executes an arbitrary event query against the search provider.
-	 * 
-	 * @param query
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException;
+    /**
+     * Executes an arbitrary event query against the search provider.
+     * 
+     * @param query
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException;
 
-	/**
-	 * Get a list of device locations near the given lat/long in the given time period.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param distance
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<IDeviceLocation> getLocationsNear(double latitude, double longitude, double distance,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    /**
+     * Get a list of device locations near the given lat/long in the given time
+     * period.
+     * 
+     * @param latitude
+     * @param longitude
+     * @param distance
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDeviceLocation> getLocationsNear(double latitude, double longitude, double distance,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 }

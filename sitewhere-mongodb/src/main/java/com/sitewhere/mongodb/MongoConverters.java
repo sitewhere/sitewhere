@@ -74,61 +74,61 @@ import com.sitewhere.spi.tenant.ITenantGroupElement;
  */
 public class MongoConverters implements IMongoConverterLookup {
 
-	/** Maps interface classes to their associated converters */
-	private static Map<Class<?>, MongoConverter<?>> CONVERTERS = new HashMap<Class<?>, MongoConverter<?>>();
+    /** Maps interface classes to their associated converters */
+    private static Map<Class<?>, MongoConverter<?>> CONVERTERS = new HashMap<Class<?>, MongoConverter<?>>();
 
-	/** Create a list of converters for various types */
-	static {
-		// Converters for device management.
-		CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
-		CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
-		CONVERTERS.put(IDevice.class, new MongoDevice());
-		CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
-		CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());
-		CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
-		CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
-		CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
-		CONVERTERS.put(IDeviceStreamData.class, new MongoDeviceStreamData());
-		CONVERTERS.put(IDeviceCommandInvocation.class, new MongoDeviceCommandInvocation());
-		CONVERTERS.put(IDeviceCommandResponse.class, new MongoDeviceCommandResponse());
-		CONVERTERS.put(IDeviceStateChange.class, new MongoDeviceStateChange());
-		CONVERTERS.put(ISite.class, new MongoSite());
-		CONVERTERS.put(IZone.class, new MongoZone());
-		CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
-		CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
-		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
-		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
+    /** Create a list of converters for various types */
+    static {
+	// Converters for device management.
+	CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
+	CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
+	CONVERTERS.put(IDevice.class, new MongoDevice());
+	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
+	CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());
+	CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
+	CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
+	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
+	CONVERTERS.put(IDeviceStreamData.class, new MongoDeviceStreamData());
+	CONVERTERS.put(IDeviceCommandInvocation.class, new MongoDeviceCommandInvocation());
+	CONVERTERS.put(IDeviceCommandResponse.class, new MongoDeviceCommandResponse());
+	CONVERTERS.put(IDeviceStateChange.class, new MongoDeviceStateChange());
+	CONVERTERS.put(ISite.class, new MongoSite());
+	CONVERTERS.put(IZone.class, new MongoZone());
+	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
+	CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
+	CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
+	CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
 
-		// Converters for tenant management.
-		CONVERTERS.put(ITenant.class, new MongoTenant());
-		CONVERTERS.put(ITenantGroup.class, new MongoTenantGroup());
-		CONVERTERS.put(ITenantGroupElement.class, new MongoTenantGroupElement());
+	// Converters for tenant management.
+	CONVERTERS.put(ITenant.class, new MongoTenant());
+	CONVERTERS.put(ITenantGroup.class, new MongoTenantGroup());
+	CONVERTERS.put(ITenantGroupElement.class, new MongoTenantGroupElement());
 
-		// Converters for asset management.
-		CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
-		CONVERTERS.put(IHardwareAsset.class, new MongoHardwareAsset());
-		CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
-		CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
-		CONVERTERS.put(IAsset.class, new MongoAsset());
+	// Converters for asset management.
+	CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
+	CONVERTERS.put(IHardwareAsset.class, new MongoHardwareAsset());
+	CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
+	CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
+	CONVERTERS.put(IAsset.class, new MongoAsset());
 
-		// Converters for schedule management.
-		CONVERTERS.put(ISchedule.class, new MongoSchedule());
-		CONVERTERS.put(IScheduledJob.class, new MongoScheduledJob());
+	// Converters for schedule management.
+	CONVERTERS.put(ISchedule.class, new MongoSchedule());
+	CONVERTERS.put(IScheduledJob.class, new MongoScheduledJob());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+     * Class)
+     */
+    @SuppressWarnings("unchecked")
+    public <T> MongoConverter<T> getConverterFor(Class<T> api) {
+	MongoConverter<T> result = (MongoConverter<T>) CONVERTERS.get(api);
+	if (result == null) {
+	    throw new RuntimeException("No Mongo converter registered for " + api.getName());
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
-	 * Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> MongoConverter<T> getConverterFor(Class<T> api) {
-		MongoConverter<T> result = (MongoConverter<T>) CONVERTERS.get(api);
-		if (result == null) {
-			throw new RuntimeException("No Mongo converter registered for " + api.getName());
-		}
-		return result;
-	}
+	return result;
+    }
 }

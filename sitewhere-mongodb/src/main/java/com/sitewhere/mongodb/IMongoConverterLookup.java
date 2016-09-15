@@ -15,11 +15,11 @@ package com.sitewhere.mongodb;
  */
 public interface IMongoConverterLookup {
 
-	/**
-	 * Get converter for a given class type.
-	 * 
-	 * @param api
-	 * @return
-	 */
-	public <T> MongoConverter<T> getConverterFor(Class<T> api);
+    /**
+     * Get converter for a given class type.
+     * 
+     * @param api
+     * @return
+     */
+    public <T> MongoConverter<T> getConverterFor(Class<T> api);
 }

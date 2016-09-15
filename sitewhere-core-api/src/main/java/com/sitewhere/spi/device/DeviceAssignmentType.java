@@ -14,9 +14,9 @@ package com.sitewhere.spi.device;
  */
 public enum DeviceAssignmentType {
 
-	/** No associated asset */
-	Unassociated,
+    /** No associated asset */
+    Unassociated,
 
-	/** Assignment is associated with an asset */
-	Associated;
+    /** Assignment is associated with an asset */
+    Associated;
 }

@@ -14,12 +14,12 @@ package com.sitewhere.spi.device.event.state;
  */
 public enum StateChangeCategory {
 
-	/** Device assignment */
-	Assignment,
+    /** Device assignment */
+    Assignment,
 
-	/** Device presence */
-	Presence,
+    /** Device presence */
+    Presence,
 
-	/** Device registation */
-	Registration;
+    /** Device registation */
+    Registration;
 }

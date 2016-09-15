@@ -16,84 +16,88 @@ import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
-public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset implements
-		IDeviceCommandInvocation {
+public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset implements IDeviceCommandInvocation {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 5274138683101218581L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 5274138683101218581L;
 
-	public DeviceCommandInvocationWithAsset(IDeviceCommandInvocation wrapped, IAssetModuleManager assets)
-			throws SiteWhereException {
-		super(wrapped, assets);
-	}
+    public DeviceCommandInvocationWithAsset(IDeviceCommandInvocation wrapped, IAssetModuleManager assets)
+	    throws SiteWhereException {
+	super(wrapped, assets);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
-	 */
-	@Override
-	public CommandInitiator getInitiator() {
-		return ((IDeviceCommandInvocation) getWrapped()).getInitiator();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
+     */
+    @Override
+    public CommandInitiator getInitiator() {
+	return ((IDeviceCommandInvocation) getWrapped()).getInitiator();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
-	 */
-	@Override
-	public String getInitiatorId() {
-		return ((IDeviceCommandInvocation) getWrapped()).getInitiatorId();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
+     */
+    @Override
+    public String getInitiatorId() {
+	return ((IDeviceCommandInvocation) getWrapped()).getInitiatorId();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTarget()
-	 */
-	@Override
-	public CommandTarget getTarget() {
-		return ((IDeviceCommandInvocation) getWrapped()).getTarget();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTarget()
+     */
+    @Override
+    public CommandTarget getTarget() {
+	return ((IDeviceCommandInvocation) getWrapped()).getTarget();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetId()
-	 */
-	@Override
-	public String getTargetId() {
-		return ((IDeviceCommandInvocation) getWrapped()).getTargetId();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetId()
+     */
+    @Override
+    public String getTargetId() {
+	return ((IDeviceCommandInvocation) getWrapped()).getTargetId();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getCommandToken()
-	 */
-	@Override
-	public String getCommandToken() {
-		return ((IDeviceCommandInvocation) getWrapped()).getCommandToken();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getCommandToken()
+     */
+    @Override
+    public String getCommandToken() {
+	return ((IDeviceCommandInvocation) getWrapped()).getCommandToken();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getParameterValues()
-	 */
-	@Override
-	public Map<String, String> getParameterValues() {
-		return ((IDeviceCommandInvocation) getWrapped()).getParameterValues();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#
+     * getParameterValues()
+     */
+    @Override
+    public Map<String, String> getParameterValues() {
+	return ((IDeviceCommandInvocation) getWrapped()).getParameterValues();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getStatus()
-	 */
-	@Override
-	public CommandStatus getStatus() {
-		return ((IDeviceCommandInvocation) getWrapped()).getStatus();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getStatus()
+     */
+    @Override
+    public CommandStatus getStatus() {
+	return ((IDeviceCommandInvocation) getWrapped()).getStatus();
+    }
 }

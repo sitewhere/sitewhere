@@ -13,19 +13,20 @@ import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.server.IModelInitializer;
 
 /**
- * Class that initializes the asset model with data needed to bootstrap the system.
+ * Class that initializes the asset model with data needed to bootstrap the
+ * system.
  * 
  * @author Derek
  */
 public interface IAssetModelInitializer extends IModelInitializer {
 
-	/**
-	 * Initialize the asset model.
-	 * 
-	 * @param configuration
-	 * @param assetManagement
-	 * @throws SiteWhereException
-	 */
-	public void initialize(ITenantConfigurationResolver configuration, IAssetManagement assetManagement)
-			throws SiteWhereException;
+    /**
+     * Initialize the asset model.
+     * 
+     * @param configuration
+     * @param assetManagement
+     * @throws SiteWhereException
+     */
+    public void initialize(ITenantConfigurationResolver configuration, IAssetManagement assetManagement)
+	    throws SiteWhereException;
 }

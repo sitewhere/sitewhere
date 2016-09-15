@@ -13,17 +13,18 @@ import java.util.List;
 import com.sitewhere.rest.model.asset.Asset;
 
 /**
- * Search results that contain assets. Used by JSON marshaling for generic assets.
+ * Search results that contain assets. Used by JSON marshaling for generic
+ * assets.
  * 
  * @author Derek
  */
 public class AssetSearchResults extends SearchResults<Asset> {
 
-	public AssetSearchResults() {
-		super(new ArrayList<Asset>());
-	}
+    public AssetSearchResults() {
+	super(new ArrayList<Asset>());
+    }
 
-	public AssetSearchResults(List<Asset> results) {
-		super(results);
-	}
+    public AssetSearchResults(List<Asset> results) {
+	super(results);
+    }
 }

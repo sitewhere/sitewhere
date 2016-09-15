@@ -17,49 +17,49 @@ import com.sitewhere.spi.command.ICommandResponse;
  */
 public class CommandResponse implements ICommandResponse {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 2189097956869085792L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 2189097956869085792L;
 
-	/** Command result */
-	private CommandResult result;
+    /** Command result */
+    private CommandResult result;
 
-	/** Detail message */
-	private String message;
+    /** Detail message */
+    private String message;
 
-	public CommandResponse() {
-	}
+    public CommandResponse() {
+    }
 
-	public CommandResponse(CommandResult result, String message) {
-		this.result = result;
-		this.message = message;
-	}
+    public CommandResponse(CommandResult result, String message) {
+	this.result = result;
+	this.message = message;
+    }
 
-	public CommandResult getResult() {
-		return result;
-	}
+    public CommandResult getResult() {
+	return result;
+    }
 
-	public void setResult(CommandResult result) {
-		this.result = result;
-	}
+    public void setResult(CommandResult result) {
+	this.result = result;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+	return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+	this.message = message;
+    }
 
-	/**
-	 * Copy an SPI object to one that can marshaled.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static CommandResponse copy(ICommandResponse input) {
-		CommandResponse response = new CommandResponse();
-		response.setMessage(input.getMessage());
-		response.setResult(input.getResult());
-		return response;
-	}
+    /**
+     * Copy an SPI object to one that can marshaled.
+     * 
+     * @param input
+     * @return
+     */
+    public static CommandResponse copy(ICommandResponse input) {
+	CommandResponse response = new CommandResponse();
+	response.setMessage(input.getMessage());
+	response.setResult(input.getResult());
+	return response;
+    }
 }

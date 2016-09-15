@@ -14,31 +14,31 @@ package com.sitewhere.spi.device.event;
  */
 public interface IDeviceAlert extends IDeviceEvent {
 
-	/**
-	 * Get source of the alert.
-	 * 
-	 * @return
-	 */
-	public AlertSource getSource();
+    /**
+     * Get source of the alert.
+     * 
+     * @return
+     */
+    public AlertSource getSource();
 
-	/**
-	 * Get severity of alert.
-	 * 
-	 * @return
-	 */
-	public AlertLevel getLevel();
+    /**
+     * Get severity of alert.
+     * 
+     * @return
+     */
+    public AlertLevel getLevel();
 
-	/**
-	 * Get the alert type indicator.
-	 * 
-	 * @return
-	 */
-	public String getType();
+    /**
+     * Get the alert type indicator.
+     * 
+     * @return
+     */
+    public String getType();
 
-	/**
-	 * Get the alert message.
-	 * 
-	 * @return
-	 */
-	public String getMessage();
+    /**
+     * Get the alert message.
+     * 
+     * @return
+     */
+    public String getMessage();
 }

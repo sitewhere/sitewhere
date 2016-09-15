@@ -18,25 +18,25 @@ import com.sitewhere.web.configuration.model.ConfigurationModel;
  */
 public class ConfigurationModelParser {
 
-	/**
-	 * Unmarshal a {@link ConfigurationModel} from a JSON byte array.
-	 * 
-	 * @param json
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static ConfigurationModel unmarshalModel(byte[] json) throws SiteWhereException {
-		return MarshalUtils.unmarshalJson(json, ConfigurationModel.class);
-	}
+    /**
+     * Unmarshal a {@link ConfigurationModel} from a JSON byte array.
+     * 
+     * @param json
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ConfigurationModel unmarshalModel(byte[] json) throws SiteWhereException {
+	return MarshalUtils.unmarshalJson(json, ConfigurationModel.class);
+    }
 
-	/**
-	 * Marshal a {@link ConfigurationModel} to a JSON byte array.
-	 * 
-	 * @param model
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static byte[] marshalModel(ConfigurationModel model) throws SiteWhereException {
-		return MarshalUtils.marshalJson(model);
-	}
+    /**
+     * Marshal a {@link ConfigurationModel} to a JSON byte array.
+     * 
+     * @param model
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] marshalModel(ConfigurationModel model) throws SiteWhereException {
+	return MarshalUtils.marshalJson(model);
+    }
 }

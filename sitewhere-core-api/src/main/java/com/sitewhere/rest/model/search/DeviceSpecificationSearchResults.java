@@ -13,18 +13,18 @@ import java.util.List;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 
 /**
- * Search results that contain device specifications. Needed so that JSON marshaling has a
- * concrete class to inflate.
+ * Search results that contain device specifications. Needed so that JSON
+ * marshaling has a concrete class to inflate.
  * 
  * @author dadams
  */
 public class DeviceSpecificationSearchResults extends SearchResults<DeviceSpecification> {
 
-	public DeviceSpecificationSearchResults() {
-		super(new ArrayList<DeviceSpecification>());
-	}
+    public DeviceSpecificationSearchResults() {
+	super(new ArrayList<DeviceSpecification>());
+    }
 
-	public DeviceSpecificationSearchResults(List<DeviceSpecification> results) {
-		super(results);
-	}
+    public DeviceSpecificationSearchResults(List<DeviceSpecification> results) {
+	super(results);
+    }
 }

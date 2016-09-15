@@ -18,22 +18,22 @@ import com.sitewhere.web.rest.documentation.ExampleData.Zone_ConstructionSite;
  */
 public class Zones {
 
-	public static class UpdateZoneRequest {
+    public static class UpdateZoneRequest {
 
-		public Object generate() throws SiteWhereException {
-			ZoneCreateRequest request = new ZoneCreateRequest();
-			request.setName(ExampleData.ZONE_CONSTRUCTION_SITE.getName() + " Updated");
-			request.setCoordinates(null);
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    ZoneCreateRequest request = new ZoneCreateRequest();
+	    request.setName(ExampleData.ZONE_CONSTRUCTION_SITE.getName() + " Updated");
+	    request.setCoordinates(null);
+	    return request;
 	}
+    }
 
-	public static class UpdateZoneResponse {
+    public static class UpdateZoneResponse {
 
-		public Object generate() throws SiteWhereException {
-			Zone_ConstructionSite zone = new Zone_ConstructionSite();
-			zone.setName(ExampleData.ZONE_CONSTRUCTION_SITE.getName() + " Updated");
-			return zone;
-		}
+	public Object generate() throws SiteWhereException {
+	    Zone_ConstructionSite zone = new Zone_ConstructionSite();
+	    zone.setName(ExampleData.ZONE_CONSTRUCTION_SITE.getName() + " Updated");
+	    return zone;
 	}
+    }
 }

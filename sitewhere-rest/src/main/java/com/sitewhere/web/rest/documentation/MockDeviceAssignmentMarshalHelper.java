@@ -19,42 +19,42 @@ import com.sitewhere.spi.device.IDeviceManagement;
  */
 public class MockDeviceAssignmentMarshalHelper extends DeviceAssignmentMarshalHelper {
 
-	/** Mock helper that returns a hard-coded device */
-	private MockDeviceMarshalHelper helper;
+    /** Mock helper that returns a hard-coded device */
+    private MockDeviceMarshalHelper helper;
 
-	/** Mock version of device management that runs on static sample data */
-	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
+    /** Mock version of device management that runs on static sample data */
+    private MockDeviceManagement deviceManagement = new MockDeviceManagement();
 
-	public MockDeviceAssignmentMarshalHelper() {
-		super(null);
+    public MockDeviceAssignmentMarshalHelper() {
+	super(null);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper#
+     * getDeviceManagement()
+     */
+    @Override
+    protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
+	return deviceManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper#
+     * getDeviceHelper()
+     */
+    @Override
+    protected DeviceMarshalHelper getDeviceHelper() {
+	if (helper == null) {
+	    helper = new MockDeviceMarshalHelper();
+	    helper.setIncludeSite(false);
+	    helper.setIncludeSpecification(false);
+	    helper.setIncludeAssignment(false);
+	    helper.setIncludeAsset(false);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper#getDeviceManagement()
-	 */
-	@Override
-	protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
-		return deviceManagement;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper#getDeviceHelper()
-	 */
-	@Override
-	protected DeviceMarshalHelper getDeviceHelper() {
-		if (helper == null) {
-			helper = new MockDeviceMarshalHelper();
-			helper.setIncludeSite(false);
-			helper.setIncludeSpecification(false);
-			helper.setIncludeAssignment(false);
-			helper.setIncludeAsset(false);
-		}
-		return helper;
-	}
+	return helper;
+    }
 }

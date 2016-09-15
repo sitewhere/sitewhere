@@ -16,13 +16,13 @@ import java.net.URLStreamHandler;
  */
 public class ResourceStreamHandler extends URLStreamHandler {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.net.URLStreamHandler#openConnection(java.net.URL)
-	 */
-	@Override
-	protected URLConnection openConnection(URL url) throws IOException {
-		return new ResourceUrlConnection(url);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.net.URLStreamHandler#openConnection(java.net.URL)
+     */
+    @Override
+    protected URLConnection openConnection(URL url) throws IOException {
+	return new ResourceUrlConnection(url);
+    }
 }

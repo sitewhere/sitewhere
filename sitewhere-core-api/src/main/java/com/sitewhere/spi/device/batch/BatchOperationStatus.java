@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.device.batch;
 
-
 /**
  * Status indicators for batch operation processing.
  * 
@@ -15,39 +14,39 @@ package com.sitewhere.spi.device.batch;
  */
 public enum BatchOperationStatus {
 
-	/** Indicates a batch operation has not been processed */
-	Unprocessed('U'),
+    /** Indicates a batch operation has not been processed */
+    Unprocessed('U'),
 
-	/** Indicates a batch operation is currently being processed */
-	Processing('P'),
+    /** Indicates a batch operation is currently being processed */
+    Processing('P'),
 
-	/** Indicates processing succeeded for the batch operation */
-	FinishedSuccessfully('F'),
+    /** Indicates processing succeeded for the batch operation */
+    FinishedSuccessfully('F'),
 
-	/** Indicates processing finished with errors for the batch operation */
-	FinishedWithErrors('E');
+    /** Indicates processing finished with errors for the batch operation */
+    FinishedWithErrors('E');
 
-	/** Event code */
-	private char code;
+    /** Event code */
+    private char code;
 
-	private BatchOperationStatus(char code) {
-		this.code = code;
+    private BatchOperationStatus(char code) {
+	this.code = code;
+    }
+
+    public static BatchOperationStatus getByCode(char code) {
+	for (BatchOperationStatus value : BatchOperationStatus.values()) {
+	    if (value.getCode() == code) {
+		return value;
+	    }
 	}
+	return null;
+    }
 
-	public static BatchOperationStatus getByCode(char code) {
-		for (BatchOperationStatus value : BatchOperationStatus.values()) {
-			if (value.getCode() == code) {
-				return value;
-			}
-		}
-		return null;
-	}
+    public char getCode() {
+	return code;
+    }
 
-	public char getCode() {
-		return code;
-	}
-
-	public void setCode(char code) {
-		this.code = code;
-	}
+    public void setCode(char code) {
+	this.code = code;
+    }
 }

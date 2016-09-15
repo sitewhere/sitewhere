@@ -14,12 +14,12 @@ package com.sitewhere.web.configuration.model;
  */
 public enum NodeType {
 
-	/** Container node (no XML representation) */
-	Container,
+    /** Container node (no XML representation) */
+    Container,
 
-	/** Corresponds to an XML element */
-	Element,
+    /** Corresponds to an XML element */
+    Element,
 
-	/** Corresponds to an XML attribute */
-	Attribute
+    /** Corresponds to an XML attribute */
+    Attribute
 }

@@ -17,17 +17,17 @@ import java.util.List;
  */
 public interface IDeviceCommandNamespace extends Serializable {
 
-	/**
-	 * Namespace value.
-	 * 
-	 * @return
-	 */
-	public String getValue();
+    /**
+     * Namespace value.
+     * 
+     * @return
+     */
+    public String getValue();
 
-	/**
-	 * List of commands in namespace.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceCommand> getCommands();
+    /**
+     * List of commands in namespace.
+     * 
+     * @return
+     */
+    public List<IDeviceCommand> getCommands();
 }

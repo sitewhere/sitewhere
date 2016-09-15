@@ -10,10 +10,10 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public interface IAssignmentSearchCriteria extends ISearchCriteria {
 
-	/**
-	 * Only return assignments with the given status.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentStatus getStatus();
+    /**
+     * Only return assignments with the given status.
+     * 
+     * @return
+     */
+    public DeviceAssignmentStatus getStatus();
 }

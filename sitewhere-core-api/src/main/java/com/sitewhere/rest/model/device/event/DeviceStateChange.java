@@ -24,107 +24,107 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  */
 public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = 7904836116060730355L;
+    /** For Java serialization */
+    private static final long serialVersionUID = 7904836116060730355L;
 
-	/** State change category */
-	private StateChangeCategory category;
+    /** State change category */
+    private StateChangeCategory category;
 
-	/** State change type */
-	private StateChangeType type;
+    /** State change type */
+    private StateChangeType type;
 
-	/** Previous or expected state */
-	private String previousState;
+    /** Previous or expected state */
+    private String previousState;
 
-	/** New state */
-	private String newState;
+    /** New state */
+    private String newState;
 
-	public DeviceStateChange() {
-		super(DeviceEventType.StateChange);
-	}
+    public DeviceStateChange() {
+	super(DeviceEventType.StateChange);
+    }
 
-	/** Data associated with the state change */
-	private Map<String, String> data = new HashMap<String, String>();
+    /** Data associated with the state change */
+    private Map<String, String> data = new HashMap<String, String>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStateChange#getCategory()
-	 */
-	public StateChangeCategory getCategory() {
-		return category;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getCategory()
+     */
+    public StateChangeCategory getCategory() {
+	return category;
+    }
 
-	public void setCategory(StateChangeCategory category) {
-		this.category = category;
-	}
+    public void setCategory(StateChangeCategory category) {
+	this.category = category;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStateChange#getType()
-	 */
-	public StateChangeType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getType()
+     */
+    public StateChangeType getType() {
+	return type;
+    }
 
-	public void setType(StateChangeType type) {
-		this.type = type;
-	}
+    public void setType(StateChangeType type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStateChange#getPreviousState()
-	 */
-	public String getPreviousState() {
-		return previousState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getPreviousState()
+     */
+    public String getPreviousState() {
+	return previousState;
+    }
 
-	public void setPreviousState(String previousState) {
-		this.previousState = previousState;
-	}
+    public void setPreviousState(String previousState) {
+	this.previousState = previousState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStateChange#getNewState()
-	 */
-	public String getNewState() {
-		return newState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getNewState()
+     */
+    public String getNewState() {
+	return newState;
+    }
 
-	public void setNewState(String newState) {
-		this.newState = newState;
-	}
+    public void setNewState(String newState) {
+	this.newState = newState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStateChange#getData()
-	 */
-	public Map<String, String> getData() {
-		return data;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getData()
+     */
+    public Map<String, String> getData() {
+	return data;
+    }
 
-	public void setData(Map<String, String> data) {
-		this.data = data;
-	}
+    public void setData(Map<String, String> data) {
+	this.data = data;
+    }
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceStateChange copy(IDeviceStateChange input) throws SiteWhereException {
-		DeviceStateChange result = new DeviceStateChange();
-		DeviceEvent.copy(input, result);
-		result.setCategory(input.getCategory());
-		result.setType(input.getType());
-		result.setPreviousState(input.getPreviousState());
-		result.setNewState(input.getNewState());
-		result.getData().putAll(input.getData());
-		return result;
-	}
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static DeviceStateChange copy(IDeviceStateChange input) throws SiteWhereException {
+	DeviceStateChange result = new DeviceStateChange();
+	DeviceEvent.copy(input, result);
+	result.setCategory(input.getCategory());
+	result.setType(input.getType());
+	result.setPreviousState(input.getPreviousState());
+	result.setNewState(input.getNewState());
+	result.getData().putAll(input.getData());
+	return result;
+    }
 }

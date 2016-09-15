@@ -19,25 +19,26 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class MockDeviceCommandInvocationMarshalHelper extends DeviceCommandInvocationMarshalHelper {
 
-	/** Mocks device management data */
-	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
+    /** Mocks device management data */
+    private MockDeviceManagement deviceManagement = new MockDeviceManagement();
 
-	public MockDeviceCommandInvocationMarshalHelper() {
-		super(null);
-	}
+    public MockDeviceCommandInvocationMarshalHelper() {
+	super(null);
+    }
 
-	public MockDeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
-		super(null, includeCommand);
-	}
+    public MockDeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
+	super(null, includeCommand);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper#
-	 * getDeviceManagement(com.sitewhere.spi.user.ITenant)
-	 */
-	@Override
-	protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-		return deviceManagement;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper#
+     * getDeviceManagement(com.sitewhere.spi.user.ITenant)
+     */
+    @Override
+    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+	return deviceManagement;
+    }
 }

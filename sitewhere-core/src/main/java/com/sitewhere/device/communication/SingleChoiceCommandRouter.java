@@ -28,73 +28,73 @@ import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
  */
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Destinations that will deliver all commands */
-	private ICommandDestination<?, ?> destination;
+    /** Destinations that will deliver all commands */
+    private ICommandDestination<?, ?> destination;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-	 * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException {
-		destination.deliverCommand(execution, nesting, assignment);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+     * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	destination.deliverCommand(execution, nesting, assignment);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+     * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	destination.deliverSystemCommand(command, nesting, assignment);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	LOGGER.info("Starting single choice command router...");
+	if (getDestinations().size() != 1) {
+	    throw new SiteWhereException(
+		    "Expected exactly one destination for command routing but found " + getDestinations().size() + ".");
 	}
+	Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
+	this.destination = it.next();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-	 * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		destination.deliverSystemCommand(command, nesting, assignment);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		LOGGER.info("Starting single choice command router...");
-		if (getDestinations().size() != 1) {
-			throw new SiteWhereException(
-					"Expected exactly one destination for command routing but found " + getDestinations().size() + ".");
-		}
-		Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
-		this.destination = it.next();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped single choice command router.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	LOGGER.info("Stopped single choice command router.");
+    }
 }

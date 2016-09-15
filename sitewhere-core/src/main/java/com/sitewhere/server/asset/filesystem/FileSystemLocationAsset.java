@@ -23,80 +23,80 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemLocationAsset {
 
-	@XmlAttribute
-	private String id;
+    @XmlAttribute
+    private String id;
 
-	@XmlAttribute
-	private String name;
+    @XmlAttribute
+    private String name;
 
-	@XmlAttribute
-	private double lat;
+    @XmlAttribute
+    private double lat;
 
-	@XmlAttribute
-	private double lon;
+    @XmlAttribute
+    private double lon;
 
-	@XmlAttribute
-	private double elevation;
+    @XmlAttribute
+    private double elevation;
 
-	@XmlElement(name = "image-url")
-	private String imageUrl;
+    @XmlElement(name = "image-url")
+    private String imageUrl;
 
-	@XmlElement(name = "property")
-	private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
+    @XmlElement(name = "property")
+    private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public double getLat() {
-		return lat;
-	}
+    public double getLat() {
+	return lat;
+    }
 
-	public void setLat(double lat) {
-		this.lat = lat;
-	}
+    public void setLat(double lat) {
+	this.lat = lat;
+    }
 
-	public double getLon() {
-		return lon;
-	}
+    public double getLon() {
+	return lon;
+    }
 
-	public void setLon(double lon) {
-		this.lon = lon;
-	}
+    public void setLon(double lon) {
+	this.lon = lon;
+    }
 
-	public double getElevation() {
-		return elevation;
-	}
+    public double getElevation() {
+	return elevation;
+    }
 
-	public void setElevation(double elevation) {
-		this.elevation = elevation;
-	}
+    public void setElevation(double elevation) {
+	this.elevation = elevation;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	public List<FileSystemAssetProperty> getProperties() {
-		return properties;
-	}
+    public List<FileSystemAssetProperty> getProperties() {
+	return properties;
+    }
 
-	public void setProperties(List<FileSystemAssetProperty> properties) {
-		this.properties = properties;
-	}
+    public void setProperties(List<FileSystemAssetProperty> properties) {
+	this.properties = properties;
+    }
 }

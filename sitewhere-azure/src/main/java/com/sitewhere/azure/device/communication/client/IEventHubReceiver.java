@@ -37,5 +37,5 @@ public interface IEventHubReceiver {
     EventData receive(long timeoutInMilliseconds);
 
     @SuppressWarnings("rawtypes")
-	Map getMetricsData();
+    Map getMetricsData();
 }

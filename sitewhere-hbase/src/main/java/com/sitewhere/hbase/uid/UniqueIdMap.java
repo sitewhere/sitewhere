@@ -35,355 +35,355 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public abstract class UniqueIdMap<N, V> {
 
-	/** Qualifier for columns containing values */
-	public static final byte[] VALUE_QUAL = Bytes.toBytes("value");
+    /** Qualifier for columns containing values */
+    public static final byte[] VALUE_QUAL = Bytes.toBytes("value");
 
-	/** HBase context */
-	protected IHBaseContext context;
+    /** HBase context */
+    protected IHBaseContext context;
 
-	/** Key type indicator */
-	protected byte keyIndicator;
+    /** Key type indicator */
+    protected byte keyIndicator;
 
-	/** Value type indicator */
-	protected byte valueIndicator;
+    /** Value type indicator */
+    protected byte valueIndicator;
 
-	/** Map of names to values */
-	private Map<N, V> nameToValue = new HashMap<N, V>();
+    /** Map of names to values */
+    private Map<N, V> nameToValue = new HashMap<N, V>();
 
-	/** Maps of values to names */
-	private Map<V, N> valueToName = new HashMap<V, N>();
+    /** Maps of values to names */
+    private Map<V, N> valueToName = new HashMap<V, N>();
 
-	public UniqueIdMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
-		this.context = context;
-		this.keyIndicator = keyIndicator;
-		this.valueIndicator = valueIndicator;
+    public UniqueIdMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
+	this.context = context;
+	this.keyIndicator = keyIndicator;
+	this.valueIndicator = valueIndicator;
+    }
+
+    /**
+     * Create mapping and reverse mapping in UID table. Create value-to-name
+     * first, so if it fails we do not have names without reverse mappings.
+     * 
+     * @param name
+     * @param value
+     * @throws SiteWhereException
+     */
+    public void create(N name, V value) throws SiteWhereException {
+	createValueToName(value, name);
+	createNameToValue(name, value);
+    }
+
+    /**
+     * Delete a mapping and reverse mapping in UID table.
+     * 
+     * @param name
+     * @throws SiteWhereException
+     */
+    public void delete(N name) throws SiteWhereException {
+	V value = nameToValue.get(name);
+	deleteNameToValue(name);
+	deleteValueToName(value);
+    }
+
+    /**
+     * Create name to value row in the UID table.
+     * 
+     * @param name
+     * @param value
+     * @throws SiteWhereException
+     */
+    protected void createNameToValue(N name, V value) throws SiteWhereException {
+	byte[] nameBytes = convertName(name);
+	ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
+	nameBuffer.put(keyIndicator);
+	nameBuffer.put(nameBytes);
+	byte[] valueBytes = convertValue(value);
+
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Put put = new Put(nameBuffer.array());
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, valueBytes);
+	    uids.put(put);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to store value mapping in UID table.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
 	}
+	nameToValue.put(name, value);
+    }
 
-	/**
-	 * Create mapping and reverse mapping in UID table. Create value-to-name
-	 * first, so if it fails we do not have names without reverse mappings.
-	 * 
-	 * @param name
-	 * @param value
-	 * @throws SiteWhereException
-	 */
-	public void create(N name, V value) throws SiteWhereException {
-		createValueToName(value, name);
-		createNameToValue(name, value);
+    /**
+     * Delete an existing name to value mapping.
+     * 
+     * @param name
+     * @throws SiteWhereException
+     */
+    protected void deleteNameToValue(N name) throws SiteWhereException {
+	byte[] nameBytes = convertName(name);
+	ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
+	nameBuffer.put(keyIndicator);
+	nameBuffer.put(nameBytes);
+
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Delete delete = new Delete(nameBuffer.array());
+	    uids.delete(delete);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to delete UID forward mapping.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
 	}
+	nameToValue.remove(name);
+    }
 
-	/**
-	 * Delete a mapping and reverse mapping in UID table.
-	 * 
-	 * @param name
-	 * @throws SiteWhereException
-	 */
-	public void delete(N name) throws SiteWhereException {
-		V value = nameToValue.get(name);
-		deleteNameToValue(name);
-		deleteValueToName(value);
+    /**
+     * Create value to name row in the UID table.
+     * 
+     * @param name
+     * @param value
+     * @throws SiteWhereException
+     */
+    protected void createValueToName(V value, N name) throws SiteWhereException {
+	byte[] valueBytes = convertValue(value);
+	ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
+	valueBuffer.put(valueIndicator);
+	valueBuffer.put(valueBytes);
+	byte[] nameBytes = convertName(name);
+
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Put put = new Put(valueBuffer.array());
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, nameBytes);
+	    uids.put(put);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to store value mapping in UID table.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
 	}
+	valueToName.put(value, name);
+    }
 
-	/**
-	 * Create name to value row in the UID table.
-	 * 
-	 * @param name
-	 * @param value
-	 * @throws SiteWhereException
-	 */
-	protected void createNameToValue(N name, V value) throws SiteWhereException {
-		byte[] nameBytes = convertName(name);
-		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator);
-		nameBuffer.put(nameBytes);
-		byte[] valueBytes = convertValue(value);
+    /**
+     * Delete an existing value to name mapping.
+     * 
+     * @param value
+     * @throws SiteWhereException
+     */
+    protected void deleteValueToName(V value) throws SiteWhereException {
+	byte[] valueBytes = convertValue(value);
+	ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
+	valueBuffer.put(valueIndicator);
+	valueBuffer.put(valueBytes);
 
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Put put = new Put(nameBuffer.array());
-			put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, valueBytes);
-			uids.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to store value mapping in UID table.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Delete delete = new Delete(valueBuffer.array());
+	    uids.delete(delete);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to delete UID backward mapping.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
+	}
+	valueToName.remove(value);
+    }
+
+    /**
+     * Refresh from HBase UID table.
+     * 
+     * @throws SiteWhereException
+     */
+    public void refresh() throws SiteWhereException {
+	try {
+	    List<Result> ntvList = getValuesForType(keyIndicator);
+	    for (Result ntv : ntvList) {
+		byte[] key = ntv.getRow();
+		byte[] nameBytes = new byte[key.length - 1];
+		System.arraycopy(key, 1, nameBytes, 0, nameBytes.length);
+		N name = convertName(nameBytes);
+		V value = convertValue(ntv.value());
 		nameToValue.put(name, value);
-	}
-
-	/**
-	 * Delete an existing name to value mapping.
-	 * 
-	 * @param name
-	 * @throws SiteWhereException
-	 */
-	protected void deleteNameToValue(N name) throws SiteWhereException {
-		byte[] nameBytes = convertName(name);
-		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator);
-		nameBuffer.put(nameBytes);
-
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Delete delete = new Delete(nameBuffer.array());
-			uids.delete(delete);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to delete UID forward mapping.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
-		nameToValue.remove(name);
-	}
-
-	/**
-	 * Create value to name row in the UID table.
-	 * 
-	 * @param name
-	 * @param value
-	 * @throws SiteWhereException
-	 */
-	protected void createValueToName(V value, N name) throws SiteWhereException {
-		byte[] valueBytes = convertValue(value);
-		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator);
-		valueBuffer.put(valueBytes);
-		byte[] nameBytes = convertName(name);
-
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Put put = new Put(valueBuffer.array());
-			put.addColumn(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, nameBytes);
-			uids.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to store value mapping in UID table.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
+	    }
+	    List<Result> vtnList = getValuesForType(valueIndicator);
+	    for (Result vtn : vtnList) {
+		byte[] key = vtn.getRow();
+		byte[] valueBytes = new byte[key.length - 1];
+		System.arraycopy(key, 1, valueBytes, 0, valueBytes.length);
+		V value = convertValue(valueBytes);
+		N name = convertName(vtn.value());
 		valueToName.put(value, name);
+	    }
+	} catch (Throwable t) {
+	    throw new SiteWhereException(t);
 	}
+    }
 
-	/**
-	 * Delete an existing value to name mapping.
-	 * 
-	 * @param value
-	 * @throws SiteWhereException
-	 */
-	protected void deleteValueToName(V value) throws SiteWhereException {
-		byte[] valueBytes = convertValue(value);
-		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator);
-		valueBuffer.put(valueBytes);
+    /**
+     * Get all {@link Result} results for the given uid type.
+     * 
+     * @param type
+     * @return
+     * @throws Exception
+     */
+    protected List<Result> getValuesForType(byte type) throws Exception {
+	byte startByte = type;
+	byte stopByte = type;
+	stopByte++;
+	byte[] startKey = { startByte };
+	byte[] stopKey = { stopByte };
 
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Delete delete = new Delete(valueBuffer.array());
-			uids.delete(delete);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to delete UID backward mapping.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
-		valueToName.remove(value);
+	Table uids = null;
+	ResultScanner scanner = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Scan scan = new Scan();
+	    scan.setStartRow(startKey);
+	    scan.setStopRow(stopKey);
+	    scanner = uids.getScanner(scan);
+
+	    List<Result> results = new ArrayList<Result>();
+	    for (Result result : scanner) {
+		results.add(result);
+	    }
+	    return results;
+	} catch (IOException e) {
+	    throw new SiteWhereException("Error scanning site rows.", e);
+	} finally {
+	    if (scanner != null) {
+		scanner.close();
+	    }
+	    HBaseUtils.closeCleanly(uids);
 	}
+    }
 
-	/**
-	 * Refresh from HBase UID table.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void refresh() throws SiteWhereException {
-		try {
-			List<Result> ntvList = getValuesForType(keyIndicator);
-			for (Result ntv : ntvList) {
-				byte[] key = ntv.getRow();
-				byte[] nameBytes = new byte[key.length - 1];
-				System.arraycopy(key, 1, nameBytes, 0, nameBytes.length);
-				N name = convertName(nameBytes);
-				V value = convertValue(ntv.value());
-				nameToValue.put(name, value);
-			}
-			List<Result> vtnList = getValuesForType(valueIndicator);
-			for (Result vtn : vtnList) {
-				byte[] key = vtn.getRow();
-				byte[] valueBytes = new byte[key.length - 1];
-				System.arraycopy(key, 1, valueBytes, 0, valueBytes.length);
-				V value = convertValue(valueBytes);
-				N name = convertName(vtn.value());
-				valueToName.put(value, name);
-			}
-		} catch (Throwable t) {
-			throw new SiteWhereException(t);
-		}
+    /**
+     * Get value based on name.
+     * 
+     * @param name
+     * @return
+     * @throws SiteWhereException
+     */
+    public V getValue(N name) throws SiteWhereException {
+	V result = nameToValue.get(name);
+	if (result == null) {
+	    result = getValueFromTable(name);
+	    if (result != null) {
+		nameToValue.put(name, result);
+		valueToName.put(result, name);
+	    }
 	}
+	return result;
+    }
 
-	/**
-	 * Get all {@link Result} results for the given uid type.
-	 * 
-	 * @param type
-	 * @return
-	 * @throws Exception
-	 */
-	protected List<Result> getValuesForType(byte type) throws Exception {
-		byte startByte = type;
-		byte stopByte = type;
-		stopByte++;
-		byte[] startKey = { startByte };
-		byte[] stopKey = { stopByte };
+    /**
+     * Get the current value for name from UID table.
+     * 
+     * @param name
+     * @return
+     * @throws SiteWhereException
+     */
+    protected V getValueFromTable(N name) throws SiteWhereException {
+	byte[] nameBytes = convertName(name);
+	ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
+	nameBuffer.put(keyIndicator);
+	nameBuffer.put(nameBytes);
 
-		Table uids = null;
-		ResultScanner scanner = null;
-		try {
-			uids = getUidTableInterface(context);
-			Scan scan = new Scan();
-			scan.setStartRow(startKey);
-			scan.setStopRow(stopKey);
-			scanner = uids.getScanner(scan);
-
-			List<Result> results = new ArrayList<Result>();
-			for (Result result : scanner) {
-				results.add(result);
-			}
-			return results;
-		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning site rows.", e);
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-			HBaseUtils.closeCleanly(uids);
-		}
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Get get = new Get(nameBuffer.array());
+	    Result result = uids.get(get);
+	    if (result.size() > 0) {
+		return convertValue(result.value());
+	    }
+	    return null;
+	} catch (IOException e) {
+	    throw new SiteWhereException("Error locating name to value mapping.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
 	}
+    }
 
-	/**
-	 * Get value based on name.
-	 * 
-	 * @param name
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public V getValue(N name) throws SiteWhereException {
-		V result = nameToValue.get(name);
-		if (result == null) {
-			result = getValueFromTable(name);
-			if (result != null) {
-				nameToValue.put(name, result);
-				valueToName.put(result, name);
-			}
-		}
-		return result;
+    /**
+     * Get name based on value.
+     * 
+     * @param value
+     * @return
+     * @throws SiteWhereException
+     */
+    public N getName(V value) throws SiteWhereException {
+	N result = valueToName.get(value);
+	if (result == null) {
+	    result = getNameFromTable(value);
+	    if (result != null) {
+		nameToValue.put(result, value);
+		valueToName.put(value, result);
+	    }
 	}
+	return result;
+    }
 
-	/**
-	 * Get the current value for name from UID table.
-	 * 
-	 * @param name
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected V getValueFromTable(N name) throws SiteWhereException {
-		byte[] nameBytes = convertName(name);
-		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator);
-		nameBuffer.put(nameBytes);
+    /**
+     * Get the current name for value from UID table.
+     * 
+     * @param value
+     * @return
+     * @throws SiteWhereException
+     */
+    protected N getNameFromTable(V value) throws SiteWhereException {
+	byte[] valueBytes = convertValue(value);
+	ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
+	valueBuffer.put(valueIndicator);
+	valueBuffer.put(valueBytes);
 
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Get get = new Get(nameBuffer.array());
-			Result result = uids.get(get);
-			if (result.size() > 0) {
-				return convertValue(result.value());
-			}
-			return null;
-		} catch (IOException e) {
-			throw new SiteWhereException("Error locating name to value mapping.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
+	Table uids = null;
+	try {
+	    uids = getUidTableInterface(context);
+	    Get get = new Get(valueBuffer.array());
+	    Result result = uids.get(get);
+	    if (result.size() > 0) {
+		return convertName(result.value());
+	    }
+	    return null;
+	} catch (IOException e) {
+	    throw new SiteWhereException("Error locating value to name mapping.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(uids);
 	}
+    }
 
-	/**
-	 * Get name based on value.
-	 * 
-	 * @param value
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public N getName(V value) throws SiteWhereException {
-		N result = valueToName.get(value);
-		if (result == null) {
-			result = getNameFromTable(value);
-			if (result != null) {
-				nameToValue.put(result, value);
-				valueToName.put(value, result);
-			}
-		}
-		return result;
-	}
+    /** Used to convert stored name to correct datatype */
+    public abstract N convertName(byte[] bytes);
 
-	/**
-	 * Get the current name for value from UID table.
-	 * 
-	 * @param value
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected N getNameFromTable(V value) throws SiteWhereException {
-		byte[] valueBytes = convertValue(value);
-		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator);
-		valueBuffer.put(valueBytes);
+    /** Used to convert stored name to correct datatype */
+    public abstract byte[] convertName(N name);
 
-		Table uids = null;
-		try {
-			uids = getUidTableInterface(context);
-			Get get = new Get(valueBuffer.array());
-			Result result = uids.get(get);
-			if (result.size() > 0) {
-				return convertName(result.value());
-			}
-			return null;
-		} catch (IOException e) {
-			throw new SiteWhereException("Error locating value to name mapping.", e);
-		} finally {
-			HBaseUtils.closeCleanly(uids);
-		}
-	}
+    /** Used to convert stored value to correct datatype */
+    public abstract V convertValue(byte[] bytes);
 
-	/** Used to convert stored name to correct datatype */
-	public abstract N convertName(byte[] bytes);
+    /** Used to convert stored value to correct datatype */
+    public abstract byte[] convertValue(V value);
 
-	/** Used to convert stored name to correct datatype */
-	public abstract byte[] convertName(N name);
+    /** Get indicator for key rows for this type */
+    public byte getKeyIndicator() {
+	return keyIndicator;
+    }
 
-	/** Used to convert stored value to correct datatype */
-	public abstract V convertValue(byte[] bytes);
+    /** Get indicator for value rows for this type */
+    public byte getValueIndicator() {
+	return valueIndicator;
+    }
 
-	/** Used to convert stored value to correct datatype */
-	public abstract byte[] convertValue(V value);
-
-	/** Get indicator for key rows for this type */
-	public byte getKeyIndicator() {
-		return keyIndicator;
-	}
-
-	/** Get indicator for value rows for this type */
-	public byte getValueIndicator() {
-		return valueIndicator;
-	}
-
-	/**
-	 * Get UIDs table based on context.
-	 * 
-	 * @param context
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected static Table getUidTableInterface(IHBaseContext context) throws SiteWhereException {
-		return HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
-	}
+    /**
+     * Get UIDs table based on context.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static Table getUidTableInterface(IHBaseContext context) throws SiteWhereException {
+	return HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
+    }
 }

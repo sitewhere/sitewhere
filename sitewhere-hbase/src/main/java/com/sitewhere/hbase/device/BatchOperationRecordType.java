@@ -14,30 +14,30 @@ package com.sitewhere.hbase.device;
  */
 public enum BatchOperationRecordType {
 
-	/** Batch operation record */
-	BatchOperation((byte) 0x00),
+    /** Batch operation record */
+    BatchOperation((byte) 0x00),
 
-	/** Batch element record */
-	BatchElement((byte) 0x01);
+    /** Batch element record */
+    BatchElement((byte) 0x01);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private BatchOperationRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private BatchOperationRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

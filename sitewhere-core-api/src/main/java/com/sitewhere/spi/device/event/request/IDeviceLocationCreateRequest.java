@@ -14,24 +14,24 @@ package com.sitewhere.spi.device.event.request;
  */
 public interface IDeviceLocationCreateRequest extends IDeviceEventCreateRequest {
 
-	/**
-	 * Get latitude.
-	 * 
-	 * @return
-	 */
-	public Double getLatitude();
+    /**
+     * Get latitude.
+     * 
+     * @return
+     */
+    public Double getLatitude();
 
-	/**
-	 * Get longitude.
-	 * 
-	 * @return
-	 */
-	public Double getLongitude();
+    /**
+     * Get longitude.
+     * 
+     * @return
+     */
+    public Double getLongitude();
 
-	/**
-	 * Get elevation.s
-	 * 
-	 * @return
-	 */
-	public Double getElevation();
+    /**
+     * Get elevation.s
+     * 
+     * @return
+     */
+    public Double getElevation();
 }

@@ -14,30 +14,30 @@ package com.sitewhere.hbase.device;
  */
 public enum DeviceGroupRecordType {
 
-	/** Device group record */
-	DeviceGroup((byte) 0x00),
+    /** Device group record */
+    DeviceGroup((byte) 0x00),
 
-	/** Device group element record */
-	DeviceGroupElement((byte) 0x01);
+    /** Device group element record */
+    DeviceGroupElement((byte) 0x01);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private DeviceGroupRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private DeviceGroupRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

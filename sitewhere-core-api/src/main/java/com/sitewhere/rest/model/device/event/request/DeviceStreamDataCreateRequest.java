@@ -17,61 +17,63 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceStreamDataCreateRequest, Serializable {
+public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest
+	implements IDeviceStreamDataCreateRequest, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -8175812734171141445L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -8175812734171141445L;
 
-	/** Stream id */
-	private String streamId;
+    /** Stream id */
+    private String streamId;
 
-	/** Sequence number for ordering chunks */
-	private long sequenceNumber;
+    /** Sequence number for ordering chunks */
+    private long sequenceNumber;
 
-	/** Chunk data */
-	private byte[] data;
+    /** Chunk data */
+    private byte[] data;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#getStreamId()
-	 */
-	public String getStreamId() {
-		return streamId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * getStreamId()
+     */
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#getSequenceNumber
-	 * ()
-	 */
-	public long getSequenceNumber() {
-		return sequenceNumber;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * getSequenceNumber ()
+     */
+    public long getSequenceNumber() {
+	return sequenceNumber;
+    }
 
-	public void setSequenceNumber(long sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
-	}
+    public void setSequenceNumber(long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#getData()
-	 */
-	public byte[] getData() {
-		return data;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * getData()
+     */
+    public byte[] getData() {
+	return data;
+    }
 
-	public void setData(byte[] data) {
-		this.data = data;
-	}
+    public void setData(byte[] data) {
+	this.data = data;
+    }
 }

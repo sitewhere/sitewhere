@@ -22,15 +22,15 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IDeviceEventMulticaster<T> extends ITenantLifecycleComponent {
 
-	/**
-	 * Calculates the list of routes to which an event should be sent.
-	 * 
-	 * @param event
-	 * @param deivice
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<T> calculateRoutes(IDeviceEvent event, IDevice deivice, IDeviceAssignment assignment)
-			throws SiteWhereException;
+    /**
+     * Calculates the list of routes to which an event should be sent.
+     * 
+     * @param event
+     * @param deivice
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<T> calculateRoutes(IDeviceEvent event, IDevice deivice, IDeviceAssignment assignment)
+	    throws SiteWhereException;
 }

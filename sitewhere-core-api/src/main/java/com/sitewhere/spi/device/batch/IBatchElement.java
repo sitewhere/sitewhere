@@ -12,44 +12,45 @@ import java.util.Date;
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
- * Holds information about a single device operation within an {@link IBatchOperation}.
+ * Holds information about a single device operation within an
+ * {@link IBatchOperation}.
  * 
  * @author Derek
  */
 public interface IBatchElement extends IMetadataProvider {
 
-	/**
-	 * Get token for parent {@link IBatchOperation}.
-	 * 
-	 * @return
-	 */
-	public String getBatchOperationToken();
+    /**
+     * Get token for parent {@link IBatchOperation}.
+     * 
+     * @return
+     */
+    public String getBatchOperationToken();
 
-	/**
-	 * Get hardware id of device.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get hardware id of device.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get index that corresponds to this entry.
-	 * 
-	 * @return
-	 */
-	public long getIndex();
+    /**
+     * Get index that corresponds to this entry.
+     * 
+     * @return
+     */
+    public long getIndex();
 
-	/**
-	 * Get processing status indicator.
-	 * 
-	 * @return
-	 */
-	public ElementProcessingStatus getProcessingStatus();
+    /**
+     * Get processing status indicator.
+     * 
+     * @return
+     */
+    public ElementProcessingStatus getProcessingStatus();
 
-	/**
-	 * Get the date on which the element was processed.
-	 * 
-	 * @return
-	 */
-	public Date getProcessedDate();
+    /**
+     * Get the date on which the element was processed.
+     * 
+     * @return
+     */
+    public Date getProcessedDate();
 }

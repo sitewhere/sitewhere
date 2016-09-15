@@ -17,21 +17,22 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  */
 public class DeviceUtils {
 
-	/**
-	 * Find {@link IDeviceElementMapping} for the given nested device hardware id.
-	 * 
-	 * @param device
-	 * @param nestedHardwareId
-	 * @return
-	 */
-	public static IDeviceElementMapping findMappingFor(IDevice device, String nestedHardwareId) {
-		if (device.getDeviceElementMappings() != null) {
-			for (IDeviceElementMapping mapping : device.getDeviceElementMappings()) {
-				if (mapping.getHardwareId().equals(nestedHardwareId)) {
-					return mapping;
-				}
-			}
+    /**
+     * Find {@link IDeviceElementMapping} for the given nested device hardware
+     * id.
+     * 
+     * @param device
+     * @param nestedHardwareId
+     * @return
+     */
+    public static IDeviceElementMapping findMappingFor(IDevice device, String nestedHardwareId) {
+	if (device.getDeviceElementMappings() != null) {
+	    for (IDeviceElementMapping mapping : device.getDeviceElementMappings()) {
+		if (mapping.getHardwareId().equals(nestedHardwareId)) {
+		    return mapping;
 		}
-		return null;
+	    }
 	}
+	return null;
+    }
 }

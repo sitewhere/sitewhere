@@ -14,61 +14,63 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 
 /**
- * Implements {@link ICommandDeliveryParameterExtractor} for {@link MqttParameters},
- * allowing expressions to be defined such that the device hardware id may be included in
- * the topic name to target a specific device.
+ * Implements {@link ICommandDeliveryParameterExtractor} for
+ * {@link MqttParameters}, allowing expressions to be defined such that the
+ * device hardware id may be included in the topic name to target a specific
+ * device.
  * 
  * @author Derek
  */
 public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
 
-	/** Default command topic */
-	public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
+    /** Default command topic */
+    public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
 
-	/** Default system topic */
-	public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
+    /** Default system topic */
+    public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
 
-	/** Command topic prefix */
-	private String commandTopicExpr = DEFAULT_COMMAND_TOPIC;
+    /** Command topic prefix */
+    private String commandTopicExpr = DEFAULT_COMMAND_TOPIC;
 
-	/** System topic prefix */
-	private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
+    /** System topic prefix */
+    private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
-	 */
-	@Override
-	public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDeviceCommandExecution execution) throws SiteWhereException {
-		MqttParameters params = new MqttParameters();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.
+     * ICommandDeliveryParameterExtractor#
+     * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     */
+    @Override
+    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+	    IDeviceCommandExecution execution) throws SiteWhereException {
+	MqttParameters params = new MqttParameters();
 
-		String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
-		params.setCommandTopic(commandTopic);
+	String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
+	params.setCommandTopic(commandTopic);
 
-		String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
-		params.setSystemTopic(systemTopic);
+	String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
+	params.setSystemTopic(systemTopic);
 
-		return params;
-	}
+	return params;
+    }
 
-	public String getCommandTopicExpr() {
-		return commandTopicExpr;
-	}
+    public String getCommandTopicExpr() {
+	return commandTopicExpr;
+    }
 
-	public void setCommandTopicExpr(String commandTopicExpr) {
-		this.commandTopicExpr = commandTopicExpr;
-	}
+    public void setCommandTopicExpr(String commandTopicExpr) {
+	this.commandTopicExpr = commandTopicExpr;
+    }
 
-	public String getSystemTopicExpr() {
-		return systemTopicExpr;
-	}
+    public String getSystemTopicExpr() {
+	return systemTopicExpr;
+    }
 
-	public void setSystemTopicExpr(String systemTopicExpr) {
-		this.systemTopicExpr = systemTopicExpr;
-	}
+    public void setSystemTopicExpr(String systemTopicExpr) {
+	this.systemTopicExpr = systemTopicExpr;
+    }
 }

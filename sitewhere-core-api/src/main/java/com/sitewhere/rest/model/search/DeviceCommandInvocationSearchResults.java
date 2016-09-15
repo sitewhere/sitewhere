@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
  */
 public class DeviceCommandInvocationSearchResults extends SearchResults<DeviceCommandInvocation> {
 
-	public DeviceCommandInvocationSearchResults() {
-		super(new ArrayList<DeviceCommandInvocation>());
-	}
+    public DeviceCommandInvocationSearchResults() {
+	super(new ArrayList<DeviceCommandInvocation>());
+    }
 
-	public DeviceCommandInvocationSearchResults(List<DeviceCommandInvocation> results) {
-		super(results);
-	}
+    public DeviceCommandInvocationSearchResults(List<DeviceCommandInvocation> results) {
+	super(results);
+    }
 }

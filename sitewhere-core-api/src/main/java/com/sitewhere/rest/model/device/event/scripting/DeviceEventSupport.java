@@ -13,89 +13,91 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
- * Provides support for common operations on device events in scripting operations.
+ * Provides support for common operations on device events in scripting
+ * operations.
  * 
  * @author Derek
  */
 public class DeviceEventSupport {
 
-	/** Wrapped event */
-	private IDeviceEvent event;
+    /** Wrapped event */
+    private IDeviceEvent event;
 
-	public DeviceEventSupport(IDeviceEvent event) {
-		this.event = event;
-	}
+    public DeviceEventSupport(IDeviceEvent event) {
+	this.event = event;
+    }
 
-	/**
-	 * Indicates a location event.
-	 * 
-	 * @return
-	 */
-	public boolean isLocation() {
-		return event.getEventType() == DeviceEventType.Location;
-	}
+    /**
+     * Indicates a location event.
+     * 
+     * @return
+     */
+    public boolean isLocation() {
+	return event.getEventType() == DeviceEventType.Location;
+    }
 
-	/**
-	 * Indicates a measurements event.
-	 * 
-	 * @return
-	 */
-	public boolean isMeasurements() {
-		return event.getEventType() == DeviceEventType.Measurements;
-	}
+    /**
+     * Indicates a measurements event.
+     * 
+     * @return
+     */
+    public boolean isMeasurements() {
+	return event.getEventType() == DeviceEventType.Measurements;
+    }
 
-	/**
-	 * Indicates if event has a measurement with the given name.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public boolean hasMeasurement(String name) {
-		return (getMeasurement(name) != null);
-	}
+    /**
+     * Indicates if event has a measurement with the given name.
+     * 
+     * @param name
+     * @return
+     */
+    public boolean hasMeasurement(String name) {
+	return (getMeasurement(name) != null);
+    }
 
-	/**
-	 * Attempts to get the named measurement if the event is a measurements event.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public Double getMeasurement(String name) {
-		if (event.getEventType() != DeviceEventType.Measurements) {
-			return null;
-		}
-		IDeviceMeasurements mxs = (IDeviceMeasurements) event;
-		Double mx = mxs.getMeasurement(name);
-		if (mx == null) {
-			return null;
-		}
-		return mx;
+    /**
+     * Attempts to get the named measurement if the event is a measurements
+     * event.
+     * 
+     * @param name
+     * @return
+     */
+    public Double getMeasurement(String name) {
+	if (event.getEventType() != DeviceEventType.Measurements) {
+	    return null;
 	}
+	IDeviceMeasurements mxs = (IDeviceMeasurements) event;
+	Double mx = mxs.getMeasurement(name);
+	if (mx == null) {
+	    return null;
+	}
+	return mx;
+    }
 
-	/**
-	 * Returns true if event is an alert.
-	 * 
-	 * @return
-	 */
-	public boolean isAlert() {
-		return event.getEventType() == DeviceEventType.Alert;
-	}
+    /**
+     * Returns true if event is an alert.
+     * 
+     * @return
+     */
+    public boolean isAlert() {
+	return event.getEventType() == DeviceEventType.Alert;
+    }
 
-	/**
-	 * Returns true if event is an alert and has the given type.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isAlertOfType(String type) {
-		return (isAlert() && ((IDeviceAlert) event).getType().equals(type));
-	}
+    /**
+     * Returns true if event is an alert and has the given type.
+     * 
+     * @param type
+     * @return
+     */
+    public boolean isAlertOfType(String type) {
+	return (isAlert() && ((IDeviceAlert) event).getType().equals(type));
+    }
 
-	public IDeviceEvent data() {
-		return event;
-	}
+    public IDeviceEvent data() {
+	return event;
+    }
 
-	public IDeviceEvent getData() {
-		return event;
-	}
+    public IDeviceEvent getData() {
+	return event;
+    }
 }

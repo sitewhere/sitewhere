@@ -14,27 +14,27 @@ package com.sitewhere.groovy.device.communication;
  */
 public interface IGroovyVariables {
 
-	/** Groovy variable used for decoded events */
-	public static final String VAR_DECODED_EVENTS = "events";
+    /** Groovy variable used for decoded events */
+    public static final String VAR_DECODED_EVENTS = "events";
 
-	/** Groovy variable used for passing payload */
-	public static final String VAR_PAYLOAD = "payload";
+    /** Groovy variable used for passing payload */
+    public static final String VAR_PAYLOAD = "payload";
 
-	/** Groovy variable used for passing payload metadata */
-	public static final String VAR_PAYLOAD_METADATA = "metadata";
+    /** Groovy variable used for passing payload metadata */
+    public static final String VAR_PAYLOAD_METADATA = "metadata";
 
-	/** Groovy variable used for passing logger */
-	public static final String VAR_LOGGER = "logger";
+    /** Groovy variable used for passing logger */
+    public static final String VAR_LOGGER = "logger";
 
-	/** Groovy variable used for passing command execution */
-	public static final String VAR_COMMAND_EXCUTION = "command";
+    /** Groovy variable used for passing command execution */
+    public static final String VAR_COMMAND_EXCUTION = "command";
 
-	/** Groovy variable used for passing system command */
-	public static final String VAR_SYSTEM_COMMAND = "system";
+    /** Groovy variable used for passing system command */
+    public static final String VAR_SYSTEM_COMMAND = "system";
 
-	/** Groovy variable used for passing command (or command execution) */
-	public static final String VAR_NESTING_CONTEXT = "nesting";
+    /** Groovy variable used for passing command (or command execution) */
+    public static final String VAR_NESTING_CONTEXT = "nesting";
 
-	/** Groovy variable used for passing assignment */
-	public static final String VAR_ASSIGNMENT = "assignment";
+    /** Groovy variable used for passing assignment */
+    public static final String VAR_ASSIGNMENT = "assignment";
 }

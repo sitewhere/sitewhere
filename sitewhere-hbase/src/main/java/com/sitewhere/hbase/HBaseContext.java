@@ -24,113 +24,113 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class HBaseContext implements IHBaseContext {
 
-	/** Tenant */
-	private ITenant tenant;
+    /** Tenant */
+    private ITenant tenant;
 
-	/** Client implementation */
-	private ISiteWhereHBaseClient client;
+    /** Client implementation */
+    private ISiteWhereHBaseClient client;
 
-	/** Configured cache provider */
-	private IDeviceManagementCacheProvider cacheProvider;
+    /** Configured cache provider */
+    private IDeviceManagementCacheProvider cacheProvider;
 
-	/** Configured payload encoder */
-	private IPayloadMarshaler payloadMarshaler;
+    /** Configured payload encoder */
+    private IPayloadMarshaler payloadMarshaler;
 
-	/** Device event buffer */
-	private IDeviceEventBuffer deviceEventBuffer;
+    /** Device event buffer */
+    private IDeviceEventBuffer deviceEventBuffer;
 
-	/** Assignment state manager */
-	private IAssignmentStateManager assignmentStateManager;
+    /** Assignment state manager */
+    private IAssignmentStateManager assignmentStateManager;
 
-	/** Device id manager */
-	private IDeviceIdManager deviceIdManager;
+    /** Device id manager */
+    private IDeviceIdManager deviceIdManager;
 
-	/** Asset id manager */
-	private IAssetIdManager assetIdManager;
+    /** Asset id manager */
+    private IAssetIdManager assetIdManager;
 
-	/** Schedule id manager */
-	private IScheduleIdManager scheduleIdManager;
+    /** Schedule id manager */
+    private IScheduleIdManager scheduleIdManager;
 
-	/** User id manager */
-	private IUserIdManager userIdManager;
+    /** User id manager */
+    private IUserIdManager userIdManager;
 
-	public ITenant getTenant() {
-		return tenant;
-	}
+    public ITenant getTenant() {
+	return tenant;
+    }
 
-	public void setTenant(ITenant tenant) {
-		this.tenant = tenant;
-	}
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
+    }
 
-	public ISiteWhereHBaseClient getClient() {
-		return client;
-	}
+    public ISiteWhereHBaseClient getClient() {
+	return client;
+    }
 
-	public void setClient(ISiteWhereHBaseClient client) {
-		this.client = client;
-	}
+    public void setClient(ISiteWhereHBaseClient client) {
+	this.client = client;
+    }
 
-	public IDeviceManagementCacheProvider getCacheProvider() {
-		return cacheProvider;
-	}
+    public IDeviceManagementCacheProvider getCacheProvider() {
+	return cacheProvider;
+    }
 
-	public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
-		this.cacheProvider = cacheProvider;
-	}
+    public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
+	this.cacheProvider = cacheProvider;
+    }
 
-	public IPayloadMarshaler getPayloadMarshaler() {
-		return payloadMarshaler;
-	}
+    public IPayloadMarshaler getPayloadMarshaler() {
+	return payloadMarshaler;
+    }
 
-	public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
-		this.payloadMarshaler = payloadMarshaler;
-	}
+    public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
+	this.payloadMarshaler = payloadMarshaler;
+    }
 
-	public IDeviceEventBuffer getDeviceEventBuffer() {
-		return deviceEventBuffer;
-	}
+    public IDeviceEventBuffer getDeviceEventBuffer() {
+	return deviceEventBuffer;
+    }
 
-	public void setDeviceEventBuffer(IDeviceEventBuffer deviceEventBuffer) {
-		this.deviceEventBuffer = deviceEventBuffer;
-	}
+    public void setDeviceEventBuffer(IDeviceEventBuffer deviceEventBuffer) {
+	this.deviceEventBuffer = deviceEventBuffer;
+    }
 
-	public IAssignmentStateManager getAssignmentStateManager() {
-		return assignmentStateManager;
-	}
+    public IAssignmentStateManager getAssignmentStateManager() {
+	return assignmentStateManager;
+    }
 
-	public void setAssignmentStateManager(IAssignmentStateManager assignmentStateManager) {
-		this.assignmentStateManager = assignmentStateManager;
-	}
+    public void setAssignmentStateManager(IAssignmentStateManager assignmentStateManager) {
+	this.assignmentStateManager = assignmentStateManager;
+    }
 
-	public IDeviceIdManager getDeviceIdManager() {
-		return deviceIdManager;
-	}
+    public IDeviceIdManager getDeviceIdManager() {
+	return deviceIdManager;
+    }
 
-	public void setDeviceIdManager(IDeviceIdManager deviceIdManager) {
-		this.deviceIdManager = deviceIdManager;
-	}
+    public void setDeviceIdManager(IDeviceIdManager deviceIdManager) {
+	this.deviceIdManager = deviceIdManager;
+    }
 
-	public IAssetIdManager getAssetIdManager() {
-		return assetIdManager;
-	}
+    public IAssetIdManager getAssetIdManager() {
+	return assetIdManager;
+    }
 
-	public void setAssetIdManager(IAssetIdManager assetIdManager) {
-		this.assetIdManager = assetIdManager;
-	}
+    public void setAssetIdManager(IAssetIdManager assetIdManager) {
+	this.assetIdManager = assetIdManager;
+    }
 
-	public IScheduleIdManager getScheduleIdManager() {
-		return scheduleIdManager;
-	}
+    public IScheduleIdManager getScheduleIdManager() {
+	return scheduleIdManager;
+    }
 
-	public void setScheduleIdManager(IScheduleIdManager scheduleIdManager) {
-		this.scheduleIdManager = scheduleIdManager;
-	}
+    public void setScheduleIdManager(IScheduleIdManager scheduleIdManager) {
+	this.scheduleIdManager = scheduleIdManager;
+    }
 
-	public IUserIdManager getUserIdManager() {
-		return userIdManager;
-	}
+    public IUserIdManager getUserIdManager() {
+	return userIdManager;
+    }
 
-	public void setUserIdManager(IUserIdManager userIdManager) {
-		this.userIdManager = userIdManager;
-	}
+    public void setUserIdManager(IUserIdManager userIdManager) {
+	this.userIdManager = userIdManager;
+    }
 }

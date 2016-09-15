@@ -37,256 +37,256 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MqttLifecycleComponent extends TenantLifecycleComponent implements IMqttComponent {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default protocol if not set via Spring */
-	public static final String DEFAULT_PROTOCOL = "tcp";
+    /** Default protocol if not set via Spring */
+    public static final String DEFAULT_PROTOCOL = "tcp";
 
-	/** Default hostname if not set via Spring */
-	public static final String DEFAULT_HOSTNAME = "localhost";
+    /** Default hostname if not set via Spring */
+    public static final String DEFAULT_HOSTNAME = "localhost";
 
-	/** Default port if not set from Spring */
-	public static final int DEFAULT_PORT = 1883;
+    /** Default port if not set from Spring */
+    public static final int DEFAULT_PORT = 1883;
 
-	/** Default connection timeout in seconds */
-	public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
+    /** Default connection timeout in seconds */
+    public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
 
-	private String protocol = DEFAULT_PROTOCOL;
+    private String protocol = DEFAULT_PROTOCOL;
 
-	/** Host name */
-	private String hostname = DEFAULT_HOSTNAME;
+    /** Host name */
+    private String hostname = DEFAULT_HOSTNAME;
 
-	/** Port */
-	private int port = DEFAULT_PORT;
+    /** Port */
+    private int port = DEFAULT_PORT;
 
-	/** TrustStore path */
-	private String trustStorePath;
+    /** TrustStore path */
+    private String trustStorePath;
 
-	/** TrustStore password */
-	private String trustStorePassword;
+    /** TrustStore password */
+    private String trustStorePassword;
 
-	/** Username */
-	private String username;
+    /** Username */
+    private String username;
 
-	/** Password */
-	private String password;
+    /** Password */
+    private String password;
 
-	/** MQTT client */
-	private MQTT mqtt;
+    /** MQTT client */
+    private MQTT mqtt;
 
-	/** Hawtdispatch queue */
-	private DispatchQueue queue;
+    /** Hawtdispatch queue */
+    private DispatchQueue queue;
 
-	public MqttLifecycleComponent(LifecycleComponentType type) {
-		super(type);
+    public MqttLifecycleComponent(LifecycleComponentType type) {
+	super(type);
+    }
+
+    /**
+     * Gets information about the broker.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getBrokerInfo() throws SiteWhereException {
+	return mqtt.getHost().toString();
+    }
+
+    /**
+     * Get a {@link FutureConnection} to the MQTT broker.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public FutureConnection getConnection() throws SiteWhereException {
+	FutureConnection connection = mqtt.futureConnection();
+	try {
+	    Future<Void> future = connection.connect();
+	    future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
+	    return connection;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 	}
+    }
 
-	/**
-	 * Gets information about the broker.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public String getBrokerInfo() throws SiteWhereException {
-		return mqtt.getHost().toString();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	this.queue = Dispatch.createQueue(getComponentId());
+	this.mqtt = MqttLifecycleComponent.configure(this, queue);
+    }
 
-	/**
-	 * Get a {@link FutureConnection} to the MQTT broker.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public FutureConnection getConnection() throws SiteWhereException {
-		FutureConnection connection = mqtt.futureConnection();
+    /**
+     * Configures MQTT parameters based on component settings.
+     * 
+     * @param component
+     * @return
+     * @throws SiteWhereException
+     */
+    public static MQTT configure(IMqttComponent component, DispatchQueue queue) throws SiteWhereException {
+	MQTT mqtt = new MQTT();
+	if ((component.getProtocol().startsWith("ssl")) || (component.getProtocol().startsWith("tls"))) {
+	    if ((component.getTrustStorePath() != null) && (component.getTrustStorePassword() != null)) {
 		try {
-			Future<Void> future = connection.connect();
-			future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
-			return connection;
+		    SSLContext sslContext = SSLContext.getInstance("TLS");
+		    TrustManagerFactory tmf = TrustManagerFactory
+			    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		    KeyStore ks = KeyStore.getInstance("JKS");
+		    File trustFile = new File(component.getTrustStorePath());
+		    ks.load(new FileInputStream(trustFile), component.getTrustStorePassword().toCharArray());
+		    tmf.init(ks);
+		    sslContext.init(null, tmf.getTrustManagers(), null);
+		    mqtt.setSslContext(sslContext);
+		    LOGGER.info("Created SSL context for MQTT receiver.");
 		} catch (Exception e) {
-			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
+		    throw new SiteWhereException("Unable to load SSL context.", e);
 		}
+	    }
 	}
+	// Set username if provided.
+	if (!StringUtils.isEmpty(component.getUsername())) {
+	    mqtt.setUserName(component.getUsername());
+	}
+	// Set password if provided.
+	if (!StringUtils.isEmpty(component.getPassword())) {
+	    mqtt.setPassword(component.getPassword());
+	}
+	try {
+	    mqtt.setHost(component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
+	    return mqtt;
+	} catch (URISyntaxException e) {
+	    throw new SiteWhereException("Invalid hostname for MQTT server.", e);
+	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		this.queue = Dispatch.createQueue(getComponentId());
-		this.mqtt = MqttLifecycleComponent.configure(this, queue);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	if (queue != null) {
+	    queue.suspend();
 	}
+    }
 
-	/**
-	 * Configures MQTT parameters based on component settings.
-	 * 
-	 * @param component
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static MQTT configure(IMqttComponent component, DispatchQueue queue) throws SiteWhereException {
-		MQTT mqtt = new MQTT();
-		if ((component.getProtocol().startsWith("ssl")) || (component.getProtocol().startsWith("tls"))) {
-			if ((component.getTrustStorePath() != null) && (component.getTrustStorePassword() != null)) {
-				try {
-					SSLContext sslContext = SSLContext.getInstance("TLS");
-					TrustManagerFactory tmf = TrustManagerFactory
-							.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-					KeyStore ks = KeyStore.getInstance("JKS");
-					File trustFile = new File(component.getTrustStorePath());
-					ks.load(new FileInputStream(trustFile), component.getTrustStorePassword().toCharArray());
-					tmf.init(ks);
-					sslContext.init(null, tmf.getTrustManagers(), null);
-					mqtt.setSslContext(sslContext);
-					LOGGER.info("Created SSL context for MQTT receiver.");
-				} catch (Exception e) {
-					throw new SiteWhereException("Unable to load SSL context.", e);
-				}
-			}
-		}
-		// Set username if provided.
-		if (!StringUtils.isEmpty(component.getUsername())) {
-			mqtt.setUserName(component.getUsername());
-		}
-		// Set password if provided.
-		if (!StringUtils.isEmpty(component.getPassword())) {
-			mqtt.setPassword(component.getPassword());
-		}
-		try {
-			mqtt.setHost(component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
-			return mqtt;
-		} catch (URISyntaxException e) {
-			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		if (queue != null) {
-			queue.suspend();
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
+     */
+    public String getProtocol() {
+	return protocol;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    public void setProtocol(String protocol) {
+	this.protocol = protocol;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
-	 */
-	public String getProtocol() {
-		return protocol;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
+     */
+    public String getHostname() {
+	return hostname;
+    }
 
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
+     */
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IInternetConnected#getPort()
+     */
+    public int getPort() {
+	return port;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
-	 */
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IInternetConnected#setPort(int)
+     */
+    public void setPort(int port) {
+	this.port = port;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#getPort()
-	 */
-	public int getPort() {
-		return port;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
+     */
+    public String getUsername() {
+	return username;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#setPort(int)
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public void setUsername(String username) {
+	this.username = username;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
+     */
+    public String getPassword() {
+	return password;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
-	 */
-	public String getPassword() {
-		return password;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
+     * )
+     */
+    public String getTrustStorePath() {
+	return trustStorePath;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setTrustStorePath(String trustStorePath) {
+	this.trustStorePath = trustStorePath;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
-	 * )
-	 */
-	public String getTrustStorePath() {
-		return trustStorePath;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
+     * getTrustStorePassword()
+     */
+    public String getTrustStorePassword() {
+	return trustStorePassword;
+    }
 
-	public void setTrustStorePath(String trustStorePath) {
-		this.trustStorePath = trustStorePath;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
-	 * getTrustStorePassword()
-	 */
-	public String getTrustStorePassword() {
-		return trustStorePassword;
-	}
-
-	public void setTrustStorePassword(String trustStorePassword) {
-		this.trustStorePassword = trustStorePassword;
-	}
+    public void setTrustStorePassword(String trustStorePassword) {
+	this.trustStorePassword = trustStorePassword;
+    }
 }

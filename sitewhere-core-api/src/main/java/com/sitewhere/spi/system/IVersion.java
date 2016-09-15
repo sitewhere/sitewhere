@@ -16,31 +16,31 @@ import java.io.Serializable;
  */
 public interface IVersion extends Serializable {
 
-	/**
-	 * Get full edition name.
-	 * 
-	 * @return
-	 */
-	public String getEdition();
+    /**
+     * Get full edition name.
+     * 
+     * @return
+     */
+    public String getEdition();
 
-	/**
-	 * Get the short identifier for edition.
-	 * 
-	 * @return
-	 */
-	public String getEditionIdentifier();
+    /**
+     * Get the short identifier for edition.
+     * 
+     * @return
+     */
+    public String getEditionIdentifier();
 
-	/**
-	 * Gets the Maven version identifier.
-	 * 
-	 * @return
-	 */
-	public String getVersionIdentifier();
+    /**
+     * Gets the Maven version identifier.
+     * 
+     * @return
+     */
+    public String getVersionIdentifier();
 
-	/**
-	 * Gets the build timestamp.
-	 * 
-	 * @return
-	 */
-	public String getBuildTimestamp();
+    /**
+     * Gets the build timestamp.
+     * 
+     * @return
+     */
+    public String getBuildTimestamp();
 }

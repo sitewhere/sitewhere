@@ -16,24 +16,24 @@ import java.util.List;
  */
 public interface IDeviceEventBatchResponse {
 
-	/**
-	 * List of measurements that were created.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceMeasurements> getCreatedMeasurements();
+    /**
+     * List of measurements that were created.
+     * 
+     * @return
+     */
+    public List<IDeviceMeasurements> getCreatedMeasurements();
 
-	/**
-	 * List of locations that were created.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceLocation> getCreatedLocations();
+    /**
+     * List of locations that were created.
+     * 
+     * @return
+     */
+    public List<IDeviceLocation> getCreatedLocations();
 
-	/**
-	 * List of alerts that were created.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceAlert> getCreatedAlerts();
+    /**
+     * List of alerts that were created.
+     * 
+     * @return
+     */
+    public List<IDeviceAlert> getCreatedAlerts();
 }

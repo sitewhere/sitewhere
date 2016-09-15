@@ -8,16 +8,17 @@
 package com.sitewhere.spi.server.tenant;
 
 /**
- * Marker interface for components interested in the tenant Hazelcast configuration.
+ * Marker interface for components interested in the tenant Hazelcast
+ * configuration.
  * 
  * @author Derek
  */
 public interface ITenantHazelcastAware {
 
-	/**
-	 * Set the tenant Hazelcast configuration.
-	 * 
-	 * @param configuration
-	 */
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration);
+    /**
+     * Set the tenant Hazelcast configuration.
+     * 
+     * @param configuration
+     */
+    public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration);
 }

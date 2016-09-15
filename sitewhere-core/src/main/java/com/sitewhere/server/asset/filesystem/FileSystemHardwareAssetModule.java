@@ -26,57 +26,57 @@ import com.sitewhere.spi.resource.IResource;
  * @author Derek Adams
  */
 public class FileSystemHardwareAssetModule extends FileSystemAssetModule<HardwareAsset>
-		implements IAssetModule<HardwareAsset> {
+	implements IAssetModule<HardwareAsset> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -8641817304295833195L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -8641817304295833195L;
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Module id */
-	public static final String MODULE_ID = "fs-hardware";
+    /** Module id */
+    public static final String MODULE_ID = "fs-hardware";
 
-	/** Module name */
-	public static final String MODULE_NAME = "Default Hardware Management";
+    /** Module name */
+    public static final String MODULE_NAME = "Default Hardware Management";
 
-	/** Filename in SiteWhere config folder that contains hardware assets */
-	public static final String HARDWARE_CONFIG_FILENAME = "hardware-assets.xml";
+    /** Filename in SiteWhere config folder that contains hardware assets */
+    public static final String HARDWARE_CONFIG_FILENAME = "hardware-assets.xml";
 
-	public FileSystemHardwareAssetModule() {
-		super(HARDWARE_CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
-	}
+    public FileSystemHardwareAssetModule() {
+	super(HARDWARE_CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.
-	 * spi.asset .AssetType)
-	 */
-	public AssetType getAssetType() {
-		return AssetType.Hardware;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.
+     * spi.asset .AssetType)
+     */
+    public AssetType getAssetType() {
+	return AssetType.Hardware;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
-	 * .sitewhere.spi.resource.IResource)
-	 */
-	@Override
-	protected List<HardwareAsset> unmarshal(IResource resource) throws SiteWhereException {
-		return MarshalUtils.loadHardwareAssets(new ByteArrayInputStream(resource.getContent()), getAssetType());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
+     * .sitewhere.spi.resource.IResource)
+     */
+    @Override
+    protected List<HardwareAsset> unmarshal(IResource resource) throws SiteWhereException {
+	return MarshalUtils.loadHardwareAssets(new ByteArrayInputStream(resource.getContent()), getAssetType());
+    }
 }

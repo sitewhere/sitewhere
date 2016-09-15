@@ -23,57 +23,61 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 public class DeviceEventBatchResponse implements IDeviceEventBatchResponse, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -5564589917811891744L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -5564589917811891744L;
 
-	/** List of measurements that were created */
-	private List<DeviceMeasurements> createdMeasurements = new ArrayList<DeviceMeasurements>();
+    /** List of measurements that were created */
+    private List<DeviceMeasurements> createdMeasurements = new ArrayList<DeviceMeasurements>();
 
-	/** List of locations that were created */
-	private List<DeviceLocation> createdLocations = new ArrayList<DeviceLocation>();
+    /** List of locations that were created */
+    private List<DeviceLocation> createdLocations = new ArrayList<DeviceLocation>();
 
-	/** List of alerts that were created */
-	private List<DeviceAlert> createdAlerts = new ArrayList<DeviceAlert>();
+    /** List of alerts that were created */
+    private List<DeviceAlert> createdAlerts = new ArrayList<DeviceAlert>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedMeasurements()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceMeasurements> getCreatedMeasurements() {
-		return (List<IDeviceMeasurements>) (List<? extends IDeviceMeasurements>) createdMeasurements;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedMeasurements
+     * ()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceMeasurements> getCreatedMeasurements() {
+	return (List<IDeviceMeasurements>) (List<? extends IDeviceMeasurements>) createdMeasurements;
+    }
 
-	public void setCreatedMeasurements(List<DeviceMeasurements> createdMeasurements) {
-		this.createdMeasurements = createdMeasurements;
-	}
+    public void setCreatedMeasurements(List<DeviceMeasurements> createdMeasurements) {
+	this.createdMeasurements = createdMeasurements;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedLocations()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceLocation> getCreatedLocations() {
-		return (List<IDeviceLocation>) (List<? extends IDeviceLocation>) createdLocations;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedLocations()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceLocation> getCreatedLocations() {
+	return (List<IDeviceLocation>) (List<? extends IDeviceLocation>) createdLocations;
+    }
 
-	public void setCreatedLocations(List<DeviceLocation> createdLocations) {
-		this.createdLocations = createdLocations;
-	}
+    public void setCreatedLocations(List<DeviceLocation> createdLocations) {
+	this.createdLocations = createdLocations;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedAlerts()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceAlert> getCreatedAlerts() {
-		return (List<IDeviceAlert>) (List<? extends IDeviceAlert>) createdAlerts;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceEventBatchResponse#getCreatedAlerts()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceAlert> getCreatedAlerts() {
+	return (List<IDeviceAlert>) (List<? extends IDeviceAlert>) createdAlerts;
+    }
 
-	public void setCreatedAlerts(List<DeviceAlert> createdAlerts) {
-		this.createdAlerts = createdAlerts;
-	}
+    public void setCreatedAlerts(List<DeviceAlert> createdAlerts) {
+	this.createdAlerts = createdAlerts;
+    }
 }

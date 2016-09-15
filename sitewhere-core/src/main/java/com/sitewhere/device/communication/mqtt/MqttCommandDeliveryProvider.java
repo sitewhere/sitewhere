@@ -28,101 +28,101 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
-		implements ICommandDeliveryProvider<byte[], MqttParameters> {
+	implements ICommandDeliveryProvider<byte[], MqttParameters> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Shared MQTT connection */
-	private FutureConnection connection;
+    /** Shared MQTT connection */
+    private FutureConnection connection;
 
-	public MqttCommandDeliveryProvider() {
-		super(LifecycleComponentType.CommandDeliveryProvider);
+    public MqttCommandDeliveryProvider() {
+	super(LifecycleComponentType.CommandDeliveryProvider);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	super.start();
+
+	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	connection = getConnection();
+	LOGGER.info("Connected to MQTT broker.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	if (connection != null) {
+	    try {
+		connection.disconnect().await();
+		connection.kill().await();
+	    } catch (ShutdownException e) {
+		LOGGER.info("Dispatcher has already been shut down.");
+	    } catch (Exception e) {
+		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+	    }
 	}
+	super.stop();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		super.start();
-
-		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-		connection = getConnection();
-		LOGGER.info("Connected to MQTT broker.");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
+     * com. sitewhere .spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
+	    byte[] encoded, MqttParameters params) throws SiteWhereException {
+	try {
+	    LOGGER.debug("About to publish command message to topic: " + params.getCommandTopic());
+	    connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
+	    LOGGER.debug("Command published.");
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
+     * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
+	    MqttParameters params) throws SiteWhereException {
+	try {
+	    LOGGER.debug("About to publish system message to topic: " + params.getSystemTopic());
+	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
+	    LOGGER.debug("Command published.");
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		if (connection != null) {
-			try {
-				connection.disconnect().await();
-				connection.kill().await();
-			} catch (ShutdownException e) {
-				LOGGER.info("Dispatcher has already been shut down.");
-			} catch (Exception e) {
-				LOGGER.error("Error shutting down MQTT device event receiver.", e);
-			}
-		}
-		super.stop();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
-	 * com. sitewhere .spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution,
-	 * java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
-			byte[] encoded, MqttParameters params) throws SiteWhereException {
-		try {
-			LOGGER.debug("About to publish command message to topic: " + params.getCommandTopic());
-			connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-			LOGGER.debug("Command published.");
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
-	 * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
-	 * java.lang.Object)
-	 */
-	@Override
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
-			MqttParameters params) throws SiteWhereException {
-		try {
-			LOGGER.debug("About to publish system message to topic: " + params.getSystemTopic());
-			connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-			LOGGER.debug("Command published.");
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
-		}
-	}
+    }
 }

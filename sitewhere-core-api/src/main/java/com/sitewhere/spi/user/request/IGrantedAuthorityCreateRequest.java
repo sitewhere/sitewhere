@@ -14,31 +14,31 @@ package com.sitewhere.spi.user.request;
  */
 public interface IGrantedAuthorityCreateRequest {
 
-	/**
-	 * Get the authority name.
-	 * 
-	 * @return
-	 */
-	public String getAuthority();
+    /**
+     * Get the authority name.
+     * 
+     * @return
+     */
+    public String getAuthority();
 
-	/**
-	 * Get the description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get parent authority.
-	 * 
-	 * @return
-	 */
-	public String getParent();
+    /**
+     * Get parent authority.
+     * 
+     * @return
+     */
+    public String getParent();
 
-	/**
-	 * Indicates if the authority is a group.
-	 * 
-	 * @return
-	 */
-	public boolean isGroup();
+    /**
+     * Indicates if the authority is a group.
+     * 
+     * @return
+     */
+    public boolean isGroup();
 }

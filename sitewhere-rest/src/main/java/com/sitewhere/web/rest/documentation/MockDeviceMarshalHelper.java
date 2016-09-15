@@ -20,41 +20,42 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class MockDeviceMarshalHelper extends DeviceMarshalHelper {
 
-	/** Mock device management imlementation that wraps sample data */
-	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
+    /** Mock device management imlementation that wraps sample data */
+    private MockDeviceManagement deviceManagement = new MockDeviceManagement();
 
-	/** Mock device assignment marshal helper */
-	private MockDeviceAssignmentMarshalHelper assignmentHelper;
+    /** Mock device assignment marshal helper */
+    private MockDeviceAssignmentMarshalHelper assignmentHelper;
 
-	public MockDeviceMarshalHelper() {
-		super(null);
+    public MockDeviceMarshalHelper() {
+	super(null);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.marshaling.DeviceMarshalHelper#getDeviceManagement(
+     * com.sitewhere .spi.user.ITenant)
+     */
+    @Override
+    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+	return deviceManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.marshaling.DeviceMarshalHelper#getAssignmentHelper()
+     */
+    @Override
+    protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
+	if (assignmentHelper == null) {
+	    assignmentHelper = new MockDeviceAssignmentMarshalHelper();
+	    assignmentHelper.setIncludeAsset(false);
+	    assignmentHelper.setIncludeDevice(false);
+	    assignmentHelper.setIncludeSite(false);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.marshaling.DeviceMarshalHelper#getDeviceManagement(com.sitewhere
-	 * .spi.user.ITenant)
-	 */
-	@Override
-	protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-		return deviceManagement;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.marshaling.DeviceMarshalHelper#getAssignmentHelper()
-	 */
-	@Override
-	protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
-		if (assignmentHelper == null) {
-			assignmentHelper = new MockDeviceAssignmentMarshalHelper();
-			assignmentHelper.setIncludeAsset(false);
-			assignmentHelper.setIncludeDevice(false);
-			assignmentHelper.setIncludeSite(false);
-		}
-		return assignmentHelper;
-	}
+	return assignmentHelper;
+    }
 }

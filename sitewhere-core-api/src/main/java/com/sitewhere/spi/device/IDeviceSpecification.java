@@ -17,45 +17,45 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  */
 public interface IDeviceSpecification extends IMetadataProviderEntity {
 
-	/**
-	 * Get unique device specification token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique device specification token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get name that describes specification.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get name that describes specification.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get asset module id.
-	 * 
-	 * @return
-	 */
-	public String getAssetModuleId();
+    /**
+     * Get asset module id.
+     * 
+     * @return
+     */
+    public String getAssetModuleId();
 
-	/**
-	 * Get unique id within asset module.
-	 * 
-	 * @return
-	 */
-	public String getAssetId();
+    /**
+     * Get unique id within asset module.
+     * 
+     * @return
+     */
+    public String getAssetId();
 
-	/**
-	 * Indicates whether this device contains other devices.
-	 * 
-	 * @return
-	 */
-	public DeviceContainerPolicy getContainerPolicy();
+    /**
+     * Indicates whether this device contains other devices.
+     * 
+     * @return
+     */
+    public DeviceContainerPolicy getContainerPolicy();
 
-	/**
-	 * Get schema that describes how nested devices are arranged.
-	 * 
-	 * @return
-	 */
-	public IDeviceElementSchema getDeviceElementSchema();
+    /**
+     * Get schema that describes how nested devices are arranged.
+     * 
+     * @return
+     */
+    public IDeviceElementSchema getDeviceElementSchema();
 }

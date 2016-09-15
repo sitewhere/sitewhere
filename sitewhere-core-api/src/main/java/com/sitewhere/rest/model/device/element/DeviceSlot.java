@@ -21,9 +21,9 @@ import com.sitewhere.spi.device.element.IDeviceSlot;
 @JsonInclude(Include.NON_NULL)
 public class DeviceSlot extends DeviceElement implements IDeviceSlot, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 6916032415258391337L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 6916032415258391337L;
 
-	public DeviceSlot() {
-	}
+    public DeviceSlot() {
+    }
 }

@@ -12,17 +12,18 @@ import com.sitewhere.spi.server.IModelInitializer;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
- * Class that initializes the user model with data needed to bootstrap the system.
+ * Class that initializes the user model with data needed to bootstrap the
+ * system.
  * 
  * @author Derek
  */
 public interface IUserModelInitializer extends IModelInitializer {
 
-	/**
-	 * Initialize the user model.
-	 * 
-	 * @param userManagement
-	 * @throws SiteWhereException
-	 */
-	public void initialize(IUserManagement userManagement) throws SiteWhereException;
+    /**
+     * Initialize the user model.
+     * 
+     * @param userManagement
+     * @throws SiteWhereException
+     */
+    public void initialize(IUserManagement userManagement) throws SiteWhereException;
 }

@@ -11,14 +11,14 @@ import com.sitewhere.device.communication.CommandDestination;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 
 /**
- * Implementation of {@link ICommandDestination} that encodes and delivers messages that
- * are byte arrays.
+ * Implementation of {@link ICommandDestination} that encodes and delivers
+ * messages that are byte arrays.
  * 
  * @author Derek
  */
 public class MqttCommandDestination extends CommandDestination<byte[], MqttParameters> {
 
-	public MqttCommandDestination() {
-		setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
-	}
+    public MqttCommandDestination() {
+	setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
+    }
 }

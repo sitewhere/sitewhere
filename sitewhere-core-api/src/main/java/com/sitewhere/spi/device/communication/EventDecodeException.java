@@ -16,21 +16,21 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class EventDecodeException extends SiteWhereException {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 1994831211720002160L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 1994831211720002160L;
 
-	public EventDecodeException() {
-	}
+    public EventDecodeException() {
+    }
 
-	public EventDecodeException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public EventDecodeException(String message, Throwable cause) {
+	super(message, cause);
+    }
 
-	public EventDecodeException(String message) {
-		super(message);
-	}
+    public EventDecodeException(String message) {
+	super(message);
+    }
 
-	public EventDecodeException(Throwable cause) {
-		super(cause);
-	}
+    public EventDecodeException(Throwable cause) {
+	super(cause);
+    }
 }

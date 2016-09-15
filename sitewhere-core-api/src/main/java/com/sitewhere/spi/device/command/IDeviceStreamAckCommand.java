@@ -16,17 +16,17 @@ import java.io.Serializable;
  */
 public interface IDeviceStreamAckCommand extends ISystemCommand, Serializable {
 
-	/**
-	 * Get unique id of stream being created.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get unique id of stream being created.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get status of stream creation.
-	 * 
-	 * @return
-	 */
-	public DeviceStreamStatus getStatus();
+    /**
+     * Get status of stream creation.
+     * 
+     * @return
+     */
+    public DeviceStreamStatus getStatus();
 }

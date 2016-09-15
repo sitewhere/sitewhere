@@ -28,63 +28,65 @@ import com.sitewhere.spi.error.ErrorLevel;
  */
 public class DeviceSpecificationUtils {
 
-	/**
-	 * Get an {@link IDeviceSlot} given relative path in {@link IDeviceElementSchema}.
-	 * 
-	 * @param specification
-	 * @param path
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static IDeviceSlot getDeviceSlotByPath(IDeviceSpecification specification, String path)
-			throws SiteWhereException {
-		IDeviceElement match = getDeviceElementByPath(specification, path);
-		if ((match == null) || (!(match instanceof IDeviceSlot))) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSlotPath, ErrorLevel.ERROR);
-		}
-		return (IDeviceSlot) match;
+    /**
+     * Get an {@link IDeviceSlot} given relative path in
+     * {@link IDeviceElementSchema}.
+     * 
+     * @param specification
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IDeviceSlot getDeviceSlotByPath(IDeviceSpecification specification, String path)
+	    throws SiteWhereException {
+	IDeviceElement match = getDeviceElementByPath(specification, path);
+	if ((match == null) || (!(match instanceof IDeviceSlot))) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSlotPath, ErrorLevel.ERROR);
 	}
+	return (IDeviceSlot) match;
+    }
 
-	/**
-	 * Get an {@link IDeviceElement} located at the given path. Return null if not found.
-	 * 
-	 * @param specification
-	 * @param path
-	 * @return
-	 */
-	public static IDeviceElement getDeviceElementByPath(IDeviceSpecification specification, String path) {
-		if (path.startsWith("/")) {
-			path = path.substring(1);
+    /**
+     * Get an {@link IDeviceElement} located at the given path. Return null if
+     * not found.
+     * 
+     * @param specification
+     * @param path
+     * @return
+     */
+    public static IDeviceElement getDeviceElementByPath(IDeviceSpecification specification, String path) {
+	if (path.startsWith("/")) {
+	    path = path.substring(1);
+	}
+	String[] segarray = path.split("[/]");
+	Queue<String> segments = new ArrayDeque<String>(Arrays.asList(segarray));
+	IDeviceUnit unit = specification.getDeviceElementSchema();
+	if (unit == null) {
+	    return null;
+	}
+	while (segments.size() > 0) {
+	    String segment = segments.poll();
+	    if (segments.size() > 0) {
+		for (IDeviceUnit nested : unit.getDeviceUnits()) {
+		    if (nested.getPath().equals(segment)) {
+			unit = nested;
+			break;
+		    }
 		}
-		String[] segarray = path.split("[/]");
-		Queue<String> segments = new ArrayDeque<String>(Arrays.asList(segarray));
-		IDeviceUnit unit = specification.getDeviceElementSchema();
-		if (unit == null) {
-			return null;
+	    } else {
+		for (IDeviceSlot slot : unit.getDeviceSlots()) {
+		    if (slot.getPath().equals(segment)) {
+			return slot;
+		    }
 		}
-		while (segments.size() > 0) {
-			String segment = segments.poll();
-			if (segments.size() > 0) {
-				for (IDeviceUnit nested : unit.getDeviceUnits()) {
-					if (nested.getPath().equals(segment)) {
-						unit = nested;
-						break;
-					}
-				}
-			} else {
-				for (IDeviceSlot slot : unit.getDeviceSlots()) {
-					if (slot.getPath().equals(segment)) {
-						return slot;
-					}
-				}
-				for (IDeviceUnit nested : unit.getDeviceUnits()) {
-					if (nested.getPath().equals(segment)) {
-						return nested;
-					}
-				}
-				return null;
-			}
+		for (IDeviceUnit nested : unit.getDeviceUnits()) {
+		    if (nested.getPath().equals(segment)) {
+			return nested;
+		    }
 		}
 		return null;
+	    }
 	}
+	return null;
+    }
 }

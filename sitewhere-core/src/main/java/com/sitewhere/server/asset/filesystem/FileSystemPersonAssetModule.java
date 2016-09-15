@@ -25,55 +25,55 @@ import com.sitewhere.spi.resource.IResource;
  * @author Derek Adams
  */
 public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAsset>
-		implements IAssetModule<PersonAsset> {
+	implements IAssetModule<PersonAsset> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -8518071972348096650L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -8518071972348096650L;
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Module id */
-	public static final String MODULE_ID = "fs-persons";
+    /** Module id */
+    public static final String MODULE_ID = "fs-persons";
 
-	/** Module name */
-	public static final String MODULE_NAME = "Default Identity Management";
+    /** Module name */
+    public static final String MODULE_NAME = "Default Identity Management";
 
-	/** Filename in SiteWhere config folder that contains person assets */
-	public static final String PERSON_CONFIG_FILENAME = "person-assets.xml";
+    /** Filename in SiteWhere config folder that contains person assets */
+    public static final String PERSON_CONFIG_FILENAME = "person-assets.xml";
 
-	public FileSystemPersonAssetModule() {
-		super(PERSON_CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
-	}
+    public FileSystemPersonAssetModule() {
+	super(PERSON_CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
-	 */
-	public AssetType getAssetType() {
-		return AssetType.Person;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
+     */
+    public AssetType getAssetType() {
+	return AssetType.Person;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
-	 * .sitewhere.spi.resource.IResource)
-	 */
-	@Override
-	protected List<PersonAsset> unmarshal(IResource resource) throws SiteWhereException {
-		return MarshalUtils.loadPersonAssets(new ByteArrayInputStream(resource.getContent()));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
+     * .sitewhere.spi.resource.IResource)
+     */
+    @Override
+    protected List<PersonAsset> unmarshal(IResource resource) throws SiteWhereException {
+	return MarshalUtils.loadPersonAssets(new ByteArrayInputStream(resource.getContent()));
+    }
 }

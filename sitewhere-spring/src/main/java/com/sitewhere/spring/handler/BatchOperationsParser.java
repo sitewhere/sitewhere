@@ -26,100 +26,100 @@ import com.sitewhere.server.batch.BatchOperationManager;
  */
 public class BatchOperationsParser {
 
-	/**
-	 * Parse elements in the device registration section.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parse(Element element, ParserContext context) {
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			Elements type = Elements.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown registration element: " + child.getLocalName());
-			}
-			switch (type) {
-			case DefaultBatchOperationManager: {
-				return parseDefaultBatchOperationManager(child, context);
-			}
-			case BatchOperationManager: {
-				return parseBatchOperationManager(child, context);
-			}
-			}
-		}
-		return null;
+    /**
+     * Parse elements in the device registration section.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parse(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown registration element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case DefaultBatchOperationManager: {
+		return parseDefaultBatchOperationManager(child, context);
+	    }
+	    case BatchOperationManager: {
+		return parseBatchOperationManager(child, context);
+	    }
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Parse information for the default batch operation manager.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected BeanDefinition parseDefaultBatchOperationManager(Element element, ParserContext context) {
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(BatchOperationManager.class);
+
+	Attr throttleDelayMs = element.getAttributeNode("throttleDelayMs");
+	if (throttleDelayMs != null) {
+	    manager.addPropertyValue("throttleDelayMs", throttleDelayMs.getValue());
 	}
 
-	/**
-	 * Parse information for the default batch operation manager.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected BeanDefinition parseDefaultBatchOperationManager(Element element, ParserContext context) {
-		BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(BatchOperationManager.class);
+	return manager.getBeanDefinition();
+    }
 
-		Attr throttleDelayMs = element.getAttributeNode("throttleDelayMs");
-		if (throttleDelayMs != null) {
-			manager.addPropertyValue("throttleDelayMs", throttleDelayMs.getValue());
-		}
+    /**
+     * Parse a batch operation manager reference.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected RuntimeBeanReference parseBatchOperationManager(Element element, ParserContext context) {
+	Attr ref = element.getAttributeNode("ref");
+	if (ref != null) {
+	    return new RuntimeBeanReference(ref.getValue());
+	}
+	throw new RuntimeException("Batch operation manager reference does not have ref defined.");
+    }
 
-		return manager.getBeanDefinition();
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** Default batch operation manager */
+	DefaultBatchOperationManager("default-batch-operation-manager"),
+
+	/** Batch operation manager reference */
+	BatchOperationManager("batch-operation-manager");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
 	}
 
-	/**
-	 * Parse a batch operation manager reference.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected RuntimeBeanReference parseBatchOperationManager(Element element, ParserContext context) {
-		Attr ref = element.getAttributeNode("ref");
-		if (ref != null) {
-			return new RuntimeBeanReference(ref.getValue());
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
 		}
-		throw new RuntimeException("Batch operation manager reference does not have ref defined.");
+	    }
+	    return null;
 	}
 
-	/**
-	 * Expected child elements.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Elements {
-
-		/** Default batch operation manager */
-		DefaultBatchOperationManager("default-batch-operation-manager"),
-
-		/** Batch operation manager reference */
-		BatchOperationManager("batch-operation-manager");
-
-		/** Event code */
-		private String localName;
-
-		private Elements(String localName) {
-			this.localName = localName;
-		}
-
-		public static Elements getByLocalName(String localName) {
-			for (Elements value : Elements.values()) {
-				if (value.getLocalName().equals(localName)) {
-					return value;
-				}
-			}
-			return null;
-		}
-
-		public String getLocalName() {
-			return localName;
-		}
-
-		public void setLocalName(String localName) {
-			this.localName = localName;
-		}
+	public String getLocalName() {
+	    return localName;
 	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

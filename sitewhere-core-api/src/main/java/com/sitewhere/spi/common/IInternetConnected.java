@@ -8,37 +8,38 @@
 package com.sitewhere.spi.common;
 
 /**
- * Interface for components that SiteWhere connects to using a hostname and port.
+ * Interface for components that SiteWhere connects to using a hostname and
+ * port.
  * 
  * @author Derek
  */
 public interface IInternetConnected {
 
-	/**
-	 * Get hostname to connect to.
-	 * 
-	 * @return
-	 */
-	public String getHostname();
+    /**
+     * Get hostname to connect to.
+     * 
+     * @return
+     */
+    public String getHostname();
 
-	/**
-	 * Set hostname to connect to.
-	 * 
-	 * @param hostname
-	 */
-	public void setHostname(String hostname);
+    /**
+     * Set hostname to connect to.
+     * 
+     * @param hostname
+     */
+    public void setHostname(String hostname);
 
-	/**
-	 * Get port to connect to.
-	 * 
-	 * @return
-	 */
-	public int getPort();
+    /**
+     * Get port to connect to.
+     * 
+     * @return
+     */
+    public int getPort();
 
-	/**
-	 * Set port to connect to.
-	 * 
-	 * @param port
-	 */
-	public void setPort(int port);
+    /**
+     * Set port to connect to.
+     * 
+     * @param port
+     */
+    public void setPort(int port);
 }

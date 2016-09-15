@@ -37,122 +37,122 @@ import com.sitewhere.version.VersionHelper;
  */
 public class MvcController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Version information sent in request */
-	public static final String DATA_VERSION = "version";
+    /** Version information sent in request */
+    public static final String DATA_VERSION = "version";
 
-	/** Current user information sent in request */
-	public static final String DATA_CURRENT_USER = "currentUser";
+    /** Current user information sent in request */
+    public static final String DATA_CURRENT_USER = "currentUser";
 
-	/** Granted authorities sent in request */
-	public static final String DATA_AUTHORITIES = "authorities";
+    /** Granted authorities sent in request */
+    public static final String DATA_AUTHORITIES = "authorities";
 
-	/** Tenant information sent in request */
-	public static final String DATA_TENANT = "tenant";
+    /** Tenant information sent in request */
+    public static final String DATA_TENANT = "tenant";
 
-	/** Redirect URL for tenant selection page */
-	public static final String DATA_REDIRECT = "redirect";
+    /** Redirect URL for tenant selection page */
+    public static final String DATA_REDIRECT = "redirect";
 
-	/** Encoded basic auth header information */
-	public static final String DATA_BASIC_AUTH = "basicAuth";
+    /** Encoded basic auth header information */
+    public static final String DATA_BASIC_AUTH = "basicAuth";
 
-	/**
-	 * Show error message for exception.
-	 * 
-	 * @param e
-	 * @return
-	 */
-	protected ModelAndView showError(Exception e) {
-		LOGGER.error("Error in MVC controller.", e);
-		return showError(e.getMessage());
+    /**
+     * Show error message for exception.
+     * 
+     * @param e
+     * @return
+     */
+    protected ModelAndView showError(Exception e) {
+	LOGGER.error("Error in MVC controller.", e);
+	return showError(e.getMessage());
+    }
+
+    /**
+     * Returns a {@link ModelAndView} that will display an error message.
+     * 
+     * @param message
+     * @return
+     */
+    protected ModelAndView showError(String message) {
+	try {
+	    Map<String, Object> data = new HashMap<String, Object>();
+	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
+	    data.put("message", message);
+	    return new ModelAndView("error", data);
+	} catch (SiteWhereException e) {
+	    Map<String, Object> data = new HashMap<String, Object>();
+	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put("message", e.getMessage());
+	    return new ModelAndView("error", data);
+	}
+    }
+
+    /**
+     * Create data structure and common objects passed to pages. Require a
+     * tenant is chosen for the user.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Map<String, Object> createTenantPageBaseData(String tenantId, HttpServletRequest request)
+	    throws SiteWhereException {
+	Map<String, Object> data = createBaseData(request);
+	IUser user = LoginManager.getCurrentlyLoggedInUser();
+	if (user == null) {
+	    throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR);
+	}
+	List<ITenant> authed = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
+	for (ITenant tenant : authed) {
+	    if (tenant.getId().equals(tenantId)) {
+		data.put(DATA_TENANT, tenant);
+		break;
+	    }
+	}
+	return data;
+    }
+
+    /**
+     * Create data structure and common objects passed to pages.
+     * 
+     * @param request
+     * @param requireTenant
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Map<String, Object> createBaseData(HttpServletRequest request) throws SiteWhereException {
+	IUser user = LoginManager.getCurrentlyLoggedInUser();
+
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put(DATA_VERSION, VersionHelper.getVersion());
+	data.put(DATA_CURRENT_USER, user);
+	data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
+
+	if (user != null) {
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String creds = user.getUsername() + ":" + auth.getCredentials();
+	    String basicAuth = new String(Base64.getEncoder().encodeToString(creds.getBytes()));
+	    data.put(DATA_BASIC_AUTH, basicAuth);
 	}
 
-	/**
-	 * Returns a {@link ModelAndView} that will display an error message.
-	 * 
-	 * @param message
-	 * @return
-	 */
-	protected ModelAndView showError(String message) {
-		try {
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(DATA_VERSION, VersionHelper.getVersion());
-			data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
-			data.put("message", message);
-			return new ModelAndView("error", data);
-		} catch (SiteWhereException e) {
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(DATA_VERSION, VersionHelper.getVersion());
-			data.put("message", e.getMessage());
-			return new ModelAndView("error", data);
-		}
+	return data;
+    }
+
+    /**
+     * Get URL from servlet request.
+     * 
+     * @param request
+     * @return
+     */
+    protected static String getUrl(HttpServletRequest request) {
+	String reqUrl = request.getRequestURL().toString();
+	String queryString = request.getQueryString();
+	if (queryString != null) {
+	    reqUrl += "?" + queryString;
 	}
-
-	/**
-	 * Create data structure and common objects passed to pages. Require a
-	 * tenant is chosen for the user.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected Map<String, Object> createTenantPageBaseData(String tenantId, HttpServletRequest request)
-			throws SiteWhereException {
-		Map<String, Object> data = createBaseData(request);
-		IUser user = LoginManager.getCurrentlyLoggedInUser();
-		if (user == null) {
-			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR);
-		}
-		List<ITenant> authed = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
-		for (ITenant tenant : authed) {
-			if (tenant.getId().equals(tenantId)) {
-				data.put(DATA_TENANT, tenant);
-				break;
-			}
-		}
-		return data;
-	}
-
-	/**
-	 * Create data structure and common objects passed to pages.
-	 * 
-	 * @param request
-	 * @param requireTenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected Map<String, Object> createBaseData(HttpServletRequest request) throws SiteWhereException {
-		IUser user = LoginManager.getCurrentlyLoggedInUser();
-
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(DATA_VERSION, VersionHelper.getVersion());
-		data.put(DATA_CURRENT_USER, user);
-		data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
-
-		if (user != null) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			String creds = user.getUsername() + ":" + auth.getCredentials();
-			String basicAuth = new String(Base64.getEncoder().encodeToString(creds.getBytes()));
-			data.put(DATA_BASIC_AUTH, basicAuth);
-		}
-
-		return data;
-	}
-
-	/**
-	 * Get URL from servlet request.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	protected static String getUrl(HttpServletRequest request) {
-		String reqUrl = request.getRequestURL().toString();
-		String queryString = request.getQueryString();
-		if (queryString != null) {
-			reqUrl += "?" + queryString;
-		}
-		return reqUrl;
-	}
+	return reqUrl;
+    }
 }

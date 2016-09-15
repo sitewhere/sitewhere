@@ -12,80 +12,80 @@ import java.util.Date;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Assigns a device to a physical entity being monitored. A device may be used for
- * multiple assets over a period of time.
+ * Assigns a device to a physical entity being monitored. A device may be used
+ * for multiple assets over a period of time.
  * 
  * @author Derek
  */
 public interface IDeviceAssignment extends IMetadataProviderEntity {
 
-	/**
-	 * Get token that uniquely identifies the assignment.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get token that uniquely identifies the assignment.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get hardware id for assigned device.
-	 * 
-	 * @return
-	 */
-	public String getDeviceHardwareId();
+    /**
+     * Get hardware id for assigned device.
+     * 
+     * @return
+     */
+    public String getDeviceHardwareId();
 
-	/**
-	 * Get token for assigned site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token for assigned site.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Get the referenced asset type.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentType getAssignmentType();
+    /**
+     * Get the referenced asset type.
+     * 
+     * @return
+     */
+    public DeviceAssignmentType getAssignmentType();
 
-	/**
-	 * Get id of referenced asset module.
-	 * 
-	 * @return
-	 */
-	public String getAssetModuleId();
+    /**
+     * Get id of referenced asset module.
+     * 
+     * @return
+     */
+    public String getAssetModuleId();
 
-	/**
-	 * Get the asset identifier.
-	 * 
-	 * @return
-	 */
-	public String getAssetId();
+    /**
+     * Get the asset identifier.
+     * 
+     * @return
+     */
+    public String getAssetId();
 
-	/**
-	 * Get the device assignement status.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentStatus getStatus();
+    /**
+     * Get the device assignement status.
+     * 
+     * @return
+     */
+    public DeviceAssignmentStatus getStatus();
 
-	/**
-	 * Get the date/time at which the assignment was made active.
-	 * 
-	 * @return
-	 */
-	public Date getActiveDate();
+    /**
+     * Get the date/time at which the assignment was made active.
+     * 
+     * @return
+     */
+    public Date getActiveDate();
 
-	/**
-	 * Get the date/time at which the assignment was released.
-	 * 
-	 * @return
-	 */
-	public Date getReleasedDate();
+    /**
+     * Get the date/time at which the assignment was released.
+     * 
+     * @return
+     */
+    public Date getReleasedDate();
 
-	/**
-	 * Get latest state information for the assignment.
-	 * 
-	 * @return
-	 */
-	public IDeviceAssignmentState getState();
+    /**
+     * Get latest state information for the assignment.
+     * 
+     * @return
+     */
+    public IDeviceAssignmentState getState();
 }

@@ -14,43 +14,43 @@ package com.sitewhere.spi.user;
  */
 public enum AccountStatus {
 
-	/** Account is active */
-	Active('A'),
+    /** Account is active */
+    Active('A'),
 
-	/** Account is disabled due to inactivity */
-	Expired('E'),
+    /** Account is disabled due to inactivity */
+    Expired('E'),
 
-	/** Account is locked due to admin action */
-	Locked('L');
+    /** Account is locked due to admin action */
+    Locked('L');
 
-	/** Status code */
-	private char statusCode;
+    /** Status code */
+    private char statusCode;
 
-	private AccountStatus(char statusCode) {
-		this.statusCode = statusCode;
+    private AccountStatus(char statusCode) {
+	this.statusCode = statusCode;
+    }
+
+    /**
+     * Get the status code.
+     * 
+     * @return
+     */
+    public char getStatusCode() {
+	return statusCode;
+    }
+
+    /**
+     * Get AccountStatus from status code.
+     * 
+     * @param code
+     * @return
+     */
+    public static AccountStatus fromStatusCode(char code) {
+	for (AccountStatus status : AccountStatus.values()) {
+	    if (status.getStatusCode() == code) {
+		return status;
+	    }
 	}
-
-	/**
-	 * Get the status code.
-	 * 
-	 * @return
-	 */
-	public char getStatusCode() {
-		return statusCode;
-	}
-
-	/**
-	 * Get AccountStatus from status code.
-	 * 
-	 * @param code
-	 * @return
-	 */
-	public static AccountStatus fromStatusCode(char code) {
-		for (AccountStatus status : AccountStatus.values()) {
-			if (status.getStatusCode() == code) {
-				return status;
-			}
-		}
-		throw new RuntimeException("Unknown AccountStatus code: " + code);
-	}
+	throw new RuntimeException("Unknown AccountStatus code: " + code);
+    }
 }

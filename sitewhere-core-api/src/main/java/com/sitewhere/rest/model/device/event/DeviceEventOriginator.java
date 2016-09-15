@@ -13,34 +13,34 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventOriginator;
 
 /**
- * Default implementation of {@link IDeviceEventOriginator}. This object is used to
- * provide a strongly-typed argument in interactions with device agents that use Java
- * introspection to find the right method to invoke.
+ * Default implementation of {@link IDeviceEventOriginator}. This object is used
+ * to provide a strongly-typed argument in interactions with device agents that
+ * use Java introspection to find the right method to invoke.
  * 
  * @author Derek
  */
 public class DeviceEventOriginator implements IDeviceEventOriginator, Serializable {
 
-	/** Used for Java serialization */
-	private static final long serialVersionUID = -5674524224174870647L;
+    /** Used for Java serialization */
+    private static final long serialVersionUID = -5674524224174870647L;
 
-	/** Originating event id */
-	private String eventId;
+    /** Originating event id */
+    private String eventId;
 
-	public DeviceEventOriginator(IDeviceEvent event) {
-		this.eventId = event.getId();
-	}
+    public DeviceEventOriginator(IDeviceEvent event) {
+	this.eventId = event.getId();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceEventOriginator#getEventId()
-	 */
-	public String getEventId() {
-		return eventId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceEventOriginator#getEventId()
+     */
+    public String getEventId() {
+	return eventId;
+    }
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
-	}
+    public void setEventId(String eventId) {
+	this.eventId = eventId;
+    }
 }

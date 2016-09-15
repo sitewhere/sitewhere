@@ -9,37 +9,37 @@ import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
  */
 public class DeviceMappingCreateRequest implements IDeviceMappingCreateRequest {
 
-	/** Hardware id of composite device containing mapping */
-	private String compositeDeviceHardwareId;
+    /** Hardware id of composite device containing mapping */
+    private String compositeDeviceHardwareId;
 
-	/** Path device will be mapped to */
-	private String mappingPath;
+    /** Path device will be mapped to */
+    private String mappingPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest#
-	 * getCompositeDeviceHardwareId()
-	 */
-	public String getCompositeDeviceHardwareId() {
-		return compositeDeviceHardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest#
+     * getCompositeDeviceHardwareId()
+     */
+    public String getCompositeDeviceHardwareId() {
+	return compositeDeviceHardwareId;
+    }
 
-	public void setCompositeDeviceHardwareId(String compositeDeviceHardwareId) {
-		this.compositeDeviceHardwareId = compositeDeviceHardwareId;
-	}
+    public void setCompositeDeviceHardwareId(String compositeDeviceHardwareId) {
+	this.compositeDeviceHardwareId = compositeDeviceHardwareId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest#
-	 * getMappingPath()
-	 */
-	public String getMappingPath() {
-		return mappingPath;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest#
+     * getMappingPath()
+     */
+    public String getMappingPath() {
+	return mappingPath;
+    }
 
-	public void setMappingPath(String mappingPath) {
-		this.mappingPath = mappingPath;
-	}
+    public void setMappingPath(String mappingPath) {
+	this.mappingPath = mappingPath;
+    }
 }

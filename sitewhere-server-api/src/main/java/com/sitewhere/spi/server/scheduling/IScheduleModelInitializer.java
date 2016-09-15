@@ -12,17 +12,18 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.IModelInitializer;
 
 /**
- * Class that initializes the schedule model with data needed to bootstrap the system.
+ * Class that initializes the schedule model with data needed to bootstrap the
+ * system.
  * 
  * @author Derek
  */
 public interface IScheduleModelInitializer extends IModelInitializer {
 
-	/**
-	 * Intialize schedule management.
-	 * 
-	 * @param scheduleManagement
-	 * @throws SiteWhereException
-	 */
-	public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException;
+    /**
+     * Intialize schedule management.
+     * 
+     * @param scheduleManagement
+     * @throws SiteWhereException
+     */
+    public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException;
 }

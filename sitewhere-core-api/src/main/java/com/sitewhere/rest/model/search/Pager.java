@@ -19,60 +19,60 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public class Pager<T> {
 
-	/** Result list */
-	private List<T> results = new ArrayList<T>();
+    /** Result list */
+    private List<T> results = new ArrayList<T>();
 
-	/** Search criteria */
-	private ISearchCriteria criteria;
+    /** Search criteria */
+    private ISearchCriteria criteria;
 
-	/** Number of records left to skip */
-	private long toSkip;
+    /** Number of records left to skip */
+    private long toSkip;
 
-	/** Number of records matched */
-	private long matched;
+    /** Number of records matched */
+    private long matched;
 
-	/** Total records matched */
-	private long total;
+    /** Total records matched */
+    private long total;
 
-	public Pager(ISearchCriteria criteria) {
-		this.criteria = criteria;
-		if (criteria.getPageNumber() >= 1) {
-			this.toSkip = ((criteria.getPageNumber() - 1) * criteria.getPageSize());
-		} else {
-			this.toSkip = 0;
-		}
-		this.total = 0;
+    public Pager(ISearchCriteria criteria) {
+	this.criteria = criteria;
+	if (criteria.getPageNumber() >= 1) {
+	    this.toSkip = ((criteria.getPageNumber() - 1) * criteria.getPageSize());
+	} else {
+	    this.toSkip = 0;
 	}
+	this.total = 0;
+    }
 
-	/**
-	 * Process a record. Return false if no more processing is needed (page of records has
-	 * been found).
-	 * 
-	 * @param record
-	 */
-	public void process(T record) {
-		total++;
-		if (toSkip > 0) {
-			toSkip--;
-		} else if ((criteria.getPageSize() == 0) || (matched < criteria.getPageSize())) {
-			results.add(record);
-			matched++;
-		}
+    /**
+     * Process a record. Return false if no more processing is needed (page of
+     * records has been found).
+     * 
+     * @param record
+     */
+    public void process(T record) {
+	total++;
+	if (toSkip > 0) {
+	    toSkip--;
+	} else if ((criteria.getPageSize() == 0) || (matched < criteria.getPageSize())) {
+	    results.add(record);
+	    matched++;
 	}
+    }
 
-	public ISearchCriteria getSearchCriteria() {
-		return criteria;
-	}
+    public ISearchCriteria getSearchCriteria() {
+	return criteria;
+    }
 
-	public List<T> getResults() {
-		return results;
-	}
+    public List<T> getResults() {
+	return results;
+    }
 
-	public void setResults(List<T> results) {
-		this.results = results;
-	}
+    public void setResults(List<T> results) {
+	this.results = results;
+    }
 
-	public long getTotal() {
-		return total;
-	}
+    public long getTotal() {
+	return total;
+    }
 }

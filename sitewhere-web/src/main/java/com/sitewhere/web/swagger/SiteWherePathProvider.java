@@ -18,12 +18,12 @@ import com.mangofactory.swagger.paths.RelativeSwaggerPathProvider;
  */
 public class SiteWherePathProvider extends RelativeSwaggerPathProvider {
 
-	public SiteWherePathProvider(ServletContext servletContext) {
-		super(servletContext);
-	}
+    public SiteWherePathProvider(ServletContext servletContext) {
+	super(servletContext);
+    }
 
-	@Override
-	protected String applicationPath() {
-		return super.applicationPath() + "/api";
-	}
+    @Override
+    protected String applicationPath() {
+	return super.applicationPath() + "/api";
+    }
 }

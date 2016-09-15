@@ -14,36 +14,36 @@ import com.sitewhere.spi.resource.IResourceCreateError;
  */
 public class MultiResourceCreateResponse implements IMultiResourceCreateResponse {
 
-	/** List of resources that were created */
-	private List<IResource> createdResources = new ArrayList<IResource>();
+    /** List of resources that were created */
+    private List<IResource> createdResources = new ArrayList<IResource>();
 
-	/** List of errors in creating resources */
-	private List<IResourceCreateError> errors = new ArrayList<IResourceCreateError>();
+    /** List of errors in creating resources */
+    private List<IResourceCreateError> errors = new ArrayList<IResourceCreateError>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.resource.IMultiResourceCreateResponse#
-	 * getCreatedResources()
-	 */
-	public List<IResource> getCreatedResources() {
-		return createdResources;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.resource.IMultiResourceCreateResponse#
+     * getCreatedResources()
+     */
+    public List<IResource> getCreatedResources() {
+	return createdResources;
+    }
 
-	public void setCreatedResources(List<IResource> createdResources) {
-		this.createdResources = createdResources;
-	}
+    public void setCreatedResources(List<IResource> createdResources) {
+	this.createdResources = createdResources;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.resource.IMultiResourceCreateResponse#getErrors()
-	 */
-	public List<IResourceCreateError> getErrors() {
-		return errors;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.resource.IMultiResourceCreateResponse#getErrors()
+     */
+    public List<IResourceCreateError> getErrors() {
+	return errors;
+    }
 
-	public void setErrors(List<IResourceCreateError> errors) {
-		this.errors = errors;
-	}
+    public void setErrors(List<IResourceCreateError> errors) {
+	this.errors = errors;
+    }
 }

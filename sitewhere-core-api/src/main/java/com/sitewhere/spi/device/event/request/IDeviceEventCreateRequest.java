@@ -17,33 +17,33 @@ import java.util.Map;
  */
 public interface IDeviceEventCreateRequest {
 
-	/**
-	 * Get the date on which the event occurred.
-	 * 
-	 * @return
-	 */
-	public Date getEventDate();
+    /**
+     * Get the date on which the event occurred.
+     * 
+     * @return
+     */
+    public Date getEventDate();
 
-	/**
-	 * Indicates whether state information on the device assignment should be updated to
-	 * reflect new event.
-	 * 
-	 * @return
-	 */
-	public boolean isUpdateState();
+    /**
+     * Indicates whether state information on the device assignment should be
+     * updated to reflect new event.
+     * 
+     * @return
+     */
+    public boolean isUpdateState();
 
-	/**
-	 * Set indicator for whether state information on the device assignment should be
-	 * updated.
-	 * 
-	 * @param update
-	 */
-	public void setUpdateState(boolean update);
+    /**
+     * Set indicator for whether state information on the device assignment
+     * should be updated.
+     * 
+     * @param update
+     */
+    public void setUpdateState(boolean update);
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

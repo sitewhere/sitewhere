@@ -17,75 +17,79 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class SendDeviceStreamDataCommand extends SystemCommand implements ISendDeviceStreamDataCommand {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -5372263771806975660L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -5372263771806975660L;
 
-	/** Hardware id */
-	private String hardwareId;
+    /** Hardware id */
+    private String hardwareId;
 
-	/** Stream id */
-	private String streamId;
+    /** Stream id */
+    private String streamId;
 
-	/** Sequence number */
-	private long sequenceNumber;
+    /** Sequence number */
+    private long sequenceNumber;
 
-	/** Data */
-	private byte[] data;
+    /** Data */
+    private byte[] data;
 
-	public SendDeviceStreamDataCommand() {
-		super(SystemCommandType.SendDeviceStreamData);
-	}
+    public SendDeviceStreamDataCommand() {
+	super(SystemCommandType.SendDeviceStreamData);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#
+     * getHardwareId()
+     */
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getStreamId()
-	 */
-	public String getStreamId() {
-		return streamId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getStreamId
+     * ()
+     */
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getSequenceNumber()
-	 */
-	public long getSequenceNumber() {
-		return sequenceNumber;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#
+     * getSequenceNumber()
+     */
+    public long getSequenceNumber() {
+	return sequenceNumber;
+    }
 
-	public void setSequenceNumber(long sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
-	}
+    public void setSequenceNumber(long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getData()
-	 */
-	public byte[] getData() {
-		return data;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getData()
+     */
+    public byte[] getData() {
+	return data;
+    }
 
-	public void setData(byte[] data) {
-		this.data = data;
-	}
+    public void setData(byte[] data) {
+	this.data = data;
+    }
 }

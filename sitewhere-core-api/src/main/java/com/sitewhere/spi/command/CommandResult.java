@@ -14,9 +14,9 @@ package com.sitewhere.spi.command;
  */
 public enum CommandResult {
 
-	/** Command was successful */
-	Successful,
+    /** Command was successful */
+    Successful,
 
-	/** Command failed */
-	Failed;
+    /** Command failed */
+    Failed;
 }

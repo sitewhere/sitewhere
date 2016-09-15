@@ -14,6 +14,6 @@ package com.sitewhere.spi.device.event;
  */
 public enum CommandTarget {
 
-	/** Target is a single device assignment */
-	Assignment;
+    /** Target is a single device assignment */
+    Assignment;
 }

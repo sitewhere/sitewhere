@@ -20,66 +20,66 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  */
 public interface IDeviceCreateRequest {
 
-	/**
-	 * Get the unique device hardware id.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get the unique device hardware id.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get the site token.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get the site token.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Get the device specification token.
-	 * 
-	 * @return
-	 */
-	public String getSpecificationToken();
+    /**
+     * Get the device specification token.
+     * 
+     * @return
+     */
+    public String getSpecificationToken();
 
-	/**
-	 * Get the parent hardware id (if nested).
-	 * 
-	 * @return
-	 */
-	public String getParentHardwareId();
+    /**
+     * Get the parent hardware id (if nested).
+     * 
+     * @return
+     */
+    public String getParentHardwareId();
 
-	/**
-	 * Indicates whether parent reference should be removed.
-	 * 
-	 * @return
-	 */
-	public Boolean isRemoveParentHardwareId();
+    /**
+     * Indicates whether parent reference should be removed.
+     * 
+     * @return
+     */
+    public Boolean isRemoveParentHardwareId();
 
-	/**
-	 * Get the list of device element mappings.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceElementMapping> getDeviceElementMappings();
+    /**
+     * Get the list of device element mappings.
+     * 
+     * @return
+     */
+    public List<IDeviceElementMapping> getDeviceElementMappings();
 
-	/**
-	 * Get comments associated with device.
-	 * 
-	 * @return
-	 */
-	public String getComments();
+    /**
+     * Get comments associated with device.
+     * 
+     * @return
+     */
+    public String getComments();
 
-	/**
-	 * Get device status indicator.
-	 * 
-	 * @return
-	 */
-	public DeviceStatus getStatus();
+    /**
+     * Get device status indicator.
+     * 
+     * @return
+     */
+    public DeviceStatus getStatus();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

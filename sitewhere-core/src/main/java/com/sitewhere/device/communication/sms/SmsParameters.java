@@ -14,14 +14,14 @@ package com.sitewhere.device.communication.sms;
  */
 public class SmsParameters {
 
-	/** SMS phone number */
-	private String smsPhoneNumber;
+    /** SMS phone number */
+    private String smsPhoneNumber;
 
-	public String getSmsPhoneNumber() {
-		return smsPhoneNumber;
-	}
+    public String getSmsPhoneNumber() {
+	return smsPhoneNumber;
+    }
 
-	public void setSmsPhoneNumber(String smsPhoneNumber) {
-		this.smsPhoneNumber = smsPhoneNumber;
-	}
+    public void setSmsPhoneNumber(String smsPhoneNumber) {
+	this.smsPhoneNumber = smsPhoneNumber;
+    }
 }

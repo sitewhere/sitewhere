@@ -16,58 +16,58 @@ import com.sitewhere.spi.cache.CacheType;
  */
 public class CacheInformation {
 
-	/** Cache type */
-	private CacheType cacheType;
+    /** Cache type */
+    private CacheType cacheType;
 
-	/** Number of elements */
-	private long elementCount;
+    /** Number of elements */
+    private long elementCount;
 
-	/** Number of requests */
-	private long requestCount;
+    /** Number of requests */
+    private long requestCount;
 
-	/** Number of hits */
-	private long hitCount;
+    /** Number of hits */
+    private long hitCount;
 
-	/** Hit ratio */
-	private double hitRatio;
+    /** Hit ratio */
+    private double hitRatio;
 
-	public CacheType getCacheType() {
-		return cacheType;
-	}
+    public CacheType getCacheType() {
+	return cacheType;
+    }
 
-	public void setCacheType(CacheType cacheType) {
-		this.cacheType = cacheType;
-	}
+    public void setCacheType(CacheType cacheType) {
+	this.cacheType = cacheType;
+    }
 
-	public long getElementCount() {
-		return elementCount;
-	}
+    public long getElementCount() {
+	return elementCount;
+    }
 
-	public void setElementCount(long elementCount) {
-		this.elementCount = elementCount;
-	}
+    public void setElementCount(long elementCount) {
+	this.elementCount = elementCount;
+    }
 
-	public long getRequestCount() {
-		return requestCount;
-	}
+    public long getRequestCount() {
+	return requestCount;
+    }
 
-	public void setRequestCount(long requestCount) {
-		this.requestCount = requestCount;
-	}
+    public void setRequestCount(long requestCount) {
+	this.requestCount = requestCount;
+    }
 
-	public long getHitCount() {
-		return hitCount;
-	}
+    public long getHitCount() {
+	return hitCount;
+    }
 
-	public void setHitCount(long hitCount) {
-		this.hitCount = hitCount;
-	}
+    public void setHitCount(long hitCount) {
+	this.hitCount = hitCount;
+    }
 
-	public double getHitRatio() {
-		return hitRatio;
-	}
+    public double getHitRatio() {
+	return hitRatio;
+    }
 
-	public void setHitRatio(double hitRatio) {
-		this.hitRatio = hitRatio;
-	}
+    public void setHitRatio(double hitRatio) {
+	this.hitRatio = hitRatio;
+    }
 }

@@ -21,15 +21,15 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  */
 public interface ICommandDeliveryParameterExtractor<T> {
 
-	/**
-	 * Extract required delivery parameters from the given sources.
-	 * 
-	 * @param nesting
-	 * @param assignment
-	 * @param execution
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public T extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution) throws SiteWhereException;
+    /**
+     * Extract required delivery parameters from the given sources.
+     * 
+     * @param nesting
+     * @param assignment
+     * @param execution
+     * @return
+     * @throws SiteWhereException
+     */
+    public T extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+	    IDeviceCommandExecution execution) throws SiteWhereException;
 }

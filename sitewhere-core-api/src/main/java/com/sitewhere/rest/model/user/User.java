@@ -29,138 +29,138 @@ import com.sitewhere.spi.user.IUser;
 @JsonInclude(Include.NON_NULL)
 public class User extends MetadataProviderEntity implements IUser, Serializable {
 
-	/** For {@link Serializable} */
-	private static final long serialVersionUID = -3322129570954465956L;
+    /** For {@link Serializable} */
+    private static final long serialVersionUID = -3322129570954465956L;
 
-	/** Unique username */
-	private String username;
+    /** Unique username */
+    private String username;
 
-	/** Hashed password */
-	private String hashedPassword;
+    /** Hashed password */
+    private String hashedPassword;
 
-	/** First name */
-	private String firstName;
+    /** First name */
+    private String firstName;
 
-	/** Last name */
-	private String lastName;
+    /** Last name */
+    private String lastName;
 
-	/** Last login */
-	private Date lastLogin;
+    /** Last login */
+    private Date lastLogin;
 
-	/** Account status */
-	private AccountStatus status;
+    /** Account status */
+    private AccountStatus status;
 
-	/** List of granted authorities */
-	private List<String> authorities = new ArrayList<String>();
+    /** List of granted authorities */
+    private List<String> authorities = new ArrayList<String>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getUsername()
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getUsername()
+     */
+    public String getUsername() {
+	return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+	this.username = username;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getHashedPassword()
-	 */
-	public String getHashedPassword() {
-		return hashedPassword;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getHashedPassword()
+     */
+    public String getHashedPassword() {
+	return hashedPassword;
+    }
 
-	public void setHashedPassword(String hashedPassword) {
-		this.hashedPassword = hashedPassword;
-	}
+    public void setHashedPassword(String hashedPassword) {
+	this.hashedPassword = hashedPassword;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getFirstName()
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getFirstName()
+     */
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getLastName()
-	 */
-	public String getLastName() {
-		return lastName;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getLastName()
+     */
+    public String getLastName() {
+	return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getLastLogin()
-	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getLastLogin() {
-		return lastLogin;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getLastLogin()
+     */
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getLastLogin() {
+	return lastLogin;
+    }
 
-	public void setLastLogin(Date lastLogin) {
-		this.lastLogin = lastLogin;
-	}
+    public void setLastLogin(Date lastLogin) {
+	this.lastLogin = lastLogin;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getStatus()
-	 */
-	public AccountStatus getStatus() {
-		return status;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getStatus()
+     */
+    public AccountStatus getStatus() {
+	return status;
+    }
 
-	public void setStatus(AccountStatus status) {
-		this.status = status;
-	}
+    public void setStatus(AccountStatus status) {
+	this.status = status;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUser#getAuthorities()
-	 */
-	public List<String> getAuthorities() {
-		return authorities;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUser#getAuthorities()
+     */
+    public List<String> getAuthorities() {
+	return authorities;
+    }
 
-	public void setAuthorities(List<String> authorities) {
-		this.authorities = authorities;
-	}
+    public void setAuthorities(List<String> authorities) {
+	this.authorities = authorities;
+    }
 
-	/**
-	 * Copy contents from the SPI class.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static User copy(IUser input) throws SiteWhereException {
-		User result = new User();
-		result.setUsername(input.getUsername());
-		result.setHashedPassword(input.getHashedPassword());
-		result.setFirstName(input.getFirstName());
-		result.setLastName(input.getLastName());
-		result.setLastLogin(input.getLastLogin());
-		result.setStatus(input.getStatus());
-		result.setAuthorities(new ArrayList<String>(input.getAuthorities()));
-		MetadataProviderEntity.copy(input, result);
-		return result;
-	}
+    /**
+     * Copy contents from the SPI class.
+     * 
+     * @param input
+     * @return
+     */
+    public static User copy(IUser input) throws SiteWhereException {
+	User result = new User();
+	result.setUsername(input.getUsername());
+	result.setHashedPassword(input.getHashedPassword());
+	result.setFirstName(input.getFirstName());
+	result.setLastName(input.getLastName());
+	result.setLastLogin(input.getLastLogin());
+	result.setStatus(input.getStatus());
+	result.setAuthorities(new ArrayList<String>(input.getAuthorities()));
+	MetadataProviderEntity.copy(input, result);
+	return result;
+    }
 }

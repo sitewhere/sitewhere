@@ -23,100 +23,100 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  */
 public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 
-	/** Property for element group token */
-	public static final String PROP_GROUP_TOKEN = "groupToken";
+    /** Property for element group token */
+    public static final String PROP_GROUP_TOKEN = "groupToken";
 
-	/** Property for element type */
-	public static final String PROP_TYPE = "type";
+    /** Property for element type */
+    public static final String PROP_TYPE = "type";
 
-	/** Property for element id */
-	public static final String PROP_ELEMENT_ID = "elementId";
+    /** Property for element id */
+    public static final String PROP_ELEMENT_ID = "elementId";
 
-	/** Property for list of roles */
-	public static final String PROP_ROLES = "roles";
+    /** Property for list of roles */
+    public static final String PROP_ROLES = "roles";
 
-	/** Property for element index */
-	public static final String PROP_INDEX = "index";
+    /** Property for element index */
+    public static final String PROP_INDEX = "index";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
-	 */
-	@Override
-	public BasicDBObject convert(IDeviceGroupElement source) {
-		return MongoDeviceGroupElement.toDBObject(source);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    @Override
+    public BasicDBObject convert(IDeviceGroupElement source) {
+	return MongoDeviceGroupElement.toDBObject(source);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     */
+    @Override
+    public IDeviceGroupElement convert(DBObject source) {
+	return MongoDeviceGroupElement.fromDBObject(source);
+    }
+
+    /**
+     * Copy information from SPI into Mongo DBObject.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void toDBObject(IDeviceGroupElement source, BasicDBObject target) {
+	target.append(PROP_GROUP_TOKEN, source.getGroupToken());
+	target.append(PROP_INDEX, source.getIndex());
+	target.append(PROP_TYPE, source.getType().name());
+	target.append(PROP_ELEMENT_ID, source.getElementId());
+	target.append(PROP_ROLES, source.getRoles());
+    }
+
+    /**
+     * Copy information from Mongo DBObject to model object.
+     * 
+     * @param source
+     * @param target
+     */
+    @SuppressWarnings("unchecked")
+    public static void fromDBObject(DBObject source, DeviceGroupElement target) {
+	String group = (String) source.get(PROP_GROUP_TOKEN);
+	Long index = (Long) source.get(PROP_INDEX);
+	String type = (String) source.get(PROP_TYPE);
+	String elementId = (String) source.get(PROP_ELEMENT_ID);
+	List<String> roles = (List<String>) source.get(PROP_ROLES);
+
+	if (type == null) {
+	    throw new RuntimeException("Group element type not stored.");
 	}
+	target.setGroupToken(group);
+	target.setType(GroupElementType.valueOf(type));
+	target.setElementId(elementId);
+	target.setRoles(roles);
+	target.setIndex(index);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
-	 */
-	@Override
-	public IDeviceGroupElement convert(DBObject source) {
-		return MongoDeviceGroupElement.fromDBObject(source);
-	}
+    /**
+     * Convert SPI object to Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public static BasicDBObject toDBObject(IDeviceGroupElement source) {
+	BasicDBObject result = new BasicDBObject();
+	MongoDeviceGroupElement.toDBObject(source, result);
+	return result;
+    }
 
-	/**
-	 * Copy information from SPI into Mongo DBObject.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void toDBObject(IDeviceGroupElement source, BasicDBObject target) {
-		target.append(PROP_GROUP_TOKEN, source.getGroupToken());
-		target.append(PROP_INDEX, source.getIndex());
-		target.append(PROP_TYPE, source.getType().name());
-		target.append(PROP_ELEMENT_ID, source.getElementId());
-		target.append(PROP_ROLES, source.getRoles());
-	}
-
-	/**
-	 * Copy information from Mongo DBObject to model object.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	@SuppressWarnings("unchecked")
-	public static void fromDBObject(DBObject source, DeviceGroupElement target) {
-		String group = (String) source.get(PROP_GROUP_TOKEN);
-		Long index = (Long) source.get(PROP_INDEX);
-		String type = (String) source.get(PROP_TYPE);
-		String elementId = (String) source.get(PROP_ELEMENT_ID);
-		List<String> roles = (List<String>) source.get(PROP_ROLES);
-
-		if (type == null) {
-			throw new RuntimeException("Group element type not stored.");
-		}
-		target.setGroupToken(group);
-		target.setType(GroupElementType.valueOf(type));
-		target.setElementId(elementId);
-		target.setRoles(roles);
-		target.setIndex(index);
-	}
-
-	/**
-	 * Convert SPI object to Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static BasicDBObject toDBObject(IDeviceGroupElement source) {
-		BasicDBObject result = new BasicDBObject();
-		MongoDeviceGroupElement.toDBObject(source, result);
-		return result;
-	}
-
-	/**
-	 * Convert a DBObject into the SPI equivalent.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static DeviceGroupElement fromDBObject(DBObject source) {
-		DeviceGroupElement result = new DeviceGroupElement();
-		MongoDeviceGroupElement.fromDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert a DBObject into the SPI equivalent.
+     * 
+     * @param source
+     * @return
+     */
+    public static DeviceGroupElement fromDBObject(DBObject source) {
+	DeviceGroupElement result = new DeviceGroupElement();
+	MongoDeviceGroupElement.fromDBObject(source, result);
+	return result;
+    }
 }

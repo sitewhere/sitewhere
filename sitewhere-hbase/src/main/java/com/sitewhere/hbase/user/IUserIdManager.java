@@ -16,7 +16,7 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMap;
  */
 public interface IUserIdManager {
 
-	public UniqueIdCounterMap getTenantKeys();
+    public UniqueIdCounterMap getTenantKeys();
 
-	public UniqueIdCounterMap getTenantGroupKeys();
+    public UniqueIdCounterMap getTenantGroupKeys();
 }

@@ -18,33 +18,33 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
  */
 public class DateRangeSearchCriteria extends SearchCriteria implements IDateRangeSearchCriteria {
 
-	/** Start date for search */
-	private Date startDate;
+    /** Start date for search */
+    private Date startDate;
 
-	/** End date for search */
-	private Date endDate;
+    /** End date for search */
+    private Date endDate;
 
-	public DateRangeSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
-		super(pageNumber, pageSize);
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
+    public DateRangeSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
+	super(pageNumber, pageSize);
+	this.startDate = startDate;
+	this.endDate = endDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IDateRangeSearchCriteria#getStartDate()
-	 */
-	public Date getStartDate() {
-		return startDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IDateRangeSearchCriteria#getStartDate()
+     */
+    public Date getStartDate() {
+	return startDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IDateRangeSearchCriteria#getEndDate()
-	 */
-	public Date getEndDate() {
-		return endDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IDateRangeSearchCriteria#getEndDate()
+     */
+    public Date getEndDate() {
+	return endDate;
+    }
 }

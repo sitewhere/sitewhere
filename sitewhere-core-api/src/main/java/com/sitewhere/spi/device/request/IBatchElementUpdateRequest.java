@@ -20,24 +20,24 @@ import com.sitewhere.spi.device.batch.IBatchElement;
  */
 public interface IBatchElementUpdateRequest {
 
-	/**
-	 * Get processing status indicator.
-	 * 
-	 * @return
-	 */
-	public ElementProcessingStatus getProcessingStatus();
+    /**
+     * Get processing status indicator.
+     * 
+     * @return
+     */
+    public ElementProcessingStatus getProcessingStatus();
 
-	/**
-	 * Get date element was processed.
-	 * 
-	 * @return
-	 */
-	public Date getProcessedDate();
+    /**
+     * Get date element was processed.
+     * 
+     * @return
+     */
+    public Date getProcessedDate();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

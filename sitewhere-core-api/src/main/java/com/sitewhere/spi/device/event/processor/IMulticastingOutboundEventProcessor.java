@@ -17,17 +17,17 @@ import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
  */
 public interface IMulticastingOutboundEventProcessor<T> extends IOutboundEventProcessor {
 
-	/**
-	 * Get the configured multcaster implementation.
-	 * 
-	 * @return
-	 */
-	public IDeviceEventMulticaster<T> getMulticaster();
+    /**
+     * Get the configured multcaster implementation.
+     * 
+     * @return
+     */
+    public IDeviceEventMulticaster<T> getMulticaster();
 
-	/**
-	 * Get the configured route builder implementation.
-	 * 
-	 * @return
-	 */
-	public IRouteBuilder<T> getRouteBuilder();
+    /**
+     * Get the configured route builder implementation.
+     * 
+     * @return
+     */
+    public IRouteBuilder<T> getRouteBuilder();
 }

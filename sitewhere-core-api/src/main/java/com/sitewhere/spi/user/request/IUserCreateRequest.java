@@ -19,45 +19,45 @@ import com.sitewhere.spi.user.AccountStatus;
  */
 public interface IUserCreateRequest extends IMetadataProvider {
 
-	/**
-	 * Get the username.
-	 * 
-	 * @return
-	 */
-	public String getUsername();
+    /**
+     * Get the username.
+     * 
+     * @return
+     */
+    public String getUsername();
 
-	/**
-	 * Get the password.
-	 * 
-	 * @return
-	 */
-	public String getPassword();
+    /**
+     * Get the password.
+     * 
+     * @return
+     */
+    public String getPassword();
 
-	/**
-	 * Get the common name.
-	 * 
-	 * @return
-	 */
-	public String getFirstName();
+    /**
+     * Get the common name.
+     * 
+     * @return
+     */
+    public String getFirstName();
 
-	/**
-	 * Get the surname.
-	 * 
-	 * @return
-	 */
-	public String getLastName();
+    /**
+     * Get the surname.
+     * 
+     * @return
+     */
+    public String getLastName();
 
-	/**
-	 * Get the account status.
-	 * 
-	 * @return
-	 */
-	public AccountStatus getStatus();
+    /**
+     * Get the account status.
+     * 
+     * @return
+     */
+    public AccountStatus getStatus();
 
-	/**
-	 * Get the list of granted authorities.
-	 * 
-	 * @return
-	 */
-	public List<String> getAuthorities();
+    /**
+     * Get the list of granted authorities.
+     * 
+     * @return
+     */
+    public List<String> getAuthorities();
 }

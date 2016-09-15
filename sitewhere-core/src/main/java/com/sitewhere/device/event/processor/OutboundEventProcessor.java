@@ -23,74 +23,71 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class OutboundEventProcessor extends TenantLifecycleComponent
-		implements IOutboundEventProcessor {
+public abstract class OutboundEventProcessor extends TenantLifecycleComponent implements IOutboundEventProcessor {
 
-	public OutboundEventProcessor() {
-		super(LifecycleComponentType.OutboundEventProcessor);
-	}
+    public OutboundEventProcessor() {
+	super(LifecycleComponentType.OutboundEventProcessor);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onMeasurements (com.sitewhere.spi.device.event.IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
-	 * .sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onLocation(com .sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocation(IDeviceLocation location) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
-	 * sitewhere .spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(
+     * com. sitewhere .spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandInvocation
+     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
-	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
-	 */
-	@Override
-	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandResponse (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     */
+    @Override
+    public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
-	 * sitewhere.spi.device.event.IDeviceStateChange)
-	 */
-	@Override
-	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onStateChange(com. sitewhere.spi.device.event.IDeviceStateChange)
+     */
+    @Override
+    public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+    }
 }

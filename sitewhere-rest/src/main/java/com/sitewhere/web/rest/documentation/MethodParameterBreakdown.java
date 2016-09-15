@@ -22,53 +22,52 @@ import com.sitewhere.web.rest.documentation.ParsedParameter.ParameterType;
  */
 public class MethodParameterBreakdown {
 
-	/** Parameters not associated with a concern */
-	private List<ParsedParameter> nonConcernParameters = new ArrayList<ParsedParameter>();
+    /** Parameters not associated with a concern */
+    private List<ParsedParameter> nonConcernParameters = new ArrayList<ParsedParameter>();
 
-	/** Parameters listed by concern */
-	private Map<ConcernType, List<ParsedParameter>> concernParameters =
-			new HashMap<ConcernType, List<ParsedParameter>>();
+    /** Parameters listed by concern */
+    private Map<ConcernType, List<ParsedParameter>> concernParameters = new HashMap<ConcernType, List<ParsedParameter>>();
 
-	public List<ParsedParameter> getNonConcernParameters() {
-		return nonConcernParameters;
-	}
+    public List<ParsedParameter> getNonConcernParameters() {
+	return nonConcernParameters;
+    }
 
-	public void setNonConcernParameters(List<ParsedParameter> nonConcernParameters) {
-		this.nonConcernParameters = nonConcernParameters;
-	}
+    public void setNonConcernParameters(List<ParsedParameter> nonConcernParameters) {
+	this.nonConcernParameters = nonConcernParameters;
+    }
 
-	public Map<ConcernType, List<ParsedParameter>> getConcernParameters() {
-		return concernParameters;
-	}
+    public Map<ConcernType, List<ParsedParameter>> getConcernParameters() {
+	return concernParameters;
+    }
 
-	public void setConcernParameters(Map<ConcernType, List<ParsedParameter>> concernParameters) {
-		this.concernParameters = concernParameters;
-	}
+    public void setConcernParameters(Map<ConcernType, List<ParsedParameter>> concernParameters) {
+	this.concernParameters = concernParameters;
+    }
 
-	/**
-	 * Parse method parameters to break them
-	 * 
-	 * @param method
-	 * @return
-	 */
-	public static MethodParameterBreakdown parse(ParsedMethod method) {
-		MethodParameterBreakdown breakdown = new MethodParameterBreakdown();
-		for (ParsedParameter param : method.getParameters()) {
-			if (param.getType() == ParameterType.Request) {
-				if (param.getConcerns().size() == 0) {
-					breakdown.getNonConcernParameters().add(param);
-				} else {
-					for (ConcernType concern : param.getConcerns()) {
-						List<ParsedParameter> cparams = breakdown.getConcernParameters().get(concern);
-						if (cparams == null) {
-							cparams = new ArrayList<ParsedParameter>();
-							breakdown.getConcernParameters().put(concern, cparams);
-						}
-						cparams.add(param);
-					}
-				}
+    /**
+     * Parse method parameters to break them
+     * 
+     * @param method
+     * @return
+     */
+    public static MethodParameterBreakdown parse(ParsedMethod method) {
+	MethodParameterBreakdown breakdown = new MethodParameterBreakdown();
+	for (ParsedParameter param : method.getParameters()) {
+	    if (param.getType() == ParameterType.Request) {
+		if (param.getConcerns().size() == 0) {
+		    breakdown.getNonConcernParameters().add(param);
+		} else {
+		    for (ConcernType concern : param.getConcerns()) {
+			List<ParsedParameter> cparams = breakdown.getConcernParameters().get(concern);
+			if (cparams == null) {
+			    cparams = new ArrayList<ParsedParameter>();
+			    breakdown.getConcernParameters().put(concern, cparams);
 			}
+			cparams.add(param);
+		    }
 		}
-		return breakdown;
+	    }
 	}
+	return breakdown;
+    }
 }

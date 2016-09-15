@@ -20,31 +20,31 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  */
 public interface IDeviceEventBatch {
 
-	/**
-	 * Unique device hardware id.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Unique device hardware id.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get a list of device measurements create requests.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceMeasurementsCreateRequest> getMeasurements();
+    /**
+     * Get a list of device measurements create requests.
+     * 
+     * @return
+     */
+    public List<IDeviceMeasurementsCreateRequest> getMeasurements();
 
-	/**
-	 * Get a list of device location create requests.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceLocationCreateRequest> getLocations();
+    /**
+     * Get a list of device location create requests.
+     * 
+     * @return
+     */
+    public List<IDeviceLocationCreateRequest> getLocations();
 
-	/**
-	 * Get a list of device alert create requests.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceAlertCreateRequest> getAlerts();
+    /**
+     * Get a list of device alert create requests.
+     * 
+     * @return
+     */
+    public List<IDeviceAlertCreateRequest> getAlerts();
 }

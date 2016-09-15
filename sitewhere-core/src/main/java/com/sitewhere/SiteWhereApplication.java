@@ -33,53 +33,53 @@ import com.sitewhere.spi.server.ISiteWhereApplication;
 @EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class })
 public class SiteWhereApplication implements ISiteWhereApplication {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public SiteWhereApplication() {
-		try {
-			SiteWhere.start(this);
-			LOGGER.info("Server started successfully.");
-			SiteWhere.getServer().logState();
-		} catch (ServerStartupException e) {
-			SiteWhere.getServer().setServerStartupError(e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-			messages.add("");
-			messages.add("Component: " + e.getDescription());
-			messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		} catch (SiteWhereException e) {
-			LOGGER.error("Exception on server startup.", e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-			messages.add("");
-			messages.add("Error: " + e.getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		} catch (Throwable e) {
-			LOGGER.error("Unhandled exception in server startup.", e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! Unhandled Exception !!!!");
-			messages.add("");
-			messages.add("Error: " + e.getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		}
+    public SiteWhereApplication() {
+	try {
+	    SiteWhere.start(this);
+	    LOGGER.info("Server started successfully.");
+	    SiteWhere.getServer().logState();
+	} catch (ServerStartupException e) {
+	    SiteWhere.getServer().setServerStartupError(e);
+	    List<String> messages = new ArrayList<String>();
+	    messages.add("!!!! SiteWhere Server Failed to Start !!!!");
+	    messages.add("");
+	    messages.add("Component: " + e.getDescription());
+	    messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
+	    String message = Boilerplate.boilerplate(messages, '*', 60);
+	    LOGGER.info("\n" + message + "\n");
+	} catch (SiteWhereException e) {
+	    LOGGER.error("Exception on server startup.", e);
+	    List<String> messages = new ArrayList<String>();
+	    messages.add("!!!! SiteWhere Server Failed to Start !!!!");
+	    messages.add("");
+	    messages.add("Error: " + e.getMessage());
+	    String message = Boilerplate.boilerplate(messages, '*', 60);
+	    LOGGER.info("\n" + message + "\n");
+	} catch (Throwable e) {
+	    LOGGER.error("Unhandled exception in server startup.", e);
+	    List<String> messages = new ArrayList<String>();
+	    messages.add("!!!! Unhandled Exception !!!!");
+	    messages.add("");
+	    messages.add("Error: " + e.getMessage());
+	    String message = Boilerplate.boilerplate(messages, '*', 60);
+	    LOGGER.info("\n" + message + "\n");
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereApplication#getServerClass()
-	 */
-	@Override
-	public Class<? extends SiteWhereServer> getServerClass() throws SiteWhereException {
-		return SiteWhereServer.class;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereApplication#getServerClass()
+     */
+    @Override
+    public Class<? extends SiteWhereServer> getServerClass() throws SiteWhereException {
+	return SiteWhereServer.class;
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(SiteWhereApplication.class, args);
-	}
+    public static void main(String[] args) {
+	SpringApplication.run(SiteWhereApplication.class, args);
+    }
 }

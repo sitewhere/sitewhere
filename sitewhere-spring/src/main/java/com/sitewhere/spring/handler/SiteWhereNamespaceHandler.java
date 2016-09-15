@@ -14,38 +14,38 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import com.sitewhere.SiteWhere;
 
 /**
- * Implementation of {@link NamespaceHandler} for supporting SiteWhere configuration
- * elements.
+ * Implementation of {@link NamespaceHandler} for supporting SiteWhere
+ * configuration elements.
  * 
  * @author Derek
  */
 public class SiteWhereNamespaceHandler extends NamespaceHandlerSupport {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.xml.NamespaceHandler#init()
-	 */
-	@Override
-	public void init() {
-		registerBeanDefinitionParser(IConfigurationElements.CONFIGURATION, getBeanDefinitionParser());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.beans.factory.xml.NamespaceHandler#init()
+     */
+    @Override
+    public void init() {
+	registerBeanDefinitionParser(IConfigurationElements.CONFIGURATION, getBeanDefinitionParser());
+    }
 
-	/**
-	 * Create {@link BeanDefinitionParser} from class specified by server.
-	 * 
-	 * @return
-	 */
-	protected BeanDefinitionParser getBeanDefinitionParser() {
-		try {
-			Class<?> clazz = Class.forName(SiteWhere.getServer().getConfigurationParserClassname());
-			return (BeanDefinitionParser) clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Unable to find configuration parser class.");
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Could not create configuration parser class.");
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Could not access configuration parser class.");
-		}
+    /**
+     * Create {@link BeanDefinitionParser} from class specified by server.
+     * 
+     * @return
+     */
+    protected BeanDefinitionParser getBeanDefinitionParser() {
+	try {
+	    Class<?> clazz = Class.forName(SiteWhere.getServer().getConfigurationParserClassname());
+	    return (BeanDefinitionParser) clazz.newInstance();
+	} catch (ClassNotFoundException e) {
+	    throw new RuntimeException("Unable to find configuration parser class.");
+	} catch (InstantiationException e) {
+	    throw new RuntimeException("Could not create configuration parser class.");
+	} catch (IllegalAccessException e) {
+	    throw new RuntimeException("Could not access configuration parser class.");
 	}
+    }
 }

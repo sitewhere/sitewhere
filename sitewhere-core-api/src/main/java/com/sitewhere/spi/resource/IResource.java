@@ -8,31 +8,31 @@ package com.sitewhere.spi.resource;
  */
 public interface IResource {
 
-	/**
-	 * Get unique resource path.
-	 * 
-	 * @return
-	 */
-	public String getPath();
+    /**
+     * Get unique resource path.
+     * 
+     * @return
+     */
+    public String getPath();
 
-	/**
-	 * Get type of resource.
-	 * 
-	 * @return
-	 */
-	public ResourceType getResourceType();
+    /**
+     * Get type of resource.
+     * 
+     * @return
+     */
+    public ResourceType getResourceType();
 
-	/**
-	 * Get resource content.
-	 * 
-	 * @return
-	 */
-	public byte[] getContent();
+    /**
+     * Get resource content.
+     * 
+     * @return
+     */
+    public byte[] getContent();
 
-	/**
-	 * Get last modified date for resource.
-	 * 
-	 * @return
-	 */
-	public long getLastModified();
+    /**
+     * Get last modified date for resource.
+     * 
+     * @return
+     */
+    public long getLastModified();
 }

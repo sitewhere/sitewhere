@@ -32,38 +32,38 @@ public class EventData implements Comparable<EventData> {
     private long enqueueTime;
 
     public EventData(Message message, MessageId messageId) {
-        this.message = message;
-        this.messageId = messageId;
+	this.message = message;
+	this.messageId = messageId;
     }
 
     public EventData(Message message, MessageId messageId, long enqueuTime) {
-        this.message = message;
-        this.messageId = messageId;
-        this.enqueueTime = enqueuTime;
+	this.message = message;
+	this.messageId = messageId;
+	this.enqueueTime = enqueuTime;
     }
 
     public static EventData create(Message message, MessageId messageId) {
-        return new EventData(message, messageId);
+	return new EventData(message, messageId);
     }
 
-    public static EventData create(Message message, MessageId messageId, long enqueueTime){
-        return new EventData(message, messageId, enqueueTime);
+    public static EventData create(Message message, MessageId messageId, long enqueueTime) {
+	return new EventData(message, messageId, enqueueTime);
     }
 
     public Message getMessage() {
-        return this.message;
+	return this.message;
     }
 
     public MessageId getMessageId() {
-        return this.messageId;
+	return this.messageId;
     }
 
-    public long getEnqueueTime(){
-        return this.enqueueTime;
+    public long getEnqueueTime() {
+	return this.enqueueTime;
     }
+
     @Override
     public int compareTo(EventData ed) {
-        return messageId.getSequenceNumber().
-                compareTo(ed.getMessageId().getSequenceNumber());
+	return messageId.getSequenceNumber().compareTo(ed.getMessageId().getSequenceNumber());
     }
 }

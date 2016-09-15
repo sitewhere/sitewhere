@@ -19,64 +19,64 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class SiteWhere {
 
-	/** Singleton server instance */
-	private static ISiteWhereServer SERVER;
+    /** Singleton server instance */
+    private static ISiteWhereServer SERVER;
 
-	/**
-	 * Called once to bootstrap the SiteWhere server.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public static void start(ISiteWhereApplication application) throws SiteWhereException {
-		Class<? extends ISiteWhereServer> clazz = application.getServerClass();
-		try {
-			SERVER = clazz.newInstance();
-			SERVER.initialize();
-			SERVER.lifecycleStart();
+    /**
+     * Called once to bootstrap the SiteWhere server.
+     * 
+     * @throws SiteWhereException
+     */
+    public static void start(ISiteWhereApplication application) throws SiteWhereException {
+	Class<? extends ISiteWhereServer> clazz = application.getServerClass();
+	try {
+	    SERVER = clazz.newInstance();
+	    SERVER.initialize();
+	    SERVER.lifecycleStart();
 
-			// Handle errors that prevent server startup.
-			if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
-				throw SERVER.getLifecycleError();
-			}
-		} catch (InstantiationException e) {
-			throw new SiteWhereException("Unable to create SiteWhere server instance.", e);
-		} catch (IllegalAccessException e) {
-			throw new SiteWhereException("Unable to access SiteWhere server class.", e);
-		}
+	    // Handle errors that prevent server startup.
+	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+		throw SERVER.getLifecycleError();
+	    }
+	} catch (InstantiationException e) {
+	    throw new SiteWhereException("Unable to create SiteWhere server instance.", e);
+	} catch (IllegalAccessException e) {
+	    throw new SiteWhereException("Unable to access SiteWhere server class.", e);
 	}
+    }
 
-	/**
-	 * Called to shut down the SiteWhere server.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public static void stop() throws SiteWhereException {
-		getServer().lifecycleStop();
+    /**
+     * Called to shut down the SiteWhere server.
+     * 
+     * @throws SiteWhereException
+     */
+    public static void stop() throws SiteWhereException {
+	getServer().lifecycleStop();
 
-		// Handle errors that prevent server shutdown.
-		if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
-			throw SERVER.getLifecycleError();
-		}
+	// Handle errors that prevent server shutdown.
+	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	    throw SERVER.getLifecycleError();
 	}
+    }
 
-	/**
-	 * Get the singleton SiteWhere server instance.
-	 * 
-	 * @return
-	 */
-	public static ISiteWhereServer getServer() {
-		if (SERVER == null) {
-			throw new RuntimeException("SiteWhere server has not been initialized.");
-		}
-		return SERVER;
+    /**
+     * Get the singleton SiteWhere server instance.
+     * 
+     * @return
+     */
+    public static ISiteWhereServer getServer() {
+	if (SERVER == null) {
+	    throw new RuntimeException("SiteWhere server has not been initialized.");
 	}
+	return SERVER;
+    }
 
-	/**
-	 * Determine whether server is available.
-	 * 
-	 * @return
-	 */
-	public static boolean isServerAvailable() {
-		return ((SERVER != null && (SERVER.getLifecycleStatus() == LifecycleStatus.Started)));
-	}
+    /**
+     * Determine whether server is available.
+     * 
+     * @return
+     */
+    public static boolean isServerAvailable() {
+	return ((SERVER != null && (SERVER.getLifecycleStatus() == LifecycleStatus.Started)));
+    }
 }

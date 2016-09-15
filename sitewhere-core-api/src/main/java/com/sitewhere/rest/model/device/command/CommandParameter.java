@@ -19,66 +19,66 @@ import com.sitewhere.spi.device.command.ParameterType;
  */
 public class CommandParameter implements ICommandParameter, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = -4689464499966528051L;
+    /** For Java serialization */
+    private static final long serialVersionUID = -4689464499966528051L;
 
-	/** Command name */
-	private String name;
+    /** Command name */
+    private String name;
 
-	/** Datatype */
-	private ParameterType type;
+    /** Datatype */
+    private ParameterType type;
 
-	/** Indicates whether required */
-	private boolean required;
+    /** Indicates whether required */
+    private boolean required;
 
-	public CommandParameter() {
-	}
+    public CommandParameter() {
+    }
 
-	public CommandParameter(String name, ParameterType type, boolean required) {
-		this.name = name;
-		this.type = type;
-		this.required = required;
-	}
+    public CommandParameter(String name, ParameterType type, boolean required) {
+	this.name = name;
+	this.type = type;
+	this.required = required;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ICommandParameter#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ICommandParameter#getName()
+     */
+    @Override
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ICommandParameter#getType()
-	 */
-	@Override
-	public ParameterType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ICommandParameter#getType()
+     */
+    @Override
+    public ParameterType getType() {
+	return type;
+    }
 
-	public void setType(ParameterType type) {
-		this.type = type;
-	}
+    public void setType(ParameterType type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ICommandParameter#isRequired()
-	 */
-	@Override
-	public boolean isRequired() {
-		return required;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ICommandParameter#isRequired()
+     */
+    @Override
+    public boolean isRequired() {
+	return required;
+    }
 
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
+    public void setRequired(boolean required) {
+	this.required = required;
+    }
 }

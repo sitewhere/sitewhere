@@ -24,103 +24,103 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class MongoTenant implements MongoConverter<ITenant> {
 
-	/** Property for tenant id */
-	public static final String PROP_ID = "id";
+    /** Property for tenant id */
+    public static final String PROP_ID = "id";
 
-	/** Property for tenant name */
-	public static final String PROP_NAME = "name";
+    /** Property for tenant name */
+    public static final String PROP_NAME = "name";
 
-	/** Property for authentication token */
-	public static final String PROP_AUTH_TOKEN = "auth";
+    /** Property for authentication token */
+    public static final String PROP_AUTH_TOKEN = "auth";
 
-	/** Property for logo URL */
-	public static final String PROP_LOGO_URL = "logo";
+    /** Property for logo URL */
+    public static final String PROP_LOGO_URL = "logo";
 
-	/** Property for authorized users */
-	public static final String PROP_AUTH_USERS = "users";
+    /** Property for authorized users */
+    public static final String PROP_AUTH_USERS = "users";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
-	 */
-	@Override
-	public BasicDBObject convert(ITenant source) {
-		return MongoTenant.toDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    @Override
+    public BasicDBObject convert(ITenant source) {
+	return MongoTenant.toDBObject(source);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
-	 */
-	@Override
-	public ITenant convert(DBObject source) {
-		return MongoTenant.fromDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     */
+    @Override
+    public ITenant convert(DBObject source) {
+	return MongoTenant.fromDBObject(source);
+    }
 
-	/**
-	 * Copy information from SPI into Mongo DBObject.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void toDBObject(ITenant source, BasicDBObject target) {
-		target.append(PROP_ID, source.getId());
-		target.append(PROP_NAME, source.getName());
-		target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
-		target.append(PROP_LOGO_URL, source.getLogoUrl());
-		target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
+    /**
+     * Copy information from SPI into Mongo DBObject.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void toDBObject(ITenant source, BasicDBObject target) {
+	target.append(PROP_ID, source.getId());
+	target.append(PROP_NAME, source.getName());
+	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
+	target.append(PROP_LOGO_URL, source.getLogoUrl());
+	target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
 
-		MongoSiteWhereEntity.toDBObject(source, target);
-		MongoMetadataProvider.toDBObject(source, target);
-	}
+	MongoSiteWhereEntity.toDBObject(source, target);
+	MongoMetadataProvider.toDBObject(source, target);
+    }
 
-	/**
-	 * Copy information from Mongo DBObject to model object.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	@SuppressWarnings("unchecked")
-	public static void fromDBObject(DBObject source, Tenant target) {
-		String id = (String) source.get(PROP_ID);
-		String name = (String) source.get(PROP_NAME);
-		String authToken = (String) source.get(PROP_AUTH_TOKEN);
-		String logo = (String) source.get(PROP_LOGO_URL);
-		List<String> authUsers = (List<String>) source.get(PROP_AUTH_USERS);
+    /**
+     * Copy information from Mongo DBObject to model object.
+     * 
+     * @param source
+     * @param target
+     */
+    @SuppressWarnings("unchecked")
+    public static void fromDBObject(DBObject source, Tenant target) {
+	String id = (String) source.get(PROP_ID);
+	String name = (String) source.get(PROP_NAME);
+	String authToken = (String) source.get(PROP_AUTH_TOKEN);
+	String logo = (String) source.get(PROP_LOGO_URL);
+	List<String> authUsers = (List<String>) source.get(PROP_AUTH_USERS);
 
-		target.setId(id);
-		target.setName(name);
-		target.setAuthenticationToken(authToken);
-		target.setLogoUrl(logo);
-		target.setAuthorizedUserIds(authUsers);
+	target.setId(id);
+	target.setName(name);
+	target.setAuthenticationToken(authToken);
+	target.setLogoUrl(logo);
+	target.setAuthorizedUserIds(authUsers);
 
-		MongoSiteWhereEntity.fromDBObject(source, target);
-		MongoMetadataProvider.fromDBObject(source, target);
-	}
+	MongoSiteWhereEntity.fromDBObject(source, target);
+	MongoMetadataProvider.fromDBObject(source, target);
+    }
 
-	/**
-	 * Convert SPI object to Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static BasicDBObject toDBObject(ITenant source) {
-		BasicDBObject result = new BasicDBObject();
-		MongoTenant.toDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert SPI object to Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public static BasicDBObject toDBObject(ITenant source) {
+	BasicDBObject result = new BasicDBObject();
+	MongoTenant.toDBObject(source, result);
+	return result;
+    }
 
-	/**
-	 * Convert a DBObject into the SPI equivalent.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static Tenant fromDBObject(DBObject source) {
-		Tenant result = new Tenant();
-		MongoTenant.fromDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert a DBObject into the SPI equivalent.
+     * 
+     * @param source
+     * @return
+     */
+    public static Tenant fromDBObject(DBObject source) {
+	Tenant result = new Tenant();
+	MongoTenant.fromDBObject(source, result);
+	return result;
+    }
 }

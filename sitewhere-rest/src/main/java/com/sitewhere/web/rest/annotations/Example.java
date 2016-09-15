@@ -21,17 +21,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Example {
 
-	/** Stage example applies to */
-	public enum Stage {
-		Request, Response;
-	}
+    /** Stage example applies to */
+    public enum Stage {
+	Request, Response;
+    }
 
-	/** Example description markdown relative path */
-	String description() default "";
+    /** Example description markdown relative path */
+    String description() default "";
 
-	/** Stage example applies to */
-	Stage stage() default Stage.Request;
+    /** Stage example applies to */
+    Stage stage() default Stage.Request;
 
-	/** Object example for marshaled JSON */
-	Class<?> json();
+    /** Object example for marshaled JSON */
+    Class<?> json();
 }

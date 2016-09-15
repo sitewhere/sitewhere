@@ -16,24 +16,24 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  */
 public interface IDeviceCommandResponseCreateRequest extends IDeviceEventCreateRequest {
 
-	/**
-	 * Get id of {@link IDeviceCommandInvocation} that triggered the response.
-	 * 
-	 * @return
-	 */
-	public String getOriginatingEventId();
+    /**
+     * Get id of {@link IDeviceCommandInvocation} that triggered the response.
+     * 
+     * @return
+     */
+    public String getOriginatingEventId();
 
-	/**
-	 * Get id of event sent as a response.
-	 * 
-	 * @return
-	 */
-	public String getResponseEventId();
+    /**
+     * Get id of event sent as a response.
+     * 
+     * @return
+     */
+    public String getResponseEventId();
 
-	/**
-	 * Get response payload.
-	 * 
-	 * @return
-	 */
-	public String getResponse();
+    /**
+     * Get response payload.
+     * 
+     * @return
+     */
+    public String getResponse();
 }

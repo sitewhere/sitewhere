@@ -21,25 +21,25 @@ import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
 @ComponentScan(basePackageClasses = { AdminInterfaceController.class })
 public class MvcConfiguration extends WebMvcConfigurationSupport {
 
-	/**
-	 * Ignore path extension on URLs.
-	 */
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer.favorPathExtension(false);
-	}
+    /**
+     * Ignore path extension on URLs.
+     */
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+	configurer.favorPathExtension(false);
+    }
 
-	/**
-	 * Set up the JSP view resolver.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public UrlBasedViewResolver viewResolver() {
-		UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-		resolver.setViewClass(JstlView.class);
-		resolver.setPrefix("/WEB-INF/jsp/");
-		resolver.setSuffix(".jsp");
-		return resolver;
-	}
+    /**
+     * Set up the JSP view resolver.
+     * 
+     * @return
+     */
+    @Bean
+    public UrlBasedViewResolver viewResolver() {
+	UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+	resolver.setViewClass(JstlView.class);
+	resolver.setPrefix("/WEB-INF/jsp/");
+	resolver.setSuffix(".jsp");
+	return resolver;
+    }
 }

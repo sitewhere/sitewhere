@@ -25,63 +25,63 @@ import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
  */
 public class NoOpCommandRouter extends OutboundCommandRouter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-	 * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException {
-		LOGGER.warn("Ignoring routing of command. Add a command router to allow commands to be sent to destinations.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+     * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	LOGGER.warn("Ignoring routing of command. Add a command router to allow commands to be sent to destinations.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-	 * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
-	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		LOGGER.warn(
-				"Ignoring routing of system command. Add a command router to allow commands to be sent to destinations.");
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
+     * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	LOGGER.warn(
+		"Ignoring routing of system command. Add a command router to allow commands to be sent to destinations.");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 }

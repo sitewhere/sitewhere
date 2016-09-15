@@ -12,17 +12,18 @@ import com.sitewhere.spi.server.IModelInitializer;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
- * Class that initializes the tenant model with data needed to bootstrap the system.
+ * Class that initializes the tenant model with data needed to bootstrap the
+ * system.
  * 
  * @author Derek
  */
 public interface ITenantModelInitializer extends IModelInitializer {
 
-	/**
-	 * Initialize the tenant model.
-	 * 
-	 * @param tenantManagement
-	 * @throws SiteWhereException
-	 */
-	public void initialize(ITenantManagement tenantManagement) throws SiteWhereException;
+    /**
+     * Initialize the tenant model.
+     * 
+     * @param tenantManagement
+     * @throws SiteWhereException
+     */
+    public void initialize(ITenantManagement tenantManagement) throws SiteWhereException;
 }

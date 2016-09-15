@@ -14,46 +14,55 @@ package com.sitewhere.spi.scheduling;
  */
 public interface JobConstants {
 
+    /**
+     * Constants used for single command invocation.
+     * 
+     * @author Derek
+     */
+    public static interface CommandInvocation {
+
+	/** Token of assignment to target */
+	public static final String ASSIGNMENT_TOKEN = "assignmentToken";
+
+	/** Token of command to invoke */
+	public static final String COMMAND_TOKEN = "commandToken";
+
+	/** Prefix for command parameter values */
+	public static final String PARAMETER_PREFIX = "param_";
+    }
+
+    /**
+     * Constants used for batch command invocations.
+     * 
+     * @author Derek
+     */
+    public static interface BatchCommandInvocation {
+
+	/** Indicates if results should be narrowed by device specification */
+	public static final String SPECIFICATION_TOKEN = "specificationToken";
+
+	/** Indicates if results should be narrowed by site */
+	public static final String SITE_TOKEN = "siteToken";
+
+	/** Indicates if results should be narrowed by group */
+	public static final String GROUP_TOKEN = "groupToken";
+
 	/**
-	 * Constants used for single command invocation.
-	 * 
-	 * @author Derek
+	 * Indicates if results should be narrowed by groups that have a given
+	 * role
 	 */
-	public static interface CommandInvocation {
-
-		/** Token of assignment to target */
-		public static final String ASSIGNMENT_TOKEN = "assignmentToken";
-
-		/** Token of command to invoke */
-		public static final String COMMAND_TOKEN = "commandToken";
-
-		/** Prefix for command parameter values */
-		public static final String PARAMETER_PREFIX = "param_";
-	}
+	public static final String GROUP_ROLE = "groupRole";
 
 	/**
-	 * Constants used for batch command invocations.
-	 * 
-	 * @author Derek
+	 * Indicates if results should be narrowed by devices created on or
+	 * after a date
 	 */
-	public static interface BatchCommandInvocation {
+	public static final String START_DATE = "startDate";
 
-		/** Indicates if results should be narrowed by device specification */
-		public static final String SPECIFICATION_TOKEN = "specificationToken";
-
-		/** Indicates if results should be narrowed by site */
-		public static final String SITE_TOKEN = "siteToken";
-
-		/** Indicates if results should be narrowed by group */
-		public static final String GROUP_TOKEN = "groupToken";
-
-		/** Indicates if results should be narrowed by groups that have a given role */
-		public static final String GROUP_ROLE = "groupRole";
-
-		/** Indicates if results should be narrowed by devices created on or after a date */
-		public static final String START_DATE = "startDate";
-
-		/** Indicates if results should be narrowed by devices created on or before a date */
-		public static final String END_DATE = "endDate";
-	}
+	/**
+	 * Indicates if results should be narrowed by devices created on or
+	 * before a date
+	 */
+	public static final String END_DATE = "endDate";
+    }
 }

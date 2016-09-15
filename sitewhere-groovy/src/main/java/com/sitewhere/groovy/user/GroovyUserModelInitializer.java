@@ -30,54 +30,54 @@ import groovy.util.ScriptException;
  */
 public class GroovyUserModelInitializer implements IUserModelInitializer {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Injected Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Relative path to Groovy script */
-	private String scriptPath;
+    /** Relative path to Groovy script */
+    private String scriptPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.
-	 * sitewhere.spi. user.IUserManagement)
-	 */
-	@Override
-	public void initialize(IUserManagement userManagement) throws SiteWhereException {
-		Binding binding = new Binding();
-		binding.setVariable("logger", LOGGER);
-		binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.
+     * sitewhere.spi. user.IUserManagement)
+     */
+    @Override
+    public void initialize(IUserManagement userManagement) throws SiteWhereException {
+	Binding binding = new Binding();
+	binding.setVariable("logger", LOGGER);
+	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
-		try {
-			// Use the system account for logging "created by" on created
-			// elements.
-			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
-			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy script.", e);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(null);
-		}
+	try {
+	    // Use the system account for logging "created by" on created
+	    // elements.
+	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
+	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(null);
 	}
+    }
 
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
-	public String getScriptPath() {
-		return scriptPath;
-	}
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 }

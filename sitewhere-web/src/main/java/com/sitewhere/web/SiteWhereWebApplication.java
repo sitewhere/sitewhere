@@ -46,124 +46,124 @@ import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
 @Import(SiteWhereSecurity.class)
 public class SiteWhereWebApplication extends SiteWhereApplication {
 
-	/** Static logger instance */
-	@SuppressWarnings("unused")
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LogManager.getLogger();
 
-	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
-		tomcat.setContextPath("/sitewhere");
-		tomcat.setPort(8080);
-		tomcat.addContextCustomizers(new TomcatContextCustomizer() {
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+	TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+	tomcat.setContextPath("/sitewhere");
+	tomcat.setPort(8080);
+	tomcat.addContextCustomizers(new TomcatContextCustomizer() {
 
-			@Override
-			public void customize(Context context) {
-				Container jsp = context.findChild("jsp");
-				if (jsp instanceof Wrapper) {
-					((Wrapper) jsp).addInitParameter("development", "false");
-				}
+	    @Override
+	    public void customize(Context context) {
+		Container jsp = context.findChild("jsp");
+		if (jsp instanceof Wrapper) {
+		    ((Wrapper) jsp).addInitParameter("development", "false");
+		}
 
-			}
-		});
-		return tomcat;
-	}
+	    }
+	});
+	return tomcat;
+    }
 
-	@Bean
-	public ServletRegistrationBean sitewhereRestInterface() {
-		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-		applicationContext.register(RestMvcConfiguration.class, SiteWhereSwaggerConfig.class);
-		dispatcherServlet.setApplicationContext(applicationContext);
-		ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
-				RestMvcConfiguration.REST_API_MATCHER);
-		registration.setName("sitewhereRestInterface");
-		registration.setLoadOnStartup(1);
-		return registration;
-	}
+    @Bean
+    public ServletRegistrationBean sitewhereRestInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(RestMvcConfiguration.class, SiteWhereSwaggerConfig.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		RestMvcConfiguration.REST_API_MATCHER);
+	registration.setName("sitewhereRestInterface");
+	registration.setLoadOnStartup(1);
+	return registration;
+    }
 
-	@Bean
-	public CorsFilter corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("*");
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		config.addExposedHeader("Authorization");
-		config.addExposedHeader("Content-Type");
-		source.registerCorsConfiguration("/api/**", config);
-		return new CorsFilter(source);
-	}
+    @Bean
+    public CorsFilter corsFilter() {
+	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	CorsConfiguration config = new CorsConfiguration();
+	config.addAllowedOrigin("*");
+	config.addAllowedHeader("*");
+	config.addAllowedMethod("*");
+	config.addExposedHeader("Authorization");
+	config.addExposedHeader("Content-Type");
+	source.registerCorsConfiguration("/api/**", config);
+	return new CorsFilter(source);
+    }
 
-	@Bean
-	public ServletRegistrationBean sitewhereAdminInterface() {
-		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-		applicationContext.register(MvcConfiguration.class);
-		dispatcherServlet.setApplicationContext(applicationContext);
-		ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/admin/*");
-		registration.setName("sitewhereAdminInterface");
-		registration.setLoadOnStartup(2);
-		return registration;
-	}
+    @Bean
+    public ServletRegistrationBean sitewhereAdminInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(MvcConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/admin/*");
+	registration.setName("sitewhereAdminInterface");
+	registration.setLoadOnStartup(2);
+	return registration;
+    }
 
-	@Bean
-	public ServletRegistrationBean redirectServlet() {
-		RedirectServlet redirect = new RedirectServlet();
-		ServletRegistrationBean registration = new ServletRegistrationBean(redirect, "/admin");
-		registration.setName("sitewhereRedirect");
-		registration.setLoadOnStartup(3);
-		return registration;
-	}
+    @Bean
+    public ServletRegistrationBean redirectServlet() {
+	RedirectServlet redirect = new RedirectServlet();
+	ServletRegistrationBean registration = new ServletRegistrationBean(redirect, "/admin");
+	registration.setName("sitewhereRedirect");
+	registration.setLoadOnStartup(3);
+	return registration;
+    }
 
-	@Bean
-	public FilterRegistrationBean methodOverrideFilter() {
-		MethodOverrideFilter filter = new MethodOverrideFilter();
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(filter);
-		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
-		return registration;
-	}
+    @Bean
+    public FilterRegistrationBean methodOverrideFilter() {
+	MethodOverrideFilter filter = new MethodOverrideFilter();
+	FilterRegistrationBean registration = new FilterRegistrationBean();
+	registration.setFilter(filter);
+	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	return registration;
+    }
 
-	@Bean
-	public FilterRegistrationBean responseTimerFilter() {
-		ResponseTimerFilter filter = new ResponseTimerFilter();
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(filter);
-		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
-		return registration;
-	}
+    @Bean
+    public FilterRegistrationBean responseTimerFilter() {
+	ResponseTimerFilter filter = new ResponseTimerFilter();
+	FilterRegistrationBean registration = new FilterRegistrationBean();
+	registration.setFilter(filter);
+	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	return registration;
+    }
 
-	@Bean
-	public FilterRegistrationBean noCacheFilter() {
-		NoCacheFilter filter = new NoCacheFilter();
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(filter);
-		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
-		return registration;
-	}
+    @Bean
+    public FilterRegistrationBean noCacheFilter() {
+	NoCacheFilter filter = new NoCacheFilter();
+	FilterRegistrationBean registration = new FilterRegistrationBean();
+	registration.setFilter(filter);
+	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	return registration;
+    }
 
-	@Bean
-	public FilterRegistrationBean jsonpFilter() {
-		JsonpFilter filter = new JsonpFilter();
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(filter);
-		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
-		return registration;
-	}
+    @Bean
+    public FilterRegistrationBean jsonpFilter() {
+	JsonpFilter filter = new JsonpFilter();
+	FilterRegistrationBean registration = new FilterRegistrationBean();
+	registration.setFilter(filter);
+	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	return registration;
+    }
 
-	/**
-	 * Acts on shutdown hook to gracefully shut down SiteWhere server
-	 * components.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public ShutdownListener shutdownListener() {
-		return new ShutdownListener();
-	}
+    /**
+     * Acts on shutdown hook to gracefully shut down SiteWhere server
+     * components.
+     * 
+     * @return
+     */
+    @Bean
+    public ShutdownListener shutdownListener() {
+	return new ShutdownListener();
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(SiteWhereWebApplication.class, args);
-	}
+    public static void main(String[] args) {
+	SpringApplication.run(SiteWhereWebApplication.class, args);
+    }
 }

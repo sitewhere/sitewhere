@@ -32,60 +32,60 @@ import groovy.util.ScriptException;
  */
 public class GroovyEventDecoder implements IDeviceEventDecoder<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Injected global Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected global Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Path to script used for decoder */
-	private String scriptPath;
+    /** Path to script used for decoder */
+    private String scriptPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
-	 * lang.Object, java.util.Map)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		try {
-			Binding binding = new Binding();
-			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-			binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
-			binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
-			binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
-			binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-			LOGGER.debug("About to execute '" + getScriptPath() + "' with payload: " + payload);
-			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-			return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
-		} catch (ResourceException e) {
-			throw new EventDecodeException("Unable to access Groovy decoder script.", e);
-		} catch (ScriptException e) {
-			throw new EventDecodeException("Unable to run Groovy decoder script.", e);
-		} catch (CompilationFailedException e) {
-			throw new EventDecodeException("Error compiling Groovy script.", e);
-		} catch (Throwable e) {
-			throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+	    throws EventDecodeException {
+	try {
+	    Binding binding = new Binding();
+	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
+	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
+	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
+	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	    LOGGER.debug("About to execute '" + getScriptPath() + "' with payload: " + payload);
+	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
+	} catch (ResourceException e) {
+	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
+	} catch (ScriptException e) {
+	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+	} catch (CompilationFailedException e) {
+	    throw new EventDecodeException("Error compiling Groovy script.", e);
+	} catch (Throwable e) {
+	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
 	}
+    }
 
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
-	public String getScriptPath() {
-		return scriptPath;
-	}
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 }

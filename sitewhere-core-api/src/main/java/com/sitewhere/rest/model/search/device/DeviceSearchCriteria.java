@@ -19,63 +19,65 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
  */
 public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDeviceSearchCriteria {
 
-	/** Specification to match in filter */
-	private String specificationToken;
+    /** Specification to match in filter */
+    private String specificationToken;
 
-	/** Site to match in filter */
-	private String siteToken;
+    /** Site to match in filter */
+    private String siteToken;
 
-	/** Indicates if assigned devices should be excluded */
-	private boolean excludeAssigned = true;
+    /** Indicates if assigned devices should be excluded */
+    private boolean excludeAssigned = true;
 
-	public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
-		super(pageNumber, pageSize, startDate, endDate);
-	}
+    public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
+	super(pageNumber, pageSize, startDate, endDate);
+    }
 
-	public DeviceSearchCriteria(String specToken, String siteToken, boolean excludeAssigned, int pageNumber,
-			int pageSize, Date startDate, Date endDate) {
-		super(pageNumber, pageSize, startDate, endDate);
-		this.specificationToken = specToken;
-		this.siteToken = siteToken;
-		this.excludeAssigned = excludeAssigned;
-	}
+    public DeviceSearchCriteria(String specToken, String siteToken, boolean excludeAssigned, int pageNumber,
+	    int pageSize, Date startDate, Date endDate) {
+	super(pageNumber, pageSize, startDate, endDate);
+	this.specificationToken = specToken;
+	this.siteToken = siteToken;
+	this.excludeAssigned = excludeAssigned;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSpecificationToken()
-	 */
-	public String getSpecificationToken() {
-		return specificationToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#
+     * getSpecificationToken()
+     */
+    public String getSpecificationToken() {
+	return specificationToken;
+    }
 
-	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
-	}
+    public void setSpecificationToken(String specificationToken) {
+	this.specificationToken = specificationToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSiteToken()
-	 */
-	public String getSiteToken() {
-		return siteToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSiteToken()
+     */
+    public String getSiteToken() {
+	return siteToken;
+    }
 
-	public void setSiteToken(String siteToken) {
-		this.siteToken = siteToken;
-	}
+    public void setSiteToken(String siteToken) {
+	this.siteToken = siteToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#isExcludeAssigned()
-	 */
-	public boolean isExcludeAssigned() {
-		return excludeAssigned;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.search.device.IDeviceSearchCriteria#isExcludeAssigned()
+     */
+    public boolean isExcludeAssigned() {
+	return excludeAssigned;
+    }
 
-	public void setExcludeAssigned(boolean excludeAssigned) {
-		this.excludeAssigned = excludeAssigned;
-	}
+    public void setExcludeAssigned(boolean excludeAssigned) {
+	this.excludeAssigned = excludeAssigned;
+    }
 }

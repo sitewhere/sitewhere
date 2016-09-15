@@ -28,58 +28,55 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  * Event decoder that converts a binary payload into the default SiteWhere REST
  * implementations using Jackson to marshal them as JSON.
  * 
- * DEPRECATED: This only supports events that can be wrapped in a {@link DeviceEventBatch}
- * object and does not offer full-featured support. Use {@link JsonDeviceRequestDecoder}
- * instead.
+ * DEPRECATED: This only supports events that can be wrapped in a
+ * {@link DeviceEventBatch} object and does not offer full-featured support. Use
+ * {@link JsonDeviceRequestDecoder} instead.
  * 
  * @author Derek
  */
 public class JsonBatchEventDecoder implements IDeviceEventDecoder<byte[]> {
 
-	/** Used to map data into an object based on JSON parsing */
-	private ObjectMapper mapper = new ObjectMapper();
+    /** Used to map data into an object based on JSON parsing */
+    private ObjectMapper mapper = new ObjectMapper();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
-	 * java.util.Map)
-	 */
-	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		try {
-			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-			DeviceEventBatch batch = mapper.readValue(payload, DeviceEventBatch.class);
-			for (IDeviceLocationCreateRequest lc : batch.getLocations()) {
-				DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
-				decoded.setHardwareId(batch.getHardwareId());
-				decoded.setRequest(lc);
-				events.add(decoded);
-			}
-			for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
-				DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
-				decoded.setHardwareId(batch.getHardwareId());
-				decoded.setRequest(mc);
-				events.add(decoded);
-			}
-			for (IDeviceAlertCreateRequest ac : batch.getAlerts()) {
-				DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded =
-						new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
-				decoded.setHardwareId(batch.getHardwareId());
-				decoded.setRequest(ac);
-				events.add(decoded);
-			}
-			return events;
-		} catch (JsonParseException e) {
-			throw new EventDecodeException(e);
-		} catch (JsonMappingException e) {
-			throw new EventDecodeException(e);
-		} catch (IOException e) {
-			throw new EventDecodeException(e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+	    throws EventDecodeException {
+	try {
+	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
+	    DeviceEventBatch batch = mapper.readValue(payload, DeviceEventBatch.class);
+	    for (IDeviceLocationCreateRequest lc : batch.getLocations()) {
+		DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(lc);
+		events.add(decoded);
+	    }
+	    for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
+		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(mc);
+		events.add(decoded);
+	    }
+	    for (IDeviceAlertCreateRequest ac : batch.getAlerts()) {
+		DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(ac);
+		events.add(decoded);
+	    }
+	    return events;
+	} catch (JsonParseException e) {
+	    throw new EventDecodeException(e);
+	} catch (JsonMappingException e) {
+	    throw new EventDecodeException(e);
+	} catch (IOException e) {
+	    throw new EventDecodeException(e);
 	}
+    }
 }

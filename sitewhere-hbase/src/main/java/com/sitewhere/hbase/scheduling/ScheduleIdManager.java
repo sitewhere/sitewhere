@@ -19,47 +19,46 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class ScheduleIdManager implements IScheduleIdManager {
 
-	/** Manager for site tokens */
-	private UniqueIdCounterMap scheduleKeys;
+    /** Manager for site tokens */
+    private UniqueIdCounterMap scheduleKeys;
 
-	/** Manager for device ids */
-	private UniqueIdCounterMap scheduledJobKeys;
+    /** Manager for device ids */
+    private UniqueIdCounterMap scheduledJobKeys;
 
-	/**
-	 * Load key managers from HBase.
-	 * 
-	 * @param context
-	 * @throws SiteWhereException
-	 */
-	public void load(IHBaseContext context) throws SiteWhereException {
-		scheduleKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.ScheduleKey.getIndicator(),
-						UniqueIdType.ScheduleValue.getIndicator());
-		scheduleKeys.refresh();
+    /**
+     * Load key managers from HBase.
+     * 
+     * @param context
+     * @throws SiteWhereException
+     */
+    public void load(IHBaseContext context) throws SiteWhereException {
+	scheduleKeys = new UniqueIdCounterMap(context, UniqueIdType.ScheduleKey.getIndicator(),
+		UniqueIdType.ScheduleValue.getIndicator());
+	scheduleKeys.refresh();
 
-		scheduledJobKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.ScheduledJobKey.getIndicator(),
-						UniqueIdType.ScheduledJobValue.getIndicator());
-		scheduledJobKeys.refresh();
-	}
+	scheduledJobKeys = new UniqueIdCounterMap(context, UniqueIdType.ScheduledJobKey.getIndicator(),
+		UniqueIdType.ScheduledJobValue.getIndicator());
+	scheduledJobKeys.refresh();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.scheduling.IScheduleIdManager#getScheduleKeys()
-	 */
-	@Override
-	public UniqueIdCounterMap getScheduleKeys() {
-		return scheduleKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.scheduling.IScheduleIdManager#getScheduleKeys()
+     */
+    @Override
+    public UniqueIdCounterMap getScheduleKeys() {
+	return scheduleKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.scheduling.IScheduleIdManager#getScheduledJobKeys()
-	 */
-	@Override
-	public UniqueIdCounterMap getScheduledJobKeys() {
-		return scheduledJobKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.hbase.scheduling.IScheduleIdManager#getScheduledJobKeys()
+     */
+    @Override
+    public UniqueIdCounterMap getScheduledJobKeys() {
+	return scheduledJobKeys;
+    }
 }

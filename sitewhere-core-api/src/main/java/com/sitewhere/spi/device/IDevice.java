@@ -19,60 +19,60 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  */
 public interface IDevice extends IMetadataProviderEntity {
 
-	/**
-	 * Get the unique hardware id of the device.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get the unique hardware id of the device.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get token for associated site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token for associated site.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Get token for device specification.
-	 * 
-	 * @return
-	 */
-	public String getSpecificationToken();
+    /**
+     * Get token for device specification.
+     * 
+     * @return
+     */
+    public String getSpecificationToken();
 
-	/**
-	 * If contained by a parent device, returns the parent hardware id.
-	 * 
-	 * @return
-	 */
-	public String getParentHardwareId();
+    /**
+     * If contained by a parent device, returns the parent hardware id.
+     * 
+     * @return
+     */
+    public String getParentHardwareId();
 
-	/**
-	 * Gets mappings of {@link IDeviceElementSchema} paths to hardware ids for nested
-	 * devices.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceElementMapping> getDeviceElementMappings();
+    /**
+     * Gets mappings of {@link IDeviceElementSchema} paths to hardware ids for
+     * nested devices.
+     * 
+     * @return
+     */
+    public List<IDeviceElementMapping> getDeviceElementMappings();
 
-	/**
-	 * Get device comments.
-	 * 
-	 * @return
-	 */
-	public String getComments();
+    /**
+     * Get device comments.
+     * 
+     * @return
+     */
+    public String getComments();
 
-	/**
-	 * Get most recent device status.
-	 * 
-	 * @return
-	 */
-	public DeviceStatus getStatus();
+    /**
+     * Get most recent device status.
+     * 
+     * @return
+     */
+    public DeviceStatus getStatus();
 
-	/**
-	 * Get the current device assignment token if assigned.
-	 * 
-	 * @return
-	 */
-	public String getAssignmentToken();
+    /**
+     * Get the current device assignment token if assigned.
+     * 
+     * @return
+     */
+    public String getAssignmentToken();
 }

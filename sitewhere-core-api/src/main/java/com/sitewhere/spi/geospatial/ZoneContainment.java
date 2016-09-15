@@ -14,9 +14,9 @@ package com.sitewhere.spi.geospatial;
  */
 public enum ZoneContainment {
 
-	// If a location is inside a zone.
-	Inside,
+    // If a location is inside a zone.
+    Inside,
 
-	// If a location is outside a zone.
-	Outside;
+    // If a location is outside a zone.
+    Outside;
 }

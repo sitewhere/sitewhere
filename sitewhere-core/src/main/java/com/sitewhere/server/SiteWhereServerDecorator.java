@@ -45,348 +45,348 @@ import com.sitewhere.spi.user.IUserManagement;
  */
 public class SiteWhereServerDecorator extends LifecycleComponentDecorator implements ISiteWhereServer {
 
-	/** Delegate instance being wrapped */
-	private ISiteWhereServer server;
+    /** Delegate instance being wrapped */
+    private ISiteWhereServer server;
 
-	public SiteWhereServerDecorator(ISiteWhereServer server) {
-		super(server);
-		this.server = server;
-	}
+    public SiteWhereServerDecorator(ISiteWhereServer server) {
+	super(server);
+	this.server = server;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getVersion()
-	 */
-	@Override
-	public IVersion getVersion() {
-		return server.getVersion();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getVersion()
+     */
+    @Override
+    public IVersion getVersion() {
+	return server.getVersion();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname
-	 * ()
-	 */
-	@Override
-	public String getConfigurationParserClassname() {
-		return server.getConfigurationParserClassname();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname
+     * ()
+     */
+    @Override
+    public String getConfigurationParserClassname() {
+	return server.getConfigurationParserClassname();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#
-	 * getTenantConfigurationParserClassname()
-	 */
-	@Override
-	public String getTenantConfigurationParserClassname() {
-		return server.getTenantConfigurationParserClassname();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#
+     * getTenantConfigurationParserClassname()
+     */
+    @Override
+    public String getTenantConfigurationParserClassname() {
+	return server.getTenantConfigurationParserClassname();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
-	 */
-	@Override
-	public ISiteWhereServerState getServerState() {
-		return server.getServerState();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
+     */
+    @Override
+    public ISiteWhereServerState getServerState() {
+	return server.getServerState();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
-	 */
-	@Override
-	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException {
-		return server.getServerRuntimeInformation(includeHistorical);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
+     */
+    @Override
+    public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException {
+	return server.getServerRuntimeInformation(includeHistorical);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#initialize()
-	 */
-	@Override
-	public void initialize() throws SiteWhereException {
-		server.initialize();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#initialize()
+     */
+    @Override
+    public void initialize() throws SiteWhereException {
+	server.initialize();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerStartupError()
-	 */
-	@Override
-	public ServerStartupException getServerStartupError() {
-		return server.getServerStartupError();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getServerStartupError()
+     */
+    @Override
+    public ServerStartupException getServerStartupError() {
+	return server.getServerStartupError();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#setServerStartupError(com.
-	 * sitewhere.spi .ServerStartupException)
-	 */
-	@Override
-	public void setServerStartupError(ServerStartupException e) {
-		server.setServerStartupError(e);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#setServerStartupError(com.
+     * sitewhere.spi .ServerStartupException)
+     */
+    @Override
+    public void setServerStartupError(ServerStartupException e) {
+	server.setServerStartupError(e);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTracer()
-	 */
-	@Override
-	public ITracer getTracer() {
-		return server.getTracer();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTracer()
+     */
+    @Override
+    public ITracer getTracer() {
+	return server.getTracer();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getResourceManager()
-	 */
-	@Override
-	public IResourceManager getResourceManager() {
-		return server.getResourceManager();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getResourceManager()
+     */
+    @Override
+    public IResourceManager getResourceManager() {
+	return server.getResourceManager();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
-	 */
-	@Override
-	public IGlobalConfigurationResolver getConfigurationResolver() {
-		return server.getConfigurationResolver();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
+     */
+    @Override
+    public IGlobalConfigurationResolver getConfigurationResolver() {
+	return server.getConfigurationResolver();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantByAuthToken(java.lang.
-	 * String)
-	 */
-	@Override
-	public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException {
-		return server.getTenantByAuthToken(authToken);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getTenantByAuthToken(java.lang.
+     * String)
+     */
+    @Override
+    public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException {
+	return server.getTenantByAuthToken(authToken);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.
-	 * String, boolean)
-	 */
-	@Override
-	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException {
-		return server.getAuthorizedTenants(userId, requireStarted);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.
+     * String, boolean)
+     */
+    @Override
+    public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException {
+	return server.getAuthorizedTenants(userId, requireStarted);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.
-	 * String)
-	 */
-	@Override
-	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
-		return server.getTenantEngine(tenantId);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.
+     * String)
+     */
+    @Override
+    public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
+	return server.getTenantEngine(tenantId);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.
-	 * sitewhere .spi.user.ITenant)
-	 */
-	@Override
-	public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
-		server.onTenantInformationUpdated(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.
+     * sitewhere .spi.user.ITenant)
+     */
+    @Override
+    public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
+	server.onTenantInformationUpdated(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getUserManagement()
-	 */
-	@Override
-	public IUserManagement getUserManagement() {
-		return server.getUserManagement();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getUserManagement()
+     */
+    @Override
+    public IUserManagement getUserManagement() {
+	return server.getUserManagement();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantManagement()
-	 */
-	@Override
-	public ITenantManagement getTenantManagement() {
-		return server.getTenantManagement();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantManagement()
+     */
+    @Override
+    public ITenantManagement getTenantManagement() {
+	return server.getTenantManagement();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagement(com.
-	 * sitewhere.spi .user.ITenant)
-	 */
-	@Override
-	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-		return server.getDeviceManagement(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagement(com.
+     * sitewhere.spi .user.ITenant)
+     */
+    @Override
+    public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+	return server.getDeviceManagement(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.
-	 * sitewhere .spi.user.ITenant)
-	 */
-	@Override
-	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
-		return server.getDeviceEventManagement(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.
+     * sitewhere .spi.user.ITenant)
+     */
+    @Override
+    public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
+	return server.getDeviceEventManagement(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#
-	 * getDeviceManagementCacheProvider(com. sitewhere.spi.user.ITenant)
-	 */
-	@Override
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException {
-		return server.getDeviceManagementCacheProvider(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#
+     * getDeviceManagementCacheProvider(com. sitewhere.spi.user.ITenant)
+     */
+    @Override
+    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException {
+	return server.getDeviceManagementCacheProvider(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetManagement(com.
-	 * sitewhere.spi. user.ITenant)
-	 */
-	@Override
-	public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException {
-		return server.getAssetManagement(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetManagement(com.
+     * sitewhere.spi. user.ITenant)
+     */
+    @Override
+    public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException {
+	return server.getAssetManagement(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManagement(com.
-	 * sitewhere.spi .user.ITenant)
-	 */
-	@Override
-	public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException {
-		return server.getScheduleManagement(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManagement(com.
+     * sitewhere.spi .user.ITenant)
+     */
+    @Override
+    public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException {
+	return server.getScheduleManagement(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.
-	 * sitewhere. spi.user.ITenant)
-	 */
-	@Override
-	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException {
-		return server.getDeviceCommunication(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.
+     * sitewhere. spi.user.ITenant)
+     */
+    @Override
+    public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException {
+	return server.getDeviceCommunication(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.
-	 * sitewhere.spi. user.ITenant)
-	 */
-	@Override
-	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
-		return server.getEventProcessing(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.
+     * sitewhere.spi. user.ITenant)
+     */
+    @Override
+    public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
+	return server.getEventProcessing(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager(com.
-	 * sitewhere.spi .user.ITenant)
-	 */
-	@Override
-	public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException {
-		return server.getAssetModuleManager(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager(com.
+     * sitewhere.spi .user.ITenant)
+     */
+    @Override
+    public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException {
+	return server.getAssetModuleManager(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.
-	 * sitewhere .spi.user.ITenant)
-	 */
-	@Override
-	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException {
-		return server.getSearchProviderManager(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.
+     * sitewhere .spi.user.ITenant)
+     */
+    @Override
+    public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException {
+	return server.getSearchProviderManager(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.
-	 * sitewhere.spi. user.ITenant)
-	 */
-	@Override
-	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
-		return server.getScheduleManager(tenant);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.
+     * sitewhere.spi. user.ITenant)
+     */
+    @Override
+    public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
+	return server.getScheduleManager(tenant);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#
-	 * getRegisteredLifecycleComponents()
-	 */
-	@Override
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
-		return server.getRegisteredLifecycleComponents();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#
+     * getRegisteredLifecycleComponents()
+     */
+    @Override
+    public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
+	return server.getRegisteredLifecycleComponents();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.
-	 * lang. String )
-	 */
-	@Override
-	public ILifecycleComponent getLifecycleComponentById(String id) {
-		return server.getLifecycleComponentById(id);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.
+     * lang. String )
+     */
+    @Override
+    public ILifecycleComponent getLifecycleComponentById(String id) {
+	return server.getLifecycleComponentById(id);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getMetricRegistry()
-	 */
-	@Override
-	public MetricRegistry getMetricRegistry() {
-		return server.getMetricRegistry();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getMetricRegistry()
+     */
+    @Override
+    public MetricRegistry getMetricRegistry() {
+	return server.getMetricRegistry();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getHealthCheckRegistry()
-	 */
-	@Override
-	public HealthCheckRegistry getHealthCheckRegistry() {
-		return server.getHealthCheckRegistry();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getHealthCheckRegistry()
+     */
+    @Override
+    public HealthCheckRegistry getHealthCheckRegistry() {
+	return server.getHealthCheckRegistry();
+    }
 }

@@ -14,18 +14,18 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.search.SearchResults;
 
 /**
- * Search results that contain hardware assets. Needed so that JSON marshaling has a
- * concrete class to inflate.
+ * Search results that contain hardware assets. Needed so that JSON marshaling
+ * has a concrete class to inflate.
  * 
  * @author dadams
  */
 public class HardwareAssetSearchResults extends SearchResults<HardwareAsset> {
 
-	public HardwareAssetSearchResults() {
-		super(new ArrayList<HardwareAsset>());
-	}
+    public HardwareAssetSearchResults() {
+	super(new ArrayList<HardwareAsset>());
+    }
 
-	public HardwareAssetSearchResults(List<HardwareAsset> results) {
-		super(results);
-	}
+    public HardwareAssetSearchResults(List<HardwareAsset> results) {
+	super(results);
+    }
 }

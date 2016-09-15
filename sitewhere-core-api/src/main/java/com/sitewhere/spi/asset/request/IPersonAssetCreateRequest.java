@@ -18,25 +18,25 @@ import com.sitewhere.spi.asset.IPersonAsset;
  */
 public interface IPersonAssetCreateRequest extends IAssetCreateRequest {
 
-	/**
-	 * Get the unique username.
-	 * 
-	 * @return
-	 */
-	public String getUserName();
+    /**
+     * Get the unique username.
+     * 
+     * @return
+     */
+    public String getUserName();
 
-	//
-	/**
-	 * Get the email address.
-	 * 
-	 * @return
-	 */
-	public String getEmailAddress();
+    //
+    /**
+     * Get the email address.
+     * 
+     * @return
+     */
+    public String getEmailAddress();
 
-	/**
-	 * Get a list of roles for the person.
-	 * 
-	 * @return
-	 */
-	public List<String> getRoles();
+    /**
+     * Get a list of roles for the person.
+     * 
+     * @return
+     */
+    public List<String> getRoles();
 }

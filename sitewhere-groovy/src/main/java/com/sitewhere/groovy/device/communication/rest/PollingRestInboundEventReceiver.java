@@ -32,144 +32,144 @@ import groovy.util.ScriptException;
  */
 public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Groovy variable that contains rest client helper class */
-	private static final String VAR_REST_CLIENT = "rest";
+    /** Groovy variable that contains rest client helper class */
+    private static final String VAR_REST_CLIENT = "rest";
 
-	/** Groovy variable that contains json payloads to be parsed */
-	private static final String VAR_PAYLOADS = "payloads";
+    /** Groovy variable that contains json payloads to be parsed */
+    private static final String VAR_PAYLOADS = "payloads";
 
-	/** Injected global Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected global Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Path to script used for decoder */
-	private String scriptPath;
+    /** Path to script used for decoder */
+    private String scriptPath;
 
-	/** Base URL used for REST calls */
-	private String baseUrl;
+    /** Base URL used for REST calls */
+    private String baseUrl;
 
-	/** Username used for REST calls */
-	private String username;
+    /** Username used for REST calls */
+    private String username;
 
-	/** Password used for REST calls */
-	private String password;
+    /** Password used for REST calls */
+    private String password;
 
-	/** Helper class for REST operations */
-	private RestHelper rest;
+    /** Helper class for REST operations */
+    private RestHelper rest;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		this.rest = new RestHelper(getBaseUrl(), getUsername(), getPassword());
-		super.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	this.rest = new RestHelper(getBaseUrl(), getUsername(), getPassword());
+	super.start();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.PollingInboundEventReceiver#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	super.stop();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void doPoll() throws SiteWhereException {
+	try {
+	    Binding binding = new Binding();
+	    List<byte[]> payloads = new ArrayList<byte[]>();
+	    binding.setVariable(VAR_REST_CLIENT, rest);
+	    binding.setVariable(VAR_PAYLOADS, payloads);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	    LOGGER.debug("About to execute '" + getScriptPath() + "'");
+	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
+
+	    // Process each payload individually.
+	    for (byte[] payload : payloads) {
+		EventProcessingLogic.processRawPayload(PollingRestInboundEventReceiver.this, payload, null);
+	    }
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy decoder script.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.communication.PollingInboundEventReceiver#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		super.stop();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * onEventPayloadReceived (java.lang.Object, java.util.Map)
+     */
+    @Override
+    public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
+	getEventSource().onEncodedEventReceived(this, payload, metadata);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void doPoll() throws SiteWhereException {
-		try {
-			Binding binding = new Binding();
-			List<byte[]> payloads = new ArrayList<byte[]>();
-			binding.setVariable(VAR_REST_CLIENT, rest);
-			binding.setVariable(VAR_PAYLOADS, payloads);
-			binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-			LOGGER.debug("About to execute '" + getScriptPath() + "'");
-			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-			payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getDisplayName()
+     */
+    @Override
+    public String getDisplayName() {
+	return "Polling REST Receiver";
+    }
 
-			// Process each payload individually.
-			for (byte[] payload : payloads) {
-				EventProcessingLogic.processRawPayload(PollingRestInboundEventReceiver.this, payload, null);
-			}
-		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy decoder script.", e);
-		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy decoder script.", e);
-		}
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-	 * onEventPayloadReceived (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
-		getEventSource().onEncodedEventReceived(this, payload, metadata);
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-	 * getDisplayName()
-	 */
-	@Override
-	public String getDisplayName() {
-		return "Polling REST Receiver";
-	}
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    public String getBaseUrl() {
+	return baseUrl;
+    }
 
-	public String getScriptPath() {
-		return scriptPath;
-	}
+    public void setBaseUrl(String baseUrl) {
+	this.baseUrl = baseUrl;
+    }
 
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public String getUsername() {
+	return username;
+    }
 
-	public String getBaseUrl() {
-		return baseUrl;
-	}
+    public void setUsername(String username) {
+	this.username = username;
+    }
 
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
+    public String getPassword() {
+	return password;
+    }
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 }

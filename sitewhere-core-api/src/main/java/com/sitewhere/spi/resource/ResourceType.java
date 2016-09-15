@@ -7,12 +7,12 @@ package com.sitewhere.spi.resource;
  */
 public enum ResourceType {
 
-	/** SiteWhere configuration file */
-	ConfigurationFile,
+    /** SiteWhere configuration file */
+    ConfigurationFile,
 
-	/** Groovy script */
-	GroovyScript,
+    /** Groovy script */
+    GroovyScript,
 
-	/** Unknown type */
-	Unknown;
+    /** Unknown type */
+    Unknown;
 }

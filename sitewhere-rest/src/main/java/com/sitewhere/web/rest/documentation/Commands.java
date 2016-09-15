@@ -20,52 +20,52 @@ import com.sitewhere.web.rest.documentation.ExampleData.Command_SetReportInterva
  */
 public class Commands {
 
-	public static class DeviceCommandUpdateRequest {
+    public static class DeviceCommandUpdateRequest {
 
-		public Object generate() throws SiteWhereException {
-			DeviceCommandCreateRequest request = new DeviceCommandCreateRequest();
-			request.setName("setReportIntervalUpd");
-			request.setDescription("Set the device reporting interval (in seconds) (updated).");
-			request.setNamespace("http://mycompany.com/devices");
-			CommandParameter interval = new CommandParameter();
-			interval.setName("interval");
-			interval.setType(ParameterType.Int32);
-			interval.setRequired(false);
-			request.getParameters().add(interval);
-			CommandParameter reboot = new CommandParameter();
-			reboot.setName("reboot");
-			reboot.setType(ParameterType.Bool);
-			reboot.setRequired(false);
-			request.getParameters().add(reboot);
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    DeviceCommandCreateRequest request = new DeviceCommandCreateRequest();
+	    request.setName("setReportIntervalUpd");
+	    request.setDescription("Set the device reporting interval (in seconds) (updated).");
+	    request.setNamespace("http://mycompany.com/devices");
+	    CommandParameter interval = new CommandParameter();
+	    interval.setName("interval");
+	    interval.setType(ParameterType.Int32);
+	    interval.setRequired(false);
+	    request.getParameters().add(interval);
+	    CommandParameter reboot = new CommandParameter();
+	    reboot.setName("reboot");
+	    reboot.setType(ParameterType.Bool);
+	    reboot.setRequired(false);
+	    request.getParameters().add(reboot);
+	    return request;
 	}
+    }
 
-	public static class DeviceCommandUpdateResponse {
+    public static class DeviceCommandUpdateResponse {
 
-		public Object generate() throws SiteWhereException {
-			Command_SetReportInterval command = new ExampleData.Command_SetReportInterval();
-			command.setName("setReportIntervalUpd");
-			command.setDescription("Set the device reporting interval (in seconds) (updated).");
-			command.getParameters().clear();
-			CommandParameter interval = new CommandParameter();
-			interval.setName("interval");
-			interval.setType(ParameterType.Int32);
-			interval.setRequired(false);
-			command.getParameters().add(interval);
-			CommandParameter reboot = new CommandParameter();
-			reboot.setName("reboot");
-			reboot.setType(ParameterType.Bool);
-			reboot.setRequired(false);
-			command.getParameters().add(reboot);
-			return command;
-		}
+	public Object generate() throws SiteWhereException {
+	    Command_SetReportInterval command = new ExampleData.Command_SetReportInterval();
+	    command.setName("setReportIntervalUpd");
+	    command.setDescription("Set the device reporting interval (in seconds) (updated).");
+	    command.getParameters().clear();
+	    CommandParameter interval = new CommandParameter();
+	    interval.setName("interval");
+	    interval.setType(ParameterType.Int32);
+	    interval.setRequired(false);
+	    command.getParameters().add(interval);
+	    CommandParameter reboot = new CommandParameter();
+	    reboot.setName("reboot");
+	    reboot.setType(ParameterType.Bool);
+	    reboot.setRequired(false);
+	    command.getParameters().add(reboot);
+	    return command;
 	}
+    }
 
-	public static class DeviceCommandByTokenResponse {
+    public static class DeviceCommandByTokenResponse {
 
-		public Object generate() throws SiteWhereException {
-			return ExampleData.COMMAND_SET_RPT_INTV;
-		}
+	public Object generate() throws SiteWhereException {
+	    return ExampleData.COMMAND_SET_RPT_INTV;
 	}
+    }
 }

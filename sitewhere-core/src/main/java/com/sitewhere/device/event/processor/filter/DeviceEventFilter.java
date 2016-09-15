@@ -22,33 +22,33 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public abstract class DeviceEventFilter extends TenantLifecycleComponent implements IDeviceEventFilter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public DeviceEventFilter() {
-		super(LifecycleComponentType.OutboundEventProcessorFilter);
-	}
+    public DeviceEventFilter() {
+	super(LifecycleComponentType.OutboundEventProcessorFilter);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 }

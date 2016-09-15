@@ -17,54 +17,57 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
  */
 public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 8950287661317676377L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8950287661317676377L;
 
-	/** Category id */
-	private String id;
+    /** Category id */
+    private String id;
 
-	/** Category name */
-	private String name;
+    /** Category name */
+    private String name;
 
-	/** Category asset type */
-	private AssetType assetType;
+    /** Category asset type */
+    private AssetType assetType;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getId()
+     */
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getAssetType()
-	 */
-	public AssetType getAssetType() {
-		return assetType;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getAssetType(
+     * )
+     */
+    public AssetType getAssetType() {
+	return assetType;
+    }
 
-	public void setAssetType(AssetType assetType) {
-		this.assetType = assetType;
-	}
+    public void setAssetType(AssetType assetType) {
+	this.assetType = assetType;
+    }
 }

@@ -8,41 +8,41 @@
 package com.sitewhere.spi.device.command;
 
 /**
- * Indicates parameter datatype. These are the same datatypes used in <a
- * href="https://developers.google.com/protocol-buffers/docs/proto">Google Protocol
- * Buffers</a>.
+ * Indicates parameter datatype. These are the same datatypes used in
+ * <a href="https://developers.google.com/protocol-buffers/docs/proto">Google
+ * Protocol Buffers</a>.
  * 
  * @author Derek
  */
 public enum ParameterType {
 
-	Double,
+    Double,
 
-	Float,
+    Float,
 
-	Int32,
+    Int32,
 
-	Int64,
+    Int64,
 
-	UInt32,
+    UInt32,
 
-	UInt64,
+    UInt64,
 
-	SInt32,
+    SInt32,
 
-	SInt64,
+    SInt64,
 
-	Fixed32,
+    Fixed32,
 
-	Fixed64,
+    Fixed64,
 
-	SFixed32,
+    SFixed32,
 
-	SFixed64,
+    SFixed64,
 
-	Bool,
+    Bool,
 
-	String,
+    String,
 
-	Bytes;
+    Bytes;
 }

@@ -17,14 +17,14 @@ import java.util.List;
  */
 public class CacheSummary {
 
-	/** List of cache information entries */
-	private List<CacheInformation> caches = new ArrayList<CacheInformation>();
+    /** List of cache information entries */
+    private List<CacheInformation> caches = new ArrayList<CacheInformation>();
 
-	public List<CacheInformation> getCaches() {
-		return caches;
-	}
+    public List<CacheInformation> getCaches() {
+	return caches;
+    }
 
-	public void setCaches(List<CacheInformation> caches) {
-		this.caches = caches;
-	}
+    public void setCaches(List<CacheInformation> caches) {
+	this.caches = caches;
+    }
 }

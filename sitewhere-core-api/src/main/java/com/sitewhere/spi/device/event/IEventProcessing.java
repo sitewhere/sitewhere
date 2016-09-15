@@ -14,37 +14,38 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * Base interface for system components that enable the event processing pipeline.
+ * Base interface for system components that enable the event processing
+ * pipeline.
  * 
  * @author Derek
  */
 public interface IEventProcessing extends ITenantLifecycleComponent {
 
-	/**
-	 * Get the strategy for moving decoded events into the inbound chain.
-	 * 
-	 * @return
-	 */
-	public IInboundProcessingStrategy getInboundProcessingStrategy();
+    /**
+     * Get the strategy for moving decoded events into the inbound chain.
+     * 
+     * @return
+     */
+    public IInboundProcessingStrategy getInboundProcessingStrategy();
 
-	/**
-	 * Get chain of processor that will act on inbound data.
-	 * 
-	 * @return
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain();
+    /**
+     * Get chain of processor that will act on inbound data.
+     * 
+     * @return
+     */
+    public IInboundEventProcessorChain getInboundEventProcessorChain();
 
-	/**
-	 * Get the strategy for moving processed events into the outbound chain.
-	 * 
-	 * @return
-	 */
-	public IOutboundProcessingStrategy getOutboundProcessingStrategy();
+    /**
+     * Get the strategy for moving processed events into the outbound chain.
+     * 
+     * @return
+     */
+    public IOutboundProcessingStrategy getOutboundProcessingStrategy();
 
-	/**
-	 * Get chain of processors that will act on outbound data.
-	 * 
-	 * @return
-	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain();
+    /**
+     * Get chain of processors that will act on outbound data.
+     * 
+     * @return
+     */
+    public IOutboundEventProcessorChain getOutboundEventProcessorChain();
 }

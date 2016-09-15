@@ -24,83 +24,84 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IDeviceCommunication extends ITenantLifecycleComponent {
 
-	/**
-	 * Get the list of sources that bring device event data into the system.
-	 * 
-	 * @return
-	 */
-	public List<IInboundEventSource<?>> getInboundEventSources();
+    /**
+     * Get the list of sources that bring device event data into the system.
+     * 
+     * @return
+     */
+    public List<IInboundEventSource<?>> getInboundEventSources();
 
-	/**
-	 * Get the configured registration manager.
-	 * 
-	 * @return
-	 */
-	public IRegistrationManager getRegistrationManager();
+    /**
+     * Get the configured registration manager.
+     * 
+     * @return
+     */
+    public IRegistrationManager getRegistrationManager();
 
-	/**
-	 * Get manager for generating symbols for entities.
-	 * 
-	 * @return
-	 */
-	public ISymbolGeneratorManager getSymbolGeneratorManager();
+    /**
+     * Get manager for generating symbols for entities.
+     * 
+     * @return
+     */
+    public ISymbolGeneratorManager getSymbolGeneratorManager();
 
-	/**
-	 * Get the configured batch operation manager.
-	 * 
-	 * @return
-	 */
-	public IBatchOperationManager getBatchOperationManager();
+    /**
+     * Get the configured batch operation manager.
+     * 
+     * @return
+     */
+    public IBatchOperationManager getBatchOperationManager();
 
-	/**
-	 * Get the configured device stream manager.
-	 * 
-	 * @return
-	 */
-	public IDeviceStreamManager getDeviceStreamManager();
+    /**
+     * Get the configured device stream manager.
+     * 
+     * @return
+     */
+    public IDeviceStreamManager getDeviceStreamManager();
 
-	/**
-	 * Get the configured device presence manager.
-	 * 
-	 * @return
-	 */
-	public IDevicePresenceManager getDevicePresenceManager();
+    /**
+     * Get the configured device presence manager.
+     * 
+     * @return
+     */
+    public IDevicePresenceManager getDevicePresenceManager();
 
-	/**
-	 * Get the command processing strategy.
-	 * 
-	 * @return
-	 */
-	public ICommandProcessingStrategy getCommandProcessingStrategy();
+    /**
+     * Get the command processing strategy.
+     * 
+     * @return
+     */
+    public ICommandProcessingStrategy getCommandProcessingStrategy();
 
-	/**
-	 * Get the router that chooses which destination will process a command.
-	 * 
-	 * @return
-	 */
-	public IOutboundCommandRouter getOutboundCommandRouter();
+    /**
+     * Get the router that chooses which destination will process a command.
+     * 
+     * @return
+     */
+    public IOutboundCommandRouter getOutboundCommandRouter();
 
-	/**
-	 * Get the list of command destinations that can deliver commands to devices.
-	 * 
-	 * @return
-	 */
-	public List<ICommandDestination<?, ?>> getCommandDestinations();
+    /**
+     * Get the list of command destinations that can deliver commands to
+     * devices.
+     * 
+     * @return
+     */
+    public List<ICommandDestination<?, ?>> getCommandDestinations();
 
-	/**
-	 * Deliver a command invocation.
-	 * 
-	 * @param invocation
-	 * @throws SiteWhereException
-	 */
-	public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException;
+    /**
+     * Deliver a command invocation.
+     * 
+     * @param invocation
+     * @throws SiteWhereException
+     */
+    public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
-	/**
-	 * Deliver a system command.
-	 * 
-	 * @param hardwareId
-	 * @param command
-	 * @throws SiteWhereException
-	 */
-	public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException;
+    /**
+     * Deliver a system command.
+     * 
+     * @param hardwareId
+     * @param command
+     * @throws SiteWhereException
+     */
+    public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException;
 }

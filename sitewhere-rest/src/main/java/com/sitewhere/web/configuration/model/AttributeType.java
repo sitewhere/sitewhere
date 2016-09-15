@@ -14,21 +14,21 @@ package com.sitewhere.web.configuration.model;
  */
 public enum AttributeType {
 
-	/** String value */
-	String,
+    /** String value */
+    String,
 
-	/** Whole number value */
-	Integer,
+    /** Whole number value */
+    Integer,
 
-	/** Decimal number value */
-	Decimal,
+    /** Decimal number value */
+    Decimal,
 
-	/** Boolean value */
-	Boolean,
+    /** Boolean value */
+    Boolean,
 
-	/** Reference to a site by token */
-	SiteReference,
+    /** Reference to a site by token */
+    SiteReference,
 
-	/** Reference to a specification by token */
-	SpecificationReference;
+    /** Reference to a specification by token */
+    SpecificationReference;
 }

@@ -20,41 +20,41 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class SystemInfo {
 
-	public static class GetVersionResponse {
+    public static class GetVersionResponse {
 
-		public Object generate() throws SiteWhereException {
-			Version version = new Version();
-			version.setVersionIdentifier("1.3.0");
-			version.setEdition("Community Edition");
-			version.setEditionIdentifier("CE");
-			version.setBuildTimestamp("20151231120000");
-			return version;
-		}
+	public Object generate() throws SiteWhereException {
+	    Version version = new Version();
+	    version.setVersionIdentifier("1.3.0");
+	    version.setEdition("Community Edition");
+	    version.setEditionIdentifier("CE");
+	    version.setBuildTimestamp("20151231120000");
+	    return version;
 	}
+    }
 
-	public static class GetServerRuntimeResponse {
+    public static class GetServerRuntimeResponse {
 
-		public Object generate() throws SiteWhereException {
-			SiteWhereServerRuntime state = new SiteWhereServerRuntime();
+	public Object generate() throws SiteWhereException {
+	    SiteWhereServerRuntime state = new SiteWhereServerRuntime();
 
-			GeneralInformation general = new GeneralInformation();
-			general.setVersionIdentifier("1.3.0");
-			general.setEdition("Community Edition");
-			general.setEditionIdentifier("CE");
-			general.setBuildTimestamp("20151231120000");
-			general.setOperatingSystemName("Windows 8.1");
-			general.setOperatingSystemVersion("6.3");
-			general.setUptime((long) 107297);
-			state.setGeneral(general);
+	    GeneralInformation general = new GeneralInformation();
+	    general.setVersionIdentifier("1.3.0");
+	    general.setEdition("Community Edition");
+	    general.setEditionIdentifier("CE");
+	    general.setBuildTimestamp("20151231120000");
+	    general.setOperatingSystemName("Windows 8.1");
+	    general.setOperatingSystemVersion("6.3");
+	    general.setUptime((long) 107297);
+	    state.setGeneral(general);
 
-			JavaInformation java = new JavaInformation();
-			java.setJvmVendor("Oracle Corporation");
-			java.setJvmVersion("1.7.0_79");
-			java.setJvmTotalMemory((long) 576192512);
-			java.setJvmFreeMemory((long) 275942376);
-			java.setJvmMaxMemory((long) 954728448);
-			state.setJava(java);
-			return state;
-		}
+	    JavaInformation java = new JavaInformation();
+	    java.setJvmVendor("Oracle Corporation");
+	    java.setJvmVersion("1.7.0_79");
+	    java.setJvmTotalMemory((long) 576192512);
+	    java.setJvmFreeMemory((long) 275942376);
+	    java.setJvmMaxMemory((long) 954728448);
+	    state.setJava(java);
+	    return state;
 	}
+    }
 }

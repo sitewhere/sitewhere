@@ -21,54 +21,54 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class DeviceStreamCreateRequest implements IDeviceStreamCreateRequest {
 
-	/** Stream id */
-	private String streamId;
+    /** Stream id */
+    private String streamId;
 
-	/** Content type */
-	private String contentType;
+    /** Content type */
+    private String contentType;
 
-	/** Metadata */
-	private Map<String, String> metadata;
+    /** Metadata */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#getStreamId()
-	 */
-	public String getStreamId() {
-		return streamId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#
+     * getStreamId()
+     */
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#getContentType()
-	 */
-	public String getContentType() {
-		return contentType;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#
+     * getContentType()
+     */
+    public String getContentType() {
+	return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+	this.contentType = contentType;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#
+     * getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
 }

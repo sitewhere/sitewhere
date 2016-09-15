@@ -7,9 +7,9 @@ package com.sitewhere.spi.resource;
  */
 public enum ResourceCreateFailReason {
 
-	/** Resource already exists and overwrite not enabled */
-	ResourceExists,
+    /** Resource already exists and overwrite not enabled */
+    ResourceExists,
 
-	/** Unable to store resource on underlying medium */
-	StorageFailure;
+    /** Unable to store resource on underlying medium */
+    StorageFailure;
 }

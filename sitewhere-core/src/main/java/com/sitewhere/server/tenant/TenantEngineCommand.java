@@ -19,14 +19,14 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
  */
 public abstract class TenantEngineCommand implements Callable<ICommandResponse> {
 
-	/** Tenant engine */
-	private ISiteWhereTenantEngine engine;
+    /** Tenant engine */
+    private ISiteWhereTenantEngine engine;
 
-	public ISiteWhereTenantEngine getEngine() {
-		return engine;
-	}
+    public ISiteWhereTenantEngine getEngine() {
+	return engine;
+    }
 
-	public void setEngine(ISiteWhereTenantEngine engine) {
-		this.engine = engine;
-	}
+    public void setEngine(ISiteWhereTenantEngine engine) {
+	this.engine = engine;
+    }
 }

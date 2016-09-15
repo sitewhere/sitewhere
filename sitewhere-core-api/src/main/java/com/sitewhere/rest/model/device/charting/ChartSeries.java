@@ -20,40 +20,40 @@ import com.sitewhere.spi.device.charting.IChartSeries;
  */
 public class ChartSeries<T> implements IChartSeries<T> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 6247118353120214502L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 6247118353120214502L;
 
-	/** Measurement id */
-	private String measurementId;
+    /** Measurement id */
+    private String measurementId;
 
-	/** Entries for the chart series */
-	private List<IChartEntry<T>> entries = new ArrayList<IChartEntry<T>>();
+    /** Entries for the chart series */
+    private List<IChartEntry<T>> entries = new ArrayList<IChartEntry<T>>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.charting.IChartSeries#getMeasurementId()
-	 */
-	@Override
-	public String getMeasurementId() {
-		return measurementId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.charting.IChartSeries#getMeasurementId()
+     */
+    @Override
+    public String getMeasurementId() {
+	return measurementId;
+    }
 
-	public void setMeasurementId(String measurementId) {
-		this.measurementId = measurementId;
-	}
+    public void setMeasurementId(String measurementId) {
+	this.measurementId = measurementId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.charting.IChartSeries#getEntries()
-	 */
-	@Override
-	public List<IChartEntry<T>> getEntries() {
-		return entries;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.charting.IChartSeries#getEntries()
+     */
+    @Override
+    public List<IChartEntry<T>> getEntries() {
+	return entries;
+    }
 
-	public void setEntries(List<IChartEntry<T>> entries) {
-		this.entries = entries;
-	}
+    public void setEntries(List<IChartEntry<T>> entries) {
+	this.entries = entries;
+    }
 }

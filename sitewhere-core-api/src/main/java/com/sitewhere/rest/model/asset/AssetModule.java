@@ -17,59 +17,59 @@ import com.sitewhere.spi.asset.IAssetModule;
  */
 public class AssetModule {
 
-	/** Module id */
-	private String id;
+    /** Module id */
+    private String id;
 
-	/** Module name */
-	private String name;
+    /** Module name */
+    private String name;
 
-	/** Asset type */
-	private AssetType assetType;
+    /** Asset type */
+    private AssetType assetType;
 
-	public AssetModule() {
-	}
+    public AssetModule() {
+    }
 
-	public AssetModule(String id, String name, AssetType assetType) {
-		this.id = id;
-		this.name = name;
-		this.assetType = assetType;
-	}
+    public AssetModule(String id, String name, AssetType assetType) {
+	this.id = id;
+	this.name = name;
+	this.assetType = assetType;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public AssetType getAssetType() {
-		return assetType;
-	}
+    public AssetType getAssetType() {
+	return assetType;
+    }
 
-	public void setAssetType(AssetType assetType) {
-		this.assetType = assetType;
-	}
+    public void setAssetType(AssetType assetType) {
+	this.assetType = assetType;
+    }
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static AssetModule copy(IAssetModule<?> input) {
-		AssetModule module = new AssetModule();
-		module.setId(input.getId());
-		module.setName(input.getName());
-		module.setAssetType(input.getAssetType());
-		return module;
-	}
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static AssetModule copy(IAssetModule<?> input) {
+	AssetModule module = new AssetModule();
+	module.setId(input.getId());
+	module.setName(input.getName());
+	module.setAssetType(input.getAssetType());
+	return module;
+    }
 }

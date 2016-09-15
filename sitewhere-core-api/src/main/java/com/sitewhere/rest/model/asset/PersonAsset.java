@@ -21,61 +21,61 @@ import java.io.Serializable;
  */
 public class PersonAsset extends Asset implements IPersonAsset, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 367520855621148358L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 367520855621148358L;
 
-	/** Asset username */
-	private String userName;
+    /** Asset username */
+    private String userName;
 
-	/** Asset email address */
-	private String emailAddress;
+    /** Asset email address */
+    private String emailAddress;
 
-	/** List of roles */
-	private List<String> roles = new ArrayList<String>();
+    /** List of roles */
+    private List<String> roles = new ArrayList<String>();
 
-	public PersonAsset() {
-		setType(AssetType.Person);
-	}
+    public PersonAsset() {
+	setType(AssetType.Person);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IPersonAsset#getUserName()
-	 */
-	@Override
-	public String getUserName() {
-		return userName;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IPersonAsset#getUserName()
+     */
+    @Override
+    public String getUserName() {
+	return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+	this.userName = userName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IPersonAsset#getEmailAddress()
-	 */
-	@Override
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IPersonAsset#getEmailAddress()
+     */
+    @Override
+    public String getEmailAddress() {
+	return emailAddress;
+    }
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IPersonAsset#getRoles()
-	 */
-	@Override
-	public List<String> getRoles() {
-		return roles;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IPersonAsset#getRoles()
+     */
+    @Override
+    public List<String> getRoles() {
+	return roles;
+    }
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(List<String> roles) {
+	this.roles = roles;
+    }
 }

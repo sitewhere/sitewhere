@@ -58,379 +58,379 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceManagementDecorator extends LifecycleComponentDecorator implements IDeviceManagement {
 
-	/** Delegate instance */
-	private IDeviceManagement delegate;
-
-	public DeviceManagementDecorator(IDeviceManagement delegate) {
-		super(delegate);
-		this.delegate = delegate;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-	 * com. sitewhere .spi.user.ITenant)
-	 */
-	@Override
-	public void setTenant(ITenant tenant) {
-		delegate.setTenant(tenant);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
-	 */
-	@Override
-	public ITenant getTenant() {
-		return delegate.getTenant();
-	}
-
-	@Override
-	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
-			throws SiteWhereException {
-		return delegate.createDeviceSpecification(request);
-	}
-
-	@Override
-	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-		return delegate.getDeviceSpecificationByToken(token);
-	}
-
-	@Override
-	public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
-			throws SiteWhereException {
-		return delegate.updateDeviceSpecification(token, request);
-	}
-
-	@Override
-	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listDeviceSpecifications(includeDeleted, criteria);
-	}
-
-	@Override
-	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
-		return delegate.deleteDeviceSpecification(token, force);
-	}
-
-	@Override
-	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
-			throws SiteWhereException {
-		return delegate.createDeviceCommand(spec, request);
-	}
-
-	@Override
-	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-		return delegate.getDeviceCommandByToken(token);
-	}
-
-	@Override
-	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
-			throws SiteWhereException {
-		return delegate.updateDeviceCommand(token, request);
-	}
-
-	@Override
-	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted) throws SiteWhereException {
-		return delegate.listDeviceCommands(token, includeDeleted);
-	}
-
-	@Override
-	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
-		return delegate.deleteDeviceCommand(token, force);
-	}
-
-	@Override
-	public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-		return delegate.createDevice(device);
-	}
-
-	@Override
-	public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-		return delegate.getDeviceByHardwareId(hardwareId);
-	}
-
-	@Override
-	public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-		return delegate.updateDevice(hardwareId, request);
-	}
-
-	@Override
-	public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-		return delegate.getCurrentDeviceAssignment(device);
-	}
-
-	@Override
-	public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listDevices(includeDeleted, criteria);
-	}
-
-	@Override
-	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
-			throws SiteWhereException {
-		return delegate.createDeviceElementMapping(hardwareId, mapping);
-	}
-
-	@Override
-	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
-		return delegate.deleteDeviceElementMapping(hardwareId, path);
-	}
-
-	@Override
-	public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-		return delegate.deleteDevice(hardwareId, force);
-	}
-
-	@Override
-	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-		return delegate.createDeviceAssignment(request);
-	}
-
-	@Override
-	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-		return delegate.getDeviceAssignmentByToken(token);
-	}
-
-	@Override
-	public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-		return delegate.deleteDeviceAssignment(token, force);
-	}
-
-	@Override
-	public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return delegate.getDeviceForAssignment(assignment);
-	}
-
-	@Override
-	public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return delegate.getSiteForAssignment(assignment);
-	}
-
-	@Override
-	public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
-			throws SiteWhereException {
-		return delegate.updateDeviceAssignmentMetadata(token, metadata);
-	}
-
-	@Override
-	public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
-			throws SiteWhereException {
-		return delegate.updateDeviceAssignmentStatus(token, status);
-	}
-
-	@Override
-	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
-			throws SiteWhereException {
-		return delegate.updateDeviceAssignmentState(token, state);
-	}
-
-	@Override
-	public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-		return delegate.endDeviceAssignment(token);
-	}
-
-	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return delegate.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.getMissingDeviceAssignments(siteToken, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
-			IAssignmentSearchCriteria criteria) throws SiteWhereException {
-		return delegate.getDeviceAssignmentsForSite(siteToken, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
-			IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-		return delegate.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
-	}
-
-	@Override
-	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
-			throws SiteWhereException {
-		return delegate.createDeviceStream(assignmentToken, request);
-	}
-
-	@Override
-	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
-		return delegate.getDeviceStream(assignmentToken, streamId);
-	}
-
-	@Override
-	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listDeviceStreams(assignmentToken, criteria);
-	}
-
-	@Override
-	public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
-		return delegate.createSite(request);
-	}
-
-	@Override
-	public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
-		return delegate.deleteSite(siteToken, force);
-	}
-
-	@Override
-	public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
-		return delegate.updateSite(siteToken, request);
-	}
-
-	@Override
-	public ISite getSiteByToken(String token) throws SiteWhereException {
-		return delegate.getSiteByToken(token);
-	}
-
-	@Override
-	public ISearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listSites(criteria);
-	}
-
-	@Override
-	public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-		return delegate.createZone(site, request);
-	}
-
-	@Override
-	public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
-		return delegate.updateZone(token, request);
-	}
-
-	@Override
-	public IZone getZone(String zoneToken) throws SiteWhereException {
-		return delegate.getZone(zoneToken);
-	}
-
-	@Override
-	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listZones(siteToken, criteria);
-	}
-
-	@Override
-	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
-		return delegate.deleteZone(zoneToken, force);
-	}
-
-	@Override
-	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-		return delegate.createDeviceGroup(request);
-	}
-
-	@Override
-	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
-		return delegate.updateDeviceGroup(token, request);
-	}
-
-	@Override
-	public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
-		return delegate.getDeviceGroup(token);
-	}
-
-	@Override
-	public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listDeviceGroups(includeDeleted, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listDeviceGroupsWithRole(role, includeDeleted, criteria);
-	}
-
-	@Override
-	public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
-			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-		return delegate.addDeviceGroupElements(groupToken, elements);
-	}
-
-	@Override
-	public List<IDeviceGroupElement> removeDeviceGroupElements(String groupToken,
-			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-		return delegate.removeDeviceGroupElements(groupToken, elements);
-	}
-
-	@Override
-	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listDeviceGroupElements(groupToken, criteria);
-	}
-
-	@Override
-	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
-		return delegate.deleteDeviceGroup(token, force);
-	}
-
-	@Override
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
-		return delegate.createBatchOperation(request);
-	}
-
-	@Override
-	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
-			throws SiteWhereException {
-		return delegate.updateBatchOperation(token, request);
-	}
-
-	@Override
-	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-		return delegate.getBatchOperation(token);
-	}
-
-	@Override
-	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listBatchOperations(includeDeleted, criteria);
-	}
-
-	@Override
-	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-		return delegate.deleteBatchOperation(token, force);
-	}
-
-	@Override
-	public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
-			throws SiteWhereException {
-		return delegate.listBatchElements(batchToken, criteria);
-	}
-
-	@Override
-	public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
-			throws SiteWhereException {
-		return delegate.updateBatchElement(operationToken, index, request);
-	}
-
-	@Override
-	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
-			throws SiteWhereException {
-		return delegate.createBatchCommandInvocation(request);
-	}
-
-	public IDeviceManagement getDelegate() {
-		return delegate;
-	}
-
-	public void setDelegate(IDeviceManagement delegate) {
-		this.delegate = delegate;
-	}
+    /** Delegate instance */
+    private IDeviceManagement delegate;
+
+    public DeviceManagementDecorator(IDeviceManagement delegate) {
+	super(delegate);
+	this.delegate = delegate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
+     * com. sitewhere .spi.user.ITenant)
+     */
+    @Override
+    public void setTenant(ITenant tenant) {
+	delegate.setTenant(tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     */
+    @Override
+    public ITenant getTenant() {
+	return delegate.getTenant();
+    }
+
+    @Override
+    public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
+	    throws SiteWhereException {
+	return delegate.createDeviceSpecification(request);
+    }
+
+    @Override
+    public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+	return delegate.getDeviceSpecificationByToken(token);
+    }
+
+    @Override
+    public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+	    throws SiteWhereException {
+	return delegate.updateDeviceSpecification(token, request);
+    }
+
+    @Override
+    public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
+	    ISearchCriteria criteria) throws SiteWhereException {
+	return delegate.listDeviceSpecifications(includeDeleted, criteria);
+    }
+
+    @Override
+    public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
+	return delegate.deleteDeviceSpecification(token, force);
+    }
+
+    @Override
+    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+	    throws SiteWhereException {
+	return delegate.createDeviceCommand(spec, request);
+    }
+
+    @Override
+    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+	return delegate.getDeviceCommandByToken(token);
+    }
+
+    @Override
+    public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+	    throws SiteWhereException {
+	return delegate.updateDeviceCommand(token, request);
+    }
+
+    @Override
+    public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted) throws SiteWhereException {
+	return delegate.listDeviceCommands(token, includeDeleted);
+    }
+
+    @Override
+    public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
+	return delegate.deleteDeviceCommand(token, force);
+    }
+
+    @Override
+    public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
+	return delegate.createDevice(device);
+    }
+
+    @Override
+    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
+	return delegate.getDeviceByHardwareId(hardwareId);
+    }
+
+    @Override
+    public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
+	return delegate.updateDevice(hardwareId, request);
+    }
+
+    @Override
+    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
+	return delegate.getCurrentDeviceAssignment(device);
+    }
+
+    @Override
+    public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listDevices(includeDeleted, criteria);
+    }
+
+    @Override
+    public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+	    throws SiteWhereException {
+	return delegate.createDeviceElementMapping(hardwareId, mapping);
+    }
+
+    @Override
+    public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
+	return delegate.deleteDeviceElementMapping(hardwareId, path);
+    }
+
+    @Override
+    public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
+	return delegate.deleteDevice(hardwareId, force);
+    }
+
+    @Override
+    public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
+	return delegate.createDeviceAssignment(request);
+    }
+
+    @Override
+    public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
+	return delegate.getDeviceAssignmentByToken(token);
+    }
+
+    @Override
+    public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
+	return delegate.deleteDeviceAssignment(token, force);
+    }
+
+    @Override
+    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
+	return delegate.getDeviceForAssignment(assignment);
+    }
+
+    @Override
+    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
+	return delegate.getSiteForAssignment(assignment);
+    }
+
+    @Override
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+	    throws SiteWhereException {
+	return delegate.updateDeviceAssignmentMetadata(token, metadata);
+    }
+
+    @Override
+    public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
+	    throws SiteWhereException {
+	return delegate.updateDeviceAssignmentStatus(token, status);
+    }
+
+    @Override
+    public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
+	    throws SiteWhereException {
+	return delegate.updateDeviceAssignmentState(token, state);
+    }
+
+    @Override
+    public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
+	return delegate.endDeviceAssignment(token);
+    }
+
+    @Override
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	return delegate.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
+    }
+
+    @Override
+    public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.getMissingDeviceAssignments(siteToken, criteria);
+    }
+
+    @Override
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
+    }
+
+    @Override
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
+	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
+	return delegate.getDeviceAssignmentsForSite(siteToken, criteria);
+    }
+
+    @Override
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
+	return delegate.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
+    }
+
+    @Override
+    public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+	    throws SiteWhereException {
+	return delegate.createDeviceStream(assignmentToken, request);
+    }
+
+    @Override
+    public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
+	return delegate.getDeviceStream(assignmentToken, streamId);
+    }
+
+    @Override
+    public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listDeviceStreams(assignmentToken, criteria);
+    }
+
+    @Override
+    public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
+	return delegate.createSite(request);
+    }
+
+    @Override
+    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
+	return delegate.deleteSite(siteToken, force);
+    }
+
+    @Override
+    public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
+	return delegate.updateSite(siteToken, request);
+    }
+
+    @Override
+    public ISite getSiteByToken(String token) throws SiteWhereException {
+	return delegate.getSiteByToken(token);
+    }
+
+    @Override
+    public ISearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
+	return delegate.listSites(criteria);
+    }
+
+    @Override
+    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
+	return delegate.createZone(site, request);
+    }
+
+    @Override
+    public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
+	return delegate.updateZone(token, request);
+    }
+
+    @Override
+    public IZone getZone(String zoneToken) throws SiteWhereException {
+	return delegate.getZone(zoneToken);
+    }
+
+    @Override
+    public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
+	return delegate.listZones(siteToken, criteria);
+    }
+
+    @Override
+    public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
+	return delegate.deleteZone(zoneToken, force);
+    }
+
+    @Override
+    public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
+	return delegate.createDeviceGroup(request);
+    }
+
+    @Override
+    public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
+	return delegate.updateDeviceGroup(token, request);
+    }
+
+    @Override
+    public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
+	return delegate.getDeviceGroup(token);
+    }
+
+    @Override
+    public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listDeviceGroups(includeDeleted, criteria);
+    }
+
+    @Override
+    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
+	    ISearchCriteria criteria) throws SiteWhereException {
+	return delegate.listDeviceGroupsWithRole(role, includeDeleted, criteria);
+    }
+
+    @Override
+    public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
+	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+	return delegate.addDeviceGroupElements(groupToken, elements);
+    }
+
+    @Override
+    public List<IDeviceGroupElement> removeDeviceGroupElements(String groupToken,
+	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+	return delegate.removeDeviceGroupElements(groupToken, elements);
+    }
+
+    @Override
+    public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listDeviceGroupElements(groupToken, criteria);
+    }
+
+    @Override
+    public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
+	return delegate.deleteDeviceGroup(token, force);
+    }
+
+    @Override
+    public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
+	return delegate.createBatchOperation(request);
+    }
+
+    @Override
+    public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+	    throws SiteWhereException {
+	return delegate.updateBatchOperation(token, request);
+    }
+
+    @Override
+    public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
+	return delegate.getBatchOperation(token);
+    }
+
+    @Override
+    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listBatchOperations(includeDeleted, criteria);
+    }
+
+    @Override
+    public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
+	return delegate.deleteBatchOperation(token, force);
+    }
+
+    @Override
+    public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+	    throws SiteWhereException {
+	return delegate.listBatchElements(batchToken, criteria);
+    }
+
+    @Override
+    public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+	    throws SiteWhereException {
+	return delegate.updateBatchElement(operationToken, index, request);
+    }
+
+    @Override
+    public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+	    throws SiteWhereException {
+	return delegate.createBatchCommandInvocation(request);
+    }
+
+    public IDeviceManagement getDelegate() {
+	return delegate;
+    }
+
+    public void setDelegate(IDeviceManagement delegate) {
+	this.delegate = delegate;
+    }
 }

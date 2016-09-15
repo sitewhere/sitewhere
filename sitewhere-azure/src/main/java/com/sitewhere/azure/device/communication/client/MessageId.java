@@ -30,34 +30,31 @@ public class MessageId {
     private final String offset;
     private final long sequenceNumber;
 
-    public MessageId(
-            String partitionId,
-            String offset,
-            long sequenceNumber) {
-        this.partitionId = partitionId;
-        this.offset = offset;
-        this.sequenceNumber = sequenceNumber;
+    public MessageId(String partitionId, String offset, long sequenceNumber) {
+	this.partitionId = partitionId;
+	this.offset = offset;
+	this.sequenceNumber = sequenceNumber;
     }
 
     public static MessageId create(String partitionId, String offset, long sequenceNumber) {
-        return new MessageId(partitionId, offset, sequenceNumber);
+	return new MessageId(partitionId, offset, sequenceNumber);
     }
 
     public String getPartitionId() {
-        return this.partitionId;
+	return this.partitionId;
     }
 
     public String getOffset() {
-        return this.offset;
+	return this.offset;
     }
 
     public Long getSequenceNumber() {
-        return this.sequenceNumber;
+	return this.sequenceNumber;
     }
 
     @Override
     public String toString() {
-        return String.format("PartitionId: %s, Offset: %s, SequenceNumber: %s",
-                this.partitionId, this.offset, this.sequenceNumber);
+	return String.format("PartitionId: %s, Offset: %s, SequenceNumber: %s", this.partitionId, this.offset,
+		this.sequenceNumber);
     }
 }

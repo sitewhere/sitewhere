@@ -14,25 +14,25 @@ package com.sitewhere.hbase.device;
  */
 public class DeleteRecord {
 
-	private byte[] rowkey;
-	private byte[] payloadType;
-	private byte[] payload;
+    private byte[] rowkey;
+    private byte[] payloadType;
+    private byte[] payload;
 
-	public DeleteRecord(byte[] rowkey, byte[] payloadType, byte[] payload) {
-		this.rowkey = rowkey;
-		this.payloadType = payloadType;
-		this.payload = payload;
-	}
+    public DeleteRecord(byte[] rowkey, byte[] payloadType, byte[] payload) {
+	this.rowkey = rowkey;
+	this.payloadType = payloadType;
+	this.payload = payload;
+    }
 
-	public byte[] getRowkey() {
-		return rowkey;
-	}
+    public byte[] getRowkey() {
+	return rowkey;
+    }
 
-	public byte[] getPayloadType() {
-		return payloadType;
-	}
+    public byte[] getPayloadType() {
+	return payloadType;
+    }
 
-	public byte[] getPayload() {
-		return payload;
-	}
+    public byte[] getPayload() {
+	return payload;
+    }
 }

@@ -26,89 +26,88 @@ import com.sitewhere.spi.device.batch.IBatchOperation;
  */
 public class BatchOperations {
 
-	public static class GetBatchOperationResponse {
+    public static class GetBatchOperationResponse {
 
-		public Object generate() throws SiteWhereException {
-			return ExampleData.BATCH_OPERATION1;
-		}
+	public Object generate() throws SiteWhereException {
+	    return ExampleData.BATCH_OPERATION1;
 	}
+    }
 
-	public static class ListBatchOperationsResponse {
+    public static class ListBatchOperationsResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IBatchOperation> ops = new ArrayList<IBatchOperation>();
-			ops.add(ExampleData.BATCH_OPERATION1);
-			ops.add(ExampleData.BATCH_OPERATION2);
-			return new SearchResults<IBatchOperation>(ops, 2);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IBatchOperation> ops = new ArrayList<IBatchOperation>();
+	    ops.add(ExampleData.BATCH_OPERATION1);
+	    ops.add(ExampleData.BATCH_OPERATION2);
+	    return new SearchResults<IBatchOperation>(ops, 2);
 	}
+    }
 
-	public static class ListBatchOperationElementsResponse {
+    public static class ListBatchOperationElementsResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IBatchElement> list = new ArrayList<IBatchElement>();
-			list.add(ExampleData.BATCH_ELEMENT1);
-			list.add(ExampleData.BATCH_ELEMENT2);
-			return new SearchResults<IBatchElement>(list, 2);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IBatchElement> list = new ArrayList<IBatchElement>();
+	    list.add(ExampleData.BATCH_ELEMENT1);
+	    list.add(ExampleData.BATCH_ELEMENT2);
+	    return new SearchResults<IBatchElement>(list, 2);
 	}
+    }
 
-	public static class BatchCommandInvocationCreateRequest {
+    public static class BatchCommandInvocationCreateRequest {
 
-		public Object generate() throws SiteWhereException {
-			BatchCommandInvocationRequest request = new BatchCommandInvocationRequest();
-			request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
-			request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
-			request.setHardwareIds(Arrays.asList(new String[] {
-					ExampleData.TRACKER.getHardwareId(),
-					ExampleData.HEART_MONITOR.getHardwareId() }));
-			request.getParameterValues().put("interval", "60");
-			request.getParameterValues().put("reboot", "true");
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    BatchCommandInvocationRequest request = new BatchCommandInvocationRequest();
+	    request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
+	    request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
+	    request.setHardwareIds(Arrays.asList(
+		    new String[] { ExampleData.TRACKER.getHardwareId(), ExampleData.HEART_MONITOR.getHardwareId() }));
+	    request.getParameterValues().put("interval", "60");
+	    request.getParameterValues().put("reboot", "true");
+	    return request;
 	}
+    }
 
-	public static class BatchCommandInvocationByCriteriaSpecRequest {
+    public static class BatchCommandInvocationByCriteriaSpecRequest {
 
-		public Object generate() throws SiteWhereException {
-			BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
-			request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
-			request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
-			request.getParameterValues().put("interval", "60");
-			request.getParameterValues().put("reboot", "true");
+	public Object generate() throws SiteWhereException {
+	    BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
+	    request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
+	    request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
+	    request.getParameterValues().put("interval", "60");
+	    request.getParameterValues().put("reboot", "true");
 
-			request.setSpecificationToken(ExampleData.SPEC_HEART_MONITOR.getToken());
-			request.setStartDate(new Date());
-			request.setEndDate(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
-			return request;
-		}
+	    request.setSpecificationToken(ExampleData.SPEC_HEART_MONITOR.getToken());
+	    request.setStartDate(new Date());
+	    request.setEndDate(new Date(System.currentTimeMillis() + 60 * 60 * 1000));
+	    return request;
 	}
+    }
 
-	public static class BatchCommandInvocationByCriteriaGroupRequest {
+    public static class BatchCommandInvocationByCriteriaGroupRequest {
 
-		public Object generate() throws SiteWhereException {
-			BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
-			request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
-			request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
-			request.getParameterValues().put("interval", "60");
-			request.getParameterValues().put("reboot", "true");
+	public Object generate() throws SiteWhereException {
+	    BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
+	    request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
+	    request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
+	    request.getParameterValues().put("interval", "60");
+	    request.getParameterValues().put("reboot", "true");
 
-			request.setGroupToken(ExampleData.DEVICEGROUP_SOUTHEAST.getToken());
-			return request;
-		}
+	    request.setGroupToken(ExampleData.DEVICEGROUP_SOUTHEAST.getToken());
+	    return request;
 	}
+    }
 
-	public static class BatchCommandInvocationByCriteriaGroupRoleRequest {
+    public static class BatchCommandInvocationByCriteriaGroupRoleRequest {
 
-		public Object generate() throws SiteWhereException {
-			BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
-			request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
-			request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
-			request.getParameterValues().put("interval", "60");
-			request.getParameterValues().put("reboot", "true");
+	public Object generate() throws SiteWhereException {
+	    BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
+	    request.setToken("438e068c-0dcb-4d96-a35f-06a52b084373");
+	    request.setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
+	    request.getParameterValues().put("interval", "60");
+	    request.getParameterValues().put("reboot", "true");
 
-			request.setGroupsWithRole("americas");
-			return request;
-		}
+	    request.setGroupsWithRole("americas");
+	    return request;
 	}
+    }
 }

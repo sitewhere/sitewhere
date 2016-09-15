@@ -21,61 +21,61 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ISymbolGenerator extends ITenantLifecycleComponent {
 
-	/**
-	 * Get unique generator id.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public String getId() throws SiteWhereException;
+    /**
+     * Get unique generator id.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getId() throws SiteWhereException;
 
-	/**
-	 * Get name of symbol generator.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public String getName() throws SiteWhereException;
+    /**
+     * Get name of symbol generator.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getName() throws SiteWhereException;
 
-	/**
-	 * Get symbol for a site.
-	 * 
-	 * @param site
-	 * @param provider
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException;
+    /**
+     * Get symbol for a site.
+     * 
+     * @param site
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException;
 
-	/**
-	 * Get symbol for a device specification.
-	 * 
-	 * @param specification
-	 * @param provider
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getDeviceSpecificationSymbol(IDeviceSpecification specification, IEntityUriProvider provider)
-			throws SiteWhereException;
+    /**
+     * Get symbol for a device specification.
+     * 
+     * @param specification
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getDeviceSpecificationSymbol(IDeviceSpecification specification, IEntityUriProvider provider)
+	    throws SiteWhereException;
 
-	/**
-	 * Get symbol for a device.
-	 * 
-	 * @param device
-	 * @param provider
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getDeviceSymbol(IDevice device, IEntityUriProvider provider) throws SiteWhereException;
+    /**
+     * Get symbol for a device.
+     * 
+     * @param device
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getDeviceSymbol(IDevice device, IEntityUriProvider provider) throws SiteWhereException;
 
-	/**
-	 * Get symbol for a device assignment.
-	 * 
-	 * @param assignment
-	 * @param provider
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
-			throws SiteWhereException;
+    /**
+     * Get symbol for a device assignment.
+     * 
+     * @param assignment
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
+	    throws SiteWhereException;
 }

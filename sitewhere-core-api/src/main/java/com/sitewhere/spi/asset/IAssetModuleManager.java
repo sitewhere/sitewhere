@@ -20,56 +20,57 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IAssetModuleManager extends ITenantLifecycleComponent {
 
-	/**
-	 * Get asset module by unique id.
-	 * 
-	 * @param assetModuleId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException;
+    /**
+     * Get asset module by unique id.
+     * 
+     * @param assetModuleId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException;
 
-	/**
-	 * Get the list of asset modules.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<IAssetModule<?>> listModules() throws SiteWhereException;
+    /**
+     * Get the list of asset modules.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IAssetModule<?>> listModules() throws SiteWhereException;
 
-	/**
-	 * Calls the refresh method on each asset module and returns a list of responses.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<ICommandResponse> refreshModules() throws SiteWhereException;
+    /**
+     * Calls the refresh method on each asset module and returns a list of
+     * responses.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ICommandResponse> refreshModules() throws SiteWhereException;
 
-	/**
-	 * Refresh modules loaded from datastore.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException;
+    /**
+     * Refresh modules loaded from datastore.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException;
 
-	/**
-	 * Finds an asset in a given module.
-	 * 
-	 * @param assetModuleId
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException;
+    /**
+     * Finds an asset in a given module.
+     * 
+     * @param assetModuleId
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException;
 
-	/**
-	 * Search an asset module for assets matching the given criteria.
-	 * 
-	 * @param assetModuleId
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<? extends IAsset> search(String assetModuleId, String criteria) throws SiteWhereException;
+    /**
+     * Search an asset module for assets matching the given criteria.
+     * 
+     * @param assetModuleId
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<? extends IAsset> search(String assetModuleId, String criteria) throws SiteWhereException;
 }

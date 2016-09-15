@@ -21,41 +21,41 @@ import com.sitewhere.spi.device.element.IDeviceElement;
 @JsonInclude(Include.NON_NULL)
 public class DeviceElement implements IDeviceElement, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 8334544031222730874L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 8334544031222730874L;
 
-	/** Element name */
-	private String name;
+    /** Element name */
+    private String name;
 
-	/** Path relative to parent */
-	private String path;
+    /** Path relative to parent */
+    private String path;
 
-	public DeviceElement() {
-	}
+    public DeviceElement() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.element.IDeviceElement#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.element.IDeviceElement#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.element.IDeviceElement#getPath()
-	 */
-	public String getPath() {
-		return path;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.element.IDeviceElement#getPath()
+     */
+    public String getPath() {
+	return path;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setPath(String path) {
+	this.path = path;
+    }
 }

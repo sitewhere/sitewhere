@@ -15,29 +15,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Takes care of 404 caused by not including the trailing slash on the admin interface
- * URL.
+ * Takes care of 404 caused by not including the trailing slash on the admin
+ * interface URL.
  * 
  * @author Derek
  */
 public class RedirectServlet extends HttpServlet {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -7603366944363905594L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -7603366944363905594L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-	 * javax.servlet.http.HttpServletResponse)
-	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.
+     * HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		response.setContentType("text/html");
-		String url = request.getRequestURL().toString() + "/";
+	response.setContentType("text/html");
+	String url = request.getRequestURL().toString() + "/";
 
-		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-		response.setHeader("Location", url);
-	}
+	response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+	response.setHeader("Location", url);
+    }
 }

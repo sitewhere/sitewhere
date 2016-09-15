@@ -16,21 +16,21 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class NoTenantException extends SiteWhereException {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 5632584510266953920L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 5632584510266953920L;
 
-	public NoTenantException() {
-	}
+    public NoTenantException() {
+    }
 
-	public NoTenantException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public NoTenantException(String message, Throwable cause) {
+	super(message, cause);
+    }
 
-	public NoTenantException(String message) {
-		super(message);
-	}
+    public NoTenantException(String message) {
+	super(message);
+    }
 
-	public NoTenantException(Throwable cause) {
-		super(cause);
-	}
+    public NoTenantException(Throwable cause) {
+	super(cause);
+    }
 }

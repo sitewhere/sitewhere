@@ -18,10 +18,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  */
 public interface ISocketInteractionHandlerFactory<T> extends ILifecycleComponent {
 
-	/**
-	 * Creates a new {@link ISocketInteractionHandler} instance.
-	 * 
-	 * @return
-	 */
-	public ISocketInteractionHandler<T> newInstance();
+    /**
+     * Creates a new {@link ISocketInteractionHandler} instance.
+     * 
+     * @return
+     */
+    public ISocketInteractionHandler<T> newInstance();
 }

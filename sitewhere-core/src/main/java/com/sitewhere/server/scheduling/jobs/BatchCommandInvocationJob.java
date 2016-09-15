@@ -36,98 +36,98 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class BatchCommandInvocationJob implements Job {
 
-	/** Static logger instance */
-	private static final Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
-	 */
-	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		Map<String, String> data = new HashMap<String, String>();
-		JobDataMap jobData = context.getJobDetail().getJobDataMap();
-		for (String key : jobData.keySet()) {
-			String value = jobData.getString(key);
-			data.put(key, value);
-		}
-
-		BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJob.parse(data);
-		if (criteria.getSpecificationToken() == null) {
-			throw new JobExecutionException("Specification token not provided.");
-		}
-		if (criteria.getCommandToken() == null) {
-			throw new JobExecutionException("Command token not provided.");
-		}
-		try {
-			ITenant tenant = SiteWhere.getServer().getTenantManagement()
-					.getTenantById(context.getScheduler().getSchedulerName());
-
-			// Resolve hardware ids for devices matching criteria.
-			List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, tenant);
-
-			// Create batch command invocation.
-			BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
-			invoke.setCommandToken(criteria.getCommandToken());
-			invoke.setParameterValues(criteria.getParameterValues());
-			invoke.setHardwareIds(hardwareIds);
-
-			// Use the system account for logging "created by" on created
-			// elements.
-			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
-
-			SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
-
-			SecurityContextHolder.getContext().setAuthentication(null);
-			LOGGER.info("Executed batch command invocation job.");
-		} catch (SiteWhereException e) {
-			throw new JobExecutionException("Unable to create batch command invocation.", e);
-		} catch (SchedulerException e) {
-			throw new JobExecutionException("Unable to get scheduler name.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
+     */
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+	Map<String, String> data = new HashMap<String, String>();
+	JobDataMap jobData = context.getJobDetail().getJobDataMap();
+	for (String key : jobData.keySet()) {
+	    String value = jobData.getString(key);
+	    data.put(key, value);
 	}
 
-	/**
-	 * Parse configuration data.
-	 * 
-	 * @param data
-	 * @throws JobExecutionException
-	 */
-	public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
-
-		String specificationToken = null;
-		String siteToken = null;
-		String groupToken = null;
-		String groupRole = null;
-		String commandToken = null;
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		for (String key : data.keySet()) {
-			String value = data.get(key);
-			if (JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN.equals(key)) {
-				specificationToken = value;
-			} else if (JobConstants.BatchCommandInvocation.SITE_TOKEN.equals(key)) {
-				siteToken = value;
-			} else if (JobConstants.BatchCommandInvocation.GROUP_TOKEN.equals(key)) {
-				groupToken = value;
-			} else if (JobConstants.BatchCommandInvocation.GROUP_ROLE.equals(key)) {
-				groupRole = value;
-			} else if (JobConstants.CommandInvocation.COMMAND_TOKEN.equals(key)) {
-				commandToken = value;
-			} else if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
-				String paramKey = key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
-				parameters.put(paramKey, value);
-			}
-		}
-
-		BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
-		request.setCommandToken(commandToken);
-		request.setParameterValues(parameters);
-		request.setSpecificationToken(specificationToken);
-		request.setSiteToken(siteToken);
-		request.setGroupToken(groupToken);
-		request.setGroupsWithRole(groupRole);
-		return request;
+	BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJob.parse(data);
+	if (criteria.getSpecificationToken() == null) {
+	    throw new JobExecutionException("Specification token not provided.");
 	}
+	if (criteria.getCommandToken() == null) {
+	    throw new JobExecutionException("Command token not provided.");
+	}
+	try {
+	    ITenant tenant = SiteWhere.getServer().getTenantManagement()
+		    .getTenantById(context.getScheduler().getSchedulerName());
+
+	    // Resolve hardware ids for devices matching criteria.
+	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, tenant);
+
+	    // Create batch command invocation.
+	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
+	    invoke.setCommandToken(criteria.getCommandToken());
+	    invoke.setParameterValues(criteria.getParameterValues());
+	    invoke.setHardwareIds(hardwareIds);
+
+	    // Use the system account for logging "created by" on created
+	    // elements.
+	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
+
+	    SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
+
+	    SecurityContextHolder.getContext().setAuthentication(null);
+	    LOGGER.info("Executed batch command invocation job.");
+	} catch (SiteWhereException e) {
+	    throw new JobExecutionException("Unable to create batch command invocation.", e);
+	} catch (SchedulerException e) {
+	    throw new JobExecutionException("Unable to get scheduler name.", e);
+	}
+    }
+
+    /**
+     * Parse configuration data.
+     * 
+     * @param data
+     * @throws JobExecutionException
+     */
+    public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
+
+	String specificationToken = null;
+	String siteToken = null;
+	String groupToken = null;
+	String groupRole = null;
+	String commandToken = null;
+	Map<String, String> parameters = new HashMap<String, String>();
+
+	for (String key : data.keySet()) {
+	    String value = data.get(key);
+	    if (JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN.equals(key)) {
+		specificationToken = value;
+	    } else if (JobConstants.BatchCommandInvocation.SITE_TOKEN.equals(key)) {
+		siteToken = value;
+	    } else if (JobConstants.BatchCommandInvocation.GROUP_TOKEN.equals(key)) {
+		groupToken = value;
+	    } else if (JobConstants.BatchCommandInvocation.GROUP_ROLE.equals(key)) {
+		groupRole = value;
+	    } else if (JobConstants.CommandInvocation.COMMAND_TOKEN.equals(key)) {
+		commandToken = value;
+	    } else if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
+		String paramKey = key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
+		parameters.put(paramKey, value);
+	    }
+	}
+
+	BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
+	request.setCommandToken(commandToken);
+	request.setParameterValues(parameters);
+	request.setSpecificationToken(specificationToken);
+	request.setSiteToken(siteToken);
+	request.setGroupToken(groupToken);
+	request.setGroupsWithRole(groupRole);
+	return request;
+    }
 }

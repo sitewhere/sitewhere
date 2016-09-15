@@ -18,57 +18,57 @@ import com.sitewhere.spi.search.user.ITenantSearchCriteria;
  */
 public class TenantSearchCriteria extends SearchCriteria implements ITenantSearchCriteria {
 
-	/** Search for text in tenant id or name */
-	private String textSearch;
+    /** Search for text in tenant id or name */
+    private String textSearch;
 
-	/** User id */
-	private String userId;
+    /** User id */
+    private String userId;
 
-	/** Include tenant runtime information */
-	private boolean includeRuntimeInfo;
+    /** Include tenant runtime information */
+    private boolean includeRuntimeInfo;
 
-	public TenantSearchCriteria(int pageNumber, int pageSize) {
-		super(pageNumber, pageSize);
-	}
+    public TenantSearchCriteria(int pageNumber, int pageSize) {
+	super(pageNumber, pageSize);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#getTextSearch()
-	 */
-	public String getTextSearch() {
-		return textSearch;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#getTextSearch()
+     */
+    public String getTextSearch() {
+	return textSearch;
+    }
 
-	public void setTextSearch(String textSearch) {
-		this.textSearch = textSearch;
-	}
+    public void setTextSearch(String textSearch) {
+	this.textSearch = textSearch;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#getUserId()
-	 */
-	public String getUserId() {
-		return userId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#getUserId()
+     */
+    public String getUserId() {
+	return userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public void setUserId(String userId) {
+	this.userId = userId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.search.user.ITenantSearchCriteria#isIncludeRuntimeInfo(
-	 * )
-	 */
-	public boolean isIncludeRuntimeInfo() {
-		return includeRuntimeInfo;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.search.user.ITenantSearchCriteria#isIncludeRuntimeInfo(
+     * )
+     */
+    public boolean isIncludeRuntimeInfo() {
+	return includeRuntimeInfo;
+    }
 
-	public void setIncludeRuntimeInfo(boolean includeRuntimeInfo) {
-		this.includeRuntimeInfo = includeRuntimeInfo;
-	}
+    public void setIncludeRuntimeInfo(boolean includeRuntimeInfo) {
+	this.includeRuntimeInfo = includeRuntimeInfo;
+    }
 }

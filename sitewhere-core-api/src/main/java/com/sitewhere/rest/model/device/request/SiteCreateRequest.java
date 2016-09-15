@@ -26,165 +26,165 @@ import com.sitewhere.spi.device.request.ISiteCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 574323736888872612L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 574323736888872612L;
 
-	/** Unique token */
-	private String token;
+    /** Unique token */
+    private String token;
 
-	/** Site name */
-	private String name;
+    /** Site name */
+    private String name;
 
-	/** Site description */
-	private String description;
+    /** Site description */
+    private String description;
 
-	/** Logo image URL */
-	private String imageUrl;
+    /** Logo image URL */
+    private String imageUrl;
 
-	/** Map data */
-	private SiteMapData map;
+    /** Map data */
+    private SiteMapData map;
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Metadata values */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getToken()
-	 */
-	public String getToken() {
-		return token;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getToken()
+     */
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getName()
+     */
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getDescription()
+     */
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getImageUrl()
+     */
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getMap()
+     */
+    public SiteMapData getMap() {
+	return map;
+    }
+
+    public void setMap(SiteMapData map) {
+	this.map = map;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private SiteCreateRequest request = new SiteCreateRequest();
+
+	public Builder(String token, String name) {
+	    request.setToken(token);
+	    request.setName(name);
+	    request.setDescription("");
+	    request.setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg");
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public Builder withDescription(String description) {
+	    request.setDescription(description);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getName()
-	 */
-	public String getName() {
-		return name;
+	public Builder withImageUrl(String imageUrl) {
+	    request.setImageUrl(imageUrl);
+	    return this;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Builder openStreetMap(double latitude, double longitude, int zoomLevel) {
+	    SiteMapData map = new SiteMapData();
+	    try {
+		map.setType("openstreetmap");
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
+		request.setMap(map);
+	    } catch (SiteWhereException e) {
+		throw new RuntimeException(e);
+	    }
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getDescription()
-	 */
-	public String getDescription() {
-		return description;
+	public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {
+	    SiteMapData map = new SiteMapData();
+	    try {
+		map.setType("mapquest");
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
+		map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
+		request.setMap(map);
+	    } catch (SiteWhereException e) {
+		throw new RuntimeException(e);
+	    }
+	    return this;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getImageUrl()
-	 */
-	public String getImageUrl() {
-		return imageUrl;
+	public SiteCreateRequest build() {
+	    return request;
 	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getMap()
-	 */
-	public SiteMapData getMap() {
-		return map;
-	}
-
-	public void setMap(SiteMapData map) {
-		this.map = map;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
-
-	public static class Builder {
-
-		/** Request being built */
-		private SiteCreateRequest request = new SiteCreateRequest();
-
-		public Builder(String token, String name) {
-			request.setToken(token);
-			request.setName(name);
-			request.setDescription("");
-			request.setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg");
-		}
-
-		public Builder withDescription(String description) {
-			request.setDescription(description);
-			return this;
-		}
-
-		public Builder withImageUrl(String imageUrl) {
-			request.setImageUrl(imageUrl);
-			return this;
-		}
-
-		public Builder openStreetMap(double latitude, double longitude, int zoomLevel) {
-			SiteMapData map = new SiteMapData();
-			try {
-				map.setType("openstreetmap");
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
-				request.setMap(map);
-			} catch (SiteWhereException e) {
-				throw new RuntimeException(e);
-			}
-			return this;
-		}
-
-		public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {
-			SiteMapData map = new SiteMapData();
-			try {
-				map.setType("mapquest");
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
-				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
-				request.setMap(map);
-			} catch (SiteWhereException e) {
-				throw new RuntimeException(e);
-			}
-			return this;
-		}
-
-		public Builder metadata(String name, String value) {
-			if (request.getMetadata() == null) {
-				request.setMetadata(new HashMap<String, String>());
-			}
-			request.getMetadata().put(name, value);
-			return this;
-		}
-
-		public SiteCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

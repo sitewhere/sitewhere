@@ -19,42 +19,43 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class SiteFilter extends DeviceEventFilter {
 
-	/** Site token to allow */
-	private String siteToken;
+    /** Site token to allow */
+    private String siteToken;
 
-	/** Operation filter performs */
-	private FilterOperation operation = FilterOperation.Include;
+    /** Operation filter performs */
+    private FilterOperation operation = FilterOperation.Include;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(com.sitewhere
-	 * .spi.device.event.IDeviceEvent, com.sitewhere.spi.device.IDevice,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		if (getSiteToken().equals(device.getSiteToken())) {
-			return (getOperation() != FilterOperation.Include);
-		}
-		return (getOperation() == FilterOperation.Include);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
+     * com.sitewhere .spi.device.event.IDeviceEvent,
+     * com.sitewhere.spi.device.IDevice,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	if (getSiteToken().equals(device.getSiteToken())) {
+	    return (getOperation() != FilterOperation.Include);
 	}
+	return (getOperation() == FilterOperation.Include);
+    }
 
-	public String getSiteToken() {
-		return siteToken;
-	}
+    public String getSiteToken() {
+	return siteToken;
+    }
 
-	public void setSiteToken(String siteToken) {
-		this.siteToken = siteToken;
-	}
+    public void setSiteToken(String siteToken) {
+	this.siteToken = siteToken;
+    }
 
-	public FilterOperation getOperation() {
-		return operation;
-	}
+    public FilterOperation getOperation() {
+	return operation;
+    }
 
-	public void setOperation(FilterOperation operation) {
-		this.operation = operation;
-	}
+    public void setOperation(FilterOperation operation) {
+	this.operation = operation;
+    }
 }

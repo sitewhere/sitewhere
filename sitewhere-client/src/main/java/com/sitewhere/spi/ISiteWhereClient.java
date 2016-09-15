@@ -64,520 +64,533 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  */
 public interface ISiteWhereClient {
 
-	/**
-	 * Get SiteWhere version information.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Version getSiteWhereVersion() throws SiteWhereException;
+    /**
+     * Get SiteWhere version information.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public Version getSiteWhereVersion() throws SiteWhereException;
 
-	/**
-	 * Create a new device specification.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a new device specification.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * Get a device specification by token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
+    /**
+     * Get a device specification by token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
 
-	/**
-	 * Update an existing device specification.
-	 * 
-	 * @param token
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification updateDeviceSpecification(String token,
-			DeviceSpecificationCreateRequest request) throws SiteWhereException;
+    /**
+     * Update an existing device specification.
+     * 
+     * @param token
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification updateDeviceSpecification(String token, DeviceSpecificationCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * List device specifications that meet the given criteria.
-	 * 
-	 * @param includeDeleted
-	 * @param includeDetailedAssetInfo
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted,
-			boolean includeDetailedAssetInfo, SearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List device specifications that meet the given criteria.
+     * 
+     * @param includeDeleted
+     * @param includeDetailedAssetInfo
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted,
+	    boolean includeDetailedAssetInfo, SearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Delete an existing device specification.
-	 * 
-	 * @param token
-	 * @param deletePermanently
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
-			throws SiteWhereException;
+    /**
+     * Delete an existing device specification.
+     * 
+     * @param token
+     * @param deletePermanently
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
+	    throws SiteWhereException;
 
-	/**
-	 * Create a new device command for a specification.
-	 * 
-	 * @param specificationToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommand createDeviceCommand(String specificationToken, DeviceCommandCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a new device command for a specification.
+     * 
+     * @param specificationToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommand createDeviceCommand(String specificationToken, DeviceCommandCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * List all device commands for a device specification.
-	 * 
-	 * @param specificationToken
-	 * @param includeDeleted
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandSearchResults listDeviceCommands(String specificationToken, boolean includeDeleted)
-			throws SiteWhereException;
+    /**
+     * List all device commands for a device specification.
+     * 
+     * @param specificationToken
+     * @param includeDeleted
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandSearchResults listDeviceCommands(String specificationToken, boolean includeDeleted)
+	    throws SiteWhereException;
 
-	/**
-	 * Create a new site.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Site createSite(SiteCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new site.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public Site createSite(SiteCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get Site by unique token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Site getSiteByToken(String token) throws SiteWhereException;
+    /**
+     * Get Site by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public Site getSiteByToken(String token) throws SiteWhereException;
 
-	/**
-	 * Create a new zone associated with a site.
-	 * 
-	 * @param siteToken unique token for site
-	 * @param request information for new zone
-	 * @return zone that was created.
-	 * @throws SiteWhereException
-	 */
-	public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new zone associated with a site.
+     * 
+     * @param siteToken
+     *            unique token for site
+     * @param request
+     *            information for new zone
+     * @return zone that was created.
+     * @throws SiteWhereException
+     */
+    public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * List zones associated with a given site.
-	 * 
-	 * @param siteToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
+    /**
+     * List zones associated with a given site.
+     * 
+     * @param siteToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
 
-	/**
-	 * Create a new device.
-	 * 
-	 * @param request information about device to be created
-	 * @return the created device
-	 * @throws SiteWhereException
-	 */
-	public Device createDevice(DeviceCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new device.
+     * 
+     * @param request
+     *            information about device to be created
+     * @return the created device
+     * @throws SiteWhereException
+     */
+    public Device createDevice(DeviceCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get a device by its unique hardware id.
-	 * 
-	 * @param hardwareId hardware id of device to return
-	 * @return device if found or null if not
-	 * @throws SiteWhereException
-	 */
-	public Device getDeviceByHardwareId(String hardwareId) throws SiteWhereException;
+    /**
+     * Get a device by its unique hardware id.
+     * 
+     * @param hardwareId
+     *            hardware id of device to return
+     * @return device if found or null if not
+     * @throws SiteWhereException
+     */
+    public Device getDeviceByHardwareId(String hardwareId) throws SiteWhereException;
 
-	/**
-	 * Update information for an existing device.
-	 * 
-	 * @param hardwareId hardware id of device to update
-	 * @param request updated information
-	 * @throws SiteWhereException
-	 */
-	public Device updateDevice(String hardwareId, DeviceCreateRequest request) throws SiteWhereException;
+    /**
+     * Update information for an existing device.
+     * 
+     * @param hardwareId
+     *            hardware id of device to update
+     * @param request
+     *            updated information
+     * @throws SiteWhereException
+     */
+    public Device updateDevice(String hardwareId, DeviceCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * List devices that meet the given criteria.
-	 * 
-	 * @param includeDeleted
-	 * @param excludeAssigned
-	 * @param populateSpecification
-	 * @param populateAssignment
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
-			boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
-			throws SiteWhereException;
+    /**
+     * List devices that meet the given criteria.
+     * 
+     * @param includeDeleted
+     * @param excludeAssigned
+     * @param populateSpecification
+     * @param populateAssignment
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
+	    boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
-	/**
-	 * Delete a device.
-	 * 
-	 * @param hardwareId hardware id of device to delete
-	 * @param force if true, data is deleted. if false, delete flag is set to true
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Device deleteDevice(String hardwareId, boolean force) throws SiteWhereException;
+    /**
+     * Delete a device.
+     * 
+     * @param hardwareId
+     *            hardware id of device to delete
+     * @param force
+     *            if true, data is deleted. if false, delete flag is set to true
+     * @return
+     * @throws SiteWhereException
+     */
+    public Device deleteDevice(String hardwareId, boolean force) throws SiteWhereException;
 
-	/**
-	 * Get current device assignment for a device based on hardware id.
-	 * 
-	 * @param hardwareId unique hardware id of device
-	 * @return device assignment information
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment getCurrentAssignmentForDevice(String hardwareId) throws SiteWhereException;
+    /**
+     * Get current device assignment for a device based on hardware id.
+     * 
+     * @param hardwareId
+     *            unique hardware id of device
+     * @return device assignment information
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment getCurrentAssignmentForDevice(String hardwareId) throws SiteWhereException;
 
-	/**
-	 * Get the history of device assignments for a given hardware id.
-	 * 
-	 * @param hardwareId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignmentSearchResults listDeviceAssignmentHistory(String hardwareId)
-			throws SiteWhereException;
+    /**
+     * Get the history of device assignments for a given hardware id.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignmentSearchResults listDeviceAssignmentHistory(String hardwareId) throws SiteWhereException;
 
-	/**
-	 * Get all assignments at a site that are associated with a given asset.
-	 * 
-	 * @param siteToken
-	 * @param assetModuleId
-	 * @param assetId
-	 * @param status
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId,
-			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException;
+    /**
+     * Get all assignments at a site that are associated with a given asset.
+     * 
+     * @param siteToken
+     * @param assetModuleId
+     * @param assetId
+     * @param status
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId, String assetId,
+	    DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Add a batch of events to the current assignment for the given hardware id.
-	 * 
-	 * @param hardwareId hardware id whose assignment will have events added
-	 * @param batch batch of events that will be added
-	 * @return response of events that were created
-	 * @throws SiteWhereException
-	 */
-	public DeviceEventBatchResponse addDeviceEventBatch(String hardwareId, DeviceEventBatch batch)
-			throws SiteWhereException;
+    /**
+     * Add a batch of events to the current assignment for the given hardware
+     * id.
+     * 
+     * @param hardwareId
+     *            hardware id whose assignment will have events added
+     * @param batch
+     *            batch of events that will be added
+     * @return response of events that were created
+     * @throws SiteWhereException
+     */
+    public DeviceEventBatchResponse addDeviceEventBatch(String hardwareId, DeviceEventBatch batch)
+	    throws SiteWhereException;
 
-	/**
-	 * Create a new device assignment based on the given inputs.
-	 * 
-	 * @param request information about the new assignment
-	 * @return the assignment that was created.
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a new device assignment based on the given inputs.
+     * 
+     * @param request
+     *            information about the new assignment
+     * @return the assignment that was created.
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get a device assignment by its unique token.
-	 * 
-	 * @param assignmentToken unique assignment token
-	 * @return the device assignment
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment getDeviceAssignmentByToken(String assignmentToken) throws SiteWhereException;
+    /**
+     * Get a device assignment by its unique token.
+     * 
+     * @param assignmentToken
+     *            unique assignment token
+     * @return the device assignment
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment getDeviceAssignmentByToken(String assignmentToken) throws SiteWhereException;
 
-	/**
-	 * List all assignments for a site.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignmentSearchResults listAssignmentsForSite(String token) throws SiteWhereException;
+    /**
+     * List all assignments for a site.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignmentSearchResults listAssignmentsForSite(String token) throws SiteWhereException;
 
-	/**
-	 * Delete a device assignment based on its unique token.
-	 * 
-	 * @param assignmentToken unique assignment token
-	 * @param force value of false sets deleted flag, true deletes data.
-	 * @return assignment that was deleted
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment deleteDeviceAssignment(String assignmentToken, boolean force)
-			throws SiteWhereException;
+    /**
+     * Delete a device assignment based on its unique token.
+     * 
+     * @param assignmentToken
+     *            unique assignment token
+     * @param force
+     *            value of false sets deleted flag, true deletes data.
+     * @return assignment that was deleted
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment deleteDeviceAssignment(String assignmentToken, boolean force) throws SiteWhereException;
 
-	/**
-	 * Update the metadata for an existing device assignment.
-	 * 
-	 * @param token
-	 * @param metadata
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment updateDeviceAssignmentMetadata(String token, MetadataProvider metadata)
-			throws SiteWhereException;
+    /**
+     * Update the metadata for an existing device assignment.
+     * 
+     * @param token
+     * @param metadata
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment updateDeviceAssignmentMetadata(String token, MetadataProvider metadata)
+	    throws SiteWhereException;
 
-	/**
-	 * Create measurements for an assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param measurements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceMeasurements createDeviceMeasurements(String assignmentToken,
-			DeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
+    /**
+     * Create measurements for an assignment.
+     * 
+     * @param assignmentToken
+     * @param measurements
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceMeasurements createDeviceMeasurements(String assignmentToken,
+	    DeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
 
-	/**
-	 * Get most recent device measurements for a given assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param searchCriteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
-			DateRangeSearchCriteria searchCriteria) throws SiteWhereException;
+    /**
+     * Get most recent device measurements for a given assignment.
+     * 
+     * @param assignmentToken
+     * @param searchCriteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
+	    DateRangeSearchCriteria searchCriteria) throws SiteWhereException;
 
-	/**
-	 * Create a new device location for an assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceLocation createDeviceLocation(String assignmentToken, DeviceLocationCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a new device location for an assignment.
+     * 
+     * @param assignmentToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceLocation createDeviceLocation(String assignmentToken, DeviceLocationCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * Get most recent device locations for a given assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken,
-			DateRangeSearchCriteria criteria) throws SiteWhereException;
+    /**
+     * Get most recent device locations for a given assignment.
+     * 
+     * @param assignmentToken
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceLocationSearchResults listDeviceLocations(String assignmentToken, DateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
-	/**
-	 * Create a new alert for a device assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAlert createDeviceAlert(String assignmentToken, DeviceAlertCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a new alert for a device assignment.
+     * 
+     * @param assignmentToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAlert createDeviceAlert(String assignmentToken, DeviceAlertCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * Get most recent device alerts for a given assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, DateRangeSearchCriteria criteria)
-			throws SiteWhereException;
+    /**
+     * Get most recent device alerts for a given assignment.
+     * 
+     * @param assignmentToken
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, DateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
-	/**
-	 * Create a new device command invocation for a device assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandInvocation createDeviceCommandInvocation(String assignmentToken,
-			DeviceCommandInvocationCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new device command invocation for a device assignment.
+     * 
+     * @param assignmentToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandInvocation createDeviceCommandInvocation(String assignmentToken,
+	    DeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * List device command invocations that match the given criteria.
-	 * 
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandInvocationSearchResults listDeviceCommandInvocations(String assignmentToken,
-			DateRangeSearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List device command invocations that match the given criteria.
+     * 
+     * @param assignmentToken
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandInvocationSearchResults listDeviceCommandInvocations(String assignmentToken,
+	    DateRangeSearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Create a stream that will be associated with a device assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStream createDeviceStream(String assignmentToken, DeviceStreamCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Create a stream that will be associated with a device assignment.
+     * 
+     * @param assignmentToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStream createDeviceStream(String assignmentToken, DeviceStreamCreateRequest request)
+	    throws SiteWhereException;
 
-	/**
-	 * Get a stream from an assignment based on unique id.
-	 * 
-	 * @param assignmentToken
-	 * @param streamId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException;
+    /**
+     * Get a stream from an assignment based on unique id.
+     * 
+     * @param assignmentToken
+     * @param streamId
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException;
 
-	/**
-	 * List device streams for an assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStreamSearchResults listDeviceStreams(String assignmentToken,
-			DateRangeSearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List device streams for an assignment.
+     * 
+     * @param assignmentToken
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStreamSearchResults listDeviceStreams(String assignmentToken, DateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
-	/**
-	 * Add a chunk of data to a device stream.
-	 * 
-	 * @param assignmentToken
-	 * @param streamId
-	 * @param sequenceNumber
-	 * @param data
-	 * @throws SiteWhereException
-	 */
-	public void addDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber, byte[] data)
-			throws SiteWhereException;
+    /**
+     * Add a chunk of data to a device stream.
+     * 
+     * @param assignmentToken
+     * @param streamId
+     * @param sequenceNumber
+     * @param data
+     * @throws SiteWhereException
+     */
+    public void addDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber, byte[] data)
+	    throws SiteWhereException;
 
-	/**
-	 * Get a chunk of data from a device stream.
-	 * 
-	 * @param assignmentToken
-	 * @param streamId
-	 * @param sequenceNumber
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
-			throws SiteWhereException;
+    /**
+     * Get a chunk of data from a device stream.
+     * 
+     * @param assignmentToken
+     * @param streamId
+     * @param sequenceNumber
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+	    throws SiteWhereException;
 
-	/**
-	 * List device stream data that meets the given criteria.
-	 * 
-	 * @param assignmentToken
-	 * @param streamId
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] listDeviceStreamData(String assignmentToken, String streamId,
-			DateRangeSearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List device stream data that meets the given criteria.
+     * 
+     * @param assignmentToken
+     * @param streamId
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] listDeviceStreamData(String assignmentToken, String streamId, DateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
-	/**
-	 * Invokes a command on a list of devices as a batch operation.
-	 * 
-	 * @param batchToken
-	 * @param commandToken
-	 * @param parameters
-	 * @param hardwareIds
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
-			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
+    /**
+     * Invokes a command on a list of devices as a batch operation.
+     * 
+     * @param batchToken
+     * @param commandToken
+     * @param parameters
+     * @param hardwareIds
+     * @return
+     * @throws SiteWhereException
+     */
+    public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
+	    Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
 
-	/**
-	 * Create a new device group.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroup createDeviceGroup(DeviceGroupCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new device group.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroup createDeviceGroup(DeviceGroupCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get a device group by unique token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException;
+    /**
+     * Get a device group by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException;
 
-	/**
-	 * Delete a device group by unique token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroup deleteDeviceGroup(String token) throws SiteWhereException;
+    /**
+     * Delete a device group by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroup deleteDeviceGroup(String token) throws SiteWhereException;
 
-	/**
-	 * List device groups that meet the given criteria.
-	 * 
-	 * @param role
-	 * @param criteria
-	 * @param includeDeleted
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupSearchResults listDeviceGroups(String role, SearchCriteria criteria,
-			boolean includeDeleted) throws SiteWhereException;
+    /**
+     * List device groups that meet the given criteria.
+     * 
+     * @param role
+     * @param criteria
+     * @param includeDeleted
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupSearchResults listDeviceGroups(String role, SearchCriteria criteria, boolean includeDeleted)
+	    throws SiteWhereException;
 
-	/**
-	 * Add elements to an existing device group.
-	 * 
-	 * @param groupToken
-	 * @param elements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupElementSearchResults addDeviceGroupElements(String groupToken,
-			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
+    /**
+     * Add elements to an existing device group.
+     * 
+     * @param groupToken
+     * @param elements
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupElementSearchResults addDeviceGroupElements(String groupToken,
+	    List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
 
-	/**
-	 * List device group elements that meet the given criteria.
-	 * 
-	 * @param groupToken
-	 * @param includeDetails
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupElementSearchResults listDeviceGroupElements(String groupToken, boolean includeDetails,
-			SearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List device group elements that meet the given criteria.
+     * 
+     * @param groupToken
+     * @param includeDetails
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupElementSearchResults listDeviceGroupElements(String groupToken, boolean includeDetails,
+	    SearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Delete elements from an existing device group.
-	 * 
-	 * @param groupToken
-	 * @param elements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupElementSearchResults deleteDeviceGroupElements(String groupToken,
-			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
+    /**
+     * Delete elements from an existing device group.
+     * 
+     * @param groupToken
+     * @param elements
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupElementSearchResults deleteDeviceGroupElements(String groupToken,
+	    List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
 
-	/**
-	 * List all assets in a given asset module that meet the given criteria.
-	 * 
-	 * @param moduleId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException;
+    /**
+     * List all assets in a given asset module that meet the given criteria.
+     * 
+     * @param moduleId
+     * @return
+     * @throws SiteWhereException
+     */
+    public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException;
 }

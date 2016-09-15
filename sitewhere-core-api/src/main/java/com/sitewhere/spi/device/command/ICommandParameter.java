@@ -14,24 +14,24 @@ package com.sitewhere.spi.device.command;
  */
 public interface ICommandParameter {
 
-	/**
-	 * Get parameter name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get parameter name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get parameter datatype.
-	 * 
-	 * @return
-	 */
-	public ParameterType getType();
+    /**
+     * Get parameter datatype.
+     * 
+     * @return
+     */
+    public ParameterType getType();
 
-	/**
-	 * Indicates if parameter is required for command.
-	 * 
-	 * @return
-	 */
-	public boolean isRequired();
+    /**
+     * Indicates if parameter is required for command.
+     * 
+     * @return
+     */
+    public boolean isRequired();
 }

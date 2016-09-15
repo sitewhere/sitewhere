@@ -21,12 +21,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DocumentedController {
 
-	/** Name shown for controller */
-	String name();
+    /** Name shown for controller */
+    String name();
 
-	/** Controller description markdown relative path */
-	String description() default "";
-	
-	/** Indicates a global controller */
-	boolean global() default false;
+    /** Controller description markdown relative path */
+    String description() default "";
+
+    /** Indicates a global controller */
+    boolean global() default false;
 }

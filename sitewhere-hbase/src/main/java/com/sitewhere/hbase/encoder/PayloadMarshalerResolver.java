@@ -17,55 +17,54 @@ import java.util.Map;
  */
 public class PayloadMarshalerResolver {
 
-	/** Singleton instance */
-	private static PayloadMarshalerResolver INSTANCE;
+    /** Singleton instance */
+    private static PayloadMarshalerResolver INSTANCE;
 
-	/** Map of marshalers by encoding */
-	private static Map<PayloadEncoding, IPayloadMarshaler> MARSHALERS =
-			new HashMap<PayloadEncoding, IPayloadMarshaler>();
+    /** Map of marshalers by encoding */
+    private static Map<PayloadEncoding, IPayloadMarshaler> MARSHALERS = new HashMap<PayloadEncoding, IPayloadMarshaler>();
 
-	static {
-		MARSHALERS.put(PayloadEncoding.Json, new JsonPayloadMarshaler());
-		MARSHALERS.put(PayloadEncoding.ProtocolBuffers, new ProtobufPayloadMarshaler());
+    static {
+	MARSHALERS.put(PayloadEncoding.Json, new JsonPayloadMarshaler());
+	MARSHALERS.put(PayloadEncoding.ProtocolBuffers, new ProtobufPayloadMarshaler());
+    }
+
+    /**
+     * Get singleton instance.
+     * 
+     * @return
+     */
+    public static PayloadMarshalerResolver getInstance() {
+	if (INSTANCE == null) {
+	    INSTANCE = new PayloadMarshalerResolver();
 	}
+	return INSTANCE;
+    }
 
-	/**
-	 * Get singleton instance.
-	 * 
-	 * @return
-	 */
-	public static PayloadMarshalerResolver getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new PayloadMarshalerResolver();
-		}
-		return INSTANCE;
+    /**
+     * Get marshaler for a given encoding.
+     * 
+     * @param encoding
+     * @return
+     */
+    public IPayloadMarshaler getMarshaler(PayloadEncoding encoding) {
+	IPayloadMarshaler marshaler = MARSHALERS.get(encoding);
+	if (marshaler == null) {
+	    throw new RuntimeException("No marshaler registered for type: " + encoding);
 	}
+	return marshaler;
+    }
 
-	/**
-	 * Get marshaler for a given encoding.
-	 * 
-	 * @param encoding
-	 * @return
-	 */
-	public IPayloadMarshaler getMarshaler(PayloadEncoding encoding) {
-		IPayloadMarshaler marshaler = MARSHALERS.get(encoding);
-		if (marshaler == null) {
-			throw new RuntimeException("No marshaler registered for type: " + encoding);
-		}
-		return marshaler;
+    /**
+     * Get marshaler based on encoding indicator.
+     * 
+     * @param indicator
+     * @return
+     */
+    public IPayloadMarshaler getMarshaler(byte[] indicator) {
+	PayloadEncoding encoding = PayloadEncoding.getEncoding(indicator);
+	if (encoding == null) {
+	    throw new RuntimeException("Unknown encoding type: " + new String(indicator));
 	}
-
-	/**
-	 * Get marshaler based on encoding indicator.
-	 * 
-	 * @param indicator
-	 * @return
-	 */
-	public IPayloadMarshaler getMarshaler(byte[] indicator) {
-		PayloadEncoding encoding = PayloadEncoding.getEncoding(indicator);
-		if (encoding == null) {
-			throw new RuntimeException("Unknown encoding type: " + new String(indicator));
-		}
-		return getMarshaler(encoding);
-	}
+	return getMarshaler(encoding);
+    }
 }

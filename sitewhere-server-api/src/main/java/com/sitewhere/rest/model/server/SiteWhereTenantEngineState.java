@@ -23,55 +23,56 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 @JsonInclude(Include.NON_NULL)
 public class SiteWhereTenantEngineState implements ISiteWhereTenantEngineState {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 2078848111680197247L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 2078848111680197247L;
 
-	/** Lifecycle status */
-	private LifecycleStatus lifecycleStatus;
+    /** Lifecycle status */
+    private LifecycleStatus lifecycleStatus;
 
-	/** Hierarchy of tenant engine components */
-	private List<ITenantEngineComponent> componentHierarchyState;
+    /** Hierarchy of tenant engine components */
+    private List<ITenantEngineComponent> componentHierarchyState;
 
-	/** Flag indicating whether changes are staged */
-	private boolean staged;
+    /** Flag indicating whether changes are staged */
+    private boolean staged;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngineState#getLifecycleStatus()
-	 */
-	public LifecycleStatus getLifecycleStatus() {
-		return lifecycleStatus;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereTenantEngineState#getLifecycleStatus()
+     */
+    public LifecycleStatus getLifecycleStatus() {
+	return lifecycleStatus;
+    }
 
-	public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
-		this.lifecycleStatus = lifecycleStatus;
-	}
+    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+	this.lifecycleStatus = lifecycleStatus;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngineState#getComponentHierarchyState()
-	 */
-	public List<ITenantEngineComponent> getComponentHierarchyState() {
-		return componentHierarchyState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereTenantEngineState#
+     * getComponentHierarchyState()
+     */
+    public List<ITenantEngineComponent> getComponentHierarchyState() {
+	return componentHierarchyState;
+    }
 
-	public void setComponentHierarchyState(List<ITenantEngineComponent> componentHierarchyState) {
-		this.componentHierarchyState = componentHierarchyState;
-	}
+    public void setComponentHierarchyState(List<ITenantEngineComponent> componentHierarchyState) {
+	this.componentHierarchyState = componentHierarchyState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngineState#isStaged()
-	 */
-	public boolean isStaged() {
-		return staged;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereTenantEngineState#isStaged()
+     */
+    public boolean isStaged() {
+	return staged;
+    }
 
-	public void setStaged(boolean staged) {
-		this.staged = staged;
-	}
+    public void setStaged(boolean staged) {
+	this.staged = staged;
+    }
 }

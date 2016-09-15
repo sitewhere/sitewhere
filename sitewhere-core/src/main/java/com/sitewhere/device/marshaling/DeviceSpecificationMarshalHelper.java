@@ -30,67 +30,67 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceSpecificationMarshalHelper {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Tenant */
-	private ITenant tenant;
+    /** Tenant */
+    private ITenant tenant;
 
-	/**
-	 * Indicates whether device specification asset information is to be
-	 * included
-	 */
-	private boolean includeAsset = true;
+    /**
+     * Indicates whether device specification asset information is to be
+     * included
+     */
+    private boolean includeAsset = true;
 
-	public DeviceSpecificationMarshalHelper(ITenant tenant) {
-		this.tenant = tenant;
+    public DeviceSpecificationMarshalHelper(ITenant tenant) {
+	this.tenant = tenant;
+    }
+
+    /**
+     * Convert a device specification for marshaling.
+     * 
+     * @param source
+     * @param manager
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification convert(IDeviceSpecification source, IAssetModuleManager manager)
+	    throws SiteWhereException {
+	DeviceSpecification spec = new DeviceSpecification();
+	MetadataProviderEntity.copy(source, spec);
+	spec.setToken(source.getToken());
+	spec.setName(source.getName());
+	HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+	if (asset == null) {
+	    LOGGER.warn("Device specification has reference to non-existent asset.");
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
 	}
-
-	/**
-	 * Convert a device specification for marshaling.
-	 * 
-	 * @param source
-	 * @param manager
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification convert(IDeviceSpecification source, IAssetModuleManager manager)
-			throws SiteWhereException {
-		DeviceSpecification spec = new DeviceSpecification();
-		MetadataProviderEntity.copy(source, spec);
-		spec.setToken(source.getToken());
-		spec.setName(source.getName());
-		HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
-		if (asset == null) {
-			LOGGER.warn("Device specification has reference to non-existent asset.");
-			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
-		}
-		spec.setAssetModuleId(source.getAssetModuleId());
-		spec.setAssetId(asset.getId());
-		spec.setAssetName(asset.getName());
-		spec.setAssetImageUrl(asset.getImageUrl());
-		if (isIncludeAsset()) {
-			spec.setAsset(asset);
-		}
-		spec.setContainerPolicy(source.getContainerPolicy());
-		spec.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
-		return spec;
+	spec.setAssetModuleId(source.getAssetModuleId());
+	spec.setAssetId(asset.getId());
+	spec.setAssetName(asset.getName());
+	spec.setAssetImageUrl(asset.getImageUrl());
+	if (isIncludeAsset()) {
+	    spec.setAsset(asset);
 	}
+	spec.setContainerPolicy(source.getContainerPolicy());
+	spec.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
+	return spec;
+    }
 
-	public boolean isIncludeAsset() {
-		return includeAsset;
-	}
+    public boolean isIncludeAsset() {
+	return includeAsset;
+    }
 
-	public DeviceSpecificationMarshalHelper setIncludeAsset(boolean includeAsset) {
-		this.includeAsset = includeAsset;
-		return this;
-	}
+    public DeviceSpecificationMarshalHelper setIncludeAsset(boolean includeAsset) {
+	this.includeAsset = includeAsset;
+	return this;
+    }
 
-	public ITenant getTenant() {
-		return tenant;
-	}
+    public ITenant getTenant() {
+	return tenant;
+    }
 
-	public void setTenant(ITenant tenant) {
-		this.tenant = tenant;
-	}
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
+    }
 }

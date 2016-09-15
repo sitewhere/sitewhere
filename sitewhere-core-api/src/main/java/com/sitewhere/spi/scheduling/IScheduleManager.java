@@ -17,35 +17,35 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IScheduleManager extends ITenantLifecycleComponent {
 
-	/**
-	 * Called when a new schedule has been added.
-	 * 
-	 * @param schedule
-	 * @throws SiteWhereException
-	 */
-	public void scheduleAdded(ISchedule schedule) throws SiteWhereException;
+    /**
+     * Called when a new schedule has been added.
+     * 
+     * @param schedule
+     * @throws SiteWhereException
+     */
+    public void scheduleAdded(ISchedule schedule) throws SiteWhereException;
 
-	/**
-	 * Called when a schedule is removed.
-	 * 
-	 * @param schedule
-	 * @throws SiteWhereException
-	 */
-	public void scheduleRemoved(ISchedule schedule) throws SiteWhereException;
+    /**
+     * Called when a schedule is removed.
+     * 
+     * @param schedule
+     * @throws SiteWhereException
+     */
+    public void scheduleRemoved(ISchedule schedule) throws SiteWhereException;
 
-	/**
-	 * Adds a job to the scheduler.
-	 * 
-	 * @param job
-	 * @throws SiteWhereException
-	 */
-	public void scheduleJob(IScheduledJob job) throws SiteWhereException;
+    /**
+     * Adds a job to the scheduler.
+     * 
+     * @param job
+     * @throws SiteWhereException
+     */
+    public void scheduleJob(IScheduledJob job) throws SiteWhereException;
 
-	/**
-	 * Unschedules the given job if scheduled.
-	 * 
-	 * @param job
-	 * @throws SiteWhereException
-	 */
-	public void unscheduleJob(IScheduledJob job) throws SiteWhereException;
+    /**
+     * Unschedules the given job if scheduled.
+     * 
+     * @param job
+     * @throws SiteWhereException
+     */
+    public void unscheduleJob(IScheduledJob job) throws SiteWhereException;
 }

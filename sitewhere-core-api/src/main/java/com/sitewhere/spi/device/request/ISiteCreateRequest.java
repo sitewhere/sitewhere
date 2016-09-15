@@ -18,45 +18,45 @@ import com.sitewhere.spi.device.ISiteMapData;
  */
 public interface ISiteCreateRequest {
 
-	/**
-	 * Site token. Can be set to null if token should be auto-generated.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Site token. Can be set to null if token should be auto-generated.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get site name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get site name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get site description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get site description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get URL for site logo image.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get URL for site logo image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
-	/**
-	 * Get map information.
-	 * 
-	 * @return
-	 */
-	public ISiteMapData getMap();
+    /**
+     * Get map information.
+     * 
+     * @return
+     */
+    public ISiteMapData getMap();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

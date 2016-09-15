@@ -22,35 +22,36 @@ import org.w3c.dom.Element;
  */
 public abstract class SiteWhereBeanListParser {
 
-	/** Map classes that override root bean classes */
-	private Map<Class<?>, Class<?>> beanMappings = new HashMap<Class<?>, Class<?>>();
+    /** Map classes that override root bean classes */
+    private Map<Class<?>, Class<?>> beanMappings = new HashMap<Class<?>, Class<?>>();
 
-	/**
-	 * Parse element contents into a {@link ManagedList}.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	public abstract ManagedList<?> parse(Element element, ParserContext context);
+    /**
+     * Parse element contents into a {@link ManagedList}.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    public abstract ManagedList<?> parse(Element element, ParserContext context);
 
-	/**
-	 * Returns a builder for the given bean, allowing for class override if needed.
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	protected BeanDefinitionBuilder getBuilderFor(Class<?> clazz) {
-		Class<?> override = beanMappings.get(clazz);
-		Class<?> used = (override == null) ? clazz : override;
-		return BeanDefinitionBuilder.rootBeanDefinition(used);
-	}
+    /**
+     * Returns a builder for the given bean, allowing for class override if
+     * needed.
+     * 
+     * @param clazz
+     * @return
+     */
+    protected BeanDefinitionBuilder getBuilderFor(Class<?> clazz) {
+	Class<?> override = beanMappings.get(clazz);
+	Class<?> used = (override == null) ? clazz : override;
+	return BeanDefinitionBuilder.rootBeanDefinition(used);
+    }
 
-	public Map<Class<?>, Class<?>> getBeanMappings() {
-		return beanMappings;
-	}
+    public Map<Class<?>, Class<?>> getBeanMappings() {
+	return beanMappings;
+    }
 
-	public void setBeanMappings(Map<Class<?>, Class<?>> beanMappings) {
-		this.beanMappings = beanMappings;
-	}
+    public void setBeanMappings(Map<Class<?>, Class<?>> beanMappings) {
+	this.beanMappings = beanMappings;
+    }
 }

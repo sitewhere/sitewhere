@@ -36,112 +36,112 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> {
 
-	/** Static logger */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** User property that references the event reciever */
-	public static final String PROP_EVENT_RECEIVER = "sw.event.receiver";
+    /** User property that references the event reciever */
+    public static final String PROP_EVENT_RECEIVER = "sw.event.receiver";
 
-	/** Web socket session */
-	private Session session;
+    /** Web socket session */
+    private Session session;
 
-	/** Web socket URL to connect to */
-	private String webSocketUrl;
+    /** Web socket URL to connect to */
+    private String webSocketUrl;
 
-	/** Headers passed in web socket configuration */
-	private Map<String, String> headers = new HashMap<String, String>();
+    /** Headers passed in web socket configuration */
+    private Map<String, String> headers = new HashMap<String, String>();
 
-	/**
-	 * Get concrete {@link Endpoint} implementation class.
-	 * 
-	 * @return
-	 */
-	public abstract Class<? extends Endpoint> getWebSocketClientClass();
+    /**
+     * Get concrete {@link Endpoint} implementation class.
+     * 
+     * @return
+     */
+    public abstract Class<? extends Endpoint> getWebSocketClientClass();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+	ClientEndpointConfig config = ClientEndpointConfig.Builder.create().configurator(new WebSocketConfigurator())
+		.build();
+	config.getUserProperties().put(PROP_EVENT_RECEIVER, this);
+	try {
+	    session = container.connectToServer(getWebSocketClientClass(), config, URI.create(getWebSocketUrl()));
+	} catch (DeploymentException e) {
+	    throw new SiteWhereException("Unable to connect to web socket.", e);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to connect to web socket.", e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+	try {
+	    session.close();
+	} catch (IOException e) {
+	    LOGGER.error("IOException closing web socket: ", e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getDisplayName()
+     */
+    @Override
+    public String getDisplayName() {
+	return "WebSocket()";
+    }
+
+    /**
+     * Configurator that passes in configured headers.
+     * 
+     * @author Derek
+     */
+    private class WebSocketConfigurator extends ClientEndpointConfig.Configurator {
 	@Override
-	public void start() throws SiteWhereException {
-		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-		ClientEndpointConfig config = ClientEndpointConfig.Builder.create().configurator(new WebSocketConfigurator())
-				.build();
-		config.getUserProperties().put(PROP_EVENT_RECEIVER, this);
-		try {
-			session = container.connectToServer(getWebSocketClientClass(), config, URI.create(getWebSocketUrl()));
-		} catch (DeploymentException e) {
-			throw new SiteWhereException("Unable to connect to web socket.", e);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to connect to web socket.", e);
-		}
+	public void beforeRequest(Map<String, List<String>> headers) {
+	    Map<String, String> extHeaders = WebSocketEventReceiver.this.headers;
+	    for (String key : extHeaders.keySet()) {
+		headers.put(key, Arrays.asList(extHeaders.get(key)));
+	    }
+	    super.beforeRequest(headers);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		try {
-			session.close();
-		} catch (IOException e) {
-			LOGGER.error("IOException closing web socket: ", e);
-		}
-	}
+    public String getWebSocketUrl() {
+	return webSocketUrl;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    public void setWebSocketUrl(String webSocketUrl) {
+	this.webSocketUrl = webSocketUrl;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-	 * getDisplayName()
-	 */
-	@Override
-	public String getDisplayName() {
-		return "WebSocket()";
-	}
+    public Map<String, String> getHeaders() {
+	return headers;
+    }
 
-	/**
-	 * Configurator that passes in configured headers.
-	 * 
-	 * @author Derek
-	 */
-	private class WebSocketConfigurator extends ClientEndpointConfig.Configurator {
-		@Override
-		public void beforeRequest(Map<String, List<String>> headers) {
-			Map<String, String> extHeaders = WebSocketEventReceiver.this.headers;
-			for (String key : extHeaders.keySet()) {
-				headers.put(key, Arrays.asList(extHeaders.get(key)));
-			}
-			super.beforeRequest(headers);
-		}
-	}
-
-	public String getWebSocketUrl() {
-		return webSocketUrl;
-	}
-
-	public void setWebSocketUrl(String webSocketUrl) {
-		this.webSocketUrl = webSocketUrl;
-	}
-
-	public Map<String, String> getHeaders() {
-		return headers;
-	}
-
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
-	}
+    public void setHeaders(Map<String, String> headers) {
+	this.headers = headers;
+    }
 }

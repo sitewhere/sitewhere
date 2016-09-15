@@ -18,15 +18,18 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
  */
 public interface IPresenceNotificationStrategy {
 
-	/**
-	 * Based on the given data, chooses whether to store an event which will in turn fire
-	 * notifications to the outbound processing chain.
-	 * 
-	 * @param assignment affected device assignment
-	 * @param request state change request
-	 * @return true if event should be generated, false if not
-	 * @throws SiteWhereException if error in implementation
-	 */
-	public boolean shouldGenerateEvent(IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Based on the given data, chooses whether to store an event which will in
+     * turn fire notifications to the outbound processing chain.
+     * 
+     * @param assignment
+     *            affected device assignment
+     * @param request
+     *            state change request
+     * @return true if event should be generated, false if not
+     * @throws SiteWhereException
+     *             if error in implementation
+     */
+    public boolean shouldGenerateEvent(IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request)
+	    throws SiteWhereException;
 }

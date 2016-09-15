@@ -27,93 +27,85 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  */
 public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
-	public DeviceManagementTriggers(IDeviceManagement delegate) {
-		super(delegate);
-	}
+    public DeviceManagementTriggers(IDeviceManagement delegate) {
+	super(delegate);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#createDeviceAssignment(com.sitewhere
-	 * .spi.device.request.IDeviceAssignmentCreateRequest)
-	 */
-	@Override
-	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
-			throws SiteWhereException {
-		IDeviceAssignment created = super.createDeviceAssignment(request);
-		DeviceStateChangeCreateRequest state =
-				new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-						StateChangeType.Assignment_Created, null, null);
-		SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(created.getToken(),
-				state);
-		return created;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#createDeviceAssignment(com
+     * .sitewhere .spi.device.request.IDeviceAssignmentCreateRequest)
+     */
+    @Override
+    public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
+	IDeviceAssignment created = super.createDeviceAssignment(request);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
+		StateChangeType.Assignment_Created, null, null);
+	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(created.getToken(), state);
+	return created;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentMetadata(java.
-	 * lang.String, com.sitewhere.spi.common.IMetadataProvider)
-	 */
-	@Override
-	public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
-			throws SiteWhereException {
-		IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(token, metadata);
-		DeviceStateChangeCreateRequest state =
-				new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-						StateChangeType.Assignment_Updated, null, null);
-		SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(),
-				state);
-		return updated;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.DeviceManagementDecorator#
+     * updateDeviceAssignmentMetadata(java. lang.String,
+     * com.sitewhere.spi.common.IMetadataProvider)
+     */
+    @Override
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+	    throws SiteWhereException {
+	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(token, metadata);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
+		StateChangeType.Assignment_Updated, null, null);
+	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(), state);
+	return updated;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.DeviceManagementDecorator#endDeviceAssignment(java.lang.
-	 * String)
-	 */
-	@Override
-	public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-		IDeviceAssignment updated = super.endDeviceAssignment(token);
-		DeviceStateChangeCreateRequest state =
-				new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-						StateChangeType.Assignment_Released, null, null);
-		SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(),
-				state);
-		return updated;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#endDeviceAssignment(java.
+     * lang. String)
+     */
+    @Override
+    public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
+	IDeviceAssignment updated = super.endDeviceAssignment(token);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
+		StateChangeType.Assignment_Released, null, null);
+	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(), state);
+	return updated;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#createBatchOperation(com.sitewhere.
-	 * spi.device.request.IBatchOperationCreateRequest)
-	 */
-	@Override
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
-			throws SiteWhereException {
-		IBatchOperation operation = super.createBatchOperation(request);
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
-				operation);
-		return operation;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#createBatchOperation(com.
+     * sitewhere. spi.device.request.IBatchOperationCreateRequest)
+     */
+    @Override
+    public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
+	IBatchOperation operation = super.createBatchOperation(request);
+	SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(operation);
+	return operation;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#createBatchCommandInvocation(com.sitewhere.
-	 * spi.device.request.IBatchCommandInvocationRequest)
-	 */
-	@Override
-	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request) throws SiteWhereException {
-		IBatchOperation operation = super.createBatchCommandInvocation(request);
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
-				operation);
-		return operation;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.sitewhere.device.DeviceManagementDecorator#
+     * createBatchCommandInvocation(com.sitewhere.
+     * spi.device.request.IBatchCommandInvocationRequest)
+     */
+    @Override
+    public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+	    throws SiteWhereException {
+	IBatchOperation operation = super.createBatchCommandInvocation(request);
+	SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(operation);
+	return operation;
+    }
 }

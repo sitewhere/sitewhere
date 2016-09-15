@@ -29,143 +29,144 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * A SiteWhere tenant engine wraps up the processing pipeline and data storage for a
- * single SiteWhere tenant.
+ * A SiteWhere tenant engine wraps up the processing pipeline and data storage
+ * for a single SiteWhere tenant.
  * 
  * @author Derek
  */
 public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 
-	/**
-	 * Get resolver for global configuration elements.
-	 * 
-	 * @return
-	 */
-	public IGlobalConfigurationResolver getGlobalConfigurationResolver();
+    /**
+     * Get resolver for global configuration elements.
+     * 
+     * @return
+     */
+    public IGlobalConfigurationResolver getGlobalConfigurationResolver();
 
-	/**
-	 * Get resolver for tenant configuration elements.
-	 * 
-	 * @return
-	 */
-	public ITenantConfigurationResolver getTenantConfigurationResolver();
+    /**
+     * Get resolver for tenant configuration elements.
+     * 
+     * @return
+     */
+    public ITenantConfigurationResolver getTenantConfigurationResolver();
 
-	/**
-	 * Get Spring {@link ApplicationContext} used to configure the tenant engine.
-	 * 
-	 * @return
-	 */
-	public ApplicationContext getSpringContext();
+    /**
+     * Get Spring {@link ApplicationContext} used to configure the tenant
+     * engine.
+     * 
+     * @return
+     */
+    public ApplicationContext getSpringContext();
 
-	/**
-	 * Get the Hazelcast configuration for this tenant.
-	 * 
-	 * @return
-	 */
-	public ITenantHazelcastConfiguration getHazelcastConfiguration();
+    /**
+     * Get the Hazelcast configuration for this tenant.
+     * 
+     * @return
+     */
+    public ITenantHazelcastConfiguration getHazelcastConfiguration();
 
-	/**
-	 * Get list of components that have registered to participate in the server component
-	 * lifecycle.
-	 * 
-	 * @return
-	 */
-	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
+    /**
+     * Get list of components that have registered to participate in the server
+     * component lifecycle.
+     * 
+     * @return
+     */
+    public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
-	/**
-	 * Get the device management implementation.
-	 * 
-	 * @return
-	 */
-	public IDeviceManagement getDeviceManagement();
+    /**
+     * Get the device management implementation.
+     * 
+     * @return
+     */
+    public IDeviceManagement getDeviceManagement();
 
-	/**
-	 * Get the device event management implementation.
-	 * 
-	 * @return
-	 */
-	public IDeviceEventManagement getDeviceEventManagement();
+    /**
+     * Get the device event management implementation.
+     * 
+     * @return
+     */
+    public IDeviceEventManagement getDeviceEventManagement();
 
-	/**
-	 * Get the asset management implementation.
-	 * 
-	 * @return
-	 */
-	public IAssetManagement getAssetManagement();
+    /**
+     * Get the asset management implementation.
+     * 
+     * @return
+     */
+    public IAssetManagement getAssetManagement();
 
-	/**
-	 * Get the schedule management implementation.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduleManagement getScheduleManagement() throws SiteWhereException;
+    /**
+     * Get the schedule management implementation.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduleManagement getScheduleManagement() throws SiteWhereException;
 
-	/**
-	 * Get the configured device management cache provider implementation.
-	 * 
-	 * @return
-	 */
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
+    /**
+     * Get the configured device management cache provider implementation.
+     * 
+     * @return
+     */
+    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
 
-	/**
-	 * Get the device communication subsystem implementation.
-	 * 
-	 * @return
-	 */
-	public IDeviceCommunication getDeviceCommunication();
+    /**
+     * Get the device communication subsystem implementation.
+     * 
+     * @return
+     */
+    public IDeviceCommunication getDeviceCommunication();
 
-	/**
-	 * Get the event processing subsystem implementation.
-	 * 
-	 * @return
-	 */
-	public IEventProcessing getEventProcessing();
+    /**
+     * Get the event processing subsystem implementation.
+     * 
+     * @return
+     */
+    public IEventProcessing getEventProcessing();
 
-	/**
-	 * Get the asset modules manager instance.
-	 * 
-	 * @return
-	 */
-	public IAssetModuleManager getAssetModuleManager();
+    /**
+     * Get the asset modules manager instance.
+     * 
+     * @return
+     */
+    public IAssetModuleManager getAssetModuleManager();
 
-	/**
-	 * Get the search provider manager implementation.
-	 * 
-	 * @return
-	 */
-	public ISearchProviderManager getSearchProviderManager();
+    /**
+     * Get the search provider manager implementation.
+     * 
+     * @return
+     */
+    public ISearchProviderManager getSearchProviderManager();
 
-	/**
-	 * Get the schedule manager implementation.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduleManager getScheduleManager() throws SiteWhereException;
+    /**
+     * Get the schedule manager implementation.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduleManager getScheduleManager() throws SiteWhereException;
 
-	/**
-	 * Get current runtime state of engine.
-	 * 
-	 * @return
-	 */
-	public ISiteWhereTenantEngineState getEngineState();
+    /**
+     * Get current runtime state of engine.
+     * 
+     * @return
+     */
+    public ISiteWhereTenantEngineState getEngineState();
 
-	/**
-	 * Initialize the engine.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public boolean initialize() throws SiteWhereException;
+    /**
+     * Initialize the engine.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public boolean initialize() throws SiteWhereException;
 
-	/**
-	 * Issue a command to the tenant engine.
-	 * 
-	 * @param command
-	 * @param maxWaitSeconds
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException;
+    /**
+     * Issue a command to the tenant engine.
+     * 
+     * @param command
+     * @param maxWaitSeconds
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException;
 }

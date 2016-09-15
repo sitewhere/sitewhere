@@ -19,45 +19,45 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IRegistrationManager extends ITenantLifecycleComponent {
 
-	/**
-	 * Indicates whether the registration manager allows new devices to be
-	 * created as a byproduct of the registration process.
-	 * 
-	 * @return
-	 */
-	public boolean isAllowNewDevices();
+    /**
+     * Indicates whether the registration manager allows new devices to be
+     * created as a byproduct of the registration process.
+     * 
+     * @return
+     */
+    public boolean isAllowNewDevices();
 
-	/**
-	 * Indicates whether all new regsitrations can be automatically assigned to
-	 * a given site. If not, the site token must be passed as part of the
-	 * registration payload.
-	 * 
-	 * @return
-	 */
-	public boolean isAutoAssignSite();
+    /**
+     * Indicates whether all new regsitrations can be automatically assigned to
+     * a given site. If not, the site token must be passed as part of the
+     * registration payload.
+     * 
+     * @return
+     */
+    public boolean isAutoAssignSite();
 
-	/**
-	 * Gets the token used for automatic site assignment. This only applies when
-	 * 'auto assign site' is set to true.
-	 * 
-	 * @return
-	 */
-	public String getAutoAssignSiteToken();
+    /**
+     * Gets the token used for automatic site assignment. This only applies when
+     * 'auto assign site' is set to true.
+     * 
+     * @return
+     */
+    public String getAutoAssignSiteToken();
 
-	/**
-	 * Handle registration of a new device.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException;
+    /**
+     * Handle registration of a new device.
+     * 
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException;
 
-	/**
-	 * Handle mapping of a device to a path on a composite device.
-	 * 
-	 * @param hardwareId
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void handleDeviceMapping(String hardwareId, IDeviceMappingCreateRequest request) throws SiteWhereException;
+    /**
+     * Handle mapping of a device to a path on a composite device.
+     * 
+     * @param hardwareId
+     * @param request
+     * @throws SiteWhereException
+     */
+    public void handleDeviceMapping(String hardwareId, IDeviceMappingCreateRequest request) throws SiteWhereException;
 }

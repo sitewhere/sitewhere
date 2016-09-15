@@ -32,76 +32,76 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte[]> {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
+     * process (java.net.Socket,
+     * com.sitewhere.spi.device.communication.IInboundEventReceiver)
+     */
+    @Override
+    public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
+	try {
+	    InputStream input = socket.getInputStream();
+	    ByteArrayOutputStream output = new ByteArrayOutputStream();
+	    int value;
+	    while ((value = input.read()) != -1) {
+		output.write(value);
+	    }
+	    input.close();
+	    EventProcessingLogic.processRawPayload(receiver, output.toByteArray(), null);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
+	}
+    }
+
+    /**
+     * Factory class that produces {@link ReadAllInteractionHandler} instances.
+     * 
+     * @author Derek
+     */
+    public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public Factory() {
+	    super(LifecycleComponentType.Other);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
-	 * process (java.net.Socket,
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver)
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
-	public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
-		try {
-			InputStream input = socket.getInputStream();
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			int value;
-			while ((value = input.read()) != -1) {
-				output.write(value);
-			}
-			input.close();
-			EventProcessingLogic.processRawPayload(receiver, output.toByteArray(), null);
-		} catch (IOException e) {
-			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
-		}
+	public void start() throws SiteWhereException {
 	}
 
-	/**
-	 * Factory class that produces {@link ReadAllInteractionHandler} instances.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
-	public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
-
-		/** Static logger instance */
-		private static Logger LOGGER = LogManager.getLogger();
-
-		public Factory() {
-			super(LifecycleComponentType.Other);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-		 */
-		@Override
-		public void start() throws SiteWhereException {
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-		 */
-		@Override
-		public void stop() throws SiteWhereException {
-		}
-
-		@Override
-		public Logger getLogger() {
-			return LOGGER;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.device.communication.socket.
-		 * ISocketInteractionHandlerFactory #newInstance()
-		 */
-		@Override
-		public ISocketInteractionHandler<byte[]> newInstance() {
-			return new ReadAllInteractionHandler();
-		}
+	@Override
+	public void stop() throws SiteWhereException {
 	}
+
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.socket.
+	 * ISocketInteractionHandlerFactory #newInstance()
+	 */
+	@Override
+	public ISocketInteractionHandler<byte[]> newInstance() {
+	    return new ReadAllInteractionHandler();
+	}
+    }
 }

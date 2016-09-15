@@ -15,37 +15,37 @@ import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IHardwareAsset;
 
 /**
- * Implementation of {@link IAssetModule} that loads hardware assets from a datastore.
+ * Implementation of {@link IAssetModule} that loads hardware assets from a
+ * datastore.
  * 
  * @author Derek
  */
-public class HardwareAssetModule extends DataStoreAssetModule<IHardwareAsset> implements
-		IAssetModule<IHardwareAsset> {
+public class HardwareAssetModule extends DataStoreAssetModule<IHardwareAsset> implements IAssetModule<IHardwareAsset> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 8273484848445563832L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8273484848445563832L;
 
-	public HardwareAssetModule(IAssetCategory category) {
-		super(category);
-	}
+    public HardwareAssetModule(IAssetCategory category) {
+	super(category);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
-	 */
-	@Override
-	public IHardwareAsset getAssetById(String id) throws SiteWhereException {
-		return doGetAsset(id);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     */
+    @Override
+    public IHardwareAsset getAssetById(String id) throws SiteWhereException {
+	return doGetAsset(id);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
-	 */
-	@Override
-	public List<IHardwareAsset> search(String criteria) throws SiteWhereException {
-		return doSearch(criteria);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
+     */
+    @Override
+    public List<IHardwareAsset> search(String criteria) throws SiteWhereException {
+	return doSearch(criteria);
+    }
 }

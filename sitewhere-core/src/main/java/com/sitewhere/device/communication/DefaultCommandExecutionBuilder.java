@@ -33,139 +33,139 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public DefaultCommandExecutionBuilder() {
-		super(LifecycleComponentType.CommandExecutionBuilder);
-	}
+    public DefaultCommandExecutionBuilder() {
+	super(LifecycleComponentType.CommandExecutionBuilder);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandExecutionBuilder#
-	 * createExecution (com.sitewhere.spi.device.command.IDeviceCommand,
-	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
-			throws SiteWhereException {
-		LOGGER.debug("Building default command execution for invocation.");
-		DeviceCommandExecution execution = new DeviceCommandExecution();
-		execution.setCommand(command);
-		execution.setInvocation(invocation);
-		generateParameters(execution);
-		return execution;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.ICommandExecutionBuilder#
+     * createExecution (com.sitewhere.spi.device.command.IDeviceCommand,
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException {
+	LOGGER.debug("Building default command execution for invocation.");
+	DeviceCommandExecution execution = new DeviceCommandExecution();
+	execution.setCommand(command);
+	execution.setInvocation(invocation);
+	generateParameters(execution);
+	return execution;
+    }
 
-	/**
-	 * Generate a parameters map based on information from the command and
-	 * invocation.
-	 * 
-	 * @param execution
-	 * @throws SiteWhereException
-	 */
-	protected void generateParameters(IDeviceCommandExecution execution) throws SiteWhereException {
-		execution.getParameters().clear();
-		for (ICommandParameter parameter : execution.getCommand().getParameters()) {
-			String paramValue = execution.getInvocation().getParameterValues().get(parameter.getName());
-			if (parameter.isRequired() && (paramValue == null)) {
-				throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
-			}
-			Object converted = null;
-			switch (parameter.getType()) {
-			case Bool: {
-				converted = Boolean.parseBoolean(paramValue);
-				break;
-			}
-			case String: {
-				converted = paramValue;
-				break;
-			}
-			case Bytes: {
-				converted = String.valueOf(converted).getBytes();
-				break;
-			}
-			case Double: {
-				try {
-					converted = Double.parseDouble(paramValue);
-				} catch (NumberFormatException e) {
-					throw new SiteWhereException(
-							"Field '" + parameter.getName() + "' contains a value that can not be parsed as a double.");
-				}
-				break;
-			}
-			case Float: {
-				try {
-					converted = Float.parseFloat(paramValue);
-				} catch (NumberFormatException e) {
-					throw new SiteWhereException(
-							"Field '" + parameter.getName() + "' contains a value that can not be parsed as a float.");
-				}
-				break;
-			}
-			case Int32:
-			case UInt32:
-			case SInt32:
-			case Fixed32:
-			case SFixed32: {
-				try {
-					converted = Integer.parseInt(paramValue);
-				} catch (NumberFormatException e) {
-					throw new SiteWhereException("Field '" + parameter.getName()
-							+ "' contains a value that can not be parsed as an integer.");
-				}
-				break;
-			}
-			case Int64:
-			case UInt64:
-			case SInt64:
-			case Fixed64:
-			case SFixed64: {
-				try {
-					converted = Long.parseLong(paramValue);
-				} catch (NumberFormatException e) {
-					throw new SiteWhereException(
-							"Field '" + parameter.getName() + "' contains a value that can not be parsed as an long.");
-				}
-				break;
-			}
-			default: {
-				throw new SiteWhereException("Unhandled parameter type: " + parameter.getType().name());
-			}
-
-			}
-			if (converted != null) {
-				execution.getParameters().put(parameter.getName(), converted);
-			}
+    /**
+     * Generate a parameters map based on information from the command and
+     * invocation.
+     * 
+     * @param execution
+     * @throws SiteWhereException
+     */
+    protected void generateParameters(IDeviceCommandExecution execution) throws SiteWhereException {
+	execution.getParameters().clear();
+	for (ICommandParameter parameter : execution.getCommand().getParameters()) {
+	    String paramValue = execution.getInvocation().getParameterValues().get(parameter.getName());
+	    if (parameter.isRequired() && (paramValue == null)) {
+		throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
+	    }
+	    Object converted = null;
+	    switch (parameter.getType()) {
+	    case Bool: {
+		converted = Boolean.parseBoolean(paramValue);
+		break;
+	    }
+	    case String: {
+		converted = paramValue;
+		break;
+	    }
+	    case Bytes: {
+		converted = String.valueOf(converted).getBytes();
+		break;
+	    }
+	    case Double: {
+		try {
+		    converted = Double.parseDouble(paramValue);
+		} catch (NumberFormatException e) {
+		    throw new SiteWhereException(
+			    "Field '" + parameter.getName() + "' contains a value that can not be parsed as a double.");
 		}
-	}
+		break;
+	    }
+	    case Float: {
+		try {
+		    converted = Float.parseFloat(paramValue);
+		} catch (NumberFormatException e) {
+		    throw new SiteWhereException(
+			    "Field '" + parameter.getName() + "' contains a value that can not be parsed as a float.");
+		}
+		break;
+	    }
+	    case Int32:
+	    case UInt32:
+	    case SInt32:
+	    case Fixed32:
+	    case SFixed32: {
+		try {
+		    converted = Integer.parseInt(paramValue);
+		} catch (NumberFormatException e) {
+		    throw new SiteWhereException("Field '" + parameter.getName()
+			    + "' contains a value that can not be parsed as an integer.");
+		}
+		break;
+	    }
+	    case Int64:
+	    case UInt64:
+	    case SInt64:
+	    case Fixed64:
+	    case SFixed64: {
+		try {
+		    converted = Long.parseLong(paramValue);
+		} catch (NumberFormatException e) {
+		    throw new SiteWhereException(
+			    "Field '" + parameter.getName() + "' contains a value that can not be parsed as an long.");
+		}
+		break;
+	    }
+	    default: {
+		throw new SiteWhereException("Unhandled parameter type: " + parameter.getType().name());
+	    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
+	    }
+	    if (converted != null) {
+		execution.getParameters().put(parameter.getName(), converted);
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 }

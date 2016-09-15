@@ -10,16 +10,17 @@ package com.sitewhere.spi.device.event.processor;
 import java.util.List;
 
 /**
- * Holds a list of {@link IInboundEventProcessor} objects that are invoked in order.
+ * Holds a list of {@link IInboundEventProcessor} objects that are invoked in
+ * order.
  * 
  * @author Derek
  */
 public interface IInboundEventProcessorChain extends IInboundEventProcessor {
 
-	/**
-	 * Get the list of chained processors.
-	 * 
-	 * @return
-	 */
-	public List<IInboundEventProcessor> getProcessors();
+    /**
+     * Get the list of chained processors.
+     * 
+     * @return
+     */
+    public List<IInboundEventProcessor> getProcessors();
 }

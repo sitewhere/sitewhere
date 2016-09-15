@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.group.DeviceGroupElement;
  */
 public class DeviceGroupElementSearchResults extends SearchResults<DeviceGroupElement> {
 
-	public DeviceGroupElementSearchResults() {
-		super(new ArrayList<DeviceGroupElement>());
-	}
+    public DeviceGroupElementSearchResults() {
+	super(new ArrayList<DeviceGroupElement>());
+    }
 
-	public DeviceGroupElementSearchResults(List<DeviceGroupElement> results) {
-		super(results);
-	}
+    public DeviceGroupElementSearchResults(List<DeviceGroupElement> results) {
+	super(results);
+    }
 }

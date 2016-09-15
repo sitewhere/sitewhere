@@ -19,58 +19,58 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
  */
 public class DeviceStreamData extends DeviceEvent implements IDeviceStreamData, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 7241224075838793803L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 7241224075838793803L;
 
-	/** Stream id this chunk belongs to */
-	private String streamId;
+    /** Stream id this chunk belongs to */
+    private String streamId;
 
-	/** Sequence number for ordering chunks */
-	private Long sequenceNumber;
+    /** Sequence number for ordering chunks */
+    private Long sequenceNumber;
 
-	/** Chunk data */
-	private byte[] data;
+    /** Chunk data */
+    private byte[] data;
 
-	public DeviceStreamData() {
-		super(DeviceEventType.StreamData);
-	}
+    public DeviceStreamData() {
+	super(DeviceEventType.StreamData);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStreamData#getStreamId()
-	 */
-	public String getStreamId() {
-		return streamId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStreamData#getStreamId()
+     */
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStreamData#getSequenceNumber()
-	 */
-	public Long getSequenceNumber() {
-		return sequenceNumber;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStreamData#getSequenceNumber()
+     */
+    public Long getSequenceNumber() {
+	return sequenceNumber;
+    }
 
-	public void setSequenceNumber(Long sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
-	}
+    public void setSequenceNumber(Long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceStreamData#getData()
-	 */
-	public byte[] getData() {
-		return data;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceStreamData#getData()
+     */
+    public byte[] getData() {
+	return data;
+    }
 
-	public void setData(byte[] data) {
-		this.data = data;
-	}
+    public void setData(byte[] data) {
+	this.data = data;
+    }
 }

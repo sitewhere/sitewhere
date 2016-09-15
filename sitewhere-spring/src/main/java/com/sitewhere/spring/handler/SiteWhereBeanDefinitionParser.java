@@ -14,32 +14,34 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 
 /**
- * Extension of {@link AbstractBeanDefinitionParser} that supports overriding beans
+ * Extension of {@link AbstractBeanDefinitionParser} that supports overriding
+ * beans
  * 
  * @author Derek
  */
 public abstract class SiteWhereBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
-	/** Map classes that override root bean classes */
-	private Map<Class<?>, Class<?>> beanMappings = new HashMap<Class<?>, Class<?>>();
+    /** Map classes that override root bean classes */
+    private Map<Class<?>, Class<?>> beanMappings = new HashMap<Class<?>, Class<?>>();
 
-	/**
-	 * Returns a builder for the given bean, allowing for class override if needed.
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	protected BeanDefinitionBuilder getBuilderFor(Class<?> clazz) {
-		Class<?> override = beanMappings.get(clazz);
-		Class<?> used = (override == null) ? clazz : override;
-		return BeanDefinitionBuilder.rootBeanDefinition(used);
-	}
+    /**
+     * Returns a builder for the given bean, allowing for class override if
+     * needed.
+     * 
+     * @param clazz
+     * @return
+     */
+    protected BeanDefinitionBuilder getBuilderFor(Class<?> clazz) {
+	Class<?> override = beanMappings.get(clazz);
+	Class<?> used = (override == null) ? clazz : override;
+	return BeanDefinitionBuilder.rootBeanDefinition(used);
+    }
 
-	public Map<Class<?>, Class<?>> getBeanMappings() {
-		return beanMappings;
-	}
+    public Map<Class<?>, Class<?>> getBeanMappings() {
+	return beanMappings;
+    }
 
-	public void setBeanMappings(Map<Class<?>, Class<?>> beanMappings) {
-		this.beanMappings = beanMappings;
-	}
+    public void setBeanMappings(Map<Class<?>, Class<?>> beanMappings) {
+	this.beanMappings = beanMappings;
+    }
 }

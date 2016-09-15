@@ -17,31 +17,31 @@ import java.util.Map;
  */
 public interface IAssetCreateRequest extends Serializable {
 
-	/**
-	 * Unique asset id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Unique asset id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get asset name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get asset name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get URL for asset image.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get URL for asset image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
-	/**
-	 * Get properties associated with asset.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getProperties();
+    /**
+     * Get properties associated with asset.
+     * 
+     * @return
+     */
+    public Map<String, String> getProperties();
 }

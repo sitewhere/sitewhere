@@ -10,24 +10,24 @@ package com.sitewhere.spi.server.tenant;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Used by components that do not need to implement full lifecycle support, but should be
- * aware of which tenant they are executing in.
+ * Used by components that do not need to implement full lifecycle support, but
+ * should be aware of which tenant they are executing in.
  * 
  * @author Derek
  */
 public interface ITenantAware {
 
-	/**
-	 * Get associated tenant.
-	 * 
-	 * @return
-	 */
-	public ITenant getTenant();
+    /**
+     * Get associated tenant.
+     * 
+     * @return
+     */
+    public ITenant getTenant();
 
-	/**
-	 * Set associated tenant.
-	 * 
-	 * @param tenant
-	 */
-	public void setTenant(ITenant tenant);
+    /**
+     * Set associated tenant.
+     * 
+     * @param tenant
+     */
+    public void setTenant(ITenant tenant);
 }

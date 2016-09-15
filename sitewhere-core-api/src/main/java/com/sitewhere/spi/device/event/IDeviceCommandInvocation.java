@@ -16,52 +16,52 @@ import java.util.Map;
  */
 public interface IDeviceCommandInvocation extends IDeviceEvent {
 
-	/**
-	 * Get actor type that initiated the command.
-	 * 
-	 * @return
-	 */
-	public CommandInitiator getInitiator();
+    /**
+     * Get actor type that initiated the command.
+     * 
+     * @return
+     */
+    public CommandInitiator getInitiator();
 
-	/**
-	 * Get unique id of command initiated.
-	 * 
-	 * @return
-	 */
-	public String getInitiatorId();
+    /**
+     * Get unique id of command initiated.
+     * 
+     * @return
+     */
+    public String getInitiatorId();
 
-	/**
-	 * Get actor type that received command.
-	 * 
-	 * @return
-	 */
-	public CommandTarget getTarget();
+    /**
+     * Get actor type that received command.
+     * 
+     * @return
+     */
+    public CommandTarget getTarget();
 
-	/**
-	 * Get unique id of command target.
-	 * 
-	 * @return
-	 */
-	public String getTargetId();
+    /**
+     * Get unique id of command target.
+     * 
+     * @return
+     */
+    public String getTargetId();
 
-	/**
-	 * Get the unique token of the command to be executed.
-	 * 
-	 * @return
-	 */
-	public String getCommandToken();
+    /**
+     * Get the unique token of the command to be executed.
+     * 
+     * @return
+     */
+    public String getCommandToken();
 
-	/**
-	 * Get the list of parameter names mapped to values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getParameterValues();
+    /**
+     * Get the list of parameter names mapped to values.
+     * 
+     * @return
+     */
+    public Map<String, String> getParameterValues();
 
-	/**
-	 * Get status of command.
-	 * 
-	 * @return
-	 */
-	public CommandStatus getStatus();
+    /**
+     * Get status of command.
+     * 
+     * @return
+     */
+    public CommandStatus getStatus();
 }

@@ -15,37 +15,37 @@ import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IPersonAsset;
 
 /**
- * Implementation of {@link IAssetModule} that loads person assets from a datastore.
+ * Implementation of {@link IAssetModule} that loads person assets from a
+ * datastore.
  * 
  * @author Derek
  */
-public class PersonAssetModule extends DataStoreAssetModule<IPersonAsset> implements
-		IAssetModule<IPersonAsset> {
+public class PersonAssetModule extends DataStoreAssetModule<IPersonAsset> implements IAssetModule<IPersonAsset> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -6530318818641755281L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -6530318818641755281L;
 
-	public PersonAssetModule(IAssetCategory category) {
-		super(category);
-	}
+    public PersonAssetModule(IAssetCategory category) {
+	super(category);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
-	 */
-	@Override
-	public IPersonAsset getAssetById(String id) throws SiteWhereException {
-		return doGetAsset(id);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     */
+    @Override
+    public IPersonAsset getAssetById(String id) throws SiteWhereException {
+	return doGetAsset(id);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
-	 */
-	@Override
-	public List<IPersonAsset> search(String criteria) throws SiteWhereException {
-		return doSearch(criteria);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
+     */
+    @Override
+    public List<IPersonAsset> search(String criteria) throws SiteWhereException {
+	return doSearch(criteria);
+    }
 }

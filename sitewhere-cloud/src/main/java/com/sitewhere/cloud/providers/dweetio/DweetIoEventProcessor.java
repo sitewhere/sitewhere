@@ -30,97 +30,97 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  */
 public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Base URI for REST calls */
-	private static final String API_BASE = "https://dweet.io:443/dweet/for/";
+    /** Base URI for REST calls */
+    private static final String API_BASE = "https://dweet.io:443/dweet/for/";
 
-	/** Use Spring RestTemplate to send requests */
-	private RestTemplate client;
+    /** Use Spring RestTemplate to send requests */
+    private RestTemplate client;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		// Required for filters.
-		super.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	// Required for filters.
+	super.start();
 
-		this.client = new RestTemplate();
+	this.client = new RestTemplate();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+	sendDweet(measurements);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+	sendDweet(location);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+	sendDweet(alert);
+    }
+
+    /**
+     * Send a Dweet with the measurements information.
+     * 
+     * @param event
+     * @return
+     * @throws SiteWhereException
+     */
+    protected boolean sendDweet(IDeviceEvent event) throws SiteWhereException {
+	try {
+	    String url = API_BASE + event.getDeviceAssignmentToken();
+	    ResponseEntity<String> response = getClient().postForEntity(url, event, String.class);
+	    if (response.getStatusCode() == HttpStatus.OK) {
+		return true;
+	    }
+	    throw new SiteWhereException("Unable to create dweet. Status code was: " + response.getStatusCode());
+	} catch (ResourceAccessException e) {
+	    throw new SiteWhereException(e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-	 * IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
-		sendDweet(measurements);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
-		sendDweet(location);
-	}
+    public RestTemplate getClient() {
+	return client;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
-		sendDweet(alert);
-	}
-
-	/**
-	 * Send a Dweet with the measurements information.
-	 * 
-	 * @param event
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected boolean sendDweet(IDeviceEvent event) throws SiteWhereException {
-		try {
-			String url = API_BASE + event.getDeviceAssignmentToken();
-			ResponseEntity<String> response = getClient().postForEntity(url, event, String.class);
-			if (response.getStatusCode() == HttpStatus.OK) {
-				return true;
-			}
-			throw new SiteWhereException("Unable to create dweet. Status code was: " + response.getStatusCode());
-		} catch (ResourceAccessException e) {
-			throw new SiteWhereException(e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	public RestTemplate getClient() {
-		return client;
-	}
-
-	public void setClient(RestTemplate client) {
-		this.client = client;
-	}
+    public void setClient(RestTemplate client) {
+	this.client = client;
+    }
 }

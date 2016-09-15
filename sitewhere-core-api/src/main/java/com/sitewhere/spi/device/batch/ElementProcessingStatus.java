@@ -14,39 +14,39 @@ package com.sitewhere.spi.device.batch;
  */
 public enum ElementProcessingStatus {
 
-	/** Indicates a batch element has not been processed */
-	Unprocessed('U'),
+    /** Indicates a batch element has not been processed */
+    Unprocessed('U'),
 
-	/** Indicates a batch element is currently being processed */
-	Processing('P'),
+    /** Indicates a batch element is currently being processed */
+    Processing('P'),
 
-	/** Indicates processing failed for the batch element */
-	Failed('F'),
+    /** Indicates processing failed for the batch element */
+    Failed('F'),
 
-	/** Indicates processing succeeded for the batch element */
-	Succeeded('S');
+    /** Indicates processing succeeded for the batch element */
+    Succeeded('S');
 
-	/** Event code */
-	private char code;
+    /** Event code */
+    private char code;
 
-	private ElementProcessingStatus(char code) {
-		this.code = code;
+    private ElementProcessingStatus(char code) {
+	this.code = code;
+    }
+
+    public static ElementProcessingStatus getByCode(char code) {
+	for (ElementProcessingStatus value : ElementProcessingStatus.values()) {
+	    if (value.getCode() == code) {
+		return value;
+	    }
 	}
+	return null;
+    }
 
-	public static ElementProcessingStatus getByCode(char code) {
-		for (ElementProcessingStatus value : ElementProcessingStatus.values()) {
-			if (value.getCode() == code) {
-				return value;
-			}
-		}
-		return null;
-	}
+    public char getCode() {
+	return code;
+    }
 
-	public char getCode() {
-		return code;
-	}
-
-	public void setCode(char code) {
-		this.code = code;
-	}
+    public void setCode(char code) {
+	this.code = code;
+    }
 }

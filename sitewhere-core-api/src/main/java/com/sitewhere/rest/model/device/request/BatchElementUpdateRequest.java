@@ -21,55 +21,57 @@ import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
  */
 public class BatchElementUpdateRequest implements IBatchElementUpdateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -3369336266183401785L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -3369336266183401785L;
 
-	/** Processing status for update */
-	private ElementProcessingStatus processingStatus;
+    /** Processing status for update */
+    private ElementProcessingStatus processingStatus;
 
-	/** Date element was processed */
-	private Date processedDate;
+    /** Date element was processed */
+    private Date processedDate;
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Metadata values */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getProcessingStatus()
-	 */
-	public ElementProcessingStatus getProcessingStatus() {
-		return processingStatus;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#
+     * getProcessingStatus()
+     */
+    public ElementProcessingStatus getProcessingStatus() {
+	return processingStatus;
+    }
 
-	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
-		this.processingStatus = processingStatus;
-	}
+    public void setProcessingStatus(ElementProcessingStatus processingStatus) {
+	this.processingStatus = processingStatus;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getProcessedDate()
-	 */
-	public Date getProcessedDate() {
-		return processedDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#
+     * getProcessedDate()
+     */
+    public Date getProcessedDate() {
+	return processedDate;
+    }
 
-	public void setProcessedDate(Date processedDate) {
-		this.processedDate = processedDate;
-	}
+    public void setProcessedDate(Date processedDate) {
+	this.processedDate = processedDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
 }

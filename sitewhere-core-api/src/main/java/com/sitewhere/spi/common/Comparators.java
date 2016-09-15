@@ -16,24 +16,24 @@ import java.util.Comparator;
  */
 public class Comparators {
 
-	/**
-	 * Lists objects with newest created first.
-	 * 
-	 * @author Derek
-	 */
-	public static class InverseCreatedDateComparator implements Comparator<ISiteWhereEntity> {
+    /**
+     * Lists objects with newest created first.
+     * 
+     * @author Derek
+     */
+    public static class InverseCreatedDateComparator implements Comparator<ISiteWhereEntity> {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		@Override
-		public int compare(ISiteWhereEntity arg0, ISiteWhereEntity arg1) {
-			if ((arg0.getCreatedDate() == null) || (arg0.getCreatedDate() == null)) {
-				return 0;
-			}
-			return -1 * (arg0.getCreatedDate().compareTo(arg1.getCreatedDate()));
-		}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	public int compare(ISiteWhereEntity arg0, ISiteWhereEntity arg1) {
+	    if ((arg0.getCreatedDate() == null) || (arg0.getCreatedDate() == null)) {
+		return 0;
+	    }
+	    return -1 * (arg0.getCreatedDate().compareTo(arg1.getCreatedDate()));
 	}
+    }
 }

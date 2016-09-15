@@ -24,37 +24,37 @@ import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
  */
 public class HazelcastTest {
 
-	/** SiteWhere Hazelcast username */
-	private static final String SITEWHERE_USERNAME = "sitewhere";
+    /** SiteWhere Hazelcast username */
+    private static final String SITEWHERE_USERNAME = "sitewhere";
 
-	/** SiteWhere Hazelcast password */
-	private static final String SITEWHERE_PASSWORD = "sitewhere";
+    /** SiteWhere Hazelcast password */
+    private static final String SITEWHERE_PASSWORD = "sitewhere";
 
-	/** Hazelcast client for SiteWhere */
-	private HazelcastInstance hazelcast;
+    /** Hazelcast client for SiteWhere */
+    private HazelcastInstance hazelcast;
 
-	@Before
-	public void setup() throws Exception {
+    @Before
+    public void setup() throws Exception {
 
-		try {
-			Config config = new Config();
-			config.getGroupConfig().setName(SITEWHERE_USERNAME);
-			config.getGroupConfig().setPassword(SITEWHERE_PASSWORD);
-			config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-			config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
-			hazelcast = Hazelcast.newHazelcastInstance(config);
-		} catch (Exception e) {
-			throw new Exception("Unable to connect to SiteWhere Hazelcast cluster.", e);
-		}
+	try {
+	    Config config = new Config();
+	    config.getGroupConfig().setName(SITEWHERE_USERNAME);
+	    config.getGroupConfig().setPassword(SITEWHERE_PASSWORD);
+	    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+	    config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
+	    hazelcast = Hazelcast.newHazelcastInstance(config);
+	} catch (Exception e) {
+	    throw new Exception("Unable to connect to SiteWhere Hazelcast cluster.", e);
 	}
+    }
 
-	@Test
-	public void test() {
-		ITopic<DeviceLocation> locationsTopic = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
-		locationsTopic.getName();
-		try {
-			Thread.sleep(120000);
-		} catch (InterruptedException e) {
-		}
+    @Test
+    public void test() {
+	ITopic<DeviceLocation> locationsTopic = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
+	locationsTopic.getName();
+	try {
+	    Thread.sleep(120000);
+	} catch (InterruptedException e) {
 	}
+    }
 }

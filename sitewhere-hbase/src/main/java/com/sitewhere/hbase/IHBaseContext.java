@@ -24,73 +24,73 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public interface IHBaseContext {
 
-	/**
-	 * Get tenant information.
-	 * 
-	 * @return
-	 */
-	public ITenant getTenant();
+    /**
+     * Get tenant information.
+     * 
+     * @return
+     */
+    public ITenant getTenant();
 
-	/**
-	 * Get HBase client accessor.
-	 * 
-	 * @return
-	 */
-	public ISiteWhereHBaseClient getClient();
+    /**
+     * Get HBase client accessor.
+     * 
+     * @return
+     */
+    public ISiteWhereHBaseClient getClient();
 
-	/**
-	 * Get configured cache provider.
-	 * 
-	 * @return
-	 */
-	public IDeviceManagementCacheProvider getCacheProvider();
+    /**
+     * Get configured cache provider.
+     * 
+     * @return
+     */
+    public IDeviceManagementCacheProvider getCacheProvider();
 
-	/**
-	 * Get configured payload marshaler.
-	 * 
-	 * @return
-	 */
-	public IPayloadMarshaler getPayloadMarshaler();
+    /**
+     * Get configured payload marshaler.
+     * 
+     * @return
+     */
+    public IPayloadMarshaler getPayloadMarshaler();
 
-	/**
-	 * Get buffer for storing device events.
-	 * 
-	 * @return
-	 */
-	public IDeviceEventBuffer getDeviceEventBuffer();
+    /**
+     * Get buffer for storing device events.
+     * 
+     * @return
+     */
+    public IDeviceEventBuffer getDeviceEventBuffer();
 
-	/**
-	 * Get assignment state manager.
-	 * 
-	 * @return
-	 */
-	public IAssignmentStateManager getAssignmentStateManager();
+    /**
+     * Get assignment state manager.
+     * 
+     * @return
+     */
+    public IAssignmentStateManager getAssignmentStateManager();
 
-	/**
-	 * Device id manager.
-	 * 
-	 * @return
-	 */
-	public IDeviceIdManager getDeviceIdManager();
+    /**
+     * Device id manager.
+     * 
+     * @return
+     */
+    public IDeviceIdManager getDeviceIdManager();
 
-	/**
-	 * Asset id manager.
-	 * 
-	 * @return
-	 */
-	public IAssetIdManager getAssetIdManager();
+    /**
+     * Asset id manager.
+     * 
+     * @return
+     */
+    public IAssetIdManager getAssetIdManager();
 
-	/**
-	 * Schedule id manager.
-	 * 
-	 * @return
-	 */
-	public IScheduleIdManager getScheduleIdManager();
+    /**
+     * Schedule id manager.
+     * 
+     * @return
+     */
+    public IScheduleIdManager getScheduleIdManager();
 
-	/**
-	 * User id manager.
-	 * 
-	 * @return
-	 */
-	public IUserIdManager getUserIdManager();
+    /**
+     * User id manager.
+     * 
+     * @return
+     */
+    public IUserIdManager getUserIdManager();
 }

@@ -18,38 +18,38 @@ import com.sitewhere.spi.common.IMetadataProvider;
  */
 public interface ITenantCreateRequest extends IMetadataProvider {
 
-	/**
-	 * Get unique tenant id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get unique tenant id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get tenant name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get tenant name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get token that devices pass to identify tenant.
-	 * 
-	 * @return
-	 */
-	public String getAuthenticationToken();
+    /**
+     * Get token that devices pass to identify tenant.
+     * 
+     * @return
+     */
+    public String getAuthenticationToken();
 
-	/**
-	 * Get URL for tenant logo.
-	 * 
-	 * @return
-	 */
-	public String getLogoUrl();
+    /**
+     * Get URL for tenant logo.
+     * 
+     * @return
+     */
+    public String getLogoUrl();
 
-	/**
-	 * Get list of users authorized to access the tenant.
-	 * 
-	 * @return
-	 */
-	public List<String> getAuthorizedUserIds();
+    /**
+     * Get list of users authorized to access the tenant.
+     * 
+     * @return
+     */
+    public List<String> getAuthorizedUserIds();
 }

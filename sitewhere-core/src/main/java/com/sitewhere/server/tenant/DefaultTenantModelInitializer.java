@@ -29,49 +29,49 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  */
 public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default tenant id */
-	public static final String DEFAULT_TENANT_ID = "default";
+    /** Default tenant id */
+    public static final String DEFAULT_TENANT_ID = "default";
 
-	/** Default tenant name */
-	public static final String DEFAULT_TENANT_NAME = "Default Tenant";
+    /** Default tenant name */
+    public static final String DEFAULT_TENANT_NAME = "Default Tenant";
 
-	/** Default tenant logo URL */
-	public static final String DEFAULT_TENANT_LOGO = "https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
+    /** Default tenant logo URL */
+    public static final String DEFAULT_TENANT_LOGO = "https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
 
-	/** Default tenant auth token */
-	public static final String DEFAULT_TENANT_TOKEN = "sitewhere1234567890";
+    /** Default tenant auth token */
+    public static final String DEFAULT_TENANT_TOKEN = "sitewhere1234567890";
 
-	/** Prefix for create tenant */
-	public static final String PREFIX_CREATE_TENANT = "[Create Tenant]";
+    /** Prefix for create tenant */
+    public static final String PREFIX_CREATE_TENANT = "[Create Tenant]";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
-	 * sitewhere. spi.tenant.ITenantManagement)
-	 */
-	@Override
-	public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
-		// Use the system account for logging "created by" on created elements.
-		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
+     * sitewhere. spi.tenant.ITenantManagement)
+     */
+    @Override
+    public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
+	// Use the system account for logging "created by" on created elements.
+	SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
-		ITenant tenant = tenantManagement.getTenantById(DEFAULT_TENANT_ID);
-		if (tenant == null) {
-			TenantCreateRequest treq = new TenantCreateRequest();
-			treq.setId(DEFAULT_TENANT_ID);
-			treq.setName(DEFAULT_TENANT_NAME);
-			treq.setLogoUrl(DEFAULT_TENANT_LOGO);
-			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DefaultUserModelInitializer.DEFAULT_USERNAME,
-					DefaultUserModelInitializer.NOADMIN_CREDENTIAL }));
-			treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
-			tenant = tenantManagement.createTenant(treq);
-			LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
-		}
-
-		SecurityContextHolder.getContext().setAuthentication(null);
+	ITenant tenant = tenantManagement.getTenantById(DEFAULT_TENANT_ID);
+	if (tenant == null) {
+	    TenantCreateRequest treq = new TenantCreateRequest();
+	    treq.setId(DEFAULT_TENANT_ID);
+	    treq.setName(DEFAULT_TENANT_NAME);
+	    treq.setLogoUrl(DEFAULT_TENANT_LOGO);
+	    treq.setAuthorizedUserIds(Arrays.asList(new String[] { DefaultUserModelInitializer.DEFAULT_USERNAME,
+		    DefaultUserModelInitializer.NOADMIN_CREDENTIAL }));
+	    treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
+	    tenant = tenantManagement.createTenant(treq);
+	    LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
 	}
+
+	SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

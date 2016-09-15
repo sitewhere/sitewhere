@@ -14,28 +14,28 @@ package com.sitewhere.spi.scheduling;
  */
 public interface TriggerConstants {
 
-	/**
-	 * Fields used by a simple trigger.
-	 * 
-	 * @author Derek
-	 */
-	public static interface SimpleTrigger {
+    /**
+     * Fields used by a simple trigger.
+     * 
+     * @author Derek
+     */
+    public static interface SimpleTrigger {
 
-		/** Number of times trigger should repeat */
-		public static final String REPEAT_COUNT = "repeatCount";
+	/** Number of times trigger should repeat */
+	public static final String REPEAT_COUNT = "repeatCount";
 
-		/** Interval (in milliseconds) trigger should repeat */
-		public static final String REPEAT_INTERVAL = "repeatInterval";
-	}
+	/** Interval (in milliseconds) trigger should repeat */
+	public static final String REPEAT_INTERVAL = "repeatInterval";
+    }
 
-	/**
-	 * Fields used by a cron trigger.
-	 * 
-	 * @author Derek
-	 */
-	public static interface CronTrigger {
+    /**
+     * Fields used by a cron trigger.
+     * 
+     * @author Derek
+     */
+    public static interface CronTrigger {
 
-		/** Cron expression that defines trigger schedule */
-		public static final String CRON_EXPRESSION = "cronExpression";
-	}
+	/** Cron expression that defines trigger schedule */
+	public static final String CRON_EXPRESSION = "cronExpression";
+    }
 }

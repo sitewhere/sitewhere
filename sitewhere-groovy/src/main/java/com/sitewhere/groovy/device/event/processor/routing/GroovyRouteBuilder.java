@@ -28,57 +28,57 @@ import groovy.util.ScriptException;
  */
 public class GroovyRouteBuilder implements IRouteBuilder<String> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Injected global Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected global Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Relative path to Groovy script */
-	private String scriptPath;
+    /** Relative path to Groovy script */
+    private String scriptPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.routing.IRouteBuilder#build(com.
-	 * sitewhere .spi.device.event.IDeviceEvent,
-	 * com.sitewhere.spi.device.IDevice,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public String build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment) throws SiteWhereException {
-		Binding binding = new Binding();
-		binding.setVariable("logger", LOGGER);
-		binding.setVariable("event", event);
-		binding.setVariable("device", device);
-		binding.setVariable("assignment", assignment);
-		try {
-			Object result = getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-			if (!(result instanceof String)) {
-				throw new SiteWhereException("Groovy route builder expected script to return a String.");
-			}
-			return (String) result;
-		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy route builder script.", e);
-		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy route builder script.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.routing.IRouteBuilder#build(com.
+     * sitewhere .spi.device.event.IDeviceEvent,
+     * com.sitewhere.spi.device.IDevice,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public String build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment) throws SiteWhereException {
+	Binding binding = new Binding();
+	binding.setVariable("logger", LOGGER);
+	binding.setVariable("event", event);
+	binding.setVariable("device", device);
+	binding.setVariable("assignment", assignment);
+	try {
+	    Object result = getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    if (!(result instanceof String)) {
+		throw new SiteWhereException("Groovy route builder expected script to return a String.");
+	    }
+	    return (String) result;
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy route builder script.", e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy route builder script.", e);
 	}
+    }
 
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
-	public String getScriptPath() {
-		return scriptPath;
-	}
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 }

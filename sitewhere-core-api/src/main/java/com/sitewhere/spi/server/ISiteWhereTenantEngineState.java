@@ -19,24 +19,24 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public interface ISiteWhereTenantEngineState extends Serializable {
 
-	/**
-	 * Get lifecycle status of tenant engine.
-	 * 
-	 * @return
-	 */
-	public LifecycleStatus getLifecycleStatus();
+    /**
+     * Get lifecycle status of tenant engine.
+     * 
+     * @return
+     */
+    public LifecycleStatus getLifecycleStatus();
 
-	/**
-	 * Get state of tenant engine component hierarchy.
-	 * 
-	 * @return
-	 */
-	public List<ITenantEngineComponent> getComponentHierarchyState();
+    /**
+     * Get state of tenant engine component hierarchy.
+     * 
+     * @return
+     */
+    public List<ITenantEngineComponent> getComponentHierarchyState();
 
-	/**
-	 * Indicates if a new configuration has been staged, but not applied.
-	 * 
-	 * @return
-	 */
-	public boolean isStaged();
+    /**
+     * Indicates if a new configuration has been staged, but not applied.
+     * 
+     * @return
+     */
+    public boolean isStaged();
 }

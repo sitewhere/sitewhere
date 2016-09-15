@@ -16,82 +16,82 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  */
 public class GrantedAuthority implements IGrantedAuthority {
 
-	/** Authority */
-	private String authority;
+    /** Authority */
+    private String authority;
 
-	/** Description */
-	private String description;
+    /** Description */
+    private String description;
 
-	/** Parent authority */
-	private String parent;
+    /** Parent authority */
+    private String parent;
 
-	/** Indicates whether authority is a group */
-	private boolean group;
+    /** Indicates whether authority is a group */
+    private boolean group;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IGrantedAuthority#getAuthority()
-	 */
-	public String getAuthority() {
-		return authority;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IGrantedAuthority#getAuthority()
+     */
+    public String getAuthority() {
+	return authority;
+    }
 
-	public void setAuthority(String authority) {
-		this.authority = authority;
-	}
+    public void setAuthority(String authority) {
+	this.authority = authority;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IGrantedAuthority#getDescription()
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IGrantedAuthority#getDescription()
+     */
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IGrantedAuthority#getParent()
-	 */
-	public String getParent() {
-		return parent;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IGrantedAuthority#getParent()
+     */
+    public String getParent() {
+	return parent;
+    }
 
-	public void setParent(String parent) {
-		this.parent = parent;
-	}
+    public void setParent(String parent) {
+	this.parent = parent;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IGrantedAuthority#isGroup()
-	 */
-	public boolean isGroup() {
-		return group;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IGrantedAuthority#isGroup()
+     */
+    public boolean isGroup() {
+	return group;
+    }
 
-	public void setGroup(boolean group) {
-		this.group = group;
-	}
+    public void setGroup(boolean group) {
+	this.group = group;
+    }
 
-	/**
-	 * Copy contents from the SPI class.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static GrantedAuthority copy(IGrantedAuthority input) {
-		GrantedAuthority result = new GrantedAuthority();
-		result.setAuthority(input.getAuthority());
-		result.setDescription(input.getDescription());
-		result.setParent(input.getParent());
-		result.setGroup(input.isGroup());
-		return result;
-	}
+    /**
+     * Copy contents from the SPI class.
+     * 
+     * @param input
+     * @return
+     */
+    public static GrantedAuthority copy(IGrantedAuthority input) {
+	GrantedAuthority result = new GrantedAuthority();
+	result.setAuthority(input.getAuthority());
+	result.setDescription(input.getDescription());
+	result.setParent(input.getParent());
+	result.setGroup(input.isGroup());
+	return result;
+    }
 }

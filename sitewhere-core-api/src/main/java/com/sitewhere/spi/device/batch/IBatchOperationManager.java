@@ -17,12 +17,12 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IBatchOperationManager extends ITenantLifecycleComponent {
 
-	/**
-	 * Processes an {@link IBatchOperation}. The batch operation is processed in the
-	 * calling thread.
-	 * 
-	 * @param operation
-	 * @throws SiteWhereException
-	 */
-	public void process(IBatchOperation operation) throws SiteWhereException;
+    /**
+     * Processes an {@link IBatchOperation}. The batch operation is processed in
+     * the calling thread.
+     * 
+     * @param operation
+     * @throws SiteWhereException
+     */
+    public void process(IBatchOperation operation) throws SiteWhereException;
 }

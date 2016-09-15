@@ -34,76 +34,73 @@ import java.util.TreeSet;
 public class PartitionManager extends SimplePartitionManager {
     private static final Logger logger = LoggerFactory.getLogger(PartitionManager.class);
     private final int ehReceiveTimeoutMs = 5000;
-    //private final int ehReceiveTimeoutMs = -1;
+    // private final int ehReceiveTimeoutMs = -1;
 
-    //all sent events are stored in pending
+    // all sent events are stored in pending
     private final Map<String, EventData> pending;
-    //all failed events are put in toResend, which is sorted by event's offset
+    // all failed events are put in toResend, which is sorted by event's offset
     private final TreeSet<EventData> toResend;
 
-    public PartitionManager(
-            EventHubReceiverTaskConfig config,
-            String partitionId,
-            IStateStore stateStore,
-            IEventHubReceiver receiver) {
+    public PartitionManager(EventHubReceiverTaskConfig config, String partitionId, IStateStore stateStore,
+	    IEventHubReceiver receiver) {
 
-        super(config, partitionId, stateStore, receiver);
+	super(config, partitionId, stateStore, receiver);
 
-        this.pending = new LinkedHashMap<String, EventData>();
-        this.toResend = new TreeSet<EventData>();
+	this.pending = new LinkedHashMap<String, EventData>();
+	this.toResend = new TreeSet<EventData>();
     }
 
     @Override
     public EventData receive() {
-        if (pending.size() >= config.getMaxPendingMsgsPerPartition()) {
-            return null;
-        }
+	if (pending.size() >= config.getMaxPendingMsgsPerPartition()) {
+	    return null;
+	}
 
-        EventData eventData;
-        if (toResend.isEmpty()) {
-            eventData = receiver.receive(ehReceiveTimeoutMs);
-        } else {
-            eventData = toResend.pollFirst();
-        }
+	EventData eventData;
+	if (toResend.isEmpty()) {
+	    eventData = receiver.receive(ehReceiveTimeoutMs);
+	} else {
+	    eventData = toResend.pollFirst();
+	}
 
-        if (eventData != null) {
-            lastOffset = eventData.getMessageId().getOffset();
-            pending.put(lastOffset, eventData);
-        }
+	if (eventData != null) {
+	    lastOffset = eventData.getMessageId().getOffset();
+	    pending.put(lastOffset, eventData);
+	}
 
-        return eventData;
+	return eventData;
     }
 
     @Override
     public void ack(String offset) {
-        pending.remove(offset);
+	pending.remove(offset);
     }
 
     @Override
     public void fail(String offset) {
-        logger.warn("fail on " + offset);
-        EventData eventData = pending.remove(offset);
-        toResend.add(eventData);
+	logger.warn("fail on " + offset);
+	EventData eventData = pending.remove(offset);
+	toResend.add(eventData);
     }
 
     @Override
     protected String getCompletedOffset() {
-        String offset = null;
+	String offset = null;
 
-        if (pending.size() > 0) {
-            //find the smallest offset in pending list
-            offset = pending.keySet().iterator().next();
-        }
-        if (toResend.size() > 0) {
-            //find the smallest offset in toResend list
-            String offset2 = toResend.first().getMessageId().getOffset();
-            if (offset == null || offset2.compareTo(offset) < 0) {
-                offset = offset2;
-            }
-        }
-        if (offset == null) {
-            offset = lastOffset;
-        }
-        return offset;
+	if (pending.size() > 0) {
+	    // find the smallest offset in pending list
+	    offset = pending.keySet().iterator().next();
+	}
+	if (toResend.size() > 0) {
+	    // find the smallest offset in toResend list
+	    String offset2 = toResend.first().getMessageId().getOffset();
+	    if (offset == null || offset2.compareTo(offset) < 0) {
+		offset = offset2;
+	    }
+	}
+	if (offset == null) {
+	    offset = lastOffset;
+	}
+	return offset;
     }
 }

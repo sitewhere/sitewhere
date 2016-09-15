@@ -20,41 +20,41 @@ import com.sitewhere.spi.device.batch.OperationType;
  */
 public interface IBatchOperationCreateRequest {
 
-	/** Metadata property on events that holds batch id that generated event */
-	public static final String META_BATCH_OPERATION_ID = "batch";
+    /** Metadata property on events that holds batch id that generated event */
+    public static final String META_BATCH_OPERATION_ID = "batch";
 
-	/**
-	 * Get the unique token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get the unique token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get operation to be performed.
-	 * 
-	 * @return
-	 */
-	public OperationType getOperationType();
+    /**
+     * Get operation to be performed.
+     * 
+     * @return
+     */
+    public OperationType getOperationType();
 
-	/**
-	 * Get operation parameters.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getParameters();
+    /**
+     * Get operation parameters.
+     * 
+     * @return
+     */
+    public Map<String, String> getParameters();
 
-	/**
-	 * Get list of hardware ids for devices to be operated on.
-	 * 
-	 * @return
-	 */
-	public List<String> getHardwareIds();
+    /**
+     * Get list of hardware ids for devices to be operated on.
+     * 
+     * @return
+     */
+    public List<String> getHardwareIds();
 
-	/**
-	 * Get metadata entries.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata entries.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

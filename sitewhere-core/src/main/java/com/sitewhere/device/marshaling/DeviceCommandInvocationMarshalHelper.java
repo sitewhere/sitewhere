@@ -31,78 +31,78 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceCommandInvocationMarshalHelper {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Tenant */
-	private ITenant tenant;
+    /** Tenant */
+    private ITenant tenant;
 
-	/** Indicates whether to include command information */
-	private boolean includeCommand = false;
+    /** Indicates whether to include command information */
+    private boolean includeCommand = false;
 
-	/** Cache to prevent repeated command lookups */
-	private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
+    /** Cache to prevent repeated command lookups */
+    private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
 
-	public DeviceCommandInvocationMarshalHelper(ITenant tenant) {
-		this(tenant, false);
-	}
+    public DeviceCommandInvocationMarshalHelper(ITenant tenant) {
+	this(tenant, false);
+    }
 
-	public DeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
-		this.tenant = tenant;
-		this.includeCommand = includeCommand;
-	}
+    public DeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
+	this.tenant = tenant;
+	this.includeCommand = includeCommand;
+    }
 
-	/**
-	 * Convert an {@link IDeviceCommandInvocation} to a
-	 * {@link DeviceCommandInvocation}, populating command information if
-	 * requested so the marshaled data includes it.
-	 * 
-	 * @param source
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandInvocation convert(IDeviceCommandInvocation source) throws SiteWhereException {
-		DeviceCommandInvocation result = new DeviceCommandInvocation();
-		DeviceEvent.copy(source, result);
-		result.setInitiator(source.getInitiator());
-		result.setInitiatorId(source.getInitiatorId());
-		result.setTarget(source.getTarget());
-		result.setTargetId(source.getTargetId());
-		result.setCommandToken(source.getCommandToken());
-		result.setStatus(source.getStatus());
-		result.setParameterValues(source.getParameterValues());
-		if (isIncludeCommand()) {
-			if ((source.getCommandToken() == null) || (source.getCommandToken().isEmpty())) {
-				LOGGER.warn("Device invocation is missing command token.");
-				return result;
-			}
-			DeviceCommand command = commandsByToken.get(source.getCommandToken());
-			if (command == null) {
-				IDeviceCommand found = getDeviceManagement(tenant).getDeviceCommandByToken(source.getCommandToken());
-				if (found == null) {
-					LOGGER.warn("Device invocation references a non-existent command token.");
-					return result;
-				}
-				command = DeviceCommand.copy(found);
-				commandsByToken.put(command.getToken(), command);
-			}
-			if (command != null) {
-				result.setCommand(command);
-				result.setAsHtml(CommandHtmlHelper.getHtml(result));
-			}
-		}
+    /**
+     * Convert an {@link IDeviceCommandInvocation} to a
+     * {@link DeviceCommandInvocation}, populating command information if
+     * requested so the marshaled data includes it.
+     * 
+     * @param source
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandInvocation convert(IDeviceCommandInvocation source) throws SiteWhereException {
+	DeviceCommandInvocation result = new DeviceCommandInvocation();
+	DeviceEvent.copy(source, result);
+	result.setInitiator(source.getInitiator());
+	result.setInitiatorId(source.getInitiatorId());
+	result.setTarget(source.getTarget());
+	result.setTargetId(source.getTargetId());
+	result.setCommandToken(source.getCommandToken());
+	result.setStatus(source.getStatus());
+	result.setParameterValues(source.getParameterValues());
+	if (isIncludeCommand()) {
+	    if ((source.getCommandToken() == null) || (source.getCommandToken().isEmpty())) {
+		LOGGER.warn("Device invocation is missing command token.");
 		return result;
+	    }
+	    DeviceCommand command = commandsByToken.get(source.getCommandToken());
+	    if (command == null) {
+		IDeviceCommand found = getDeviceManagement(tenant).getDeviceCommandByToken(source.getCommandToken());
+		if (found == null) {
+		    LOGGER.warn("Device invocation references a non-existent command token.");
+		    return result;
+		}
+		command = DeviceCommand.copy(found);
+		commandsByToken.put(command.getToken(), command);
+	    }
+	    if (command != null) {
+		result.setCommand(command);
+		result.setAsHtml(CommandHtmlHelper.getHtml(result));
+	    }
 	}
+	return result;
+    }
 
-	protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-		return SiteWhere.getServer().getDeviceManagement(tenant);
-	}
+    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+	return SiteWhere.getServer().getDeviceManagement(tenant);
+    }
 
-	public boolean isIncludeCommand() {
-		return includeCommand;
-	}
+    public boolean isIncludeCommand() {
+	return includeCommand;
+    }
 
-	public void setIncludeCommand(boolean includeCommand) {
-		this.includeCommand = includeCommand;
-	}
+    public void setIncludeCommand(boolean includeCommand) {
+	this.includeCommand = includeCommand;
+    }
 }

@@ -25,90 +25,90 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 @JsonInclude(Include.NON_NULL)
 public class DeviceAlert extends DeviceEvent implements IDeviceAlert, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = 594540716893472520L;
+    /** For Java serialization */
+    private static final long serialVersionUID = 594540716893472520L;
 
-	/** Alert source */
-	private AlertSource source;
+    /** Alert source */
+    private AlertSource source;
 
-	/** Alert level */
-	private AlertLevel level;
+    /** Alert level */
+    private AlertLevel level;
 
-	/** Alert type */
-	private String type;
+    /** Alert type */
+    private String type;
 
-	/** Alert message */
-	private String message;
+    /** Alert message */
+    private String message;
 
-	public DeviceAlert() {
-		super(DeviceEventType.Alert);
-	}
+    public DeviceAlert() {
+	super(DeviceEventType.Alert);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAlert#getSource()
-	 */
-	public AlertSource getSource() {
-		return source;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAlert#getSource()
+     */
+    public AlertSource getSource() {
+	return source;
+    }
 
-	public void setSource(AlertSource source) {
-		this.source = source;
-	}
+    public void setSource(AlertSource source) {
+	this.source = source;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAlert#getLevel()
-	 */
-	public AlertLevel getLevel() {
-		return level;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAlert#getLevel()
+     */
+    public AlertLevel getLevel() {
+	return level;
+    }
 
-	public void setLevel(AlertLevel level) {
-		this.level = level;
-	}
+    public void setLevel(AlertLevel level) {
+	this.level = level;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAlert#getType()
-	 */
-	public String getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAlert#getType()
+     */
+    public String getType() {
+	return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAlert#getMessage()
-	 */
-	public String getMessage() {
-		return message;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAlert#getMessage()
+     */
+    public String getMessage() {
+	return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+	this.message = message;
+    }
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceAlert copy(IDeviceAlert input) throws SiteWhereException {
-		DeviceAlert result = new DeviceAlert();
-		DeviceEvent.copy(input, result);
-		result.setSource(input.getSource());
-		result.setType(input.getType());
-		result.setMessage(input.getMessage());
-		result.setLevel(input.getLevel());
-		return result;
-	}
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static DeviceAlert copy(IDeviceAlert input) throws SiteWhereException {
+	DeviceAlert result = new DeviceAlert();
+	DeviceEvent.copy(input, result);
+	result.setSource(input.getSource());
+	result.setType(input.getType());
+	result.setMessage(input.getMessage());
+	result.setLevel(input.getLevel());
+	return result;
+    }
 }

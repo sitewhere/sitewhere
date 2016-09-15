@@ -17,19 +17,19 @@ import com.sitewhere.hbase.uid.UuidRowKeyMap;
  */
 public interface IDeviceIdManager {
 
-	public UniqueIdCounterMap getSiteKeys();
+    public UniqueIdCounterMap getSiteKeys();
 
-	public UniqueIdCounterMap getDeviceKeys();
+    public UniqueIdCounterMap getDeviceKeys();
 
-	public UniqueIdCounterMap getSpecificationKeys();
+    public UniqueIdCounterMap getSpecificationKeys();
 
-	public UuidRowKeyMap getCommandKeys();
+    public UuidRowKeyMap getCommandKeys();
 
-	public UniqueIdCounterMap getDeviceGroupKeys();
+    public UniqueIdCounterMap getDeviceGroupKeys();
 
-	public UniqueIdCounterMap getBatchOperationKeys();
+    public UniqueIdCounterMap getBatchOperationKeys();
 
-	public UuidRowKeyMap getZoneKeys();
+    public UuidRowKeyMap getZoneKeys();
 
-	public UuidRowKeyMap getAssignmentKeys();
+    public UuidRowKeyMap getAssignmentKeys();
 }

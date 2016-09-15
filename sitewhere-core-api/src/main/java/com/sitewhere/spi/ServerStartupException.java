@@ -16,33 +16,33 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  */
 public class ServerStartupException extends SiteWhereException {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 3458605782783632700L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 3458605782783632700L;
 
-	/** Component that caused startup to fail */
-	private ILifecycleComponent component;
+    /** Component that caused startup to fail */
+    private ILifecycleComponent component;
 
-	/** High-level description of error */
-	private String description;
+    /** High-level description of error */
+    private String description;
 
-	public ServerStartupException(ILifecycleComponent component, String description) {
-		this.component = component;
-		this.description = description;
-	}
+    public ServerStartupException(ILifecycleComponent component, String description) {
+	this.component = component;
+	this.description = description;
+    }
 
-	public ILifecycleComponent getComponent() {
-		return component;
-	}
+    public ILifecycleComponent getComponent() {
+	return component;
+    }
 
-	public void setComponent(ILifecycleComponent component) {
-		this.component = component;
-	}
+    public void setComponent(ILifecycleComponent component) {
+	this.component = component;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 }

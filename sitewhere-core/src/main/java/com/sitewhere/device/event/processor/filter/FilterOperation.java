@@ -8,15 +8,16 @@
 package com.sitewhere.device.event.processor.filter;
 
 /**
- * Used to indicate if matches should be included or excluded from the result set.
+ * Used to indicate if matches should be included or excluded from the result
+ * set.
  * 
  * @author Derek
  */
 public enum FilterOperation {
 
-	/** Include matches */
-	Include,
+    /** Include matches */
+    Include,
 
-	/** Exclude matches */
-	Exclude;
+    /** Exclude matches */
+    Exclude;
 }

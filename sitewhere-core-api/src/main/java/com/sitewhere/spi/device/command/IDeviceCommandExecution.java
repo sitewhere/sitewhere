@@ -13,32 +13,33 @@ import java.util.Map;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
- * Represents an {@link IDeviceCommand} combined with an {@link IDeviceCommandInvocation}
- * to represent the actual call made to the target.
+ * Represents an {@link IDeviceCommand} combined with an
+ * {@link IDeviceCommandInvocation} to represent the actual call made to the
+ * target.
  * 
  * @author Derek
  * 
  */
 public interface IDeviceCommandExecution extends Serializable {
 
-	/**
-	 * Get the command being executed.
-	 * 
-	 * @return
-	 */
-	public IDeviceCommand getCommand();
+    /**
+     * Get the command being executed.
+     * 
+     * @return
+     */
+    public IDeviceCommand getCommand();
 
-	/**
-	 * Get the invocation details.
-	 * 
-	 * @return
-	 */
-	public IDeviceCommandInvocation getInvocation();
+    /**
+     * Get the invocation details.
+     * 
+     * @return
+     */
+    public IDeviceCommandInvocation getInvocation();
 
-	/**
-	 * Get parameters populated with data from the invocation.
-	 * 
-	 * @return
-	 */
-	public Map<String, Object> getParameters();
+    /**
+     * Get parameters populated with data from the invocation.
+     * 
+     * @return
+     */
+    public Map<String, Object> getParameters();
 }

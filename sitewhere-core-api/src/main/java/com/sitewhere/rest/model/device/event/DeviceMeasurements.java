@@ -26,119 +26,122 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 @JsonInclude(Include.NON_NULL)
 public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = -4369962596450151827L;
+    /** For Java serialization */
+    private static final long serialVersionUID = -4369962596450151827L;
 
-	/** Holder for measurements */
-	private MeasurementsProvider measurementsMetadata = new MeasurementsProvider();
+    /** Holder for measurements */
+    private MeasurementsProvider measurementsMetadata = new MeasurementsProvider();
 
-	public DeviceMeasurements() {
-		super(DeviceEventType.Measurements);
+    public DeviceMeasurements() {
+	super(DeviceEventType.Measurements);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(
+     * java.lang .String, java.lang.Double)
+     */
+    @Override
+    public void addOrReplaceMeasurement(String name, Double value) {
+	measurementsMetadata.addOrReplaceMeasurement(name, value);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.
+     * lang.String)
+     */
+    @Override
+    public Double removeMeasurement(String name) {
+	return measurementsMetadata.removeMeasurement(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.
+     * String)
+     */
+    @Override
+    public Double getMeasurement(String name) {
+	return measurementsMetadata.getMeasurement(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurements()
+     */
+    @Override
+    public Map<String, Double> getMeasurements() {
+	return measurementsMetadata.getMeasurements();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#clearMeasurements()
+     */
+    @Override
+    public void clearMeasurements() {
+	measurementsMetadata.clearMeasurements();
+    }
+
+    /**
+     * Needed for JSON marshaling.
+     * 
+     * @param entries
+     */
+    public void setMeasurements(Map<String, Double> entries) {
+	this.measurementsMetadata = new MeasurementsProvider();
+	measurementsMetadata.setMeasurements(entries);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceMeasurements#getMeasurementsSummary()
+     */
+    public String getMeasurementsSummary() {
+	String result = "";
+	boolean isFirst = true;
+	for (String key : measurementsMetadata.getMeasurements().keySet()) {
+	    if (!isFirst) {
+		result += ", ";
+	    } else {
+		isFirst = false;
+	    }
+	    result += key + ": " + measurementsMetadata.getMeasurement(key);
 	}
+	return result;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(java.lang
-	 * .String, java.lang.Double)
-	 */
-	@Override
-	public void addOrReplaceMeasurement(String name, Double value) {
-		measurementsMetadata.addOrReplaceMeasurement(name, value);
-	}
+    /**
+     * For Jackson marshalling.
+     * 
+     * @param value
+     */
+    public void setMeasurementsSummary(String value) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.lang.String)
-	 */
-	@Override
-	public Double removeMeasurement(String name) {
-		return measurementsMetadata.removeMeasurement(name);
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static DeviceMeasurements copy(IDeviceMeasurements input) throws SiteWhereException {
+	DeviceMeasurements result = new DeviceMeasurements();
+	DeviceEvent.copy(input, result);
+	for (String key : input.getMeasurements().keySet()) {
+	    result.addOrReplaceMeasurement(key, input.getMeasurement(key));
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.String)
-	 */
-	@Override
-	public Double getMeasurement(String name) {
-		return measurementsMetadata.getMeasurement(name);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurements()
-	 */
-	@Override
-	public Map<String, Double> getMeasurements() {
-		return measurementsMetadata.getMeasurements();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IMeasurementsProvider#clearMeasurements()
-	 */
-	@Override
-	public void clearMeasurements() {
-		measurementsMetadata.clearMeasurements();
-	}
-
-	/**
-	 * Needed for JSON marshaling.
-	 * 
-	 * @param entries
-	 */
-	public void setMeasurements(Map<String, Double> entries) {
-		this.measurementsMetadata = new MeasurementsProvider();
-		measurementsMetadata.setMeasurements(entries);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceMeasurements#getMeasurementsSummary()
-	 */
-	public String getMeasurementsSummary() {
-		String result = "";
-		boolean isFirst = true;
-		for (String key : measurementsMetadata.getMeasurements().keySet()) {
-			if (!isFirst) {
-				result += ", ";
-			} else {
-				isFirst = false;
-			}
-			result += key + ": " + measurementsMetadata.getMeasurement(key);
-		}
-		return result;
-	}
-
-	/**
-	 * For Jackson marshalling.
-	 * 
-	 * @param value
-	 */
-	public void setMeasurementsSummary(String value) {
-	}
-
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceMeasurements copy(IDeviceMeasurements input) throws SiteWhereException {
-		DeviceMeasurements result = new DeviceMeasurements();
-		DeviceEvent.copy(input, result);
-		for (String key : input.getMeasurements().keySet()) {
-			result.addOrReplaceMeasurement(key, input.getMeasurement(key));
-		}
-		return result;
-	}
+	return result;
+    }
 }

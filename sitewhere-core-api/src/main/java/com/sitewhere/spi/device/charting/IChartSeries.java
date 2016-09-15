@@ -19,17 +19,17 @@ import java.util.List;
  */
 public interface IChartSeries<T> extends Serializable {
 
-	/**
-	 * Get id a measurement represented by the series.
-	 * 
-	 * @return
-	 */
-	public String getMeasurementId();
+    /**
+     * Get id a measurement represented by the series.
+     * 
+     * @return
+     */
+    public String getMeasurementId();
 
-	/**
-	 * Get data entries for the series.
-	 * 
-	 * @return
-	 */
-	public List<IChartEntry<T>> getEntries();
+    /**
+     * Get data entries for the series.
+     * 
+     * @return
+     */
+    public List<IChartEntry<T>> getEntries();
 }

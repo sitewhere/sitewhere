@@ -16,22 +16,22 @@ import java.io.IOException;
  */
 public class SiteWhereException extends IOException {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 1L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 1L;
 
-	public SiteWhereException() {
-		super();
-	}
+    public SiteWhereException() {
+	super();
+    }
 
-	public SiteWhereException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public SiteWhereException(String message, Throwable cause) {
+	super(message, cause);
+    }
 
-	public SiteWhereException(String message) {
-		super(message);
-	}
+    public SiteWhereException(String message) {
+	super(message);
+    }
 
-	public SiteWhereException(Throwable cause) {
-		super(cause);
-	}
+    public SiteWhereException(Throwable cause) {
+	super(cause);
+    }
 }

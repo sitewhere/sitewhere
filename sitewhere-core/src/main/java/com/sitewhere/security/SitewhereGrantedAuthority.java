@@ -18,37 +18,37 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  */
 public class SitewhereGrantedAuthority implements GrantedAuthority {
 
-	/** Serial verison UID */
-	private static final long serialVersionUID = 1L;
-	
-	/** Prefix Spring Security expects for role authorities */
-	public static final String ROLE_VOTER_PREFIX = "ROLE_";
+    /** Serial verison UID */
+    private static final long serialVersionUID = 1L;
 
-	/** Authority */
-	private String authority;
+    /** Prefix Spring Security expects for role authorities */
+    public static final String ROLE_VOTER_PREFIX = "ROLE_";
 
-	public SitewhereGrantedAuthority(IGrantedAuthority auth) {
-		this.authority = ROLE_VOTER_PREFIX + auth.getAuthority();
+    /** Authority */
+    private String authority;
+
+    public SitewhereGrantedAuthority(IGrantedAuthority auth) {
+	this.authority = ROLE_VOTER_PREFIX + auth.getAuthority();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.GrantedAuthority#getAuthority()
+     */
+    public String getAuthority() {
+	return authority;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object o) {
+	if ((o != null) && (o instanceof GrantedAuthority)) {
+	    return getAuthority().compareTo(((GrantedAuthority) o).getAuthority());
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.GrantedAuthority#getAuthority()
-	 */
-	public String getAuthority() {
-		return authority;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(Object o) {
-		if ((o != null) && (o instanceof GrantedAuthority)) {
-			return getAuthority().compareTo(((GrantedAuthority) o).getAuthority());
-		}
-		return -1;
-	}
+	return -1;
+    }
 }

@@ -21,119 +21,119 @@ import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
  */
 public class TenantGroupCreateRequest extends MetadataProvider implements ITenantGroupCreateRequest, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -6593183022611071721L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -6593183022611071721L;
 
-	/** Unqiue token. Leave null to auto-generate */
-	private String token;
+    /** Unqiue token. Leave null to auto-generate */
+    private String token;
 
-	/** Group name */
-	private String name;
+    /** Group name */
+    private String name;
 
-	/** Group description */
-	private String description;
+    /** Group description */
+    private String description;
 
-	/** Group image URL */
-	private String imageUrl;
+    /** Group image URL */
+    private String imageUrl;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getToken()
-	 */
-	public String getToken() {
-		return token;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getToken()
+     */
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getName()
+     */
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getDescription
+     * ()
+     */
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getImageUrl()
+     */
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private TenantGroupCreateRequest request = new TenantGroupCreateRequest();
+
+	public Builder(String name) {
+	    request.setName(name);
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public Builder(String token, String name) {
+	    request.setToken(token);
+	    request.setName(name);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getName()
-	 */
-	public String getName() {
-		return name;
+	public Builder(ITenantGroup existing) {
+	    request.setToken(existing.getToken());
+	    request.setName(existing.getName());
+	    request.setDescription(existing.getDescription());
+	    request.setImageUrl(existing.getImageUrl());
+	    request.setMetadata(existing.getMetadata());
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Builder withDescription(String description) {
+	    request.setDescription(description);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getDescription
-	 * ()
-	 */
-	public String getDescription() {
-		return description;
+	public Builder withImageUrl(String imageUrl) {
+	    request.setImageUrl(imageUrl);
+	    return this;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getImageUrl()
-	 */
-	public String getImageUrl() {
-		return imageUrl;
+	public TenantGroupCreateRequest build() {
+	    return request;
 	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	public static class Builder {
-
-		/** Request being built */
-		private TenantGroupCreateRequest request = new TenantGroupCreateRequest();
-
-		public Builder(String name) {
-			request.setName(name);
-		}
-
-		public Builder(String token, String name) {
-			request.setToken(token);
-			request.setName(name);
-		}
-
-		public Builder(ITenantGroup existing) {
-			request.setToken(existing.getToken());
-			request.setName(existing.getName());
-			request.setDescription(existing.getDescription());
-			request.setImageUrl(existing.getImageUrl());
-			request.setMetadata(existing.getMetadata());
-		}
-
-		public Builder withDescription(String description) {
-			request.setDescription(description);
-			return this;
-		}
-
-		public Builder withImageUrl(String imageUrl) {
-			request.setImageUrl(imageUrl);
-			return this;
-		}
-
-		public Builder metadata(String name, String value) {
-			if (request.getMetadata() == null) {
-				request.setMetadata(new HashMap<String, String>());
-			}
-			request.getMetadata().put(name, value);
-			return this;
-		}
-
-		public TenantGroupCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

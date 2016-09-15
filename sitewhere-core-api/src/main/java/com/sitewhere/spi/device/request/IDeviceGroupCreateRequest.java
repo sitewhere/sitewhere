@@ -17,38 +17,38 @@ import java.util.Map;
  */
 public interface IDeviceGroupCreateRequest {
 
-	/**
-	 * Get the unique token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get the unique token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get the group name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get the group name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get the group description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the group description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get list of roles associated with group.
-	 * 
-	 * @return
-	 */
-	public List<String> getRoles();
+    /**
+     * Get list of roles associated with group.
+     * 
+     * @return
+     */
+    public List<String> getRoles();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

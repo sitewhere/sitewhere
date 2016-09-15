@@ -68,227 +68,227 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Users")
 public class UsersController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Create a new user.
-	 * 
-	 * @param input
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new user")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Users.CreateUserRequest.class, description = "createUserRequest.md"),
-			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
-	public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
-		try {
-			if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
-					|| (input.getLastName() == null)) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
-			}
-			if (input.getStatus() == null) {
-				input.setStatus(AccountStatus.Active);
-			}
-			IUser user = getUserManagement().createUser(input);
-			return User.copy(user);
-		} finally {
-			Tracer.stop(LOGGER);
+    /**
+     * Create a new user.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create new user")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Users.CreateUserRequest.class, description = "createUserRequest.md"),
+	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
+    public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
+	try {
+	    if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
+		    || (input.getLastName() == null)) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+	    }
+	    if (input.getStatus() == null) {
+		input.setStatus(AccountStatus.Active);
+	    }
+	    IUser user = getUserManagement().createUser(input);
+	    return User.copy(user);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Update an existing user.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Update existing user.")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
+	    @Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
+    public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	    @RequestBody UserCreateRequest input) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
+	try {
+	    IUser user = getUserManagement().updateUser(username, input);
+	    return User.copy(user);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get a user by unique username.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get user by username")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
+    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
+	try {
+	    IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
+	    if (user == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
+			HttpServletResponse.SC_NOT_FOUND);
+	    }
+	    return User.copy(user);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Delete information for a given user based on username.
+     * 
+     * @param siteToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Delete user by username")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "deleteUserByUsernameResponse.md") })
+    public User deleteUserByUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
+	try {
+	    IUser user = getUserManagement().deleteUser(username, force);
+	    return User.copy(user);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get a list of detailed authority information for a given user.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get authorities for user")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
+    public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
+	try {
+	    List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
+	    List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
+	    for (IGrantedAuthority auth : matches) {
+		converted.add(GrantedAuthority.copy(auth));
+	    }
+	    return new SearchResults<GrantedAuthority>(converted);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * List devices that match given criteria.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List users matching criteria")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Users.ListUsersResponse.class, description = "listUsersResponse.md") })
+    public SearchResults<User> listUsers(
+	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
+	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
+	try {
+	    List<User> usersConv = new ArrayList<User>();
+	    UserSearchCriteria criteria = new UserSearchCriteria();
+	    criteria.setIncludeDeleted(includeDeleted);
+	    List<IUser> users = getUserManagement().listUsers(criteria);
+	    for (IUser user : users) {
+		usersConv.add(User.copy(user));
+	    }
+	    SearchResults<User> results = new SearchResults<User>(usersConv);
+	    return results;
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get tenants associated with a user.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List authorized tenants for user")
+    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "getTenantsForUsernameResponse.md") })
+    public List<ITenant> getTenantsForUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
+
+	// TODO: This should be in the system controller since it's not using
+	// the user management implementation, but rather uses the runtime
+	// tenant engine state to build the list.
+
+	try {
+	    List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
+	    if (includeRuntimeInfo) {
+		for (ITenant tenant : results) {
+		    ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+		    if (engine != null) {
+			((Tenant) tenant).setEngineState(engine.getEngineState());
+		    }
 		}
+	    }
+	    return results;
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Update an existing user.
-	 * 
-	 * @param input
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
-	@ResponseBody
-	@ApiOperation(value = "Update existing user.")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
-			@Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
-	public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-			@RequestBody UserCreateRequest input) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
-		try {
-			IUser user = getUserManagement().updateUser(username, input);
-			return User.copy(user);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Get a user by unique username.
-	 * 
-	 * @param username
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get user by username")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
-	public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
-		try {
-			IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
-			if (user == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
-						HttpServletResponse.SC_NOT_FOUND);
-			}
-			return User.copy(user);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Delete information for a given user based on username.
-	 * 
-	 * @param siteToken
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@ApiOperation(value = "Delete user by username")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "deleteUserByUsernameResponse.md") })
-	public User deleteUserByUsername(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
-		try {
-			IUser user = getUserManagement().deleteUser(username, force);
-			return User.copy(user);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Get a list of detailed authority information for a given user.
-	 * 
-	 * @param username
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get authorities for user")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
-	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
-		try {
-			List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
-			List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
-			for (IGrantedAuthority auth : matches) {
-				converted.add(GrantedAuthority.copy(auth));
-			}
-			return new SearchResults<GrantedAuthority>(converted);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * List devices that match given criteria.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List users matching criteria")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Users.ListUsersResponse.class, description = "listUsersResponse.md") })
-	public SearchResults<User> listUsers(
-			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
-		try {
-			List<User> usersConv = new ArrayList<User>();
-			UserSearchCriteria criteria = new UserSearchCriteria();
-			criteria.setIncludeDeleted(includeDeleted);
-			List<IUser> users = getUserManagement().listUsers(criteria);
-			for (IUser user : users) {
-				usersConv.add(User.copy(user));
-			}
-			SearchResults<User> results = new SearchResults<User>(usersConv);
-			return results;
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Get tenants associated with a user.
-	 * 
-	 * @param username
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List authorized tenants for user")
-	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "getTenantsForUsernameResponse.md") })
-	public List<ITenant> getTenantsForUsername(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
-
-		// TODO: This should be in the system controller since it's not using
-		// the user management implementation, but rather uses the runtime
-		// tenant engine state to build the list.
-
-		try {
-			List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
-			if (includeRuntimeInfo) {
-				for (ITenant tenant : results) {
-					ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
-					if (engine != null) {
-						((Tenant) tenant).setEngineState(engine.getEngineState());
-					}
-				}
-			}
-			return results;
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Get {@link IUserManagement} implementation.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IUserManagement getUserManagement() throws SiteWhereException {
-		return SiteWhere.getServer().getUserManagement();
-	}
+    /**
+     * Get {@link IUserManagement} implementation.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IUserManagement getUserManagement() throws SiteWhereException {
+	return SiteWhere.getServer().getUserManagement();
+    }
 }

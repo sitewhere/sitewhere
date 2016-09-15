@@ -19,57 +19,57 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
  */
 public class ZoneRelationship implements IZoneRelationship {
 
-	/** Location */
-	private IDeviceLocation location;
+    /** Location */
+    private IDeviceLocation location;
 
-	/** Zone */
-	private IZone zone;
+    /** Zone */
+    private IZone zone;
 
-	/** Containment */
-	private ZoneContainment containment;
+    /** Containment */
+    private ZoneContainment containment;
 
-	public ZoneRelationship(IDeviceLocation location, IZone zone, ZoneContainment containment) {
-		this.location = location;
-		this.zone = zone;
-		this.containment = containment;
-	}
+    public ZoneRelationship(IDeviceLocation location, IZone zone, ZoneContainment containment) {
+	this.location = location;
+	this.zone = zone;
+	this.containment = containment;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneRelationship#getLocation()
-	 */
-	public IDeviceLocation getLocation() {
-		return location;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneRelationship#getLocation()
+     */
+    public IDeviceLocation getLocation() {
+	return location;
+    }
 
-	public void setLocation(IDeviceLocation location) {
-		this.location = location;
-	}
+    public void setLocation(IDeviceLocation location) {
+	this.location = location;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneRelationship#getZone()
-	 */
-	public IZone getZone() {
-		return zone;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneRelationship#getZone()
+     */
+    public IZone getZone() {
+	return zone;
+    }
 
-	public void setZone(IZone zone) {
-		this.zone = zone;
-	}
+    public void setZone(IZone zone) {
+	this.zone = zone;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneRelationship#getContainment()
-	 */
-	public ZoneContainment getContainment() {
-		return containment;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneRelationship#getContainment()
+     */
+    public ZoneContainment getContainment() {
+	return containment;
+    }
 
-	public void setContainment(ZoneContainment containment) {
-		this.containment = containment;
-	}
+    public void setContainment(ZoneContainment containment) {
+	this.containment = containment;
+    }
 }

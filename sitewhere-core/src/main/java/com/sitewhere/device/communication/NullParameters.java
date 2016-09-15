@@ -15,35 +15,37 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor
 import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
 
 /**
- * Placeholder object for {@link ICommandDeliveryProvider} that do not require parameters.
+ * Placeholder object for {@link ICommandDeliveryProvider} that do not require
+ * parameters.
  * 
  * @author Derek
  */
 public class NullParameters {
 
-	/**
-	 * Implementation of {@link ICommandDeliveryParameterExtractor} that returns
-	 * {@link NullParameters}.
+    /**
+     * Implementation of {@link ICommandDeliveryParameterExtractor} that returns
+     * {@link NullParameters}.
+     * 
+     * @author Derek
+     */
+    public static class Extractor implements ICommandDeliveryParameterExtractor<NullParameters> {
+
+	/** Value to be returned */
+	private NullParameters parameters = new NullParameters();
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see com.sitewhere.spi.device.communication.
+	 * ICommandDeliveryParameterExtractor#
+	 * extractDeliveryParameters(com.sitewhere.spi.device.
+	 * IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
 	 */
-	public static class Extractor implements ICommandDeliveryParameterExtractor<NullParameters> {
-
-		/** Value to be returned */
-		private NullParameters parameters = new NullParameters();
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor#
-		 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-		 * com.sitewhere.spi.device.IDeviceAssignment,
-		 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
-		 */
-		@Override
-		public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-				IDeviceAssignment assignment, IDeviceCommandExecution execution) throws SiteWhereException {
-			return parameters;
-		}
+	@Override
+	public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+		IDeviceCommandExecution execution) throws SiteWhereException {
+	    return parameters;
 	}
+    }
 }

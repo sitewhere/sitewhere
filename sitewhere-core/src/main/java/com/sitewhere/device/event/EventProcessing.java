@@ -30,141 +30,141 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  */
 public class EventProcessing extends TenantLifecycleComponent implements IEventProcessing, ITenantHazelcastAware {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Configured inbound processing strategy */
-	private IInboundProcessingStrategy inboundProcessingStrategy = new BlockingQueueInboundProcessingStrategy();
+    /** Configured inbound processing strategy */
+    private IInboundProcessingStrategy inboundProcessingStrategy = new BlockingQueueInboundProcessingStrategy();
 
-	/** Configured inbound event processor chain */
-	private IInboundEventProcessorChain inboundEventProcessorChain;
+    /** Configured inbound event processor chain */
+    private IInboundEventProcessorChain inboundEventProcessorChain;
 
-	/** Configured outbound processing strategy */
-	private IOutboundProcessingStrategy outboundProcessingStrategy = new BlockingQueueOutboundProcessingStrategy();
+    /** Configured outbound processing strategy */
+    private IOutboundProcessingStrategy outboundProcessingStrategy = new BlockingQueueOutboundProcessingStrategy();
 
-	/** Configured outbound event processor chain */
-	private IOutboundEventProcessorChain outboundEventProcessorChain;
+    /** Configured outbound event processor chain */
+    private IOutboundEventProcessorChain outboundEventProcessorChain;
 
-	public EventProcessing() {
-		super(LifecycleComponentType.EventProcessing);
+    public EventProcessing() {
+	super(LifecycleComponentType.EventProcessing);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+
+	// Enable outbound processor chain.
+	if (getOutboundEventProcessorChain() != null) {
+	    startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.", true);
+	    getOutboundEventProcessorChain().setProcessingEnabled(true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-
-		// Enable outbound processor chain.
-		if (getOutboundEventProcessorChain() != null) {
-			startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.", true);
-			getOutboundEventProcessorChain().setProcessingEnabled(true);
-		}
-
-		// Enable inbound processor chain.
-		if (getInboundEventProcessorChain() != null) {
-			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.", true);
-		}
-
-		// Start outbound processing strategy.
-		if (getOutboundProcessingStrategy() == null) {
-			throw new SiteWhereException("No outbound processing strategy configured for communication subsystem.");
-		}
-		startNestedComponent(getOutboundProcessingStrategy(), true);
-
-		// Start inbound processing strategy.
-		if (getInboundProcessingStrategy() == null) {
-			throw new SiteWhereException("No inbound processing strategy configured for communication subsystem.");
-		}
-		startNestedComponent(getInboundProcessingStrategy(), true);
+	// Enable inbound processor chain.
+	if (getInboundEventProcessorChain() != null) {
+	    startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.", true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
+	// Start outbound processing strategy.
+	if (getOutboundProcessingStrategy() == null) {
+	    throw new SiteWhereException("No outbound processing strategy configured for communication subsystem.");
+	}
+	startNestedComponent(getOutboundProcessingStrategy(), true);
 
-		// Stop inbound processing strategy.
-		if (getInboundProcessingStrategy() != null) {
-			getInboundProcessingStrategy().lifecycleStop();
-		}
+	// Start inbound processing strategy.
+	if (getInboundProcessingStrategy() == null) {
+	    throw new SiteWhereException("No inbound processing strategy configured for communication subsystem.");
+	}
+	startNestedComponent(getInboundProcessingStrategy(), true);
+    }
 
-		// Stop outbound processing strategy.
-		if (getOutboundProcessingStrategy() != null) {
-			getOutboundProcessingStrategy().lifecycleStop();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
 
-		if (getInboundEventProcessorChain() != null) {
-			getInboundEventProcessorChain().lifecycleStop();
-		}
-
-		if (getOutboundEventProcessorChain() != null) {
-			getOutboundEventProcessorChain().setProcessingEnabled(false);
-			getOutboundEventProcessorChain().lifecycleStop();
-		}
+	// Stop inbound processing strategy.
+	if (getInboundProcessingStrategy() != null) {
+	    getInboundProcessingStrategy().lifecycleStop();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-	 * setHazelcastConfiguration(com
-	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-	 */
-	@Override
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
-		if (getOutboundEventProcessorChain() instanceof ITenantHazelcastAware) {
-			((ITenantHazelcastAware) getOutboundEventProcessorChain()).setHazelcastConfiguration(configuration);
-		}
-		if (getInboundEventProcessorChain() instanceof ITenantHazelcastAware) {
-			((ITenantHazelcastAware) getInboundEventProcessorChain()).setHazelcastConfiguration(configuration);
-		}
+	// Stop outbound processing strategy.
+	if (getOutboundProcessingStrategy() != null) {
+	    getOutboundProcessingStrategy().lifecycleStop();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
+	if (getInboundEventProcessorChain() != null) {
+	    getInboundEventProcessorChain().lifecycleStop();
 	}
 
-	public IInboundProcessingStrategy getInboundProcessingStrategy() {
-		return inboundProcessingStrategy;
+	if (getOutboundEventProcessorChain() != null) {
+	    getOutboundEventProcessorChain().setProcessingEnabled(false);
+	    getOutboundEventProcessorChain().lifecycleStop();
 	}
+    }
 
-	public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
-		this.inboundProcessingStrategy = inboundProcessingStrategy;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+     * setHazelcastConfiguration(com
+     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+     */
+    @Override
+    public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
+	if (getOutboundEventProcessorChain() instanceof ITenantHazelcastAware) {
+	    ((ITenantHazelcastAware) getOutboundEventProcessorChain()).setHazelcastConfiguration(configuration);
 	}
+	if (getInboundEventProcessorChain() instanceof ITenantHazelcastAware) {
+	    ((ITenantHazelcastAware) getInboundEventProcessorChain()).setHazelcastConfiguration(configuration);
+	}
+    }
 
-	public IInboundEventProcessorChain getInboundEventProcessorChain() {
-		return inboundEventProcessorChain;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public void setInboundEventProcessorChain(IInboundEventProcessorChain inboundEventProcessorChain) {
-		this.inboundEventProcessorChain = inboundEventProcessorChain;
-	}
+    public IInboundProcessingStrategy getInboundProcessingStrategy() {
+	return inboundProcessingStrategy;
+    }
 
-	public IOutboundProcessingStrategy getOutboundProcessingStrategy() {
-		return outboundProcessingStrategy;
-	}
+    public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
+	this.inboundProcessingStrategy = inboundProcessingStrategy;
+    }
 
-	public void setOutboundProcessingStrategy(IOutboundProcessingStrategy outboundProcessingStrategy) {
-		this.outboundProcessingStrategy = outboundProcessingStrategy;
-	}
+    public IInboundEventProcessorChain getInboundEventProcessorChain() {
+	return inboundEventProcessorChain;
+    }
 
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
-		return outboundEventProcessorChain;
-	}
+    public void setInboundEventProcessorChain(IInboundEventProcessorChain inboundEventProcessorChain) {
+	this.inboundEventProcessorChain = inboundEventProcessorChain;
+    }
 
-	public void setOutboundEventProcessorChain(IOutboundEventProcessorChain outboundEventProcessorChain) {
-		this.outboundEventProcessorChain = outboundEventProcessorChain;
-	}
+    public IOutboundProcessingStrategy getOutboundProcessingStrategy() {
+	return outboundProcessingStrategy;
+    }
+
+    public void setOutboundProcessingStrategy(IOutboundProcessingStrategy outboundProcessingStrategy) {
+	this.outboundProcessingStrategy = outboundProcessingStrategy;
+    }
+
+    public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
+	return outboundEventProcessorChain;
+    }
+
+    public void setOutboundEventProcessorChain(IOutboundEventProcessorChain outboundEventProcessorChain) {
+	this.outboundEventProcessorChain = outboundEventProcessorChain;
+    }
 }

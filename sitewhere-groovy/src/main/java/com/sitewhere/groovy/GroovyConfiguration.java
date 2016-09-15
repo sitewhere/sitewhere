@@ -26,117 +26,117 @@ import groovy.util.GroovyScriptEngine;
  */
 public class GroovyConfiguration extends TenantLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Bean name where global Groovy configuration is expected */
-	public static final String GROOVY_CONFIGURATION_BEAN = "swGroovyConfiguration";
+    /** Bean name where global Groovy configuration is expected */
+    public static final String GROOVY_CONFIGURATION_BEAN = "swGroovyConfiguration";
 
-	/** Used to connect Groovy engine to SiteWhere resource manager */
-	private SiteWhereResourceConnector resourceConnector;
+    /** Used to connect Groovy engine to SiteWhere resource manager */
+    private SiteWhereResourceConnector resourceConnector;
 
-	/** Groovy script engine */
-	private GroovyScriptEngine groovyScriptEngine;
+    /** Groovy script engine */
+    private GroovyScriptEngine groovyScriptEngine;
 
-	/** Configures script root to an external URL */
-	private String externalScriptRoot;
+    /** Configures script root to an external URL */
+    private String externalScriptRoot;
 
-	/** Field for setting GSE verbose flag */
-	private boolean verbose = false;
+    /** Field for setting GSE verbose flag */
+    private boolean verbose = false;
 
-	/** Field for setting GSE debug flag */
-	private boolean debug = false;
+    /** Field for setting GSE debug flag */
+    private boolean debug = false;
 
-	public GroovyConfiguration() {
-		super(LifecycleComponentType.Other);
-	}
+    public GroovyConfiguration() {
+	super(LifecycleComponentType.Other);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		try {
-			if (getExternalScriptRoot() != null) {
-				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
-				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
-			} else {
-				// Handle global scripts.
-				if (getTenant() == null) {
-					resourceConnector = new SiteWhereResourceConnector();
-					LOGGER.info("Starting Groovy script engine with global resouce scope.");
-				}
-
-				// Handle tenant scripts.
-				else {
-					resourceConnector = new SiteWhereResourceConnector(getTenant().getId());
-					LOGGER.info("Starting Groovy script engine with tenant resouce scope.");
-				}
-				groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
-			}
-
-			groovyScriptEngine.getConfig().setVerbose(isVerbose());
-			groovyScriptEngine.getConfig().setDebug(isDebug());
-			LOGGER.info(
-					"Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:" + isDebug() + ").");
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to configure Groovy script engine.", e);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	try {
+	    if (getExternalScriptRoot() != null) {
+		groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
+		LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
+	    } else {
+		// Handle global scripts.
+		if (getTenant() == null) {
+		    resourceConnector = new SiteWhereResourceConnector();
+		    LOGGER.info("Starting Groovy script engine with global resouce scope.");
 		}
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	public GroovyScriptEngine getGroovyScriptEngine() {
-		return groovyScriptEngine;
-	}
-
-	public void setGroovyScriptEngine(GroovyScriptEngine groovyScriptEngine) {
-		this.groovyScriptEngine = groovyScriptEngine;
-	}
-
-	public String getExternalScriptRoot() {
-		return externalScriptRoot;
-	}
-
-	public void setExternalScriptRoot(String externalScriptRoot) {
-		if ((externalScriptRoot != null) && (!externalScriptRoot.endsWith("/"))) {
-			externalScriptRoot += "/";
+		// Handle tenant scripts.
+		else {
+		    resourceConnector = new SiteWhereResourceConnector(getTenant().getId());
+		    LOGGER.info("Starting Groovy script engine with tenant resouce scope.");
 		}
-		this.externalScriptRoot = externalScriptRoot;
-	}
+		groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
+	    }
 
-	public boolean isVerbose() {
-		return verbose;
+	    groovyScriptEngine.getConfig().setVerbose(isVerbose());
+	    groovyScriptEngine.getConfig().setDebug(isDebug());
+	    LOGGER.info(
+		    "Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:" + isDebug() + ").");
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to configure Groovy script engine.", e);
 	}
+    }
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
 
-	public boolean isDebug() {
-		return debug;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
+    public GroovyScriptEngine getGroovyScriptEngine() {
+	return groovyScriptEngine;
+    }
+
+    public void setGroovyScriptEngine(GroovyScriptEngine groovyScriptEngine) {
+	this.groovyScriptEngine = groovyScriptEngine;
+    }
+
+    public String getExternalScriptRoot() {
+	return externalScriptRoot;
+    }
+
+    public void setExternalScriptRoot(String externalScriptRoot) {
+	if ((externalScriptRoot != null) && (!externalScriptRoot.endsWith("/"))) {
+	    externalScriptRoot += "/";
 	}
+	this.externalScriptRoot = externalScriptRoot;
+    }
+
+    public boolean isVerbose() {
+	return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+	this.verbose = verbose;
+    }
+
+    public boolean isDebug() {
+	return debug;
+    }
+
+    public void setDebug(boolean debug) {
+	this.debug = debug;
+    }
 }

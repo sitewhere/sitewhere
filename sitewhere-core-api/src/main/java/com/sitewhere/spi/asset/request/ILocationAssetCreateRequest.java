@@ -16,24 +16,24 @@ import com.sitewhere.spi.asset.ILocationAsset;
  */
 public interface ILocationAssetCreateRequest extends IAssetCreateRequest {
 
-	/**
-	 * Get location latitude.
-	 * 
-	 * @return
-	 */
-	public Double getLatitude();
+    /**
+     * Get location latitude.
+     * 
+     * @return
+     */
+    public Double getLatitude();
 
-	/**
-	 * Get location longitude.
-	 * 
-	 * @return
-	 */
-	public Double getLongitude();
+    /**
+     * Get location longitude.
+     * 
+     * @return
+     */
+    public Double getLongitude();
 
-	/**
-	 * Get location elevation.
-	 * 
-	 * @return
-	 */
-	public Double getElevation();
+    /**
+     * Get location elevation.
+     * 
+     * @return
+     */
+    public Double getElevation();
 }

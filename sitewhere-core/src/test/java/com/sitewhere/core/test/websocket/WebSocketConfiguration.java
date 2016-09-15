@@ -22,30 +22,29 @@ import javax.websocket.server.ServerEndpointConfig;
  */
 public class WebSocketConfiguration implements ServerApplicationConfig {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.websocket.server.ServerApplicationConfig#getAnnotatedEndpointClasses(
-	 * java.util.Set)
-	 */
-	@Override
-	public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> annotated) {
-		return Collections.emptySet();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.websocket.server.ServerApplicationConfig#
+     * getAnnotatedEndpointClasses( java.util.Set)
+     */
+    @Override
+    public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> annotated) {
+	return Collections.emptySet();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.websocket.server.ServerApplicationConfig#getEndpointConfigs(java.util
-	 * .Set)
-	 */
-	@Override
-	public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpoints) {
-		Set<ServerEndpointConfig> configs = new HashSet<ServerEndpointConfig>();
-		configs.add(ServerEndpointConfig.Builder.create(StringSender.class, "/stringsender").build());
-		configs.add(ServerEndpointConfig.Builder.create(BinarySender.class, "/binarysender").build());
-		return configs;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.websocket.server.ServerApplicationConfig#getEndpointConfigs(java.
+     * util .Set)
+     */
+    @Override
+    public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpoints) {
+	Set<ServerEndpointConfig> configs = new HashSet<ServerEndpointConfig>();
+	configs.add(ServerEndpointConfig.Builder.create(StringSender.class, "/stringsender").build());
+	configs.add(ServerEndpointConfig.Builder.create(BinarySender.class, "/binarysender").build());
+	return configs;
+    }
 }

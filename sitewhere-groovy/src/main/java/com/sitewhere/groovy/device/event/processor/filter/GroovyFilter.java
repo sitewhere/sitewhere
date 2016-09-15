@@ -32,85 +32,85 @@ import groovy.util.ScriptException;
  */
 public class GroovyFilter extends DeviceEventFilter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Injected global Groovy configuration */
-	private GroovyConfiguration configuration;
+    /** Injected global Groovy configuration */
+    private GroovyConfiguration configuration;
 
-	/** Relative path to Groovy script */
-	private String scriptPath;
+    /** Relative path to Groovy script */
+    private String scriptPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		super.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+	super.start();
 
-		if (getScriptPath() == null) {
-			throw new SiteWhereException("Script path not configured for Groovy filter.");
-		}
+	if (getScriptPath() == null) {
+	    throw new SiteWhereException("Script path not configured for Groovy filter.");
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
-	 * com.sitewhere .spi.device.event.IDeviceEvent,
-	 * com.sitewhere.spi.device.IDevice,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		Binding binding = new Binding();
-		binding.setVariable("logger", getLogger());
-		binding.setVariable("event", event);
-		binding.setVariable("device", device);
-		binding.setVariable("assignment", assignment);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
+     * com.sitewhere .spi.device.event.IDeviceEvent,
+     * com.sitewhere.spi.device.IDevice,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	Binding binding = new Binding();
+	binding.setVariable("logger", getLogger());
+	binding.setVariable("event", event);
+	binding.setVariable("device", device);
+	binding.setVariable("assignment", assignment);
 
-		try {
-			Object result = getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-			if (!(result instanceof Boolean)) {
-				throw new SiteWhereException("Groovy filter script returned non-boolean result.");
-			}
-			return !((Boolean) result).booleanValue();
-		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy filter script. " + e.getMessage(), e);
-		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy filter script.", e);
-		}
+	try {
+	    Object result = getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    if (!(result instanceof Boolean)) {
+		throw new SiteWhereException("Groovy filter script returned non-boolean result.");
+	    }
+	    return !((Boolean) result).booleanValue();
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy filter script. " + e.getMessage(), e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy filter script.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.filter.DeviceEventFilter#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public String getScriptPath() {
-		return scriptPath;
-	}
+    public String getScriptPath() {
+	return scriptPath;
+    }
 
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
+    public void setScriptPath(String scriptPath) {
+	this.scriptPath = scriptPath;
+    }
 
-	public GroovyConfiguration getConfiguration() {
-		return configuration;
-	}
+    public GroovyConfiguration getConfiguration() {
+	return configuration;
+    }
 
-	public void setConfiguration(GroovyConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    public void setConfiguration(GroovyConfiguration configuration) {
+	this.configuration = configuration;
+    }
 }

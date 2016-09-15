@@ -29,78 +29,78 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceGroupElementMarshalHelper {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Tenant */
-	private ITenant tenant;
+    /** Tenant */
+    private ITenant tenant;
 
-	/**
-	 * Indicates whether detailed device or device group information is to be
-	 * included
-	 */
-	private boolean includeDetails = false;
+    /**
+     * Indicates whether detailed device or device group information is to be
+     * included
+     */
+    private boolean includeDetails = false;
 
-	/** Helper class for enriching device information */
-	private DeviceMarshalHelper deviceHelper;
+    /** Helper class for enriching device information */
+    private DeviceMarshalHelper deviceHelper;
 
-	public DeviceGroupElementMarshalHelper(ITenant tenant) {
-		this.tenant = tenant;
-		this.deviceHelper = new DeviceMarshalHelper(tenant).setIncludeSpecification(true).setIncludeAsset(true)
-				.setIncludeAssignment(true);
-	}
+    public DeviceGroupElementMarshalHelper(ITenant tenant) {
+	this.tenant = tenant;
+	this.deviceHelper = new DeviceMarshalHelper(tenant).setIncludeSpecification(true).setIncludeAsset(true)
+		.setIncludeAssignment(true);
+    }
 
-	/**
-	 * Convert the SPI object to a model object for marshaling.
-	 * 
-	 * @param source
-	 * @param manager
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupElement convert(IDeviceGroupElement source, IAssetModuleManager manager)
-			throws SiteWhereException {
-		DeviceGroupElement result = new DeviceGroupElement();
-		result.setGroupToken(source.getGroupToken());
-		result.setIndex(source.getIndex());
-		result.setType(source.getType());
-		result.setElementId(source.getElementId());
-		result.getRoles().addAll(source.getRoles());
-		if (isIncludeDetails()) {
-			switch (source.getType()) {
-			case Device: {
-				IDevice device = SiteWhere.getServer().getDeviceManagement(tenant)
-						.getDeviceByHardwareId(source.getElementId());
-				if (device != null) {
-					Device inflated = deviceHelper.convert(device, manager);
-					result.setDevice(inflated);
-				} else {
-					LOGGER.warn("Group references invalid device: " + source.getElementId());
-				}
-				break;
-			}
-			case Group: {
-				IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(tenant)
-						.getDeviceGroup(source.getElementId());
-				if (group != null) {
-					DeviceGroup inflated = DeviceGroup.copy(group);
-					result.setDeviceGroup(inflated);
-				} else {
-					LOGGER.warn("Group references invalid subgroup: " + source.getElementId());
-				}
-				break;
-			}
-			}
+    /**
+     * Convert the SPI object to a model object for marshaling.
+     * 
+     * @param source
+     * @param manager
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupElement convert(IDeviceGroupElement source, IAssetModuleManager manager)
+	    throws SiteWhereException {
+	DeviceGroupElement result = new DeviceGroupElement();
+	result.setGroupToken(source.getGroupToken());
+	result.setIndex(source.getIndex());
+	result.setType(source.getType());
+	result.setElementId(source.getElementId());
+	result.getRoles().addAll(source.getRoles());
+	if (isIncludeDetails()) {
+	    switch (source.getType()) {
+	    case Device: {
+		IDevice device = SiteWhere.getServer().getDeviceManagement(tenant)
+			.getDeviceByHardwareId(source.getElementId());
+		if (device != null) {
+		    Device inflated = deviceHelper.convert(device, manager);
+		    result.setDevice(inflated);
+		} else {
+		    LOGGER.warn("Group references invalid device: " + source.getElementId());
 		}
-		return result;
+		break;
+	    }
+	    case Group: {
+		IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(tenant)
+			.getDeviceGroup(source.getElementId());
+		if (group != null) {
+		    DeviceGroup inflated = DeviceGroup.copy(group);
+		    result.setDeviceGroup(inflated);
+		} else {
+		    LOGGER.warn("Group references invalid subgroup: " + source.getElementId());
+		}
+		break;
+	    }
+	    }
 	}
+	return result;
+    }
 
-	public boolean isIncludeDetails() {
-		return includeDetails;
-	}
+    public boolean isIncludeDetails() {
+	return includeDetails;
+    }
 
-	public DeviceGroupElementMarshalHelper setIncludeDetails(boolean includeDetails) {
-		this.includeDetails = includeDetails;
-		return this;
-	}
+    public DeviceGroupElementMarshalHelper setIncludeDetails(boolean includeDetails) {
+	this.includeDetails = includeDetails;
+	return this;
+    }
 }

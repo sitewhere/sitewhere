@@ -16,25 +16,25 @@ import com.sitewhere.rest.model.common.Location;
  */
 public class DeviceAssignmentHistoryEntry {
 
-	/** Time slot (in ms.) */
-	private long timeSlot;
+    /** Time slot (in ms.) */
+    private long timeSlot;
 
-	/** Location information */
-	private Location location;
+    /** Location information */
+    private Location location;
 
-	public long getTimeSlot() {
-		return timeSlot;
-	}
+    public long getTimeSlot() {
+	return timeSlot;
+    }
 
-	public void setTimeSlot(long timeSlot) {
-		this.timeSlot = timeSlot;
-	}
+    public void setTimeSlot(long timeSlot) {
+	this.timeSlot = timeSlot;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public Location getLocation() {
+	return location;
+    }
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+    public void setLocation(Location location) {
+	this.location = location;
+    }
 }

@@ -20,20 +20,21 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  */
 public class TenantManagementTriggers extends TenantManagementDecorator {
 
-	public TenantManagementTriggers(ITenantManagement delegate) {
-		super(delegate);
-	}
+    public TenantManagementTriggers(ITenantManagement delegate) {
+	super(delegate);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.server.tenant.TenantManagementDecorator#updateTenant(java.lang.
-	 * String, com.sitewhere.spi.tenant.request.ITenantCreateRequest)
-	 */
-	@Override
-	public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-		ITenant updated = super.updateTenant(id, request);
-		SiteWhere.getServer().onTenantInformationUpdated(updated);
-		return updated;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.tenant.TenantManagementDecorator#updateTenant(java.
+     * lang. String, com.sitewhere.spi.tenant.request.ITenantCreateRequest)
+     */
+    @Override
+    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+	ITenant updated = super.updateTenant(id, request);
+	SiteWhere.getServer().onTenantInformationUpdated(updated);
+	return updated;
+    }
 }

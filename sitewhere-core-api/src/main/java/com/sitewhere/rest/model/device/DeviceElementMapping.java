@@ -22,61 +22,63 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 @JsonInclude(Include.NON_NULL)
 public class DeviceElementMapping implements IDeviceElementMapping, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 2668063520841302094L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 2668063520841302094L;
 
-	/** Path in device element schema being mapped */
-	private String deviceElementSchemaPath;
+    /** Path in device element schema being mapped */
+    private String deviceElementSchemaPath;
 
-	/** Hardware id of device being mapped */
-	private String hardwareId;
+    /** Hardware id of device being mapped */
+    private String hardwareId;
 
-	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
-	/** Device info if populated by marshaller */
-	private IDevice device;
+    /** Device info if populated by marshaller */
+    private IDevice device;
 
-	public DeviceElementMapping() {
-	}
+    public DeviceElementMapping() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceElementMapping#getDeviceElementSchemaPath()
-	 */
-	public String getDeviceElementSchemaPath() {
-		return deviceElementSchemaPath;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceElementMapping#getDeviceElementSchemaPath
+     * ()
+     */
+    public String getDeviceElementSchemaPath() {
+	return deviceElementSchemaPath;
+    }
 
-	public void setDeviceElementSchemaPath(String deviceElementSchemaPath) {
-		this.deviceElementSchemaPath = deviceElementSchemaPath;
-	}
+    public void setDeviceElementSchemaPath(String deviceElementSchemaPath) {
+	this.deviceElementSchemaPath = deviceElementSchemaPath;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceElementMapping#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceElementMapping#getHardwareId()
+     */
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	public IDevice getDevice() {
-		return device;
-	}
+    public IDevice getDevice() {
+	return device;
+    }
 
-	public void setDevice(IDevice device) {
-		this.device = device;
-	}
+    public void setDevice(IDevice device) {
+	this.device = device;
+    }
 
-	public static DeviceElementMapping copy(IDeviceElementMapping input) {
-		DeviceElementMapping result = new DeviceElementMapping();
-		result.setDeviceElementSchemaPath(input.getDeviceElementSchemaPath());
-		result.setHardwareId(input.getHardwareId());
-		return result;
-	}
+    public static DeviceElementMapping copy(IDeviceElementMapping input) {
+	DeviceElementMapping result = new DeviceElementMapping();
+	result.setDeviceElementSchemaPath(input.getDeviceElementSchemaPath());
+	result.setHardwareId(input.getHardwareId());
+	return result;
+    }
 }
