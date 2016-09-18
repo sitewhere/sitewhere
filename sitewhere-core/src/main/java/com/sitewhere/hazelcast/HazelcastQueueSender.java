@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.InboundEventProcessor;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,21 +24,16 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Sends all events to a Hazelcast queue.
  * 
  * @author Derek
  */
-public class HazelcastQueueSender extends InboundEventProcessor implements ITenantHazelcastAware {
+public class HazelcastQueueSender extends InboundEventProcessor {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Injected Hazelcast configuration */
-    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
     /** Queue of events to be processed */
     private IQueue<DecodedDeviceRequest<?>> eventQueue;
@@ -52,10 +48,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
      */
     @Override
     public void start() throws SiteWhereException {
-	if (getHazelcastConfiguration() == null) {
-	    throw new SiteWhereException("No Hazelcast configuration provided.");
-	}
-	this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
+	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
+		.getQueue(getQueueName());
 	LOGGER.info("Sender posting events to Hazelcast queue: " + getQueueName());
     }
 
@@ -186,21 +180,6 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-	return hazelcastConfiguration;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-	this.hazelcastConfiguration = hazelcastConfiguration;
     }
 
     public IQueue<DecodedDeviceRequest<?>> getEventQueue() {

@@ -26,6 +26,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
@@ -104,6 +105,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
      * @return
      */
     public ITracer getTracer();
+
+    /**
+     * Get the Hazelcast configuration for this node.
+     * 
+     * @return
+     */
+    public IHazelcastConfiguration getHazelcastConfiguration();
 
     /**
      * Get resource manager for bootstrapping the system.

@@ -34,8 +34,6 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Default implementation of {@link IInboundEventSource}.
@@ -44,8 +42,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @param <T>
  */
-public class InboundEventSource<T> extends TenantLifecycleComponent
-	implements IInboundEventSource<T>, ITenantHazelcastAware {
+public class InboundEventSource<T> extends TenantLifecycleComponent implements IInboundEventSource<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -217,22 +214,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	if (getInboundEventReceivers().size() > 0) {
 	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
 		receiver.lifecycleStop();
-	    }
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    @Override
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
-	for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
-	    if (receiver instanceof ITenantHazelcastAware) {
-		((ITenantHazelcastAware) receiver).setHazelcastConfiguration(configuration);
 	    }
 	}
     }

@@ -30,6 +30,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
@@ -145,6 +146,17 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public ITracer getTracer() {
 	return server.getTracer();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getHazelcastConfiguration()
+     */
+    @Override
+    public IHazelcastConfiguration getHazelcastConfiguration() {
+	return server.getHazelcastConfiguration();
     }
 
     /*

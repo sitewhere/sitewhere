@@ -21,7 +21,6 @@ import org.w3c.dom.Element;
 import com.sitewhere.ehcache.DeviceManagementCacheProvider;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
-import com.sitewhere.hazelcast.HazelcastDeviceEventManagement;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
@@ -73,10 +72,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	    switch (type) {
 	    case MongoTenantDatastore: {
 		parseMongoTenantDatasource(child, context);
-		break;
-	    }
-	    case MongoHazelcastDbTenantDatastore: {
-		parseMongoHazelcastTenantDatasource(child, context);
 		break;
 	    }
 	    case MongoInfluxDbTenantDatastore: {
@@ -141,43 +136,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	Attr bulkInsertMaxChunkSize = element.getAttributeNode("bulkInsertMaxChunkSize");
 	if (bulkInsertMaxChunkSize != null) {
 	    dem.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
-	}
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
-		dem.getBeanDefinition());
-
-	// Register Mongo asset management implementation.
-	BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
-	am.addPropertyReference("mongoClient", "mongo");
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
-		am.getBeanDefinition());
-
-	// Register Mongo schedule management implementation.
-	BeanDefinitionBuilder sm = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
-	sm.addPropertyReference("mongoClient", "mongo");
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT,
-		sm.getBeanDefinition());
-    }
-
-    /**
-     * Add service provider implementations to support a hybid MongoDB/Hazelcast
-     * tenant datastore.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseMongoHazelcastTenantDatasource(Element element, ParserContext context) {
-	// Register Mongo device management implementation.
-	BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
-	dm.addPropertyReference("mongoClient", "mongo");
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
-		dm.getBeanDefinition());
-
-	// Register device event management implementation.
-	BeanDefinitionBuilder dem = BeanDefinitionBuilder.rootBeanDefinition(HazelcastDeviceEventManagement.class);
-
-	Attr expirationInMin = element.getAttributeNode("expirationInMin");
-	if (expirationInMin != null) {
-	    dem.addPropertyValue("expirationInMin", expirationInMin.getValue());
 	}
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
 		dem.getBeanDefinition());
@@ -428,9 +386,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 
 	/** Mongo tenant datastore service providers */
 	MongoTenantDatastore("mongo-tenant-datastore"),
-
-	/** Hybrid MongoDB/Hazelcast datastore configuration */
-	MongoHazelcastDbTenantDatastore("mongo-hazelcast-tenant-datastore"),
 
 	/** Hybrid MongoDB/InfluxDB datastore configuration */
 	MongoInfluxDbTenantDatastore("mongo-influxdb-tenant-datastore"),

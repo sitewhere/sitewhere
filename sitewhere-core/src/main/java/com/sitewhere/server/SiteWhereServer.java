@@ -27,6 +27,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
+import com.sitewhere.hazelcast.HazelcastConfiguration;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
@@ -63,6 +64,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -108,6 +110,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Provides hierarchical tracing for debugging */
     protected ITracer tracer = new NullTracer();
+
+    /** Hazelcast configuration for this node */
+    protected IHazelcastConfiguration hazelcastConfiguration;
 
     /** Bootstrap resource manager implementation */
     protected IResourceManager bootstrapResourceManager;
@@ -245,6 +250,17 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public ITracer getTracer() {
 	return tracer;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getHazelcastConfiguration()
+     */
+    @Override
+    public IHazelcastConfiguration getHazelcastConfiguration() {
+	return hazelcastConfiguration;
     }
 
     /*
@@ -588,6 +604,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
+	// Start the Hazelcast instance.
+	startNestedComponent(getHazelcastConfiguration(), "Hazelcast startup failed.", true);
+
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 	    startNestedComponent(component, component.getComponentName() + " startup failed.", true);
@@ -728,6 +747,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 	    component.lifecycleStop();
 	}
+
+	// Stop the Hazelcast instance.
+	getHazelcastConfiguration().lifecycleStop();
     }
 
     /**
@@ -802,6 +824,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize persistent state.
 	initializeServerState();
 
+	// Initialize the Hazelcast instance.
+	initializeHazelcastConfiguration();
+
 	// Initialize Spring.
 	initializeSpringContext();
 
@@ -871,6 +896,20 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    state = MarshalUtils.unmarshalJson(stateResource.getContent(), SiteWhereServerState.class);
 	}
 	this.serverState = state;
+    }
+
+    /**
+     * Initialize Hazelcast configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeHazelcastConfiguration() throws SiteWhereException {
+	IResource resource = getBootstrapResourceManager().getGlobalResource(HazelcastConfiguration.CONFIG_FILE_NAME);
+	if (resource == null) {
+	    throw new SiteWhereException(
+		    "Base Hazelcast configuration resource not found: " + HazelcastConfiguration.CONFIG_FILE_NAME);
+	}
+	this.hazelcastConfiguration = new HazelcastConfiguration(resource);
     }
 
     /**

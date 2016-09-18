@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -25,22 +26,18 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Sends processed device events out on Hazelcast topics for further processing.
  * 
  * @author Derek
  */
-public class HazelcastEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
+public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Injected tenant Hazelcast configuration */
-    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
     /** Topic for device measurements */
     private ITopic<DeviceMeasurements> measurementsTopic;
@@ -70,19 +67,14 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	// Required for filters.
 	super.start();
 
-	if (getHazelcastConfiguration() == null) {
-	    throw new SiteWhereException("No Hazelcast configuration provided.");
-	}
+	IHazelcastConfiguration hzConfig = SiteWhere.getServer().getHazelcastConfiguration();
 	this.invocationHelper = new DeviceCommandInvocationMarshalHelper(getTenant(), true);
-	this.measurementsTopic = getHazelcastConfiguration().getHazelcastInstance()
-		.getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
-	this.locationsTopic = getHazelcastConfiguration().getHazelcastInstance()
-		.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
-	this.alertsTopic = getHazelcastConfiguration().getHazelcastInstance()
-		.getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
-	this.commandInvocationsTopic = getHazelcastConfiguration().getHazelcastInstance()
+	this.measurementsTopic = hzConfig.getHazelcastInstance().getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
+	this.locationsTopic = hzConfig.getHazelcastInstance().getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
+	this.alertsTopic = hzConfig.getHazelcastInstance().getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
+	this.commandInvocationsTopic = hzConfig.getHazelcastInstance()
 		.getTopic(ISiteWhereHazelcast.TOPIC_COMMAND_INVOCATION_ADDED);
-	this.commandResponsesTopic = getHazelcastConfiguration().getHazelcastInstance()
+	this.commandResponsesTopic = hzConfig.getHazelcastInstance()
 		.getTopic(ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
     }
 
@@ -179,20 +171,5 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor impl
 	DeviceCommandResponse marshaled = DeviceCommandResponse.copy(response);
 	commandResponsesTopic.publish(marshaled);
 	LOGGER.debug("Published command response event to Hazelcast (id=" + response.getId() + ")");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-	this.hazelcastConfiguration = hazelcastConfiguration;
-    }
-
-    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-	return hazelcastConfiguration;
     }
 }

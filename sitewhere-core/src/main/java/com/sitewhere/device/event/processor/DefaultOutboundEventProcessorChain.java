@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Default implementation of {@link IOutboundEventProcessorChain} interface.
@@ -34,7 +32,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * @author Derek
  */
 public class DefaultOutboundEventProcessorChain extends TenantLifecycleComponent
-	implements IOutboundEventProcessorChain, ITenantHazelcastAware {
+	implements IOutboundEventProcessorChain {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -106,22 +104,6 @@ public class DefaultOutboundEventProcessorChain extends TenantLifecycleComponent
     @Override
     public boolean isProcessingEnabled() {
 	return processingEnabled;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    @Override
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
-	for (IOutboundEventProcessor processor : getProcessors()) {
-	    if (processor instanceof ITenantHazelcastAware) {
-		((ITenantHazelcastAware) processor).setHazelcastConfiguration(configuration);
-	    }
-	}
     }
 
     /*

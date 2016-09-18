@@ -1,11 +1,11 @@
 /*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+b * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
  *
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.tenant;
+package com.sitewhere.hazelcast;
 
 import java.io.ByteArrayInputStream;
 
@@ -21,11 +21,11 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.util.ServiceLoader;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.resource.IResource;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Bean that configures the hazelcast instance associated with a SiteWhere
@@ -33,8 +33,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @author Derek
  */
-public class TenantHazelcastConfiguration extends TenantLifecycleComponent
-	implements ITenantHazelcastConfiguration, LifecycleListener {
+public class HazelcastConfiguration extends LifecycleComponent implements IHazelcastConfiguration, LifecycleListener {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -45,13 +44,16 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
     /** Configuration file handle */
     private IResource baseConfiguration;
 
+    /** Overrides group name from configuration file */
+    private String groupName = "sitewhere";
+
     /** Overrides group password from configuration file */
     private String groupPassword = "sitewhere";
 
     /** Singleton hazelcast instance */
     private HazelcastInstance instance;
 
-    public TenantHazelcastConfiguration(IResource baseConfiguration) {
+    public HazelcastConfiguration(IResource baseConfiguration) {
 	super(LifecycleComponentType.Other);
 	this.baseConfiguration = baseConfiguration;
     }
@@ -65,7 +67,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
     public void start() throws SiteWhereException {
 	try {
 	    Config config = new XmlConfigBuilder(new ByteArrayInputStream(baseConfiguration.getContent())).build();
-	    config.setInstanceName(getTenant().getId());
+	    config.setInstanceName(getGroupName());
 	    performGroupOverrides(config);
 	    performSerializationOverrides(config);
 	    config.setProperty("hazelcast.logging.type", "log4j2");
@@ -81,7 +83,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	    instance.getLifecycleService().addLifecycleListener(this);
 	    LOGGER.info("Hazelcast instance '" + config.getInstanceName() + "' started.");
 	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to create tenant Hazelcast instance.", e);
+	    throw new SiteWhereException("Unable to create Hazelcast instance.", e);
 	}
     }
 
@@ -119,8 +121,8 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	    group = new GroupConfig();
 	    config.setGroupConfig(group);
 	}
-	LOGGER.info("Hazelcast group/cluster name is '" + getTenant().getId() + "'.");
-	group.setName(getTenant().getId());
+	LOGGER.info("Hazelcast group/cluster name is '" + getGroupName() + "'.");
+	group.setName(getGroupName());
 	LOGGER.info("Hazelcast group/cluster password is '" + getGroupPassword() + "'.");
 	group.setPassword(getGroupPassword());
     }
@@ -146,8 +148,22 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	LOGGER.info("Hazelcast lifecycle changed to: " + event.getState().name());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration#
+     * getHazelcastInstance()
+     */
     public HazelcastInstance getHazelcastInstance() {
 	return instance;
+    }
+
+    public String getGroupName() {
+	return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+	this.groupName = groupName;
     }
 
     public String getGroupPassword() {

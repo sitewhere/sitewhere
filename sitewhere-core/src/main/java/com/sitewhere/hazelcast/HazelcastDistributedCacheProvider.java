@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IMap;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.CacheType;
@@ -23,8 +24,6 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Implements {@link IDeviceManagementCacheProvider} using Hazelcast as a
@@ -33,7 +32,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * @author Derek
  */
 public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
-	implements IDeviceManagementCacheProvider, ITenantHazelcastAware {
+	implements IDeviceManagementCacheProvider {
 
     public HazelcastDistributedCacheProvider() {
 	super(LifecycleComponentType.CacheProvider);
@@ -53,9 +52,6 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 
     /** Name of assignment cache */
     private static final String ASSIGNMENT_CACHE = "assignmentCache";
-
-    /** Tenant Hazelcast configuration */
-    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
     /** Cache for sites */
     private HazelcastCache<ISite> siteCache;
@@ -157,21 +153,6 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	return assignmentCache;
     }
 
-    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-	return hazelcastConfiguration;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-	this.hazelcastConfiguration = hazelcastConfiguration;
-    }
-
     @SuppressWarnings({ "rawtypes", "unused", "unchecked" })
     private class HazelcastCache<T> implements ICache<String, T> {
 
@@ -193,7 +174,7 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	public HazelcastCache(String name, CacheType type) {
 	    this.name = name;
 	    this.type = type;
-	    this.hMap = getHazelcastConfiguration().getHazelcastInstance().getMap(name);
+	    this.hMap = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance().getMap(name);
 	}
 
 	/*

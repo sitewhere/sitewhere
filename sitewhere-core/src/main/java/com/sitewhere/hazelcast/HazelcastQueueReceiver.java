@@ -16,14 +16,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that reads events from a
@@ -31,17 +30,13 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @author Derek
  */
-public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRequest<?>>
-	implements ITenantHazelcastAware {
+public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRequest<?>> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Queue of events to be processed */
     private IQueue<DecodedDeviceRequest<?>> eventQueue;
-
-    /** Injected Hazelcast configuration */
-    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
     /** Used to queue processing in a separate thread */
     private ExecutorService executor;
@@ -56,10 +51,8 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
      */
     @Override
     public void start() throws SiteWhereException {
-	if (getHazelcastConfiguration() == null) {
-	    throw new SiteWhereException("No Hazelcast configuration provided.");
-	}
-	this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
+	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
+		.getQueue(getQueueName());
 	LOGGER.info("Receiver listening for events on Hazelcast queue: " + getQueueName());
 	this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
 	executor.submit(new HazelcastQueueProcessor());
@@ -139,21 +132,6 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 
     public void setEventQueue(IQueue<DecodedDeviceRequest<?>> eventQueue) {
 	this.eventQueue = eventQueue;
-    }
-
-    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-	return hazelcastConfiguration;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-	this.hazelcastConfiguration = hazelcastConfiguration;
     }
 
     public String getQueueName() {

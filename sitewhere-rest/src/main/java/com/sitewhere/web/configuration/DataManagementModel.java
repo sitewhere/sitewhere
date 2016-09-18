@@ -28,7 +28,6 @@ public class DataManagementModel extends ConfigurationModel {
 	// Datastore implementations.
 	addElement(createMongoTenantDatastoreElement());
 	addElement(createMongoInfluxDbTenantDatastoreElement());
-	addElement(createMongoHazelcastTenantDatastoreElement());
 	addElement(createHBaseTenantDatastoreElement());
 
 	// Cache implementations.
@@ -120,27 +119,6 @@ public class DataManagementModel extends ConfigurationModel {
 		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer)
 			.description("Maximum amount of time (in ms) to wait before sending a batch.").group("batch")
 			.defaultValue("100").build()));
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for MonogoDB/Hazelcast tenant datastore.
-     * 
-     * @return
-     */
-    protected ElementNode createMongoHazelcastTenantDatastoreElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("MongoDB/Hazelcast Tenant Datastore",
-		TenantDatastoreParser.Elements.MongoHazelcastDbTenantDatastore.getLocalName(), "database",
-		ElementRole.DataManagement_Datastore);
-
-	builder.description("Store tenant master data using a MongoDB database and store tenant event "
-		+ "data in Hazelcast. Note that the global datastore must be configured to "
-		+ "use MongoDB if this tenant datastore is to be used. Most core "
-		+ "MongoDB settings are configured at the global level.");
-	builder.attributeGroup("conn", "Hazelcast Settings");
-	builder.attribute((new AttributeNode.Builder("Event expiration", "expirationInMin", AttributeType.Integer)
-		.description("Number of minutes events are kept in memory before expiring.").group("conn")
-		.defaultValue("120").build()));
 	return builder.build();
     }
 

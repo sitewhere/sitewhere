@@ -27,8 +27,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Base class for implementations of {@link IDeviceCommunication}. Takes care of
@@ -36,8 +34,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @author Derek
  */
-public abstract class DeviceCommunication extends TenantLifecycleComponent
-	implements IDeviceCommunication, ITenantHazelcastAware {
+public abstract class DeviceCommunication extends TenantLifecycleComponent implements IDeviceCommunication {
 
     /** Configured registration manager */
     private IRegistrationManager registrationManager = new RegistrationManager();
@@ -184,24 +181,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent
 	if (getCommandDestinations() != null) {
 	    for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
 		destination.lifecycleStop();
-	    }
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    @Override
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
-	if (getInboundEventSources() != null) {
-	    for (IInboundEventSource<?> source : getInboundEventSources()) {
-		if (source instanceof ITenantHazelcastAware) {
-		    ((ITenantHazelcastAware) source).setHazelcastConfiguration(configuration);
-		}
 	    }
 	}
     }

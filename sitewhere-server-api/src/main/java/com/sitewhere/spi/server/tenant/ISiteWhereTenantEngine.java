@@ -59,13 +59,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
     public ApplicationContext getSpringContext();
 
     /**
-     * Get the Hazelcast configuration for this tenant.
-     * 
-     * @return
-     */
-    public ITenantHazelcastConfiguration getHazelcastConfiguration();
-
-    /**
      * Get list of components that have registered to participate in the server
      * component lifecycle.
      * 

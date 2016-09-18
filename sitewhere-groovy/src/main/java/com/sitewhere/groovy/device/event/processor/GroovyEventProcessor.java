@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -37,16 +35,13 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
+public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Injected Groovy configuration */
     private GroovyConfiguration configuration;
-
-    /** Injected tenant Hazelcast configuration */
-    private ITenantHazelcastConfiguration hazelcastConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
@@ -158,7 +153,6 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
 	binding.setVariable("device", device);
 	binding.setVariable("deviceManagement", deviceBuilder);
 	binding.setVariable("eventBuilder", eventsBuilder);
-	binding.setVariable("hazelcast", getHazelcastConfiguration().getHazelcastInstance());
 
 	try {
 	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
@@ -177,21 +171,6 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor impleme
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-	return hazelcastConfiguration;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
-     * setHazelcastConfiguration(com
-     * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-     */
-    public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-	this.hazelcastConfiguration = hazelcastConfiguration;
     }
 
     public GroovyConfiguration getConfiguration() {
