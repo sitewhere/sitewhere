@@ -1,12 +1,36 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
 * text=auto
 
-# Java files should always be normalized and converted to native line endings on checkout.
-*.java text
-*
-# Shell scripts should always use Unix linefeeds.
-*.sh text eol=lf
+#
+# The above will handle all files NOT found below
+#
+# These files are text and should be normalized (Convert crlf => lf)
+*.css           text
+*.df            text
+*.htm           text
+*.html          text
+*.java          text
+*.js            text
+*.json          text
+*.jsp           text
+*.jspf          text
+*.properties    text
+*.sh            text
+*.tld           text
+*.txt           text
+*.xml           text
 
-# Denote all files that are truly binary and should not be modified.
-*.png binary
-*.jpg binary
+# These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
+*.class         binary
+*.dll           binary
+*.ear           binary
+*.gif           binary
+*.ico           binary
+*.jar           binary
+*.jpg           binary
+*.jpeg          binary
+*.png           binary
+*.so            binary
+*.war           binary
