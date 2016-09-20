@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.FixCrLfFilter;
+
 buildscript {
 	repositories {
 		maven { url "https://plugins.gradle.org/m2/" }
@@ -166,6 +168,7 @@ task serverTar(type: Tar, dependsOn: createServerDistro) {
 	}
 	from("$buildDir/sitewhere") {
 		include ('**/*.sh')
+		filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
 		fileMode 0755
 	}
 	into "${baseName}-${project.version}"
