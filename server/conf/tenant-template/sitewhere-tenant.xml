@@ -36,9 +36,6 @@
 			<sw:mongo-tenant-datastore
 				useBulkEventInserts="true" bulkInsertMaxChunkSize="1000" />
 
-			<!-- Hybrid MongoDB/Hazelcast Datastore -->
-			<!-- <sw:mongo-hazelcast-tenant-datastore expirationInMin="60"/> -->
-
 			<!-- Hybrid MongoDB/InfluxDB Datastore -->
 			<!-- <sw:mongo-influxdb-tenant-datastore connectUrl="http://localhost:8086" 
 				logLevel="basic" enableBatch="true" batchChunkSize="1000" batchIntervalMs="100"/> -->
