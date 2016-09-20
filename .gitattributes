@@ -1,0 +1,12 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Java files should always be normalized and converted to native line endings on checkout.
+*.java text
+*
+# Shell scripts should always use Unix linefeeds.
+*.sh text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
