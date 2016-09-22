@@ -68,9 +68,11 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
 	try {
 	    Config config = new XmlConfigBuilder(new ByteArrayInputStream(baseConfiguration.getContent())).build();
 	    config.setInstanceName(getGroupName());
+	    configureManagementCenter(config);
 	    performGroupOverrides(config);
 	    performSerializationOverrides(config);
 	    config.setProperty("hazelcast.logging.type", "log4j2");
+	    config.setProperty("hazelcast.rest.enabled", "true");
 
 	    ClassLoader loader = Thread.currentThread().getContextClassLoader();
 	    try {
@@ -107,6 +109,15 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    /**
+     * Configure Hazelcast Management Center.
+     * 
+     * @param config
+     */
+    protected void configureManagementCenter(Config config) {
+	config.getManagementCenterConfig().setEnabled(true).setUrl("http://localhost:8787/mancenter");
     }
 
     /**

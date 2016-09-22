@@ -27,6 +27,7 @@ dependencies {
  	compile ('org.apache.tomcat.embed:tomcat-embed-jasper')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'
+    compile group: 'org.springframework.session', name: 'spring-session'
   
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
