@@ -9,9 +9,7 @@ package com.sitewhere.web;
 
 import java.util.Arrays;
 
-import org.apache.catalina.Container;
 import org.apache.catalina.Context;
-import org.apache.catalina.Wrapper;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +63,12 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 	tomcat.setContextPath("/sitewhere");
 	tomcat.setPort(8080);
+
+	// Turn off development mode.
+	tomcat.getJspServlet().getInitParameters().put("development", "false");
+	tomcat.getJspServlet().getInitParameters().put("modificationTestInterval", "0");
+
+	// Customize cache settings.
 	tomcat.addContextCustomizers(new TomcatContextCustomizer() {
 
 	    @Override
@@ -74,14 +78,9 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		standardRoot.setCachingAllowed(true);
 		standardRoot.setCacheMaxSize(128 * 1024);
 		standardRoot.setCacheObjectMaxSize(16 * 1024);
-
-		// Turn off development mode.
-		Container jsp = context.findChild("jsp");
-		if (jsp instanceof Wrapper) {
-		    ((Wrapper) jsp).addInitParameter("development", "false");
-		}
 	    }
 	});
+
 	return tomcat;
     }
 
