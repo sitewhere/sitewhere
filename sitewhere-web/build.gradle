@@ -1,5 +1,7 @@
 description = 'SiteWhere Web Components'
 
+apply plugin: 'nebula.provided-base'
+
 configurations {
     compile.exclude module: 'spring-boot-starter-logging'
 }
@@ -42,7 +44,7 @@ dependencies {
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'javax.mail', name: 'mail', version: '1.4'
     
-	compile group: 'javax.servlet', name: 'javax.servlet-api'
+	provided group: 'javax.servlet', name: 'javax.servlet-api'
 	compile group: 'javax.servlet', name: 'jstl'
 }
 

@@ -1,5 +1,5 @@
-
 description = 'SiteWhere Spring Extensions'
+
 dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
