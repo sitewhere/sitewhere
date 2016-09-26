@@ -90,5 +90,11 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
      */
     @Override
     public void stop() throws SiteWhereException {
+	if (getMetadataExtractor() != null) {
+	    getMetadataExtractor().lifecycleStop();
+	}
+	for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
+	    choice.lifecycleStop();
+	}
     }
 }
