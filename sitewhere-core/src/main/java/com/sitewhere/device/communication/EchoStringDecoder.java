@@ -14,9 +14,12 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that does not actually decode
@@ -24,10 +27,14 @@ import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
  * 
  * @author Derek
  */
-public class EchoStringDecoder implements IDeviceEventDecoder<String> {
+public class EchoStringDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<String> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    public EchoStringDecoder() {
+	super(LifecycleComponentType.DeviceEventDecoder);
+    }
 
     /*
      * (non-Javadoc)
@@ -41,5 +48,33 @@ public class EchoStringDecoder implements IDeviceEventDecoder<String> {
 	    throws EventDecodeException {
 	LOGGER.info("Payload: " + payload);
 	return new ArrayList<IDecodedDeviceRequest<?>>();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }

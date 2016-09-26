@@ -110,6 +110,9 @@ public enum LifecycleComponentType {
     /** Event source */
     InboundEventSource,
 
+    /** Device event decoder */
+    DeviceEventDecoder,
+
     /** Event receiver */
     InboundEventReceiver,
 

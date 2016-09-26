@@ -29,8 +29,7 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						Global configuration settings for external
-						services that SiteWhere
-						interacts with.
+						services that SiteWhere interacts with.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -38,44 +37,20 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						Provides information about how tenant-specific
-						SiteWhere data is
-						to be persisted and how the core service provider
-						interfaces are implemented.
-						Caching of persisted data is also
-						configured in this section.
+						SiteWhere data is to be persisted and how the core service
+						provider interfaces are implemented. Caching of persisted data is
+						also configured in this section.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element ref="abstract-communication-subsystem-implementation" />
 			<xsd:element ref="abstract-event-processing-subsystem-implementation" />
-			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
-				minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
-						DEPRECATED: Inbound processing chain has moved
-						to event processing
-						subsystem.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
-				minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
-						DEPRECATED: Outbound processing chain has moved
-						to event
-						processing subsystem.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
 			<xsd:element name="asset-management" type="assetManagementType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies details related to the asset
-						management subsystem
-						including the asset manager implementation and
-						the list of asset modules that should
-						be used for device
+						management subsystem including the asset manager implementation
+						and the list of asset modules that should be used for device
 						assignments.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -85,10 +60,8 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies a list of external search providers
-						that have indexed
-						SiteWhere data and may be queried via the REST
-						services, returning a list of
-						SiteWhere events.
+						that have indexed SiteWhere data and may be queried via the REST
+						services, returning a list of SiteWhere events.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -175,8 +148,7 @@
 				<xsd:attribute name="bulkInsertMaxChunkSize" type="sw:substitutableInt">
 					<xsd:annotation>
 						<xsd:documentation>When 'useBulkEventInserts' is true, specifies
-							the maximum number
-							of events to send in a single call.
+							the maximum number of events to send in a single call.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -231,8 +203,7 @@
 			<xsd:annotation>
 				<xsd:documentation>
 					Indicates the amount of logging output for
-					debugging interactions
-					with InfluxDB.
+					debugging interactions with InfluxDB.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -262,8 +233,7 @@
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
 			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for
-				storing device
-				management data and InfluxDB for storing event data.
+				storing device management data and InfluxDB for storing event data.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -281,8 +251,7 @@
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
 			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for
-				storing device
-				management data and Hazelcast for storing event data.
+				storing device management data and Hazelcast for storing event data.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -292,8 +261,7 @@
 				<xsd:attribute name="expirationInMin" type="xsd:int">
 					<xsd:annotation>
 						<xsd:documentation>Number of minutes events are kept in memory
-							before they are
-							evicted.
+							before they are evicted.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1942,6 +1910,128 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for device metadata extractors to allow substitutionGroups -->
+	<xsd:element name="abstract-device-metadata-extractor"
+		abstract="true" type="abstractDeviceMetadataExtractorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for device metadata extractor
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common device metadata extractor information -->
+	<xsd:complexType name="abstractDeviceMetadataExtractorType" />
+
+	<!-- Groovy device metadata extractor -->
+	<xsd:element name="groovy-device-metadata-extractor" type="swGroovyDeviceMetadataExtractorType"
+		substitutionGroup="abstract-device-metadata-extractor">
+		<xsd:annotation>
+			<xsd:documentation>Uses a Groovy script to extract device/payload
+				information from a message.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyDeviceMetadataExtractorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeviceMetadataExtractorType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that extracts metadata
+							such as hardware id from the message.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for composite decoder choices to allow substitutionGroups -->
+	<xsd:element name="abstract-decoder-choice" abstract="true"
+		type="abstractCompositeDecoderChoiceType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder a choice available to a composite
+				decoder.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common composite decoder choice information -->
+	<xsd:complexType name="abstractCompositeDecoderChoiceType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-decoder">
+				<xsd:annotation>
+					<xsd:documentation>Decoder used if choice criteria is met.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Composite decoder choice based on device specification -->
+	<xsd:element name="device-specification-decoder-choice"
+		type="swDeviceSpecificationDecoderChoiceType" substitutionGroup="abstract-decoder-choice">
+		<xsd:annotation>
+			<xsd:documentation>Uses device specification token as the criteria
+				for choosing the associated decoder.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swDeviceSpecificationDecoderChoiceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCompositeDecoderChoiceType">
+				<xsd:attribute name="token" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Token for device specification to match.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- List of choices for a composite event decoder -->
+	<xsd:complexType name="swCompositeDecoderChoicesType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-decoder-choice" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Decoder that extracts metadata and delegates to sub-decoders -->
+	<xsd:element name="composite-decoder" type="swCompositeDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that extracts metadata from the initial
+				message in order to determine which of a list of sub-decoders should
+				be used to decode the message.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swCompositeDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+				<xsd:all>
+					<xsd:element ref="abstract-device-metadata-extractor" />
+					<xsd:element name="choices" type="swCompositeDecoderChoicesType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								List of choices available for the composite
+								decoder.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:all>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
 	<xsd:element name="abstract-event-source" abstract="true"
 		type="abstractEventSourceType">
@@ -2360,8 +2450,7 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Path to a Groovy script that executes logic
-							needed to generate
-							REST request and parse response.
+							needed to generate REST request and parse response.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

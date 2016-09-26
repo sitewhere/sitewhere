@@ -80,6 +80,13 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 	    throw new SiteWhereException("No inbound event receivers registered for event source.");
 	}
+	if (getDeviceEventDecoder() == null) {
+	    throw new SiteWhereException("No device event decoder assigned.");
+	}
+
+	// Start device event decoder.
+	startNestedComponent(getDeviceEventDecoder(), "Event decoder startup failed.", true);
+
 	startEventReceivers();
 	LOGGER.debug("Started event source '" + getSourceId() + "'.");
     }

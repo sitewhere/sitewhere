@@ -15,9 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -29,7 +32,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
+public class GroovyStringEventDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<String> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -39,6 +42,10 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 
     /** Path to script used for decoder */
     private String scriptPath;
+
+    public GroovyStringEventDecoder() {
+	super(LifecycleComponentType.DeviceEventDecoder);
+    }
 
     /*
      * (non-Javadoc)
@@ -65,6 +72,34 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 	} catch (ScriptException e) {
 	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public GroovyConfiguration getConfiguration() {

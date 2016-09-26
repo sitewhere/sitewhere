@@ -33,6 +33,8 @@ import com.sitewhere.device.communication.DecodedInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
 import com.sitewhere.device.communication.coap.CoapServerEventReceiver;
+import com.sitewhere.device.communication.decoder.composite.BinaryCompositeDeviceEventDecoder;
+import com.sitewhere.device.communication.decoder.composite.DeviceSpecificationDecoderChoice;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
 import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
@@ -45,6 +47,7 @@ import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
+import com.sitewhere.groovy.device.communication.decoder.composite.GroovyMessageMetadataExtractor;
 import com.sitewhere.groovy.device.communication.rest.PollingRestInboundEventReceiver;
 import com.sitewhere.groovy.device.communication.socket.GroovySocketInteractionHandler;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
@@ -1046,6 +1049,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      */
     protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 	List<Element> children = DomUtils.getChildElements(parent);
+	AbstractBeanDefinition decoder = null;
 	for (Element child : children) {
 	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
@@ -1066,27 +1070,38 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    }
 	    switch (type) {
 	    case ProtobufDecoder: {
-		parseProtobufDecoder(parent, child, context, source);
-		return true;
+		decoder = parseProtobufDecoder(parent, child, context);
+		break;
 	    }
 	    case JsonDeviceRequestDecoder: {
-		parseJsonDeviceRequestDecoder(parent, child, context, source);
-		return true;
+		decoder = parseJsonDeviceRequestDecoder(parent, child, context);
+		break;
 	    }
 	    case JsonEventDecoder:
 	    case JsonBatchEventDecoder: {
-		parseJsonBatchDecoder(parent, child, context, source);
-		return true;
+		decoder = parseJsonBatchDecoder(parent, child, context);
+		break;
 	    }
 	    case GroovyEventDecoder: {
-		parseGroovyDecoder(parent, child, context, source);
-		return true;
+		decoder = parseGroovyDecoder(parent, child, context);
+		break;
+	    }
+	    case CompositeDecoder: {
+		decoder = parseCompositeDecoder(parent, child, context);
+		break;
 	    }
 	    case EventDecoder: {
 		parseDecoderRef(parent, child, context, source);
 		return true;
 	    }
 	    }
+	}
+
+	if (decoder != null) {
+	    String name = nameGenerator.generateBeanName(decoder, context.getRegistry());
+	    context.getRegistry().registerBeanDefinition(name, decoder);
+	    source.addPropertyReference("deviceEventDecoder", name);
+	    return true;
 	}
 	return false;
     }
@@ -1101,6 +1116,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      */
     protected boolean parseStringDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 	List<Element> children = DomUtils.getChildElements(parent);
+	AbstractBeanDefinition decoder = null;
 	for (Element child : children) {
 	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
@@ -1121,18 +1137,24 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    }
 	    switch (type) {
 	    case EchoStringDecoder: {
-		parseEchoStringDecoder(parent, child, context, source);
-		return true;
+		decoder = parseEchoStringDecoder(parent, child, context);
+		break;
 	    }
 	    case GroovyStringDecoder: {
-		parseGroovyStringDecoder(parent, child, context, source);
-		return true;
+		decoder = parseGroovyStringDecoder(parent, child, context);
+		break;
 	    }
 	    case EventDecoder: {
 		parseDecoderRef(parent, child, context, source);
 		return true;
 	    }
 	    }
+	}
+	if (decoder != null) {
+	    String name = nameGenerator.generateBeanName(decoder, context.getRegistry());
+	    context.getRegistry().registerBeanDefinition(name, decoder);
+	    source.addPropertyReference("deviceEventDecoder", name);
+	    return true;
 	}
 	return false;
     }
@@ -1143,16 +1165,11 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseProtobufDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
-	LOGGER.debug("Configuring SiteWhere Google Protocol Buffer event decoder for " + parent.getLocalName());
+    protected AbstractBeanDefinition parseProtobufDecoder(Element parent, Element decoder, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ProtobufDeviceEventDecoder.class);
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1161,16 +1178,12 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseJsonDeviceRequestDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
-	LOGGER.debug("Configuring SiteWhere JSON device request decoder for " + parent.getLocalName());
+    protected AbstractBeanDefinition parseJsonDeviceRequestDecoder(Element parent, Element decoder,
+	    ParserContext contex) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonDeviceRequestDecoder.class);
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1179,16 +1192,11 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseJsonBatchDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
-	LOGGER.debug("Configuring SiteWhere JSON batch event decoder for " + parent.getLocalName());
+    protected AbstractBeanDefinition parseJsonBatchDecoder(Element parent, Element decoder, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1197,11 +1205,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseGroovyDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
-	LOGGER.debug("Configuring Groovy decoder for " + parent.getLocalName());
+    protected AbstractBeanDefinition parseGroovyDecoder(Element parent, Element decoder, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDecoder.class);
 	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
@@ -1211,10 +1217,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 	builder.addPropertyValue("scriptPath", scriptPath.getValue());
 
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1223,16 +1226,12 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseEchoStringDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
+    protected AbstractBeanDefinition parseEchoStringDecoder(Element parent, Element decoder, ParserContext context) {
 	LOGGER.debug("Configuring echo String decoder for " + parent.getLocalName());
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(EchoStringDecoder.class);
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1241,10 +1240,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @param parent
      * @param decoder
      * @param context
-     * @param source
+     * @return
      */
-    protected void parseGroovyStringDecoder(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
+    protected AbstractBeanDefinition parseGroovyStringDecoder(Element parent, Element decoder, ParserContext context) {
 	LOGGER.debug("Configuring Groovy String decoder for " + parent.getLocalName());
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyStringEventDecoder.class);
 	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
@@ -1255,10 +1253,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 	builder.addPropertyValue("scriptPath", scriptPath.getValue());
 
-	AbstractBeanDefinition bean = builder.getBeanDefinition();
-	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(name, bean);
-	source.addPropertyReference("deviceEventDecoder", name);
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1277,6 +1272,127 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 	LOGGER.debug("Configuring reference to " + decoderRef.getValue() + " for " + parent.getLocalName());
 	source.addPropertyReference("deviceEventDecoder", decoderRef.getValue());
+    }
+
+    /**
+     * Parse information for a composite device event decoder.
+     * 
+     * @param parent
+     * @param decoder
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseCompositeDecoder(Element parent, Element decoder, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder
+		.rootBeanDefinition(BinaryCompositeDeviceEventDecoder.class);
+
+	List<Element> children = DomUtils.getChildElements(decoder);
+	for (Element child : children) {
+	    if (child.getLocalName().equals("choices")) {
+		ManagedList<Object> choices = parseChoicesList(decoder, child, context);
+		builder.addPropertyValue("decoderChoices", choices);
+	    } else {
+		AbstractBeanDefinition extractor = parseCompositeDecoderMetadataExtractor(child, context);
+		builder.addPropertyValue("metadataExtractor", extractor);
+	    }
+	}
+
+	return builder.getBeanDefinition();
+    }
+
+    /**
+     * Parse list of choices specified for a composite device decoder.
+     * 
+     * @param decoder
+     * @param choices
+     * @param context
+     * @param source
+     * @return
+     */
+    protected ManagedList<Object> parseChoicesList(Element decoder, Element choices, ParserContext context) {
+	ManagedList<Object> result = new ManagedList<Object>();
+	List<Element> children = DomUtils.getChildElements(choices);
+	for (Element child : children) {
+	    CompositeDecoderChoiceElements type = CompositeDecoderChoiceElements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown choice for composite decoder element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case DeviceSpecificationDecoderChoice: {
+		result.add(parseDeviceSpecificationDecoderChoice(child, context));
+		break;
+	    }
+	    }
+	}
+	return result;
+    }
+
+    /**
+     * Parse a device specification decoder choice.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseDeviceSpecificationDecoderChoice(Element element, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder
+		.rootBeanDefinition(DeviceSpecificationDecoderChoice.class);
+
+	// Device specification token is required.
+	Attr token = element.getAttributeNode("token");
+	if (token == null) {
+	    throw new RuntimeException("Token not set for device specification decoder choice.");
+	}
+	builder.addPropertyValue("deviceSpecificationToken", token.getValue());
+
+	// Parse decoder associated with choice.
+	parseBinaryDecoder(element, context, builder);
+
+	return builder.getBeanDefinition();
+    }
+
+    /**
+     * Parse the message metadata extractor for a composite device event
+     * decoder.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseCompositeDecoderMetadataExtractor(Element element, ParserContext context) {
+	CompositeDecoderMetadataExtractorElements type = CompositeDecoderMetadataExtractorElements
+		.getByLocalName(element.getLocalName());
+	if (type == null) {
+	    throw new RuntimeException(
+		    "Unknown metadata extractor for composite decoder element: " + element.getLocalName());
+	}
+	switch (type) {
+	case GroovyDeviceMetadataExtractor: {
+	    return parseGroovyMessageMetatataExtractor(element, context);
+	}
+	}
+	return null;
+    }
+
+    /**
+     * Parse the Groovy message metadata extractor.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseGroovyMessageMetatataExtractor(Element element, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyMessageMetadataExtractor.class);
+	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+	// Script path is required.
+	Attr scriptPath = element.getAttributeNode("scriptPath");
+	if (scriptPath == null) {
+	    throw new RuntimeException("Groovy script path is required for message metadata extractor.");
+	}
+	builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
+	return builder.getBeanDefinition();
     }
 
     /**
@@ -1382,7 +1498,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	GroovyEventDecoder("groovy-event-decoder"),
 
 	/** Reference to externally defined event decoder */
-	EventDecoder("event-decoder");
+	EventDecoder("event-decoder"),
+
+	/** Decoder that defers to nested decoders based on criteria */
+	CompositeDecoder("composite-decoder");
 
 	/** Event code */
 	private String localName;
@@ -1487,6 +1606,66 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 
 	public static BinarySocketInteractionHandlers getByLocalName(String localName) {
 	    for (BinarySocketInteractionHandlers value : BinarySocketInteractionHandlers.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum CompositeDecoderMetadataExtractorElements {
+
+	/** Extracts message metadata using a Groovy script */
+	GroovyDeviceMetadataExtractor("groovy-device-metadata-extractor");
+
+	/** Event code */
+	private String localName;
+
+	private CompositeDecoderMetadataExtractorElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static CompositeDecoderMetadataExtractorElements getByLocalName(String localName) {
+	    for (CompositeDecoderMetadataExtractorElements value : CompositeDecoderMetadataExtractorElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum CompositeDecoderChoiceElements {
+
+	/** Produces interaction handler uses Groovy to interact with socket */
+	DeviceSpecificationDecoderChoice("device-specification-decoder-choice");
+
+	/** Event code */
+	private String localName;
+
+	private CompositeDecoderChoiceElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static CompositeDecoderChoiceElements getByLocalName(String localName) {
+	    for (CompositeDecoderChoiceElements value : CompositeDecoderChoiceElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

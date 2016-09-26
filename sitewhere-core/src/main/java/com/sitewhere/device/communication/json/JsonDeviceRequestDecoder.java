@@ -12,14 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Decodes binary device messages in JSON format into device requests for
@@ -27,10 +33,17 @@ import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
  * 
  * @author Derek
  */
-public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
+public class JsonDeviceRequestDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Used to map data into an object based on JSON parsing */
     private static ObjectMapper MAPPER = getObjectMapper();
+
+    public JsonDeviceRequestDecoder() {
+	super(LifecycleComponentType.DeviceEventDecoder);
+    }
 
     /*
      * (non-Javadoc)
@@ -54,6 +67,34 @@ public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
 	} catch (IOException e) {
 	    throw new EventDecodeException(e);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     */
+    @Override
+    public void start() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     */
+    @Override
+    public void stop() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     /**

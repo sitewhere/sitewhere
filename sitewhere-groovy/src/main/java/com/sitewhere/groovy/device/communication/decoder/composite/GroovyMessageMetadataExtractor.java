@@ -1,26 +1,19 @@
-/*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
-package com.sitewhere.groovy.device.communication;
+package com.sitewhere.groovy.device.communication.decoder.composite;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.communication.IGroovyVariables;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IMessageMetadata;
+import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IMessageMetadataExtractor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
@@ -28,12 +21,13 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IDeviceEventDecoder} that uses a Groovy script to
- * decode a binary payload.
+ * Implements {@link IMessageMetadataExtractor} by using a Groovy script to
+ * extract message metadata from a binary payload.
  * 
  * @author Derek
  */
-public class GroovyEventDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
+	implements IMessageMetadataExtractor<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -44,39 +38,38 @@ public class GroovyEventDecoder extends TenantLifecycleComponent implements IDev
     /** Path to script used for decoder */
     private String scriptPath;
 
-    public GroovyEventDecoder() {
-	super(LifecycleComponentType.DeviceEventDecoder);
+    public GroovyMessageMetadataExtractor() {
+	super(LifecycleComponentType.Other);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
-     * lang.Object, java.util.Map)
+     * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
+     * IMessageMetadataExtractor#extractMetadata(java.lang.Object,
+     * java.util.Map)
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+    public IMessageMetadata<byte[]> extractMetadata(byte[] payload, Map<String, String> eventSourceMetadata)
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();
-	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
+	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT,
+		    SiteWhere.getServer().getDeviceManagement(getTenant()));
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
-	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
+	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    LOGGER.debug("About to execute '" + getScriptPath() + "' with payload: " + payload);
-	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
+	    return (IMessageMetadata<byte[]>) getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
+	    throw new EventDecodeException("Unable to access Groovy metadata extractor script.", e);
 	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+	    throw new EventDecodeException("Unable to run Groovy metadata extractor script.", e);
 	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
+	    throw new EventDecodeException("Error compiling Groovy metadata extractor script.", e);
 	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
+	    throw new EventDecodeException("Unhandled exception in Groovy metadata extractor script.", e);
 	}
     }
 

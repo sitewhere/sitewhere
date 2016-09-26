@@ -10,12 +10,14 @@ package com.sitewhere.spi.device.communication;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+
 /**
  * Decodes inbound device event messages.
  * 
  * @author Derek
  */
-public interface IDeviceEventDecoder<T> {
+public interface IDeviceEventDecoder<T> extends ITenantLifecycleComponent {
 
     /**
      * Decodes a payload into one or more {@link IDecodedDeviceRequest} objects.

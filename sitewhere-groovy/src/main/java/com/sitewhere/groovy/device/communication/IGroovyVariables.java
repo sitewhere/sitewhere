@@ -14,6 +14,9 @@ package com.sitewhere.groovy.device.communication;
  */
 public interface IGroovyVariables {
 
+    /** Groovy variable used for device management implementaton */
+    public static final String VAR_DEVICE_MANAGEMENT = "deviceManagement";
+
     /** Groovy variable used for decoded events */
     public static final String VAR_DECODED_EVENTS = "events";
 

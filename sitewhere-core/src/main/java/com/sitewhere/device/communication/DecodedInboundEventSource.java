@@ -11,10 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link InboundEventSource} where event receivers return
@@ -34,7 +40,15 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
      * 
      * @author Derek
      */
-    public class NoOpDecoder implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
+    public static class NoOpDecoder extends TenantLifecycleComponent
+	    implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public NoOpDecoder() {
+	    super(LifecycleComponentType.DeviceEventDecoder);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -49,6 +63,35 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 	    results.add(payload);
 	    return results;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
 	}
     }
 }
