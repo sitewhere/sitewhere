@@ -56,6 +56,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	addElement(createJsonDeviceRequestDecoderElement());
 	addElement(createJsonBatchEventDecoderElement());
 	addElement(createGroovyEventDecoderElement());
+	addElement(createCompositeEventDecoderElement());
+	addElement(createCompositeEventDecoderChoicesElement());
+	addElement(createDeviceSpecificationDecoderChoiceElement());
+	addElement(createGroovyMetadataExtractorElement());
 
 	// String event decoders.
 	addElement(createGroovyStringEventDecoderElement());
@@ -594,6 +598,73 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 	builder.description(
 		"Decoder for event receivers with String payloads that simply echoes the payload to the log.");
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for composite event decoder.
+     * 
+     * @return
+     */
+    protected ElementNode createCompositeEventDecoderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Composite Event Decoder (Binary)",
+		EventSourcesParser.BinaryDecoders.CompositeDecoder.getLocalName(), "cogs",
+		ElementRole.EventSource_CompositeEventDecoder);
+
+	builder.description("Decoder that extracts device metadata from the binary payload, then delegates "
+		+ "further decoding to a list of sub-decoders, which may be invoked if criteria are met.");
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for composite event decoder.
+     * 
+     * @return
+     */
+    protected ElementNode createCompositeEventDecoderChoicesElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Composite Event Decoder Choices", "choices", "cogs",
+		ElementRole.CompositeEventDecoder_DecoderChoices);
+
+	builder.description("List of decoder choices avaliable for parsing the payload. The first choice to "
+		+ "match based on the given criteria is used to decode the payload.");
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for Groovy metadata extractor.
+     * 
+     * @return
+     */
+    protected ElementNode createDeviceSpecificationDecoderChoiceElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Match Device Specification",
+		EventSourcesParser.CompositeDecoderChoiceElements.DeviceSpecificationDecoderChoice.getLocalName(),
+		"cogs", ElementRole.CompositeEventDecoder_DecoderChoice);
+
+	builder.description("Composite event decoder choice that applies when the device specification from the "
+		+ " extracted metadata matches the specified value. This allows payload processing to be directly "
+		+ " based on the specification assigned in SiteWhere device management.");
+	builder.attribute(
+		(new AttributeNode.Builder("Specification token", "token", AttributeType.SpecificationReference)
+			.description("Specification token to match.").makeRequired().build()));
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for Groovy metadata extractor.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyMetadataExtractorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy Metadata Extractor (Binary)",
+		EventSourcesParser.CompositeDecoderMetadataExtractorElements.GroovyDeviceMetadataExtractor
+			.getLocalName(),
+		"cogs", ElementRole.CompositeEventDecoder_MetadataExtractor);
+
+	builder.description("Metadata extractor that uses a Groovy script to parse a binary payload and extract "
+		+ " information such as the unique hardware id and payload. This data will be forwarded to the list "
+		+ " of nested decoder choices for further processing.");
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
+		.description("Relative path to script used for extracting metadata.").makeRequired().build()));
 	return builder.build();
     }
 

@@ -33,9 +33,9 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
      * 
      * @param metadata
      * @return
-     * @throws EventDecodeException
+     * @throws SiteWhereException
      */
-    public abstract IDeviceContext<T> buildContext(IMessageMetadata<T> metadata) throws EventDecodeException;
+    public abstract IDeviceContext<T> buildContext(IMessageMetadata<T> metadata) throws SiteWhereException;
 
     /*
      * (non-Javadoc)
@@ -50,16 +50,26 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
 
 	// Parse metadata from payload.
 	IMessageMetadata<T> metadata = getMetadataExtractor().extractMetadata(payload, eventSourceMetadata);
-	IDeviceContext<T> context = buildContext(metadata);
+	getLogger().info("Extracted payload metadata: HardwareId: " + metadata.getHardwareId() + " Payload: "
+		+ metadata.getPayload().toString());
 
-	// Loop through choices and use first one that applies.
-	for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
+	try {
+	    IDeviceContext<T> context = buildContext(metadata);
+	    getLogger().info("Built context: Device: " + context.getDevice() + " Specification: "
+		    + context.getDeviceSpecification());
 
-	    if (choice.appliesTo(context)) {
-		return choice.getDeviceEventDecoder().decode(context.getPayload(), eventSourceMetadata);
+	    // Loop through choices and use first one that applies.
+	    for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
+
+		if (choice.appliesTo(context)) {
+		    return choice.getDeviceEventDecoder().decode(context.getPayload(), eventSourceMetadata);
+		}
 	    }
+	} catch (SiteWhereException e) {
+	    throw new EventDecodeException("Unable to build context from extracted metadata.", e);
 	}
 
+	// Handle case where no choices apply.
 	return new ArrayList<IDecodedDeviceRequest<?>>();
     }
 

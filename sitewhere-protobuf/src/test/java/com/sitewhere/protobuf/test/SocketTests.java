@@ -90,6 +90,27 @@ public class SocketTests {
     }
 
     @Test
+    public void doLoraTest() throws Exception {
+	Socket socket = new Socket("localhost", 8484);
+	String message = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+		+ "<DevEUI_uplink xmlns=\"http://uri.actility.com/lora\">"
+		+ "<Time>2016-05-31T20:20:05.186+02:00</Time><DevEUI>0018B20000000999</DevEUI>"
+		+ "<FPort>1</FPort><FCntUp>309</FCntUp><ADRbit>1</ADRbit><FCntDn>6</FCntDn>"
+		+ "<payload_hex>0264060a0000000000000000</payload_hex><mic_hex>220bd706</mic_hex>"
+		+ "<Lrcid>00000065</Lrcid><LrrRSSI>-24.000000</LrrRSSI><LrrSNR>10.000000</LrrSNR>"
+		+ "<SpFact>7</SpFact><SubBand>G1</SubBand><Channel>LC1</Channel><DevLrrCnt>1</DevLrrCnt>"
+		+ "<Lrrid>004a059a</Lrrid><Lrrs><Lrr><Lrrid>004a059a</Lrrid><LrrRSSI>-24.000000</LrrRSSI>"
+		+ "<LrrSNR>10.000000</LrrSNR></Lrr></Lrrs>"
+		+ "<CustomerID>999999999</CustomerID><CustomerData>{\"alr\":{\"pro\":\"LORA/genericA.1\",\"ver\":\"1\"}}</CustomerData>"
+		+ "<ModelCfg>0</ModelCfg></DevEUI_uplink>";
+	byte[] encoded = message.getBytes();
+	socket.getOutputStream().write(encoded);
+	socket.getOutputStream().flush();
+	socket.getOutputStream().close();
+	socket.close();
+    }
+
+    @Test
     public void doMqttTest() throws Exception {
 	MQTT mqtt = new MQTT();
 	try {

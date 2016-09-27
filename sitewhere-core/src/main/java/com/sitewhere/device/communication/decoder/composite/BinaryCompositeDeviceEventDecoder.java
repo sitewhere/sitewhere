@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.EventDecodeException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder;
 
 /**
@@ -36,22 +36,18 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
      * communication.ICompositeDeviceEventDecoder.IMessageMetadata)
      */
     @Override
-    public IDeviceContext<byte[]> buildContext(IMessageMetadata<byte[]> metadata) throws EventDecodeException {
+    public IDeviceContext<byte[]> buildContext(IMessageMetadata<byte[]> metadata) throws SiteWhereException {
 	BinaryDeviceContext context = new BinaryDeviceContext();
 
-	try {
-	    context.setDevice(SiteWhere.getServer().getDeviceManagement(getTenant())
-		    .getDeviceByHardwareId(metadata.getHardwareId()));
-	} catch (SiteWhereException e) {
-	    throw new EventDecodeException("Device not found for hardwareId: " + metadata.getHardwareId(), e);
+	IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(getTenant());
+	context.setDevice(devices.getDeviceByHardwareId(metadata.getHardwareId()));
+	if (context.getDevice() == null) {
+	    throw new SiteWhereException(
+		    "Unable to build device context. Device not found for hardware id: " + metadata.getHardwareId());
 	}
 
-	try {
-	    context.setDeviceSpecification(SiteWhere.getServer().getDeviceManagement(getTenant())
-		    .getDeviceSpecificationByToken(context.getDevice().getSpecificationToken()));
-	} catch (SiteWhereException e) {
-	    throw new EventDecodeException("Device specification not found: " + metadata.getHardwareId(), e);
-	}
+	context.setDeviceSpecification(
+		devices.getDeviceSpecificationByToken(context.getDevice().getSpecificationToken()));
 
 	context.setPayload(metadata.getPayload());
 	return context;

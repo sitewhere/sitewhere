@@ -108,8 +108,20 @@ public enum ElementRole {
     /** Event processing. */
     EventProcessing(null, false, false, false, new ElementRole[] { EventProcessing_InboundProcessingStrategy, InboundProcessingChain, EventProcessing_OutboundProcessingStrategy, OutboundProcessingChain }, new ElementRole[0], true),
 
+    /** Composite event decoder. Decoder choice. */
+    CompositeEventDecoder_DecoderChoice("Composite Event Decoder Choice", true, true, true, new ElementRole[] {}),
+
+    /** Composite event decoder. Decoder choices. */
+    CompositeEventDecoder_DecoderChoices("Composite Event Decoder Choices", false, false, false, new ElementRole[] { CompositeEventDecoder_DecoderChoice }, new ElementRole[0], true),
+
+    /** Composite event decoder. Metadata extractor. */
+    CompositeEventDecoder_MetadataExtractor("Metadata Extractor", false, false, false),
+
+    /** Event source. Composite event decoder. */
+    EventSource_CompositeEventDecoder("Composite Event Decoder", false, false, false, new ElementRole[] { CompositeEventDecoder_MetadataExtractor, CompositeEventDecoder_DecoderChoices }),
+
     /** Event source. Binary event decoder. */
-    EventSource_BinaryEventDecoder("Binary Event Decoder", false, false, false),
+    EventSource_BinaryEventDecoder("Binary Event Decoder", false, false, false, new ElementRole[0], new ElementRole[] { EventSource_CompositeEventDecoder }, false, new ElementRole[] { CompositeEventDecoder_DecoderChoice }),
 
     /** Event source. String event decoder. */
     EventSource_StringEventDecoder("String Event Decoder", false, false, false),
@@ -243,6 +255,11 @@ public enum ElementRole {
 
     private ElementRole(String name, boolean optional, boolean multiple, boolean reorderable, ElementRole[] children,
 	    ElementRole[] subtypes, boolean permanent) {
+	this(name, optional, multiple, reorderable, children, subtypes, permanent, null);
+    }
+
+    private ElementRole(String name, boolean optional, boolean multiple, boolean reorderable, ElementRole[] children,
+	    ElementRole[] subtypes, boolean permanent, ElementRole[] childReferences) {
 	this.name = name;
 	this.optional = optional;
 	this.multiple = multiple;
@@ -250,6 +267,19 @@ public enum ElementRole {
 	this.children = children;
 	this.subtypes = subtypes;
 	this.permanent = permanent;
+
+	if (childReferences != null) {
+	    for (ElementRole childReference : childReferences) {
+		ElementRole[] before = childReference.getChildren();
+		if (before == null) {
+		    before = new ElementRole[0];
+		}
+		ElementRole[] after = new ElementRole[before.length + 1];
+		System.arraycopy(before, 0, after, 0, before.length);
+		after[before.length] = this;
+		childReference.setChildren(after);
+	    }
+	}
     }
 
     public String getName() {
