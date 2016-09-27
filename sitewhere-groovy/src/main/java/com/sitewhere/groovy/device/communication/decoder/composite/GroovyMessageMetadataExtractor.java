@@ -51,7 +51,7 @@ public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
      */
     @Override
     @SuppressWarnings("unchecked")
-    public IMessageMetadata<byte[]> extractMetadata(byte[] payload, Map<String, String> eventSourceMetadata)
+    public IMessageMetadata<byte[]> extractMetadata(byte[] payload, Map<String, Object> eventSourceMetadata)
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();

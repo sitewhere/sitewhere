@@ -56,7 +56,7 @@ public class GroovyStringEventDecoder extends TenantLifecycleComponent implement
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
+    public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();

@@ -116,7 +116,7 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
 	 * @return
 	 * @throws EventDecodeException
 	 */
-	public IMessageMetadata<T> extractMetadata(T payload, Map<String, String> eventSourceMetadata)
+	public IMessageMetadata<T> extractMetadata(T payload, Map<String, Object> eventSourceMetadata)
 		throws EventDecodeException;
     }
 }

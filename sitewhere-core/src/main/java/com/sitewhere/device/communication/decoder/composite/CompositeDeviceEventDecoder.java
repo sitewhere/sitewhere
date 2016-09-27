@@ -1,6 +1,7 @@
 package com.sitewhere.device.communication.decoder.composite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
+import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -45,7 +47,7 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
      * lang.Object, java.util.Map)
      */
     @Override
-    public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, String> eventSourceMetadata)
+    public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, Object> eventSourceMetadata)
 	    throws EventDecodeException {
 
 	// Parse metadata from payload.
@@ -55,18 +57,28 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
 
 	try {
 	    IDeviceContext<T> context = buildContext(metadata);
-	    getLogger().info("Built context: Device: " + context.getDevice() + " Specification: "
+	    getLogger().debug("Built context: Device: " + context.getDevice() + " Specification: "
 		    + context.getDeviceSpecification());
+
+	    // Add context metadata to event source metadata.
+	    Map<String, Object> combined = new HashMap<String, Object>();
+	    if (eventSourceMetadata != null) {
+		combined.putAll(eventSourceMetadata);
+	    }
+	    combined.put(IDeviceEventDecoder.META_DEVICE, context.getDevice());
+	    combined.put(IDeviceEventDecoder.META_DEVICE_SPECIFICATION, context.getDeviceSpecification());
 
 	    // Loop through choices and use first one that applies.
 	    for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
 
 		if (choice.appliesTo(context)) {
-		    return choice.getDeviceEventDecoder().decode(context.getPayload(), eventSourceMetadata);
+		    return choice.getDeviceEventDecoder().decode(context.getPayload(), combined);
 		}
 	    }
 	} catch (SiteWhereException e) {
-	    throw new EventDecodeException("Unable to build context from extracted metadata.", e);
+	    throw new EventDecodeException("Exception in composite decoder.", e);
+	} catch (Throwable t) {
+	    throw new EventDecodeException("Unhandled exception in composite decoder.", t);
 	}
 
 	// Handle case where no choices apply.

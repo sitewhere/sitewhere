@@ -118,7 +118,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) throws EventDecodeException {
 	getEventSource().onEncodedEventReceived(this, payload, metadata);
     }
 

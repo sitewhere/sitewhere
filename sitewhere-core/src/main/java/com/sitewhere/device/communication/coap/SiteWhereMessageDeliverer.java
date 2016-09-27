@@ -92,7 +92,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	if (paths.size() == 0) {
 	    switch (exchange.getRequest().getCode()) {
 	    case POST: {
-		Map<String, String> metadata = new HashMap<String, String>();
+		Map<String, Object> metadata = new HashMap<String, Object>();
 		metadata.put(META_EVENT_TYPE, Type.RegisterDevice.name());
 		try {
 		    EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
@@ -151,7 +151,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
      * @param exchange
      */
     protected void handleDeviceMeasurements(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
-	Map<String, String> metadata = new HashMap<String, String>();
+	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceMeasurements.name());
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
@@ -181,7 +181,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
      * @param exchange
      */
     protected void handleDeviceAlerts(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
-	Map<String, String> metadata = new HashMap<String, String>();
+	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceAlert.name());
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
@@ -211,7 +211,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
      * @param exchange
      */
     protected void handleDeviceLocations(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
-	Map<String, String> metadata = new HashMap<String, String>();
+	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceLocation.name());
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {

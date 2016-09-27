@@ -138,7 +138,7 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     @Override
     @SuppressWarnings("unchecked")
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload,
-	    Map<String, String> metadata) throws EventDecodeException {
+	    Map<String, Object> metadata) throws EventDecodeException {
 	LOGGER.debug("Device event receiver thread picked up event.");
 	List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
 	try {
@@ -195,7 +195,7 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
      * @return
      * @throws EventDecodeException
      */
-    protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload, Map<String, String> metadata)
+    protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	return getDeviceEventDecoder().decode(encodedPayload, metadata);
     }

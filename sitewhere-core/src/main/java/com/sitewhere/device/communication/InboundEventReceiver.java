@@ -84,7 +84,7 @@ public class InboundEventReceiver<T> extends TenantLifecycleComponent implements
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) throws EventDecodeException {
 	getEventSource().onEncodedEventReceived(InboundEventReceiver.this, payload, metadata);
     }
 

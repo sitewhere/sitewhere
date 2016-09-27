@@ -645,7 +645,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		+ " based on the specification assigned in SiteWhere device management.");
 	builder.attribute(
 		(new AttributeNode.Builder("Specification token", "token", AttributeType.SpecificationReference)
-			.description("Specification token to match.").makeRequired().build()));
+			.description("Specification token to match.").makeIndex().makeRequired().build()));
 	return builder.build();
     }
 

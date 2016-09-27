@@ -33,7 +33,7 @@ public interface IInboundEventReceiver<T> extends ITenantLifecycleComponent {
      * @param metadata
      * @throws SiteWhereException
      */
-    public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException;
+    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) throws EventDecodeException;
 
     /**
      * Set the parent event source that will process events.

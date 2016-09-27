@@ -44,7 +44,7 @@ public class EchoStringDecoder extends TenantLifecycleComponent implements IDevi
      * lang.Object, java.util.Map)
      */
     @Override
-    public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
+    public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	LOGGER.info("Payload: " + payload);
 	return new ArrayList<IDecodedDeviceRequest<?>>();

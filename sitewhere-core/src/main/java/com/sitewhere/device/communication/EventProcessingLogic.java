@@ -35,7 +35,7 @@ public class EventProcessingLogic {
      * @param metadata
      */
     public static <T> void processRawPayload(IInboundEventReceiver<T> receiver, T payload,
-	    Map<String, String> metadata) {
+	    Map<String, Object> metadata) {
 	try {
 	    receiver.onEventPayloadReceived(payload, metadata);
 	} catch (EventDecodeException e) {
@@ -54,7 +54,7 @@ public class EventProcessingLogic {
      * @throws EventDecodeException
      */
     public static <T> void processRawPayloadWithExceptionHandling(IInboundEventReceiver<T> receiver, T payload,
-	    Map<String, String> metadata) throws EventDecodeException {
+	    Map<String, Object> metadata) throws EventDecodeException {
 	receiver.onEventPayloadReceived(payload, metadata);
     }
 }

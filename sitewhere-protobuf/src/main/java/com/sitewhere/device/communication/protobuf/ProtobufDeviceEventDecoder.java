@@ -78,7 +78,7 @@ public class ProtobufDeviceEventDecoder extends TenantLifecycleComponent impleme
      * lang.Object, java.util.Map)
      */
     @Override
-    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> payloadMetadata)
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, Object> payloadMetadata)
 	    throws EventDecodeException {
 	try {
 	    ByteArrayInputStream stream = new ByteArrayInputStream(payload);

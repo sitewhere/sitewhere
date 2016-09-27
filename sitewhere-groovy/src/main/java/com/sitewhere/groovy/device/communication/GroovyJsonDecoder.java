@@ -57,7 +57,7 @@ public class GroovyJsonDecoder extends TenantLifecycleComponent implements IDevi
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<IDecodedDeviceRequest<?>> decode(JsonNode payload, Map<String, String> metadata)
+    public List<IDecodedDeviceRequest<?>> decode(JsonNode payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();

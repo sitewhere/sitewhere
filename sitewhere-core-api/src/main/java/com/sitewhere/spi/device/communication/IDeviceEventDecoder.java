@@ -19,6 +19,12 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IDeviceEventDecoder<T> extends ITenantLifecycleComponent {
 
+    /** Metadata field used to pass device into nested decoders */
+    public static final String META_DEVICE = "com.sitewhere.spi.device.communication.IDeviceEventDecoder:device";
+
+    /** Metadata field used to pass device into nested decoders */
+    public static final String META_DEVICE_SPECIFICATION = "com.sitewhere.spi.device.communication.IDeviceEventDecoder:deviceSpecification";
+
     /**
      * Decodes a payload into one or more {@link IDecodedDeviceRequest} objects.
      * 
@@ -30,5 +36,5 @@ public interface IDeviceEventDecoder<T> extends ITenantLifecycleComponent {
      * @throws EventDecodeException
      *             if the payload can not be decoded
      */
-    public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, String> metadata) throws EventDecodeException;
+    public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, Object> metadata) throws EventDecodeException;
 }

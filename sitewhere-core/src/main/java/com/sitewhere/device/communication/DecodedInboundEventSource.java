@@ -58,7 +58,7 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 	 * java.lang. Object, java.util.Map)
 	 */
 	@Override
-	public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload, Map<String, String> metadata)
+	public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload, Map<String, Object> metadata)
 		throws EventDecodeException {
 	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 	    results.add(payload);

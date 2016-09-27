@@ -60,7 +60,7 @@ public class JsonBatchEventDecoder extends TenantLifecycleComponent implements I
      * lang.Object, java.util.Map)
      */
     @Override
-    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	try {
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();

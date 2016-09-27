@@ -128,7 +128,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) throws EventDecodeException {
 	getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
     }
 
