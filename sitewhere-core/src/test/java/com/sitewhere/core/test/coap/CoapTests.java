@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
@@ -134,6 +135,34 @@ public class CoapTests {
     public void testAddDeviceLocationSimple() {
 	CoapClient client = createClientFor("devices/111-COAP-TEST-555/locations");
 	String payload = "lat=33.7490,lon=-84.3880,ele=0.0";
+	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
+    }
+
+    @Test
+    public void testAddAcknowledgement() {
+	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
+	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
+	ack.setOriginatingEventId("1234567890");
+	ack.setResponse("Arbitrary string containing response content.");
+	ack.setMetadata(new HashMap<String, String>());
+	ack.getMetadata().put("meta1", "value");
+	try {
+	    CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
+	    System.out.println(response.getCode());
+	    System.out.println(response.getOptions());
+	    System.out.println(response.getResponseText());
+	} catch (SiteWhereException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testAddAcknowledgementSimple() {
+	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
+	String payload = "orig=1234567890,response=Arbitrary string containing response content.,m:meta1=value";
 	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
 	System.out.println(response.getCode());
 	System.out.println(response.getOptions());

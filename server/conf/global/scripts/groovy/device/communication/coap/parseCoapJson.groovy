@@ -44,3 +44,13 @@ else if (DeviceRequest.Type.DeviceLocation.name().equals(type)) {
 	events.add(request)
 	logger.info("Added device location request for ${hwid}.")
 }
+
+// Parse device acknowledge message.
+else if (DeviceRequest.Type.Acknowledge.name().equals(type)) {
+	def ack = MarshalUtils.unmarshalJson(payload, DeviceCommandResponseCreateRequest.class)
+	DecodedDeviceRequest<DeviceCommandResponseCreateRequest> request = new DecodedDeviceRequest<DeviceCommandResponseCreateRequest>()
+	request.setHardwareId(hwid)
+	request.setRequest(ack)
+	events.add(request)
+	logger.info("Added device acknowledge request for ${hwid}.")
+}
