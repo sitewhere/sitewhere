@@ -406,6 +406,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      */
     @Override
     public IResource getGlobalResource(String path) throws SiteWhereException {
+	LOGGER.debug("Attempting to load resource from: " + path);
 	return getGlobalResourceMap().get(path);
     }
 

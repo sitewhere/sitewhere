@@ -85,7 +85,10 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
      * Reloads list of person assets from the filesystem.
      */
     protected void reload() throws SiteWhereException {
-	IResource configResource = SiteWhere.getServer().getConfigurationResolver().getAssetResource(getFilename());
+	IResource configResource = SiteWhere.getServer().getConfigurationResolver().getResourceForPath(getFilename());
+	if (configResource == null) {
+	    throw new SiteWhereException("Resource missing for file system asset module: " + getFilename());
+	}
 	LOGGER.info("Loading assets from: " + getFilename());
 
 	// Unmarshal assets from XML file and store in data object.
