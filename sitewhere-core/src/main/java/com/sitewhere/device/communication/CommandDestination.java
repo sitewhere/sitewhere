@@ -63,8 +63,12 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
     public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignment);
-	P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, execution);
-	getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
+	if (encoded != null) {
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, execution);
+	    getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
+	} else {
+	    LOGGER.info("Skipping command delivery. Encoder returned null.");
+	}
     }
 
     /*
@@ -79,8 +83,12 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
     public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignment);
-	P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
-	getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
+	if (encoded != null) {
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
+	    getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
+	} else {
+	    LOGGER.info("Skipping system command delivery. Encoder returned null.");
+	}
     }
 
     /*
