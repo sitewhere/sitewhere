@@ -743,7 +743,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Stop management implementations.
 	stopManagementImplementations();
 
-	// Start all lifecycle components.
+	// Stop all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 	    component.lifecycleStop();
 	}
