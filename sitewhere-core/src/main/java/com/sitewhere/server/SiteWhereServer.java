@@ -7,6 +7,7 @@
  */
 package com.sitewhere.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -592,6 +593,30 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	SitewhereUserDetails details = new SitewhereUserDetails(fake, new ArrayList<IGrantedAuthority>());
 	SitewhereAuthentication auth = new SitewhereAuthentication(details, null);
 	return auth;
+    }
+
+    /**
+     * Access folder pointed to by SiteWhere home environment variable.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public static File getSiteWhereHomeFolder() throws SiteWhereException {
+	String sitewhere = System.getProperty(ISiteWhereServer.ENV_SITEWHERE_HOME);
+	if (sitewhere == null) {
+	    // Support fallback environment variable name.
+	    sitewhere = System.getProperty("SITEWHERE_HOME");
+	    if (sitewhere == null) {
+		throw new SiteWhereException(
+			"SiteWhere home environment variable (" + ISiteWhereServer.ENV_SITEWHERE_HOME + ") not set.");
+	    }
+	}
+	File swFolder = new File(sitewhere);
+	if (!swFolder.exists()) {
+	    throw new SiteWhereException(
+		    "SiteWhere home folder does not exist. Looking in: " + swFolder.getAbsolutePath());
+	}
+	return swFolder;
     }
 
     /*

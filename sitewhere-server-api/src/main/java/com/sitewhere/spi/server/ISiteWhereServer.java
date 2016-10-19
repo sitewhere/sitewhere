@@ -41,6 +41,9 @@ import com.sitewhere.spi.user.IUserManagement;
  */
 public interface ISiteWhereServer extends ILifecycleComponent {
 
+    /** SiteWhere home environment variable name */
+    public static final String ENV_SITEWHERE_HOME = "sitewhere.home";
+
     /**
      * Get version information.
      * 

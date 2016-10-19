@@ -2,6 +2,7 @@ package com.sitewhere.server.resource;
 
 import java.io.File;
 
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -11,9 +12,6 @@ import com.sitewhere.spi.SiteWhereException;
  * @author Derek
  */
 public class SiteWhereHomeResourceManager extends FileSystemResourceManager {
-
-    /** SiteWhere home directory */
-    public static final String SITEWHERE_HOME = "sitewhere.home";
 
     /*
      * (non-Javadoc)
@@ -34,19 +32,7 @@ public class SiteWhereHomeResourceManager extends FileSystemResourceManager {
      * @throws SiteWhereException
      */
     public static File calculateConfigurationPath() throws SiteWhereException {
-	String sitewhere = System.getProperty(SITEWHERE_HOME);
-	if (sitewhere == null) {
-	    // Support fallback environment variable name.
-	    sitewhere = System.getProperty("SITEWHERE_HOME");
-	    if (sitewhere == null) {
-		throw new SiteWhereException("SiteWhere home environment variable (" + SITEWHERE_HOME + ") not set.");
-	    }
-	}
-	File swFolder = new File(sitewhere);
-	if (!swFolder.exists()) {
-	    throw new SiteWhereException(
-		    "SiteWhere home folder does not exist. Looking in: " + swFolder.getAbsolutePath());
-	}
+	File swFolder = SiteWhereServer.getSiteWhereHomeFolder();
 	File confDir = new File(swFolder, "conf");
 	if (!confDir.exists()) {
 	    throw new SiteWhereException(
