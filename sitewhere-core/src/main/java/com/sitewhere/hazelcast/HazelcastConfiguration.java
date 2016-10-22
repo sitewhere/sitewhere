@@ -18,8 +18,6 @@ import com.hazelcast.config.SerializationConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.LifecycleEvent;
-import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.util.ServiceLoader;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -33,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HazelcastConfiguration extends LifecycleComponent implements IHazelcastConfiguration, LifecycleListener {
+public class HazelcastConfiguration extends LifecycleComponent implements IHazelcastConfiguration {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -68,11 +66,10 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
 	try {
 	    Config config = new XmlConfigBuilder(new ByteArrayInputStream(baseConfiguration.getContent())).build();
 	    config.setInstanceName(getGroupName());
-	    configureManagementCenter(config);
-	    performGroupOverrides(config);
-	    performSerializationOverrides(config);
-	    config.setProperty("hazelcast.logging.type", "log4j2");
-	    config.setProperty("hazelcast.rest.enabled", "true");
+	    HazelcastConfiguration.configureManagementCenter(config);
+	    HazelcastConfiguration.performGroupOverrides(config, getGroupName(), getGroupPassword());
+	    HazelcastConfiguration.performSerializationOverrides(config);
+	    HazelcastConfiguration.performPropertyOverrides(config);
 
 	    ClassLoader loader = Thread.currentThread().getContextClassLoader();
 	    try {
@@ -82,7 +79,6 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
 		Thread.currentThread().setContextClassLoader(loader);
 	    }
 
-	    instance.getLifecycleService().addLifecycleListener(this);
 	    LOGGER.info("Hazelcast instance '" + config.getInstanceName() + "' started.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to create Hazelcast instance.", e);
@@ -116,29 +112,35 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
      * 
      * @param config
      */
-    protected void configureManagementCenter(Config config) {
+    public static void configureManagementCenter(Config config) {
 	config.getManagementCenterConfig().setEnabled(true).setUrl("http://localhost:8787/mancenter");
     }
 
     /**
-     * If group name or password is specified, override settings from the
-     * configuration file.
+     * Set up group name and password.
      * 
      * @param config
+     * @param groupName
+     * @param groupPassword
      */
-    protected void performGroupOverrides(Config config) {
+    public static void performGroupOverrides(Config config, String groupName, String groupPassword) {
 	GroupConfig group = config.getGroupConfig();
 	if (group == null) {
 	    group = new GroupConfig();
 	    config.setGroupConfig(group);
 	}
-	LOGGER.info("Hazelcast group/cluster name is '" + getGroupName() + "'.");
-	group.setName(getGroupName());
-	LOGGER.info("Hazelcast group/cluster password is '" + getGroupPassword() + "'.");
-	group.setPassword(getGroupPassword());
+	LOGGER.info("Hazelcast group/cluster name is '" + groupName + "'.");
+	group.setName(groupName);
+	LOGGER.info("Hazelcast group/cluster password is '" + groupPassword + "'.");
+	group.setPassword(groupPassword);
     }
 
-    protected void performSerializationOverrides(Config config) {
+    /**
+     * Set up serialization configuration.
+     * 
+     * @param config
+     */
+    public static void performSerializationOverrides(Config config) {
 	SerializationConfig serial = config.getSerializationConfig();
 	if (serial == null) {
 	    serial = new SerializationConfig();
@@ -147,16 +149,14 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
 	config.setSerializationConfig(null);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Override properties.
      * 
-     * @see
-     * com.hazelcast.core.LifecycleListener#stateChanged(com.hazelcast.core.
-     * LifecycleEvent )
+     * @param config
      */
-    @Override
-    public void stateChanged(LifecycleEvent event) {
-	LOGGER.info("Hazelcast lifecycle changed to: " + event.getState().name());
+    public static void performPropertyOverrides(Config config) {
+	config.setProperty("hazelcast.logging.type", "log4j2");
+	config.setProperty("hazelcast.rest.enabled", "true");
     }
 
     /*
