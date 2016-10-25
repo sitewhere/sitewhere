@@ -38,6 +38,9 @@
     "Alert":"Alert",
     "Alerts":"$t(public.Alert)s",
     "DeviceAlerts":"$t(public.Device) $t(public.Alerts)",
+	"Response":"Response",
+	"Responses":"$t(public.Response)s",
+	"CommandResponses":"$t(public.Command) $t(public.Responses)",
     "Date":"Date",
     "EventDate":"Event $t(public.Date)",
     "CreatedDate":"$t(public.Created) $t(public.Date)",
@@ -367,6 +370,7 @@
           "title":"$t(public.ViewAssignment)",
           "EmulateAssignment":"Emulate $t(public.Assignment)",
           "DeviceCommandInvocations":"$t(public.Device) $t(public.Command) $t(public.Invocation)s",
+          "DeviceCommandResponses":"$t(public.Device) $t(public.CommandResponses)",
           "InvokeCommand":"$t(public.Invoke) $t(public.Command)",
           "Target":"Target"
        },
