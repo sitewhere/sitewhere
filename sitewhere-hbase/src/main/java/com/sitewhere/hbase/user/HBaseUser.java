@@ -253,7 +253,7 @@ public class HBaseUser {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_UNAUTHORIZED);
 	}
-	String inPassword = SiteWherePersistence.encodePassoword(password);
+	String inPassword = SiteWherePersistence.encodePassword(password);
 	if (!existing.getHashedPassword().equals(inPassword)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_UNAUTHORIZED);

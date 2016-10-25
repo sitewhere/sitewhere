@@ -1837,7 +1837,7 @@ public class SiteWherePersistence {
      * @param plaintext
      * @return
      */
-    public static String encodePassoword(String plaintext) {
+    public static String encodePassword(String plaintext) {
 	return passwordEncoder.encodePassword(plaintext, null);
     }
 }
