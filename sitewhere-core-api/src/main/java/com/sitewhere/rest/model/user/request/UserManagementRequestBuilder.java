@@ -50,7 +50,7 @@ public class UserManagementRequestBuilder {
      * @throws SiteWhereException
      */
     public IUser persist(UserCreateRequest.Builder builder) throws SiteWhereException {
-	return getUserManagement().createUser(builder.build());
+	return getUserManagement().createUser(builder.build(), true);
     }
 
     /**

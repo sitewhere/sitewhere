@@ -105,15 +105,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-     * request .IUserCreateRequest)
+     * request.IUserCreateRequest, boolean)
      */
-    public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
+    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
 	IUser existing = getUserByUsername(request.getUsername());
 	if (existing != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_CONFLICT);
 	}
-	User user = SiteWherePersistence.userCreateLogic(request);
+	User user = SiteWherePersistence.userCreateLogic(request, encodePassword);
 
 	DBCollection users = getMongoClient().getUsersCollection();
 	DBObject created = MongoUser.toDBObject(user);
@@ -182,14 +182,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
-     * com.sitewhere.spi.user.request.IUserCreateRequest)
+     * com.sitewhere.spi.user.request.IUserCreateRequest, boolean)
      */
-    public IUser updateUser(String username, IUserCreateRequest request) throws SiteWhereException {
+    public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
+	    throws SiteWhereException {
 	DBObject existing = assertUser(username);
 
 	// Copy any non-null fields.
 	User updatedUser = MongoUser.fromDBObject(existing);
-	SiteWherePersistence.userUpdateLogic(request, updatedUser);
+	SiteWherePersistence.userUpdateLogic(request, updatedUser, encodePassword);
 
 	DBObject updated = MongoUser.toDBObject(updatedUser);
 

@@ -95,7 +95,7 @@ public class UsersController extends RestController {
 	    if (input.getStatus() == null) {
 		input.setStatus(AccountStatus.Active);
 	    }
-	    IUser user = getUserManagement().createUser(input);
+	    IUser user = getUserManagement().createUser(input, true);
 	    return User.copy(user);
 	} finally {
 	    Tracer.stop(LOGGER);
@@ -120,7 +120,7 @@ public class UsersController extends RestController {
 	    @RequestBody UserCreateRequest input) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
 	try {
-	    IUser user = getUserManagement().updateUser(username, input);
+	    IUser user = getUserManagement().updateUser(username, input, true);
 	    return User.copy(user);
 	} finally {
 	    Tracer.stop(LOGGER);

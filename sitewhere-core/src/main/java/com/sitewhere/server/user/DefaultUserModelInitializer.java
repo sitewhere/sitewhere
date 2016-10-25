@@ -100,7 +100,7 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	ureq.setAuthorities(grantedAuthIds);
 	ureq.setStatus(AccountStatus.Active);
 
-	getUserManagement().createUser(ureq);
+	getUserManagement().createUser(ureq, true);
 	LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 
 	// Non-admin user will not be able to admin users or tenants.
@@ -116,7 +116,7 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	nonadmin.setAuthorities(grantedAuthIds);
 	nonadmin.setStatus(AccountStatus.Active);
 
-	getUserManagement().createUser(nonadmin);
+	getUserManagement().createUser(nonadmin, true);
 	LOGGER.info(PREFIX_CREATE_USER + " " + nonadmin.getUsername());
     }
 

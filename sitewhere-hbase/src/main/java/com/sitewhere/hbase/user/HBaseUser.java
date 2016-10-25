@@ -49,14 +49,16 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class HBaseUser {
 
     /**
-     * Create a new device.
+     * Create a new user.
      * 
      * @param context
      * @param request
+     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public static User createUser(IHBaseContext context, IUserCreateRequest request) throws SiteWhereException {
+    public static User createUser(IHBaseContext context, IUserCreateRequest request, boolean encodePassword)
+	    throws SiteWhereException {
 	User existing = getUserByUsername(context, request.getUsername());
 	if (existing != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
@@ -64,7 +66,7 @@ public class HBaseUser {
 	}
 
 	// Create the new user and store it.
-	User user = SiteWherePersistence.userCreateLogic(request);
+	User user = SiteWherePersistence.userCreateLogic(request, encodePassword);
 	byte[] primary = getUserRowKey(request.getUsername());
 	byte[] payload = context.getPayloadMarshaler().encodeUser(user);
 
@@ -126,16 +128,17 @@ public class HBaseUser {
      * @param context
      * @param username
      * @param request
+     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public static User updateUser(IHBaseContext context, String username, IUserCreateRequest request)
-	    throws SiteWhereException {
+    public static User updateUser(IHBaseContext context, String username, IUserCreateRequest request,
+	    boolean encodePassword) throws SiteWhereException {
 	User updated = getUserByUsername(context, username);
 	if (updated == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 	}
-	SiteWherePersistence.userUpdateLogic(request, updated);
+	SiteWherePersistence.userUpdateLogic(request, updated, encodePassword);
 
 	byte[] primary = getUserRowKey(username);
 	byte[] payload = context.getPayloadMarshaler().encodeUser(updated);

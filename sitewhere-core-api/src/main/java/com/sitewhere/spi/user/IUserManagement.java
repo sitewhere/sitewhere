@@ -25,10 +25,11 @@ public interface IUserManagement extends ILifecycleComponent {
      * Create a new user based on the given input.
      * 
      * @param request
+     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public IUser createUser(IUserCreateRequest request) throws SiteWhereException;
+    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException;
 
     /**
      * Imports a user (including encrypted password) from an external system.
@@ -55,10 +56,12 @@ public interface IUserManagement extends ILifecycleComponent {
      * 
      * @param username
      * @param request
+     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public IUser updateUser(String username, IUserCreateRequest request) throws SiteWhereException;
+    public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
+	    throws SiteWhereException;
 
     /**
      * Get a user given unique username.

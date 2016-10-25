@@ -1196,13 +1196,17 @@ public class SiteWherePersistence {
      * Common logic for creating a user based on an incoming request.
      * 
      * @param source
+     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public static User userCreateLogic(IUserCreateRequest source) throws SiteWhereException {
+    public static User userCreateLogic(IUserCreateRequest source, boolean encodePassword) throws SiteWhereException {
+	String password = (encodePassword) ? passwordEncoder.encodePassword(source.getPassword(), null)
+		: source.getPassword();
+
 	User user = new User();
 	user.setUsername(source.getUsername());
-	user.setHashedPassword(passwordEncoder.encodePassword(source.getPassword(), null));
+	user.setHashedPassword(password);
 	user.setFirstName(source.getFirstName());
 	user.setLastName(source.getLastName());
 	user.setLastLogin(null);
@@ -1220,14 +1224,18 @@ public class SiteWherePersistence {
      * 
      * @param source
      * @param target
+     * @param encodePassword
      * @throws SiteWhereException
      */
-    public static void userUpdateLogic(IUserCreateRequest source, User target) throws SiteWhereException {
+    public static void userUpdateLogic(IUserCreateRequest source, User target, boolean encodePassword)
+	    throws SiteWhereException {
 	if (source.getUsername() != null) {
 	    target.setUsername(source.getUsername());
 	}
 	if (source.getPassword() != null) {
-	    target.setHashedPassword(passwordEncoder.encodePassword(source.getPassword(), null));
+	    String password = (encodePassword) ? passwordEncoder.encodePassword(source.getPassword(), null)
+		    : source.getPassword();
+	    target.setHashedPassword(password);
 	}
 	if (source.getFirstName() != null) {
 	    target.setFirstName(source.getFirstName());
