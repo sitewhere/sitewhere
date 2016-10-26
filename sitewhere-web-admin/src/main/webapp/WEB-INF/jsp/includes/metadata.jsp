@@ -73,12 +73,14 @@
 		</td>
 	</tr>
 </script>
-<div class="sw-sublist-header">
-	<div style="width: 205px;" data-i18n="public.Name"></div>
-	<div style="width: 145px" data-i18n="public.Value"></div>
+<div style="max-height: 300px; overflow-y: auto;">
+	<div class="sw-sublist-header">
+		<div style="width: 205px;" data-i18n="public.Name"></div>
+		<div style="width: 145px" data-i18n="public.Value"></div>
+	</div>
+	<table id="sw-metadata-<%=request.getParameter("uid")%>" class="sw-sublist-list">
+	</table>
 </div>
-<table id="sw-metadata-<%=request.getParameter("uid")%>" class="sw-sublist-list">
-</table>
 
 <%
 	if (request.getParameter("mdReadOnly") == null) {
