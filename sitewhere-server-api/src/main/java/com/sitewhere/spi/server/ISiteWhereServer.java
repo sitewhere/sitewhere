@@ -28,6 +28,7 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
@@ -84,9 +85,10 @@ public interface ISiteWhereServer extends ILifecycleComponent {
     /**
      * Initialize the server.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    public void initialize() throws SiteWhereException;
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Returns exception if one was thrown on startup.

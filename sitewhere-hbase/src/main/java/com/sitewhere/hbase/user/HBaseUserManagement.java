@@ -21,6 +21,7 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -59,10 +60,12 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	ensureTablesExist();
 
 	// Create context from configured options.
@@ -84,15 +87,6 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /**

@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -50,60 +51,65 @@ public class EventProcessing extends TenantLifecycleComponent implements IEventP
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 
 	// Enable outbound processor chain.
 	if (getOutboundEventProcessorChain() != null) {
-	    startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.", true);
+	    startNestedComponent(getOutboundEventProcessorChain(), monitor, "Outbound processor chain startup failed.",
+		    true);
 	    getOutboundEventProcessorChain().setProcessingEnabled(true);
 	}
 
 	// Enable inbound processor chain.
 	if (getInboundEventProcessorChain() != null) {
-	    startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.", true);
+	    startNestedComponent(getInboundEventProcessorChain(), monitor, "Inbound processor chain startup failed.",
+		    true);
 	}
 
 	// Start outbound processing strategy.
 	if (getOutboundProcessingStrategy() == null) {
 	    throw new SiteWhereException("No outbound processing strategy configured for communication subsystem.");
 	}
-	startNestedComponent(getOutboundProcessingStrategy(), true);
+	startNestedComponent(getOutboundProcessingStrategy(), monitor, true);
 
 	// Start inbound processing strategy.
 	if (getInboundProcessingStrategy() == null) {
 	    throw new SiteWhereException("No inbound processing strategy configured for communication subsystem.");
 	}
-	startNestedComponent(getInboundProcessingStrategy(), true);
+	startNestedComponent(getInboundProcessingStrategy(), monitor, true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 
 	// Stop inbound processing strategy.
 	if (getInboundProcessingStrategy() != null) {
-	    getInboundProcessingStrategy().lifecycleStop();
+	    getInboundProcessingStrategy().lifecycleStop(monitor);
 	}
 
 	// Stop outbound processing strategy.
 	if (getOutboundProcessingStrategy() != null) {
-	    getOutboundProcessingStrategy().lifecycleStop();
+	    getOutboundProcessingStrategy().lifecycleStop(monitor);
 	}
 
 	if (getInboundEventProcessorChain() != null) {
-	    getInboundEventProcessorChain().lifecycleStop();
+	    getInboundEventProcessorChain().lifecycleStop(monitor);
 	}
 
 	if (getOutboundEventProcessorChain() != null) {
 	    getOutboundEventProcessorChain().setProcessingEnabled(false);
-	    getOutboundEventProcessorChain().lifecycleStop();
+	    getOutboundEventProcessorChain().lifecycleStop(monitor);
 	}
     }
 

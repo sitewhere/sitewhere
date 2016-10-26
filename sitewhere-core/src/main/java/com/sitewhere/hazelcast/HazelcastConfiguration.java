@@ -23,6 +23,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -59,10 +60,12 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    Config config = new XmlConfigBuilder(new ByteArrayInputStream(baseConfiguration.getContent())).build();
 	    config.setInstanceName(getGroupName());
@@ -88,10 +91,12 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (instance != null) {
 	    instance.shutdown();
 	}

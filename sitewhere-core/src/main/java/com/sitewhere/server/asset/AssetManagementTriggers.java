@@ -8,6 +8,7 @@
 package com.sitewhere.server.asset;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -21,6 +22,7 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -44,7 +46,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	IAssetCategory created = super.createAssetCategory(request);
-	refreshAll();
+	refreshAll(new LifecycleProgressMonitor());
 	return created;
     }
 
@@ -60,7 +62,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
 	IAssetCategory updated = super.updateAssetCategory(categoryId, request);
-	refreshAll();
+	refreshAll(new LifecycleProgressMonitor());
 	return updated;
     }
 
@@ -74,7 +76,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	IAssetCategory deleted = super.deleteAssetCategory(categoryId);
-	refreshAll();
+	refreshAll(new LifecycleProgressMonitor());
 	return deleted;
     }
 
@@ -191,12 +193,13 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /**
      * Refresh all datastore modules.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void refreshAll() throws SiteWhereException {
+    protected void refreshAll(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
 	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    manager.refreshDatastoreModules();
+	    manager.refreshDatastoreModules(monitor);
 	}
     }
 

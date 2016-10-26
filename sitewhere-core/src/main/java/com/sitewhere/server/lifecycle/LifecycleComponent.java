@@ -14,6 +14,7 @@ import java.util.UUID;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -78,15 +79,17 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void lifecycleStart() {
+    @Override
+    public void lifecycleStart(ILifecycleProgressMonitor monitor) {
 	LifecycleStatus old = getLifecycleStatus();
 	setLifecycleStatus(LifecycleStatus.Starting);
 	getLogger().info(getComponentName() + " state transitioned to STARTING.");
 	try {
 	    if (old != LifecycleStatus.Paused) {
-		start();
+		start(monitor);
 	    }
 	    setLifecycleStatus(LifecycleStatus.Started);
 	    getLogger().info(getComponentName() + " state transitioned to STARTED.");
@@ -104,15 +107,26 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void lifecyclePause() {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecyclePause(ILifecycleProgressMonitor monitor) {
 	setLifecycleStatus(LifecycleStatus.Pausing);
 	getLogger().info(getComponentName() + " state transitioned to PAUSING.");
 	try {
-	    pause();
+	    pause(monitor);
 	    setLifecycleStatus(LifecycleStatus.Paused);
 	    getLogger().info(getComponentName() + " state transitioned to PAUSED.");
 	} catch (SiteWhereException e) {
@@ -129,10 +143,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void pause() throws SiteWhereException {
+    public void pause(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
@@ -148,13 +163,15 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void lifecycleStop() {
+    @Override
+    public void lifecycleStop(ILifecycleProgressMonitor monitor) {
 	setLifecycleStatus(LifecycleStatus.Stopping);
 	getLogger().info(getComponentName() + " state transitioned to STOPPING.");
 	try {
-	    stop();
+	    stop(monitor);
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to STOPPED.");
 	} catch (SiteWhereException e) {
@@ -166,6 +183,17 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
@@ -227,24 +255,27 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * Starts a nested {@link ILifecycleComponent}. Uses default message.
      * 
      * @param component
+     * @param monitor
      * @param require
      * @throws SiteWhereException
      */
-    public void startNestedComponent(ILifecycleComponent component, boolean require) throws SiteWhereException {
-	startNestedComponent(component, getComponentName() + " failed to start.", require);
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException {
+	startNestedComponent(component, monitor, getComponentName() + " failed to start.", require);
     }
 
     /**
      * Starts a nested {@link ILifecycleComponent}.
      * 
      * @param component
+     * @param monitor
      * @param errorMessage
      * @param require
      * @throws SiteWhereException
      */
-    public void startNestedComponent(ILifecycleComponent component, String errorMessage, boolean require)
-	    throws SiteWhereException {
-	component.lifecycleStart();
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
+	component.lifecycleStart(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.Error) {
 		throw new ServerStartupException(component, errorMessage);

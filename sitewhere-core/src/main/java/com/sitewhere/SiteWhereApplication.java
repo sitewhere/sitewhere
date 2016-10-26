@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereApplication;
@@ -38,7 +39,8 @@ public class SiteWhereApplication implements ISiteWhereApplication {
 
     public SiteWhereApplication() {
 	try {
-	    SiteWhere.start(this);
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
+	    SiteWhere.start(this, monitor);
 	    LOGGER.info("Server started successfully.");
 	    SiteWhere.getServer().logState();
 	} catch (ServerStartupException e) {

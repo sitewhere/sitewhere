@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
@@ -54,24 +53,6 @@ public class PayloadLoggerEventDecoder extends TenantLifecycleComponent implemen
 	LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));
 	LOGGER.info("=== EVENT DATA END ===");
 	return new ArrayList<IDecodedDeviceRequest<?>>();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-     */
-    @Override
-    public void start() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /*

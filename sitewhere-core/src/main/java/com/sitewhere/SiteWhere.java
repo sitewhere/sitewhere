@@ -10,6 +10,7 @@ package com.sitewhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereApplication;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -25,14 +26,17 @@ public class SiteWhere {
     /**
      * Called once to bootstrap the SiteWhere server.
      * 
+     * @param application
+     * @param monitor
      * @throws SiteWhereException
      */
-    public static void start(ISiteWhereApplication application) throws SiteWhereException {
+    public static void start(ISiteWhereApplication application, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	Class<? extends ISiteWhereServer> clazz = application.getServerClass();
 	try {
 	    SERVER = clazz.newInstance();
-	    SERVER.initialize();
-	    SERVER.lifecycleStart();
+	    SERVER.initialize(monitor);
+	    SERVER.lifecycleStart(monitor);
 
 	    // Handle errors that prevent server startup.
 	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
@@ -48,10 +52,11 @@ public class SiteWhere {
     /**
      * Called to shut down the SiteWhere server.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    public static void stop() throws SiteWhereException {
-	getServer().lifecycleStop();
+    public static void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getServer().lifecycleStop(monitor);
 
 	// Handle errors that prevent server shutdown.
 	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {

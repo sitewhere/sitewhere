@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -112,10 +113,12 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.queue = Dispatch.createQueue(getComponentId());
 	this.mqtt = MqttLifecycleComponent.configure(this, queue);
     }
@@ -166,10 +169,12 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (queue != null) {
 	    queue.suspend();
 	}

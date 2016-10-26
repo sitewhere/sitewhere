@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Abstract base class for event receivers that poll an external source at a
@@ -47,10 +48,12 @@ public abstract class PollingInboundEventReceiver<T> extends InboundEventReceive
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.executor = Executors.newSingleThreadExecutor();
 	executor.submit(new Poller());
     }
@@ -58,10 +61,12 @@ public abstract class PollingInboundEventReceiver<T> extends InboundEventReceive
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (executor != null) {
 	    executor.shutdownNow();
 	}

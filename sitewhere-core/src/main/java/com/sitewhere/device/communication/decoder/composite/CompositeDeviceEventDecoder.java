@@ -11,6 +11,7 @@ import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -88,10 +89,12 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getMetadataExtractor() == null) {
 	    throw new SiteWhereException("Composite decoder has no metadata extractor configured.");
 	}
@@ -99,24 +102,27 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
 	    throw new SiteWhereException("Composite decoder has no chocies configured.");
 	}
 
-	startNestedComponent(getMetadataExtractor(), "Composite decoder metadata extractor startup failed.", true);
+	startNestedComponent(getMetadataExtractor(), monitor, "Composite decoder metadata extractor startup failed.",
+		true);
 	for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
-	    startNestedComponent(choice, "Composite decoder delegate startup failed.", true);
+	    startNestedComponent(choice, monitor, "Composite decoder delegate startup failed.", true);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getMetadataExtractor() != null) {
-	    getMetadataExtractor().lifecycleStop();
+	    getMetadataExtractor().lifecycleStop(monitor);
 	}
 	for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
-	    choice.lifecycleStop();
+	    choice.lifecycleStop(monitor);
 	}
     }
 }

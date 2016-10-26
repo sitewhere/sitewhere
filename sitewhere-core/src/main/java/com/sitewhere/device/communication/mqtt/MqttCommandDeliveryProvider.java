@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -43,11 +44,13 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	super.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 
 	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 	connection = getConnection();
@@ -67,10 +70,12 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (connection != null) {
 	    try {
 		connection.disconnect().await();
@@ -81,7 +86,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 		LOGGER.error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
-	super.stop();
+	super.stop(monitor);
     }
 
     /*

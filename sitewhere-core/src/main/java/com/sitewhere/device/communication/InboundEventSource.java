@@ -33,6 +33,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -66,10 +67,12 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
 	LOGGER.debug("Starting event source '" + getSourceId() + "'.");
@@ -85,9 +88,9 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	}
 
 	// Start device event decoder.
-	startNestedComponent(getDeviceEventDecoder(), "Event decoder startup failed.", true);
+	startNestedComponent(getDeviceEventDecoder(), monitor, "Event decoder startup failed.", true);
 
-	startEventReceivers();
+	startEventReceivers(monitor);
 	LOGGER.debug("Started event source '" + getSourceId() + "'.");
     }
 
@@ -114,13 +117,14 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /**
      * Start event receivers for this event source.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void startEventReceivers() throws SiteWhereException {
+    protected void startEventReceivers(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getInboundEventReceivers().size() > 0) {
 	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
 		receiver.setEventSource(this);
-		startNestedComponent(receiver, true);
+		startNestedComponent(receiver, monitor, true);
 	    }
 	} else {
 	    LOGGER.warn("No device event receivers configured for event source!");
@@ -213,14 +217,16 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	LOGGER.info("Stopping inbound event source '" + getSourceId() + "'.");
 	if (getInboundEventReceivers().size() > 0) {
 	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
-		receiver.lifecycleStop();
+		receiver.lifecycleStop(monitor);
 	    }
 	}
     }

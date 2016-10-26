@@ -44,24 +44,6 @@ public class GroovyCommandExecutionEncoder extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-     */
-    @Override
-    public void start() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
      * com.sitewhere.spi.device.command.IDeviceCommandExecution,

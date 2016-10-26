@@ -43,6 +43,7 @@ import com.sitewhere.spi.resource.ResourceCreateFailReason;
 import com.sitewhere.spi.resource.ResourceCreateMode;
 import com.sitewhere.spi.resource.ResourceType;
 import com.sitewhere.spi.resource.request.IResourceCreateRequest;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -92,10 +93,11 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getGlobalResourceMap().clear();
 	getTenantResourceMaps().clear();
 
@@ -116,10 +118,12 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (executor != null) {
 	    executor.shutdownNow();
 	}

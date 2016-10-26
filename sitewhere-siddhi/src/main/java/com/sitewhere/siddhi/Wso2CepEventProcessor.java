@@ -32,6 +32,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Sends SiteWhere events to an external WSO2 CEP instance.
@@ -82,12 +83,14 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	try {
 	    URI rootUri = SiteWhere.getServer().getConfigurationResolver().getFilesystemConfigurationRoot();
@@ -130,12 +133,12 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
      * 
      * @see
      * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop filters.
-	super.stop();
+	super.stop(monitor);
 
 	// Shut the publisher down.
 	if (publisher != null) {

@@ -32,6 +32,7 @@ import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
@@ -110,11 +111,13 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#initialize()
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#initialize(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void initialize() throws SiteWhereException {
-	server.initialize();
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	server.initialize(monitor);
     }
 
     /*

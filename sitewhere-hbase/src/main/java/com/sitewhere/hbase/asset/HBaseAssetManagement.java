@@ -31,6 +31,7 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -62,10 +63,12 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
 	context.setTenant(getTenant());
@@ -78,15 +81,6 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	assetIdManager = new AssetIdManager();
 	assetIdManager.load(context);
 	context.setAssetIdManager(assetIdManager);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /*

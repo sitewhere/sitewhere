@@ -68,6 +68,7 @@ import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -622,28 +623,30 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
 	// Start the Hazelcast instance.
-	startNestedComponent(getHazelcastConfiguration(), "Hazelcast startup failed.", true);
+	startNestedComponent(getHazelcastConfiguration(), monitor, "Hazelcast startup failed.", true);
 
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    startNestedComponent(component, component.getComponentName() + " startup failed.", true);
+	    startNestedComponent(component, monitor, component.getComponentName() + " startup failed.", true);
 	}
 
 	// Start management implementations.
-	startManagementImplementations();
+	startManagementImplementations(monitor);
 
 	// Initialize and start tenant engines.
 	initializeTenantEngines();
 	for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
-	    startTenantEngine(engine);
+	    startTenantEngine(engine, monitor);
 	}
 
 	// Force refresh on components-by-id map.
@@ -665,14 +668,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /**
      * Start management implementations.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void startManagementImplementations() throws SiteWhereException {
+    protected void startManagementImplementations(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Start user management.
-	startNestedComponent(getUserManagement(), "User management startup failed.", true);
+	startNestedComponent(getUserManagement(), monitor, "User management startup failed.", true);
 
 	// Start tenant management.
-	startNestedComponent(getTenantManagement(), "Tenant management startup failed.", true);
+	startNestedComponent(getTenantManagement(), monitor, "Tenant management startup failed.", true);
 
 	// Populate user data if requested.
 	verifyUserModel();
@@ -685,11 +689,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * Start a tenant engine.
      * 
      * @param engine
+     * @param monitor
      */
-    protected void startTenantEngine(ISiteWhereTenantEngine engine) {
+    protected void startTenantEngine(ISiteWhereTenantEngine engine, ILifecycleProgressMonitor monitor) {
 	try {
 	    if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
-		startNestedComponent(engine, "Tenant engine startup failed.", true);
+		startNestedComponent(engine, monitor, "Tenant engine startup failed.", true);
 	    } else {
 		getLifecycleComponents().add(engine);
 		LOGGER.info("Skipping startup for tenant engine '" + engine.getTenant().getName()
@@ -749,10 +754,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (executor != null) {
 	    executor.shutdownNow();
 	    executor = null;
@@ -761,34 +768,35 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Stop tenant engines.
 	for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
 	    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
-		engine.lifecycleStop();
+		engine.lifecycleStop(monitor);
 	    }
 	}
 
 	// Stop management implementations.
-	stopManagementImplementations();
+	stopManagementImplementations(monitor);
 
 	// Stop all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    component.lifecycleStop();
+	    component.lifecycleStop(monitor);
 	}
 
 	// Stop the Hazelcast instance.
-	getHazelcastConfiguration().lifecycleStop();
+	getHazelcastConfiguration().lifecycleStop(monitor);
     }
 
     /**
      * Stop management implementations.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void stopManagementImplementations() throws SiteWhereException {
+    protected void stopManagementImplementations(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getTenantManagement() != null) {
-	    getTenantManagement().lifecycleStop();
+	    getTenantManagement().lifecycleStop(monitor);
 	}
 
 	if (getUserManagement() != null) {
-	    getUserManagement().lifecycleStop();
+	    getUserManagement().lifecycleStop(monitor);
 	}
     }
 
@@ -837,14 +845,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#initialize()
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#initialize(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void initialize() throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.version = VersionHelper.getVersion();
 
 	// Initialize bootstrap resource manager.
 	initializeBootstrapResourceManager();
-	getBootstrapResourceManager().start();
+	getBootstrapResourceManager().start(monitor);
 
 	// Initialize persistent state.
 	initializeServerState();
@@ -869,7 +879,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize runtime resource manager.
 	initializeRuntimeResourceManager();
-	getRuntimeResourceManager().start();
+	getRuntimeResourceManager().start(monitor);
 
 	// Show banner containing server information.
 	showServerBanner();

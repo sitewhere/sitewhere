@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Outbound event processor that forwards events to Amazon SQS.
@@ -55,11 +56,11 @@ public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
      * 
      * @see
      * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * ()
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	super.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 
 	ClientConfiguration config = new ClientConfiguration();
 	config.setMaxConnections(250);

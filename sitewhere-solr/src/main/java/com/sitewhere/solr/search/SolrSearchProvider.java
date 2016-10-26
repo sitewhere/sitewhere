@@ -31,6 +31,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -66,10 +67,12 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	LOGGER.info("Solr search provider starting.");
 	if (getSolr() == null) {
 	    throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
@@ -95,16 +98,6 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
-	LOGGER.info("Stopped Solr search provider.");
     }
 
     /*

@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implmentation of {@link IOutboundEventProcessor} that sends events to the
@@ -42,12 +43,14 @@ public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	this.client = new RestTemplate();
     }

@@ -38,6 +38,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundEventProcessor} that sends events to an
@@ -72,12 +73,14 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	try {
 	    String key = URLEncoder.encode(getSasKey(), "UTF8");
@@ -113,11 +116,13 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
-	super.stop();
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
 	if (sender != null) {
 	    try {
 		sender.close();

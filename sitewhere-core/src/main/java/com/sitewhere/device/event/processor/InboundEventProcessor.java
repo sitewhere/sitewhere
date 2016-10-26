@@ -37,24 +37,6 @@ public abstract class InboundEventProcessor extends TenantLifecycleComponent imp
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-     */
-    @Override
-    public void start() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
      * onRegistrationRequest (java.lang.String, java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)

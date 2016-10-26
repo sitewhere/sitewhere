@@ -28,6 +28,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Sends processed device events out on Hazelcast topics for further processing.
@@ -60,12 +61,14 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	IHazelcastConfiguration hzConfig = SiteWhere.getServer().getHazelcastConfiguration();
 	this.invocationHelper = new DeviceCommandInvocationMarshalHelper(getTenant(), true);

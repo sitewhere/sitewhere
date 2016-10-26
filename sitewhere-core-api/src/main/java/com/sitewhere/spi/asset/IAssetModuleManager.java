@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -41,18 +42,20 @@ public interface IAssetModuleManager extends ITenantLifecycleComponent {
      * Calls the refresh method on each asset module and returns a list of
      * responses.
      * 
+     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public List<ICommandResponse> refreshModules() throws SiteWhereException;
+    public List<ICommandResponse> refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Refresh modules loaded from datastore.
      * 
+     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException;
+    public List<ICommandResponse> refreshDatastoreModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Finds an asset in a given module.

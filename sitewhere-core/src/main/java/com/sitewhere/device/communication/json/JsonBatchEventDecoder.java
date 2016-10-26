@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
@@ -91,24 +90,6 @@ public class JsonBatchEventDecoder extends TenantLifecycleComponent implements I
 	} catch (IOException e) {
 	    throw new EventDecodeException(e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-     */
-    @Override
-    public void start() throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /*

@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Event receiver that pulls data from a web socket.
@@ -61,10 +62,12 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 	ClientEndpointConfig config = ClientEndpointConfig.Builder.create().configurator(new WebSocketConfigurator())
 		.build();
@@ -81,10 +84,12 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    session.close();
 	} catch (IOException e) {

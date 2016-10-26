@@ -9,6 +9,7 @@ package com.sitewhere.server.lifecycle;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
@@ -29,16 +30,17 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
      * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
-     * com.sitewhere .spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
      * java.lang.String, boolean)
      */
     @Override
-    public void startNestedComponent(ILifecycleComponent component, String errorMessage, boolean require)
-	    throws SiteWhereException {
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
 	if (component instanceof ITenantLifecycleComponent) {
 	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
-	super.startNestedComponent(component, errorMessage, require);
+	super.startNestedComponent(component, monitor, errorMessage, require);
     }
 
     /** Tenant associated with component */

@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor
 import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.ICommandExecutionEncoder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -94,10 +95,11 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
@@ -105,7 +107,7 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	if (getCommandExecutionEncoder() == null) {
 	    throw new SiteWhereException("No command execution encoder configured for destination.");
 	}
-	startNestedComponent(getCommandExecutionEncoder(), true);
+	startNestedComponent(getCommandExecutionEncoder(), monitor, true);
 
 	// Start command execution encoder.
 	if (getCommandDeliveryParameterExtractor() == null) {
@@ -116,7 +118,7 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	if (getCommandDeliveryProvider() == null) {
 	    throw new SiteWhereException("No command delivery provider configured for destination.");
 	}
-	startNestedComponent(getCommandDeliveryProvider(), true);
+	startNestedComponent(getCommandDeliveryProvider(), monitor, true);
     }
 
     /*
@@ -142,18 +144,20 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop command execution encoder.
 	if (getCommandExecutionEncoder() != null) {
-	    getCommandExecutionEncoder().lifecycleStop();
+	    getCommandExecutionEncoder().lifecycleStop(monitor);
 	}
 
 	// Stop command delivery provider.
 	if (getCommandDeliveryProvider() != null) {
-	    getCommandDeliveryProvider().lifecycleStop();
+	    getCommandDeliveryProvider().lifecycleStop(monitor);
 	}
     }
 

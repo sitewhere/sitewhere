@@ -65,19 +65,19 @@ public interface ILifecycleComponent {
     /**
      * Starts the component while keeping up with lifecycle information.
      */
-    public void lifecycleStart();
+    public void lifecycleStart(ILifecycleProgressMonitor monitor);
 
     /**
      * Start the component.
      * 
      * @throws SiteWhereException
      */
-    public void start() throws SiteWhereException;
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Pauses the component while keeping up with lifecycle information.
      */
-    public void lifecyclePause();
+    public void lifecyclePause(ILifecycleProgressMonitor monitor);
 
     /**
      * Indicates to framework whether component can be paused.
@@ -92,19 +92,19 @@ public interface ILifecycleComponent {
      * 
      * @throws SiteWhereException
      */
-    public void pause() throws SiteWhereException;
+    public void pause(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Stops the component while keeping up with lifecycle information.
      */
-    public void lifecycleStop();
+    public void lifecycleStop(ILifecycleProgressMonitor monitor);
 
     /**
      * Stop the component.
      * 
      * @throws SiteWhereException
      */
-    public void stop() throws SiteWhereException;
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Find components (including this component and nested components) that are

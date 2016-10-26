@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -70,22 +71,23 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
 	// Start command processing strategy.
 	if (getCommandProcessingStrategy() == null) {
 	    throw new SiteWhereException("No command processing strategy configured for communication subsystem.");
 	}
-	startNestedComponent(getCommandProcessingStrategy(), true);
+	startNestedComponent(getCommandProcessingStrategy(), monitor, true);
 
 	// Start command destinations.
 	if (getCommandDestinations() != null) {
 	    for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-		startNestedComponent(destination, false);
+		startNestedComponent(destination, monitor, false);
 	    }
 	}
 
@@ -94,41 +96,41 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	    throw new SiteWhereException("No command router for communication subsystem.");
 	}
 	getOutboundCommandRouter().initialize(getCommandDestinations());
-	startNestedComponent(getOutboundCommandRouter(), true);
+	startNestedComponent(getOutboundCommandRouter(), monitor, true);
 
 	// Start registration manager.
 	if (getRegistrationManager() == null) {
 	    throw new SiteWhereException("No registration manager configured for communication subsystem.");
 	}
-	startNestedComponent(getRegistrationManager(), true);
+	startNestedComponent(getRegistrationManager(), monitor, true);
 
 	// Start symbol generator manager.
 	if (getSymbolGeneratorManager() == null) {
 	    throw new SiteWhereException("No symbol generator manager configured for communication subsystem.");
 	}
-	startNestedComponent(getSymbolGeneratorManager(), true);
+	startNestedComponent(getSymbolGeneratorManager(), monitor, true);
 
 	// Start batch operation manager.
 	if (getBatchOperationManager() == null) {
 	    throw new SiteWhereException("No batch operation manager configured for communication subsystem.");
 	}
-	startNestedComponent(getBatchOperationManager(), true);
+	startNestedComponent(getBatchOperationManager(), monitor, true);
 
 	// Start device stream manager.
 	if (getDeviceStreamManager() == null) {
 	    throw new SiteWhereException("No device stream manager configured for communication subsystem.");
 	}
-	startNestedComponent(getDeviceStreamManager(), true);
+	startNestedComponent(getDeviceStreamManager(), monitor, true);
 
 	// Start device presence manager if configured.
 	if (getDevicePresenceManager() != null) {
-	    startNestedComponent(getDevicePresenceManager(), true);
+	    startNestedComponent(getDevicePresenceManager(), monitor, true);
 	}
 
 	// Start device event sources.
 	if (getInboundEventSources() != null) {
 	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
-		startNestedComponent(processor, false);
+		startNestedComponent(processor, monitor, false);
 	    }
 	}
     }
@@ -136,51 +138,53 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop inbound event sources.
 	if (getInboundEventSources() != null) {
 	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
-		processor.lifecycleStop();
+		processor.lifecycleStop(monitor);
 	    }
 	}
 
 	// Stop device stream manager.
 	if (getDevicePresenceManager() != null) {
-	    getDevicePresenceManager().lifecycleStop();
+	    getDevicePresenceManager().lifecycleStop(monitor);
 	}
 
 	// Stop device stream manager.
 	if (getDeviceStreamManager() != null) {
-	    getDeviceStreamManager().lifecycleStop();
+	    getDeviceStreamManager().lifecycleStop(monitor);
 	}
 
 	// Stop batch operation manager.
 	if (getBatchOperationManager() != null) {
-	    getBatchOperationManager().lifecycleStop();
+	    getBatchOperationManager().lifecycleStop(monitor);
 	}
 
 	// Stop symbol generator manager.
 	if (getSymbolGeneratorManager() != null) {
-	    getSymbolGeneratorManager().lifecycleStop();
+	    getSymbolGeneratorManager().lifecycleStop(monitor);
 	}
 
 	// Stop registration manager.
 	if (getRegistrationManager() != null) {
-	    getRegistrationManager().lifecycleStop();
+	    getRegistrationManager().lifecycleStop(monitor);
 	}
 
 	// Stop command processing strategy.
 	if (getCommandProcessingStrategy() != null) {
-	    getCommandProcessingStrategy().lifecycleStop();
+	    getCommandProcessingStrategy().lifecycleStop(monitor);
 	}
 
 	// Start command destinations.
 	if (getCommandDestinations() != null) {
 	    for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-		destination.lifecycleStop();
+		destination.lifecycleStop(monitor);
 	    }
 	}
     }

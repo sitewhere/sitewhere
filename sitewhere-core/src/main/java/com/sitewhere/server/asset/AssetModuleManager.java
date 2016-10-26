@@ -32,6 +32,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -60,26 +61,29 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
 	modulesById.clear();
 	for (IAssetModule<?> module : modules) {
-	    startNestedComponent(module, true);
+	    startNestedComponent(module, monitor, true);
 	    modulesById.put(module.getId(), module);
 	}
-	refreshDatastoreModules();
+	refreshDatastoreModules(monitor);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#refreshDatastoreModules()
+     * com.sitewhere.spi.asset.IAssetModuleManager#refreshDatastoreModules(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
-    public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException {
+    public List<ICommandResponse> refreshDatastoreModules(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 	dsModulesById.clear();
 	ISearchResults<IAssetCategory> categories = SiteWhere.getServer().getAssetManagement(getTenant())
@@ -89,17 +93,17 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	    case Device:
 	    case Hardware: {
 		HardwareAssetModule module = new HardwareAssetModule(category);
-		startDatastoreModule(category, module, responses);
+		startDatastoreModule(category, module, responses, monitor);
 		break;
 	    }
 	    case Person: {
 		PersonAssetModule module = new PersonAssetModule(category);
-		startDatastoreModule(category, module, responses);
+		startDatastoreModule(category, module, responses, monitor);
 		break;
 	    }
 	    case Location: {
 		LocationAssetModule module = new LocationAssetModule(category);
-		startDatastoreModule(category, module, responses);
+		startDatastoreModule(category, module, responses, monitor);
 		break;
 	    }
 	    }
@@ -113,11 +117,12 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      * @param category
      * @param module
      * @param responses
+     * @param monitor
      * @throws SiteWhereException
      */
     protected void startDatastoreModule(IAssetCategory category, IAssetModule<?> module,
-	    List<ICommandResponse> responses) throws SiteWhereException {
-	startNestedComponent(module, true);
+	    List<ICommandResponse> responses, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(module, monitor, true);
 	dsModulesById.put(category.getId(), module);
 	responses
 		.add(new CommandResponse(CommandResult.Successful, "Asset module " + category.getId() + " refreshed."));
@@ -136,14 +141,16 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void stop() {
+    public void stop(ILifecycleProgressMonitor monitor) {
 	for (IAssetModule<?> module : modulesById.values()) {
-	    module.lifecycleStop();
+	    module.lifecycleStop(monitor);
 	}
 	for (IAssetModule<?> module : dsModulesById.values()) {
-	    module.lifecycleStop();
+	    module.lifecycleStop(monitor);
 	}
     }
 
@@ -203,14 +210,16 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModuleManager#refreshModules()
+     * @see
+     * com.sitewhere.spi.asset.IAssetModuleManager#refreshModules(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
-    public List<ICommandResponse> refreshModules() throws SiteWhereException {
+    public List<ICommandResponse> refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 	for (IAssetModule<?> module : modulesById.values()) {
 	    responses.add(module.refresh());
 	}
-	List<ICommandResponse> dsResponses = refreshDatastoreModules();
+	List<ICommandResponse> dsResponses = refreshDatastoreModules(monitor);
 	responses.addAll(dsResponses);
 	return responses;
     }

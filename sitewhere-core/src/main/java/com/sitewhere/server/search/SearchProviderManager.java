@@ -19,6 +19,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -45,12 +46,13 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (ISearchProvider provider : getSearchProviders()) {
-	    provider.lifecycleStart();
+	    provider.lifecycleStart(monitor);
 	    providersById.put(provider.getId(), provider);
 	}
     }
@@ -68,12 +70,14 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (ISearchProvider provider : getSearchProviders()) {
-	    provider.lifecycleStop();
+	    provider.lifecycleStop(monitor);
 	}
     }
 

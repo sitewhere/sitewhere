@@ -35,6 +35,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
 import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Outbound event processor that sends events to an MQTT topic.
@@ -88,20 +89,22 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if ((topic == null) && ((multicaster == null) && (routeBuilder == null))) {
 	    throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
 	}
 
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	// Start the multicaster implementation.
 	if (multicaster != null) {
-	    startNestedComponent(multicaster, true);
+	    startNestedComponent(multicaster, monitor, true);
 	}
 
 	// Use common MQTT configuration setup.
@@ -124,10 +127,10 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see
      * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (connection != null) {
 	    try {
 		connection.disconnect();
@@ -139,7 +142,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	if (queue != null) {
 	    queue.suspend();
 	}
-	super.stop();
+	super.stop(monitor);
     }
 
     /*

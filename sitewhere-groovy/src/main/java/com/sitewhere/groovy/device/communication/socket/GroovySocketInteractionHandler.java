@@ -19,6 +19,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
@@ -116,19 +117,22 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
 	 */
 	@Override
-	public void start() throws SiteWhereException {
+	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
+	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	}
 
 	@Override

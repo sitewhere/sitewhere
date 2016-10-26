@@ -25,6 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantGroup;
@@ -60,8 +61,15 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
 	super(LifecycleComponentType.DataStore);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	ensureTablesExist();
 
 	// Create context from configured options.
@@ -73,10 +81,6 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
 	userIdManager = new UserIdManager();
 	userIdManager.load(context);
 	context.setUserIdManager(userIdManager);
-    }
-
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /**

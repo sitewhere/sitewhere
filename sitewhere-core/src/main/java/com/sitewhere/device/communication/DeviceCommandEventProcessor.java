@@ -19,6 +19,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Event processor that hands off {@link IDeviceCommandInvocation} events after
@@ -44,13 +45,13 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
-     * start()
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
-	super.start();
+	super.start(monitor);
 
 	LOGGER.info("Command event processor using " + getNumThreads() + " threads to process requests.");
 	executor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
@@ -70,12 +71,12 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
-     * stop()
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
-	super.stop();
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
 	executor.shutdownNow();
     }
 

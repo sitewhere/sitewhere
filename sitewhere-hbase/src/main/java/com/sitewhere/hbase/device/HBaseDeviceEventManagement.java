@@ -50,6 +50,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -90,10 +91,11 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
 	context.setTenant(getTenant());
@@ -114,24 +116,26 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 
 	// Create assignment state manager and start it.
 	assignmentStateManager = new AssignmentStateManager(getDeviceManagement());
-	startNestedComponent(assignmentStateManager, true);
+	startNestedComponent(assignmentStateManager, monitor, true);
 	context.setAssignmentStateManager(assignmentStateManager);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (buffer != null) {
 	    buffer.stop();
 	}
 
 	// Stop the assignment state manager.
 	if (assignmentStateManager != null) {
-	    assignmentStateManager.stop();
+	    assignmentStateManager.lifecycleStop(monitor);
 	}
     }
 

@@ -33,6 +33,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
 import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Extension of {@link FilteredOutboundEventProcessor} that sends messages to
@@ -81,11 +82,11 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      * 
      * @see
      * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * ()
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	super.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 	try {
 	    ConnectionFactory factory = new ConnectionFactory();
 	    factory.setUri(getConnectionUri());
@@ -104,10 +105,10 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      * 
      * @see
      * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    if (channel != null) {
 		channel.close();
@@ -118,7 +119,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	} catch (Exception e) {
 	    throw new SiteWhereException("Error stopping RabbitMQ event processor.", e);
 	}
-	super.stop();
+	super.stop(monitor);
     }
 
     /*

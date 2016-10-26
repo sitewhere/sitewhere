@@ -31,6 +31,7 @@ import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -213,10 +214,12 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (isAutoAssignSite()) {
 	    if (getAutoAssignSiteToken() == null) {
 		updateAutoAssignToFirstSite();
@@ -254,15 +257,6 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	} else {
 	    setAutoAssignSiteToken(sites.getResults().get(0).getToken());
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     public boolean isAllowNewDevices() {

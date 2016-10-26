@@ -40,6 +40,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantGroup;
@@ -69,9 +70,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	/** Ensure that expected indexes exist */
 	ensureIndexes();
     }
@@ -101,15 +104,6 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	getMongoClient().getTenantGroupElementsCollection()
 		.createIndex(new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, 1)
 			.append(MongoTenantGroupElement.PROP_TENANT_ID, 1), new BasicDBObject("unique", true));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    public void stop() throws SiteWhereException {
-	LOGGER.info("Mongo user management stopped.");
     }
 
     /*

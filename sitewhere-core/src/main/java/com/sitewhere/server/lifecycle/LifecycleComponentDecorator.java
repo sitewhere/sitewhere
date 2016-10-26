@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -103,32 +104,35 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void lifecycleStart() {
-	delegate.lifecycleStart();
+    public void lifecycleStart(ILifecycleProgressMonitor monitor) {
+	delegate.lifecycleStart(monitor);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	delegate.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	delegate.start(monitor);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void lifecyclePause() {
-	delegate.lifecyclePause();
+    public void lifecyclePause(ILifecycleProgressMonitor monitor) {
+	delegate.lifecyclePause(monitor);
     }
 
     /*
@@ -144,32 +148,36 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void pause() throws SiteWhereException {
-	delegate.pause();
+    public void pause(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	delegate.pause(monitor);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void lifecycleStop() {
-	delegate.lifecycleStop();
+    public void lifecycleStop(ILifecycleProgressMonitor monitor) {
+	delegate.lifecycleStop(monitor);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
-	delegate.stop();
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	delegate.stop(monitor);
     }
 
     /*

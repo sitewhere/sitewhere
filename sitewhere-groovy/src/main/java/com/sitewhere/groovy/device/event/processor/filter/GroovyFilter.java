@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -45,11 +46,12 @@ public class GroovyFilter extends DeviceEventFilter {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start()
+     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	super.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 
 	if (getScriptPath() == null) {
 	    throw new SiteWhereException("Script path not configured for Groovy filter.");

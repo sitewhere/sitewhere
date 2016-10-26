@@ -35,6 +35,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.scheduling.QuartzScheduleManager;
 import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
@@ -71,6 +72,7 @@ import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -152,89 +154,93 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
 	// Start lifecycle components.
 	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    startNestedComponent(component, component.getComponentName() + " startup failed.", true);
+	    startNestedComponent(component, monitor, component.getComponentName() + " startup failed.", true);
 	}
 
 	// Start asset management.
-	startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
+	startNestedComponent(getAssetManagement(), monitor, "Asset management startup failed.", true);
 
 	// Start device management.
-	startNestedComponent(getDeviceManagement(), "Device management startup failed.", true);
+	startNestedComponent(getDeviceManagement(), monitor, "Device management startup failed.", true);
 
 	// Start device management.
-	startNestedComponent(getDeviceEventManagement(), "Device event management startup failed.", true);
+	startNestedComponent(getDeviceEventManagement(), monitor, "Device event management startup failed.", true);
 
 	// Start device management.
-	startNestedComponent(getScheduleManagement(), "Schedule management startup failed.", true);
+	startNestedComponent(getScheduleManagement(), monitor, "Schedule management startup failed.", true);
 
 	// Populate schedule data if requested.
 	verifyScheduleModel();
 
 	// Start device management cache provider if specificed.
 	if (getDeviceManagementCacheProvider() != null) {
-	    startNestedComponent(getDeviceManagementCacheProvider(), "Device management cache provider startup failed.",
-		    true);
+	    startNestedComponent(getDeviceManagementCacheProvider(), monitor,
+		    "Device management cache provider startup failed.", true);
 	}
 
 	// Populate asset data if requested.
 	verifyAssetModel();
 
 	// Start asset module manager.
-	startNestedComponent(getAssetModuleManager(), "Asset module manager startup failed.", true);
+	startNestedComponent(getAssetModuleManager(), monitor, "Asset module manager startup failed.", true);
 
 	// Start search provider manager.
-	startNestedComponent(getSearchProviderManager(), "Search provider manager startup failed.", true);
+	startNestedComponent(getSearchProviderManager(), monitor, "Search provider manager startup failed.", true);
 	verifyDeviceModel();
 
 	// Start event processing subsystem.
-	startNestedComponent(getEventProcessing(), "Event processing subsystem startup failed.", true);
+	startNestedComponent(getEventProcessing(), monitor, "Event processing subsystem startup failed.", true);
 
 	// Start device communication subsystem.
-	startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.", true);
+	startNestedComponent(getDeviceCommunication(), monitor, "Device communication subsystem startup failed.", true);
 
 	// Start schedule manager.
-	startNestedComponent(getScheduleManager(), "Schedule manager startup failed.", true);
+	startNestedComponent(getScheduleManager(), monitor, "Schedule manager startup failed.", true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop scheduling new jobs.
-	getScheduleManager().lifecycleStop();
-	getScheduleManagement().lifecycleStop();
+	getScheduleManager().lifecycleStop(monitor);
+	getScheduleManagement().lifecycleStop(monitor);
 
 	// Disable device communications.
-	getDeviceCommunication().lifecycleStop();
-	getEventProcessing().lifecycleStop();
+	getDeviceCommunication().lifecycleStop(monitor);
+	getEventProcessing().lifecycleStop(monitor);
 
 	// Stop core management implementations.
 	if (getDeviceManagementCacheProvider() != null) {
-	    getDeviceManagementCacheProvider().lifecycleStop();
+	    getDeviceManagementCacheProvider().lifecycleStop(monitor);
 	}
 
 	// Stop lifecycle components.
 	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    component.lifecycleStop();
+	    component.lifecycleStop(monitor);
 	}
 
-	getDeviceEventManagement().lifecycleStop();
-	getDeviceManagement().lifecycleStop();
-	getAssetModuleManager().lifecycleStop();
-	getAssetManagement().lifecycleStop();
-	getSearchProviderManager().lifecycleStop();
+	getDeviceEventManagement().lifecycleStop(monitor);
+	getDeviceManagement().lifecycleStop(monitor);
+	getAssetModuleManager().lifecycleStop(monitor);
+	getAssetManagement().lifecycleStop(monitor);
+	getSearchProviderManager().lifecycleStop(monitor);
     }
 
     /*
@@ -318,8 +324,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineCommand, ErrorLevel.ERROR);
 	}
 	try {
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
 	    TenantEngineCommand cmd = commandClass.newInstance();
 	    cmd.setEngine(this);
+	    cmd.setProgressMonitor(monitor);
 	    Future<ICommandResponse> response = commandExecutor.submit(cmd);
 	    return response.get(maxWaitSeconds, TimeUnit.SECONDS);
 	} catch (InstantiationException e) {

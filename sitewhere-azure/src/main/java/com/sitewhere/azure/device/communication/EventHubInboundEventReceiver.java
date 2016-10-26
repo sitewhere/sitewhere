@@ -43,6 +43,7 @@ import com.sitewhere.azure.device.communication.client.EventHubReceiverTaskConfi
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
@@ -79,10 +80,12 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.device.communication.InboundEventReceiver#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	config = new EventHubReceiverTaskConfig(username, password, namespace, entityPath, partitionCount,
 		zkStateStore);
 	config.setTargetAddress(targetFqn);
@@ -95,10 +98,12 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.device.communication.InboundEventReceiver#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (EventHubReceiverTask task : taskPool) {
 	    task.deactivate();
 	}

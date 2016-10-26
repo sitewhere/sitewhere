@@ -21,6 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket
@@ -69,17 +70,19 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    // Verify handler factory is set, then start it.
 	    if (getHandlerFactory() == null) {
 		throw new SiteWhereException(
 			"No socket interaction handler factory configured for socket event source.");
 	    }
-	    getHandlerFactory().start();
+	    getHandlerFactory().start(monitor);
 
 	    LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 	    this.server = new ServerSocket(getPort());
@@ -118,10 +121,12 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (processing != null) {
 	    processing.setTerminate(true);
 	}
@@ -139,7 +144,7 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 	    }
 	}
 	if (getHandlerFactory() != null) {
-	    getHandlerFactory().stop();
+	    getHandlerFactory().stop(monitor);
 	}
 
 	LOGGER.info("Socket receiver processing stopped.");

@@ -20,6 +20,7 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.IGroovyVariables;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -62,23 +63,14 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-     */
-    @Override
-    public void start() throws SiteWhereException {
-	this.rest = new RestHelper(getBaseUrl(), getUsername(), getPassword());
-	super.start();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.communication.PollingInboundEventReceiver#stop()
+     * com.sitewhere.device.communication.PollingInboundEventReceiver#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
-	super.stop();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.rest = new RestHelper(getBaseUrl(), getUsername(), getPassword());
+	super.start(monitor);
     }
 
     /*

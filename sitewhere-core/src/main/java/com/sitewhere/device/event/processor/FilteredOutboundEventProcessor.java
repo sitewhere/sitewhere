@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
 import com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Extends {@link OutboundEventProcessor} with filtering functionality.
@@ -46,28 +47,31 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
 	this.eventManagement = SiteWhere.getServer().getDeviceEventManagement(getTenant());
 
 	getLifecycleComponents().clear();
 	for (IDeviceEventFilter filter : filters) {
-	    startNestedComponent(filter, true);
+	    startNestedComponent(filter, monitor, true);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (IDeviceEventFilter filter : filters) {
-	    filter.stop();
+	    filter.stop(monitor);
 	}
     }
 

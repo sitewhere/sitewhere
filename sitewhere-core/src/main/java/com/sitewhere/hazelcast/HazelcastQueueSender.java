@@ -24,6 +24,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Sends all events to a Hazelcast queue.
@@ -44,10 +45,12 @@ public class HazelcastQueueSender extends InboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.device.event.processor.InboundEventProcessor#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
 		.getQueue(getQueueName());
 	LOGGER.info("Sender posting events to Hazelcast queue: " + getQueueName());

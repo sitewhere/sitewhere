@@ -81,7 +81,7 @@ public class SiteWhereTenantEngineCommands {
 	public ICommandResponse call() throws Exception {
 	    try {
 		if (getEngine().initialize()) {
-		    getEngine().lifecycleStart();
+		    getEngine().lifecycleStart(getProgressMonitor());
 		    if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
 			return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		    }
@@ -110,7 +110,7 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		getEngine().lifecycleStop();
+		getEngine().lifecycleStop(getProgressMonitor());
 		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}

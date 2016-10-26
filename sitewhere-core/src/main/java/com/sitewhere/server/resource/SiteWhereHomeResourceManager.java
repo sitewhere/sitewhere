@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Extends {@link FileSystemResourceManager} to set root of resource tree based
@@ -16,12 +17,13 @@ public class SiteWhereHomeResourceManager extends FileSystemResourceManager {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.server.resource.FileSystemResourceManager#start()
+     * @see com.sitewhere.server.resource.FileSystemResourceManager#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	setRootFolder(calculateConfigurationPath());
-	super.start();
+	super.start(monitor);
     }
 
     /**

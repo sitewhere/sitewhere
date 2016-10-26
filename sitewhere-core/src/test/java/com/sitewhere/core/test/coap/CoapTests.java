@@ -160,6 +160,41 @@ public class CoapTests {
     }
 
     @Test
+    public void sendSilecticaRules() {
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":0,\"n\":\"netup\",\"v\":\"Networking Up\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":1}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":1,\"n\":\"nflsh0\",\"v\":\"Net Up Flash Rly 0\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"evt/netup\",\"v\":0,\"r\":\"eq\",\"l\":\"or\",\"dt\":0},{\"n\":\"a/light/fix/rly\",\"v\":0,\"r\":\"eq\",\"l\":\"or\",\"dt\":0}],\"a\":[{\"n\":\"a/light/fix/rly\",\"v\":1,\"hg\":\"loop0\",\"dt\":2},{\"n\":\"a/light/fix/rly\",\"v\":0,\"hg\":\"loop0\",\"dt\":0},{\"n\":\"evt/nflsh1\",\"v\":\"dis\",\"hg\":\"loop0\",\"dt\":0},{\"n\":\"evt/nflsh0\",\"v\":\"dis\",\"hg\":\"loop0\",\"dt\":0}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":2,\"n\":\"nflsh1\",\"v\":\"Net Up Flash Rly 1\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"evt/netup\",\"v\":0,\"r\":\"eq\",\"l\":\"or\",\"dt\":0},{\"n\":\"a/light/fix/rly\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":0}],\"a\":[{\"n\":\"a/light/fix/rly\",\"v\":0,\"hg\":\"loop0\",\"dt\":2},{\"n\":\"a/light/fix/rly\",\"v\":1,\"hg\":\"loop0\",\"dt\":0},{\"n\":\"evt/nflsh0\",\"v\":\"dis\",\"hg\":\"loop0\",\"dt\":0},{\"n\":\"evt/nflsh1\",\"v\":\"dis\",\"hg\":\"loop0\",\"dt\":0}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":3,\"n\":\"swreg\",\"v\":\"SiteWhere Registration\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":0}],\"a\":[{\"n\":\"s/app/swreg/msg\",\"v\":{\"spec\":\"23b3b92e-1b8d-44f6-8d8d-7b79783ad90b\"},\"hg\":\"loop0\",\"dt\":0},{\"n\":\"s/app/swreg/msg\",\"v\":{\"site\":\"idf-2016-1\"},\"hg\":\"loop0\",\"dt\":0},{\"n\":\"s/app/swreg/msg\",\"v\":{},\"hg\":\"swapp\",\"dt\":0},{\"n\":\"evt/swreg\",\"v\":\"dis\",\"hg\":\"loop0\",\"dt\":0}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":4,\"n\":\"swlog\",\"v\":\"SiteWhere Datalogger\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":0}],\"a\":[{\"n\":\"s/app/swlog/msg\",\"v\":[\"s/light/fix/dim\",\"s/ener/fix/pwr\"],\"hg\":\"swapp\",\"dt\":10},{\"n\":\"s/app/swlog/msg\",\"v\":[\"a/light/fix/rly\",\"s/ener/fix/vln\"],\"hg\":\"swapp\",\"dt\":10},{\"n\":\"s/app/swlog/msg\",\"v\":[\"s/temp/mod/ta\",\"s/temp/fix/ta\"],\"hg\":\"swapp\",\"dt\":10},{\"n\":\"s/app/swlog/msg\",\"v\":\"s/ener/fix/fln\",\"hg\":\"swapp\",\"dt\":10}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+	sendSilecticaRuleAck(
+		"{\"rule\":{\"r\":5,\"n\":\"swrules\",\"v\":\"SiteWhere Ack w/ SN Rul\",\"s\":\"act\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"an\",\"dt\":0},{\"n\":\"s/app/swrule/send\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":1}],\"a\":[{\"n\":\"s/app/swrule/msg\",\"v\":{},\"hg\":\"swapp\",\"dt\":1}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
+    }
+
+    /** Send Silectica rule as an ack */
+    protected void sendSilecticaRuleAck(String rule) {
+	CoapClient client = createClientFor("devices/00173B1200210024/acks");
+	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
+	ack.setOriginatingEventId("1234567890");
+	ack.setResponse(rule);
+	try {
+	    CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
+	    System.out.println(response.getCode());
+	    System.out.println(response.getOptions());
+	    System.out.println(response.getResponseText());
+	    Thread.sleep(100);
+	} catch (SiteWhereException e) {
+	    e.printStackTrace();
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testAddAcknowledgementSimple() {
 	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
 	String payload = "orig=1234567890,response=Arbitrary string containing response content.,m:meta1=value";

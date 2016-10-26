@@ -8,6 +8,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IDecoderChoice;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IDeviceContext;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -65,21 +66,24 @@ public class DeviceSpecificationDecoderChoice<T> extends TenantLifecycleComponen
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	startNestedComponent(getDeviceEventDecoder(), "Event decoder startup failed.", true);
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getDeviceEventDecoder(), monitor, "Event decoder startup failed.", true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
-	getDeviceEventDecoder().lifecycleStop();
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getDeviceEventDecoder().lifecycleStop(monitor);
     }
 
     /*

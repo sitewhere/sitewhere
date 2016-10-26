@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.communication.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.communication.ICommandTargetResolver;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -106,23 +107,24 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
 	// Start command execution builder.
 	if (getCommandExecutionBuilder() == null) {
 	    throw new SiteWhereException("No command execution builder configured for command processing.");
 	}
-	startNestedComponent(getCommandExecutionBuilder(), true);
+	startNestedComponent(getCommandExecutionBuilder(), monitor, true);
 
 	// Start command target resolver.
 	if (getCommandTargetResolver() == null) {
 	    throw new SiteWhereException("No command target resolver configured for command processing.");
 	}
-	startNestedComponent(getCommandTargetResolver(), true);
+	startNestedComponent(getCommandTargetResolver(), monitor, true);
     }
 
     /*
@@ -138,18 +140,20 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop command execution builder.
 	if (getCommandExecutionBuilder() != null) {
-	    getCommandExecutionBuilder().lifecycleStop();
+	    getCommandExecutionBuilder().lifecycleStop(monitor);
 	}
 
 	// Stop command target resolver.
 	if (getCommandTargetResolver() != null) {
-	    getCommandTargetResolver().lifecycleStop();
+	    getCommandTargetResolver().lifecycleStop(monitor);
 	}
     }
 

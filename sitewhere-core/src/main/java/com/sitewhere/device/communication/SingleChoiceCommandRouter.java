@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that assumes a single
@@ -65,11 +66,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	LOGGER.info("Starting single choice command router...");
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getDestinations().size() != 1) {
 	    throw new SiteWhereException(
 		    "Expected exactly one destination for command routing but found " + getDestinations().size() + ".");
@@ -86,15 +88,5 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
-	LOGGER.info("Stopped single choice command router.");
     }
 }

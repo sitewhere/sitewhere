@@ -19,6 +19,7 @@ import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -44,16 +45,18 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	generatorsById.clear();
 
 	// Start configured generators.
 	if (getSymbolGenerators().size() > 0) {
 	    for (ISymbolGenerator generator : symbolGenerators) {
-		startNestedComponent(generator, true);
+		startNestedComponent(generator, monitor, true);
 		generatorsById.put(generator.getId(), generator);
 	    }
 	}
@@ -62,7 +65,7 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	else {
 	    QrCodeSymbolGenerator generator = new QrCodeSymbolGenerator();
 	    symbolGenerators.add(generator);
-	    startNestedComponent(generator, true);
+	    startNestedComponent(generator, monitor, true);
 	    generatorsById.put(generator.getId(), generator);
 	}
     }
@@ -70,12 +73,14 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (ISymbolGenerator generator : symbolGenerators) {
-	    generator.lifecycleStop();
+	    generator.lifecycleStop(monitor);
 	}
     }
 

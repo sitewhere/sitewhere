@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -68,25 +69,18 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.siteCache = new HazelcastCache<ISite>(addTenantPrefix(SITE_CACHE), CacheType.SiteCache);
 	this.specificationCache = new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
 		CacheType.DeviceSpecificationCache);
 	this.deviceCache = new HazelcastCache<IDevice>(addTenantPrefix(DEVICE_CACHE), CacheType.DeviceCache);
 	this.assignmentCache = new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
 		CacheType.DeviceAssignmentCache);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-     */
-    @Override
-    public void stop() throws SiteWhereException {
     }
 
     /**

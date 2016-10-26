@@ -24,6 +24,7 @@ import com.rabbitmq.client.Envelope;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Binary inbound event source that consumes messages from a RabbitMQ broker.
@@ -68,10 +69,12 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	executors = Executors.newFixedThreadPool(getNumConsumers());
 	try {
 	    ConnectionFactory factory = new ConnectionFactory();
@@ -103,10 +106,12 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    if (channel != null) {
 		channel.close();

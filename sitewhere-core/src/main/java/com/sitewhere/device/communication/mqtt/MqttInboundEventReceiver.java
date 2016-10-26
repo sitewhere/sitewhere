@@ -27,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -62,11 +63,13 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+     * @see
+     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start() throws SiteWhereException {
-	super.start();
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 
 	this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
 	LOGGER.info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
@@ -161,10 +164,12 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+     * @see
+     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stop() throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (executor != null) {
 	    executor.shutdownNow();
 	}
@@ -178,7 +183,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		LOGGER.error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
-	super.stop();
+	super.stop(monitor);
     }
 
     /*
