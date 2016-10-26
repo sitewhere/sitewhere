@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.DeviceStatus;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
@@ -185,6 +186,14 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 
 	/** Request being built */
 	private DeviceCreateRequest request = new DeviceCreateRequest();
+
+	public Builder(IDevice device) {
+	    this(device.getSiteToken(), device.getSpecificationToken(), device.getHardwareId());
+	    if (device.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(device.getMetadata());
+	    }
+	}
 
 	public Builder(String siteToken, String specificationToken, String hardwareId) {
 	    request.setSiteToken(siteToken);

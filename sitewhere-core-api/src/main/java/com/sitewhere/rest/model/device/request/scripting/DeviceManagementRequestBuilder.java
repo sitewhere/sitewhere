@@ -82,8 +82,16 @@ public class DeviceManagementRequestBuilder {
 	return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
     }
 
+    public DeviceCreateRequest.Builder fromDevice(IDevice device) {
+	return new DeviceCreateRequest.Builder(device);
+    }
+
     public IDevice persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
 	return getDeviceManagement().createDevice(builder.build());
+    }
+
+    public IDevice update(IDevice device, DeviceCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().updateDevice(device.getHardwareId(), builder.build());
     }
 
     public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String assetModuleId,
