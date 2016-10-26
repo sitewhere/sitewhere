@@ -46,6 +46,24 @@ public class DeviceEventSupport {
     }
 
     /**
+     * Indicates a command invocation event.
+     * 
+     * @return
+     */
+    public boolean isCommandInvocation() {
+	return event.getEventType() == DeviceEventType.CommandInvocation;
+    }
+
+    /**
+     * Indicates a command response event.
+     * 
+     * @return
+     */
+    public boolean isCommandResponse() {
+	return event.getEventType() == DeviceEventType.CommandResponse;
+    }
+
+    /**
      * Indicates if event has a measurement with the given name.
      * 
      * @param name
