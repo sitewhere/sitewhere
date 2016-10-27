@@ -47,6 +47,7 @@ import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantTemplate;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.configuration.ConfigurationContentParser;
@@ -386,6 +387,26 @@ public class TenantsController extends RestController {
 		}
 	    }
 	    return matches;
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Lists all available tenant templates.
+     * 
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/templates", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List templates available for creating tenants")
+    @Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
+    public List<ITenantTemplate> listTenantTemplates(HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listTenantTemplates", LOGGER);
+	try {
+	    return SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
 	} finally {
 	    Tracer.stop(LOGGER);
 	}

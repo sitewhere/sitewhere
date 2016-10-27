@@ -119,6 +119,9 @@ public enum LifecycleComponentType {
     /** Resource manager */
     ResourceManager,
 
+    /** Tenant template manager */
+    TenantTemplateManager,
+
     /** Unclassified component */
     Other,
 }

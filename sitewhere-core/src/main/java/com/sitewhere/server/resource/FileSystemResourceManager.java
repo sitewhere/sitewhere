@@ -159,6 +159,18 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		cacheFolderResources(tenant);
 	    }
 	}
+
+	// Cache contents of "templates" folder.
+	File templates = new File(getRootFolder(), ResourceManagerGlobalConfigurationResolver.TEMPLATES_FOLDER_NAME);
+	if (!(templates.exists() && (templates.isDirectory()))) {
+	    throw new SiteWhereException("Tenant templates folder does not exist.");
+	}
+	File[] templatesFolders = templates.listFiles();
+	for (File template : templatesFolders) {
+	    if (template.isDirectory()) {
+		cacheFolderResources(template);
+	    }
+	}
     }
 
     /**

@@ -50,6 +50,12 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
     /** Folder containing tenant script resources */
     public static final String SCRIPTS_FOLDER = "scripts";
 
+    /** Folder containing tenant template resources */
+    public static final String TEMPLATES_FOLDER_NAME = "templates";
+
+    /** File name for template descriptor */
+    public static final String TEMPLATE_JSON_FILE_NAME = "template.json";
+
     /** Resource manager implementation */
     private IResourceManager resourceManager;
 

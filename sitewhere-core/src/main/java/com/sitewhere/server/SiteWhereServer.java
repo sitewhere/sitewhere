@@ -42,6 +42,7 @@ import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
 import com.sitewhere.server.tenant.TenantManagementTriggers;
+import com.sitewhere.server.tenant.TenantTemplateManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -73,6 +74,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
+import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.system.IVersionChecker;
@@ -125,16 +127,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /** Allows Spring configuration to be resolved */
     protected IGlobalConfigurationResolver configurationResolver;
 
+    /** Tenant template manager implementation */
+    protected ITenantTemplateManager tenantTemplateManager;
+
     /** Interface to user management implementation */
     protected IUserManagement userManagement;
 
     /** Interface to tenant management implementation */
     protected ITenantManagement tenantManagement;
 
-    /**
-     * List of components registered to participate in SiteWhere server
-     * lifecycle
-     */
+    /** Components registered to participate in SiteWhere server lifecycle */
     private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
 
     /** Map of component ids to lifecycle components */
@@ -294,6 +296,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public IGlobalConfigurationResolver getConfigurationResolver() {
 	return configurationResolver;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantTemplateManager()
+     */
+    @Override
+    public ITenantTemplateManager getTenantTemplateManager() {
+	return tenantTemplateManager;
     }
 
     /*
@@ -632,6 +644,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
+	// Start the tenant template manager.
+	startNestedComponent(getTenantTemplateManager(), monitor, "Tenant template manager startup failed.", true);
+
 	// Start the Hazelcast instance.
 	startNestedComponent(getHazelcastConfiguration(), monitor, "Hazelcast startup failed.", true);
 
@@ -780,6 +795,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    component.lifecycleStop(monitor);
 	}
 
+	// Stop the tenant template manager.
+	getTenantTemplateManager().lifecycleStop(monitor);
+
 	// Stop the Hazelcast instance.
 	getHazelcastConfiguration().lifecycleStop(monitor);
     }
@@ -858,6 +876,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize persistent state.
 	initializeServerState();
+
+	// Initialize tenant template manager.
+	initializeTenantTemplateManager();
 
 	// Initialize the Hazelcast instance.
 	initializeHazelcastConfiguration();
@@ -1003,6 +1024,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    LOGGER.info("No Tracer implementation configured.");
 	    this.tracer = new NullTracer();
 	}
+    }
+
+    /**
+     * Initialize the tenant template manager.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeTenantTemplateManager() throws SiteWhereException {
+	this.tenantTemplateManager = new TenantTemplateManager();
     }
 
     /**

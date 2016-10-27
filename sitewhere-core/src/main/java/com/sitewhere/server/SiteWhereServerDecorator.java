@@ -34,6 +34,7 @@ import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -192,6 +193,16 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public IGlobalConfigurationResolver getConfigurationResolver() {
 	return server.getConfigurationResolver();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantTemplateManager()
+     */
+    @Override
+    public ITenantTemplateManager getTenantTemplateManager() {
+	return server.getTenantTemplateManager();
     }
 
     /*

@@ -30,6 +30,7 @@ import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -138,6 +139,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
      * @return
      */
     public IGlobalConfigurationResolver getConfigurationResolver();
+
+    /**
+     * Get tenant template manager implementation.
+     * 
+     * @return
+     */
+    public ITenantTemplateManager getTenantTemplateManager();
 
     /**
      * Get a tenant based on its authentication token.
