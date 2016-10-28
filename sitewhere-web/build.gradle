@@ -26,7 +26,7 @@ dependencies {
     compile project(':sitewhere-wso2')
     
 	compile ('org.springframework.boot:spring-boot-starter-web')
- 	compile ('org.apache.tomcat.embed:tomcat-embed-jasper')
+ 	compile ('org.apache.velocity:velocity')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'
     compile group: 'org.springframework.session', name: 'spring-session'
@@ -45,7 +45,6 @@ dependencies {
     compile group: 'javax.mail', name: 'mail', version: '1.4'
     
 	provided group: 'javax.servlet', name: 'javax.servlet-api'
-	compile group: 'javax.servlet', name: 'jstl'
 }
 
 task manifestJar(dependsOn:'classes',type: Jar) {

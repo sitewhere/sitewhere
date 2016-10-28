@@ -194,6 +194,22 @@ public class CoapTests {
 	}
     }
 
+    /** Send Silectica rule as an ack (payload only version) */
+    @Test
+    public void sendSilecticaRuleAckPayloadOnly() {
+	CoapClient client = createClientFor("devices/00173B1200210024/acks");
+	String rule = "{\"rule\":{\"r\":0,\"n\":\"netup\",\"v\":\"Networking Up\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":1}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}";
+	try {
+	    CoapResponse response = client.post(rule.getBytes(), MediaTypeRegistry.APPLICATION_JSON);
+	    System.out.println(response.getCode());
+	    System.out.println(response.getOptions());
+	    System.out.println(response.getResponseText());
+	    Thread.sleep(100);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+    }
+
     @Test
     public void testAddAcknowledgementSimple() {
 	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");

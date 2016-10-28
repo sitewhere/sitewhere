@@ -16,6 +16,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.core.Boilerplate;
@@ -31,7 +33,8 @@ import com.sitewhere.spi.server.ISiteWhereApplication;
  * @author Derek
  */
 @Configuration
-@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class,
+	VelocityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 public class SiteWhereApplication implements ISiteWhereApplication {
 
     /** Static logger instance */

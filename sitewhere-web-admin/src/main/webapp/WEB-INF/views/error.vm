@@ -1,0 +1,53 @@
+<!-- #set ($sitewhere_title = "Error") -->
+
+<!DOCTYPE html>
+<html class="sw-body">
+<head>
+<title>SiteWhere - ${sitewhere_title}</title>
+<script src="${request.contextPath}/scripts/jquery-1.11.3.min.js"></script>
+<script src="${request.contextPath}/scripts/jquery.validity.js"></script>
+<script src="${request.contextPath}/scripts/kendo.web.min.js"></script>
+<script src="${request.contextPath}/scripts/modernizr.js"></script>
+<script src="${request.contextPath}/scripts/moment.js"></script>
+<script src="${request.contextPath}/scripts/sitewhere.js"></script>
+<link rel="shortcut icon" href="${request.contextPath}/img/favicon.ico" />
+<link href="${request.contextPath}/css/kendo.common.min.css"
+	rel="stylesheet" />
+<link href="${request.contextPath}/css/kendo.bootstrap.min.css"
+	rel="stylesheet" />
+<link href="${request.contextPath}/css/bootstrap.min.css"
+	rel="stylesheet" media="screen">
+<link href="${request.contextPath}/css/font-awesome.min.css"
+	rel="stylesheet" media="screen">
+<link href="${request.contextPath}/css/jquery.validity.css"
+	rel="stylesheet">
+<link href="${request.contextPath}/css/sitewhere.css" rel="stylesheet" />
+
+<!-- -->
+#parse ("includes/i18next.inc")
+
+</head>
+
+<body class="sw-body">
+	<div class="sw-container">
+		<div class="sw-top-bar"></div>
+		<div class="k-content container sw-content">
+			<div class="sw-header">
+				<div class="sw-logo">
+					<img src="${request.contextPath}/img/sitewhere-small.png" />
+				</div>
+			</div>
+
+			<!-- Title Bar -->
+			<div class="sw-title-bar content k-header">
+				<h1 data-i18n="error.title"></h1>
+			</div>
+
+			<h3>${message}</h3>
+
+			#parse ("includes/bottom.inc")
+
+			<script type="text/javascript">
+				/** Set sitewhere_title */
+				sitewhere_i18next.sitewhere_title = "error.title";
+			</script>

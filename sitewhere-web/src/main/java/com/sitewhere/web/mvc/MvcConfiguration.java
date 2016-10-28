@@ -10,10 +10,11 @@ package com.sitewhere.web.mvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.view.JstlView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
+import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
 
@@ -29,17 +30,20 @@ public class MvcConfiguration extends WebMvcConfigurationSupport {
 	configurer.favorPathExtension(false);
     }
 
-    /**
-     * Set up the JSP view resolver.
-     * 
-     * @return
-     */
     @Bean
-    public UrlBasedViewResolver viewResolver() {
-	UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-	resolver.setViewClass(JstlView.class);
-	resolver.setPrefix("/WEB-INF/jsp/");
-	resolver.setSuffix(".jsp");
-	return resolver;
+    public ViewResolver viewResolver() {
+	VelocityViewResolver bean = new VelocityViewResolver();
+	bean.setCache(true);
+	bean.setPrefix("/");
+	bean.setSuffix(".vm");
+	bean.setRequestContextAttribute("request");
+	return bean;
+    }
+
+    @Bean
+    public VelocityConfigurer velocityConfig() {
+	VelocityConfigurer velocityConfigurer = new VelocityConfigurer();
+	velocityConfigurer.setResourceLoaderPath("/WEB-INF/views/");
+	return velocityConfigurer;
     }
 }
