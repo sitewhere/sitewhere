@@ -75,12 +75,12 @@ public interface ITenantConfigurationResolver {
     public IResource getActiveTenantConfiguration() throws SiteWhereException;
 
     /**
-     * Create a default configuration resource for a new tenant.
+     * Copies all resources from the tenant template into the tenant.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public IResource createDefaultTenantConfiguration() throws SiteWhereException;
+    public IResource copyTenantTemplateResources() throws SiteWhereException;
 
     /**
      * Gets the staged configuration resource for a given tenant. Returns null

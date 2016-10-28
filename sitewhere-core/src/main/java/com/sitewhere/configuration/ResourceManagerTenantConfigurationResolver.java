@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
@@ -48,9 +49,6 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
 
     /** Folder containing tenant script resources */
     public static final String SCRIPTS_FOLDER = "scripts";
-
-    /** Folder containing default tenant template information */
-    public static final String DEFAULT_TENANT_TEMPLATE_FOLDER = "tenant-template";
 
     /** Filename for tenant configuration information */
     public static final String DEFAULT_TENANT_CONFIGURATION_FILE = "sitewhere-tenant";
@@ -208,21 +206,28 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
-     * createDefaultTenantConfiguration()
+     * copyTenantTemplateResources()
      */
     @Override
-    public IResource createDefaultTenantConfiguration() throws SiteWhereException {
+    public IResource copyTenantTemplateResources() throws SiteWhereException {
 	String tenantId = getTenant().getId();
 
-	IMultiResourceCreateResponse response = getResourceManager()
-		.copyGlobalResourcesToTenant(DEFAULT_TENANT_TEMPLATE_FOLDER, tenantId, ResourceCreateMode.OVERWRITE);
+	// Account for missing template id (backward compatibility).
+	String templateId = getTenant().getTenantTemplateId();
+	if (templateId == null) {
+	    templateId = IDefaultResourcePaths.EMPTY_TEMPLATE_NAME;
+	}
+
+	IMultiResourceCreateResponse response = getResourceManager().copyGlobalResourcesToTenant(
+		IDefaultResourcePaths.TEMPLATES_FOLDER_NAME + File.separator + templateId, tenantId,
+		ResourceCreateMode.OVERWRITE);
 	if (response.getErrors().size() > 0) {
 	    LOGGER.warn("Errors encountered while copying template to tenant.");
 	    for (IResourceCreateError error : response.getErrors()) {
 		LOGGER.warn("Error copying: " + error.getPath() + ". Reason: " + error.getReason().name());
 	    }
 	}
-	LOGGER.info("Created configuration for '" + tenantId + "' based on default template.");
+	LOGGER.info("Created configuration for '" + tenantId + "' based on " + templateId + "' template.");
 
 	return getActiveTenantConfiguration();
     }

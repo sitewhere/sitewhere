@@ -55,6 +55,13 @@ public interface ITenant extends IMetadataProviderEntity {
     public List<String> getAuthorizedUserIds();
 
     /**
+     * Get id of template used to create tenant.
+     * 
+     * @return
+     */
+    public String getTenantTemplateId();
+
+    /**
      * Get runtime state of tenant engine.
      * 
      * @return

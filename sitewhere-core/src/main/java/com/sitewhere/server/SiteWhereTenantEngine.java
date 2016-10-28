@@ -412,7 +412,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void verifyTenantConfigured() throws SiteWhereException {
 	if (!getTenantConfigurationResolver().hasValidConfiguration()) {
-	    getTenantConfigurationResolver().createDefaultTenantConfiguration();
+	    getTenantConfigurationResolver().copyTenantTemplateResources();
 	}
     }
 
@@ -439,8 +439,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
 	config = getTenantConfigurationResolver().getActiveTenantConfiguration();
 	if (config == null) {
-	    LOGGER.info("No active configuration found. Copying default configuration.");
-	    config = getTenantConfigurationResolver().createDefaultTenantConfiguration();
+	    LOGGER.info("No active configuration found. Copying configuration from template.");
+	    config = getTenantConfigurationResolver().copyTenantTemplateResources();
 	}
 	this.tenantContext = ConfigurationUtils.buildTenantContext(config, getTenant(),
 		SiteWhere.getServer().getVersion(), globalContext);

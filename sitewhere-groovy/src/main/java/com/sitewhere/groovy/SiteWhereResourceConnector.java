@@ -8,9 +8,9 @@ import java.net.URLConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.server.resource.ResourceStreamHandler;
 import com.sitewhere.server.resource.ResourceUrlConnection;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.resource.IResource;
 
 import groovy.util.ResourceConnector;
@@ -56,17 +56,15 @@ public class SiteWhereResourceConnector implements ResourceConnector {
 	    if (name.startsWith(ResourceUrlConnection.PROTO_SITEWHERE)) {
 		result = new ResourceUrlConnection(new URL(null, name, handler));
 	    } else if (getTenantId() != null) {
-		result = new ResourceUrlConnection(
-			new URL(ResourceUrlConnection.PROTO_SITEWHERE, ResourceUrlConnection.SUBJECT_RESOURCE, -1,
-				"/" + ResourceUrlConnection.TYPE_TENANT_RESOURCE + "/" + getTenantId() + "/"
-					+ ResourceManagerGlobalConfigurationResolver.SCRIPTS_FOLDER + "/groovy/" + name,
-				handler));
+		result = new ResourceUrlConnection(new URL(ResourceUrlConnection.PROTO_SITEWHERE,
+			ResourceUrlConnection.SUBJECT_RESOURCE, -1, "/" + ResourceUrlConnection.TYPE_TENANT_RESOURCE
+				+ "/" + getTenantId() + "/" + IDefaultResourcePaths.SCRIPTS_FOLDER + "/groovy/" + name,
+			handler));
 	    } else {
-		result = new ResourceUrlConnection(
-			new URL(ResourceUrlConnection.PROTO_SITEWHERE, ResourceUrlConnection.SUBJECT_RESOURCE, -1,
-				"/" + ResourceUrlConnection.TYPE_GLOBAL_RESOURCE + "/global/"
-					+ ResourceManagerGlobalConfigurationResolver.SCRIPTS_FOLDER + "/groovy/" + name,
-				handler));
+		result = new ResourceUrlConnection(new URL(ResourceUrlConnection.PROTO_SITEWHERE,
+			ResourceUrlConnection.SUBJECT_RESOURCE, -1, "/" + ResourceUrlConnection.TYPE_GLOBAL_RESOURCE
+				+ "/global/" + IDefaultResourcePaths.SCRIPTS_FOLDER + "/groovy/" + name,
+			handler));
 	    }
 	    try {
 		result.getInputStream();

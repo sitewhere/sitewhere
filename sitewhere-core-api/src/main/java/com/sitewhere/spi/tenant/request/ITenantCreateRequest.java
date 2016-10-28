@@ -52,4 +52,11 @@ public interface ITenantCreateRequest extends IMetadataProvider {
      * @return
      */
     public List<String> getAuthorizedUserIds();
+
+    /**
+     * Get id of template used to create tenant.
+     * 
+     * @return
+     */
+    public String getTenantTemplateId();
 }

@@ -44,6 +44,9 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
     /** List of user ids authorized to access tenant */
     private List<String> authorizedUserIds = new ArrayList<String>();
 
+    /** Tenant template id */
+    private String tenantTemplateId;
+
     /** Runtime state of tenant engine */
     private ISiteWhereTenantEngineState engineState;
 
@@ -110,6 +113,19 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 
     public void setAuthorizedUserIds(List<String> authorizedUserIds) {
 	this.authorizedUserIds = authorizedUserIds;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenant#getTenantTemplateId()
+     */
+    public String getTenantTemplateId() {
+	return tenantTemplateId;
+    }
+
+    public void setTenantTemplateId(String tenantTemplateId) {
+	this.tenantTemplateId = tenantTemplateId;
     }
 
     /*

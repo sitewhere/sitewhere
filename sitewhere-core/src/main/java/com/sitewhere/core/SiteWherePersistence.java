@@ -1321,6 +1321,10 @@ public class SiteWherePersistence {
 	assureData(request.getAuthenticationToken());
 	tenant.setAuthenticationToken(request.getAuthenticationToken());
 
+	// Tenant template is required.
+	assureData(request.getTenantTemplateId());
+	tenant.setTenantTemplateId(request.getTenantTemplateId());
+
 	tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
 
 	MetadataProvider.copy(request.getMetadata(), tenant);
@@ -1340,6 +1344,12 @@ public class SiteWherePersistence {
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
 	if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
 	    throw new SiteWhereException("Can not change the id of an existing tenant.");
+	}
+
+	if (request.getTenantTemplateId() != null) {
+	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
+		throw new SiteWhereException("Can not change the template of an existing tenant.");
+	    }
 	}
 
 	if (request.getName() != null) {

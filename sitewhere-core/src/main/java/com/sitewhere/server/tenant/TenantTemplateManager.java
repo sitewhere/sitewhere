@@ -11,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -53,9 +53,8 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	List<IResource> all = resources.getGlobalResources();
 	for (IResource resource : all) {
 	    Path path = Paths.get(resource.getPath());
-	    if (path.startsWith(ResourceManagerGlobalConfigurationResolver.TEMPLATES_FOLDER_NAME)) {
-		if ((path.getNameCount() == 3)
-			&& (path.endsWith(ResourceManagerGlobalConfigurationResolver.TEMPLATE_JSON_FILE_NAME))) {
+	    if (path.startsWith(IDefaultResourcePaths.TEMPLATES_FOLDER_NAME)) {
+		if ((path.getNameCount() == 3) && (path.endsWith(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME))) {
 		    TenantTemplate template = MarshalUtils.unmarshalJson(resource.getContent(), TenantTemplate.class);
 		    templates.add(template);
 		}

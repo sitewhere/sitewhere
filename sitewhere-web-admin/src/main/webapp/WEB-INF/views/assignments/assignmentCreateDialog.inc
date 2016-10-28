@@ -247,16 +247,18 @@
 			},
 		});
 		var module = acGetSelectedAssetModule();
-		var template = getTemplateForAssetModule(module);
-		if (acAssetMatches) {
-			acAssetMatches.destroy();
+		if (module) {
+			var template = getTemplateForAssetModule(module);
+			if (acAssetMatches) {
+				acAssetMatches.destroy();
+			}
+			acAssetMatches = $("#ac-asset-matches").kendoListView({
+				dataSource : acAssetDS,
+				selectable : "single",
+				template : template,
+				change : acAssetChosen
+			}).data("kendoListView");
 		}
-		acAssetMatches = $("#ac-asset-matches").kendoListView({
-			dataSource : acAssetDS,
-			selectable : "single",
-			template : template,
-			change : acAssetChosen
-		}).data("kendoListView");
 	}
 
 	/** Gets the currently selected asset module id */

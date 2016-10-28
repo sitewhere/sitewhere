@@ -29,13 +29,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.rest.model.resource.MultiResourceCreateResponse;
 import com.sitewhere.rest.model.resource.Resource;
 import com.sitewhere.rest.model.resource.ResourceCreateError;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.IResourceManager;
@@ -161,7 +161,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	}
 
 	// Cache contents of "templates" folder.
-	File templates = new File(getRootFolder(), ResourceManagerGlobalConfigurationResolver.TEMPLATES_FOLDER_NAME);
+	File templates = new File(getRootFolder(), IDefaultResourcePaths.TEMPLATES_FOLDER_NAME);
 	if (!(templates.exists() && (templates.isDirectory()))) {
 	    throw new SiteWhereException("Tenant templates folder does not exist.");
 	}
@@ -304,7 +304,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      */
     protected ResourceType findResourceType(File file) {
 	String filename = file.getName();
-	if (filename.equals(ResourceManagerGlobalConfigurationResolver.GLOBAL_CONFIG_FILE_NAME)) {
+	if (filename.equals(IDefaultResourcePaths.GLOBAL_CONFIG_FILE_NAME)) {
 	    return ResourceType.ConfigurationFile;
 	} else if (filename.equals(TENANT_CONFIG_FILENAME)) {
 	    return ResourceType.ConfigurationFile;

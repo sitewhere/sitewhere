@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
@@ -37,24 +38,6 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
 
     /** Static logger instance */
     public static Logger LOGGER = LogManager.getLogger();
-
-    /** File name for SiteWhere global configuration file */
-    public static final String GLOBAL_CONFIG_FILE_NAME = "sitewhere-server.xml";
-
-    /** File name for SiteWhere state information in JSON format */
-    public static final String STATE_FILE_NAME = "sitewhere-state.json";
-
-    /** Folder containing tenant asset resources */
-    public static final String ASSETS_FOLDER = "assets";
-
-    /** Folder containing tenant script resources */
-    public static final String SCRIPTS_FOLDER = "scripts";
-
-    /** Folder containing tenant template resources */
-    public static final String TEMPLATES_FOLDER_NAME = "templates";
-
-    /** File name for template descriptor */
-    public static final String TEMPLATE_JSON_FILE_NAME = "template.json";
 
     /** Resource manager implementation */
     private IResourceManager resourceManager;
@@ -105,7 +88,7 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
      */
     @Override
     public IResource getAssetResource(String path) throws SiteWhereException {
-	return getResourceManager().getGlobalResource(ASSETS_FOLDER + File.separator + path);
+	return getResourceManager().getGlobalResource(IDefaultResourcePaths.ASSETS_FOLDER + File.separator + path);
     }
 
     /*
@@ -116,7 +99,7 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
      */
     @Override
     public IResource getScriptResource(String path) throws SiteWhereException {
-	return getResourceManager().getGlobalResource(SCRIPTS_FOLDER + File.separator + path);
+	return getResourceManager().getGlobalResource(IDefaultResourcePaths.SCRIPTS_FOLDER + File.separator + path);
     }
 
     /*
@@ -127,7 +110,7 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
      */
     @Override
     public IResource getGlobalConfiguration(IVersion version) throws SiteWhereException {
-	return getResourceManager().getGlobalResource(GLOBAL_CONFIG_FILE_NAME);
+	return getResourceManager().getGlobalResource(IDefaultResourcePaths.GLOBAL_CONFIG_FILE_NAME);
     }
 
     /*
@@ -138,7 +121,7 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
      */
     @Override
     public IResource resolveServerState(IVersion version) throws SiteWhereException {
-	return getResourceManager().getGlobalResource(STATE_FILE_NAME);
+	return getResourceManager().getGlobalResource(IDefaultResourcePaths.STATE_FILE_NAME);
     }
 
     /*
@@ -151,7 +134,7 @@ public class ResourceManagerGlobalConfigurationResolver implements IGlobalConfig
     public void storeServerState(IVersion version, byte[] data) throws SiteWhereException {
 	List<IResourceCreateRequest> requests = new ArrayList<IResourceCreateRequest>();
 	ResourceCreateRequest request = new ResourceCreateRequest();
-	request.setPath(STATE_FILE_NAME);
+	request.setPath(IDefaultResourcePaths.STATE_FILE_NAME);
 	request.setResourceType(ResourceType.ConfigurationFile);
 	request.setContent(data);
 	requests.add(request);

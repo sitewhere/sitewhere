@@ -45,6 +45,9 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     /** List of users authorized for access */
     private List<String> authorizedUserIds;
 
+    /** Tenant template id */
+    private String tenantTemplateId;
+
     /*
      * (non-Javadoc)
      * 
@@ -113,16 +116,32 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	this.authorizedUserIds = authorizedUserIds;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest#getTenantTemplateId
+     * ()
+     */
+    public String getTenantTemplateId() {
+	return tenantTemplateId;
+    }
+
+    public void setTenantTemplateId(String tenantTemplateId) {
+	this.tenantTemplateId = tenantTemplateId;
+    }
+
     public static class Builder {
 
 	/** Request being built */
 	private TenantCreateRequest request = new TenantCreateRequest();
 
-	public Builder(String id, String name, String authenticationToken, String logoUrl) {
+	public Builder(String id, String name, String authenticationToken, String logoUrl, String tenantTemplateId) {
 	    request.setId(id);
 	    request.setName(name);
 	    request.setAuthenticationToken(authenticationToken);
 	    request.setLogoUrl(logoUrl);
+	    request.setTenantTemplateId(tenantTemplateId);
 	}
 
 	public Builder(ITenant existing) {
@@ -131,6 +150,7 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	    request.setLogoUrl(existing.getLogoUrl());
 	    request.setAuthenticationToken(existing.getAuthenticationToken());
 	    request.setAuthorizedUserIds(existing.getAuthorizedUserIds());
+	    request.setTenantTemplateId(existing.getTenantTemplateId());
 	    request.setMetadata(existing.getMetadata());
 	}
 

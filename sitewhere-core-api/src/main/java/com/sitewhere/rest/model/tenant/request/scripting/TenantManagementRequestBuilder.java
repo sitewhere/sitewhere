@@ -14,6 +14,7 @@ import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.rest.model.tenant.request.TenantGroupCreateRequest;
 import com.sitewhere.rest.model.tenant.request.TenantGroupElementCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantGroup;
 import com.sitewhere.spi.tenant.ITenantGroupElement;
@@ -35,7 +36,8 @@ public class TenantManagementRequestBuilder {
     }
 
     /**
-     * Create builder for new tenant request.
+     * Create builder for new tenant request. Assumes tenant uses the "empty"
+     * tenant template.
      * 
      * @param id
      * @param name
@@ -44,7 +46,23 @@ public class TenantManagementRequestBuilder {
      * @return
      */
     public TenantCreateRequest.Builder newTenant(String id, String name, String authenticationToken, String logoUrl) {
-	return new TenantCreateRequest.Builder(id, name, authenticationToken, logoUrl);
+	return newTenant(id, name, authenticationToken, logoUrl, IDefaultResourcePaths.EMPTY_TEMPLATE_NAME);
+    }
+
+    /**
+     * Create builder for new tenant request. Allows tenant template to be
+     * specified.
+     * 
+     * @param id
+     * @param name
+     * @param authenticationToken
+     * @param logoUrl
+     * @param tenantTemplateId
+     * @return
+     */
+    public TenantCreateRequest.Builder newTenant(String id, String name, String authenticationToken, String logoUrl,
+	    String tenantTemplateId) {
+	return new TenantCreateRequest.Builder(id, name, authenticationToken, logoUrl, tenantTemplateId);
     }
 
     /**

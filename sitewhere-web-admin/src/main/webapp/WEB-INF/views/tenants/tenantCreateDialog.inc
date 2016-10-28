@@ -55,10 +55,10 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="tc-configuration-type"
-							data-i18n="public.TenantConfigType">Configuration Type</label>
+						<label class="control-label" for="tc-template"
+							data-i18n="public.TenantConfigType">Template</label>
 						<div class="controls">
-							<select id="tc-configuration-type"></select>
+							<select id="tc-template" class="input-xlarge"></select>
 						</div>
 					</div>
 					<input id="tc-init-tenant-id" type="hidden" value="" />
@@ -82,8 +82,8 @@
 	/** Provides external access to tabs */
 	var tcTabs;
 
-	/** Dropdown with list of asset types */
-	var tcConfigTypesDropdown;
+	/** Dropdown with list of tenant templates */
+	var tcTemplatesDropdown;
 
 	/** Chooser for picking authorized users */
 	var tcAuthUsersChooser;
@@ -91,21 +91,26 @@
 	$(document).ready(
 			function() {
 
-				/** Available asset types shown in dropdown */
-				var ccConfigTypes = [ {
-					text : "Default",
-					value : "default"
-				} ];
-
 				/** Create tab strip */
 				tcTabs = $("#tc-tabs").kendoTabStrip({
 					animation : false
 				}).data("kendoTabStrip");
 
-				tcConfigTypesDropdown = $("#tc-configuration-type").kendoDropDownList({
-					dataTextField : "text",
-					dataValueField : "value",
-					dataSource : ccConfigTypes,
+				tcTemplatesDropdown = $("#tc-template").kendoDropDownList({
+					dataTextField : "name",
+					dataValueField : "id",
+					dataSource : {
+						transport : {
+							read : {
+								url : "${request.contextPath}/api/tenants/templates",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+								},
+								dataType : "json",
+							}
+						},
+					},
 				}).data("kendoDropDownList");
 
 				/** Chooser for authorized users */
@@ -155,6 +160,7 @@
 										"logoUrl" : $('#tc-tenant-logo').val(),
 										"authenticationToken" : $('#tc-tenant-auth-token').val(),
 										"authorizedUserIds" : tcAuthUsersChooser.value(),
+										"tenantTemplateId" : $('#tc-template').val(),
 									}
 									if (isCreate) {
 										$.postAuthJSON("${request.contextPath}/api/tenants", tenantData,
