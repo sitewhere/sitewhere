@@ -9,6 +9,8 @@ package com.sitewhere.web;
 
 import java.util.Arrays;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -57,7 +59,15 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
-	TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+	TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
+	    protected void postProcessContext(Context context) {
+		final int cacheSize = 100 * 1024 * 1024;
+		StandardRoot standardRoot = new StandardRoot(context);
+		standardRoot.setCacheMaxSize(cacheSize);
+		standardRoot.setCacheObjectMaxSize(cacheSize / 20);
+		context.setResources(standardRoot);
+	    }
+	};
 	tomcat.setContextPath("/sitewhere");
 	tomcat.setPort(8080);
 	return tomcat;
