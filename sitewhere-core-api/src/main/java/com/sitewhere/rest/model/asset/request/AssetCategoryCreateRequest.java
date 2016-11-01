@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.asset.request;
 
 import com.sitewhere.spi.asset.AssetType;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 
 /**
@@ -69,5 +70,46 @@ public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 
     public void setAssetType(AssetType assetType) {
 	this.assetType = assetType;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private AssetCategoryCreateRequest request = new AssetCategoryCreateRequest();
+
+	public Builder(IAssetCategory category) {
+	    this(category.getId(), category.getName());
+	    request.setAssetType(category.getAssetType());
+	}
+
+	public Builder(String id, String name) {
+	    request.setId(id);
+	    request.setName(name);
+	    request.setAssetType(AssetType.Hardware);
+	}
+
+	public Builder forHardwareAssets() {
+	    request.setAssetType(AssetType.Hardware);
+	    return this;
+	}
+
+	public Builder forDeviceAssets() {
+	    request.setAssetType(AssetType.Device);
+	    return this;
+	}
+
+	public Builder forLocationAssets() {
+	    request.setAssetType(AssetType.Location);
+	    return this;
+	}
+
+	public Builder forPersonAssets() {
+	    request.setAssetType(AssetType.Person);
+	    return this;
+	}
+
+	public AssetCategoryCreateRequest build() {
+	    return request;
+	}
     }
 }
