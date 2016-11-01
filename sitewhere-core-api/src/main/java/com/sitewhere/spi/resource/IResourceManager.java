@@ -42,13 +42,21 @@ public interface IResourceManager extends ILifecycleComponent {
     public List<IResource> getGlobalResources() throws SiteWhereException;
 
     /**
-     * Gets resources associated with the given tenant template.
+     * Get root names for tenant template resource trees.
      * 
-     * @param template
      * @return
      * @throws SiteWhereException
      */
-    public List<IResource> getTenantTemplateResources(String template) throws SiteWhereException;
+    public List<String> getTenantTemplateRoots() throws SiteWhereException;
+
+    /**
+     * Gets resources associated with the given tenant template.
+     * 
+     * @param templateId
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IResource> getTenantTemplateResources(String templateId) throws SiteWhereException;
 
     /**
      * Delete global resource at the given path.

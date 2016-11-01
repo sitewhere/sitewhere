@@ -50,16 +50,18 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	templates.clear();
 
 	IResourceManager resources = SiteWhere.getServer().getRuntimeResourceManager();
-	List<IResource> all = resources.getGlobalResources();
-	for (IResource resource : all) {
-	    Path path = Paths.get(resource.getPath());
-	    if (path.startsWith(IDefaultResourcePaths.TEMPLATES_FOLDER_NAME)) {
-		if ((path.getNameCount() == 3) && (path.endsWith(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME))) {
+	List<String> roots = resources.getTenantTemplateRoots();
+	for (String root : roots) {
+	    List<IResource> all = resources.getTenantTemplateResources(root);
+	    for (IResource resource : all) {
+		Path path = Paths.get(resource.getPath());
+		if ((path.getNameCount() == 1) && (path.startsWith(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME))) {
 		    TenantTemplate template = MarshalUtils.unmarshalJson(resource.getContent(), TenantTemplate.class);
 		    templates.add(template);
 		}
 	    }
 	}
+
 	// Sort by template name.
 	templates.sort(new Comparator<ITenantTemplate>() {
 

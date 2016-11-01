@@ -35,7 +35,10 @@ import com.sitewhere.rest.model.resource.ResourceCreateError;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.IResourceManager;
@@ -476,14 +479,39 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.resource.IResourceManager#getTenantTemplateRoots()
+     */
+    @Override
+    public List<String> getTenantTemplateRoots() throws SiteWhereException {
+	return new ArrayList<String>(templateResourceMaps.keySet());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.spi.resource.IResourceManager#getTenantTemplateResources(
      * java.lang.String)
      */
     @Override
-    public List<IResource> getTenantTemplateResources(String template) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+    public List<IResource> getTenantTemplateResources(String templateId) throws SiteWhereException {
+	ResourceMap map = assureTemplateResourceMap(templateId);
+	return new ArrayList<IResource>(map.values());
+    }
+
+    /**
+     * Verify that a {@link ResourceMap} exists for the given template id.
+     * 
+     * @param templateId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ResourceMap assureTemplateResourceMap(String templateId) throws SiteWhereException {
+	ResourceMap map = templateResourceMaps.get(templateId);
+	if (map == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantTemplateId, ErrorLevel.ERROR);
+	}
+	return map;
     }
 
     /*

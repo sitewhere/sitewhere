@@ -21,4 +21,26 @@ public interface ITenantTemplate {
      * @return
      */
     public String getName();
+
+    /**
+     * Get model initializer information.
+     * 
+     * @return
+     */
+    public Initializers getInitializers();
+
+    /**
+     * Model initializers information.
+     * 
+     * @author Derek
+     */
+    public static interface Initializers {
+
+	/**
+	 * Get device management initializer Groovy script location.
+	 * 
+	 * @return
+	 */
+	public String getDeviceManagement();
+    }
 }

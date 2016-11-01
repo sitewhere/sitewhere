@@ -146,6 +146,9 @@ public enum ErrorCode {
     /** Invalid scheduled job token */
     DuplicateScheduledJobToken(548, "Scheduled job token already in use."),
 
+    /** Invalid tenant template id */
+    InvalidTenantTemplateId(549, "Tenant template not found"),
+
     /******************
      * DEVICE COMMAND *
      ******************/

@@ -15,6 +15,9 @@ public class TenantTemplate implements ITenantTemplate {
     /** Template name */
     private String name;
 
+    /** Model initializers */
+    private Initializers initializers;
+
     /*
      * (non-Javadoc)
      * 
@@ -39,5 +42,43 @@ public class TenantTemplate implements ITenantTemplate {
 
     public void setName(String name) {
 	this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ITenantTemplate#getInitializers()
+     */
+    public Initializers getInitializers() {
+	return initializers;
+    }
+
+    public void setInitializers(Initializers initializers) {
+	this.initializers = initializers;
+    }
+
+    /**
+     * Model initializers.
+     * 
+     * @author Derek
+     */
+    public static class Initializers implements ITenantTemplate.Initializers {
+
+	/** Device management Groovy script location */
+	private String deviceManagement;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.tenant.ITenantTemplate.Initializers#
+	 * getDeviceManagement()
+	 */
+	public String getDeviceManagement() {
+	    return deviceManagement;
+	}
+
+	public void setDeviceManagement(String deviceManagement) {
+	    this.deviceManagement = deviceManagement;
+	}
     }
 }
