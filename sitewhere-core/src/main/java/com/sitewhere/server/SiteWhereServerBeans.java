@@ -80,17 +80,4 @@ public interface SiteWhereServerBeans {
      * Bean id for tenant management data initializer in server configuration
      */
     public static final String BEAN_TENANT_MODEL_INITIALIZER = "tenantModelInitializer";
-
-    /**
-     * Bean id for device management data initializer in server configuration
-     */
-    public static final String BEAN_DEVICE_MODEL_INITIALIZER = "deviceModelInitializer";
-
-    /** Bean id for asset management data initializer in server configuration */
-    public static final String BEAN_ASSET_MODEL_INITIALIZER = "assetModelInitializer";
-
-    /**
-     * Bean id for schedule management data initializer in server configuration
-     */
-    public static final String BEAN_SCHEDULE_MODEL_INITIALIZER = "scheduleModelInitializer";
 }

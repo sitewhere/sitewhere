@@ -20,13 +20,6 @@
 	<!-- ######################## -->
 	<sw:tenant-configuration>
 
-		<!-- #################### -->
-		<!-- # GLOBAL OVERRIDES # -->
-		<!-- #################### -->
-		<sw:globals>
-			<!-- <global:groovy-configuration debug="true" verbose="true"/> -->
-		</sw:globals>
-
 		<!-- ########################### -->
 		<!-- # DATASTORE CONFIGURATION # -->
 		<!-- ########################### -->

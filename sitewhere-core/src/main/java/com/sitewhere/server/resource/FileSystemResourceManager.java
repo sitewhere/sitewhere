@@ -745,8 +745,10 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			    if ((kind == StandardWatchEventKinds.ENTRY_CREATE)
 				    || (kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
 				try {
-				    cacheFile(file);
-				    LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
+				    if (file.exists()) {
+					cacheFile(file);
+					LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
+				    }
 				} catch (Throwable t) {
 				    LOGGER.error("Unable to cache resource: " + file.getAbsolutePath(), t);
 				}

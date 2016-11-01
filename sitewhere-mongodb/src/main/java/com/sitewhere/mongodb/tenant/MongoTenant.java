@@ -39,6 +39,9 @@ public class MongoTenant implements MongoConverter<ITenant> {
     /** Property for authorized users */
     public static final String PROP_AUTH_USERS = "users";
 
+    /** Property for authorized users */
+    public static final String PROP_TEMPLATE_ID = "templateId";
+
     /*
      * (non-Javadoc)
      * 
@@ -71,6 +74,7 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
 	target.append(PROP_LOGO_URL, source.getLogoUrl());
 	target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
+	target.append(PROP_TEMPLATE_ID, source.getTenantTemplateId());
 
 	MongoSiteWhereEntity.toDBObject(source, target);
 	MongoMetadataProvider.toDBObject(source, target);
@@ -89,12 +93,14 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	String authToken = (String) source.get(PROP_AUTH_TOKEN);
 	String logo = (String) source.get(PROP_LOGO_URL);
 	List<String> authUsers = (List<String>) source.get(PROP_AUTH_USERS);
+	String templateId = (String) source.get(PROP_TEMPLATE_ID);
 
 	target.setId(id);
 	target.setName(name);
 	target.setAuthenticationToken(authToken);
 	target.setLogoUrl(logo);
 	target.setAuthorizedUserIds(authUsers);
+	target.setTenantTemplateId(templateId);
 
 	MongoSiteWhereEntity.fromDBObject(source, target);
 	MongoMetadataProvider.fromDBObject(source, target);

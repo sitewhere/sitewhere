@@ -157,7 +157,7 @@ public class ResourceUrlConnection extends URLConnection {
 	if (TYPE_GLOBAL_RESOURCE.equals(parts[0])) {
 	    handleGlobalResource(parts);
 	} else if (TYPE_TENANT_RESOURCE.equals(parts[0])) {
-	    handleGlobalResource(parts);
+	    handleTenantResource(parts);
 	}
     }
 

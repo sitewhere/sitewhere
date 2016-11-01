@@ -33,4 +33,7 @@ public interface IDefaultResourcePaths {
 
     /** Template that does not load any device data */
     public static final String EMPTY_TEMPLATE_NAME = "empty";
+
+    /** Resource name for tenant lock file */
+    public static final String TENANT_LOCK_RESOURCE_NAME = "tenant.lock";
 }

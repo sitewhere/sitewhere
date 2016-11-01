@@ -7,9 +7,6 @@
  */
 package com.sitewhere.server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +23,15 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
+import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.rest.model.command.CommandResponse;
-import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
@@ -43,34 +42,34 @@ import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
+import com.sitewhere.server.tenant.TenantTemplate;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
-import com.sitewhere.spi.scheduling.ISchedule;
+import com.sitewhere.spi.resource.ResourceCreateMode;
+import com.sitewhere.spi.resource.ResourceType;
+import com.sitewhere.spi.resource.request.IResourceCreateRequest;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
-import com.sitewhere.spi.server.asset.IAssetModelInitializer;
-import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -78,7 +77,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -185,24 +183,17 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start device management.
 	startNestedComponent(getScheduleManagement(), monitor, "Schedule management startup failed.", true);
 
-	// Populate schedule data if requested.
-	verifyScheduleModel();
-
 	// Start device management cache provider if specificed.
 	if (getDeviceManagementCacheProvider() != null) {
 	    startNestedComponent(getDeviceManagementCacheProvider(), monitor,
 		    "Device management cache provider startup failed.", true);
 	}
 
-	// Populate asset data if requested.
-	verifyAssetModel();
-
 	// Start asset module manager.
 	startNestedComponent(getAssetModuleManager(), monitor, "Asset module manager startup failed.", true);
 
 	// Start search provider manager.
 	startNestedComponent(getSearchProviderManager(), monitor, "Search provider manager startup failed.", true);
-	verifyDeviceModel();
 
 	// Start event processing subsystem.
 	startNestedComponent(getEventProcessing(), monitor, "Event processing subsystem startup failed.", true);
@@ -212,6 +203,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Start schedule manager.
 	startNestedComponent(getScheduleManager(), monitor, "Schedule manager startup failed.", true);
+
+	// Verify data models bootstrapped from tenant template.
+	verifyTenantBootstrapped();
     }
 
     /*
@@ -424,6 +418,104 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void verifyTenantConfigured() throws SiteWhereException {
 	if (!getTenantConfigurationResolver().hasValidConfiguration()) {
 	    getTenantConfigurationResolver().copyTenantTemplateResources();
+	}
+    }
+
+    /**
+     * Verify that tenant has been bootstrapped by model initializers registered
+     * in tenant template.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void verifyTenantBootstrapped() throws SiteWhereException {
+	IResource templateResource = getTenantConfigurationResolver()
+		.getResourceForPath(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+	if (templateResource == null) {
+	    LOGGER.info("Tenant already bootstrapped with tenant template data.");
+	    return;
+	}
+
+	// Bootstrap process waits on a lock resource to handle case where
+	// multiple SiteWhere instances using the same datastore are starting at
+	// the same time. Only one instance should bootstrap the data.
+	IResource lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
+		IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+	if (lock != null) {
+	    while (true) {
+		LOGGER.info("Tenant bootstrap process waiting on lock...");
+		try {
+		    Thread.sleep(1000);
+		    lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
+			    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+		    // If another instance created a lock and released it, we
+		    // can assume that the tenant has already been bootstrapped.
+		    if (lock == null) {
+			return;
+		    }
+		} catch (InterruptedException e) {
+		    LOGGER.info("Tenant bootstrap process lock interrupted.");
+		    return;
+		}
+	    }
+	}
+
+	// Create lock resource to prevent other instances from bootstrapping.
+	createLockResource();
+
+	// Unmarshal template and bootstrap from it.
+	TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
+	try {
+	    bootstrapFromTemplate(template);
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to bootstrap tenant from tenant template configuration.", t);
+	} finally {
+	    SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
+		    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+	}
+
+	// Delete template file to prevent bootstrapping on future startups.
+	SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
+		IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+    }
+
+    /**
+     * Bootstrap tenant data based on information contained in the tenant
+     * template.
+     * 
+     * @param template
+     * @throws SiteWhereException
+     */
+    protected void bootstrapFromTemplate(TenantTemplate template) throws SiteWhereException {
+	if (template.getInitializers() != null) {
+
+	    // Execute device management model initializer if configured.
+	    if (template.getInitializers().getDeviceManagement() != null) {
+		GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
+			template.getInitializers().getDeviceManagement());
+		dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
+	    }
+	}
+    }
+
+    /**
+     * Create a lock resource to prevent other SiteWhere instances from trying
+     * to bootstrap concurrently with this instance.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void createLockResource() throws SiteWhereException {
+	ResourceCreateRequest request = new ResourceCreateRequest();
+	request.setResourceType(ResourceType.ConfigurationFile);
+	request.setContent("LOCK".getBytes());
+	request.setPath(IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+	List<IResourceCreateRequest> requests = new ArrayList<IResourceCreateRequest>();
+	requests.add(request);
+
+	IMultiResourceCreateResponse response = SiteWhere.getServer().getRuntimeResourceManager()
+		.createTenantResources(getTenant().getId(), requests, ResourceCreateMode.FAIL_IF_EXISTS);
+	if (response.getErrors().size() > 0) {
+	    throw new SiteWhereException(
+		    "Unable to create lock resource. " + response.getErrors().get(0).getReason().toString());
 	}
     }
 
@@ -647,82 +739,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    return (ISearchProviderManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
 	} catch (NoSuchBeanDefinitionException e) {
 	    return new SearchProviderManager();
-	}
-    }
-
-    /**
-     * Read a line from standard in.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected String readLine() throws SiteWhereException {
-	try {
-	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	    return br.readLine();
-	} catch (IOException e) {
-	    throw new SiteWhereException(e);
-	}
-    }
-
-    /**
-     * Check whether device model is populated and offer to bootstrap system if
-     * not.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void verifyDeviceModel() throws SiteWhereException {
-	try {
-	    IDeviceModelInitializer init = (IDeviceModelInitializer) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
-	    ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
-	    if (sites.getNumResults() == 0) {
-		init.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
-	    }
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No device model initializer found in Spring bean configuration. Skipping.");
-	    return;
-	}
-    }
-
-    /**
-     * Check whether asset model is populated and offer to bootstrap system if
-     * not.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void verifyAssetModel() throws SiteWhereException {
-	try {
-	    IAssetModelInitializer init = (IAssetModelInitializer) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
-	    ISearchResults<IAssetCategory> categories = getAssetManagement()
-		    .listAssetCategories(new SearchCriteria(1, 1));
-	    if (categories.getNumResults() == 0) {
-		init.initialize(getTenantConfigurationResolver(), getAssetManagement());
-	    }
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");
-	    return;
-	}
-    }
-
-    /**
-     * Check whether schedule model is populated and offer to bootstrap system
-     * if not.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void verifyScheduleModel() throws SiteWhereException {
-	try {
-	    IScheduleModelInitializer init = (IScheduleModelInitializer) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER);
-	    ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(new SearchCriteria(1, 1));
-	    if (schedules.getNumResults() == 0) {
-		init.initialize(getScheduleManagement());
-	    }
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No schedule model initializer found in Spring bean configuration. Skipping.");
-	    return;
 	}
     }
 
