@@ -218,8 +218,7 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
 	    templateId = IDefaultResourcePaths.EMPTY_TEMPLATE_NAME;
 	}
 
-	IMultiResourceCreateResponse response = getResourceManager().copyGlobalResourcesToTenant(
-		IDefaultResourcePaths.TEMPLATES_FOLDER_NAME + File.separator + templateId, tenantId,
+	IMultiResourceCreateResponse response = getResourceManager().copyTemplateResourcesToTenant(templateId, tenantId,
 		ResourceCreateMode.OVERWRITE);
 	if (response.getErrors().size() > 0) {
 	    LOGGER.warn("Errors encountered while copying template to tenant.");

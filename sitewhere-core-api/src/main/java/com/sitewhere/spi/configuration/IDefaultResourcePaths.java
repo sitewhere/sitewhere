@@ -13,14 +13,20 @@ public interface IDefaultResourcePaths {
     /** File name for SiteWhere state information in JSON format */
     public static final String STATE_FILE_NAME = "sitewhere-state.json";
 
+    /** Folder containing global resources */
+    public static final String GLOBAL_FOLDER_NAME = "global";
+
+    /** Folder containing tenant resources */
+    public static final String TENANTS_FOLDER_NAME = "tenants";
+
+    /** Folder containing tenant template resources */
+    public static final String TEMPLATES_FOLDER_NAME = "templates";
+
     /** Folder containing tenant asset resources */
     public static final String ASSETS_FOLDER = "assets";
 
     /** Folder containing tenant script resources */
     public static final String SCRIPTS_FOLDER = "scripts";
-
-    /** Folder containing tenant template resources */
-    public static final String TEMPLATES_FOLDER_NAME = "templates";
 
     /** File name for template descriptor */
     public static final String TEMPLATE_JSON_FILE_NAME = "template.json";

@@ -1,4 +1,7 @@
 {
 	"id": "construction",
-	"name": "Construction Site Example"
+	"name": "Construction Site Example",
+	"initializers": {
+		"deviceManagement": "scripts/groovy/initializer/deviceModel.groovy"
+	}
 }

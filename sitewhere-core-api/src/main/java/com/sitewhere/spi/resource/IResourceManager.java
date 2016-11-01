@@ -42,6 +42,15 @@ public interface IResourceManager extends ILifecycleComponent {
     public List<IResource> getGlobalResources() throws SiteWhereException;
 
     /**
+     * Gets resources associated with the given tenant template.
+     * 
+     * @param template
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IResource> getTenantTemplateResources(String template) throws SiteWhereException;
+
+    /**
      * Delete global resource at the given path.
      * 
      * @param path
@@ -51,7 +60,7 @@ public interface IResourceManager extends ILifecycleComponent {
     public IResource deleteGlobalResource(String path) throws SiteWhereException;
 
     /**
-     * Copies all global resources with the given prefix to the given tenant.
+     * Copies resources from a tenant template into a tenant with the given id.
      * 
      * @param prefix
      * @param tenantId
@@ -59,7 +68,7 @@ public interface IResourceManager extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IMultiResourceCreateResponse copyGlobalResourcesToTenant(String prefix, String tenantId,
+    public IMultiResourceCreateResponse copyTemplateResourcesToTenant(String templateId, String tenantId,
 	    ResourceCreateMode mode) throws SiteWhereException;
 
     /**

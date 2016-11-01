@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +32,7 @@ import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.rest.model.resource.MultiResourceCreateResponse;
 import com.sitewhere.rest.model.resource.Resource;
 import com.sitewhere.rest.model.resource.ResourceCreateError;
+import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
@@ -57,12 +57,6 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Folder name for global resources */
-    private static final String GLOBAL_FOLDER_NAME = "global";
-
-    /** Folder containing tenant resources */
-    private static final String TENANTS_FOLDER_NAME = "tenants";
-
     /** Filename for active tenant configuration file */
     private static final String TENANT_CONFIG_FILENAME = ResourceManagerTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE
 	    + "." + ResourceManagerTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE;
@@ -76,6 +70,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
     /** Resources being managed */
     private ResourceMap globalResourceMap = new ResourceMap();
+
+    /** Template resource maps by template id */
+    private Map<String, ResourceMap> templateResourceMaps = new HashMap<String, ResourceMap>();
 
     /** Tenant resource maps by tenant id */
     private Map<String, ResourceMap> tenantResourceMaps = new HashMap<String, ResourceMap>();
@@ -142,14 +139,14 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	cacheFileResources(getRootFolder());
 
 	// Cache contents of "global" folder.
-	File globals = new File(getRootFolder(), GLOBAL_FOLDER_NAME);
+	File globals = new File(getRootFolder(), IDefaultResourcePaths.GLOBAL_FOLDER_NAME);
 	if (!(globals.exists() && (globals.isDirectory()))) {
 	    throw new SiteWhereException("Globals resources folder does not exist.");
 	}
 	cacheFolderResources(globals);
 
 	// Cache contents of "tenants" folder.
-	File tenants = new File(getRootFolder(), TENANTS_FOLDER_NAME);
+	File tenants = new File(getRootFolder(), IDefaultResourcePaths.TENANTS_FOLDER_NAME);
 	if (!(tenants.exists() && (tenants.isDirectory()))) {
 	    throw new SiteWhereException("Tenant resources folder does not exist.");
 	}
@@ -220,7 +217,16 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     protected void cacheFile(File file) throws SiteWhereException {
 	Path path = file.toPath();
 	Path relative = getRootFolder().toPath().relativize(path);
-	if (relative.startsWith(TENANTS_FOLDER_NAME)) {
+	if (relative.startsWith(IDefaultResourcePaths.TEMPLATES_FOLDER_NAME)) {
+	    Path templatesRelative = relative.subpath(1, relative.getNameCount());
+	    if (templatesRelative.getNameCount() > 0) {
+		String templateId = templatesRelative.getName(0).toString();
+		Path templateRelative = templatesRelative.subpath(1, templatesRelative.getNameCount());
+		if (templateRelative.getNameCount() > 0) {
+		    cacheTemplateFile(templateId, templateRelative.toString(), file);
+		}
+	    }
+	} else if (relative.startsWith(IDefaultResourcePaths.TENANTS_FOLDER_NAME)) {
 	    Path tenantsRelative = relative.subpath(1, relative.getNameCount());
 	    if (tenantsRelative.getNameCount() > 0) {
 		String tenantId = tenantsRelative.getName(0).toString();
@@ -244,7 +250,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     protected void cacheGlobalFile(String relativePath, File file) throws SiteWhereException {
 	IResource resource = createResourceFromFile(relativePath, file);
 	getGlobalResourceMap().put(relativePath, resource);
-	LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+	LOGGER.debug("Cached global resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 		+ resource.getContent().length + " bytes");
     }
 
@@ -264,7 +270,27 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	}
 	IResource resource = createResourceFromFile(relativePath, file);
 	tenant.put(relativePath, resource);
-	LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+	LOGGER.debug("Cached tenant resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		+ resource.getContent().length + " bytes");
+    }
+
+    /**
+     * Cache a template file resource.
+     * 
+     * @param templateId
+     * @param relativePath
+     * @param file
+     * @throws SiteWhereException
+     */
+    protected void cacheTemplateFile(String templateId, String relativePath, File file) throws SiteWhereException {
+	ResourceMap template = getTemplateResourceMaps().get(templateId);
+	if (template == null) {
+	    template = new ResourceMap();
+	    getTemplateResourceMaps().put(templateId, template);
+	}
+	IResource resource = createResourceFromFile(relativePath, file);
+	template.put(relativePath, resource);
+	LOGGER.debug("Cached template resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 		+ resource.getContent().length + " bytes");
     }
 
@@ -451,6 +477,19 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.resource.IResourceManager#getTenantTemplateResources(
+     * java.lang.String)
+     */
+    @Override
+    public List<IResource> getTenantTemplateResources(String template) throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.resource.IResourceManager#deleteGlobalResource(java.
      * lang.String)
      */
@@ -495,7 +534,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     protected void uncacheFile(File file) throws SiteWhereException {
 	Path path = file.toPath();
 	Path relative = getRootFolder().toPath().relativize(path);
-	if (relative.startsWith(TENANTS_FOLDER_NAME)) {
+	if (relative.startsWith(IDefaultResourcePaths.TENANTS_FOLDER_NAME)) {
 	    Path tenantsRelative = relative.subpath(1, relative.getNameCount());
 	    if (tenantsRelative.getNameCount() > 0) {
 		String tenantId = tenantsRelative.getName(0).toString();
@@ -516,25 +555,22 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.resource.IResourceManager#copyGlobalResourcesToTenant(
-     * java.lang.String, java.lang.String,
+     * com.sitewhere.spi.resource.IResourceManager#copyTemplateResourcesToTenant
+     * (java.lang.String, java.lang.String,
      * com.sitewhere.spi.resource.ResourceCreateMode)
      */
     @Override
-    public IMultiResourceCreateResponse copyGlobalResourcesToTenant(String prefix, String tenantId,
+    public IMultiResourceCreateResponse copyTemplateResourcesToTenant(String templateId, String tenantId,
 	    ResourceCreateMode mode) throws SiteWhereException {
-	MultiResourceCreateResponse response = new MultiResourceCreateResponse();
-	File source = new File(getRootFolder().getAbsolutePath() + File.separator + prefix);
-	if (!source.exists()) {
-	    throw new SiteWhereException("No source folder found for: " + source.getAbsolutePath());
+	ResourceMap templateResources = getTemplateResourceMaps().get(templateId);
+	if (templateResources == null) {
+	    throw new SiteWhereException("No template resources found for '" + templateId + "'.");
 	}
-	File target = assureTenantFolder(tenantId);
-	try {
-	    FileUtils.copyDirectory(source, target);
-	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to copy global resources to tenant.");
+	List<IResourceCreateRequest> requests = new ArrayList<IResourceCreateRequest>();
+	for (IResource resource : templateResources.values()) {
+	    requests.add(new ResourceCreateRequest.Builder(resource).build());
 	}
-	return response;
+	return createTenantResources(tenantId, requests, mode);
     }
 
     /**
@@ -545,8 +581,8 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      * @throws SiteWhereException
      */
     protected File assureTenantFolder(String tenantId) throws SiteWhereException {
-	File folder = new File(
-		getRootFolder().getAbsolutePath() + File.separator + TENANTS_FOLDER_NAME + File.separator + tenantId);
+	File folder = new File(getRootFolder().getAbsolutePath() + File.separator
+		+ IDefaultResourcePaths.TENANTS_FOLDER_NAME + File.separator + tenantId);
 	if (!folder.exists()) {
 	    folder.mkdirs();
 	}
@@ -567,7 +603,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	MultiResourceCreateResponse response = new MultiResourceCreateResponse();
 	for (IResourceCreateRequest request : requests) {
 	    IResource resource = getTenantResource(tenantId, request.getPath());
-	    String qualifier = TENANTS_FOLDER_NAME + File.separator + tenantId;
+	    String qualifier = IDefaultResourcePaths.TENANTS_FOLDER_NAME + File.separator + tenantId;
 	    if (resource == null) {
 		writeResourceFile(request, qualifier, response);
 	    } else {
@@ -629,7 +665,8 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
      */
     @Override
     public IResource deleteTenantResource(String tenantId, String path) throws SiteWhereException {
-	return deleteResource(TENANTS_FOLDER_NAME + File.separator + tenantId, getTenantResource(tenantId, path));
+	return deleteResource(IDefaultResourcePaths.TENANTS_FOLDER_NAME + File.separator + tenantId,
+		getTenantResource(tenantId, path));
     }
 
     /**
@@ -776,6 +813,14 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
     public void setGlobalResourceMap(ResourceMap globalResourceMap) {
 	this.globalResourceMap = globalResourceMap;
+    }
+
+    public Map<String, ResourceMap> getTemplateResourceMaps() {
+	return templateResourceMaps;
+    }
+
+    public void setTemplateResourceMaps(Map<String, ResourceMap> templateResourceMaps) {
+	this.templateResourceMaps = templateResourceMaps;
     }
 
     public Map<String, ResourceMap> getTenantResourceMaps() {
