@@ -26,6 +26,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -57,6 +58,13 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
      * @return
      */
     public ApplicationContext getSpringContext();
+
+    /**
+     * Get tenant-scoped Groovy configuration.
+     * 
+     * @return
+     */
+    public ITenantGroovyConfiguration getGroovyConfiguration();
 
     /**
      * Get list of components that have registered to participate in the server

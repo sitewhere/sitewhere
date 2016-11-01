@@ -44,7 +44,6 @@ import com.sitewhere.device.communication.socket.HttpInteractionHandler;
 import com.sitewhere.device.communication.socket.ReadAllInteractionHandler;
 import com.sitewhere.device.communication.websocket.BinaryWebSocketEventReceiver;
 import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver;
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.groovy.device.communication.decoder.composite.GroovyMessageMetadataExtractor;
@@ -767,7 +766,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	LOGGER.debug("Configuring Groovy socket interaction handler factory for " + parent.getLocalName());
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder
 		.rootBeanDefinition(GroovySocketInteractionHandler.Factory.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {
@@ -822,7 +820,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      */
     protected AbstractBeanDefinition createPollingRestEventReceiver(Element element, ParserContext context) {
 	BeanDefinitionBuilder builder = getBuilderFor(PollingRestInboundEventReceiver.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr pollIntervalMs = element.getAttributeNode("pollIntervalMs");
 	if (pollIntervalMs != null) {
@@ -1209,7 +1206,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      */
     protected AbstractBeanDefinition parseGroovyDecoder(Element parent, Element decoder, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDecoder.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = decoder.getAttributeNode("scriptPath");
 	if (scriptPath == null) {
@@ -1245,7 +1241,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     protected AbstractBeanDefinition parseGroovyStringDecoder(Element parent, Element decoder, ParserContext context) {
 	LOGGER.debug("Configuring Groovy String decoder for " + parent.getLocalName());
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyStringEventDecoder.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = decoder.getAttributeNode("scriptPath");
 	if (scriptPath == null) {
@@ -1383,7 +1378,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      */
     protected AbstractBeanDefinition parseGroovyMessageMetatataExtractor(Element element, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyMessageMetadataExtractor.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	// Script path is required.
 	Attr scriptPath = element.getAttributeNode("scriptPath");

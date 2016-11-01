@@ -9,6 +9,8 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -19,8 +21,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.ehcache.DeviceManagementCacheProvider;
-import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
@@ -32,9 +32,6 @@ import com.sitewhere.mongodb.device.MongoDeviceEventManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
 import com.sitewhere.mongodb.scheduling.MongoScheduleManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
-import com.sitewhere.server.asset.DefaultAssetModuleInitializer;
-import com.sitewhere.server.device.DefaultDeviceModelInitializer;
-import com.sitewhere.server.scheduling.DefaultScheduleModelInitializer;
 
 /**
  * Parses configuration for tenant datastore entries.
@@ -42,6 +39,9 @@ import com.sitewhere.server.scheduling.DefaultScheduleModelInitializer;
  * @author Derek
  */
 public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /*
      * (non-Javadoc)
@@ -317,13 +317,7 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDefaultDeviceModelInitializer(Element element, ParserContext context) {
-	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceModelInitializer.class);
-	Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-	if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-	    init.addPropertyValue("initializeIfNoConsole", "true");
-	}
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
-		init.getBeanDefinition());
+	LOGGER.warn("Device model initialization is now handled in the tenant template.");
     }
 
     /**
@@ -333,16 +327,7 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseGroovyDeviceModelInitializer(Element element, ParserContext context) {
-	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(GroovyDeviceModelInitializer.class);
-	init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
-
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath != null) {
-	    init.addPropertyValue("scriptPath", scriptPath.getValue());
-	}
-
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
-		init.getBeanDefinition());
+	LOGGER.warn("Device model initialization is now handled in the tenant template.");
     }
 
     /**
@@ -352,13 +337,7 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDefaultAssetModelInitializer(Element element, ParserContext context) {
-	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(DefaultAssetModuleInitializer.class);
-	Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-	if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-	    init.addPropertyValue("initializeIfNoConsole", "true");
-	}
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER,
-		init.getBeanDefinition());
+	LOGGER.warn("Asset model initialization is now handled in the tenant template.");
     }
 
     /**
@@ -368,13 +347,7 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDefaultScheduleModelInitializer(Element element, ParserContext context) {
-	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(DefaultScheduleModelInitializer.class);
-	Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-	if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-	    init.addPropertyValue("initializeIfNoConsole", "true");
-	}
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER,
-		init.getBeanDefinition());
+	LOGGER.warn("Schedule model initialization is now handled in the tenant template.");
     }
 
     /**
@@ -400,15 +373,19 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	HazelcastCache("hazelcast-cache"),
 
 	/** Creates sample data if no device data is present */
+	@Deprecated
 	DefaultDeviceModelInitializer("default-device-model-initializer"),
 
 	/** Create sample device data based on logic in a Groovy script */
+	@Deprecated
 	GroovyDeviceModelInitializer("groovy-device-model-initializer"),
 
 	/** Creates sample data if no asset data is present */
+	@Deprecated
 	DefaultAssetModelInitializer("default-asset-model-initializer"),
 
 	/** Creates sample data if no schedule data is present */
+	@Deprecated
 	DefaultScheduleModelInitializer("default-schedule-model-initializer");
 
 	/** Event code */

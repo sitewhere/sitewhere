@@ -26,6 +26,8 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -118,6 +120,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
      * @return
      */
     public IHazelcastConfiguration getHazelcastConfiguration();
+
+    /**
+     * Get the common Groovy configuration for this node.
+     * 
+     * @return
+     */
+    public IGroovyConfiguration getGroovyConfiguration();
 
     /**
      * Get resource manager for bootstrapping the system.
@@ -288,6 +297,15 @@ public interface ISiteWhereServer extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Get Groovy configuration for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get list of components that have registered to participate in the server

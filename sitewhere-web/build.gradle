@@ -12,7 +12,6 @@ dependencies {
     compile project(':sitewhere-core')
     compile project(':sitewhere-ehcache')
     compile project(':sitewhere-hbase')
-    compile project(':sitewhere-groovy')
     compile project(':sitewhere-influx')
     compile project(':sitewhere-mongodb')
     compile project(':sitewhere-protobuf')

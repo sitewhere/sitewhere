@@ -30,6 +30,7 @@ import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
+import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
@@ -70,6 +71,7 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -103,10 +105,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Supports tenant configuration management */
     private ITenantConfigurationResolver tenantConfigurationResolver;
 
-    /**
-     * List of components registered to participate in SiteWhere server
-     * lifecycle
-     */
+    /** Tenant-scoped Groovy configuration */
+    private ITenantGroovyConfiguration groovyConfiguration;
+
+    /** Components registered to participate in SiteWhere server lifecycle */
     private List<ITenantLifecycleComponent> registeredLifecycleComponents = new ArrayList<ITenantLifecycleComponent>();
 
     /** Device management cache provider implementation */
@@ -162,6 +164,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Clear the component list.
 	getLifecycleComponents().clear();
+
+	// Start Groovy configuration.
+	startNestedComponent(getGroovyConfiguration(), monitor, "Groovy configuration startup failed.", true);
 
 	// Start lifecycle components.
 	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
@@ -241,6 +246,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	getAssetModuleManager().lifecycleStop(monitor);
 	getAssetManagement().lifecycleStop(monitor);
 	getSearchProviderManager().lifecycleStop(monitor);
+
+	// Stop the Groovy configuration.
+	getGroovyConfiguration().lifecycleStop(monitor);
     }
 
     /*
@@ -356,6 +364,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    // Initialize the tenant Spring context.
 	    initializeSpringContext();
 
+	    // Initialize the Groovy configuration.
+	    initializeGroovyConfiguration();
+
 	    // Register discoverable beans.
 	    initializeDiscoverableBeans();
 
@@ -444,6 +455,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 	this.tenantContext = ConfigurationUtils.buildTenantContext(config, getTenant(),
 		SiteWhere.getServer().getVersion(), globalContext);
+    }
+
+    /**
+     * Initialize the Groovy configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeGroovyConfiguration() throws SiteWhereException {
+	this.groovyConfiguration = new TenantGroovyConfiguration();
     }
 
     /**
@@ -752,6 +772,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
 	this.tenantConfigurationResolver = tenantConfigurationResolver;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
+     * getGroovyConfiguration()
+     */
+    public ITenantGroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
+    }
+
+    public void setGroovyConfiguration(ITenantGroovyConfiguration groovyConfiguration) {
+	this.groovyConfiguration = groovyConfiguration;
     }
 
     /*

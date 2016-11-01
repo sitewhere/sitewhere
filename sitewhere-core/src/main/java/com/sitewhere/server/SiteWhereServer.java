@@ -28,6 +28,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
+import com.sitewhere.groovy.configuration.GroovyConfiguration;
 import com.sitewhere.hazelcast.HazelcastConfiguration;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
@@ -66,6 +67,8 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -117,6 +120,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Hazelcast configuration for this node */
     protected IHazelcastConfiguration hazelcastConfiguration;
+
+    /** Groovy configuration for this node */
+    protected IGroovyConfiguration groovyConfiguration;
 
     /** Bootstrap resource manager implementation */
     protected IResourceManager bootstrapResourceManager;
@@ -265,6 +271,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     @Override
     public IHazelcastConfiguration getHazelcastConfiguration() {
 	return hazelcastConfiguration;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getGroovyConfiguration()
+     */
+    @Override
+    public IGroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
     }
 
     /*
@@ -519,6 +535,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	return engine.getScheduleManager();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getTenantGroovyConfiguration(
+     * com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException {
+	ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
+	return engine.getGroovyConfiguration();
+    }
+
     /**
      * Get tenant engine for tenant. Throw an exception if not found.
      * 
@@ -649,6 +678,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Start the Hazelcast instance.
 	startNestedComponent(getHazelcastConfiguration(), monitor, "Hazelcast startup failed.", true);
+
+	// Start the Groovy configuration.
+	startNestedComponent(getGroovyConfiguration(), monitor, "Groovy startup failed.", true);
 
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
@@ -798,6 +830,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Stop the tenant template manager.
 	getTenantTemplateManager().lifecycleStop(monitor);
 
+	// Stop the Groovy configuration.
+	getGroovyConfiguration().lifecycleStop(monitor);
+
 	// Stop the Hazelcast instance.
 	getHazelcastConfiguration().lifecycleStop(monitor);
     }
@@ -883,6 +918,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize the Hazelcast instance.
 	initializeHazelcastConfiguration();
 
+	// Initialize the Groovy configuration.
+	initializeGroovyConfiguration();
+
 	// Initialize Spring.
 	initializeSpringContext();
 
@@ -966,6 +1004,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		    "Base Hazelcast configuration resource not found: " + HazelcastConfiguration.CONFIG_FILE_NAME);
 	}
 	this.hazelcastConfiguration = new HazelcastConfiguration(resource);
+    }
+
+    /**
+     * Initialize the Groovy configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeGroovyConfiguration() throws SiteWhereException {
+	this.groovyConfiguration = new GroovyConfiguration();
     }
 
     /**

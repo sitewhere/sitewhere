@@ -31,7 +31,6 @@ import com.sitewhere.device.event.processor.filter.SiteFilter;
 import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.event.processor.GroovyEventProcessor;
 import com.sitewhere.groovy.device.event.processor.filter.GroovyFilter;
 import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificationStringMulticaster;
@@ -539,7 +538,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      */
     protected AbstractBeanDefinition parseGroovyEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
-	processor.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {
@@ -636,7 +634,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      */
     protected AbstractBeanDefinition parseSiddhiGroovyStreamProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder groovy = BeanDefinitionBuilder.rootBeanDefinition(GroovyStreamProcessor.class);
-	groovy.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr stream = element.getAttributeNode("stream");
 	if (stream == null) {
@@ -765,7 +762,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      */
     protected AbstractBeanDefinition parseGroovyFilter(Element element, ParserContext context) {
 	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(GroovyFilter.class);
-	filter.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath == null) {
@@ -809,7 +805,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
     protected AbstractBeanDefinition parseAllWithSpecificationMulticaster(Element element, ParserContext context) {
 	BeanDefinitionBuilder multicaster = BeanDefinitionBuilder
 		.rootBeanDefinition(AllWithSpecificationStringMulticaster.class);
-	multicaster.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr specification = element.getAttributeNode("specification");
 	if (specification == null) {
@@ -857,7 +852,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      */
     protected AbstractBeanDefinition parseGroovyRouteBuilder(Element element, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyRouteBuilder.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {

@@ -37,6 +37,7 @@ dependencies {
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'commons-collections', name: 'commons-collections'
     compile group: 'commons-io', name: 'commons-io'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient'
     compile group: 'org.apache.httpcomponents', name: 'httpcore'
 	
     provided group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version:'1.10'

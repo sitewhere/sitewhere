@@ -30,6 +30,8 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -161,6 +163,16 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public IHazelcastConfiguration getHazelcastConfiguration() {
 	return server.getHazelcastConfiguration();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getGroovyConfiguration()
+     */
+    @Override
+    public IGroovyConfiguration getGroovyConfiguration() {
+	return server.getGroovyConfiguration();
     }
 
     /*
@@ -383,6 +395,18 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
 	return server.getScheduleManager(tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#getTenantGroovyConfiguration(
+     * com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException {
+	return server.getTenantGroovyConfiguration(tenant);
     }
 
     /*

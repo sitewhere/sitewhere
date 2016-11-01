@@ -36,7 +36,6 @@ import com.sitewhere.device.communication.protobuf.JavaHybridProtobufExecutionEn
 import com.sitewhere.device.communication.protobuf.ProtobufExecutionEncoder;
 import com.sitewhere.device.communication.sms.SmsCommandDestination;
 import com.sitewhere.device.communication.sms.SmsParameters;
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyCommandExecutionEncoder;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
@@ -421,7 +420,6 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
     protected void parseGroovyCommandEncoder(Element encoder, ParserContext context,
 	    BeanDefinitionBuilder destination) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandExecutionEncoder.class);
-	builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = encoder.getAttributeNode("scriptPath");
 	if (scriptPath == null) {

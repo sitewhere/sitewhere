@@ -14,7 +14,6 @@ import org.wso2.siddhi.core.stream.output.StreamCallback;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.DeviceActions;
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -48,9 +47,6 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
     /** Groovy variable used for passing logger */
     private static final String VAR_LOGGER = "logger";
 
-    /** Injected global Groovy configuration */
-    private GroovyConfiguration configuration;
-
     /** Tenant set by event processor */
     private ITenant tenant;
 
@@ -78,7 +74,8 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 		binding.setVariable(VAR_ACTIONS, actions);
 		binding.setVariable(VAR_LOGGER, LOGGER);
 		try {
-		    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+		    SiteWhere.getServer().getTenantGroovyConfiguration(getTenant()).getGroovyScriptEngine()
+			    .run(getScriptPath(), binding);
 		} catch (ResourceException e) {
 		    LOGGER.error("Unable to access Groovy decoder script.", e);
 		} catch (ScriptException e) {
@@ -108,14 +105,6 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
      */
     public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
-    }
-
-    public GroovyConfiguration getConfiguration() {
-	return configuration;
-    }
-
-    public void setConfiguration(GroovyConfiguration configuration) {
-	this.configuration = configuration;
     }
 
     public String getScriptPath() {

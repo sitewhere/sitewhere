@@ -17,7 +17,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.tenant.GroovyTenantModelInitializer;
 import com.sitewhere.groovy.user.GroovyUserModelInitializer;
 import com.sitewhere.hbase.DefaultHBaseClient;
@@ -240,7 +239,6 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
      */
     protected void parseGroovyUserModelInitializer(Element element, ParserContext context) {
 	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(GroovyUserModelInitializer.class);
-	init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {
@@ -275,7 +273,6 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
      */
     protected void parseGroovyTenantModelInitializer(Element element, ParserContext context) {
 	BeanDefinitionBuilder init = BeanDefinitionBuilder.rootBeanDefinition(GroovyTenantModelInitializer.class);
-	init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {

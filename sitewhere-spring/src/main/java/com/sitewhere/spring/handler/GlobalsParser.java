@@ -9,6 +9,8 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -18,7 +20,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
 /**
@@ -27,6 +28,9 @@ import com.sitewhere.solr.SiteWhereSolrConfiguration;
  * @author Derek
  */
 public class GlobalsParser extends AbstractBeanDefinitionParser {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /*
      * (non-Javadoc)
@@ -97,25 +101,7 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseGroovyConfiguration(Element element, ParserContext context) {
-	BeanDefinitionBuilder config = BeanDefinitionBuilder.rootBeanDefinition(GroovyConfiguration.class);
-
-	Attr debug = element.getAttributeNode("debug");
-	if (debug != null) {
-	    config.addPropertyValue("debug", debug.getValue());
-	}
-
-	Attr verbose = element.getAttributeNode("verbose");
-	if (verbose != null) {
-	    config.addPropertyValue("verbose", verbose.getValue());
-	}
-
-	Attr externalScriptRoot = element.getAttributeNode("externalScriptRoot");
-	if (externalScriptRoot != null) {
-	    config.addPropertyValue("externalScriptRoot", externalScriptRoot.getValue());
-	}
-
-	context.getRegistry().registerBeanDefinition(GroovyConfiguration.GROOVY_CONFIGURATION_BEAN,
-		config.getBeanDefinition());
+	LOGGER.warn("Groovy configuration element has been deprecated.");
     }
 
     /**
@@ -133,6 +119,7 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 	SolrConfiguration("solr-configuration"),
 
 	/** Global Groovy configuration */
+	@Deprecated
 	GroovyConfiguration("groovy-configuration");
 
 	/** Event code */
