@@ -750,7 +750,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 					LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
 				    }
 				} catch (Throwable t) {
-				    LOGGER.error("Unable to cache resource: " + file.getAbsolutePath(), t);
+				    LOGGER.warn("Unable to cache resource: " + file.getAbsolutePath());
 				}
 			    } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 				uncacheFile(file);

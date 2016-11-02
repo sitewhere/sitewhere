@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.asset.request;
 
+import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 
 /**
@@ -50,5 +51,43 @@ public class HardwareAssetCreateRequest extends AssetCreateRequest implements IH
 
     public void setDescription(String description) {
 	this.description = description;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private HardwareAssetCreateRequest request = new HardwareAssetCreateRequest();
+
+	public Builder(IHardwareAsset asset) {
+	    this(asset.getId(), asset.getName(), asset.getImageUrl());
+	    request.setSku(asset.getSku());
+	    request.setDescription(asset.getDescription());
+	    request.getProperties().putAll(asset.getProperties());
+	}
+
+	public Builder(String id, String name, String imageUrl) {
+	    request.setId(id);
+	    request.setName(name);
+	    request.setImageUrl(imageUrl);
+	}
+
+	public Builder withProperty(String name, String value) {
+	    request.getProperties().put(name, value);
+	    return this;
+	}
+
+	public Builder withSku(String sku) {
+	    request.setSku(sku);
+	    return this;
+	}
+
+	public Builder withDescription(String description) {
+	    request.setDescription(description);
+	    return this;
+	}
+
+	public HardwareAssetCreateRequest build() {
+	    return request;
+	}
     }
 }

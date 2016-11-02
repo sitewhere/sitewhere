@@ -42,5 +42,12 @@ public interface ITenantTemplate {
 	 * @return
 	 */
 	public String getDeviceManagement();
+
+	/**
+	 * Get asset management initializer Groovy script location.
+	 * 
+	 * @return
+	 */
+	public String getAssetManagement();
     }
 }

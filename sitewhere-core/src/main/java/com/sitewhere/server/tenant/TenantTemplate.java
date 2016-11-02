@@ -67,6 +67,9 @@ public class TenantTemplate implements ITenantTemplate {
 	/** Device management Groovy script location */
 	private String deviceManagement;
 
+	/** Asset management Groovy script location */
+	private String assetManagement;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -79,6 +82,20 @@ public class TenantTemplate implements ITenantTemplate {
 
 	public void setDeviceManagement(String deviceManagement) {
 	    this.deviceManagement = deviceManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.tenant.ITenantTemplate.Initializers#
+	 * getAssetManagement()
+	 */
+	public String getAssetManagement() {
+	    return assetManagement;
+	}
+
+	public void setAssetManagement(String assetManagement) {
+	    this.assetManagement = assetManagement;
 	}
     }
 }

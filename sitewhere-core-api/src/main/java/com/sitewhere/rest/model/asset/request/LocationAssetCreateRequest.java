@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.asset.request;
 
+import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 
 /**
@@ -70,5 +71,44 @@ public class LocationAssetCreateRequest extends AssetCreateRequest implements IL
 
     public void setElevation(Double elevation) {
 	this.elevation = elevation;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private LocationAssetCreateRequest request = new LocationAssetCreateRequest();
+
+	public Builder(ILocationAsset asset) {
+	    this(asset.getId(), asset.getName(), asset.getImageUrl());
+	    request.setLatitude(asset.getLatitude());
+	    request.setLongitude(asset.getLongitude());
+	    request.setElevation(asset.getElevation());
+	    request.getProperties().putAll(asset.getProperties());
+	}
+
+	public Builder(String id, String name, String imageUrl) {
+	    request.setId(id);
+	    request.setName(name);
+	    request.setImageUrl(imageUrl);
+	}
+
+	public Builder withLatitude(double latitude) {
+	    request.setLatitude(latitude);
+	    return this;
+	}
+
+	public Builder withLongitude(double longitude) {
+	    request.setLongitude(longitude);
+	    return this;
+	}
+
+	public Builder withElevation(double elevation) {
+	    request.setElevation(elevation);
+	    return this;
+	}
+
+	public LocationAssetCreateRequest build() {
+	    return request;
+	}
     }
 }

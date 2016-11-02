@@ -28,6 +28,7 @@ import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
+import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.rest.model.command.CommandResponse;
@@ -493,6 +494,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
 			template.getInitializers().getDeviceManagement());
 		dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
+	    }
+
+	    // Execute asset management model initializer if configured.
+	    if (template.getInitializers().getAssetManagement() != null) {
+		GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
+			template.getInitializers().getAssetManagement());
+		amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
 	    }
 	}
     }

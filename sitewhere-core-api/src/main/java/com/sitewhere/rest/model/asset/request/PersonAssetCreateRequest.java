@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.asset.request;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 
 /**
@@ -71,5 +72,49 @@ public class PersonAssetCreateRequest extends AssetCreateRequest implements IPer
 
     public void setRoles(List<String> roles) {
 	this.roles = roles;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private PersonAssetCreateRequest request = new PersonAssetCreateRequest();
+
+	public Builder(IPersonAsset asset) {
+	    this(asset.getId(), asset.getName(), asset.getImageUrl());
+	    request.setUserName(asset.getUserName());
+	    request.setEmailAddress(asset.getEmailAddress());
+	    request.getRoles().addAll(asset.getRoles());
+	    request.getProperties().putAll(asset.getProperties());
+	}
+
+	public Builder(String id, String name, String imageUrl) {
+	    request.setId(id);
+	    request.setName(name);
+	    request.setImageUrl(imageUrl);
+	}
+
+	public Builder withProperty(String name, String value) {
+	    request.getProperties().put(name, value);
+	    return this;
+	}
+
+	public Builder withUsername(String userName) {
+	    request.setUserName(userName);
+	    return this;
+	}
+
+	public Builder withEmailAddress(String emailAddress) {
+	    request.setEmailAddress(emailAddress);
+	    return this;
+	}
+
+	public Builder withRole(String role) {
+	    request.getRoles().add(role);
+	    return this;
+	}
+
+	public PersonAssetCreateRequest build() {
+	    return request;
+	}
     }
 }
