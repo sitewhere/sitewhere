@@ -63,6 +63,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.IBackwardCompatibilityService;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
@@ -168,6 +169,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Thread for executing JVM history monitor */
     private ExecutorService executor;
+
+    /** Supports migrating old server version to new format */
+    private IBackwardCompatibilityService backwardCompatibilityService = new BackwardCompatibilityService();
 
     public SiteWhereServer() {
 	super(LifecycleComponentType.System);
@@ -670,6 +674,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Handle backward compatibility.
+	backwardCompatibilityService.beforeServerStart(monitor);
+
 	// Clear the component list.
 	getLifecycleComponents().clear();
 
@@ -710,6 +717,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	if (versionChecker != null) {
 	    executor.execute(versionChecker);
 	}
+
+	// Handle backward compatibility.
+	backwardCompatibilityService.afterServerStart(monitor);
     }
 
     /**
@@ -903,6 +913,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Handle backward compatibility.
+	backwardCompatibilityService.beforeServerInitialize(monitor);
+
+	// Set version information.
 	this.version = VersionHelper.getVersion();
 
 	// Initialize bootstrap resource manager.
