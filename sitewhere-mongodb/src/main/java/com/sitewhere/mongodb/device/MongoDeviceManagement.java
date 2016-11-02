@@ -12,8 +12,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -203,7 +201,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	DBObject created = MongoDeviceSpecification.toDBObject(spec);
-	MongoPersistence.insert(specs, created);
+	MongoPersistence.insert(specs, created, ErrorCode.DuplicateDeviceSpecificationToken);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
@@ -364,7 +362,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 	DBObject created = MongoDeviceCommand.toDBObject(command);
-	MongoPersistence.insert(commands, created);
+	MongoPersistence.insert(commands, created, ErrorCode.DeviceCommandExists);
 	return MongoDeviceCommand.fromDBObject(created);
     }
 
@@ -491,17 +489,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice createDevice(IDeviceCreateRequest request) throws SiteWhereException {
-	IDevice existing = getDeviceByHardwareId(request.getHardwareId());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_CONFLICT);
-	}
 	Device newDevice = SiteWherePersistence.deviceCreateLogic(request);
 
 	// Convert and save device data.
 	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 	DBObject created = MongoDevice.toDBObject(newDevice);
-	MongoPersistence.insert(devices, created);
+	MongoPersistence.insert(devices, created, ErrorCode.DuplicateHardwareId);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
@@ -705,7 +698,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);
-	MongoPersistence.insert(assignments, created);
+	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
 	// Update cache with new assignment data.
 	if (getCacheProvider() != null) {
@@ -1055,14 +1048,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 	DeviceStream stream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
 
-	// Verify that another stream with the given id does not exist.
-	if (getDeviceStream(stream.getAssignmentToken(), stream.getStreamId()) != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
-	}
-
 	DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
 	DBObject created = MongoDeviceStream.toDBObject(stream);
-	MongoPersistence.insert(streams, created);
+	MongoPersistence.insert(streams, created, ErrorCode.DuplicateStreamId);
 	return MongoDeviceStream.fromDBObject(created);
     }
 
@@ -1112,7 +1100,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 	DBObject created = MongoSite.toDBObject(site);
-	MongoPersistence.insert(sites, created);
+	MongoPersistence.insert(sites, created, ErrorCode.DeuplicateSiteToken);
 	return MongoSite.fromDBObject(created);
     }
 
@@ -1243,7 +1231,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 	DBObject created = MongoZone.toDBObject(zone);
-	MongoPersistence.insert(zones, created);
+	MongoPersistence.insert(zones, created, ErrorCode.DuplicateZoneToken);
 	return MongoZone.fromDBObject(created);
     }
 
@@ -1336,7 +1324,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	DBObject created = MongoDeviceGroup.toDBObject(group);
 	created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
 
-	MongoPersistence.insert(groups, created);
+	MongoPersistence.insert(groups, created, ErrorCode.DuplicateDeviceGroupToken);
 	return MongoDeviceGroup.fromDBObject(created);
     }
 
@@ -1461,7 +1449,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
 	    DeviceGroupElement element = SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 	    DBObject created = MongoDeviceGroupElement.toDBObject(element);
-	    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created);
+	    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
+		    ErrorCode.DuplicateId);
 	    results.add(MongoDeviceGroupElement.fromDBObject(created));
 	}
 	return results;
@@ -1524,7 +1513,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	DBCollection batches = getMongoClient().getBatchOperationsCollection(getTenant());
 	DBObject created = MongoBatchOperation.toDBObject(batch);
-	MongoPersistence.insert(batches, created);
+	MongoPersistence.insert(batches, created, ErrorCode.DuplicateBatchOperationToken);
 
 	// Insert element for each hardware id.
 	long index = 0;
@@ -1532,7 +1521,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	for (String hardwareId : request.getHardwareIds()) {
 	    BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
 	    DBObject dbElement = MongoBatchElement.toDBObject(element);
-	    MongoPersistence.insert(elements, dbElement);
+	    MongoPersistence.insert(elements, dbElement, ErrorCode.DuplicateBatchElement);
 	}
 
 	return MongoBatchOperation.fromDBObject(created);

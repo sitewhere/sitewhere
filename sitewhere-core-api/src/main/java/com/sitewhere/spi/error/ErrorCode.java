@@ -71,8 +71,11 @@ public enum ErrorCode {
      * INVALID OR DUPLICATE ID *
      ***************************/
 
+    /** Generic duplicate id error */
+    DuplicateId(499, "The given id is already in use."),
+
     /** Attempting to create a device with a duplicate hardware id */
-    DuplicateHardwareId(500, "The given hardware id is already in use."),
+    DuplicateHardwareId(500, "Hardware id already in use."),
 
     /** Invalid device hardware id */
     InvalidHardwareId(501, "Hardware id not found."),
@@ -83,11 +86,20 @@ public enum ErrorCode {
     /** Invalid device specification token */
     InvalidDeviceSpecificationToken(503, "Device specification not found."),
 
+    /** Invalid device specification token */
+    DuplicateDeviceSpecificationToken(504, "Device specification token already in use."),
+
     /** Invalid site token */
     InvalidDeviceCommandToken(505, "Device command not found."),
 
+    /** Duplicate site token */
+    DeuplicateSiteToken(509, "Site token already in use."),
+
     /** Invalid site token */
     InvalidSiteToken(510, "Site not found."),
+
+    /** Duplicate device assignment token */
+    DuplicateDeviceAssignment(519, "Device assignment token already in use."),
 
     /** Invalid site assignment id */
     InvalidDeviceAssignmentId(520, "Device assignment not found."),
@@ -100,6 +112,9 @@ public enum ErrorCode {
 
     /** Invalid device event id */
     InvalidDeviceEventId(523, "Device event not found for id."),
+
+    /** Duplicate device group token */
+    DuplicateDeviceGroupToken(524, "Device group token already in use."),
 
     /** Invalid device group token */
     InvalidDeviceGroupToken(525, "Device group not found."),
@@ -148,6 +163,15 @@ public enum ErrorCode {
 
     /** Invalid tenant template id */
     InvalidTenantTemplateId(549, "Tenant template not found"),
+
+    /** Duplicate zone token */
+    DuplicateZoneToken(555, "Zone token already in use."),
+
+    /** Duplicate batch operation token */
+    DuplicateBatchOperationToken(560, "Batch operation token already in use."),
+
+    /** Duplicate batch element */
+    DuplicateBatchElement(565, "Batch element already in use."),
 
     /******************
      * DEVICE COMMAND *

@@ -102,16 +102,11 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * request.IUserCreateRequest, boolean)
      */
     public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
-	IUser existing = getUserByUsername(request.getUsername());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_CONFLICT);
-	}
 	User user = SiteWherePersistence.userCreateLogic(request, encodePassword);
 
 	DBCollection users = getMongoClient().getUsersCollection();
 	DBObject created = MongoUser.toDBObject(user);
-	MongoPersistence.insert(users, created);
+	MongoPersistence.insert(users, created, ErrorCode.DuplicateUser);
 	return user;
     }
 
@@ -136,7 +131,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 
 	DBCollection users = getMongoClient().getUsersCollection();
 	DBObject created = MongoUser.toDBObject(user);
-	MongoPersistence.insert(users, created);
+	MongoPersistence.insert(users, created, ErrorCode.DuplicateUser);
 	return user;
     }
 
@@ -311,15 +306,10 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * sitewhere.spi .user.request. IGrantedAuthorityCreateRequest)
      */
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-	IGrantedAuthority existing = getGrantedAuthorityByName(request.getAuthority());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_CONFLICT);
-	}
 	GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
 	DBCollection auths = getMongoClient().getAuthoritiesCollection();
 	DBObject created = MongoGrantedAuthority.toDBObject(auth);
-	MongoPersistence.insert(auths, created);
+	MongoPersistence.insert(auths, created, ErrorCode.DuplicateAuthority);
 	return auth;
     }
 

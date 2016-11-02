@@ -27,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
@@ -234,6 +235,39 @@ public class RestController {
 	} catch (IOException e1) {
 	    LOGGER.error(e1);
 	}
+    }
+
+    /**
+     * Handles exceptions where a new resource is to be created, but an existing
+     * resource exists with the given key.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleResourceExists(ResourceExistsException e, HttpServletResponse response) {
+	try {
+	    sendErrorResponse(e, e.getCode(), HttpServletResponse.SC_CONFLICT, response);
+	    LOGGER.error("Resource with same key already exists.", e);
+	} catch (IOException e1) {
+	    e1.printStackTrace();
+	}
+    }
+
+    /**
+     * Send error response including SiteWhere headers.
+     * 
+     * @param e
+     * @param errorCode
+     * @param responseCode
+     * @param response
+     * @throws IOException
+     */
+    protected void sendErrorResponse(Exception e, ErrorCode errorCode, int responseCode, HttpServletResponse response)
+	    throws IOException {
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
+	response.sendError(responseCode, errorCode.getMessage());
     }
 
     /**

@@ -61,6 +61,7 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.ResourceCreateMode;
@@ -493,14 +494,24 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    if (template.getInitializers().getDeviceManagement() != null) {
 		GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
 			template.getInitializers().getDeviceManagement());
-		dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
+		try {
+		    dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
+		} catch (ResourceExistsException e) {
+		    LOGGER.warn("Device management initializer data overlaps existing. "
+			    + "Skipping further device management initialization.");
+		}
 	    }
 
 	    // Execute asset management model initializer if configured.
 	    if (template.getInitializers().getAssetManagement() != null) {
 		GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
 			template.getInitializers().getAssetManagement());
-		amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
+		try {
+		    amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
+		} catch (ResourceExistsException e) {
+		    LOGGER.warn("Asset management initializer data overlaps existing. "
+			    + "Skipping further asset management initialization.");
+		}
 	    }
 	}
     }

@@ -115,17 +115,12 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      */
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-	ITenant existing = getTenantById(request.getId());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateTenantId, ErrorLevel.ERROR);
-	}
-
 	// Use common logic so all backend implementations work the same.
 	Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
 
 	DBCollection tenants = getMongoClient().getTenantsCollection();
 	DBObject created = MongoTenant.toDBObject(tenant);
-	MongoPersistence.insert(tenants, created);
+	MongoPersistence.insert(tenants, created, ErrorCode.DuplicateTenantId);
 
 	return MongoTenant.fromDBObject(created);
     }
@@ -261,7 +256,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 
 	DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
 	DBObject created = MongoTenantGroup.toDBObject(group);
-	MongoPersistence.insert(tgroups, created);
+	MongoPersistence.insert(tgroups, created, ErrorCode.DuplicateTenantGroupId);
 
 	return MongoTenantGroup.fromDBObject(created);
     }
@@ -359,7 +354,8 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	for (ITenantGroupElementCreateRequest request : elements) {
 	    TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(groupToken, request);
 	    DBObject created = MongoTenantGroupElement.toDBObject(element);
-	    MongoPersistence.insert(getMongoClient().getTenantGroupElementsCollection(), created);
+	    MongoPersistence.insert(getMongoClient().getTenantGroupElementsCollection(), created,
+		    ErrorCode.DuplicateId);
 	    results.add(MongoTenantGroupElement.fromDBObject(created));
 	}
 	return results;

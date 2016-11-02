@@ -18,6 +18,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.WriteResult;
@@ -35,6 +36,8 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -60,13 +63,16 @@ public class MongoPersistence {
      * @param object
      * @throws SiteWhereException
      */
-    public static void insert(DBCollection collection, DBObject object) throws SiteWhereException {
+    public static void insert(DBCollection collection, DBObject object, ErrorCode ifDuplicate)
+	    throws SiteWhereException {
 	try {
 	    collection.insert(object);
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (DuplicateKeyException e) {
+	    throw new ResourceExistsException(ifDuplicate);
 	}
     }
 

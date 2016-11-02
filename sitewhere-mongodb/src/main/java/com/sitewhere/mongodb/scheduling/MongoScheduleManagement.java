@@ -109,7 +109,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 
 	DBCollection schedules = getMongoClient().getSchedulesCollection(getTenant());
 	DBObject created = MongoSchedule.toDBObject(schedule);
-	MongoPersistence.insert(schedules, created);
+	MongoPersistence.insert(schedules, created, ErrorCode.DuplicateScheduleToken);
 
 	return MongoSchedule.fromDBObject(created);
     }
@@ -212,7 +212,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 
 	DBCollection jobs = getMongoClient().getScheduledJobsCollection(getTenant());
 	DBObject created = MongoScheduledJob.toDBObject(job);
-	MongoPersistence.insert(jobs, created);
+	MongoPersistence.insert(jobs, created, ErrorCode.DuplicateScheduledJobToken);
 
 	return MongoScheduledJob.fromDBObject(created);
     }

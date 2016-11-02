@@ -103,17 +103,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      */
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
-	IAssetCategory existing = getAssetCategory(request.getId());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.AssetCategoryIdInUse, ErrorLevel.ERROR);
-	}
-
 	// Use common logic so all backend implementations work the same.
 	AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
 
 	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	DBObject created = MongoAssetCategory.toDBObject(category);
-	MongoPersistence.insert(categories, created);
+	MongoPersistence.insert(categories, created, ErrorCode.AssetCategoryIdInUse);
 
 	return MongoAssetCategory.fromDBObject(created);
     }
@@ -199,13 +194,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	checkForExistingAsset(categoryId, request.getId());
 	IAssetCategory category = getAssetCategory(categoryId);
 	PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 	DBObject created = MongoPersonAsset.toDBObject(person);
-	MongoPersistence.insert(assets, created);
+	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
 	return MongoPersonAsset.fromDBObject(created);
     }
@@ -247,13 +241,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	checkForExistingAsset(categoryId, request.getId());
 	IAssetCategory category = getAssetCategory(categoryId);
 	HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 	DBObject created = MongoHardwareAsset.toDBObject(hw);
-	MongoPersistence.insert(assets, created);
+	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
 	return MongoHardwareAsset.fromDBObject(created);
     }
@@ -295,13 +288,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	checkForExistingAsset(categoryId, request.getId());
 	IAssetCategory category = getAssetCategory(categoryId);
 	LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 	DBObject created = MongoLocationAsset.toDBObject(loc);
-	MongoPersistence.insert(assets, created);
+	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
 	return MongoLocationAsset.fromDBObject(created);
     }
@@ -330,21 +322,6 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	MongoPersistence.update(assets, query, updated);
 
 	return MongoLocationAsset.fromDBObject(updated);
-    }
-
-    /**
-     * If an asset already exists for the given category and id, throw an
-     * exception.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @throws SiteWhereException
-     */
-    protected void checkForExistingAsset(String categoryId, String assetId) throws SiteWhereException {
-	IAsset asset = getAsset(categoryId, assetId);
-	if (asset != null) {
-	    throw new SiteWhereSystemException(ErrorCode.AssetIdInUse, ErrorLevel.ERROR);
-	}
     }
 
     /*
