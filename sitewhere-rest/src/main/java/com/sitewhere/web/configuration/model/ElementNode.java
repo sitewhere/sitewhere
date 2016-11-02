@@ -38,6 +38,9 @@ public class ElementNode extends XmlNode {
     /** Maps attribute group names to titles */
     private Map<String, String> attributeGroups;
 
+    /** Indicates if the element is deprecated */
+    private boolean deprecated;
+
     public ElementNode() {
 	super(NodeType.Element);
     }
@@ -80,6 +83,14 @@ public class ElementNode extends XmlNode {
 
     public void setAttributeGroups(Map<String, String> attributeGroups) {
 	this.attributeGroups = attributeGroups;
+    }
+
+    public boolean isDeprecated() {
+	return deprecated;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+	this.deprecated = deprecated;
     }
 
     /**
@@ -151,6 +162,11 @@ public class ElementNode extends XmlNode {
 
 	public Builder warnOnDelete(String warning) {
 	    element.setOnDeleteWarning(warning);
+	    return this;
+	}
+
+	public Builder makeDeprecated() {
+	    element.setDeprecated(true);
 	    return this;
 	}
 

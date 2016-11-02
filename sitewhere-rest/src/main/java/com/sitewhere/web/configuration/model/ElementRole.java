@@ -28,7 +28,7 @@ public enum ElementRole {
     Globals_Global("Global", true, true, true),
 
     /** Globals element. */
-    Globals(null, false, false, false, new ElementRole[] { Globals_Global }, new ElementRole[0], true),
+    Globals("Global Overrides", true, false, false, new ElementRole[] { Globals_Global }, new ElementRole[0], true),
 
     /** Data management container. Datastore configuration. */
     DataManagement_Datastore("Datastore", false, false, false),
