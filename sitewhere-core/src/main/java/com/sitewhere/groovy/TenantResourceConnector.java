@@ -11,19 +11,17 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.server.resource.ResourceStreamHandler;
 import com.sitewhere.server.resource.ResourceUrlConnection;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
-import com.sitewhere.spi.resource.IResource;
 
 import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
 
 /**
- * Implementation of {@link ResourceConnector} that returns
- * {@link URLConnection} objects that can resolve artifacts using SiteWhere
- * {@link IResource} implementations.
+ * Implementation of {@link ResourceConnector} that loads resources from tenant
+ * locations, but falls back to a global resource by the same name if not found.
  * 
  * @author Derek
  */
-public class SiteWhereResourceConnector implements ResourceConnector {
+public class TenantResourceConnector implements ResourceConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -34,11 +32,7 @@ public class SiteWhereResourceConnector implements ResourceConnector {
     /** Handler used in URLs */
     private ResourceStreamHandler handler = new ResourceStreamHandler();
 
-    public SiteWhereResourceConnector() {
-	this(null);
-    }
-
-    public SiteWhereResourceConnector(String tenantId) {
+    public TenantResourceConnector(String tenantId) {
 	this.tenantId = tenantId;
     }
 
@@ -55,20 +49,23 @@ public class SiteWhereResourceConnector implements ResourceConnector {
 	    URLConnection result = null;
 	    if (name.startsWith(ResourceUrlConnection.PROTO_SITEWHERE)) {
 		result = new ResourceUrlConnection(new URL(null, name, handler));
-	    } else if (getTenantId() != null) {
+	    } else {
 		result = new ResourceUrlConnection(new URL(ResourceUrlConnection.PROTO_SITEWHERE,
 			ResourceUrlConnection.SUBJECT_RESOURCE, -1, "/" + ResourceUrlConnection.TYPE_TENANT_RESOURCE
 				+ "/" + getTenantId() + "/" + IDefaultResourcePaths.SCRIPTS_FOLDER + "/groovy/" + name,
-			handler));
-	    } else {
-		result = new ResourceUrlConnection(new URL(ResourceUrlConnection.PROTO_SITEWHERE,
-			ResourceUrlConnection.SUBJECT_RESOURCE, -1, "/" + ResourceUrlConnection.TYPE_GLOBAL_RESOURCE
-				+ "/global/" + IDefaultResourcePaths.SCRIPTS_FOLDER + "/groovy/" + name,
 			handler));
 	    }
 	    try {
 		result.getInputStream();
 	    } catch (IOException e) {
+		result = GlobalResourceConnector.getGlobalResourceConnection(name, handler);
+		try {
+		    result.getInputStream();
+		    LOGGER.info(
+			    "Unable to find tenant resource '" + name + "', but found global resource with same name.");
+		} catch (IOException e1) {
+		    throw new ResourceException(e1);
+		}
 		throw new ResourceException(e);
 	    }
 	    return result;

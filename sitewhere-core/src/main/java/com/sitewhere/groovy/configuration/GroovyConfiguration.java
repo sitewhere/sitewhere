@@ -3,7 +3,7 @@ package com.sitewhere.groovy.configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.groovy.SiteWhereResourceConnector;
+import com.sitewhere.groovy.GlobalResourceConnector;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
@@ -23,7 +23,7 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Used to connect Groovy engine to SiteWhere resource manager */
-    private SiteWhereResourceConnector resourceConnector;
+    private GlobalResourceConnector resourceConnector;
 
     /** Groovy script engine */
     private GroovyScriptEngine groovyScriptEngine;
@@ -47,7 +47,7 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	resourceConnector = new SiteWhereResourceConnector();
+	resourceConnector = new GlobalResourceConnector();
 	groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
 
 	groovyScriptEngine.getConfig().setVerbose(isVerbose());
