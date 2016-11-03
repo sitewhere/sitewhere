@@ -31,6 +31,7 @@ import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
+import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
@@ -557,27 +558,45 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void bootstrapFromTemplate(TenantTemplate template) throws SiteWhereException {
 	if (template.getInitializers() != null) {
 
-	    // Execute device management model initializer if configured.
+	    // Execute device management model initializers if configured.
 	    if (template.getInitializers().getDeviceManagement() != null) {
-		GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
-			template.getInitializers().getDeviceManagement());
-		try {
-		    dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
-		} catch (ResourceExistsException e) {
-		    LOGGER.warn("Device management initializer data overlaps existing. "
-			    + "Skipping further device management initialization.");
+		for (String script : template.getInitializers().getDeviceManagement()) {
+		    GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
+			    script);
+		    try {
+			dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
+		    } catch (ResourceExistsException e) {
+			LOGGER.warn("Device management initializer data overlaps existing data. "
+				+ "Skipping further device management initialization.");
+		    }
 		}
 	    }
 
-	    // Execute asset management model initializer if configured.
+	    // Execute asset management model initializers if configured.
 	    if (template.getInitializers().getAssetManagement() != null) {
-		GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
-			template.getInitializers().getAssetManagement());
-		try {
-		    amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
-		} catch (ResourceExistsException e) {
-		    LOGGER.warn("Asset management initializer data overlaps existing. "
-			    + "Skipping further asset management initialization.");
+		for (String script : template.getInitializers().getAssetManagement()) {
+		    GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
+			    script);
+		    try {
+			amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
+		    } catch (ResourceExistsException e) {
+			LOGGER.warn("Asset management initializer data overlaps existing data. "
+				+ "Skipping further asset management initialization.");
+		    }
+		}
+	    }
+
+	    // Execute schedule management model initializers if configured.
+	    if (template.getInitializers().getAssetManagement() != null) {
+		for (String script : template.getInitializers().getScheduleManagement()) {
+		    GroovyScheduleModelInitializer smInit = new GroovyScheduleModelInitializer(getGroovyConfiguration(),
+			    script);
+		    try {
+			smInit.initialize(getScheduleManagement());
+		    } catch (ResourceExistsException e) {
+			LOGGER.warn("Schedule management initializer data overlaps existing data. "
+				+ "Skipping further asset management initialization.");
+		    }
 		}
 	    }
 	}

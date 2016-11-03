@@ -8,10 +8,14 @@
 package com.sitewhere.rest.model.scheduling.request;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.scheduling.ISchedule;
+import com.sitewhere.spi.scheduling.TriggerConstants;
 import com.sitewhere.spi.scheduling.TriggerType;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 
@@ -144,5 +148,65 @@ public class ScheduleCreateRequest implements IScheduleCreateRequest {
 
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private ScheduleCreateRequest request = new ScheduleCreateRequest();
+
+	public Builder(ISchedule schedule) {
+	    request.setToken(schedule.getToken());
+	    request.setName(schedule.getName());
+	    request.setTriggerType(schedule.getTriggerType());
+	    request.setTriggerConfiguration(schedule.getTriggerConfiguration());
+	    request.setStartDate(schedule.getStartDate());
+	    request.setEndDate(schedule.getEndDate());
+	    request.setMetadata(schedule.getMetadata());
+	}
+
+	public Builder(String name) {
+	    this(UUID.randomUUID().toString(), name);
+	}
+
+	public Builder(String token, String name) {
+	    request.setToken(token);
+	    request.setName(name);
+	}
+
+	public Builder withSimpleSchedule(Long interval, Integer count) {
+	    request.setTriggerType(TriggerType.SimpleTrigger);
+	    Map<String, String> config = new HashMap<String, String>();
+	    if (interval != null) {
+		config.put(TriggerConstants.SimpleTrigger.REPEAT_INTERVAL, String.valueOf(interval));
+	    }
+	    if (count != null) {
+		config.put(TriggerConstants.SimpleTrigger.REPEAT_COUNT, String.valueOf(count));
+	    }
+	    request.setTriggerConfiguration(config);
+	    return this;
+	}
+
+	public Builder withCronSchedule(String cronExpression) {
+	    request.setTriggerType(TriggerType.CronTrigger);
+	    Map<String, String> config = new HashMap<String, String>();
+	    config.put(TriggerConstants.CronTrigger.CRON_EXPRESSION, cronExpression);
+	    request.setTriggerConfiguration(config);
+	    return this;
+	}
+
+	public Builder withStartDate(Date startDate) {
+	    request.setStartDate(startDate);
+	    return this;
+	}
+
+	public Builder withEndDate(Date endDate) {
+	    request.setEndDate(endDate);
+	    return this;
+	}
+
+	public ScheduleCreateRequest build() {
+	    return request;
+	}
     }
 }

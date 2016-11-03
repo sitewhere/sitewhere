@@ -1,5 +1,7 @@
 package com.sitewhere.server.tenant;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.tenant.ITenantTemplate;
 
 /**
@@ -65,10 +67,13 @@ public class TenantTemplate implements ITenantTemplate {
     public static class Initializers implements ITenantTemplate.Initializers {
 
 	/** Device management Groovy script location */
-	private String deviceManagement;
+	private List<String> deviceManagement;
 
 	/** Asset management Groovy script location */
-	private String assetManagement;
+	private List<String> assetManagement;
+
+	/** Schedule management Groovy script location */
+	private List<String> scheduleManagement;
 
 	/*
 	 * (non-Javadoc)
@@ -76,11 +81,11 @@ public class TenantTemplate implements ITenantTemplate {
 	 * @see com.sitewhere.spi.server.tenant.ITenantTemplate.Initializers#
 	 * getDeviceManagement()
 	 */
-	public String getDeviceManagement() {
+	public List<String> getDeviceManagement() {
 	    return deviceManagement;
 	}
 
-	public void setDeviceManagement(String deviceManagement) {
+	public void setDeviceManagement(List<String> deviceManagement) {
 	    this.deviceManagement = deviceManagement;
 	}
 
@@ -90,12 +95,26 @@ public class TenantTemplate implements ITenantTemplate {
 	 * @see com.sitewhere.spi.server.tenant.ITenantTemplate.Initializers#
 	 * getAssetManagement()
 	 */
-	public String getAssetManagement() {
+	public List<String> getAssetManagement() {
 	    return assetManagement;
 	}
 
-	public void setAssetManagement(String assetManagement) {
+	public void setAssetManagement(List<String> assetManagement) {
 	    this.assetManagement = assetManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.tenant.ITenantTemplate.Initializers#
+	 * getScheduleManagement()
+	 */
+	public List<String> getScheduleManagement() {
+	    return scheduleManagement;
+	}
+
+	public void setScheduleManagement(List<String> scheduleManagement) {
+	    this.scheduleManagement = scheduleManagement;
 	}
     }
 }
