@@ -14,8 +14,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +40,11 @@ import com.sitewhere.spi.server.ISiteWhereApplication;
  * @author Derek
  */
 @Configuration
-@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class,
-	VelocityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { ActiveMQAutoConfiguration.class, DataSourceAutoConfiguration.class,
+	DataSourceTransactionManagerAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+	GsonAutoConfiguration.class, HazelcastAutoConfiguration.class, HazelcastJpaDependencyAutoConfiguration.class,
+	JmxAutoConfiguration.class, MongoAutoConfiguration.class, SolrAutoConfiguration.class,
+	VelocityAutoConfiguration.class })
 public class SiteWhereApplication implements ISiteWhereApplication {
 
     /** Static logger instance */
