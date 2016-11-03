@@ -104,7 +104,7 @@ public class DataManagementModel extends ConfigurationModel {
 	builder.attribute((new AttributeNode.Builder("Database", "database", AttributeType.String)
 		.description("InfluxDB database name.").group("conn").defaultValue("sitewhere").build()));
 	builder.attribute((new AttributeNode.Builder("Retention policy", "retention", AttributeType.String)
-		.description("InfluxDB retention policy name.").group("conn").defaultValue("default").build()));
+		.description("InfluxDB retention policy name.").group("conn").defaultValue("autogen").build()));
 	builder.attribute((new AttributeNode.Builder("Log level", "logLevel", AttributeType.String)
 		.description("Log level for debugging InfluxDB interactions.").group("conn").choice("none")
 		.choice("basic").choice("headers").choice("full").defaultValue("none").build()));

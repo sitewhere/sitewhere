@@ -96,7 +96,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     private String database = "sitewhere";
 
     /** Retention policy */
-    private String retention = "default";
+    private String retention = "autogen";
 
     /** Indicates if batch delivery is enabled */
     private boolean enableBatch = true;
