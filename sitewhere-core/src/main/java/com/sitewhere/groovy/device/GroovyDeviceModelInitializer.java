@@ -65,8 +65,7 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 	binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 
 	try {
-	    // Use the system account for logging "created by" on created
-	    // elements.
+	    // Use system account for logging "created by" on created elements.
 	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
