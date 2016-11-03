@@ -67,9 +67,9 @@ public class InfluxDbDeviceLocation {
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceLocation event, Point.Builder builder) throws SiteWhereException {
-	builder.field(LOCATION_LATITUDE, event.getLatitude());
-	builder.field(LOCATION_LONGITUDE, event.getLongitude());
-	builder.field(LOCATION_ELEVATION, event.getElevation());
+	builder.addField(LOCATION_LATITUDE, event.getLatitude());
+	builder.addField(LOCATION_LONGITUDE, event.getLongitude());
+	builder.addField(LOCATION_ELEVATION, event.getElevation());
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }
 }

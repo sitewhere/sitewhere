@@ -109,7 +109,7 @@ public class InfluxDbDeviceCommandInvocation {
 
 	for (String key : event.getParameterValues().keySet()) {
 	    String value = event.getParameterValues().get(key);
-	    builder.field(CMD_PARAMETER_VALUE_PREFIX + key, value);
+	    builder.addField(CMD_PARAMETER_VALUE_PREFIX + key, value);
 	}
 
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);

@@ -65,7 +65,7 @@ public class InfluxDbDeviceMeasurements {
     public static void saveToBuilder(DeviceMeasurements event, Point.Builder builder) throws SiteWhereException {
 	for (String key : event.getMeasurements().keySet()) {
 	    Double value = event.getMeasurement(key);
-	    builder.field(MEASUREMENT_PREFIX + key, value);
+	    builder.addField(MEASUREMENT_PREFIX + key, value);
 	}
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }

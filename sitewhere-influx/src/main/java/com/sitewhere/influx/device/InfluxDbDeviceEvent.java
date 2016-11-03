@@ -333,6 +333,10 @@ public class InfluxDbDeviceEvent {
 			    results.add(InfluxDbDeviceCommandResponse.parse(valueMap));
 			    break;
 			}
+			case StateChange: {
+			    results.add(InfluxDbDeviceStateChange.parse(valueMap));
+			    break;
+			}
 			default: {
 			    throw new SiteWhereException("No parser found for type: " + type);
 			}
@@ -469,7 +473,7 @@ public class InfluxDbDeviceEvent {
      */
     public static void saveToBuilder(DeviceEvent event, Point.Builder builder) throws SiteWhereException {
 	builder.time(event.getEventDate().getTime(), TimeUnit.MILLISECONDS);
-	builder.field(EVENT_ID, event.getId());
+	builder.addField(EVENT_ID, event.getId());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
 	builder.tag(EVENT_SITE, event.getSiteToken());
@@ -479,11 +483,11 @@ public class InfluxDbDeviceEvent {
 	if (event.getAssetId() != null) {
 	    builder.tag(EVENT_ASSET, event.getAssetId());
 	}
-	builder.field(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));
+	builder.addField(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));
 
 	// Add field for each metadata value.
 	for (String key : event.getMetadata().keySet()) {
-	    builder.field(EVENT_METADATA_PREFIX + key, event.getMetadata(key));
+	    builder.addField(EVENT_METADATA_PREFIX + key, event.getMetadata(key));
 	}
     }
 

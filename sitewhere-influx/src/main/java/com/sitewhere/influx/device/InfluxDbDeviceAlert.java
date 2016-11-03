@@ -76,7 +76,7 @@ public class InfluxDbDeviceAlert {
 	builder.tag(ALERT_TYPE, event.getType());
 	builder.tag(ALERT_SOURCE, event.getSource().name());
 	builder.tag(ALERT_LEVEL, event.getLevel().name());
-	builder.field(ALERT_MESSAGE, event.getMessage());
+	builder.addField(ALERT_MESSAGE, event.getMessage());
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }
 }
