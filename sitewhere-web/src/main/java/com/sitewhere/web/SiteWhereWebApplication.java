@@ -64,7 +64,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		final int cacheSize = 100 * 1024 * 1024;
 		StandardRoot standardRoot = new StandardRoot(context);
 		standardRoot.setCacheMaxSize(cacheSize);
-		standardRoot.setCacheObjectMaxSize(cacheSize / 20);
+		standardRoot.setCacheObjectMaxSize(Integer.MAX_VALUE / 1024);
 		context.setResources(standardRoot);
 	    }
 	};
