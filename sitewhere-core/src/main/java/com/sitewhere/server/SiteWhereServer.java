@@ -101,6 +101,9 @@ import com.sitewhere.version.VersionHelper;
  */
 public class SiteWhereServer extends LifecycleComponent implements ISiteWhereServer {
 
+    /** Number of threads in pool for starting tenants */
+    private static final int TENANT_STARTUP_PARALLELISM = 5;
+
     /** Private logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
@@ -175,6 +178,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Thread for executing JVM history monitor */
     private ExecutorService executor;
+
+    /** Thread pool for starting tenants in parallel */
+    private ExecutorService tenantStarters;
 
     /** Supports migrating old server version to new format */
     private IBackwardCompatibilityService backwardCompatibilityService = new BackwardCompatibilityService();
@@ -775,9 +781,25 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		initializeTenantEngines();
 
+		// Create thread pool for starting tenants in parallel.
+		if (tenantStarters != null) {
+		    tenantStarters.shutdownNow();
+		}
+		tenantStarters = Executors.newFixedThreadPool(TENANT_STARTUP_PARALLELISM);
+
 		// Start tenant engines.
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
-		    startTenantEngine(engine);
+		    tenantStarters.execute(new Runnable() {
+
+			@Override
+			public void run() {
+			    try {
+				startTenantEngine(engine);
+			    } catch (SiteWhereException e) {
+				LOGGER.error("Tenant engine startup failed.", e);
+			    }
+			}
+		    });
 		}
 	    }
 	});
