@@ -136,6 +136,10 @@ public class ProtobufDeviceEventDecoder extends TenantLifecycleComponent impleme
 		    request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
 		}
 
+		if (dm.hasUpdateState()) {
+		    request.setUpdateState(dm.getUpdateState());
+		}
+
 		List<Metadata> pbmeta = dm.getMetadataList();
 		Map<String, String> metadata = new HashMap<String, String>();
 		for (Metadata meta : pbmeta) {
@@ -166,6 +170,10 @@ public class ProtobufDeviceEventDecoder extends TenantLifecycleComponent impleme
 		request.setLongitude(location.getLongitude());
 		request.setElevation(location.getElevation());
 
+		if (location.hasUpdateState()) {
+		    request.setUpdateState(location.getUpdateState());
+		}
+
 		List<Metadata> pbmeta = location.getMetadataList();
 		Map<String, String> metadata = new HashMap<String, String>();
 		for (Metadata meta : pbmeta) {
@@ -195,6 +203,10 @@ public class ProtobufDeviceEventDecoder extends TenantLifecycleComponent impleme
 		request.setType(alert.getAlertType());
 		request.setMessage(alert.getAlertMessage());
 		request.setLevel(AlertLevel.Info);
+
+		if (alert.hasUpdateState()) {
+		    request.setUpdateState(alert.getUpdateState());
+		}
 
 		List<Metadata> pbmeta = alert.getMetadataList();
 		Map<String, String> metadata = new HashMap<String, String>();

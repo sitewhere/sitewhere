@@ -744,6 +744,16 @@ public final class Sitewhere {
        * <code>repeated .Model.Metadata metadata = 6;</code>
        */
       int getMetadataCount();
+
+      // optional bool updateState = 7;
+      /**
+       * <code>optional bool updateState = 7;</code>
+       */
+      boolean hasUpdateState();
+      /**
+       * <code>optional bool updateState = 7;</code>
+       */
+      boolean getUpdateState();
     }
     /**
      * Protobuf type {@code Model.DeviceLocation}
@@ -823,6 +833,11 @@ public final class Sitewhere {
                   mutable_bitField0_ |= 0x00000020;
                 }
                 metadata_.add(input.readMessage(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.Metadata.PARSER, extensionRegistry));
+                break;
+              }
+              case 56: {
+                bitField0_ |= 0x00000020;
+                updateState_ = input.readBool();
                 break;
               }
             }
@@ -998,6 +1013,22 @@ public final class Sitewhere {
         return metadata_.get(index);
       }
 
+      // optional bool updateState = 7;
+      public static final int UPDATESTATE_FIELD_NUMBER = 7;
+      private boolean updateState_;
+      /**
+       * <code>optional bool updateState = 7;</code>
+       */
+      public boolean hasUpdateState() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional bool updateState = 7;</code>
+       */
+      public boolean getUpdateState() {
+        return updateState_;
+      }
+
       private void initFields() {
         hardwareId_ = "";
         latitude_ = 0D;
@@ -1005,6 +1036,7 @@ public final class Sitewhere {
         elevation_ = 0D;
         eventDate_ = 0L;
         metadata_ = java.util.Collections.emptyList();
+        updateState_ = false;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -1054,6 +1086,9 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           output.writeMessage(6, metadata_.get(i));
         }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeBool(7, updateState_);
+        }
       }
 
       private int memoizedSerializedSize = -1;
@@ -1085,6 +1120,10 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(6, metadata_.get(i));
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(7, updateState_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -1193,6 +1232,8 @@ public final class Sitewhere {
           bitField0_ = (bitField0_ & ~0x00000010);
           metadata_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000020);
+          updateState_ = false;
+          bitField0_ = (bitField0_ & ~0x00000040);
           return this;
         }
 
@@ -1241,6 +1282,10 @@ public final class Sitewhere {
             bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.metadata_ = metadata_;
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          result.updateState_ = updateState_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
@@ -1273,6 +1318,9 @@ public final class Sitewhere {
               metadata_.addAll(other.metadata_);
             }
             
+          }
+          if (other.hasUpdateState()) {
+            setUpdateState(other.getUpdateState());
           }
           return this;
         }
@@ -1649,6 +1697,39 @@ public final class Sitewhere {
           return this;
         }
 
+        // optional bool updateState = 7;
+        private boolean updateState_ ;
+        /**
+         * <code>optional bool updateState = 7;</code>
+         */
+        public boolean hasUpdateState() {
+          return ((bitField0_ & 0x00000040) == 0x00000040);
+        }
+        /**
+         * <code>optional bool updateState = 7;</code>
+         */
+        public boolean getUpdateState() {
+          return updateState_;
+        }
+        /**
+         * <code>optional bool updateState = 7;</code>
+         */
+        public Builder setUpdateState(boolean value) {
+          bitField0_ |= 0x00000040;
+          updateState_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>optional bool updateState = 7;</code>
+         */
+        public Builder clearUpdateState() {
+          bitField0_ = (bitField0_ & ~0x00000040);
+          updateState_ = false;
+          
+          return this;
+        }
+
         // @@protoc_insertion_point(builder_scope:Model.DeviceLocation)
       }
 
@@ -1732,6 +1813,16 @@ public final class Sitewhere {
        * <code>repeated .Model.Metadata metadata = 5;</code>
        */
       int getMetadataCount();
+
+      // optional bool updateState = 6;
+      /**
+       * <code>optional bool updateState = 6;</code>
+       */
+      boolean hasUpdateState();
+      /**
+       * <code>optional bool updateState = 6;</code>
+       */
+      boolean getUpdateState();
     }
     /**
      * Protobuf type {@code Model.DeviceAlert}
@@ -1806,6 +1897,11 @@ public final class Sitewhere {
                   mutable_bitField0_ |= 0x00000010;
                 }
                 metadata_.add(input.readMessage(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.Metadata.PARSER, extensionRegistry));
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000010;
+                updateState_ = input.readBool();
                 break;
               }
             }
@@ -2019,12 +2115,29 @@ public final class Sitewhere {
         return metadata_.get(index);
       }
 
+      // optional bool updateState = 6;
+      public static final int UPDATESTATE_FIELD_NUMBER = 6;
+      private boolean updateState_;
+      /**
+       * <code>optional bool updateState = 6;</code>
+       */
+      public boolean hasUpdateState() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional bool updateState = 6;</code>
+       */
+      public boolean getUpdateState() {
+        return updateState_;
+      }
+
       private void initFields() {
         hardwareId_ = "";
         alertType_ = "";
         alertMessage_ = "";
         eventDate_ = 0L;
         metadata_ = java.util.Collections.emptyList();
+        updateState_ = false;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -2071,6 +2184,9 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           output.writeMessage(5, metadata_.get(i));
         }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          output.writeBool(6, updateState_);
+        }
       }
 
       private int memoizedSerializedSize = -1;
@@ -2098,6 +2214,10 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(5, metadata_.get(i));
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(6, updateState_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -2204,6 +2324,8 @@ public final class Sitewhere {
           bitField0_ = (bitField0_ & ~0x00000008);
           metadata_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000010);
+          updateState_ = false;
+          bitField0_ = (bitField0_ & ~0x00000020);
           return this;
         }
 
@@ -2248,6 +2370,10 @@ public final class Sitewhere {
             bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.metadata_ = metadata_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000010;
+          }
+          result.updateState_ = updateState_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
@@ -2281,6 +2407,9 @@ public final class Sitewhere {
               metadata_.addAll(other.metadata_);
             }
             
+          }
+          if (other.hasUpdateState()) {
+            setUpdateState(other.getUpdateState());
           }
           return this;
         }
@@ -2703,6 +2832,39 @@ public final class Sitewhere {
           ensureMetadataIsMutable();
           metadata_.remove(index);
 
+          return this;
+        }
+
+        // optional bool updateState = 6;
+        private boolean updateState_ ;
+        /**
+         * <code>optional bool updateState = 6;</code>
+         */
+        public boolean hasUpdateState() {
+          return ((bitField0_ & 0x00000020) == 0x00000020);
+        }
+        /**
+         * <code>optional bool updateState = 6;</code>
+         */
+        public boolean getUpdateState() {
+          return updateState_;
+        }
+        /**
+         * <code>optional bool updateState = 6;</code>
+         */
+        public Builder setUpdateState(boolean value) {
+          bitField0_ |= 0x00000020;
+          updateState_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>optional bool updateState = 6;</code>
+         */
+        public Builder clearUpdateState() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          updateState_ = false;
+          
           return this;
         }
 
@@ -3287,6 +3449,16 @@ public final class Sitewhere {
        * <code>repeated .Model.Metadata metadata = 4;</code>
        */
       int getMetadataCount();
+
+      // optional bool updateState = 5;
+      /**
+       * <code>optional bool updateState = 5;</code>
+       */
+      boolean hasUpdateState();
+      /**
+       * <code>optional bool updateState = 5;</code>
+       */
+      boolean getUpdateState();
     }
     /**
      * Protobuf type {@code Model.DeviceMeasurements}
@@ -3359,6 +3531,11 @@ public final class Sitewhere {
                   mutable_bitField0_ |= 0x00000008;
                 }
                 metadata_.add(input.readMessage(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.Metadata.PARSER, extensionRegistry));
+                break;
+              }
+              case 40: {
+                bitField0_ |= 0x00000004;
+                updateState_ = input.readBool();
                 break;
               }
             }
@@ -3525,11 +3702,28 @@ public final class Sitewhere {
         return metadata_.get(index);
       }
 
+      // optional bool updateState = 5;
+      public static final int UPDATESTATE_FIELD_NUMBER = 5;
+      private boolean updateState_;
+      /**
+       * <code>optional bool updateState = 5;</code>
+       */
+      public boolean hasUpdateState() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool updateState = 5;</code>
+       */
+      public boolean getUpdateState() {
+        return updateState_;
+      }
+
       private void initFields() {
         hardwareId_ = "";
         measurement_ = java.util.Collections.emptyList();
         eventDate_ = 0L;
         metadata_ = java.util.Collections.emptyList();
+        updateState_ = false;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -3571,6 +3765,9 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           output.writeMessage(4, metadata_.get(i));
         }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBool(5, updateState_);
+        }
       }
 
       private int memoizedSerializedSize = -1;
@@ -3594,6 +3791,10 @@ public final class Sitewhere {
         for (int i = 0; i < metadata_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(4, metadata_.get(i));
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(5, updateState_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -3698,6 +3899,8 @@ public final class Sitewhere {
           bitField0_ = (bitField0_ & ~0x00000004);
           metadata_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000008);
+          updateState_ = false;
+          bitField0_ = (bitField0_ & ~0x00000010);
           return this;
         }
 
@@ -3739,6 +3942,10 @@ public final class Sitewhere {
             bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.metadata_ = metadata_;
+          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.updateState_ = updateState_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
@@ -3772,6 +3979,9 @@ public final class Sitewhere {
               metadata_.addAll(other.metadata_);
             }
             
+          }
+          if (other.hasUpdateState()) {
+            setUpdateState(other.getUpdateState());
           }
           return this;
         }
@@ -4169,6 +4379,39 @@ public final class Sitewhere {
           ensureMetadataIsMutable();
           metadata_.remove(index);
 
+          return this;
+        }
+
+        // optional bool updateState = 5;
+        private boolean updateState_ ;
+        /**
+         * <code>optional bool updateState = 5;</code>
+         */
+        public boolean hasUpdateState() {
+          return ((bitField0_ & 0x00000010) == 0x00000010);
+        }
+        /**
+         * <code>optional bool updateState = 5;</code>
+         */
+        public boolean getUpdateState() {
+          return updateState_;
+        }
+        /**
+         * <code>optional bool updateState = 5;</code>
+         */
+        public Builder setUpdateState(boolean value) {
+          bitField0_ |= 0x00000010;
+          updateState_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>optional bool updateState = 5;</code>
+         */
+        public Builder clearUpdateState() {
+          bitField0_ = (bitField0_ & ~0x00000010);
+          updateState_ = false;
+          
           return this;
         }
 
