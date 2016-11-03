@@ -131,7 +131,9 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	    influx.enableBatch(getBatchChunkSize(), getBatchIntervalMs(), TimeUnit.MILLISECONDS);
 	}
 	influx.setLogLevel(convertLogLevel(getLogLevel()));
+
 	this.assignmentStateManager = new AssignmentStateManager(getDeviceManagement());
+	startNestedComponent(assignmentStateManager, monitor, true);
     }
 
     /**
@@ -556,6 +558,11 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
+
+	// Update assignment state if requested.
+	if (request.isUpdateState()) {
+	    getAssignmentStateManager().addStateChange(assignmentToken, sc);
+	}
 	return sc;
     }
 
