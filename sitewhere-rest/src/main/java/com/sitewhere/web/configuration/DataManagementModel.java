@@ -208,7 +208,9 @@ public class DataManagementModel extends ConfigurationModel {
 		ElementRole.DataManagement_DeviceModelInitializer);
 	builder.description("This component creates sample data when no existing device data "
 		+ "is detected in the datastore. A site with device specifications, devices, "
-		+ "assignments, events and other example data is created on instance startup.");
+		+ "assignments, events and other example data is created on instance startup. "
+		+ "<strong>Deprecated: Initialization is now done based on the tenant template.</strong>");
+	builder.makeDeprecated();
 	return builder.build();
     }
 
@@ -222,9 +224,11 @@ public class DataManagementModel extends ConfigurationModel {
 		TenantDatastoreParser.Elements.GroovyDeviceModelInitializer.getLocalName(), "cogs",
 		ElementRole.DataManagement_DeviceModelInitializer);
 	builder.description(
-		"Generates sample data for the device model by delegating creation " + "logic to a Groovy script.");
+		"Generates sample data for the device model by delegating creation logic to a Groovy script. "
+			+ "<strong>Deprecated: Initialization is now done based on the tenant template.</strong>");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
 		.description("Script path relative to Groovy script root.").makeRequired().build()));
+	builder.makeDeprecated();
 	return builder.build();
     }
 
@@ -239,7 +243,9 @@ public class DataManagementModel extends ConfigurationModel {
 		ElementRole.DataManagement_AssetModelInitializer);
 	builder.description("This component creates sample data when no existing asset data "
 		+ "is detected in the datastore. If using the <strong>device model initializer</strong> "
-		+ "this component should be used as well so that assets in the sample data can be resolved.");
+		+ "this component should be used as well so that assets in the sample data can be resolved. "
+		+ "<strong>Deprecated: Initialization is now done based on the tenant template.</strong>");
+	builder.makeDeprecated();
 	return builder.build();
     }
 
@@ -254,7 +260,9 @@ public class DataManagementModel extends ConfigurationModel {
 		ElementRole.DataManagement_ScheduleModelInitializer);
 	builder.description("This component creates sample data when no existing schedule data "
 		+ "is detected in the datastore. It provides examples of both simple and cron-based "
-		+ "schedules that are commonly used.");
+		+ "schedules that are commonly used. "
+		+ "<strong>Deprecated: Initialization is now done based on the tenant template.</strong>");
+	builder.makeDeprecated();
 	return builder.build();
     }
 }
