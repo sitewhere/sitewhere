@@ -264,14 +264,14 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	startNestedComponent(component, monitor, getComponentName() + " failed to start.", require);
     }
 
-    /**
-     * Starts a nested {@link ILifecycleComponent}.
+    /*
+     * (non-Javadoc)
      * 
-     * @param component
-     * @param monitor
-     * @param errorMessage
-     * @param require
-     * @throws SiteWhereException
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * java.lang.String, boolean)
      */
     public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
 	    String errorMessage, boolean require) throws SiteWhereException {

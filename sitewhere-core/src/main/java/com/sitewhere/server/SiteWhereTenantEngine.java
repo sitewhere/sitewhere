@@ -36,7 +36,10 @@ import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
+import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.scheduling.QuartzScheduleManager;
 import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
@@ -73,6 +76,7 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -162,52 +166,115 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Clear the component list.
-	getLifecycleComponents().clear();
+	// Organizes steps for starting server.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("START TENANT '" + getTenant().getName() + "'");
 
+	// Clear the component list.
+	start.addStep(new SimpleLifecycleStep("Preparing tenant") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLifecycleComponents().clear();
+	    }
+	});
+
+	// Start base tenant services.
+	startBaseServices(start);
+
+	// Start tenant management API implementations.
+	startManagementImplementations(start);
+
+	// Start tenant services.
+	startTenantServices(start);
+
+	// Verify data models bootstrapped from tenant template.
+	start.addStep(new SimpleLifecycleStep("Verifying bootstrap data") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		verifyTenantBootstrapped();
+	    }
+	});
+
+	// Execute operation and report progress.
+	start.execute(monitor);
+    }
+
+    /**
+     * Start base tenant services.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start Groovy configuration.
-	startNestedComponent(getGroovyConfiguration(), monitor, "Groovy configuration startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
+		"Starting tenant Groovy script engine", "Groovy configuration startup failed.", true));
 
 	// Start lifecycle components.
 	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    startNestedComponent(component, monitor, component.getComponentName() + " startup failed.", true);
+	    start.addStep(new StartComponentLifecycleStep(this, component, "Starting " + component.getComponentName(),
+		    component.getComponentName() + " startup failed.", true));
 	}
+    }
 
+    /**
+     * Start tenant management API implementations.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start asset management.
-	startNestedComponent(getAssetManagement(), monitor, "Asset management startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Starting asset management",
+		"Asset management startup failed.", true));
 
 	// Start device management.
-	startNestedComponent(getDeviceManagement(), monitor, "Device management startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Starting device management",
+		"Device management startup failed.", true));
 
 	// Start device management.
-	startNestedComponent(getDeviceEventManagement(), monitor, "Device event management startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(),
+		"Starting device event management", "Device event management startup failed.", true));
 
 	// Start device management.
-	startNestedComponent(getScheduleManagement(), monitor, "Schedule management startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Starting schedule management",
+		"Schedule management startup failed.", true));
+    }
 
+    /**
+     * Start tenant services.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start device management cache provider if specificed.
 	if (getDeviceManagementCacheProvider() != null) {
-	    startNestedComponent(getDeviceManagementCacheProvider(), monitor,
-		    "Device management cache provider startup failed.", true);
+	    start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		    "Starting device management cache provider", "Device management cache provider startup failed.",
+		    true));
 	}
 
 	// Start asset module manager.
-	startNestedComponent(getAssetModuleManager(), monitor, "Asset module manager startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Starting asset module manager",
+		"Asset module manager startup failed.", true));
 
 	// Start search provider manager.
-	startNestedComponent(getSearchProviderManager(), monitor, "Search provider manager startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(),
+		"Starting search provider manager", "Search provider manager startup failed.", true));
 
 	// Start event processing subsystem.
-	startNestedComponent(getEventProcessing(), monitor, "Event processing subsystem startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getEventProcessing(), "Starting event processing subsystem",
+		"Event processing subsystem startup failed.", true));
 
 	// Start device communication subsystem.
-	startNestedComponent(getDeviceCommunication(), monitor, "Device communication subsystem startup failed.", true);
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
+		"Starting device communication subsystem", "Device communication subsystem startup failed.", true));
 
 	// Start schedule manager.
-	startNestedComponent(getScheduleManager(), monitor, "Schedule manager startup failed.", true);
-
-	// Verify data models bootstrapped from tenant template.
-	verifyTenantBootstrapped();
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManager(), "Starting schedule manager",
+		"Schedule manager startup failed.", true));
     }
 
     /*

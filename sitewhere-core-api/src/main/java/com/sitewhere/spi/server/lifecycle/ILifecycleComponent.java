@@ -63,6 +63,18 @@ public interface ILifecycleComponent {
     public List<ILifecycleComponent> getLifecycleComponents();
 
     /**
+     * Start component as a nested lifecycle component.
+     * 
+     * @param component
+     * @param monitor
+     * @param errorMessage
+     * @param require
+     * @throws SiteWhereException
+     */
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException;
+
+    /**
      * Starts the component while keeping up with lifecycle information.
      */
     public void lifecycleStart(ILifecycleProgressMonitor monitor);
