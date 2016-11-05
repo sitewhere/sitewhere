@@ -36,4 +36,7 @@ public interface IDefaultResourcePaths {
 
     /** Resource name for tenant lock file */
     public static final String TENANT_LOCK_RESOURCE_NAME = "tenant.lock";
+
+    /** Resource name for tenant persistent state file */
+    public static final String TENANT_STATE_RESOURCE_NAME = "tenant.state";
 }

@@ -34,8 +34,9 @@ import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
-import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
+import com.sitewhere.rest.model.server.TenantPersistentState;
+import com.sitewhere.rest.model.server.TenantRuntimeState;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -74,17 +75,19 @@ import com.sitewhere.spi.resource.request.IResourceCreateRequest;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
-import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
+import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -158,6 +161,43 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		SiteWhere.getServer().getVersion(), global);
     }
 
+    /**
+     * Update persistent state values.
+     * 
+     * @param desired
+     * @param current
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenantPersistentState updatePersistentState(LifecycleStatus desired, LifecycleStatus current)
+	    throws SiteWhereException {
+	ITenantPersistentState persisted = getPersistentState();
+	TenantPersistentState updated = TenantPersistentState.copy(persisted);
+	if (desired != null) {
+	    updated.setDesiredState(desired);
+	}
+	updated.setLastKnownState(getLifecycleStatus());
+	persistState(updated);
+	return updated;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStart(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecycleStart(ILifecycleProgressMonitor monitor) {
+	super.lifecycleStart(monitor);
+	try {
+	    updatePersistentState(null, getLifecycleStatus());
+	} catch (SiteWhereException e) {
+	    LOGGER.warn("Unable to update tenant persistent state.");
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -198,6 +238,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	});
 
 	// Execute operation and report progress.
+	updatePersistentState(LifecycleStatus.Started, getLifecycleStatus());
 	start.execute(monitor);
     }
 
@@ -281,12 +322,59 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
+	super.lifecycleStop(monitor, constraints);
+	try {
+	    updatePersistentState(null, getLifecycleStatus());
+	} catch (SiteWhereException e) {
+	    LOGGER.warn("Unable to update tenant persistent state.");
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stop(monitor, false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException {
+	boolean persist = ((constraints != null)
+		&& (constraints instanceof SiteWhereTenantEngineCommands.PersistentShutdownConstraint));
+	stop(monitor, persist);
+    }
+
+    /**
+     * Stops components, but differentiates between server shutdown and an
+     * explicit stop request for the tenant.
+     * 
+     * @param monitor
+     * @param persist
+     * @throws SiteWhereException
+     */
+    protected void stop(ILifecycleProgressMonitor monitor, boolean persist) throws SiteWhereException {
+	LifecycleStatus desired = (persist) ? LifecycleStatus.Stopped : null;
+	updatePersistentState(desired, getLifecycleStatus());
+
 	// Stop scheduling new jobs.
 	getScheduleManager().lifecycleStop(monitor);
 	getScheduleManagement().lifecycleStop(monitor);
@@ -328,11 +416,55 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#getPersistentState
+     * ()
+     */
+    @Override
+    public ITenantPersistentState getPersistentState() throws SiteWhereException {
+	IResource resource = getTenantConfigurationResolver()
+		.getResourceForPath(IDefaultResourcePaths.TENANT_STATE_RESOURCE_NAME);
+	if (resource == null) {
+	    return null;
+	}
+	return MarshalUtils.unmarshalJson(resource.getContent(), TenantPersistentState.class);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#persistState(com.
+     * sitewhere.spi.server.tenant.ITenantPersistentState)
+     */
+    @Override
+    public void persistState(ITenantPersistentState state) throws SiteWhereException {
+	TenantPersistentState persist = TenantPersistentState.copy(state);
+	byte[] content = MarshalUtils.marshalJson(persist);
+
+	ResourceCreateRequest request = new ResourceCreateRequest();
+	request.setContent(content);
+	request.setPath(IDefaultResourcePaths.TENANT_STATE_RESOURCE_NAME);
+	request.setResourceType(ResourceType.ConfigurationFile);
+	List<IResourceCreateRequest> resources = new ArrayList<IResourceCreateRequest>();
+	resources.add(request);
+
+	IMultiResourceCreateResponse response = SiteWhere.getServer().getRuntimeResourceManager()
+		.createTenantResources(getTenant().getId(), resources, ResourceCreateMode.OVERWRITE);
+	if (response.getErrors().size() > 0) {
+	    throw new SiteWhereException(
+		    "Unable to persist tenant state. " + response.getErrors().get(0).getReason().toString());
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEngineState()
      */
     @Override
-    public ISiteWhereTenantEngineState getEngineState() {
-	SiteWhereTenantEngineState state = new SiteWhereTenantEngineState();
+    public ITenantRuntimeState getEngineState() {
+	TenantRuntimeState state = new TenantRuntimeState();
 	state.setLifecycleStatus(getLifecycleStatus());
 	if (getLifecycleStatus() == LifecycleStatus.Started) {
 	    state.setComponentHierarchyState(getComponentHierarchyState());

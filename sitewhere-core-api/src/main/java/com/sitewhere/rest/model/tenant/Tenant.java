@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -48,7 +48,7 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
     private String tenantTemplateId;
 
     /** Runtime state of tenant engine */
-    private ISiteWhereTenantEngineState engineState;
+    private ITenantRuntimeState engineState;
 
     /*
      * (non-Javadoc)
@@ -133,11 +133,11 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
      * 
      * @see com.sitewhere.spi.user.ITenant#getEngineState()
      */
-    public ISiteWhereTenantEngineState getEngineState() {
+    public ITenantRuntimeState getEngineState() {
 	return engineState;
     }
 
-    public void setEngineState(ISiteWhereTenantEngineState engineState) {
+    public void setEngineState(ITenantRuntimeState engineState) {
 	this.engineState = engineState;
     }
 

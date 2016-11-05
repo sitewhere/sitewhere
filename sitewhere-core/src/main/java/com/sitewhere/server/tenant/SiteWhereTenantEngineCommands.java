@@ -10,6 +10,7 @@ package com.sitewhere.server.tenant;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -110,7 +111,7 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		getEngine().lifecycleStop(getProgressMonitor());
+		getEngine().lifecycleStop(getProgressMonitor(), new PersistentShutdownConstraint());
 		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
@@ -119,5 +120,13 @@ public class SiteWhereTenantEngineCommands {
 	    }
 	    return new CommandResponse(CommandResult.Successful, "Tenant engine stopped.");
 	}
+    }
+
+    /**
+     * Marker class for indicating tenant shutdown should be persistent.
+     * 
+     * @author Derek
+     */
+    public static class PersistentShutdownConstraint implements ILifecycleConstraints {
     }
 }

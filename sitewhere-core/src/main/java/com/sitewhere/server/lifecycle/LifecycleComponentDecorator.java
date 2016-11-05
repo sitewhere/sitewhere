@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -187,12 +188,38 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
+	delegate.lifecycleStop(monitor, constraints);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
      * .spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	delegate.stop(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException {
+	delegate.stop(monitor, constraints);
     }
 
     /*

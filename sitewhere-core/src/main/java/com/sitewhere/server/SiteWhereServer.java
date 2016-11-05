@@ -35,6 +35,7 @@ import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerState;
+import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
@@ -84,6 +85,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
+import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
@@ -789,17 +791,31 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Start tenant engines.
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
-		    tenantStarters.execute(new Runnable() {
 
-			@Override
-			public void run() {
-			    try {
-				startTenantEngine(engine);
-			    } catch (SiteWhereException e) {
-				LOGGER.error("Tenant engine startup failed.", e);
+		    // Find state or create initial state as needed.
+		    ITenantPersistentState state = engine.getPersistentState();
+		    if (state == null) {
+			TenantPersistentState newState = new TenantPersistentState();
+			newState.setDesiredState(LifecycleStatus.Started);
+			newState.setLastKnownState(LifecycleStatus.Starting);
+			engine.persistState(newState);
+			state = newState;
+		    }
+
+		    // Do not start if desired state is 'Stopped'.
+		    if (state.getDesiredState() != LifecycleStatus.Stopped) {
+			tenantStarters.execute(new Runnable() {
+
+			    @Override
+			    public void run() {
+				try {
+				    startTenantEngine(engine);
+				} catch (SiteWhereException e) {
+				    LOGGER.error("Tenant engine startup failed.", e);
+				}
 			    }
-			}
-		    });
+			});
+		    }
 		}
 	    }
 	});

@@ -44,7 +44,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
@@ -843,7 +843,7 @@ public class AdminInterfaceController extends MvcController {
      * @throws SiteWhereException
      */
     protected void addTenantData(ITenant tenant, Map<String, Object> data) throws SiteWhereException {
-	ISiteWhereTenantEngineState state = SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
+	ITenantRuntimeState state = SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
 
 	// Only attempt to load data if engine is started.
 	if (state.getLifecycleStatus() == LifecycleStatus.Started) {

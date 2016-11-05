@@ -14,6 +14,7 @@ import java.util.UUID;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -168,10 +169,27 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor) {
+	lifecycleStop(monitor, null);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
 	setLifecycleStatus(LifecycleStatus.Stopping);
 	getLogger().info(getComponentName() + " state transitioned to STOPPING.");
 	try {
-	    stop(monitor);
+	    if (constraints == null) {
+		stop(monitor);
+	    } else {
+		stop(monitor, constraints);
+	    }
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to STOPPED.");
 	} catch (SiteWhereException e) {
@@ -194,6 +212,18 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException {
     }
 
     /*

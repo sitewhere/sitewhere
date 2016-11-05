@@ -25,7 +25,7 @@ import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
-import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -151,7 +151,23 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
      * 
      * @return
      */
-    public ISiteWhereTenantEngineState getEngineState();
+    public ITenantRuntimeState getEngineState();
+
+    /**
+     * Get state information that is persisted across engine restarts.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ITenantPersistentState getPersistentState() throws SiteWhereException;
+
+    /**
+     * Persist the engine state.
+     * 
+     * @param state
+     * @throws SiteWhereException
+     */
+    public void persistState(ITenantPersistentState state) throws SiteWhereException;
 
     /**
      * Initialize the engine.
