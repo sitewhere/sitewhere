@@ -42,6 +42,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.scheduling.QuartzScheduleManager;
 import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
@@ -375,32 +376,83 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	LifecycleStatus desired = (persist) ? LifecycleStatus.Stopped : null;
 	updatePersistentState(desired, getLifecycleStatus());
 
-	// Stop scheduling new jobs.
-	getScheduleManager().lifecycleStop(monitor);
-	getScheduleManagement().lifecycleStop(monitor);
+	// Organizes steps for stopping tenant.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("STOP TENANT '" + getTenant().getName() + "'");
 
-	// Disable device communications.
-	getDeviceCommunication().lifecycleStop(monitor);
-	getEventProcessing().lifecycleStop(monitor);
-
-	// Stop core management implementations.
-	if (getDeviceManagementCacheProvider() != null) {
-	    getDeviceManagementCacheProvider().lifecycleStop(monitor);
-	}
+	// Stop tenant services.
+	stopTenantServices(stop);
 
 	// Stop lifecycle components.
-	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    component.lifecycleStop(monitor);
+	stop.addStep(new SimpleLifecycleStep("Stopping registered components") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+		    component.lifecycleStop(monitor);
+		}
+	    }
+	});
+
+	// Stop core management implementations.
+	stopManagementServices(stop);
+
+	// Execute operation with progress monitoring.
+	stop.execute(monitor);
+    }
+
+    /**
+     * Stop tenant services.
+     * 
+     * @param stop
+     * @throws SiteWhereException
+     */
+    protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
+	// Stop scheduling new jobs.
+	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManager(), "Stop schedule manager"));
+
+	// Disable device communications.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getDeviceCommunication(), "Stop device communication subsystem"));
+	stop.addStep(new StopComponentLifecycleStep(this, getEventProcessing(), "Stop event processing subsystem"));
+
+	// Stop search provider manager.
+	stop.addStep(new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stop search provider manager"));
+
+	// Stop asset module manager.
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stop asset module manager"));
+
+	// Stop cache provider if configured.
+	if (getDeviceManagementCacheProvider() != null) {
+	    stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		    "Stop device management cache provider"));
 	}
 
-	getDeviceEventManagement().lifecycleStop(monitor);
-	getDeviceManagement().lifecycleStop(monitor);
-	getAssetModuleManager().lifecycleStop(monitor);
-	getAssetManagement().lifecycleStop(monitor);
-	getSearchProviderManager().lifecycleStop(monitor);
-
 	// Stop the Groovy configuration.
-	getGroovyConfiguration().lifecycleStop(monitor);
+	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stop Groovy engine"));
+    }
+
+    /**
+     * Stop tenant management services.
+     * 
+     * @param stop
+     * @throws SiteWhereException
+     */
+    protected void stopManagementServices(ICompositeLifecycleStep stop) throws SiteWhereException {
+	// Stop schedule management.
+	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManagement(),
+		"Stop schedule management implementation"));
+
+	// Stop device event management.
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement(),
+		"Stop device event management implementation"));
+
+	// Stop device management.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getDeviceManagement(), "Stop device management implementation"));
+
+	// Stop asset management.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getAssetManagement(), "Stop asset management implementation"));
     }
 
     /*

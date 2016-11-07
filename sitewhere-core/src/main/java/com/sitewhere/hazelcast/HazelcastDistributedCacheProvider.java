@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Implements {@link IDeviceManagementCacheProvider} using Hazelcast as a
@@ -188,12 +189,16 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	 */
 	@Override
 	public T get(String key) throws SiteWhereException {
-	    T result = (T) hMap.get(key);
-	    requestCount.incrementAndGet();
-	    if (result != null) {
-		hitCount.incrementAndGet();
+	    if (getLifecycleStatus() == LifecycleStatus.Started) {
+		T result = (T) hMap.get(key);
+		requestCount.incrementAndGet();
+		if (result != null) {
+		    hitCount.incrementAndGet();
+		}
+		return result;
+	    } else {
+		throw new SiteWhereException("Cache get() called after shutdown.");
 	    }
-	    return result;
 	}
 
 	/*
@@ -204,7 +209,11 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	 */
 	@Override
 	public void put(String key, T value) throws SiteWhereException {
-	    hMap.put(key, value);
+	    if (getLifecycleStatus() == LifecycleStatus.Started) {
+		hMap.put(key, value);
+	    } else {
+		throw new SiteWhereException("Cache put() called after shutdown.");
+	    }
 	}
 
 	/*
@@ -214,7 +223,11 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	 */
 	@Override
 	public void remove(String key) throws SiteWhereException {
-	    hMap.remove(key);
+	    if (getLifecycleStatus() == LifecycleStatus.Started) {
+		hMap.remove(key);
+	    } else {
+		throw new SiteWhereException("Cache put() called after shutdown.");
+	    }
 	}
 
 	/*
@@ -224,7 +237,11 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	 */
 	@Override
 	public void clear() throws SiteWhereException {
-	    hMap.clear();
+	    if (getLifecycleStatus() == LifecycleStatus.Started) {
+		hMap.clear();
+	    } else {
+		throw new SiteWhereException("Cache clear() called after shutdown.");
+	    }
 	}
 
 	/*
@@ -234,7 +251,11 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent
 	 */
 	@Override
 	public int getElementCount() throws SiteWhereException {
-	    return hMap.size();
+	    if (getLifecycleStatus() == LifecycleStatus.Started) {
+		return hMap.size();
+	    } else {
+		throw new SiteWhereException("Cache getElementCount() called after shutdown.");
+	    }
 	}
 
 	/*

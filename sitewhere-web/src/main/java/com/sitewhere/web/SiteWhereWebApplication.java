@@ -34,6 +34,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.SiteWhereApplication;
+import com.sitewhere.hazelcast.NoShutdownHazelcastInstance;
 import com.sitewhere.web.filters.JsonpFilter;
 import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
@@ -88,7 +89,8 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 
     @Bean
     public HazelcastInstance sitewhereHazelcast() {
-	return SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance();
+	return new NoShutdownHazelcastInstance(
+		SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance());
     }
 
     @Bean
