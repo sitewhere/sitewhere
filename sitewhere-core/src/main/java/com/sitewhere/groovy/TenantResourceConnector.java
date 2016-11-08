@@ -66,7 +66,6 @@ public class TenantResourceConnector implements ResourceConnector {
 		} catch (IOException e1) {
 		    throw new ResourceException(e1);
 		}
-		throw new ResourceException(e);
 	    }
 	    return result;
 	} catch (MalformedURLException e) {
