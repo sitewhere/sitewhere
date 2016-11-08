@@ -12,8 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -142,9 +144,27 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
 	if (device.getAssignmentToken() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
+	    // If no assignment exists, add an unassociated assignment.
+	    return createUnassociatedAssignmentFor(hardwareId);
 	}
 	return getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
+    }
+
+    /**
+     * Create an unassociated assignment for device with the given hardware id.
+     * This allows events to be written when a device does not have an existing
+     * assignment.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceAssignment createUnassociatedAssignmentFor(String hardwareId) throws SiteWhereException {
+	LOGGER.debug("Creating unassociated assignment for {}.", hardwareId);
+	DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
+	assnCreate.setDeviceHardwareId(hardwareId);
+	assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
+	return SiteWhere.getServer().getDeviceManagement(getTenant()).createDeviceAssignment(assnCreate);
     }
 
     /**
