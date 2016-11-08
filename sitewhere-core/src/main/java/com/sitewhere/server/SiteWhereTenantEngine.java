@@ -421,12 +421,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Stop asset module manager.
 	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stop asset module manager"));
 
-	// Stop cache provider if configured.
-	if (getDeviceManagementCacheProvider() != null) {
-	    stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		    "Stop device management cache provider"));
-	}
-
 	// Stop the Groovy configuration.
 	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stop Groovy engine"));
     }
@@ -445,6 +439,12 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Stop device event management.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement(),
 		"Stop device event management implementation"));
+
+	// Stop cache provider if configured.
+	if (getDeviceManagementCacheProvider() != null) {
+	    stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		    "Stop device management cache provider"));
+	}
 
 	// Stop device management.
 	stop.addStep(
