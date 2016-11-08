@@ -113,6 +113,7 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	if (getCommandDeliveryParameterExtractor() == null) {
 	    throw new SiteWhereException("No command delivery parameter extractor configured for destination.");
 	}
+	startNestedComponent(getCommandDeliveryParameterExtractor(), monitor, true);
 
 	// Start command delivery provider.
 	if (getCommandDeliveryProvider() == null) {

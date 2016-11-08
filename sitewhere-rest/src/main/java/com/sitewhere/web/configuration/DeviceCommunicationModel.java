@@ -93,8 +93,13 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	addElement(createJsonCommandEncoderElement());
 	addElement(createGroovyCommandEncoderElement());
 
+	// String command encoders.
+	addElement(createGroovyStringCommandEncoderElement());
+
+	// Parameter extractors.
 	addElement(createHardwareIdParameterExtractorElement());
 	addElement(createCoapMetadataParameterExtractorElement());
+	addElement(createGroovySmsParameterExtractorElement());
     }
 
     /**
@@ -1053,6 +1058,25 @@ public class DeviceCommunicationModel extends ConfigurationModel {
     }
 
     /**
+     * Create element configuration for Groovy String command encoder.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyStringCommandEncoderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy String Command Encoder",
+		CommandDestinationsParser.StringCommandEncoders.GroovyStringCommandEncoder.getLocalName(), "cogs",
+		ElementRole.CommandDestinations_StringCommandEncoder);
+
+	builder.description("Command encoder that encodes both system and custom commands using a groovy "
+		+ "script for the encoding logic. The script is expected to return a String which will be used "
+		+ "as the command payload.");
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
+		.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+
+	return builder.build();
+    }
+
+    /**
      * Create element configuration for hardware id parameter extractor.
      * 
      * @return
@@ -1097,6 +1121,22 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		.description(
 			"Metadata field that holds information about the relative URL for the CoAP client request.")
 		.build()));
+
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for CoAP metadata parameter extractor.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovySmsParameterExtractorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy SMS Parameter Extractor",
+		"groovy-sms-parameter-extractor", "cogs", ElementRole.CommandDestinations_SmsParameterExtractor);
+
+	builder.description("Uses a Groovy script to extract SMS parameter information for delivering a command.");
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
+		.description("Path to Groovy script which encodes commands.").makeRequired().build()));
 
 	return builder.build();
     }

@@ -11,6 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Extracts delivery parameters from
@@ -19,7 +20,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * 
  * @param <T>
  */
-public interface ICommandDeliveryParameterExtractor<T> {
+public interface ICommandDeliveryParameterExtractor<T> extends ITenantLifecycleComponent {
 
     /**
      * Extract required delivery parameters from the given sources.

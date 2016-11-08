@@ -7,12 +7,17 @@
  */
 package com.sitewhere.device.communication;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Placeholder object for {@link ICommandDeliveryProvider} that do not require
@@ -28,10 +33,18 @@ public class NullParameters {
      * 
      * @author Derek
      */
-    public static class Extractor implements ICommandDeliveryParameterExtractor<NullParameters> {
+    public static class Extractor extends TenantLifecycleComponent
+	    implements ICommandDeliveryParameterExtractor<NullParameters> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
 
 	/** Value to be returned */
 	private NullParameters parameters = new NullParameters();
+
+	public Extractor() {
+	    super(LifecycleComponentType.CommandParameterExtractor);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -46,6 +59,17 @@ public class NullParameters {
 	public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
 		IDeviceCommandExecution execution) throws SiteWhereException {
 	    return parameters;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
 	}
     }
 }

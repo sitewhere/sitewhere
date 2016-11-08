@@ -689,33 +689,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    return;
 	}
 
-	// Bootstrap process waits on a lock resource to handle case where
-	// multiple SiteWhere instances using the same datastore are starting at
-	// the same time. Only one instance should bootstrap the data.
-	IResource lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
-		IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-	if (lock != null) {
-	    while (true) {
-		LOGGER.info("Tenant bootstrap process waiting on lock...");
-		try {
-		    Thread.sleep(1000);
-		    lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
-			    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-		    // If another instance created a lock and released it, we
-		    // can assume that the tenant has already been bootstrapped.
-		    if (lock == null) {
-			return;
-		    }
-		} catch (InterruptedException e) {
-		    LOGGER.info("Tenant bootstrap process lock interrupted.");
-		    return;
-		}
-	    }
-	}
-
-	// Create lock resource to prevent other instances from bootstrapping.
-	createLockResource();
-
 	// Unmarshal template and bootstrap from it.
 	TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
 	try {
@@ -781,6 +754,37 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			LOGGER.warn("Schedule management initializer data overlaps existing data. "
 				+ "Skipping further asset management initialization.");
 		    }
+		}
+	    }
+	}
+    }
+
+    /**
+     * Wait on lock to be freed before proceeding.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void waitOnLockResource() throws SiteWhereException {
+	// Bootstrap process waits on a lock resource to handle case where
+	// multiple SiteWhere instances using the same datastore are starting at
+	// the same time. Only one instance should bootstrap the data.
+	IResource lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
+		IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+	if (lock != null) {
+	    while (true) {
+		LOGGER.info("Tenant bootstrap process waiting on lock...");
+		try {
+		    Thread.sleep(1000);
+		    lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
+			    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
+		    // If another instance created a lock and released it, we
+		    // can assume that the tenant has already been bootstrapped.
+		    if (lock == null) {
+			return;
+		    }
+		} catch (InterruptedException e) {
+		    LOGGER.info("Tenant bootstrap process lock interrupted.");
+		    return;
 		}
 	    }
 	}

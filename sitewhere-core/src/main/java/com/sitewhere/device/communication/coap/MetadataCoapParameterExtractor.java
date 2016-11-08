@@ -9,18 +9,27 @@ package com.sitewhere.device.communication.coap;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Pulls CoAP parameters from device metadata.
  * 
  * @author Derek
  */
-public class MetadataCoapParameterExtractor implements ICommandDeliveryParameterExtractor<CoapParameters> {
+public class MetadataCoapParameterExtractor extends TenantLifecycleComponent
+	implements ICommandDeliveryParameterExtractor<CoapParameters> {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Default metadata field for remote hostname */
     public static final String DEFAULT_HOSTNAME_METADATA = "hostname";
@@ -50,9 +59,11 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
     private Integer portOverride;
 
     public MetadataCoapParameterExtractor() {
+	super(LifecycleComponentType.CommandParameterExtractor);
     }
 
     public MetadataCoapParameterExtractor(int portOverride) {
+	super(LifecycleComponentType.CommandParameterExtractor);
 	this.portOverride = portOverride;
     }
 
@@ -85,6 +96,16 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 	    coap.setMethod(method);
 	}
 	return coap;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public String getHostnameMetadataField() {

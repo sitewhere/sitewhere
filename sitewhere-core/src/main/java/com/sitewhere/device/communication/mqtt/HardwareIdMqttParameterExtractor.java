@@ -7,11 +7,16 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implements {@link ICommandDeliveryParameterExtractor} for
@@ -21,7 +26,11 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor
  * 
  * @author Derek
  */
-public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
+public class HardwareIdMqttParameterExtractor extends TenantLifecycleComponent
+	implements ICommandDeliveryParameterExtractor<MqttParameters> {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Default command topic */
     public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
@@ -34,6 +43,10 @@ public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParamet
 
     /** System topic prefix */
     private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
+
+    public HardwareIdMqttParameterExtractor() {
+	super(LifecycleComponentType.CommandParameterExtractor);
+    }
 
     /*
      * (non-Javadoc)
@@ -56,6 +69,16 @@ public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParamet
 	params.setSystemTopic(systemTopic);
 
 	return params;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public String getCommandTopicExpr() {

@@ -37,6 +37,9 @@ import com.sitewhere.device.communication.protobuf.ProtobufExecutionEncoder;
 import com.sitewhere.device.communication.sms.SmsCommandDestination;
 import com.sitewhere.device.communication.sms.SmsParameters;
 import com.sitewhere.groovy.device.communication.GroovyCommandExecutionEncoder;
+import com.sitewhere.groovy.device.communication.GroovySmsParameterExtractor;
+import com.sitewhere.groovy.device.communication.GroovyStringCommandExecutionEncoder;
+import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
 
@@ -242,7 +245,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	addCommonAttributes(sms, element, context);
 
 	// Add encoder reference.
-	if (!parseBinaryCommandEncoder(element, context, sms)) {
+	if (!parseStringCommandEncoder(element, context, sms)) {
 	    throw new RuntimeException(
 		    "Command encoder required for Twilio command destination but was not specified.");
 	}
@@ -449,6 +452,69 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
     }
 
     /**
+     * Parse command encoder that results in a String payload.
+     * 
+     * @param parent
+     * @param context
+     * @param destination
+     * @return
+     */
+    protected boolean parseStringCommandEncoder(Element parent, ParserContext context,
+	    BeanDefinitionBuilder destination) {
+	List<Element> children = DomUtils.getChildElements(parent);
+	for (Element child : children) {
+	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
+		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+			.resolve(child.getNamespaceURI());
+		if (nested != null) {
+		    BeanDefinition decoderBean = nested.parse(child, context);
+		    String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
+		    context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
+		    destination.addPropertyReference("commandExecutionEncoder", decoderName);
+		    return true;
+		} else {
+		    continue;
+		}
+	    }
+	    StringCommandEncoders type = StringCommandEncoders.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		return false;
+	    }
+	    switch (type) {
+	    case GroovyStringCommandEncoder: {
+		parseGroovyStringCommandEncoder(child, context, destination);
+		return true;
+	    }
+	    }
+	}
+	return false;
+    }
+
+    /**
+     * Parse definition of Groovy String command encoder.
+     * 
+     * @param encoder
+     * @param context
+     * @param destination
+     */
+    protected void parseGroovyStringCommandEncoder(Element encoder, ParserContext context,
+	    BeanDefinitionBuilder destination) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder
+		.rootBeanDefinition(GroovyStringCommandExecutionEncoder.class);
+
+	Attr scriptPath = encoder.getAttributeNode("scriptPath");
+	if (scriptPath == null) {
+	    throw new RuntimeException("Script path required but not specified.");
+	}
+	builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
+	AbstractBeanDefinition bean = builder.getBeanDefinition();
+	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+	context.getRegistry().registerBeanDefinition(name, bean);
+	destination.addPropertyReference("commandExecutionEncoder", name);
+    }
+
+    /**
      * Add parameter extractor beans.
      * 
      * @param builder
@@ -482,6 +548,15 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	    extractor = DomUtils.getChildElementByTagName(element, "metadata-coap-parameter-extractor");
 	    if (extractor != null) {
 		AbstractBeanDefinition xref = createCoapMetadataParameterExtractor(extractor);
+		String xname = nameGenerator.generateBeanName(xref, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(xname, xref);
+		builder.addPropertyReference("commandDeliveryParameterExtractor", xname);
+		return true;
+	    }
+	} else if (paramType == SmsParameters.class) {
+	    extractor = DomUtils.getChildElementByTagName(element, "groovy-sms-parameter-extractor");
+	    if (extractor != null) {
+		AbstractBeanDefinition xref = createGroovySmsParameterExtractor(extractor);
 		String xname = nameGenerator.generateBeanName(xref, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(xname, xref);
 		builder.addPropertyReference("commandDeliveryParameterExtractor", xname);
@@ -536,6 +611,25 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	Attr urlMetadataField = element.getAttributeNode("urlMetadataField");
 	if (urlMetadataField != null) {
 	    extractor.addPropertyValue("urlMetadataField", urlMetadataField.getValue());
+	}
+
+	return extractor.getBeanDefinition();
+    }
+
+    /**
+     * Create {@link ICommandDeliveryParameterExtractor} that uses a Groovy
+     * script to extract an {@link SmsParameters} object for use by the command
+     * destination.
+     * 
+     * @param element
+     * @return
+     */
+    protected AbstractBeanDefinition createGroovySmsParameterExtractor(Element element) {
+	BeanDefinitionBuilder extractor = BeanDefinitionBuilder.rootBeanDefinition(GroovySmsParameterExtractor.class);
+
+	Attr scriptPath = element.getAttributeNode("scriptPath");
+	if (scriptPath != null) {
+	    extractor.addPropertyValue("scriptPath", scriptPath.getValue());
 	}
 
 	return extractor.getBeanDefinition();
@@ -618,6 +712,41 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 
 	public static BinaryCommandEncoders getByLocalName(String localName) {
 	    for (BinaryCommandEncoders value : BinaryCommandEncoders.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    /**
+     * Enumeration of String command encoders.
+     * 
+     * @author Derek
+     */
+    public static enum StringCommandEncoders {
+
+	/** Reference to externally defined event decoder */
+	GroovyStringCommandEncoder("groovy-string-command-encoder");
+
+	/** Event code */
+	private String localName;
+
+	private StringCommandEncoders(String localName) {
+	    this.localName = localName;
+	}
+
+	public static StringCommandEncoders getByLocalName(String localName) {
+	    for (StringCommandEncoders value : StringCommandEncoders.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

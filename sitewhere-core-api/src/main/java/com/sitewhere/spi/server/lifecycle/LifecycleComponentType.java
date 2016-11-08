@@ -77,6 +77,9 @@ public enum LifecycleComponentType {
     /** Command delivery provider */
     CommandDeliveryProvider,
 
+    /** Command parameter extractor */
+    CommandParameterExtractor,
+
     /** Command router */
     CommandRouter,
 
