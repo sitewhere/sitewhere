@@ -1,12 +1,16 @@
 package com.sitewhere.rest.model.asset.request.scripting;
 
+import java.util.List;
+
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -21,8 +25,12 @@ public class AssetManagementRequestBuilder {
     /** Asset management implementation */
     private IAssetManagement assetManagement;
 
-    public AssetManagementRequestBuilder(IAssetManagement assetManagement) {
+    /** Asset module manager */
+    private IAssetModuleManager assetModuleManager;
+
+    public AssetManagementRequestBuilder(IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) {
 	this.assetManagement = assetManagement;
+	this.assetModuleManager = assetModuleManager;
     }
 
     public AssetCategoryCreateRequest.Builder newAssetCategory(String id, String name) {
@@ -59,11 +67,23 @@ public class AssetManagementRequestBuilder {
 	return getAssetManagement().createPersonAsset(categoryId, builder.build());
     }
 
+    public List<? extends IAsset> allAssetsInModule(String moduleId) throws SiteWhereException {
+	return getAssetModuleManager().search(moduleId, "");
+    }
+
     public IAssetManagement getAssetManagement() {
 	return assetManagement;
     }
 
     public void setAssetManagement(IAssetManagement assetManagement) {
 	this.assetManagement = assetManagement;
+    }
+
+    public IAssetModuleManager getAssetModuleManager() {
+	return assetModuleManager;
+    }
+
+    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
+	this.assetModuleManager = assetModuleManager;
     }
 }

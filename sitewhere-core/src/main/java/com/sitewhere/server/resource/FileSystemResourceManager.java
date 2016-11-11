@@ -542,11 +542,10 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	}
 	String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : "";
 	File rfile = new File(getRootFolder().getAbsolutePath() + middle + resource.getPath());
-	if (!rfile.exists()) {
-	    return null;
-	}
-	if (!rfile.delete()) {
-	    throw new SiteWhereException("Unable to delete resource.");
+	try {
+	    Files.deleteIfExists(rfile.toPath());
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to delete file resource.", e);
 	}
 	uncacheFile(rfile);
 	LOGGER.info("Deleted and uncached resource: " + rfile.getAbsolutePath());

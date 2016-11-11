@@ -173,6 +173,12 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected ITenantPersistentState updatePersistentState(LifecycleStatus desired, LifecycleStatus current)
 	    throws SiteWhereException {
 	ITenantPersistentState persisted = getPersistentState();
+	if (persisted == null) {
+	    TenantPersistentState initial = new TenantPersistentState();
+	    initial.setDesiredState(LifecycleStatus.Started);
+	    initial.setLastKnownState(LifecycleStatus.Stopped);
+	    persisted = initial;
+	}
 	TenantPersistentState updated = TenantPersistentState.copy(persisted);
 	if (desired != null) {
 	    updated.setDesiredState(desired);
@@ -715,27 +721,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void bootstrapFromTemplate(TenantTemplate template) throws SiteWhereException {
 	if (template.getInitializers() != null) {
 
-	    // Execute device management model initializers if configured.
-	    if (template.getInitializers().getDeviceManagement() != null) {
-		for (String script : template.getInitializers().getDeviceManagement()) {
-		    GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
-			    script);
-		    try {
-			dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
-		    } catch (ResourceExistsException e) {
-			LOGGER.warn("Device management initializer data overlaps existing data. "
-				+ "Skipping further device management initialization.");
-		    }
-		}
-	    }
-
 	    // Execute asset management model initializers if configured.
 	    if (template.getInitializers().getAssetManagement() != null) {
 		for (String script : template.getInitializers().getAssetManagement()) {
 		    GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
 			    script);
 		    try {
-			amInit.initialize(getTenantConfigurationResolver(), getAssetManagement());
+			amInit.initialize(getAssetModuleManager(), getAssetManagement());
 		    } catch (ResourceExistsException e) {
 			LOGGER.warn("Asset management initializer data overlaps existing data. "
 				+ "Skipping further asset management initialization.");
@@ -743,8 +735,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		}
 	    }
 
+	    // Execute device management model initializers if configured.
+	    if (template.getInitializers().getDeviceManagement() != null) {
+		for (String script : template.getInitializers().getDeviceManagement()) {
+		    GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
+			    script);
+		    try {
+			dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetManagement(),
+				getAssetModuleManager());
+		    } catch (ResourceExistsException e) {
+			LOGGER.warn("Device management initializer data overlaps existing data. "
+				+ "Skipping further device management initialization.");
+		    }
+		}
+	    }
+
 	    // Execute schedule management model initializers if configured.
-	    if (template.getInitializers().getAssetManagement() != null) {
+	    if (template.getInitializers().getScheduleManagement() != null) {
 		for (String script : template.getInitializers().getScheduleManagement()) {
 		    GroovyScheduleModelInitializer smInit = new GroovyScheduleModelInitializer(getGroovyConfiguration(),
 			    script);
@@ -837,6 +844,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	if (config == null) {
 	    LOGGER.info("No active configuration found. Copying configuration from template.");
 	    config = getTenantConfigurationResolver().copyTenantTemplateResources();
+	}
+	if (config == null) {
+	    throw new SiteWhereException("Tenant configuration not found. Aborting initialization.");
 	}
 	this.tenantContext = ConfigurationUtils.buildTenantContext(config, getTenant(),
 		SiteWhere.getServer().getVersion(), globalContext);

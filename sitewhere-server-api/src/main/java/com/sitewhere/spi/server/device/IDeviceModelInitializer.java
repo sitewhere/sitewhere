@@ -8,6 +8,7 @@
 package com.sitewhere.spi.server.device;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -26,9 +27,10 @@ public interface IDeviceModelInitializer extends IModelInitializer {
      * 
      * @param deviceManagement
      * @param deviceEventManagement
+     * @param assetManagement
      * @param assetModuleManager
      * @throws SiteWhereException
      */
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetModuleManager assetModuleManager) throws SiteWhereException;
+	    IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) throws SiteWhereException;
 }

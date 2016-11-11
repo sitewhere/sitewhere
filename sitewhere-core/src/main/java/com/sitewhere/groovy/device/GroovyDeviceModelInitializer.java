@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -52,17 +54,19 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
      * 
      * @see
      * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.
-     * sitewhere. spi.device.IDeviceManagement,
+     * sitewhere.spi.device.IDeviceManagement,
      * com.sitewhere.spi.device.event.IDeviceEventManagement,
+     * com.sitewhere.spi.asset.IAssetManagement,
      * com.sitewhere.spi.asset.IAssetModuleManager)
      */
     @Override
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetModuleManager assetModuleManager) throws SiteWhereException {
+	    IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) throws SiteWhereException {
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("deviceBuilder", new DeviceManagementRequestBuilder(deviceManagement));
 	binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
+	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement, assetModuleManager));
 
 	try {
 	    // Use system account for logging "created by" on created elements.
