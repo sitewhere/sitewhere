@@ -122,12 +122,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		
 	}
 	/*
-	 *  Connects to RabbitMQ.
-	 *  
-	 *  Will try to reconnect if the initial connection attempt fails. 
-	 *  i.e. RabbitMQ is not reachable on sitewhere/tenant startup
-	 *  
-	 *  Enables automatic recovery of existing connections of amqp client.
+	 *  Connect to RabbitMQ
 	 */
 	private void connect() {
 		
@@ -151,9 +146,9 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			
 		    this.channel = connection.createChannel();			
 			
-			LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
+            LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
 
-			channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
+            channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
 
 			LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: "
 					+ getQueueName());
