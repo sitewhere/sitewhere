@@ -5,16 +5,16 @@
 The Open Platform for the Internet of Things™
 -----------------------------------------------
 
-#### SiteWhere is an open source platform for caturing, storing, integrating, and analyzing data from IoT devices. ####
+#### SiteWhere is an open source platform for capturing, storing, integrating, and analyzing data from IoT devices. ####
 SiteWhere is a server application and framework used to develop applications for the Internet of Things. 
 The core server uses the [Spring Boot](http://projects.spring.io/spring-boot/) architecture and provides
 the following list of features:
 
 * Support for multiple tenants with separate data storage and processing pipelines
-* Device management including specifications, device groups, asset assignment
+* Device management including specifications, device groups, asset assignment, and much more
 * Device connectivity via JSON, MQTT, AMQP, and most other common protocols
 * Big data storage for device event data with support for MongoDB, HBase, and InfluxDB
-* Configurable event-processing pipline
+* Configurable event-processing pipline with support for alerting, scripting, and other advanced functions
 * Integration with Apache Sprark, Apache Solr, Mule Anypoint, Amazon SQS, Azure EventHubs, and many others
 
 ### Installing a Packaged Version
@@ -82,7 +82,7 @@ SiteWhere Complete Install for Ubuntu
     mv sitewhere-server-1.7.0 /opt/sitewhere
     export SITEWHERE_HOME=/opt/sitewhere
     cd /opt/sitewhere/bin
-    sh startup.sh
+    ./startup.sh
 
 > To build and install latest code from GitHub
 
