@@ -335,6 +335,7 @@ public class AdminInterfaceController extends MvcController {
 	    IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
 	    if (assignment != null) {
 		data.put("assignment", assignment);
+		data.put("servletRequest", request);
 		return new ModelAndView("assignments/emulator", data);
 	    }
 	    return showError("Assignment for token '" + token + "' not found.");

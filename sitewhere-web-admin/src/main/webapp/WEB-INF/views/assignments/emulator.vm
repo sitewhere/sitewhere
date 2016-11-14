@@ -98,7 +98,7 @@
 								data-i18n="assignments.emulator.MQTTHostName"></label>
 							<div class="controls">
 								<input type="text" id="mqtt-host-name"
-									value="${request.serverName}" class="input-large"
+									value="${servletRequest.serverName}" class="input-large"
 									title="Host name">
 							</div>
 						</div>
