@@ -30,6 +30,7 @@ import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.user.IUserManagement;
  * 
  * @author Derek
  */
-public interface ISiteWhereServer extends ILifecycleComponent {
+public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarchyRoot {
 
     /** SiteWhere home environment variable name */
     public static final String ENV_SITEWHERE_HOME = "sitewhere.home";
@@ -306,22 +307,6 @@ public interface ISiteWhereServer extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException;
-
-    /**
-     * Get list of components that have registered to participate in the server
-     * component lifecycle.
-     * 
-     * @return
-     */
-    public List<ILifecycleComponent> getRegisteredLifecycleComponents();
-
-    /**
-     * Gets an {@link ILifecycleComponent} by unique id.
-     * 
-     * @param id
-     * @return
-     */
-    public ILifecycleComponent getLifecycleComponentById(String id);
 
     /**
      * Get the metrics registry.

@@ -8,13 +8,16 @@
 package com.sitewhere.server.lifecycle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
+import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -312,6 +315,34 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    }
 	}
 	getLifecycleComponents().add(component);
+    }
+
+    /**
+     * Build a component map by recursively navigating the component tree.
+     * 
+     * @return
+     */
+    protected Map<String, ILifecycleComponent> buildComponentMap() {
+	Map<String, ILifecycleComponent> map = new HashMap<String, ILifecycleComponent>();
+	buildComponentMap(this, map);
+	return map;
+    }
+
+    /**
+     * Recursively navigates component structure and creates a map of components
+     * by id.
+     * 
+     * @param current
+     * @param map
+     */
+    protected static void buildComponentMap(ILifecycleComponent current, Map<String, ILifecycleComponent> map) {
+	map.put(current.getComponentId(), current);
+	for (ILifecycleComponent sub : current.getLifecycleComponents()) {
+	    // Root components have a separate hierarchy.
+	    if (!(sub instanceof ILifecycleHierarchyRoot)) {
+		buildComponentMap(sub, map);
+	    }
+	}
     }
 
     /*

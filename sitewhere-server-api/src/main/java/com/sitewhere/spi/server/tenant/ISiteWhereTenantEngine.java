@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.server.tenant;
 
-import java.util.List;
-
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -27,6 +25,7 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
+import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -35,7 +34,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
+public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILifecycleHierarchyRoot {
 
     /**
      * Get resolver for global configuration elements.
@@ -65,14 +64,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
      * @return
      */
     public ITenantGroovyConfiguration getGroovyConfiguration();
-
-    /**
-     * Get list of components that have registered to participate in the server
-     * component lifecycle.
-     * 
-     * @return
-     */
-    public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
     /**
      * Get the device management implementation.

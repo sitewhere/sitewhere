@@ -8,6 +8,7 @@
 package com.sitewhere.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -84,7 +85,6 @@ import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -118,7 +118,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     private ITenantGroovyConfiguration groovyConfiguration;
 
     /** Components registered to participate in SiteWhere server lifecycle */
-    private List<ITenantLifecycleComponent> registeredLifecycleComponents = new ArrayList<ITenantLifecycleComponent>();
+    private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
+
+    /** Map of component ids to lifecycle components */
+    private Map<String, ILifecycleComponent> lifecycleComponentsById = new HashMap<String, ILifecycleComponent>();
 
     /** Device management cache provider implementation */
     private IDeviceManagementCacheProvider deviceManagementCacheProvider;
@@ -235,11 +238,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start tenant services.
 	startTenantServices(start);
 
-	// Verify data models bootstrapped from tenant template.
+	// Finish tenant startup.
 	start.addStep(new SimpleLifecycleStep("Verifying bootstrap data") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		// Force refresh on components-by-id map.
+		lifecycleComponentsById = buildComponentMap();
+
+		// Verify data models bootstrapped from tenant template.
 		verifyTenantBootstrapped();
 	    }
 	});
@@ -261,7 +268,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		"Starting tenant Groovy script engine", "Groovy configuration startup failed.", true));
 
 	// Start lifecycle components.
-	for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 	    start.addStep(new StartComponentLifecycleStep(this, component, "Starting " + component.getComponentName(),
 		    component.getComponentName() + " startup failed.", true));
 	}
@@ -393,7 +400,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 		    component.lifecycleStop(monitor);
 		}
 	    }
@@ -464,11 +471,22 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot#
      * getRegisteredLifecycleComponents()
      */
-    public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
+    public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
 	return registeredLifecycleComponents;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot#
+     * getLifecycleComponentById(java.lang.String)
+     */
+    @Override
+    public ILifecycleComponent getLifecycleComponentById(String id) {
+	return lifecycleComponentsById.get(id);
     }
 
     /*
