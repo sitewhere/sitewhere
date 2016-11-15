@@ -1227,7 +1227,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected void initializeTenantTemplateManager() throws SiteWhereException {
-	this.tenantTemplateManager = new TenantTemplateManager();
+	this.tenantTemplateManager = new TenantTemplateManager(getRuntimeResourceManager());
     }
 
     /**

@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -31,11 +30,15 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Resource manager implementation */
+    private IResourceManager resourceManager;
+
     /** List of templates */
     private List<ITenantTemplate> templates = new ArrayList<ITenantTemplate>();
 
-    public TenantTemplateManager() {
+    public TenantTemplateManager(IResourceManager resourceManager) {
 	super(LifecycleComponentType.TenantTemplateManager);
+	this.resourceManager = resourceManager;
     }
 
     /*
@@ -49,10 +52,9 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	templates.clear();
 
-	IResourceManager resources = SiteWhere.getServer().getRuntimeResourceManager();
-	List<String> roots = resources.getTenantTemplateRoots();
+	List<String> roots = getResourceManager().getTenantTemplateRoots();
 	for (String root : roots) {
-	    List<IResource> all = resources.getTenantTemplateResources(root);
+	    List<IResource> all = getResourceManager().getTenantTemplateResources(root);
 	    for (IResource resource : all) {
 		Path path = Paths.get(resource.getPath());
 		if ((path.getNameCount() == 1) && (path.startsWith(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME))) {
@@ -96,5 +98,13 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IResourceManager getResourceManager() {
+	return resourceManager;
+    }
+
+    public void setResourceManager(IResourceManager resourceManager) {
+	this.resourceManager = resourceManager;
     }
 }
