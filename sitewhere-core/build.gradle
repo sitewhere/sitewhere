@@ -21,7 +21,7 @@ dependencies {
 	compile ('org.springframework.boot:spring-boot-starter-log4j2')
     
     compile group: 'com.hazelcast', name: 'hazelcast'
-    compile group: 'com.hazelcast', name: 'hazelcast-client', version:'3.5.4'
+    compile group: 'com.hazelcast', name: 'hazelcast-client', version:'3.6.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
