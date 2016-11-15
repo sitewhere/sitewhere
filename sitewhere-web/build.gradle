@@ -63,7 +63,3 @@ task restDocZip(type: Zip, dependsOn: restDocumentationGenerator) {
     from "$buildDir/rest"
 }
 
-artifacts {
-    archives restDocZip
-}
-
