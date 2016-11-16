@@ -1060,9 +1060,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize persistent state.
 	initializeServerState();
 
-	// Initialize tenant template manager.
-	initializeTenantTemplateManager();
-
 	// Initialize the Hazelcast instance.
 	initializeHazelcastConfiguration();
 
@@ -1087,6 +1084,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize runtime resource manager.
 	initializeRuntimeResourceManager();
 	getRuntimeResourceManager().start(monitor);
+
+	// Initialize tenant template manager.
+	initializeTenantTemplateManager();
 
 	// Show banner containing server information.
 	showServerBanner();
