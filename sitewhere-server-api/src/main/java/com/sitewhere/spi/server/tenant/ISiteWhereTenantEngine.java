@@ -26,6 +26,7 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -172,9 +173,9 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * Issue a command to the tenant engine.
      * 
      * @param command
-     * @param maxWaitSeconds
+     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException;
+    public ICommandResponse issueCommand(String command, ILifecycleProgressMonitor monitor) throws SiteWhereException;
 }

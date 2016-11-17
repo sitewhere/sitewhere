@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,9 +44,11 @@ import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantTemplate;
 import com.sitewhere.spi.tenant.ITenant;
@@ -167,20 +170,43 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
     public ICommandResponse issueTenantEngineCommand(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    @ApiParam(value = "Command", required = true) @PathVariable String command) throws SiteWhereException {
+	    @ApiParam(value = "Command", required = true) @PathVariable String command,
+	    HttpServletResponse servletResponse) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
 	try {
+	    // Verify authorization and engine exists.
 	    assureAuthorizedTenantId(tenantId);
 	    ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
 	    if (engine == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 	    }
-	    ICommandResponse response = engine.issueCommand(command, 10);
+
+	    // Required to allow partial response processing in browser.
+	    servletResponse.setContentType(MediaType.TEXT_HTML_VALUE);
+
+	    // Issue command and monitor progress.
+	    ICommandResponse response = engine.issueCommand(command, new ILifecycleProgressMonitor() {
+
+		@Override
+		public void reportProgress(IProgressMessage message) throws SiteWhereException {
+		    try {
+			servletResponse.getOutputStream().println(MarshalUtils.marshalJsonAsString(message));
+			servletResponse.getOutputStream().flush();
+		    } catch (IOException e) {
+			LOGGER.warn("Unable to write progress to stream.", e);
+		    }
+		}
+	    });
 	    if (response.getResult() == CommandResult.Failed) {
 		LOGGER.error("Tenant engine command failed: " + response.getMessage());
 	    }
 	    return response;
 	} finally {
+	    try {
+		servletResponse.getOutputStream().flush();
+	    } catch (IOException e) {
+		LOGGER.warn("Unable to close output stream.");
+	    }
 	    Tracer.stop(LOGGER);
 	}
     }

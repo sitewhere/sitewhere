@@ -15,8 +15,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,14 +31,12 @@ import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
-import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.server.TenantRuntimeState;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
@@ -55,7 +51,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
@@ -593,23 +588,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#issueCommand(java.lang.
-     * String, int)
+     * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#issueCommand(java.
+     * lang.String,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException {
+    public ICommandResponse issueCommand(String command, ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	Class<? extends TenantEngineCommand> commandClass = SiteWhereTenantEngineCommands.Command
 		.getCommandClass(command);
 	if (commandClass == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineCommand, ErrorLevel.ERROR);
 	}
 	try {
-	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
 	    TenantEngineCommand cmd = commandClass.newInstance();
 	    cmd.setEngine(this);
 	    cmd.setProgressMonitor(monitor);
 	    Future<ICommandResponse> response = commandExecutor.submit(cmd);
-	    return response.get(maxWaitSeconds, TimeUnit.SECONDS);
+	    return response.get();
 	} catch (InstantiationException e) {
 	    throw new SiteWhereException(e);
 	} catch (IllegalAccessException e) {
@@ -618,8 +613,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    throw new SiteWhereException(e);
 	} catch (ExecutionException e) {
 	    throw new SiteWhereException(e);
-	} catch (TimeoutException e) {
-	    return new CommandResponse(CommandResult.Successful, "Command submitted.");
 	}
     }
 

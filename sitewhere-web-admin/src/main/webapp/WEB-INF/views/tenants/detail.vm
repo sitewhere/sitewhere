@@ -260,6 +260,8 @@ div.wz-button-bar {
 #parse ("tenants/tenantHeader.inc")
 <!-- -->
 #parse ("tenants/tenantEntry.inc")
+<!-- -->
+#parse ("tenants/tenantCommandDialog.inc")
 
 <!-- Details panel shown for a started engine -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-started">
@@ -315,7 +317,7 @@ div.wz-button-bar {
 		swConfirm("Delete Tenant", "Are you sure you want to delete tenant '" + tenantId + "'?", function(result) {
 			if (result) {
 				$.deleteAuthJSON("${request.contextPath}/api/tenants/" + tenantId + "?force=true", "${basicAuth}",
-						"${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
+					"${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -352,27 +354,71 @@ div.wz-button-bar {
 
 	/** Called when stop button is clicked */
 	function onTenantStopClicked() {
-		$.postAuthJSON("${request.contextPath}/api/tenants/" + tenantId + "/engine/stop", null, "${basicAuth}",
-				"${tenant.authenticationToken}", commandSuccess, stopFailed);
-	}
-
-	/** Called after successfully starting or stopping tenant */
-	function commandSuccess(data, status, jqXHR) {
-		window.location.reload();
-	}
-
-	function stopFailed(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to process engine stop command.");
+		swConfirm("Stop Tenant", "Are you sure you want to stop tenant '" + tenantId + "'?", function(result) {
+			if (result) {
+				cmdOpen();
+				onProcessCommand("stop");
+			}
+		});
 	}
 
 	/** Called when start button is clicked */
 	function onTenantStartClicked() {
-		$.postAuthJSON("${request.contextPath}/api/tenants/" + tenantId + "/engine/start", null, "${basicAuth}",
-				"${tenant.authenticationToken}", commandSuccess, startFailed);
+		cmdOpen();
+		onProcessCommand("start");
 	}
 
-	function startFailed(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to process engine start command.");
+	/** Called to start pushing data to repository */
+	function onProcessCommand(command) {
+		var progress;
+		$.ajax({
+			"type" : "POST",
+			"url" : "${request.contextPath}/api/tenants/" + tenantId + "/engine/" + command,
+			"contentType" : "application/json",
+			"dataType" : "text",
+			'headers' : {
+				"Authorization" : "Basic ${basicAuth}",
+				"X-SiteWhere-Tenant" : "${tenant.authenticationToken}"
+			},
+			"xhrFields" : {
+				onprogress : function(e) {
+					progress = lastRecord(e.currentTarget.response);
+					onProgress(progress);
+				}
+			}
+		}).done(function(data, textStatus, jqXHR) {
+			progress = lastRecord(data);
+			onProgress(progress);
+			cmdClose();
+			window.location.reload();
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			handleError(jqXHR, "Unable to process engine '" + command + "' command.");
+		});
+	}
+
+	/** Gets JSON object for last complete record */
+	function lastRecord(response) {
+		var entries = response.split(/\r?\n/);
+		if (entries.length == 0) {
+			return null;
+		} else if (entries.length == 1) {
+			if (entries[0].endsWith('}')) {
+				return JSON.parse(entries[0]);
+			}
+			return null;
+		} else {
+			if (entries[entries.length - 1].endsWith('}')) {
+				return JSON.parse(entries[entries.length - 1]);
+			}
+			return JSON.parse(entries[entries.length - 2]);
+		}
+	}
+
+	/** Called with progress updates */
+	function onProgress(progress) {
+		console.debug('Progress >> ' + progress.currentOperation + '/' + progress.totalOperations + '('
+				+ progress.message + ')');
+		cmdUpdate(progress);
 	}
 	
 	<!-- -->
