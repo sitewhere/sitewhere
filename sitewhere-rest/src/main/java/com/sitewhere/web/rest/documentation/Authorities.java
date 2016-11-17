@@ -23,6 +23,9 @@ public class Authorities {
 
     public static class CreateAuthorityRequest extends GrantedAuthorityCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -7280024461876152420L;
+
 	public CreateAuthorityRequest() throws SiteWhereException {
 	    setAuthority(ExampleData.AUTH_ADMIN_REST.getAuthority());
 	    setDescription(ExampleData.AUTH_ADMIN_REST.getDescription());
