@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.tenant.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class TenantCreateRequest extends MetadataProvider implements ITenantCreateRequest, Serializable {
+public class TenantCreateRequest extends MetadataProvider implements ITenantCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -5706275554835627264L;

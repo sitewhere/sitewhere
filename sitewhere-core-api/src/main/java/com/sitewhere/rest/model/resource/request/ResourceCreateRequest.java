@@ -11,6 +11,9 @@ import com.sitewhere.spi.resource.request.IResourceCreateRequest;
  */
 public class ResourceCreateRequest implements IResourceCreateRequest {
 
+    /** Serial version UID */
+    private static final long serialVersionUID = 9088874531782572049L;
+
     /** Resource path */
     private String path;
 

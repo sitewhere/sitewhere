@@ -1,5 +1,7 @@
 package com.sitewhere.spi.resource.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.resource.ResourceType;
 
 /**
@@ -7,7 +9,7 @@ import com.sitewhere.spi.resource.ResourceType;
  * 
  * @author Derek
  */
-public interface IResourceCreateRequest {
+public interface IResourceCreateRequest extends Serializable {
 
     /**
      * Get unique resource path.

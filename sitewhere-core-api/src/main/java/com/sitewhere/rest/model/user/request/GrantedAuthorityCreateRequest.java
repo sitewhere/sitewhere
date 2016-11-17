@@ -17,6 +17,9 @@ import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
  */
 public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateRequest {
 
+    /** Serial version UID */
+    private static final long serialVersionUID = 2752477482696017875L;
+
     /** Authority name */
     private String authority;
 

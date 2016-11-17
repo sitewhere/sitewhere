@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.tenant.request;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -19,7 +18,7 @@ import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
  * 
  * @author Derek
  */
-public class TenantGroupCreateRequest extends MetadataProvider implements ITenantGroupCreateRequest, Serializable {
+public class TenantGroupCreateRequest extends MetadataProvider implements ITenantGroupCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -6593183022611071721L;

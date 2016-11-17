@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.user.request;
 
+import java.io.Serializable;
+
 /**
  * Interface for arguments needed to create a granted authority.
  * 
  * @author Derek
  */
-public interface IGrantedAuthorityCreateRequest {
+public interface IGrantedAuthorityCreateRequest extends Serializable {
 
     /**
      * Get the authority name.

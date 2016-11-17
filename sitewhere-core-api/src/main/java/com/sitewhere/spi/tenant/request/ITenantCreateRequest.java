@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.tenant.request;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -16,7 +17,7 @@ import com.sitewhere.spi.common.IMetadataProvider;
  * 
  * @author Derek
  */
-public interface ITenantCreateRequest extends IMetadataProvider {
+public interface ITenantCreateRequest extends IMetadataProvider, Serializable {
 
     /**
      * Get unique tenant id.

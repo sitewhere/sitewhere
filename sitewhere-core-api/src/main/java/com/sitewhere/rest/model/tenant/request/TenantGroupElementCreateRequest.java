@@ -7,8 +7,6 @@
  */
 package com.sitewhere.rest.model.tenant.request;
 
-import java.io.Serializable;
-
 import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
@@ -17,7 +15,7 @@ import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
  * 
  * @author Derek
  */
-public class TenantGroupElementCreateRequest implements ITenantGroupElementCreateRequest, Serializable {
+public class TenantGroupElementCreateRequest implements ITenantGroupElementCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 1931203730982333819L;

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.user.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class UserCreateRequest extends MetadataProvider implements IUserCreateRequest, Serializable {
+public class UserCreateRequest extends MetadataProvider implements IUserCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -8552286827982676928L;

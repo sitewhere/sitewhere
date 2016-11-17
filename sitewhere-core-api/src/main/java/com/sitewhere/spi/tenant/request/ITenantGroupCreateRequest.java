@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.tenant.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
@@ -14,7 +16,7 @@ import com.sitewhere.spi.common.IMetadataProvider;
  * 
  * @author Derek
  */
-public interface ITenantGroupCreateRequest extends IMetadataProvider {
+public interface ITenantGroupCreateRequest extends IMetadataProvider, Serializable {
 
     /**
      * Get unique token for group. Leave null to auto-generate.
