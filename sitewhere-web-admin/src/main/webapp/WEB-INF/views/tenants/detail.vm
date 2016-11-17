@@ -392,6 +392,7 @@ div.wz-button-bar {
 			cmdClose();
 			window.location.reload();
 		}).fail(function(jqXHR, textStatus, errorThrown) {
+			cmdClose();
 			handleError(jqXHR, "Unable to process engine '" + command + "' command.");
 		});
 	}
