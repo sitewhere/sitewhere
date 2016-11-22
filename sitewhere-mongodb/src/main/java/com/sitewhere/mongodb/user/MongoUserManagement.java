@@ -40,7 +40,7 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
-
+import com.sitewhere.rest.model.user.Tenant;
 /**
  * User management implementation that uses MongoDB for persistence.
  * 
@@ -286,6 +286,33 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	public IUser deleteUser(String username, boolean force) throws SiteWhereException {
 		DBObject existing = assertUser(username);
+		
+		DBCollection tenants = getMongoClient().getTenantsCollection();
+		BasicDBObject  tenantQuery = new BasicDBObject(MongoTenant.PROP_AUTH_USERS, username);
+		DBCursor tenantsCursor = tenants.find(tenantQuery);
+		
+		while(tenantsCursor.hasNext()){
+
+			DBObject tenantDB = tenantsCursor.next();
+			List<String> currentUserList = (List<String>)(tenantDB.get(MongoTenant.PROP_AUTH_USERS));
+			List<String> updatesList = new ArrayList<String>();
+			
+			//Have to get a deep copy
+			for(String t : currentUserList){
+				updatesList.add(t);
+			}
+			
+			if(updatesList.remove(username)){
+				Tenant tenant = new Tenant();
+				MongoTenant.fromDBObject(tenantDB, tenant);
+				DBObject update = MongoTenant.toDBObject(tenant);
+				update.put(MongoTenant.PROP_AUTH_USERS, updatesList);	
+				update.put("updatedDate", new Date());
+				
+				MongoPersistence.update(tenants, tenantDB, update);		
+			}
+		}
+
 		if (force) {
 			DBCollection users = getMongoClient().getUsersCollection();
 			MongoPersistence.delete(users, existing);
