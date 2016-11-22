@@ -856,6 +856,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
 	    startNestedComponent(engine, monitor,
 		    "Tenant engine '" + engine.getTenant().getName() + "' startup failed.", false);
+	    engine.logState();
 	} else {
 	    getLifecycleComponents().add(engine);
 	    LOGGER.info("Skipping startup for tenant engine '" + engine.getTenant().getName()
@@ -1055,6 +1056,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize bootstrap resource manager.
 	initializeBootstrapResourceManager();
+	LOGGER.info("Bootstrap resources loading from: " + getBootstrapResourceManager().getClass().getCanonicalName());
 	getBootstrapResourceManager().start(monitor);
 
 	// Initialize persistent state.
@@ -1083,6 +1085,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize runtime resource manager.
 	initializeRuntimeResourceManager();
+	LOGGER.info("Runtime resources loading from: " + getRuntimeResourceManager().getClass().getCanonicalName());
 	getRuntimeResourceManager().start(monitor);
 
 	// Initialize tenant template manager.

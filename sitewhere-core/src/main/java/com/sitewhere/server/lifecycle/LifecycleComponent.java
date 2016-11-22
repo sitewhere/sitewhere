@@ -267,7 +267,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
      */
     public void logState() {
-	getLogger().info("\n\nSiteWhere Server State:\n" + logState("", this) + "\n");
+	getLogger().info("\n\n" + getComponentName() + " State:\n" + logState("", this) + "\n");
     }
 
     /**
