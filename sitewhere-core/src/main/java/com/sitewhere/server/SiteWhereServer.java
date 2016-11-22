@@ -740,10 +740,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start the tenant template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(),
-		"Starting tenant template manager", "Tenant template manager startup failed.", true));
-
 	// Start the Hazelcast instance.
 	start.addStep(new StartComponentLifecycleStep(this, getHazelcastConfiguration(), "Starting Hazelcast instance",
 		"Hazelcast startup failed.", true));
@@ -757,6 +753,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    start.addStep(new StartComponentLifecycleStep(this, component, "Starting " + component.getComponentName(),
 		    component.getComponentName() + " startup failed.", true));
 	}
+
+	// Start the tenant template manager.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(),
+		"Starting tenant template manager", "Tenant template manager startup failed.", true));
     }
 
     /**
