@@ -69,6 +69,9 @@ public class InfluxDbDeviceEvent {
 
     /** Event metadata field */
     public static final String EVENT_METADATA_PREFIX = "meta:";
+    
+    /** Event assignmentType field */
+    public static final String ASSIGNMENT_TYPE = "assignmenttype";
 
     /**
      * Return a builder for the events collection.
@@ -450,7 +453,18 @@ public class InfluxDbDeviceEvent {
 	event.setSiteToken(((String) values.get(EVENT_SITE)));
 	event.setAssetModuleId(((String) values.get(EVENT_ASSET_MODULE)));
 	event.setAssetId(((String) values.get(EVENT_ASSET)));
-	event.setAssignmentType(DeviceAssignmentType.Associated);
+
+	Object assignmentType = values.get(ASSIGNMENT_TYPE);
+	// handle old events without the tag 'assignmenttype'
+	if (assignmentType == null || String.valueOf(assignmentType).equals("null")) {
+		if (event.getAssetModuleId() == null && event.getAssetId() == null) {
+			event.setAssignmentType(DeviceAssignmentType.Unassociated);
+		} else {
+			event.setAssignmentType(DeviceAssignmentType.Associated);
+		}
+	} else {
+		event.setAssignmentType(DeviceAssignmentType.valueOf((String) (assignmentType)));
+	}
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 	event.setEventDate(parseDateField(values, "time"));
 
@@ -476,6 +490,7 @@ public class InfluxDbDeviceEvent {
 	builder.addField(EVENT_ID, event.getId());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
+	builder.tag(ASSIGNMENT_TYPE, String.valueOf(event.getAssignmentType()));
 	builder.tag(EVENT_SITE, event.getSiteToken());
 	if (event.getAssetModuleId() != null) {
 	    builder.tag(EVENT_ASSET_MODULE, event.getAssetModuleId());
