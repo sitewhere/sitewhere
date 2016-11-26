@@ -681,25 +681,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Verifies that a configuration exists for the tenant. If not, one is
-     * created based on the default template.
+     * Verifies that a configuration exists for the tenant. If not, assume the
+     * tenant has not been initialized and copy all resources from tenant
+     * template.
      * 
      * @throws SiteWhereException
      */
     protected void verifyTenantConfigured() throws SiteWhereException {
 	if (!getTenantConfigurationResolver().hasValidConfiguration()) {
-	    if (!waitOnLockResource()) {
-		try {
-		    if (createLockResource()) {
-			LOGGER.info("Obtained lock. Copying tenant template resources.");
-			getTenantConfigurationResolver().copyTenantTemplateResources();
-		    }
-		} catch (Throwable t) {
-		    throw new SiteWhereException("Unable copy tenant template resources.", t);
-		} finally {
-		    removeLockResource();
-		    LOGGER.info("Released lock for copying tenant template resources.");
-		}
+	    try {
+		LOGGER.info("Copying tenant template resources.");
+		getTenantConfigurationResolver().copyTenantTemplateResources();
+	    } catch (Throwable t) {
+		throw new SiteWhereException("Unable copy tenant template resources.", t);
 	    }
 	}
     }
@@ -717,28 +711,18 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    LOGGER.info("Tenant already bootstrapped with tenant template data.");
 	    return;
 	}
-
-	// Only bootstrap if lock can be obtained. Otherwise, assume
-	// bootstrapping taken care of by another instance.
-	if (!waitOnLockResource()) {
-	    // Unmarshal template and bootstrap from it.
-	    TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
-	    try {
-		if (createLockResource()) {
-		    LOGGER.info("Obtained lock. Bootstrapping tenant with template data.");
-		    bootstrapFromTemplate(template);
-		}
-	    } catch (Throwable t) {
-		throw new SiteWhereException("Unable to bootstrap tenant from tenant template configuration.", t);
-	    } finally {
-		removeLockResource();
-		LOGGER.info("Released lock for tenant bootstrap processing.");
-	    }
-
-	    // Delete template file to prevent bootstrapping on future startups.
-	    SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
-		    IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+	// Unmarshal template and bootstrap from it.
+	TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
+	try {
+	    LOGGER.info("Bootstrapping tenant with template data.");
+	    bootstrapFromTemplate(template);
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to bootstrap tenant from tenant template configuration.", t);
 	}
+
+	// Delete template file to prevent bootstrapping on future startups.
+	SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
+		IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
     }
 
     /**
@@ -793,74 +777,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		    }
 		}
 	    }
-	}
-    }
-
-    /**
-     * Wait on lock to be freed before proceeding.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected boolean waitOnLockResource() throws SiteWhereException {
-	// Bootstrap process waits on a lock resource to handle case where
-	// multiple SiteWhere instances using the same datastore are starting at
-	// the same time. Only one instance should bootstrap the data.
-	IResource lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
-		IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-	if (lock != null) {
-	    while (true) {
-		LOGGER.info("Tenant bootstrap process waiting on lock...");
-		try {
-		    Thread.sleep(1000);
-		    lock = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(getTenant().getId(),
-			    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-		    // If another instance created a lock and released it, we
-		    // can assume that the tenant has already been bootstrapped.
-		    if (lock == null) {
-			return true;
-		    }
-		} catch (InterruptedException e) {
-		    LOGGER.info("Tenant bootstrap process lock interrupted.");
-		    return true;
-		}
-	    }
-	}
-	return false;
-    }
-
-    /**
-     * Create a lock resource to prevent other SiteWhere instances from trying
-     * to bootstrap concurrently with this instance.
-     * 
-     * @throws SiteWhereException
-     */
-    protected boolean createLockResource() throws SiteWhereException {
-	ResourceCreateRequest request = new ResourceCreateRequest();
-	request.setResourceType(ResourceType.ConfigurationFile);
-	request.setContent("LOCK".getBytes());
-	request.setPath(IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-	List<IResourceCreateRequest> requests = new ArrayList<IResourceCreateRequest>();
-	requests.add(request);
-
-	IMultiResourceCreateResponse response = SiteWhere.getServer().getRuntimeResourceManager()
-		.createTenantResources(getTenant().getId(), requests, ResourceCreateMode.FAIL_IF_EXISTS);
-	if (response.getErrors().size() > 0) {
-	    return false;
-	}
-	return true;
-    }
-
-    /**
-     * Remove lock resource so that other instances can know the tenant has been
-     * bootstrapped.
-     */
-    protected void removeLockResource() {
-	try {
-	    SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
-		    IDefaultResourcePaths.TENANT_LOCK_RESOURCE_NAME);
-	} catch (SiteWhereException e) {
-	    LOGGER.warn("Unable to remove lock resource.", e);
 	}
     }
 
