@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.ISiteMapMetadata;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 
@@ -129,6 +130,19 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
 	/** Request being built */
 	private SiteCreateRequest request = new SiteCreateRequest();
+
+	public Builder(ISite api) {
+	    request.setToken(api.getToken());
+	    request.setName(api.getName());
+	    request.setDescription(api.getDescription());
+	    request.setImageUrl(api.getImageUrl());
+	    request.setMetadata(new HashMap<String, String>());
+	    request.getMetadata().putAll(api.getMetadata());
+	    try {
+		request.setMap(SiteMapData.copy(api.getMap()));
+	    } catch (SiteWhereException e) {
+	    }
+	}
 
 	public Builder(String token, String name) {
 	    request.setToken(token);

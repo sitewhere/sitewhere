@@ -87,7 +87,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 	dsModulesById.clear();
 	ISearchResults<IAssetCategory> categories = SiteWhere.getServer().getAssetManagement(getTenant())
-		.listAssetCategories(new SearchCriteria(1, 0));
+		.listAssetCategories(SearchCriteria.ALL);
 	for (IAssetCategory category : categories.getResults()) {
 	    switch (category.getAssetType()) {
 	    case Device:

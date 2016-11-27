@@ -850,7 +850,7 @@ public class AdminInterfaceController extends MvcController {
 	if (state.getLifecycleStatus() == LifecycleStatus.Started) {
 	    // Pass JSON representation of sites list.
 	    ISearchResults<ISite> sites = SiteWhere.getServer().getDeviceManagement(tenant)
-		    .listSites(new SearchCriteria(1, 0));
+		    .listSites(SearchCriteria.ALL);
 	    List<TokenNamePair> sitesList = new ArrayList<TokenNamePair>();
 	    for (ISite site : sites.getResults()) {
 		TokenNamePair pair = new TokenNamePair();
@@ -864,7 +864,7 @@ public class AdminInterfaceController extends MvcController {
 
 	    // Pass JSON representation of specifications list.
 	    ISearchResults<IDeviceSpecification> specs = SiteWhere.getServer().getDeviceManagement(tenant)
-		    .listDeviceSpecifications(false, new SearchCriteria(1, 0));
+		    .listDeviceSpecifications(false, SearchCriteria.ALL);
 	    List<TokenNamePair> specsList = new ArrayList<TokenNamePair>();
 	    for (IDeviceSpecification spec : specs.getResults()) {
 		TokenNamePair pair = new TokenNamePair();

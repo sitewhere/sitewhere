@@ -160,7 +160,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 
 		try {
 		    // Loop through all sites and detect presence changes.
-		    List<ISite> sites = devices.listSites(new SearchCriteria(1, 0)).getResults();
+		    List<ISite> sites = devices.listSites(SearchCriteria.ALL).getResults();
 		    for (ISite site : sites) {
 			// Calculate time window for presence calculation.
 			Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));

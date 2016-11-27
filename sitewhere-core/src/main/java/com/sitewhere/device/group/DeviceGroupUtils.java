@@ -84,9 +84,8 @@ public class DeviceGroupUtils {
      */
     public static Collection<IDevice> getDevicesInGroup(String groupToken, ITenant tenant) throws SiteWhereException {
 	Map<String, IDevice> devices = new HashMap<String, IDevice>();
-	ISearchCriteria criteria = new SearchCriteria(1, 0);
 	ISearchResults<IDeviceGroupElement> elements = SiteWhere.getServer().getDeviceManagement(tenant)
-		.listDeviceGroupElements(groupToken, criteria);
+		.listDeviceGroupElements(groupToken, SearchCriteria.ALL);
 	for (IDeviceGroupElement element : elements.getResults()) {
 	    switch (element.getType()) {
 	    case Device: {

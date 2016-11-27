@@ -108,7 +108,7 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
      */
     protected void cacheSchedules() throws SiteWhereException {
 	Map<String, ISchedule> updated = new HashMap<String, ISchedule>();
-	ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(new SearchCriteria(1, 0));
+	ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(SearchCriteria.ALL);
 	for (ISchedule schedule : schedules.getResults()) {
 	    updated.put(schedule.getToken(), schedule);
 	}
@@ -122,7 +122,7 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void scheduleJobs() throws SiteWhereException {
-	ISearchResults<IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(new SearchCriteria(1, 0));
+	ISearchResults<IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(SearchCriteria.ALL);
 	for (IScheduledJob job : jobs.getResults()) {
 	    scheduleJob(job);
 	}

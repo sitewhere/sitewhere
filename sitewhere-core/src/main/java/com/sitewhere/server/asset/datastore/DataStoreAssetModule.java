@@ -122,7 +122,7 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
     protected ICommandResponse doLoadAssets() {
 	try {
 	    ISearchResults<IAsset> assets = SiteWhere.getServer().getAssetManagement(getTenant())
-		    .listAssets(category.getId(), new SearchCriteria(1, 0));
+		    .listAssets(category.getId(), SearchCriteria.ALL);
 	    assetCache.clear();
 	    for (IAsset asset : assets.getResults()) {
 		assetCache.put(asset.getId(), (T) asset);
