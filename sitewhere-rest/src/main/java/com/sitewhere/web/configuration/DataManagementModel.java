@@ -202,6 +202,7 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createDefaultDeviceModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Device Model Initializer",
 		TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
@@ -219,6 +220,7 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createGroovyDeviceModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Device Model Initializer",
 		TenantDatastoreParser.Elements.GroovyDeviceModelInitializer.getLocalName(), "cogs",
@@ -237,6 +239,7 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createDefaultAssetModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Asset Model Initializer",
 		TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
@@ -254,6 +257,7 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createDefaultScheduleModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Schedule Model Initializer",
 		TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(), "flash",

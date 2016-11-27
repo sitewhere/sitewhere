@@ -64,6 +64,7 @@ public class GlobalsModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createGroovyConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Groovy Configuration",
 		GlobalsParser.Elements.GroovyConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
