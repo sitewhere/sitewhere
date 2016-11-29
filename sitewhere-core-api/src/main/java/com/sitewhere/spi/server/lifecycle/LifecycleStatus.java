@@ -17,9 +17,6 @@ public enum LifecycleStatus {
     /** Component is initializing */
     Initializing,
 
-    /** Component is initialized */
-    Initialized,
-
     /** Component is stopped */
     Stopped,
 

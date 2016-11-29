@@ -109,7 +109,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
 	try {
 	    initialize(monitor);
-	    setLifecycleStatus(LifecycleStatus.Initialized);
+	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleStatus(LifecycleStatus.Error);
