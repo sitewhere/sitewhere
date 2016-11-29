@@ -162,14 +162,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
     public void persistState(ITenantPersistentState state) throws SiteWhereException;
 
     /**
-     * Initialize the engine.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public boolean initialize() throws SiteWhereException;
-
-    /**
      * Issue a command to the tenant engine.
      * 
      * @param command

@@ -28,6 +28,23 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#
+     * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	if (component instanceof ITenantLifecycleComponent) {
+	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
+	}
+	super.initializeNestedComponent(component, monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,

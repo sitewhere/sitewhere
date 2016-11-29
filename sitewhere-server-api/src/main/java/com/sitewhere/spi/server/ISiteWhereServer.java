@@ -31,7 +31,6 @@ import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.system.IVersion;
@@ -85,14 +84,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException;
-
-    /**
-     * Initialize the server.
-     * 
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Returns exception if one was thrown on startup.

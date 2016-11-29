@@ -7,7 +7,9 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
@@ -93,11 +95,22 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
+     */
+    @Override
+    public Date getCreatedDate() {
+	return delegate.getCreatedDate();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * getLifecycleComponents()
      */
     @Override
-    public List<ILifecycleComponent> getLifecycleComponents() {
+    public Map<String, ILifecycleComponent> getLifecycleComponents() {
 	return delegate.getLifecycleComponents();
     }
 
@@ -105,15 +118,38 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
+     * lifecycleInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
-	delegate.startNestedComponent(component, monitor, errorMessage, require);
+    public void lifecycleInitialize(ILifecycleProgressMonitor monitor) {
+	delegate.lifecycleInitialize(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	delegate.initialize(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	delegate.initializeNestedComponent(component, monitor);
     }
 
     /*
@@ -137,6 +173,21 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	delegate.start(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * java.lang.String, boolean)
+     */
+    @Override
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
+	delegate.startNestedComponent(component, monitor, errorMessage, require);
     }
 
     /*

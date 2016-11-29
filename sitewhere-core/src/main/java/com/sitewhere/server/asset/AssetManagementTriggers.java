@@ -7,6 +7,9 @@
  */
 package com.sitewhere.server.asset;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,7 +25,6 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -31,6 +33,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public class AssetManagementTriggers extends AssetManagementDecorator {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     public AssetManagementTriggers(IAssetManagement delegate) {
 	super(delegate);
@@ -46,7 +51,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	IAssetCategory created = super.createAssetCategory(request);
-	refreshAll(new LifecycleProgressMonitor());
+	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(created,
+		new LifecycleProgressMonitor());
 	return created;
     }
 
@@ -62,7 +68,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
 	IAssetCategory updated = super.updateAssetCategory(categoryId, request);
-	refreshAll(new LifecycleProgressMonitor());
+	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(updated,
+		new LifecycleProgressMonitor());
 	return updated;
     }
 
@@ -76,7 +83,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	IAssetCategory deleted = super.deleteAssetCategory(categoryId);
-	refreshAll(new LifecycleProgressMonitor());
+	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryRemoved(deleted,
+		new LifecycleProgressMonitor());
 	return deleted;
     }
 
@@ -92,7 +100,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	IPersonAsset asset = super.createPersonAsset(categoryId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -108,7 +116,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	IPersonAsset asset = super.updatePersonAsset(categoryId, assetId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -124,7 +132,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	IHardwareAsset asset = super.createHardwareAsset(categoryId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -140,7 +148,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	IHardwareAsset asset = super.updateHardwareAsset(categoryId, assetId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -156,7 +164,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	ILocationAsset asset = super.createLocationAsset(categoryId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -172,7 +180,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	ILocationAsset asset = super.updateLocationAsset(categoryId, assetId, request);
-	refreshModule(categoryId);
+	putForAssetModule(categoryId, asset);
 	return asset;
     }
 
@@ -186,35 +194,46 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
 	IAsset asset = super.deleteAsset(categoryId, assetId);
-	refreshModule(categoryId);
+	deleteForAssetModule(categoryId, asset);
 	return asset;
     }
 
     /**
-     * Refresh all datastore modules.
+     * Push an updated asset to its associated asset module.
      * 
-     * @param monitor
+     * @param categoryId
+     * @param asset
      * @throws SiteWhereException
      */
-    protected void refreshAll(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    @SuppressWarnings("unchecked")
+    protected <T extends IAsset> void putForAssetModule(String categoryId, T asset) throws SiteWhereException {
 	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
 	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    manager.refreshDatastoreModules(monitor);
+	    IAssetModule<T> module = (IAssetModule<T>) SiteWhere.getServer().getAssetModuleManager(getTenant())
+		    .getModule(categoryId);
+	    if (module != null) {
+		module.putAsset(asset.getId(), asset);
+		LOGGER.info("Pushing asset update for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
+	    }
 	}
     }
 
     /**
-     * Refresh an asset module.
+     * Delete an asset from its associated asset module.
      * 
-     * @param id
+     * @param categoryId
+     * @param asset
      * @throws SiteWhereException
      */
-    protected void refreshModule(String id) throws SiteWhereException {
+    @SuppressWarnings("unchecked")
+    protected <T extends IAsset> void deleteForAssetModule(String categoryId, T asset) throws SiteWhereException {
 	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
 	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    IAssetModule<?> module = SiteWhere.getServer().getAssetModuleManager(getTenant()).getModule(id);
+	    IAssetModule<T> module = (IAssetModule<T>) SiteWhere.getServer().getAssetModuleManager(getTenant())
+		    .getModule(categoryId);
 	    if (module != null) {
-		module.refresh();
+		module.removeAsset(asset.getId());
+		LOGGER.info("Pushing asset delete for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
 	    }
 	}
     }

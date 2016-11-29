@@ -191,10 +191,33 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
      */
-    public PersonAsset getAssetById(String id) throws SiteWhereException {
+    public PersonAsset getAsset(String id) throws SiteWhereException {
 	return assetCache.get(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, PersonAsset asset) throws SiteWhereException {
+	// TODO: For now, does not update repository.
+	assetCache.put(id, asset);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	// TODO: For now, does not update repository.
+	assetCache.remove(id);
     }
 
     /*
@@ -220,9 +243,11 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#refresh()
+     * @see
+     * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
-    public ICommandResponse refresh() throws SiteWhereException {
+    public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    return cacheAssetData();
 	} catch (SiteWhereException e) {

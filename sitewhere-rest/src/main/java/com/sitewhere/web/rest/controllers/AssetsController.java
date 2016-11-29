@@ -44,7 +44,6 @@ import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.error.ErrorCode;
@@ -253,11 +252,11 @@ public class AssetsController extends RestController {
     @Secured({ SiteWhereRoles.REST })
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Assets.RefreshAssetModules.class, description = "refreshModules.md") })
-    public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
+    public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 	try {
 	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
-	    return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules(monitor);
+	    SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules(monitor);
 	} finally {
 	    Tracer.stop(LOGGER);
 	}

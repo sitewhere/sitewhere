@@ -8,6 +8,7 @@
 package com.sitewhere.server.tenant;
 
 import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
@@ -81,13 +82,13 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		if (getEngine().initialize()) {
-		    getEngine().lifecycleStart(getProgressMonitor());
-		    if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
-			return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
-		    }
-		} else {
-		    return new CommandResponse(CommandResult.Failed, "Engine initialization failed.");
+		getEngine().initialize(new LifecycleProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+		getEngine().lifecycleStart(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
 	    } catch (Exception e) {
 		return new CommandResponse(CommandResult.Failed, e.getMessage());

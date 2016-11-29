@@ -8,13 +8,14 @@
 package com.sitewhere.server.asset.datastore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.hazelcast.core.ILock;
+import com.hazelcast.core.IMap;
+import com.hazelcast.query.Predicate;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -36,7 +37,11 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleComponent {
+public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleComponent
+	implements IAssetModule<T> {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = -7587874182078265400L;
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -44,8 +49,8 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
     /** Asset category */
     private IAssetCategory category;
 
-    /** Cache of assets for category */
-    protected Map<String, T> assetCache = new HashMap<String, T>();
+    /** Asset store for category */
+    protected IMap<String, T> assets;
 
     /** Matcher used for searches */
     protected AssetMatcher matcher = new AssetMatcher();
@@ -53,6 +58,8 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
     public DataStoreAssetModule(IAssetCategory category) {
 	super(LifecycleComponentType.AssetModule);
 	this.category = category;
+	this.assets = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
+		.getMap(getHazelcastMapName());
     }
 
     /*
@@ -64,7 +71,11 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	doLoadAssets();
+	if (assets.size() == 0) {
+	    refresh(monitor);
+	} else {
+	    LOGGER.info("Skipping datastore refresh due to existing distributed map data.");
+	}
     }
 
     /*
@@ -107,29 +118,29 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#refresh()
-     */
-    public ICommandResponse refresh() throws SiteWhereException {
-	return doLoadAssets();
-    }
-
-    /**
-     * Load the list of assets for the category.
-     * 
-     * @return
+     * @see
+     * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
     @SuppressWarnings("unchecked")
-    protected ICommandResponse doLoadAssets() {
+    public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	ILock lock = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
+		.getLock(getHazelcastMapName());
 	try {
-	    ISearchResults<IAsset> assets = SiteWhere.getServer().getAssetManagement(getTenant())
+	    LOGGER.debug("Locking asset module to load assets from datastore.");
+	    lock.lock();
+	    ISearchResults<IAsset> matches = SiteWhere.getServer().getAssetManagement(getTenant())
 		    .listAssets(category.getId(), SearchCriteria.ALL);
-	    assetCache.clear();
-	    for (IAsset asset : assets.getResults()) {
-		assetCache.put(asset.getId(), (T) asset);
+	    assets.clear();
+	    for (IAsset asset : matches.getResults()) {
+		assets.put(asset.getId(), (T) asset);
 	    }
-	    return new CommandResponse(CommandResult.Successful, "Asset module refreshed.");
-	} catch (SiteWhereException e) {
-	    return new CommandResponse(CommandResult.Failed, "Asset module refreshed failed. " + e.getMessage());
+	    return new CommandResponse(CommandResult.Successful, "Asset list loaded from datastore.");
+	} catch (Throwable t) {
+	    return new CommandResponse(CommandResult.Failed, "Asset load operation failed. " + t.getMessage());
+	} finally {
+	    lock.unlock();
+	    LOGGER.debug("Released lock after loading assets from datastore.");
 	}
     }
 
@@ -140,23 +151,58 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
      * @return
      */
     protected T doGetAsset(String id) {
-	return assetCache.get(id);
+	return assets.get(id);
     }
 
     /**
-     * Search cached assets based on criteria.
+     * Add an asset to the module. Note: This does not put the asset in the
+     * underlying datastore. This is used to reflect changes via the APIs so
+     * that the data is kept up-to-date without having to reload all of the
+     * assets.
+     * 
+     * @param id
+     * @param asset
+     */
+    protected void doPutAsset(String id, T asset) {
+	assets.put(id, asset);
+    }
+
+    /**
+     * Removes an asset from the module. This does not remove the asset from the
+     * underlying datastore. This is used to reflect changes via the APIs so
+     * that the data is kept up-to-date without having to reload all of the
+     * assets.
+     * 
+     * @param id
+     */
+    protected void doRemoveAsset(String id) {
+	assets.remove(id);
+    }
+
+    /**
+     * Search cached assets based on criteria. TODO: Use Hazelcast
+     * {@link Predicate} to do search on grid.
      * 
      * @param criteria
      * @return
      */
     protected List<T> doSearch(String criteria) {
 	List<T> results = new ArrayList<T>();
-	for (T asset : assetCache.values()) {
+	for (T asset : assets.values()) {
 	    if (matcher.isMatch(getCategory().getAssetType(), asset, criteria)) {
 		results.add(asset);
 	    }
 	}
 	return results;
+    }
+
+    /**
+     * Get name of map stored in Hazelcast.
+     * 
+     * @return
+     */
+    protected String getHazelcastMapName() {
+	return DataStoreAssetModule.class.getName() + ":" + getId();
     }
 
     /*

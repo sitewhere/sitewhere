@@ -10,7 +10,6 @@ package com.sitewhere.spi.asset;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -20,6 +19,13 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author dadams
  */
 public interface IAssetModuleManager extends ITenantLifecycleComponent {
+
+    /**
+     * Set asset management implementation.
+     * 
+     * @param assetManagement
+     */
+    public void setAssetManagement(IAssetManagement assetManagement);
 
     /**
      * Get asset module by unique id.
@@ -39,23 +45,32 @@ public interface IAssetModuleManager extends ITenantLifecycleComponent {
     public List<IAssetModule<?>> listModules() throws SiteWhereException;
 
     /**
-     * Calls the refresh method on each asset module and returns a list of
-     * responses.
+     * Calls the refresh method on all asset modules.
      * 
      * @param monitor
-     * @return
      * @throws SiteWhereException
      */
-    public List<ICommandResponse> refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Refresh modules loaded from datastore.
+     * Called when an asset category is added.
      * 
+     * @param category
      * @param monitor
-     * @return
      * @throws SiteWhereException
      */
-    public List<ICommandResponse> refreshDatastoreModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void onAssetCategoryAdded(IAssetCategory category, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
+
+    /**
+     * Called when an asset category is removed.
+     * 
+     * @param category
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void onAssetCategoryRemoved(IAssetCategory category, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Finds an asset in a given module.

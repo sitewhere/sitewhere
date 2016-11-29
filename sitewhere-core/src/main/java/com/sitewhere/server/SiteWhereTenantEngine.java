@@ -571,8 +571,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @param results
      */
     protected void getComponentHierarchyState(ILifecycleComponent parent, List<ITenantEngineComponent> results) {
-	List<ILifecycleComponent> children = parent.getLifecycleComponents();
-	for (ILifecycleComponent child : children) {
+	Map<String, ILifecycleComponent> children = parent.getLifecycleComponents();
+	for (ILifecycleComponent child : children.values()) {
 	    TenantEngineComponent component = new TenantEngineComponent();
 	    component.setId(child.getComponentId());
 	    component.setName(child.getComponentName());
@@ -621,7 +621,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * 
      * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#initialize()
      */
-    public boolean initialize() {
+    public void initialize(ILifecycleProgressMonitor monitor) {
 	try {
 	    // Verify that tenant configuration exists.
 	    verifyTenantConfigured();
@@ -633,7 +633,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    initializeGroovyConfiguration();
 
 	    // Register discoverable beans.
-	    initializeDiscoverableBeans();
+	    initializeDiscoverableBeans(monitor);
 
 	    // Initialize event processing subsystem.
 	    setEventProcessing(initializeEventProcessingSubsystem());
@@ -648,7 +648,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    setDeviceEventManagement(initializeDeviceEventManagement());
 
 	    // Initialize asset management.
-	    setAssetManagement(initializeAssetManagement());
+	    setAssetManagement(initializeAssetManagement(monitor));
 
 	    // Initialize schedule management.
 	    setScheduleManagement(initializeScheduleManagement());
@@ -657,16 +657,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    setSearchProviderManager(initializeSearchProviderManagement());
 
 	    setLifecycleStatus(LifecycleStatus.Stopped);
-	    return true;
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.Error);
-	    return false;
 	} catch (Throwable e) {
 	    setLifecycleError(new SiteWhereException("Unhandled exception in tenant engine initialization.", e));
 	    setLifecycleStatus(LifecycleStatus.Error);
 	    LOGGER.error("Unhandled exception in tenant engine initialization.", e);
-	    return false;
 	}
     }
 
@@ -827,9 +824,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
      * registered components.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void initializeDiscoverableBeans() throws SiteWhereException {
+    protected void initializeDiscoverableBeans(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	Map<String, IDiscoverableTenantLifecycleComponent> components = tenantContext
 		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 	getRegisteredLifecycleComponents().clear();
@@ -837,6 +835,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	LOGGER.info("Registering " + components.size() + " discoverable components.");
 	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
+	    initializeNestedComponent(component, monitor);
 	    getRegisteredLifecycleComponents().add(component);
 	}
     }
@@ -958,16 +957,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /**
      * Verify and initialize asset module manager.
      * 
+     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    protected IAssetManagement initializeAssetManagement() throws SiteWhereException {
+    protected IAssetManagement initializeAssetManagement(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
+	    // Locate and initialize asset management implementation.
 	    IAssetManagement implementation = (IAssetManagement) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
 	    IAssetManagement withTriggers = new AssetManagementTriggers(implementation);
+	    initializeNestedComponent(withTriggers, monitor);
+
+	    // Locate and initialize asset module manager.
 	    assetModuleManager = (IAssetModuleManager) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
+	    assetModuleManager.setAssetManagement(withTriggers);
+	    initializeNestedComponent(assetModuleManager, monitor);
 	    return withTriggers;
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No asset module manager implementation configured.");

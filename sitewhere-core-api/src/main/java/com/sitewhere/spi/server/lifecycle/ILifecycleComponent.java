@@ -7,7 +7,9 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
@@ -56,23 +58,36 @@ public interface ILifecycleComponent {
     public SiteWhereException getLifecycleError();
 
     /**
-     * Get the list of contained {@link ILifecycleComponent} elements.
+     * Get map of contained {@link ILifecycleComponent} elements by unique id.
      * 
      * @return
      */
-    public List<ILifecycleComponent> getLifecycleComponents();
+    public Map<String, ILifecycleComponent> getLifecycleComponents();
 
     /**
-     * Start component as a nested lifecycle component.
+     * Initializes the component while keeping up with lifeycle information.
+     * 
+     * @param monitor
+     */
+    public void lifecycleInitialize(ILifecycleProgressMonitor monitor);
+
+    /**
+     * Initialize the component.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Initialize a nested component.
      * 
      * @param component
      * @param monitor
-     * @param errorMessage
-     * @param require
      * @throws SiteWhereException
      */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException;
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Starts the component while keeping up with lifecycle information.
@@ -85,6 +100,18 @@ public interface ILifecycleComponent {
      * @throws SiteWhereException
      */
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Start component as a nested lifecycle component.
+     * 
+     * @param component
+     * @param monitor
+     * @param errorMessage
+     * @param require
+     * @throws SiteWhereException
+     */
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException;
 
     /**
      * Pauses the component while keeping up with lifecycle information.
@@ -146,6 +173,13 @@ public interface ILifecycleComponent {
      * @throws SiteWhereException
      */
     public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type) throws SiteWhereException;
+
+    /**
+     * Get date the component was created.
+     * 
+     * @return
+     */
+    public Date getCreatedDate();
 
     /**
      * Get component logger.

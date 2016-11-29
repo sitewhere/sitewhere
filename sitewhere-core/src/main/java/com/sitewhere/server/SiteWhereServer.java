@@ -858,7 +858,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		    "Tenant engine '" + engine.getTenant().getName() + "' startup failed.", false);
 	    engine.logState();
 	} else {
-	    getLifecycleComponents().add(engine);
+	    getLifecycleComponents().put(engine.getComponentId(), engine);
 	    LOGGER.info("Skipping startup for tenant engine '" + engine.getTenant().getName()
 		    + "' due to initialization errors.");
 	}
@@ -1072,7 +1072,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	initializeSpringContext();
 
 	// Initialize discoverable beans.
-	initializeDiscoverableBeans();
+	initializeDiscoverableBeans(monitor);
 
 	// Initialize version checker.
 	initializeVersionChecker();
@@ -1181,9 +1181,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
      * registered components.
      * 
+     * @param monitor
      * @throws SiteWhereException
      */
-    protected void initializeDiscoverableBeans() throws SiteWhereException {
+    protected void initializeDiscoverableBeans(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	Map<String, IDiscoverableTenantLifecycleComponent> components = SERVER_SPRING_CONTEXT
 		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 	getRegisteredLifecycleComponents().clear();
@@ -1191,6 +1192,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	LOGGER.info("Registering " + components.size() + " discoverable components.");
 	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
+	    initializeNestedComponent(component, monitor);
 	    getRegisteredLifecycleComponents().add(component);
 	}
     }
@@ -1319,12 +1321,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
 	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
-	if (!engine.initialize()) {
-	    LOGGER.error("Tenant engine initialization for '" + tenant.getName() + "' failed.",
-		    engine.getLifecycleError());
+	initializeNestedComponent(engine, new LifecycleProgressMonitor());
+	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
+	    registerTenant(tenant, engine);
+	    return engine;
 	}
-	registerTenant(tenant, engine);
-	return engine;
+	return null;
     }
 
     /**

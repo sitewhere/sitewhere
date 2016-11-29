@@ -32,11 +32,32 @@ public class LocationAssetModule extends DataStoreAssetModule<ILocationAsset> im
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
      */
     @Override
-    public ILocationAsset getAssetById(String id) throws SiteWhereException {
+    public ILocationAsset getAsset(String id) throws SiteWhereException {
 	return doGetAsset(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, ILocationAsset asset) throws SiteWhereException {
+	doPutAsset(id, asset);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	doRemoveAsset(id);
     }
 
     /*

@@ -32,11 +32,32 @@ public class PersonAssetModule extends DataStoreAssetModule<IPersonAsset> implem
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
      */
     @Override
-    public IPersonAsset getAssetById(String id) throws SiteWhereException {
+    public IPersonAsset getAsset(String id) throws SiteWhereException {
 	return doGetAsset(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, IPersonAsset asset) throws SiteWhereException {
+	doPutAsset(id, asset);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	doRemoveAsset(id);
     }
 
     /*

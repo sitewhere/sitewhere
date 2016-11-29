@@ -152,10 +152,31 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
      */
-    public T getAssetById(String id) throws SiteWhereException {
+    public T getAsset(String id) throws SiteWhereException {
 	return assetsById.get(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, T asset) throws SiteWhereException {
+	throw new SiteWhereException("Assets can not be updated when loaded from filesystem.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	throw new SiteWhereException("Assets can not be updated when loaded from filesystem.");
     }
 
     /*
@@ -181,9 +202,11 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#refresh()
+     * @see
+     * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
-    public ICommandResponse refresh() throws SiteWhereException {
+    public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    reload();
 	    showLoadResults();

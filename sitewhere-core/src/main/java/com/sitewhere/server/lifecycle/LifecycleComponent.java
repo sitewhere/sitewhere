@@ -8,6 +8,9 @@
 package com.sitewhere.server.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +38,17 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /** Component type */
     private LifecycleComponentType componentType;
 
+    /** Date/time component was created */
+    private Date createdDate = new Date();
+
     /** Lifecycle status indicator */
     private LifecycleStatus lifecycleStatus = LifecycleStatus.Stopped;
 
     /** Last error encountered in lifecycle operations */
     private SiteWhereException lifecycleError;
 
-    /** List of contained lifecycle components */
-    private List<ILifecycleComponent> lifecycleComponents = new ArrayList<ILifecycleComponent>();
+    /** Map of contained lifecycle components */
+    private Map<String, ILifecycleComponent> lifecycleComponents = new HashMap<String, ILifecycleComponent>();
 
     public LifecycleComponent(LifecycleComponentType type) {
 	this.componentType = type;
@@ -83,6 +89,68 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
+     */
+    @Override
+    public Date getCreatedDate() {
+	return createdDate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * lifecycleInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecycleInitialize(ILifecycleProgressMonitor monitor) {
+	setLifecycleStatus(LifecycleStatus.Initializing);
+	getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
+	try {
+	    initialize(monitor);
+	    setLifecycleStatus(LifecycleStatus.Initialized);
+	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
+	} catch (SiteWhereException e) {
+	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleError(e);
+	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+	} catch (Throwable t) {
+	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleError(new SiteWhereException(t));
+	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	component.lifecycleInitialize(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart(com
      * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -116,6 +184,39 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /**
+     * Starts a nested {@link ILifecycleComponent}. Uses default message.
+     * 
+     * @param component
+     * @param monitor
+     * @param require
+     * @throws SiteWhereException
+     */
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException {
+	startNestedComponent(component, monitor, getComponentName() + " failed to start.", require);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * java.lang.String, boolean)
+     */
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
+	component.lifecycleStart(monitor);
+	if (require) {
+	    if (component.getLifecycleStatus() == LifecycleStatus.Error) {
+		throw new ServerStartupException(component, errorMessage);
+	    }
+	}
+	getLifecycleComponents().put(component.getComponentId(), component);
     }
 
     /*
@@ -256,7 +357,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	if (current.getComponentType() == type) {
 	    matches.add(current);
 	}
-	for (ILifecycleComponent child : current.getLifecycleComponents()) {
+	for (ILifecycleComponent child : current.getLifecycleComponents().values()) {
 	    findComponentsOfType(child, matches, type);
 	}
     }
@@ -278,43 +379,21 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     protected String logState(String pad, ILifecycleComponent component) {
 	String entry = "\n" + pad + "+ " + component.getComponentName() + " " + component.getLifecycleStatus();
-	for (ILifecycleComponent nested : component.getLifecycleComponents()) {
-	    entry = entry + logState("  " + pad, nested);
+	List<ILifecycleComponent> subcomponents = new ArrayList<ILifecycleComponent>(
+		component.getLifecycleComponents().values());
+
+	// Sort components by created date.
+	Collections.sort(subcomponents, new Comparator<ILifecycleComponent>() {
+
+	    @Override
+	    public int compare(ILifecycleComponent o1, ILifecycleComponent o2) {
+		return o1.getCreatedDate().compareTo(o2.getCreatedDate());
+	    }
+	});
+	for (ILifecycleComponent subcomponent : subcomponents) {
+	    entry = entry + logState("  " + pad, subcomponent);
 	}
 	return entry;
-    }
-
-    /**
-     * Starts a nested {@link ILifecycleComponent}. Uses default message.
-     * 
-     * @param component
-     * @param monitor
-     * @param require
-     * @throws SiteWhereException
-     */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
-	    throws SiteWhereException {
-	startNestedComponent(component, monitor, getComponentName() + " failed to start.", require);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
-     */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
-	component.lifecycleStart(monitor);
-	if (require) {
-	    if (component.getLifecycleStatus() == LifecycleStatus.Error) {
-		throw new ServerStartupException(component, errorMessage);
-	    }
-	}
-	getLifecycleComponents().add(component);
     }
 
     /**
@@ -337,7 +416,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     protected static void buildComponentMap(ILifecycleComponent current, Map<String, ILifecycleComponent> map) {
 	map.put(current.getComponentId(), current);
-	for (ILifecycleComponent sub : current.getLifecycleComponents()) {
+	for (ILifecycleComponent sub : current.getLifecycleComponents().values()) {
 	    // Root components have a separate hierarchy.
 	    if (!(sub instanceof ILifecycleHierarchyRoot)) {
 		buildComponentMap(sub, map);
@@ -381,11 +460,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * getLifecycleComponents()
      */
-    public List<ILifecycleComponent> getLifecycleComponents() {
+    public Map<String, ILifecycleComponent> getLifecycleComponents() {
 	return lifecycleComponents;
     }
 
-    public void setLifecycleComponents(List<ILifecycleComponent> lifecycleComponents) {
+    public void setLifecycleComponents(Map<String, ILifecycleComponent> lifecycleComponents) {
 	this.lifecycleComponents = lifecycleComponents;
     }
 }

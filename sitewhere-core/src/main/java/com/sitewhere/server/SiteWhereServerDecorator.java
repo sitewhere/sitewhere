@@ -115,8 +115,8 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#initialize(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponentDecorator#initialize(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {

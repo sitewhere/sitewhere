@@ -143,12 +143,11 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
@@ -168,57 +167,6 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
 	    // Force interaction to test connectivity.
 	    getGlobalDatabase().getStats();
-
-	    List<String> messages = new ArrayList<String>();
-	    messages.add("------------------");
-	    messages.add("-- MONGO CLIENT --");
-	    messages.add("------------------");
-	    messages.add("Hostname: " + hostname);
-	    messages.add("Port: " + port);
-	    messages.add("Database Name: " + databaseName);
-	    messages.add("");
-	    messages.add("-----------------------");
-	    messages.add("-- Device Management --");
-	    messages.add("-----------------------");
-	    messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
-	    messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
-	    messages.add("Devices collection name: " + getDevicesCollectionName());
-	    messages.add("Device groups collection name: " + getDeviceGroupsCollectionName());
-	    messages.add("Group elements collection name: " + getGroupElementsCollectionName());
-	    messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
-	    messages.add("Sites collection name: " + getSitesCollectionName());
-	    messages.add("Zones collection name: " + getZonesCollectionName());
-	    messages.add("Events collection name: " + getEventsCollectionName());
-	    messages.add("Streams collection name: " + getStreamsCollectionName());
-	    messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
-	    messages.add("Batch operation elements collection name: " + getBatchOperationElementsCollectionName());
-	    messages.add("");
-	    messages.add("---------------------");
-	    messages.add("-- User Management --");
-	    messages.add("---------------------");
-	    messages.add("Users collection name: " + getUsersCollectionName());
-	    messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
-	    messages.add("");
-	    messages.add("-----------------------");
-	    messages.add("-- Tenant Management --");
-	    messages.add("-----------------------");
-	    messages.add("Tenants collection name: " + getTenantsCollectionName());
-	    messages.add("Tenant groups collection name: " + getTenantGroupsCollectionName());
-	    messages.add("Tenant group elements collection name: " + getTenantGroupElementsCollectionName());
-	    messages.add("");
-	    messages.add("----------------------");
-	    messages.add("-- Asset Management --");
-	    messages.add("----------------------");
-	    messages.add("Asset categories collection name: " + getAssetCategoriesCollectionName());
-	    messages.add("Assets collection name: " + getAssetsCollectionName());
-	    messages.add("");
-	    messages.add("-------------------------");
-	    messages.add("-- Schedule Management --");
-	    messages.add("-------------------------");
-	    messages.add("Schedules collection name: " + getSchedulesCollectionName());
-	    messages.add("Scheduled jobs collection name: " + getScheduledJobsCollectionName());
-	    String message = Boilerplate.boilerplate(messages, '*', 60);
-	    LOGGER.info("\n" + message + "\n");
 	} catch (UnknownHostException e) {
 	    throw new SiteWhereException("Unable to contact host for MongoDB instance. "
 		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
@@ -226,6 +174,67 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	    throw new SiteWhereException("Could not connect to MongoDB instance. "
 		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	List<String> messages = new ArrayList<String>();
+	messages.add("------------------");
+	messages.add("-- MONGO CLIENT --");
+	messages.add("------------------");
+	messages.add("Hostname: " + hostname);
+	messages.add("Port: " + port);
+	messages.add("Database Name: " + databaseName);
+	messages.add("");
+	messages.add("-----------------------");
+	messages.add("-- Device Management --");
+	messages.add("-----------------------");
+	messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
+	messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
+	messages.add("Devices collection name: " + getDevicesCollectionName());
+	messages.add("Device groups collection name: " + getDeviceGroupsCollectionName());
+	messages.add("Group elements collection name: " + getGroupElementsCollectionName());
+	messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
+	messages.add("Sites collection name: " + getSitesCollectionName());
+	messages.add("Zones collection name: " + getZonesCollectionName());
+	messages.add("Events collection name: " + getEventsCollectionName());
+	messages.add("Streams collection name: " + getStreamsCollectionName());
+	messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
+	messages.add("Batch operation elements collection name: " + getBatchOperationElementsCollectionName());
+	messages.add("");
+	messages.add("---------------------");
+	messages.add("-- User Management --");
+	messages.add("---------------------");
+	messages.add("Users collection name: " + getUsersCollectionName());
+	messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
+	messages.add("");
+	messages.add("-----------------------");
+	messages.add("-- Tenant Management --");
+	messages.add("-----------------------");
+	messages.add("Tenants collection name: " + getTenantsCollectionName());
+	messages.add("Tenant groups collection name: " + getTenantGroupsCollectionName());
+	messages.add("Tenant group elements collection name: " + getTenantGroupElementsCollectionName());
+	messages.add("");
+	messages.add("----------------------");
+	messages.add("-- Asset Management --");
+	messages.add("----------------------");
+	messages.add("Asset categories collection name: " + getAssetCategoriesCollectionName());
+	messages.add("Assets collection name: " + getAssetsCollectionName());
+	messages.add("");
+	messages.add("-------------------------");
+	messages.add("-- Schedule Management --");
+	messages.add("-------------------------");
+	messages.add("Schedules collection name: " + getSchedulesCollectionName());
+	messages.add("Scheduled jobs collection name: " + getScheduledJobsCollectionName());
+	String message = Boilerplate.boilerplate(messages, '*', 60);
+	LOGGER.info("\n" + message + "\n");
     }
 
     /*

@@ -32,11 +32,32 @@ public class HardwareAssetModule extends DataStoreAssetModule<IHardwareAsset> im
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
      */
     @Override
-    public IHardwareAsset getAssetById(String id) throws SiteWhereException {
+    public IHardwareAsset getAsset(String id) throws SiteWhereException {
 	return doGetAsset(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, IHardwareAsset asset) throws SiteWhereException {
+	doPutAsset(id, asset);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	doRemoveAsset(id);
     }
 
     /*
