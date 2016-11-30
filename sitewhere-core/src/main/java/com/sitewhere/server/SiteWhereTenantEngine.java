@@ -31,11 +31,13 @@ import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
-import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
+import com.sitewhere.hazelcast.AssetManagementCacheProvider;
+import com.sitewhere.hazelcast.DeviceManagementCacheProvider;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.server.TenantRuntimeState;
+import com.sitewhere.server.asset.AssetCacheEventHandler;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -51,7 +53,9 @@ import com.sitewhere.server.tenant.TenantTemplate;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetManagementCacheProvider;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.ICachingAssetManagement;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
@@ -121,6 +125,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Device management cache provider implementation */
     private IDeviceManagementCacheProvider deviceManagementCacheProvider;
+
+    /** Asset management cache provider implementation */
+    private IAssetManagementCacheProvider assetManagementCacheProvider;
 
     /** Interface to device management implementation */
     private IDeviceManagement deviceManagement;
@@ -277,9 +284,17 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Start asset management cache provider.
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementCacheProvider(),
+		"Starting asset management cache provider", "Asset management cache provider startup failed.", true));
+
 	// Start asset management.
 	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Starting asset management",
 		"Asset management startup failed.", true));
+
+	// Start device management cache provider.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		"Starting device management cache provider", "Device management cache provider startup failed.", true));
 
 	// Start device management.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Starting device management",
@@ -301,13 +316,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start device management cache provider if specificed.
-	if (getDeviceManagementCacheProvider() != null) {
-	    start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		    "Starting device management cache provider", "Device management cache provider startup failed.",
-		    true));
-	}
-
 	// Start asset module manager.
 	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Starting asset module manager",
 		"Asset module manager startup failed.", true));
@@ -449,19 +457,21 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement(),
 		"Stop device event management implementation"));
 
-	// Stop cache provider if configured.
-	if (getDeviceManagementCacheProvider() != null) {
-	    stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		    "Stop device management cache provider"));
-	}
-
 	// Stop device management.
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getDeviceManagement(), "Stop device management implementation"));
 
+	// Stop device management cache provider if configured.
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		"Stop device management cache provider"));
+
 	// Stop asset management.
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getAssetManagement(), "Stop asset management implementation"));
+
+	// Stop asset management cache provider.
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagementCacheProvider(),
+		"Stop asset management cache provider"));
     }
 
     /*
@@ -643,7 +653,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    setDeviceCommunication(initializeDeviceCommunicationSubsystem());
 
 	    // Initialize device management.
-	    setDeviceManagement(initializeDeviceManagement());
+	    setDeviceManagement(initializeDeviceManagement(monitor));
 
 	    // Initialize device event management.
 	    setDeviceEventManagement(initializeDeviceEventManagement());
@@ -844,12 +854,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /**
      * Initialize device management implementation and associated decorators.
      * 
+     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceManagement initializeDeviceManagement() throws SiteWhereException {
+    protected IDeviceManagement initializeDeviceManagement(ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	// Load device management cache provider.
-	this.deviceManagementCacheProvider = new HazelcastDistributedCacheProvider();
+	this.deviceManagementCacheProvider = new DeviceManagementCacheProvider();
+	initializeNestedComponent(deviceManagementCacheProvider, monitor);
 
 	// Verify that a device management implementation exists.
 	try {
@@ -872,14 +885,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected IDeviceManagement configureDeviceManagement(IDeviceManagement management) throws SiteWhereException {
-	// Inject cache provider if available.
-	if (getDeviceManagementCacheProvider() != null) {
-	    if (management instanceof ICachingDeviceManagement) {
-		((ICachingDeviceManagement) management).setCacheProvider(getDeviceManagementCacheProvider());
-		LOGGER.info("Device management implementation is using configured cache provider.");
-	    } else {
-		LOGGER.info("Device management implementation not using cache provider.");
-	    }
+	if (management instanceof ICachingDeviceManagement) {
+	    ((ICachingDeviceManagement) management).setCacheProvider(getDeviceManagementCacheProvider());
+	    LOGGER.info("Device management implementation is using configured cache provider.");
+	} else {
+	    LOGGER.info("Device management implementation not using cache provider.");
 	}
 
 	return new DeviceManagementTriggers(management);
@@ -956,22 +966,46 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected IAssetManagement initializeAssetManagement(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Load asset management cache provider implementation.
+	this.assetManagementCacheProvider = new AssetManagementCacheProvider();
+	initializeNestedComponent(assetManagementCacheProvider, monitor);
+	assetManagementCacheProvider.getAssetCategoryCache().addListener(new AssetCacheEventHandler(getTenant()));
+
 	try {
 	    // Locate and initialize asset management implementation.
 	    IAssetManagement implementation = (IAssetManagement) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
-	    IAssetManagement withTriggers = new AssetManagementTriggers(implementation);
-	    initializeNestedComponent(withTriggers, monitor);
+	    IAssetManagement configured = configureAssetManagement(implementation);
+	    initializeNestedComponent(configured, monitor);
 
 	    // Locate and initialize asset module manager.
 	    assetModuleManager = (IAssetModuleManager) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
-	    assetModuleManager.setAssetManagement(withTriggers);
+	    assetModuleManager.setAssetManagement(configured);
 	    initializeNestedComponent(assetModuleManager, monitor);
-	    return withTriggers;
+	    return configured;
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No asset module manager implementation configured.");
 	}
+    }
+
+    /**
+     * Configure asset management implementation by injecting configured options
+     * or wrapping to add functionality.
+     * 
+     * @param management
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IAssetManagement configureAssetManagement(IAssetManagement management) throws SiteWhereException {
+	if (management instanceof ICachingAssetManagement) {
+	    ((ICachingAssetManagement) management).setCacheProvider(getAssetManagementCacheProvider());
+	    LOGGER.info("Asset management implementation is using configured cache provider.");
+	} else {
+	    LOGGER.info("Asset management implementation not using cache provider.");
+	}
+
+	return new AssetManagementTriggers(management);
     }
 
     /**
@@ -1080,6 +1114,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setDeviceManagementCacheProvider(IDeviceManagementCacheProvider deviceManagementCacheProvider) {
 	this.deviceManagementCacheProvider = deviceManagementCacheProvider;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
+     * getAssetManagementCacheProvider()
+     */
+    public IAssetManagementCacheProvider getAssetManagementCacheProvider() {
+	return assetManagementCacheProvider;
+    }
+
+    public void setAssetManagementCacheProvider(IAssetManagementCacheProvider assetManagementCacheProvider) {
+	this.assetManagementCacheProvider = assetManagementCacheProvider;
     }
 
     /*

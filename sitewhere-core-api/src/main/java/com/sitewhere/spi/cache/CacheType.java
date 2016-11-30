@@ -19,5 +19,8 @@ public enum CacheType {
     DeviceCache,
 
     /** Caches device assignment information */
-    DeviceAssignmentCache;
+    DeviceAssignmentCache,
+
+    /** Caches asset category information */
+    AssetCategoryCache;
 }

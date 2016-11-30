@@ -60,6 +60,14 @@ public interface ICache<K, V> {
     public void remove(K key) throws SiteWhereException;
 
     /**
+     * Add a listener for changes to the cache.
+     * 
+     * @param listener
+     * @throws SiteWhereException
+     */
+    public void addListener(ICacheListener<V> listener) throws SiteWhereException;
+
+    /**
      * Clear all elements from cache.
      * 
      * @throws SiteWhereException

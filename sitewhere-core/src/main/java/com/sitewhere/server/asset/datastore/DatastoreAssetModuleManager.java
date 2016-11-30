@@ -62,13 +62,11 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	LOGGER.info("STARTING DATASTORE ASSET MODULES...");
 	getLifecycleComponents().clear();
 
 	for (IAssetModule<?> module : dsModulesById.values()) {
 	    startNestedComponent(module, monitor, true);
 	}
-	LOGGER.info("DATASTORE ASSET MODULES STARTED");
     }
 
     /*

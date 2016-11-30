@@ -81,7 +81,6 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      * .server.lifecycle.ILifecycleProgressMonitor)
      */
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	LOGGER.info("STARTING ASSET MODULES...");
 	getLifecycleComponents().clear();
 
 	modulesById.clear();
@@ -92,7 +91,6 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 
 	// Start datastore module manager as nested component.
 	startNestedComponent(dsModuleManager, monitor, true);
-	LOGGER.info("ASSET MODULES STARTED");
     }
 
     /*

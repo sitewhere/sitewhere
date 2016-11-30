@@ -29,6 +29,8 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetManagementCacheProvider;
+import com.sitewhere.spi.asset.ICachingAssetManagement;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -48,13 +50,17 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MongoAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
+public class MongoAssetManagement extends TenantLifecycleComponent
+	implements IAssetManagement, ICachingAssetManagement {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Injected with global SiteWhere Mongo client */
     private IAssetManagementMongoClient mongoClient;
+
+    /** Provides caching for asset management entities */
+    private IAssetManagementCacheProvider cacheProvider;
 
     public MongoAssetManagement() {
 	super(LifecycleComponentType.DataStore);
@@ -80,6 +86,21 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IAssetManagementCacheProvider getCacheProvider() {
+	return cacheProvider;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.ICachingAssetManagement#setCacheProvider(com.
+     * sitewhere.spi.asset.IAssetManagementCacheProvider)
+     */
+    public void setCacheProvider(IAssetManagementCacheProvider cacheProvider) {
+	this.cacheProvider = cacheProvider;
     }
 
     /**
@@ -110,6 +131,10 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	DBObject created = MongoAssetCategory.toDBObject(category);
 	MongoPersistence.insert(categories, created, ErrorCode.AssetCategoryIdInUse);
 
+	// Update cache with new data.
+	if (getCacheProvider() != null) {
+	    getCacheProvider().getAssetCategoryCache().put(category.getId(), category);
+	}
 	return MongoAssetCategory.fromDBObject(created);
     }
 
@@ -121,6 +146,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      */
     @Override
     public IAssetCategory getAssetCategory(String id) throws SiteWhereException {
+	if (getCacheProvider() != null) {
+	    IAssetCategory cached = getCacheProvider().getAssetCategoryCache().get(id);
+	    if (cached != null) {
+		return cached;
+	    }
+	}
 	DBObject dbCategory = getAssetCategoryDBObject(id);
 	if (dbCategory != null) {
 	    return MongoAssetCategory.fromDBObject(dbCategory);
@@ -150,6 +181,10 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	MongoPersistence.update(categories, query, updated);
 
+	// Update cache with new data.
+	if (getCacheProvider() != null) {
+	    getCacheProvider().getAssetCategoryCache().put(category.getId(), category);
+	}
 	return MongoAssetCategory.fromDBObject(updated);
     }
 
@@ -180,6 +215,10 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	DBObject existing = assertAssetCategory(categoryId);
 	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	MongoPersistence.delete(categories, existing);
+
+	if (getCacheProvider() != null) {
+	    getCacheProvider().getAssetCategoryCache().remove(categoryId);
+	}
 	return MongoAssetCategory.fromDBObject(existing);
     }
 

@@ -11,17 +11,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
@@ -39,53 +36,6 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 
     public AssetManagementTriggers(IAssetManagement delegate) {
 	super(delegate);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#createAssetCategory(
-     * com.sitewhere .spi.asset.request.IAssetCategoryCreateRequest)
-     */
-    @Override
-    public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
-	IAssetCategory created = super.createAssetCategory(request);
-	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(created,
-		new LifecycleProgressMonitor());
-	return created;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#updateAssetCategory(
-     * java.lang .String,
-     * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
-     */
-    @Override
-    public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
-	    throws SiteWhereException {
-	IAssetCategory updated = super.updateAssetCategory(categoryId, request);
-	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(updated,
-		new LifecycleProgressMonitor());
-	return updated;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#deleteAssetCategory(
-     * java.lang .String)
-     */
-    @Override
-    public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
-	IAssetCategory deleted = super.deleteAssetCategory(categoryId);
-	SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryRemoved(deleted,
-		new LifecycleProgressMonitor());
-	return deleted;
     }
 
     /*
