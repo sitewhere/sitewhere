@@ -429,8 +429,13 @@ function addMissingOptional(roleName, role) {
 	// Add item in dropdown for each component in the given role.
 	for (var i = 0; i < modelsForRole.length; i++) {
 		var roleModel = modelsForRole[i];
-		section += "<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName
-				+ "\")'><i class='dd-icon fa fa-" + roleModel.icon + "'></i>" + roleModel.name + "</a></li>";
+		if (roleModel.deprecated) {
+			section += "<li><a href='#'><i class='dd-icon fa fa-" + roleModel.icon
+					+ "'></i><span style='text-decoration: line-through;'>" + roleModel.name + "</span></a></li>";
+		} else {
+			section += "<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName
+					+ "\")'><i class='dd-icon fa fa-" + roleModel.icon + "'></i>" + roleModel.name + "</a></li>";
+		}
 	}
 
 	section += "</ul>";

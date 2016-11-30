@@ -7,7 +7,6 @@ dependencies {
     compile project(':sitewhere-aws')
     compile project(':sitewhere-azure')
     compile project(':sitewhere-cloud')
-    compile project(':sitewhere-ehcache')
     compile project(':sitewhere-hbase')
     compile project(':sitewhere-influx')
     compile project(':sitewhere-mongodb')

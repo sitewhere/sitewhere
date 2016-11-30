@@ -55,13 +55,6 @@ public interface SiteWhereServerBeans {
     /** Bean id for asset module manager in server configuration */
     public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 
-    /*******************
-     * CACHE PROVIDERS *
-     *******************/
-
-    /** Bean id for device management cache provider */
-    public static final String BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER = "deviceManagementCacheProvider";
-
     /*****************************
      * SEARCH PROVIDER MANAGMENT *
      *****************************/

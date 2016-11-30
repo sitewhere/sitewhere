@@ -20,8 +20,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.ehcache.DeviceManagementCacheProvider;
-import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
@@ -83,11 +81,9 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		break;
 	    }
 	    case EHCacheDeviceManagementCache: {
-		parseEHCacheDeviceManagementCache(child, context);
 		break;
 	    }
 	    case HazelcastCache: {
-		parseHazelcastCache(child, context);
 		break;
 	    }
 	    case DefaultDeviceModelInitializer: {
@@ -255,62 +251,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse configuration for the EHCache device management cache provider.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseEHCacheDeviceManagementCache(Element element, ParserContext context) {
-	BeanDefinitionBuilder cache = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementCacheProvider.class);
-	Attr siteCacheMaxEntries = element.getAttributeNode("siteCacheMaxEntries");
-	if (siteCacheMaxEntries != null) {
-	    cache.addPropertyValue("siteCacheMaxEntries", siteCacheMaxEntries.getValue());
-	}
-	Attr deviceSpecificationCacheMaxEntries = element.getAttributeNode("deviceSpecificationCacheMaxEntries");
-	if (deviceSpecificationCacheMaxEntries != null) {
-	    cache.addPropertyValue("deviceSpecificationCacheMaxEntries", deviceSpecificationCacheMaxEntries.getValue());
-	}
-	Attr deviceCacheMaxEntries = element.getAttributeNode("deviceCacheMaxEntries");
-	if (deviceCacheMaxEntries != null) {
-	    cache.addPropertyValue("deviceCacheMaxEntries", deviceCacheMaxEntries.getValue());
-	}
-	Attr deviceAssignmentCacheMaxEntries = element.getAttributeNode("deviceAssignmentCacheMaxEntries");
-	if (deviceAssignmentCacheMaxEntries != null) {
-	    cache.addPropertyValue("deviceAssignmentCacheMaxEntries", deviceAssignmentCacheMaxEntries.getValue());
-	}
-	Attr siteCacheTtl = element.getAttributeNode("siteCacheTtl");
-	if (siteCacheTtl != null) {
-	    cache.addPropertyValue("siteCacheTtl", siteCacheTtl.getValue());
-	}
-	Attr deviceSpecificationCacheTtl = element.getAttributeNode("deviceSpecificationCacheTtl");
-	if (deviceSpecificationCacheTtl != null) {
-	    cache.addPropertyValue("deviceSpecificationCacheTtl", deviceSpecificationCacheTtl.getValue());
-	}
-	Attr deviceCacheTtl = element.getAttributeNode("deviceCacheTtl");
-	if (deviceCacheTtl != null) {
-	    cache.addPropertyValue("deviceCacheTtl", deviceCacheTtl.getValue());
-	}
-	Attr deviceAssignmentCacheTtl = element.getAttributeNode("deviceAssignmentCacheTtl");
-	if (deviceAssignmentCacheTtl != null) {
-	    cache.addPropertyValue("deviceAssignmentCacheTtl", deviceAssignmentCacheTtl.getValue());
-	}
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER,
-		cache.getBeanDefinition());
-    }
-
-    /**
-     * Parse configuration for Hazelcast distributed cache.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseHazelcastCache(Element element, ParserContext context) {
-	BeanDefinitionBuilder cache = BeanDefinitionBuilder.rootBeanDefinition(HazelcastDistributedCacheProvider.class);
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER,
-		cache.getBeanDefinition());
-    }
-
-    /**
      * Parse configuration for default device model initializer.
      * 
      * @param element
@@ -367,9 +307,11 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	HBaseTenantDatastore("hbase-tenant-datastore"),
 
 	/** EHCache device mananagement cache provider */
+	@Deprecated
 	EHCacheDeviceManagementCache("ehcache-device-management-cache"),
 
 	/** Hazelcast cache provider */
+	@Deprecated
 	HazelcastCache("hazelcast-cache"),
 
 	/** Creates sample data if no device data is present */

@@ -29,9 +29,6 @@
 			<sw:mongo-tenant-datastore
 				useBulkEventInserts="true" bulkInsertMaxChunkSize="1000" />
 
-			<!-- Improves performance by using Hazelcast for distributed caching -->
-			<sw:hazelcast-cache />
-
 		</sw:tenant-datastore>
 
 		<!-- ######################## -->

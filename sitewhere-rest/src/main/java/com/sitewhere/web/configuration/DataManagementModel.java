@@ -142,12 +142,15 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createHazelcastCacheElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Distributed Cache Provider",
 		TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 		ElementRole.DataManagement_CacheProvider);
 	builder.description("Cache device management data using Hazelcast distributed maps. "
-		+ "This cache allows data to be shared between clustered SiteWhere instances.");
+		+ "This cache allows data to be shared between clustered SiteWhere instances. "
+		+ "This element has been deprecated since a Hazelcast cache is used by default.");
+	builder.makeDeprecated();
 	return builder.build();
     }
 
@@ -156,12 +159,14 @@ public class DataManagementModel extends ConfigurationModel {
      * 
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ElementNode createEHCacheElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("EHCache Cache Provider",
 		TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(), "folder-open-o",
 		ElementRole.DataManagement_CacheProvider);
 	builder.description("Cache device management data using EHCache. Note that this "
-		+ "cache is not intended for use on clustered installations.");
+		+ "cache is not intended for use on clustered installations. "
+		+ "This element has been deprecated in favor of using the Hazelcast cache.");
 	builder.attributeGroup("max", "Max Entries in Cache");
 	builder.attributeGroup("ttl", "Cache Entry Time to Live");
 
@@ -194,6 +199,7 @@ public class DataManagementModel extends ConfigurationModel {
 	builder.attribute((new AttributeNode.Builder("Assignment cache TTL seconds", "deviceAssignmentCacheTtl",
 		AttributeType.Integer).description("Maximum time to live (in seconds) for device assignment cache.")
 			.defaultValue("600").group("ttl").build()));
+	builder.makeDeprecated();
 	return builder.build();
     }
 

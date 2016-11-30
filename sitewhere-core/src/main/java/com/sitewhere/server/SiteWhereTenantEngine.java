@@ -31,6 +31,7 @@ import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
+import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
@@ -847,15 +848,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected IDeviceManagement initializeDeviceManagement() throws SiteWhereException {
-	// Load device management cache provider if configured.
-	try {
-	    this.deviceManagementCacheProvider = (IDeviceManagementCacheProvider) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
-	    LOGGER.info(
-		    "Device management cache provider using: " + deviceManagementCacheProvider.getClass().getName());
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No device management cache provider configured. Caching disabled.");
-	}
+	// Load device management cache provider.
+	this.deviceManagementCacheProvider = new HazelcastDistributedCacheProvider();
 
 	// Verify that a device management implementation exists.
 	try {
