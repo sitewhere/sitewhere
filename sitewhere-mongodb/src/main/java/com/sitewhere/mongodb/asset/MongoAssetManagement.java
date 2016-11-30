@@ -194,7 +194,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	IAssetCategory category = getAssetCategory(categoryId);
+	DBObject db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
 	PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
@@ -241,7 +242,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	IAssetCategory category = getAssetCategory(categoryId);
+	DBObject db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
 	HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
@@ -288,7 +290,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	IAssetCategory category = getAssetCategory(categoryId);
+	DBObject db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
 	LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
 	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
