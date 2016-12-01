@@ -360,8 +360,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 
     @Override
     public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-	return delegate.addDeviceGroupElements(groupToken, elements);
+	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
+	return delegate.addDeviceGroupElements(groupToken, elements, ignoreDuplicates);
     }
 
     @Override

@@ -298,7 +298,7 @@ public class DeviceGroupsController extends RestController {
 	    // Validate the list of new elements.
 	    validateDeviceGroupElements(request, devices);
 
-	    List<IDeviceGroupElement> results = devices.addDeviceGroupElements(groupToken, elements);
+	    List<IDeviceGroupElement> results = devices.addDeviceGroupElements(groupToken, elements, true);
 	    List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	    for (IDeviceGroupElement elm : results) {
 		converted.add(

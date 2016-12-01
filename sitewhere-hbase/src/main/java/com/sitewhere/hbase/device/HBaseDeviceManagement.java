@@ -777,12 +777,12 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
      * 
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
-     * lang.String, java.util.List)
+     * lang.String, java.util.List, boolean)
      */
     @Override
     public List<IDeviceGroupElement> addDeviceGroupElements(String networkToken,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-	return HBaseDeviceGroupElement.createDeviceGroupElements(context, networkToken, elements);
+	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
+	return HBaseDeviceGroupElement.createDeviceGroupElements(context, networkToken, elements, ignoreDuplicates);
     }
 
     /*

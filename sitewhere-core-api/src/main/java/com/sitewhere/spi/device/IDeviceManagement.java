@@ -586,11 +586,12 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * 
      * @param groupToken
      * @param elements
+     * @param ignoreDuplicates
      * @return
      * @throws SiteWhereException
      */
     public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException;
+	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException;
 
     /**
      * Remove selected elements from a device group.

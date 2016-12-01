@@ -121,7 +121,7 @@ public class DeviceManagementRequestBuilder {
 	for (DeviceGroupElementCreateRequest.Builder builder : builders) {
 	    elements.add(builder.build());
 	}
-	return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements);
+	return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements, true);
     }
 
     public IDeviceManagement getDeviceManagement() {

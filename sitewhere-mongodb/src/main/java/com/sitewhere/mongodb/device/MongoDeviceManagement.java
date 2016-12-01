@@ -76,6 +76,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -1441,19 +1442,25 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * 
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
-     * lang.String, java.util.List)
+     * lang.String, java.util.List, boolean)
      */
     @Override
     public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
 	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
 	    DeviceGroupElement element = SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 	    DBObject created = MongoDeviceGroupElement.toDBObject(element);
-	    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
-		    ErrorCode.DuplicateId);
-	    results.add(MongoDeviceGroupElement.fromDBObject(created));
+	    try {
+		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
+			ErrorCode.DuplicateId);
+		results.add(MongoDeviceGroupElement.fromDBObject(created));
+	    } catch (ResourceExistsException e) {
+		if (!ignoreDuplicates) {
+		    throw e;
+		}
+	    }
 	}
 	return results;
     }

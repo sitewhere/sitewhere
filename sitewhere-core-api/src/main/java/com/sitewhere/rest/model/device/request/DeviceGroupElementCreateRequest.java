@@ -14,6 +14,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
 /**
@@ -64,6 +65,15 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 
 	/** Request being built */
 	private DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+
+	public Builder(IDeviceGroupElement api) {
+	    request.setElementId(api.getElementId());
+	    request.setType(api.getType());
+	    if (api.getRoles() != null) {
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().addAll(api.getRoles());
+	    }
+	}
 
 	public Builder(String id) {
 	    request.setElementId(id);

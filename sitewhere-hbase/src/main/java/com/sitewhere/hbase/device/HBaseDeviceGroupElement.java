@@ -61,7 +61,7 @@ public class HBaseDeviceGroupElement {
      * @throws SiteWhereException
      */
     public static List<IDeviceGroupElement> createDeviceGroupElements(IHBaseContext context, String groupToken,
-	    List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
+	    List<IDeviceGroupElementCreateRequest> requests, boolean ignoreDuplicates) throws SiteWhereException {
 	byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(context, groupToken);
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : requests) {

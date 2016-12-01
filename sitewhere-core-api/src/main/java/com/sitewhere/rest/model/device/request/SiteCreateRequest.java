@@ -136,8 +136,10 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 	    request.setName(api.getName());
 	    request.setDescription(api.getDescription());
 	    request.setImageUrl(api.getImageUrl());
-	    request.setMetadata(new HashMap<String, String>());
-	    request.getMetadata().putAll(api.getMetadata());
+	    if (api.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(api.getMetadata());
+	    }
 	    try {
 		request.setMap(SiteMapData.copy(api.getMap()));
 	    } catch (SiteWhereException e) {

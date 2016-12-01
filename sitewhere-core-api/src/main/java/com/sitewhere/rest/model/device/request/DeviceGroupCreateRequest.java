@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
 /**
@@ -117,6 +118,20 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
 
 	/** Request being built */
 	private DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
+
+	public Builder(IDeviceGroup api) {
+	    request.setToken(api.getToken());
+	    request.setName(api.getName());
+	    request.setDescription(api.getDescription());
+	    if (request.getRoles() != null) {
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().addAll(api.getRoles());
+	    }
+	    if (api.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(api.getMetadata());
+	    }
+	}
 
 	public Builder(String token, String name) {
 	    request.setToken(token);
