@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,11 +188,20 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	/** Request being built */
 	private DeviceCreateRequest request = new DeviceCreateRequest();
 
-	public Builder(IDevice device) {
-	    this(device.getSiteToken(), device.getSpecificationToken(), device.getHardwareId());
-	    if (device.getMetadata() != null) {
+	public Builder(IDevice api) {
+	    request.setSiteToken(api.getSiteToken());
+	    request.setSpecificationToken(api.getSpecificationToken());
+	    request.setHardwareId(api.getHardwareId());
+	    request.setStatus(api.getStatus());
+	    request.setComments(api.getComments());
+	    request.setParentHardwareId(api.getParentHardwareId());
+	    if (api.getDeviceElementMappings() != null) {
+		request.setDeviceElementMappings(new ArrayList<DeviceElementMapping>());
+		request.getDeviceElementMappings().addAll(api.getDeviceElementMappings());
+	    }
+	    if (api.getMetadata() != null) {
 		request.setMetadata(new HashMap<String, String>());
-		request.getMetadata().putAll(device.getMetadata());
+		request.getMetadata().putAll(api.getMetadata());
 	    }
 	}
 

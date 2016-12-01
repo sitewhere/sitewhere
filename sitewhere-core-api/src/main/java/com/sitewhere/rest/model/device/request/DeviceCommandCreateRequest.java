@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 
@@ -144,6 +145,16 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 
 	/** Request being built */
 	private DeviceCommandCreateRequest request = new DeviceCommandCreateRequest();
+
+	public Builder(IDeviceCommand api) {
+	    request.setToken(api.getToken());
+	    request.setName(api.getName());
+	    request.setDescription(api.getDescription());
+	    request.setNamespace(api.getNamespace());
+	    request.getParameters().addAll(api.getParameters());
+	    request.setMetadata(new HashMap<String, String>());
+	    request.getMetadata().putAll(api.getMetadata());
+	}
 
 	public Builder(String token, String namespace, String name) {
 	    request.setToken(token);

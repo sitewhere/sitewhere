@@ -17,6 +17,7 @@ import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 
@@ -31,6 +32,9 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
     /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
 
+    /** Specification token (Optional) */
+    private String token;
+
     /** Specification name */
     private String name;
 
@@ -39,9 +43,6 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
 
     /** Asset id */
     private String assetId;
-
-    /** Specification id (Optional) */
-    private String token;
 
     /** Indicates if device instances can contain nested devices */
     private DeviceContainerPolicy containerPolicy;
@@ -154,6 +155,17 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
 
 	/** Request being built */
 	private DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
+
+	public Builder(IDeviceSpecification api) {
+	    request.setToken(api.getToken());
+	    request.setName(api.getName());
+	    request.setAssetModuleId(api.getAssetModuleId());
+	    request.setAssetId(api.getAssetId());
+	    request.setContainerPolicy(api.getContainerPolicy());
+	    request.setDeviceElementSchema((DeviceElementSchema) api.getDeviceElementSchema());
+	    request.setMetadata(new HashMap<String, String>());
+	    request.getMetadata().putAll(api.getMetadata());
+	}
 
 	public Builder(String token, String name, String assetModuleId, String assetId) {
 	    request.setToken(token);

@@ -693,8 +693,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Device device = MongoDevice.fromDBObject(deviceDb);
 
 	// Use common logic to load assignment from request.
-	DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device,
-		UUID.randomUUID().toString());
+	DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device);
+	if (newAssignment.getToken() == null) {
+	    newAssignment.setToken(UUID.randomUUID().toString());
+	}
 
 	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);

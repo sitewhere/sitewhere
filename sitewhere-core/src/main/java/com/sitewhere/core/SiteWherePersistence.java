@@ -604,14 +604,10 @@ public class SiteWherePersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IDevice device,
-	    String uuid) throws SiteWhereException {
+    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IDevice device)
+	    throws SiteWhereException {
 	DeviceAssignment newAssignment = new DeviceAssignment();
-
-	if (uuid == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
-	newAssignment.setToken(uuid);
+	newAssignment.setToken(source.getToken());
 
 	// Copy site token from device.
 	newAssignment.setSiteToken(device.getSiteToken());

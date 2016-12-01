@@ -19,6 +19,13 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
 public interface IDeviceAssignmentCreateRequest {
 
     /**
+     * Get token for assignment. (Auto-assign if null).
+     * 
+     * @return
+     */
+    public String getToken();
+
+    /**
      * Get the unique device hardware id.
      * 
      * @return

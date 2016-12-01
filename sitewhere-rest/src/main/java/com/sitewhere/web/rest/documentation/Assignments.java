@@ -49,19 +49,21 @@ public class Assignments {
     public static class CreateUnassociatedRequest extends DeviceAssignmentCreateRequest {
 
 	public CreateUnassociatedRequest() throws SiteWhereException {
+	    setToken(UUID.randomUUID().toString());
 	    setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 	    setAssignmentType(DeviceAssignmentType.Unassociated);
 	    Map<String, String> metadata = new HashMap<String, String>();
 	    metadata.put("validUntil", "2016-10-10");
 	    metadata.put("renewable", "true");
 	    setMetadata(metadata);
-	    SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER, UUID.randomUUID().toString());
+	    SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER);
 	}
     }
 
     public static class CreateAssociatedRequest extends DeviceAssignmentCreateRequest {
 
 	public CreateAssociatedRequest() throws SiteWhereException {
+	    setToken(UUID.randomUUID().toString());
 	    setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 	    setAssignmentType(DeviceAssignmentType.Associated);
 	    setAssetModuleId(ExampleData.AM_PERSONS.getId());
@@ -70,7 +72,7 @@ public class Assignments {
 	    metadata.put("validUntil", "2016-10-10");
 	    metadata.put("renewable", "true");
 	    setMetadata(metadata);
-	    SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER, UUID.randomUUID().toString());
+	    SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER);
 	}
     }
 

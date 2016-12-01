@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -26,6 +27,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -6880578458870122016L;
+
+    /** Token */
+    private String token;
 
     /** Device hardware id */
     private String deviceHardwareId;
@@ -41,6 +45,21 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     /** Metadata values */
     private Map<String, String> metadata;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getToken(
+     * )
+     */
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
 
     /*
      * (non-Javadoc)
@@ -116,6 +135,18 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
 	/** Request being built */
 	private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
+
+	public Builder(IDeviceAssignment api) {
+	    request.setToken(api.getToken());
+	    request.setDeviceHardwareId(api.getDeviceHardwareId());
+	    request.setAssetModuleId(api.getAssetModuleId());
+	    request.setAssetId(api.getAssetId());
+	    request.setAssignmentType(api.getAssignmentType());
+	    if (api.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(api.getMetadata());
+	    }
+	}
 
 	public Builder(String hardwareId, String assetModuleId, String assetId) {
 	    request.setDeviceHardwareId(hardwareId);

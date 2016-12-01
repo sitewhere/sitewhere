@@ -19,6 +19,9 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
  */
 public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDeviceSearchCriteria {
 
+    /** Search criteria for getting all records */
+    public static DeviceSearchCriteria ALL = new DeviceSearchCriteria(null, null, false, 1, 0, null, null);
+
     /** Specification to match in filter */
     private String specificationToken;
 

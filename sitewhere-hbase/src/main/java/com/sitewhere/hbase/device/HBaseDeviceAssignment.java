@@ -94,12 +94,19 @@ public class HBaseDeviceAssignment {
 	    byte[] assnKey = buffer.array();
 
 	    // Associate new UUID with assignment row key.
-	    String uuid = context.getDeviceIdManager().getAssignmentKeys().createUniqueId(assnKey);
+	    String uuid;
+	    if (request.getToken() == null) {
+		uuid = context.getDeviceIdManager().getAssignmentKeys().createUniqueId(assnKey);
+	    } else {
+		context.getDeviceIdManager().getAssignmentKeys().create(request.getToken(), assnKey);
+		uuid = request.getToken();
+	    }
 
 	    byte[] primary = getPrimaryRowkey(assnKey);
 
 	    // Create device assignment for JSON.
-	    DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device, uuid);
+	    DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device);
+	    newAssignment.setToken(uuid);
 	    byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(newAssignment);
 
 	    Table sites = null;
