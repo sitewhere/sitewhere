@@ -1,7 +1,15 @@
 package com.sitewhere.rest.model.monitoring;
 
 import com.sitewhere.spi.monitoring.IProgressMessage;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
+/**
+ * Contains progress information provided by an
+ * {@link ILifecycleProgressMonitor}.
+ * 
+ * @author Derek
+ *
+ */
 public class ProgressMessage implements IProgressMessage {
 
     /** Task name */
@@ -15,6 +23,16 @@ public class ProgressMessage implements IProgressMessage {
 
     /** Operation message */
     private String message;
+
+    public ProgressMessage() {
+    }
+
+    public ProgressMessage(String taskName, int totalOperations, int currentOperation, String message) {
+	this.taskName = taskName;
+	this.totalOperations = totalOperations;
+	this.currentOperation = currentOperation;
+	this.message = message;
+    }
 
     /*
      * (non-Javadoc)
