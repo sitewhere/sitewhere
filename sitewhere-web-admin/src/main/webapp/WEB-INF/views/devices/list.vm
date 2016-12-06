@@ -120,7 +120,7 @@
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
+		swReleaseAssignment(token, '${basicAuth}', '${tenant.authenticationToken}', onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -132,7 +132,7 @@
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
+		swAssignmentMissing(token, '${basicAuth}', '${tenant.authenticationToken}', onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */

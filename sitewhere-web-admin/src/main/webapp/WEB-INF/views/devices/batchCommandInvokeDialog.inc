@@ -224,9 +224,9 @@
 		bciSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${request.contextPath}/api/specifications/" + criteria.specification
-				+ "/commands?tenantAuthToken=${tenant.authenticationToken}", bciCommandsGetSuccess,
-				bciCommandsGetFailed);
+		$.getAuthJSON("${request.contextPath}/api/specifications/" + criteria.specification
+				+ "/commands?tenantAuthToken=${tenant.authenticationToken}", "${basicAuth}",
+				"${tenant.authenticationToken}", bciCommandsGetSuccess, bciCommandsGetFailed);
 	}
 
 	/** Called on successful listing of specfication commands */
