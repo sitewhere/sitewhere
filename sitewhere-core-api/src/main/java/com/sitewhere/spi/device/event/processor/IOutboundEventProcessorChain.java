@@ -10,31 +10,32 @@ package com.sitewhere.spi.device.event.processor;
 import java.util.List;
 
 /**
- * Holds a list of {@link IOutboundEventProcessor} objects that are invoked in order.
+ * Holds a list of {@link IOutboundEventProcessor} objects that are invoked in
+ * order.
  * 
  * @author Derek
  */
 public interface IOutboundEventProcessorChain extends IOutboundEventProcessor {
 
-	/**
-	 * Sets the indicator for whether processing is enabled. NOTE: Events passed to the
-	 * chain while processing is disabled are thrown away.
-	 * 
-	 * @param enabled
-	 */
-	public void setProcessingEnabled(boolean enabled);
+    /**
+     * Sets the indicator for whether processing is enabled. NOTE: Events passed
+     * to the chain while processing is disabled are thrown away.
+     * 
+     * @param enabled
+     */
+    public void setProcessingEnabled(boolean enabled);
 
-	/**
-	 * Indicates whether processing is enabled.
-	 * 
-	 * @return
-	 */
-	public boolean isProcessingEnabled();
+    /**
+     * Indicates whether processing is enabled.
+     * 
+     * @return
+     */
+    public boolean isProcessingEnabled();
 
-	/**
-	 * Get the list of chained processors.
-	 * 
-	 * @return
-	 */
-	public List<IOutboundEventProcessor> getProcessors();
+    /**
+     * Get the list of chained processors.
+     * 
+     * @return
+     */
+    public List<IOutboundEventProcessor> getProcessors();
 }

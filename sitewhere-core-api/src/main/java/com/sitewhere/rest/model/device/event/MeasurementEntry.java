@@ -18,38 +18,38 @@ import com.sitewhere.spi.device.event.IMeasurementEntry;
  */
 public class MeasurementEntry implements IMeasurementEntry, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -427406980480474639L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -427406980480474639L;
 
-	/** Measurement name */
-	private String name;
+    /** Measurement name */
+    private String name;
 
-	/** Measurement value */
-	private Double value;
+    /** Measurement value */
+    private Double value;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IMeasurementEntry#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IMeasurementEntry#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IMeasurementEntry#getValue()
-	 */
-	public Double getValue() {
-		return value;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IMeasurementEntry#getValue()
+     */
+    public Double getValue() {
+	return value;
+    }
 
-	public void setValue(Double value) {
-		this.value = value;
-	}
+    public void setValue(Double value) {
+	this.value = value;
+    }
 }

@@ -41,58 +41,58 @@ public class EventHubClient {
     private final Connection connection;
 
     private EventHubClient(String connectionString, String entityPath) throws EventHubException {
-        this.connectionString = connectionString;
-        this.entityPath = entityPath;
-        this.connection = this.createConnection();
+	this.connectionString = connectionString;
+	this.entityPath = entityPath;
+	this.connection = this.createConnection();
     }
 
     /**
-     * creates a new instance of EventHubClient using the supplied connection string and entity path.
+     * creates a new instance of EventHubClient using the supplied connection
+     * string and entity path.
      *
-     * @param connectionString connection string to the namespace of event hubs. connection string format:
-     *                         amqps://{userId}:{password}@{namespaceName}.servicebus.windows.net
-     * @param entityPath       the name of event hub entity.
+     * @param connectionString
+     *            connection string to the namespace of event hubs. connection
+     *            string format:
+     *            amqps://{userId}:{password}@{namespaceName}.servicebus.windows.net
+     * @param entityPath
+     *            the name of event hub entity.
      * @return EventHubClient
      * @throws EventHubException
      */
     public static EventHubClient create(String connectionString, String entityPath) throws EventHubException {
-        return new EventHubClient(connectionString, entityPath);
+	return new EventHubClient(connectionString, entityPath);
     }
 
     public EventHubSender createPartitionSender(String partitionId) throws Exception {
-        return new EventHubSender(this.connection.createSession(), this.entityPath, partitionId);
+	return new EventHubSender(this.connection.createSession(), this.entityPath, partitionId);
     }
 
     public EventHubConsumerGroup getDefaultConsumerGroup() {
-        return new EventHubConsumerGroup(this.connection, this.entityPath, DefaultConsumerGroupName);
+	return new EventHubConsumerGroup(this.connection, this.entityPath, DefaultConsumerGroupName);
     }
 
     public void close() {
-        try {
-            this.connection.close();
-        } catch (ConnectionErrorException e) {
-            logger.error(e.toString());
-        }
+	try {
+	    this.connection.close();
+	} catch (ConnectionErrorException e) {
+	    logger.error(e.toString());
+	}
     }
 
     private Connection createConnection() throws EventHubException {
-        ConnectionStringBuilder connectionStringBuilder = new ConnectionStringBuilder(this.connectionString);
-        Connection clientConnection;
+	ConnectionStringBuilder connectionStringBuilder = new ConnectionStringBuilder(this.connectionString);
+	Connection clientConnection;
 
-        try {
-            clientConnection = new Connection(
-                    connectionStringBuilder.getHost(),
-                    connectionStringBuilder.getPort(),
-                    connectionStringBuilder.getUserName(),
-                    connectionStringBuilder.getPassword(),
-                    connectionStringBuilder.getHost(),
-                    connectionStringBuilder.getSsl());
-        } catch (ConnectionException e) {
-            logger.error(e.toString());
-            throw new EventHubException(e);
-        }
-        clientConnection.getEndpoint().setSyncTimeout(ConnectionSyncTimeout);
-        SelectorFilterWriter.register(clientConnection.getEndpoint().getDescribedTypeRegistry());
-        return clientConnection;
+	try {
+	    clientConnection = new Connection(connectionStringBuilder.getHost(), connectionStringBuilder.getPort(),
+		    connectionStringBuilder.getUserName(), connectionStringBuilder.getPassword(),
+		    connectionStringBuilder.getHost(), connectionStringBuilder.getSsl());
+	} catch (ConnectionException e) {
+	    logger.error(e.toString());
+	    throw new EventHubException(e);
+	}
+	clientConnection.getEndpoint().setSyncTimeout(ConnectionSyncTimeout);
+	SelectorFilterWriter.register(clientConnection.getEndpoint().getDescribedTypeRegistry());
+	return clientConnection;
     }
 }

@@ -21,28 +21,31 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  */
 public class Authorities {
 
-	public static class CreateAuthorityRequest extends GrantedAuthorityCreateRequest {
+    public static class CreateAuthorityRequest extends GrantedAuthorityCreateRequest {
 
-		public CreateAuthorityRequest() throws SiteWhereException {
-			setAuthority(ExampleData.AUTH_ADMIN_REST.getAuthority());
-			setDescription(ExampleData.AUTH_ADMIN_REST.getDescription());
-		}
+	/** Serial version UID */
+	private static final long serialVersionUID = -7280024461876152420L;
+
+	public CreateAuthorityRequest() throws SiteWhereException {
+	    setAuthority(ExampleData.AUTH_ADMIN_REST.getAuthority());
+	    setDescription(ExampleData.AUTH_ADMIN_REST.getDescription());
 	}
+    }
 
-	public static class CreateAuthorityResponse {
+    public static class CreateAuthorityResponse {
 
-		public Object generate() throws SiteWhereException {
-			return ExampleData.AUTH_ADMIN_REST;
-		}
+	public Object generate() throws SiteWhereException {
+	    return ExampleData.AUTH_ADMIN_REST;
 	}
+    }
 
-	public static class ListAuthoritiesResponse {
+    public static class ListAuthoritiesResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
-			auths.add(ExampleData.AUTH_ADMIN_REST);
-			auths.add(ExampleData.AUTH_ADMIN_USERS);
-			return auths;
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
+	    auths.add(ExampleData.AUTH_ADMIN_REST);
+	    auths.add(ExampleData.AUTH_ADMIN_USERS);
+	    return auths;
 	}
+    }
 }

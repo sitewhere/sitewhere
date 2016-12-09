@@ -21,9 +21,9 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 @JsonInclude(Include.NON_NULL)
 public class DeviceElementSchema extends DeviceUnit implements IDeviceElementSchema, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -7146013802892756603L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -7146013802892756603L;
 
-	public DeviceElementSchema() {
-	}
+    public DeviceElementSchema() {
+    }
 }

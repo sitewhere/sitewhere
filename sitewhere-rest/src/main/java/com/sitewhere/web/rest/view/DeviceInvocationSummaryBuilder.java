@@ -29,67 +29,67 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceInvocationSummaryBuilder {
 
-	/**
-	 * Creates a {@link DeviceCommandInvocationSummary} using data from a
-	 * {@link DeviceCommandInvocation} that has its command information populated.
-	 * 
-	 * @param invocation
-	 * @param responses
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
-			List<IDeviceCommandResponse> responses, ITenant tenant) throws SiteWhereException {
-		DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
-		summary.setName(invocation.getCommand().getName());
-		summary.setNamespace(invocation.getCommand().getNamespace());
-		summary.setInvocationDate(invocation.getEventDate());
-		for (ICommandParameter parameter : invocation.getCommand().getParameters()) {
-			DeviceCommandInvocationSummary.Parameter param = new DeviceCommandInvocationSummary.Parameter();
-			param.setName(parameter.getName());
-			param.setType(parameter.getType().name());
-			param.setRequired(parameter.isRequired());
-			param.setValue(invocation.getParameterValues().get(parameter.getName()));
-			summary.getParameters().add(param);
-		}
-		for (IDeviceCommandResponse response : responses) {
-			DeviceCommandInvocationSummary.Response rsp = new DeviceCommandInvocationSummary.Response();
-			rsp.setDate(response.getEventDate());
-			if (response.getResponseEventId() != null) {
-				IDeviceEvent event =
-						SiteWhere.getServer().getDeviceEventManagement(tenant).getDeviceEventById(
-								response.getResponseEventId());
-				rsp.setDescription(getDeviceEventDescription(event));
-			} else if (response.getResponse() != null) {
-				rsp.setDescription("Ack (\"" + response.getResponse() + "\")");
-			} else {
-				rsp.setDescription("Response received.");
-			}
-			summary.getResponses().add(rsp);
-		}
-		MetadataProvider.copy(invocation, summary);
-		return summary;
+    /**
+     * Creates a {@link DeviceCommandInvocationSummary} using data from a
+     * {@link DeviceCommandInvocation} that has its command information
+     * populated.
+     * 
+     * @param invocation
+     * @param responses
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
+	    List<IDeviceCommandResponse> responses, ITenant tenant) throws SiteWhereException {
+	DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
+	summary.setName(invocation.getCommand().getName());
+	summary.setNamespace(invocation.getCommand().getNamespace());
+	summary.setInvocationDate(invocation.getEventDate());
+	for (ICommandParameter parameter : invocation.getCommand().getParameters()) {
+	    DeviceCommandInvocationSummary.Parameter param = new DeviceCommandInvocationSummary.Parameter();
+	    param.setName(parameter.getName());
+	    param.setType(parameter.getType().name());
+	    param.setRequired(parameter.isRequired());
+	    param.setValue(invocation.getParameterValues().get(parameter.getName()));
+	    summary.getParameters().add(param);
 	}
+	for (IDeviceCommandResponse response : responses) {
+	    DeviceCommandInvocationSummary.Response rsp = new DeviceCommandInvocationSummary.Response();
+	    rsp.setDate(response.getEventDate());
+	    if (response.getResponseEventId() != null) {
+		IDeviceEvent event = SiteWhere.getServer().getDeviceEventManagement(tenant)
+			.getDeviceEventById(response.getResponseEventId());
+		rsp.setDescription(getDeviceEventDescription(event));
+	    } else if (response.getResponse() != null) {
+		rsp.setDescription("Ack (\"" + response.getResponse() + "\")");
+	    } else {
+		rsp.setDescription("Response received.");
+	    }
+	    summary.getResponses().add(rsp);
+	}
+	MetadataProvider.copy(invocation, summary);
+	return summary;
+    }
 
-	/**
-	 * Get a short description of a device event.
-	 * 
-	 * @param event
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static String getDeviceEventDescription(IDeviceEvent event) throws SiteWhereException {
-		if (event instanceof IDeviceMeasurements) {
-			IDeviceMeasurements m = (IDeviceMeasurements) event;
-			return "Measurements (" + m.getMeasurementsSummary() + ")";
-		} else if (event instanceof IDeviceLocation) {
-			IDeviceLocation l = (IDeviceLocation) event;
-			return "Location (" + l.getLatitude() + "/" + l.getLongitude() + "/" + l.getElevation() + ")";
-		} else if (event instanceof IDeviceAlert) {
-			IDeviceAlert a = (IDeviceAlert) event;
-			return "Alert (\"" + a.getMessage() + "\")";
-		}
-		return "Unknown Event Type";
+    /**
+     * Get a short description of a device event.
+     * 
+     * @param event
+     * @return
+     * @throws SiteWhereException
+     */
+    public static String getDeviceEventDescription(IDeviceEvent event) throws SiteWhereException {
+	if (event instanceof IDeviceMeasurements) {
+	    IDeviceMeasurements m = (IDeviceMeasurements) event;
+	    return "Measurements (" + m.getMeasurementsSummary() + ")";
+	} else if (event instanceof IDeviceLocation) {
+	    IDeviceLocation l = (IDeviceLocation) event;
+	    return "Location (" + l.getLatitude() + "/" + l.getLongitude() + "/" + l.getElevation() + ")";
+	} else if (event instanceof IDeviceAlert) {
+	    IDeviceAlert a = (IDeviceAlert) event;
+	    return "Alert (\"" + a.getMessage() + "\")";
 	}
+	return "Unknown Event Type";
+    }
 }

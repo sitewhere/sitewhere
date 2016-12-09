@@ -16,10 +16,10 @@ import java.io.Serializable;
  */
 public interface ISystemCommand extends Serializable {
 
-	/**
-	 * Gets the command type.
-	 * 
-	 * @return
-	 */
-	public SystemCommandType getType();
+    /**
+     * Gets the command type.
+     * 
+     * @return
+     */
+    public SystemCommandType getType();
 }

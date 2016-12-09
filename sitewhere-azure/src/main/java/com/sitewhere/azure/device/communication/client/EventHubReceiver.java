@@ -36,8 +36,7 @@ import java.util.Map;
 
 public final class EventHubReceiver {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(EventHubReceiver.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventHubReceiver.class);
     private static final String linkName = "eventhubs-receiver-link";
 
     private final Session session;
@@ -51,93 +50,89 @@ public final class EventHubReceiver {
     private Receiver receiver;
     private boolean isClosed;
 
-    public EventHubReceiver(Session session, String entityPath,
-                            String consumerGroupName, String partitionId, String filterStr, int defaultCredits)
-            throws EventHubException {
+    public EventHubReceiver(Session session, String entityPath, String consumerGroupName, String partitionId,
+	    String filterStr, int defaultCredits) throws EventHubException {
 
-        this.session = session;
-        this.entityPath = entityPath;
-        this.consumerGroupName = consumerGroupName;
-        this.partitionId = partitionId;
-        this.consumerAddress = this.getConsumerAddress();
-        this.filters = Collections.singletonMap(
-                Symbol.valueOf(Constants.SelectorFilterName),
-                (Filter) new SelectorFilter(filterStr));
-        logger.info("receiver filter string: " + filterStr);
-        this.defaultCredits = defaultCredits;
+	this.session = session;
+	this.entityPath = entityPath;
+	this.consumerGroupName = consumerGroupName;
+	this.partitionId = partitionId;
+	this.consumerAddress = this.getConsumerAddress();
+	this.filters = Collections.singletonMap(Symbol.valueOf(Constants.SelectorFilterName),
+		(Filter) new SelectorFilter(filterStr));
+	logger.info("receiver filter string: " + filterStr);
+	this.defaultCredits = defaultCredits;
 
-        this.ensureReceiverCreated();
+	this.ensureReceiverCreated();
     }
 
     // receive without timeout means wait until a message is delivered.
     public Message receive() {
-        return this.receive(-1L);
+	return this.receive(-1L);
     }
 
     public Message receive(long waitTimeInMilliseconds) {
 
-        this.checkIfClosed();
+	this.checkIfClosed();
 
-        Message message = this.receiver.receive(waitTimeInMilliseconds);
+	Message message = this.receiver.receive(waitTimeInMilliseconds);
 
-        if (message != null) {
-            // Let's acknowledge a message although EH service doesn't need it
-            // to avoid AMQP flow issue.
-            receiver.acknowledge(message);
+	if (message != null) {
+	    // Let's acknowledge a message although EH service doesn't need it
+	    // to avoid AMQP flow issue.
+	    receiver.acknowledge(message);
 
-            return message;
-        } else {
-            this.checkError();
-        }
+	    return message;
+	} else {
+	    this.checkError();
+	}
 
-        return null;
+	return null;
     }
 
     public void close() {
-        if (!isClosed) {
-            receiver.close();
-            isClosed = true;
-        }
+	if (!isClosed) {
+	    receiver.close();
+	    isClosed = true;
+	}
     }
 
     private String getConsumerAddress() {
-        return String.format(Constants.ConsumerAddressFormatString,
-                entityPath, consumerGroupName, partitionId);
+	return String.format(Constants.ConsumerAddressFormatString, entityPath, consumerGroupName, partitionId);
     }
 
     private void ensureReceiverCreated() throws EventHubException {
-        try {
-            logger.info("defaultCredits: " + defaultCredits);
-            receiver = session.createReceiver(consumerAddress,
-                    AcknowledgeMode.ALO, linkName, false, filters, null);
-            receiver.setCredit(UnsignedInteger.valueOf(defaultCredits), true);
-        } catch (ConnectionErrorException e) {
-            // caller (EventHubSpout) will log the error
-            throw new EventHubException(e);
-        }
+	try {
+	    logger.info("defaultCredits: " + defaultCredits);
+	    receiver = session.createReceiver(consumerAddress, AcknowledgeMode.ALO, linkName, false, filters, null);
+	    receiver.setCredit(UnsignedInteger.valueOf(defaultCredits), true);
+	} catch (ConnectionErrorException e) {
+	    // caller (EventHubSpout) will log the error
+	    throw new EventHubException(e);
+	}
     }
 
     private void checkError() {
-        org.apache.qpid.amqp_1_0.type.transport.Error error = this.receiver.getError();
-        if (error != null) {
-            String errorMessage = error.toString();
-            logger.error(errorMessage);
-            this.close();
+	org.apache.qpid.amqp_1_0.type.transport.Error error = this.receiver.getError();
+	if (error != null) {
+	    String errorMessage = error.toString();
+	    logger.error(errorMessage);
+	    this.close();
 
-            throw new RuntimeException(errorMessage);
-        } else {
-            // adding a sleep here to avoid any potential tight-loop issue.
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                logger.error(e.toString());
-            }
-        }
+	    throw new RuntimeException(errorMessage);
+	} else {
+	    // adding a sleep here to avoid any potential tight-loop issue.
+	    try {
+		Thread.sleep(10);
+	    } catch (InterruptedException e) {
+		logger.error(e.toString());
+	    }
+	}
     }
 
     private void checkIfClosed() {
-        if (this.isClosed) {
-            throw new RuntimeException("receiver was closed.");
-        }
+	if (this.isClosed) {
+	    throw new RuntimeException("receiver was closed.");
+	}
     }
 }

@@ -25,90 +25,89 @@ import com.sitewhere.device.communication.BlockingQueueOutboundProcessingStrateg
  */
 public class OutboundProcessingStrategyParser {
 
-	/**
-	 * Parse elements in the inbound processing strategy section.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parse(Element element, ParserContext context) {
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			Elements type = Elements.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown outbound processing strategy element: "
-						+ child.getLocalName());
-			}
-			switch (type) {
-			case BlockingQueueOutboundProcessingStrategy:
-			case DefaultOutboundProcessingStrategy: {
-				return parseDefaultOutboundProcessingStrategy(child, context);
-			}
-			}
-		}
-		return null;
+    /**
+     * Parse elements in the inbound processing strategy section.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parse(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown outbound processing strategy element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case BlockingQueueOutboundProcessingStrategy:
+	    case DefaultOutboundProcessingStrategy: {
+		return parseDefaultOutboundProcessingStrategy(child, context);
+	    }
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Parse information for the default outbound processing strategy.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected BeanDefinition parseDefaultOutboundProcessingStrategy(Element element, ParserContext context) {
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder
+		.rootBeanDefinition(BlockingQueueOutboundProcessingStrategy.class);
+
+	Attr maxQueueSize = element.getAttributeNode("maxQueueSize");
+	if (maxQueueSize != null) {
+	    manager.addPropertyValue("maxQueueSize", maxQueueSize.getValue());
 	}
 
-	/**
-	 * Parse information for the default outbound processing strategy.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected BeanDefinition parseDefaultOutboundProcessingStrategy(Element element, ParserContext context) {
-		BeanDefinitionBuilder manager =
-				BeanDefinitionBuilder.rootBeanDefinition(BlockingQueueOutboundProcessingStrategy.class);
-
-		Attr maxQueueSize = element.getAttributeNode("maxQueueSize");
-		if (maxQueueSize != null) {
-			manager.addPropertyValue("maxQueueSize", maxQueueSize.getValue());
-		}
-
-		Attr numEventProcessorThreads = element.getAttributeNode("numEventProcessorThreads");
-		if (numEventProcessorThreads != null) {
-			manager.addPropertyValue("eventProcessorThreadCount", numEventProcessorThreads.getValue());
-		}
-
-		return manager.getBeanDefinition();
+	Attr numEventProcessorThreads = element.getAttributeNode("numEventProcessorThreads");
+	if (numEventProcessorThreads != null) {
+	    manager.addPropertyValue("eventProcessorThreadCount", numEventProcessorThreads.getValue());
 	}
 
-	/**
-	 * Expected child elements.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Elements {
+	return manager.getBeanDefinition();
+    }
 
-		/** Blocking queue outbound processing strategy */
-		BlockingQueueOutboundProcessingStrategy("blocking-queue-outbound-processing-strategy"),
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
 
-		/** Default outbound processing strategy */
-		DefaultOutboundProcessingStrategy("default-outbound-processing-strategy");
+	/** Blocking queue outbound processing strategy */
+	BlockingQueueOutboundProcessingStrategy("blocking-queue-outbound-processing-strategy"),
 
-		/** Event code */
-		private String localName;
+	/** Default outbound processing strategy */
+	DefaultOutboundProcessingStrategy("default-outbound-processing-strategy");
 
-		private Elements(String localName) {
-			this.localName = localName;
-		}
+	/** Event code */
+	private String localName;
 
-		public static Elements getByLocalName(String localName) {
-			for (Elements value : Elements.values()) {
-				if (value.getLocalName().equals(localName)) {
-					return value;
-				}
-			}
-			return null;
-		}
-
-		public String getLocalName() {
-			return localName;
-		}
-
-		public void setLocalName(String localName) {
-			this.localName = localName;
-		}
+	private Elements(String localName) {
+	    this.localName = localName;
 	}
+
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

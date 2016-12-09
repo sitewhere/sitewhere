@@ -14,15 +14,15 @@ package com.sitewhere.web.configuration.model;
  */
 public enum ElementRoleStrategy {
 
-	/** Exactly one element in the role can be added */
-	ExactlyOne,
+    /** Exactly one element in the role can be added */
+    ExactlyOne,
 
-	/** Maximum of one element in the role can be added */
-	ZeroOrOne,
+    /** Maximum of one element in the role can be added */
+    ZeroOrOne,
 
-	/** At least one element in the role must be added */
-	AtLeastOne,
+    /** At least one element in the role must be added */
+    AtLeastOne,
 
-	/** Any number of elements in the role may be added */
-	ZeroOrMore;
+    /** Any number of elements in the role may be added */
+    ZeroOrMore;
 }

@@ -10,31 +10,31 @@ package com.sitewhere.spi.device.communication;
 import java.io.Serializable;
 
 /**
- * Contains information decoded by an {@link IDeviceEventDecoder} includng hardware id and
- * originator of the event.
+ * Contains information decoded by an {@link IDeviceEventDecoder} includng
+ * hardware id and originator of the event.
  * 
  * @author Derek
  */
 public interface IDecodedDeviceRequest<T> extends Serializable {
 
-	/**
-	 * Get hardware id the request pertains to.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get hardware id the request pertains to.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get event originator if available.
-	 * 
-	 * @return
-	 */
-	public String getOriginator();
+    /**
+     * Get event originator if available.
+     * 
+     * @return
+     */
+    public String getOriginator();
 
-	/**
-	 * Get event create request.
-	 * 
-	 * @return
-	 */
-	public T getRequest();
+    /**
+     * Get event create request.
+     * 
+     * @return
+     */
+    public T getRequest();
 }

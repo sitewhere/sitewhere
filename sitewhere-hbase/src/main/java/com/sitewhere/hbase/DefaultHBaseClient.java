@@ -11,11 +11,14 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.log4j.Logger;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.hbase.common.SiteWhereTables;
@@ -29,168 +32,180 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClient {
 
-	/** Static logger instance */
-	private static final Logger LOGGER = Logger.getLogger(DefaultHBaseClient.class);
+    /** Static logger instance */
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	/** Zookeeper quorum */
-	private String quorum;
+    /** Zookeeper quorum */
+    private String quorum;
 
-	/** Zookeeper client port */
-	private int zookeeperClientPort = 2181;
+    /** Zookeeper client port */
+    private int zookeeperClientPort = 2181;
 
-	/** Zookeeper znode parent */
-	private String zookeeperZnodeParent = "/hbase";
+    /** Zookeeper znode parent */
+    private String zookeeperZnodeParent = "/hbase";
 
-	/** Zookeeper znode root server */
-	private String zookeeperZnodeRootServer = "root-region-server";
+    /** Zookeeper znode root server */
+    private String zookeeperZnodeRootServer = "root-region-server";
 
-	/** HBase configuration */
-	private Configuration configuration;
+    /** HBase configuration */
+    private Configuration configuration;
 
-	/** HBase connection */
-	private HConnection connection;
+    /** HBase connection */
+    private Connection connection;
 
-	/** Standard admin interface */
-	private HBaseAdmin admin;
+    /** Standard admin interface */
+    private Admin admin;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-		try {
-			configuration = HBaseConfiguration.create();
-			configuration.set("hbase.zookeeper.quorum", quorum);
-			configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(getZookeeperClientPort()));
-			configuration.set("zookeeper.znode.parent", getZookeeperZnodeParent());
-			configuration.set("zookeeper.znode.rootserver", getZookeeperZnodeRootServer());
-			this.admin = new HBaseAdmin(configuration);
-			this.connection = HConnectionManager.createConnection(configuration);
-		} catch (Exception e) {
-			throw new SiteWhereException(e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+	try {
+	    configuration = HBaseConfiguration.create();
+	    configuration.set("hbase.zookeeper.quorum", quorum);
+	    configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(getZookeeperClientPort()));
+	    configuration.set("zookeeper.znode.parent", getZookeeperZnodeParent());
+	    configuration.set("zookeeper.znode.rootserver", getZookeeperZnodeRootServer());
+	    this.connection = ConnectionFactory.createConnection(configuration);
+	    this.admin = connection.getAdmin();
+	} catch (Exception e) {
+	    throw new SiteWhereException(e);
 	}
+    }
 
-	/**
-	 * Stop all connectivity. TODO: Where does this eventually get called?
-	 */
-	public void stop() {
-		if (getAdmin() != null) {
-			try {
-				getAdmin().shutdown();
-			} catch (IOException e) {
-				LOGGER.error("HBaseAdmin did not shut down cleanly.", e);
-			}
-		}
-		try {
-			getConnection().close();
-		} catch (IOException e) {
-			LOGGER.error("HConnection did not close cleanly.", e);
-		}
+    /**
+     * Stop all connectivity. TODO: Where does this eventually get called?
+     */
+    public void stop() {
+	if (getAdmin() != null) {
+	    try {
+		getAdmin().shutdown();
+	    } catch (IOException e) {
+		LOGGER.error("HBaseAdmin did not shut down cleanly.", e);
+	    }
 	}
+	try {
+	    getConnection().close();
+	} catch (IOException e) {
+	    LOGGER.error("HConnection did not close cleanly.", e);
+	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getAdmin()
-	 */
-	@Override
-	public HBaseAdmin getAdmin() {
-		return admin;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getAdmin()
+     */
+    @Override
+    public Admin getAdmin() {
+	return admin;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getConfiguration()
-	 */
-	@Override
-	public Configuration getConfiguration() {
-		return configuration;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getConfiguration()
+     */
+    @Override
+    public Configuration getConfiguration() {
+	return configuration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[])
-	 */
-	@Override
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException {
-		try {
-			HTableInterface hintf = getConnection().getTable(tableName);
-			hintf.setAutoFlushTo(true);
-			return hintf;
-		} catch (IOException e) {
-			throw new SiteWhereException("IOException getting HBase table interface.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[])
+     */
+    @Override
+    public Table getTableInterface(byte[] tableName) throws SiteWhereException {
+	try {
+	    return getConnection().getTable(TableName.valueOf(tableName));
+	} catch (IOException e) {
+	    throw new SiteWhereException("IOException getting HBase table interface.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
-	 * .ITenant, byte[])
-	 */
-	@Override
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
-		return getTableInterface(tenant, tableName, false);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere
+     * .spi.tenant.ITenant, byte[])
+     */
+    @Override
+    public Table getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
+	return getTableInterface(tenant, tableName, false);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
-	 * .ITenant, byte[], boolean)
-	 */
-	@Override
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
-			throws SiteWhereException {
-		try {
-			byte[] tablename = SiteWhereTables.getTenantTableName(tenant, tableName);
-			HTableInterface hintf = getConnection().getTable(tablename);
-			hintf.setAutoFlushTo(autoFlush);
-			return hintf;
-		} catch (IOException e) {
-			throw new SiteWhereException("IOException getting HBase table interface.", e);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere
+     * .spi.user .ITenant, byte[], boolean)
+     */
+    @Override
+    public Table getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush) throws SiteWhereException {
+	try {
+	    byte[] tablename = SiteWhereTables.getTenantTableName(tenant, tableName);
+	    return getConnection().getTable(TableName.valueOf(tablename));
+	} catch (IOException e) {
+	    throw new SiteWhereException("IOException getting HBase table interface.", e);
 	}
+    }
 
-	public HConnection getConnection() {
-		return connection;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getBufferedMutator(com.
+     * sitewhere.spi.tenant.ITenant, byte[])
+     */
+    @Override
+    public BufferedMutator getBufferedMutator(ITenant tenant, byte[] tableName) throws SiteWhereException {
+	try {
+	    byte[] tablename = SiteWhereTables.getTenantTableName(tenant, tableName);
+	    return getConnection().getBufferedMutator(TableName.valueOf(tablename));
+	} catch (IOException e) {
+	    throw new SiteWhereException("IOException getting HBase buffered mutator.", e);
 	}
+    }
 
-	public String getQuorum() {
-		return quorum;
-	}
+    public Connection getConnection() {
+	return connection;
+    }
 
-	public void setQuorum(String quorum) {
-		this.quorum = quorum;
-	}
+    public String getQuorum() {
+	return quorum;
+    }
 
-	public int getZookeeperClientPort() {
-		return zookeeperClientPort;
-	}
+    public void setQuorum(String quorum) {
+	this.quorum = quorum;
+    }
 
-	public void setZookeeperClientPort(int zookeeperClientPort) {
-		this.zookeeperClientPort = zookeeperClientPort;
-	}
+    public int getZookeeperClientPort() {
+	return zookeeperClientPort;
+    }
 
-	public String getZookeeperZnodeParent() {
-		return zookeeperZnodeParent;
-	}
+    public void setZookeeperClientPort(int zookeeperClientPort) {
+	this.zookeeperClientPort = zookeeperClientPort;
+    }
 
-	public void setZookeeperZnodeParent(String zookeeperZnodeParent) {
-		this.zookeeperZnodeParent = zookeeperZnodeParent;
-	}
+    public String getZookeeperZnodeParent() {
+	return zookeeperZnodeParent;
+    }
 
-	public String getZookeeperZnodeRootServer() {
-		return zookeeperZnodeRootServer;
-	}
+    public void setZookeeperZnodeParent(String zookeeperZnodeParent) {
+	this.zookeeperZnodeParent = zookeeperZnodeParent;
+    }
 
-	public void setZookeeperZnodeRootServer(String zookeeperZnodeRootServer) {
-		this.zookeeperZnodeRootServer = zookeeperZnodeRootServer;
-	}
+    public String getZookeeperZnodeRootServer() {
+	return zookeeperZnodeRootServer;
+    }
+
+    public void setZookeeperZnodeRootServer(String zookeeperZnodeRootServer) {
+	this.zookeeperZnodeRootServer = zookeeperZnodeRootServer;
+    }
 }

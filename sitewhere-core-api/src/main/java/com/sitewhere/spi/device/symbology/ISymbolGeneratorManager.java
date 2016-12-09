@@ -19,28 +19,28 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ISymbolGeneratorManager extends ITenantLifecycleComponent {
 
-	/**
-	 * Get the list of available symbol generators.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<ISymbolGenerator> getSymbolGenerators() throws SiteWhereException;
+    /**
+     * Get the list of available symbol generators.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ISymbolGenerator> getSymbolGenerators() throws SiteWhereException;
 
-	/**
-	 * Get a symbol generator by id.
-	 * 
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISymbolGenerator getSymbolGenerator(String id) throws SiteWhereException;
+    /**
+     * Get a symbol generator by id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISymbolGenerator getSymbolGenerator(String id) throws SiteWhereException;
 
-	/**
-	 * Get the default symbol generator.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISymbolGenerator getDefaultSymbolGenerator() throws SiteWhereException;
+    /**
+     * Get the default symbol generator.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISymbolGenerator getDefaultSymbolGenerator() throws SiteWhereException;
 }

@@ -20,58 +20,58 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  */
 public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement, Serializable {
 
-	/** For Java serialization */
-	private static final long serialVersionUID = 5255345217091668945L;
+    /** For Java serialization */
+    private static final long serialVersionUID = 5255345217091668945L;
 
-	/** Measurement name */
-	private String name;
+    /** Measurement name */
+    private String name;
 
-	/** Measurement value */
-	private Double value;
+    /** Measurement value */
+    private Double value;
 
-	public DeviceMeasurement() {
-		super(DeviceEventType.Measurement);
-	}
+    public DeviceMeasurement() {
+	super(DeviceEventType.Measurement);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IMeasurementEntry#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IMeasurementEntry#getName()
+     */
+    @Override
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.IMeasurementEntry#getValue()
-	 */
-	@Override
-	public Double getValue() {
-		return value;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.IMeasurementEntry#getValue()
+     */
+    @Override
+    public Double getValue() {
+	return value;
+    }
 
-	public void setValue(Double value) {
-		this.value = value;
-	}
+    public void setValue(Double value) {
+	this.value = value;
+    }
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceMeasurement copy(IDeviceMeasurement input) throws SiteWhereException {
-		DeviceMeasurement result = new DeviceMeasurement();
-		DeviceEvent.copy(input, result);
-		result.setName(input.getName());
-		result.setValue(input.getValue());
-		return result;
-	}
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static DeviceMeasurement copy(IDeviceMeasurement input) throws SiteWhereException {
+	DeviceMeasurement result = new DeviceMeasurement();
+	DeviceEvent.copy(input, result);
+	result.setName(input.getName());
+	result.setValue(input.getValue());
+	return result;
+    }
 }

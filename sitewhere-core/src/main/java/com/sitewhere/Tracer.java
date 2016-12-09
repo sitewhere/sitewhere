@@ -9,7 +9,8 @@ package com.sitewhere;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.spi.server.debug.ITracer;
@@ -22,139 +23,139 @@ import com.sitewhere.spi.server.debug.TracerCategory;
  */
 public class Tracer {
 
-	/** Private logger instance */
-	private static Logger LOGGER = Logger.getLogger(Tracer.class);
+    /** Private logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Fallback tracer implementation */
-	private static ITracer FALLBACK = new NullTracer();
+    /** Fallback tracer implementation */
+    private static ITracer FALLBACK = new NullTracer();
 
-	/**
-	 * Starts tracing.
-	 * 
-	 * @param category
-	 * @param message
-	 * @param logger
-	 */
-	public static void start(TracerCategory category, String message, Logger logger) {
-		getTracer().start(category, message, logger);
+    /**
+     * Starts tracing.
+     * 
+     * @param category
+     * @param message
+     * @param logger
+     */
+    public static void start(TracerCategory category, String message, Logger logger) {
+	getTracer().start(category, message, logger);
+    }
+
+    /**
+     * Stops tracing.
+     * 
+     * @param logger
+     */
+    public static void stop(Logger logger) {
+	getTracer().stop(logger);
+    }
+
+    /**
+     * Set enablement of tracer implementation.
+     * 
+     * @param enabled
+     */
+    public static void setEnabled(boolean enabled) {
+	getTracer().setEnabled(enabled);
+    }
+
+    /**
+     * Get an HTML representation of the tracer output.
+     * 
+     * @return
+     * @throws UnsupportedOperationException
+     */
+    public static String asHtml() throws UnsupportedOperationException {
+	return getTracer().asHtml();
+    }
+
+    /**
+     * Pushes another level into the trace stack.
+     * 
+     * @param category
+     * @param message
+     * @param logger
+     */
+    public static void push(TracerCategory category, String message, Logger logger) {
+	getTracer().push(category, message, logger);
+    }
+
+    /**
+     * Pops back up a level on the trace stack.
+     * 
+     * @param logger
+     */
+    public static void pop(Logger logger) {
+	getTracer().pop(logger);
+    }
+
+    /**
+     * Store or log a debug message.
+     * 
+     * @param message
+     * @param logger
+     */
+    public static void debug(String message, Logger logger) {
+	getTracer().debug(message, logger);
+    }
+
+    /**
+     * Store or log an informational message.
+     * 
+     * @param message
+     * @param logger
+     */
+    public static void info(String message, Logger logger) {
+	getTracer().info(message, logger);
+    }
+
+    /**
+     * Store or log an warning message.
+     * 
+     * @param message
+     * @param error
+     * @param logger
+     */
+    public static void warn(String message, Throwable error, Logger logger) {
+	getTracer().warn(message, error, logger);
+    }
+
+    /**
+     * Store or log an error message.
+     * 
+     * @param message
+     * @param error
+     * @param logger
+     */
+    public static void error(String message, Throwable error, Logger logger) {
+	getTracer().error(message, error, logger);
+    }
+
+    /**
+     * Store timing information.
+     * 
+     * @param message
+     * @param delta
+     * @param unit
+     * @param logger
+     */
+    public static void timing(String message, long delta, TimeUnit unit, Logger logger) {
+	getTracer().timing(message, delta, unit, logger);
+    }
+
+    /**
+     * Gets tracer while detecting server problems.
+     * 
+     * @return
+     */
+    protected static ITracer getTracer() {
+	if (!SiteWhere.isServerAvailable()) {
+	    LOGGER.debug("Tracer called, but server does not exist. Check log file for errors on startup.");
+	    return FALLBACK;
 	}
-
-	/**
-	 * Stops tracing.
-	 * 
-	 * @param logger
-	 */
-	public static void stop(Logger logger) {
-		getTracer().stop(logger);
+	if (SiteWhere.getServer().getTracer() == null) {
+	    LOGGER.warn("Tracer not initialized. Check log file for errors on startup.");
+	    return FALLBACK;
 	}
-
-	/**
-	 * Set enablement of tracer implementation.
-	 * 
-	 * @param enabled
-	 */
-	public static void setEnabled(boolean enabled) {
-		getTracer().setEnabled(enabled);
-	}
-
-	/**
-	 * Get an HTML representation of the tracer output.
-	 * 
-	 * @return
-	 * @throws UnsupportedOperationException
-	 */
-	public static String asHtml() throws UnsupportedOperationException {
-		return getTracer().asHtml();
-	}
-
-	/**
-	 * Pushes another level into the trace stack.
-	 * 
-	 * @param category
-	 * @param message
-	 * @param logger
-	 */
-	public static void push(TracerCategory category, String message, Logger logger) {
-		getTracer().push(category, message, logger);
-	}
-
-	/**
-	 * Pops back up a level on the trace stack.
-	 * 
-	 * @param logger
-	 */
-	public static void pop(Logger logger) {
-		getTracer().pop(logger);
-	}
-
-	/**
-	 * Store or log a debug message.
-	 * 
-	 * @param message
-	 * @param logger
-	 */
-	public static void debug(String message, Logger logger) {
-		getTracer().debug(message, logger);
-	}
-
-	/**
-	 * Store or log an informational message.
-	 * 
-	 * @param message
-	 * @param logger
-	 */
-	public static void info(String message, Logger logger) {
-		getTracer().info(message, logger);
-	}
-
-	/**
-	 * Store or log an warning message.
-	 * 
-	 * @param message
-	 * @param error
-	 * @param logger
-	 */
-	public static void warn(String message, Throwable error, Logger logger) {
-		getTracer().warn(message, error, logger);
-	}
-
-	/**
-	 * Store or log an error message.
-	 * 
-	 * @param message
-	 * @param error
-	 * @param logger
-	 */
-	public static void error(String message, Throwable error, Logger logger) {
-		getTracer().error(message, error, logger);
-	}
-
-	/**
-	 * Store timing information.
-	 * 
-	 * @param message
-	 * @param delta
-	 * @param unit
-	 * @param logger
-	 */
-	public static void timing(String message, long delta, TimeUnit unit, Logger logger) {
-		getTracer().timing(message, delta, unit, logger);
-	}
-
-	/**
-	 * Gets tracer while detecting server problems.
-	 * 
-	 * @return
-	 */
-	protected static ITracer getTracer() {
-		if (SiteWhere.getServer() == null) {
-			LOGGER.warn("Tracer called, but server does not exist. Check log file for errors on startup.");
-			return FALLBACK;
-		}
-		if (SiteWhere.getServer().getTracer() == null) {
-			LOGGER.warn("Tracer not initialized. Check log file for errors on startup.");
-			return FALLBACK;
-		}
-		return SiteWhere.getServer().getTracer();
-	}
+	return SiteWhere.getServer().getTracer();
+    }
 }

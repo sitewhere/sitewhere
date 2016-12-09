@@ -14,29 +14,29 @@ package com.sitewhere.web.configuration.model;
  */
 public abstract class XmlNode extends ConfigurationNode {
 
-	/** XML local name */
-	private String localName;
+    /** XML local name */
+    private String localName;
 
-	/** XML namespace */
-	private String namespace;
+    /** XML namespace */
+    private String namespace;
 
-	public XmlNode(NodeType type) {
-		super(type);
-	}
+    public XmlNode(NodeType type) {
+	super(type);
+    }
 
-	public String getLocalName() {
-		return localName;
-	}
+    public String getLocalName() {
+	return localName;
+    }
 
-	public void setLocalName(String localName) {
-		this.localName = localName;
-	}
+    public void setLocalName(String localName) {
+	this.localName = localName;
+    }
 
-	public String getNamespace() {
-		return namespace;
-	}
+    public String getNamespace() {
+	return namespace;
+    }
 
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
+    public void setNamespace(String namespace) {
+	this.namespace = namespace;
+    }
 }

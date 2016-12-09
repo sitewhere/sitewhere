@@ -1,12 +1,6 @@
-
-apply plugin: 'war'
-
-apply plugin: 'spring-boot'
-springBoot {
-    mainClass = 'com.sitewhere.web.SiteWhereWebApplication'
-}
-
 description = 'SiteWhere Web Components'
+
+apply plugin: 'nebula.provided-base'
 
 configurations {
     compile.exclude module: 'spring-boot-starter-logging'
@@ -16,9 +10,7 @@ dependencies {
     compile project(':sitewhere-activemq')
     compile project(':sitewhere-azure')
     compile project(':sitewhere-core')
-    compile project(':sitewhere-ehcache')
     compile project(':sitewhere-hbase')
-    compile project(':sitewhere-groovy')
     compile project(':sitewhere-influx')
     compile project(':sitewhere-mongodb')
     compile project(':sitewhere-protobuf')
@@ -32,26 +24,22 @@ dependencies {
     compile project(':sitewhere-wso2')
     
 	compile ('org.springframework.boot:spring-boot-starter-web')
-	compile ('org.springframework.boot:spring-boot-starter-log4j')
- 	compile ('org.apache.tomcat.embed:tomcat-embed-jasper')
+ 	compile ('org.apache.velocity:velocity')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'
+    compile group: 'org.springframework.session', name: 'spring-session'
   
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.7.0'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.10', version:'2.6.3'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version:'2.7.0'
-    compile group: 'com.wordnik', name: 'swagger-core_2.10', version:'1.3.5'
-    compile group: 'com.wordnik', name: 'swagger-annotations', version:'1.3.5'
+    compile group: 'io.swagger', name: 'swagger-core', version:'1.5.10'
+    compile group: 'io.swagger', name: 'swagger-annotations', version:'1.5.10'
     compile group: 'com.mangofactory', name: 'swagger-springmvc', version:'1.0.2'
     compile group: 'com.google.guava', name: 'guava'
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'javax.mail', name: 'mail', version: '1.4'
     
-	compile group: 'javax.servlet', name: 'javax.servlet-api'
-	compile group: 'javax.servlet', name: 'jstl'
+	provided group: 'javax.servlet', name: 'javax.servlet-api'
 }
 
 task manifestJar(dependsOn:'classes',type: Jar) {
@@ -72,9 +60,5 @@ task restDocumentationGenerator(type: JavaExec, dependsOn: manifestJar) {
 task restDocZip(type: Zip, dependsOn: restDocumentationGenerator) {
     classifier = 'api'
     from "$buildDir/rest"
-}
-
-artifacts {
-    archives restDocZip
 }
 

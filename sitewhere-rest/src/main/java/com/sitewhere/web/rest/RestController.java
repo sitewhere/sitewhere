@@ -12,7 +12,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -26,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
@@ -40,228 +42,264 @@ import com.sitewhere.spi.user.SiteWhereRoles;
  */
 public class RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RestController.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Get a tenant based on the authentication token passed. Assume that the current user
-	 * should be validated for access to the given tenant.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
-		return getTenant(request, true);
+    /**
+     * Get a tenant based on the authentication token passed. Assume that the
+     * current user should be validated for access to the given tenant.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
+	return getTenant(request, true);
+    }
+
+    /**
+     * Get a tenant based on the authentication token passed.
+     * 
+     * @param request
+     * @param checkAuthUser
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenant getTenant(HttpServletRequest request, boolean checkAuthUser) throws SiteWhereException {
+	String token = getTenantAuthToken(request);
+	ITenant match = SiteWhere.getServer().getTenantByAuthToken(token);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
+	}
+	ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
+	if (engine == null) {
+	    LOGGER.error("No tenant engine for tenant: " + match.getName());
+	    throw new TenantNotAvailableException();
+	}
+	if (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started) {
+	    LOGGER.error("Engine not started for tenant: " + match.getName());
+	    throw new TenantNotAvailableException();
 	}
 
-	/**
-	 * Get a tenant based on the authentication token passed.
-	 * 
-	 * @param request
-	 * @param checkAuthUser
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ITenant getTenant(HttpServletRequest request, boolean checkAuthUser) throws SiteWhereException {
-		String token = getTenantAuthToken(request);
-		ITenant match = SiteWhere.getServer().getTenantByAuthToken(token);
-		if (match == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
-		}
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
-		if (engine == null) {
-			LOGGER.error("No tenant engine for tenant: " + match.getName());
-			throw new TenantNotAvailableException();
-		}
-		if (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started) {
-			LOGGER.error("Engine not started for tenant: " + match.getName());
-			throw new TenantNotAvailableException();
-		}
+	if (checkAuthUser) {
+	    String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
+	    if (match.getAuthorizedUserIds().contains(username)) {
+		return match;
+	    }
+	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	} else {
+	    return match;
+	}
+    }
 
-		if (checkAuthUser) {
-			String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
-			if (match.getAuthorizedUserIds().contains(username)) {
-				return match;
-			}
-			throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+    /**
+     * Verify that the current user is authorized to interact with the given
+     * tenant id.
+     * 
+     * @param tenantId
+     * @throws SiteWhereException
+     */
+    protected ITenant assureAuthorizedTenantId(String tenantId) throws SiteWhereException {
+	ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
+	if (tenant == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	return assureAuthorizedTenant(tenant);
+    }
+
+    /**
+     * Verify that the current user is authorized to interact with the given
+     * tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenant assureAuthorizedTenant(ITenant tenant) throws SiteWhereException {
+	IUser user = LoginManager.getCurrentlyLoggedInUser();
+
+	// Tenant administrators do not have to be in the list of authorized
+	// users.
+	if (user.getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
+	    return tenant;
+	}
+
+	// Tenant self-editors have to be in the list of authorized users.
+	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	}
+	return tenant;
+    }
+
+    /**
+     * Get tenant authentication token from the servlet request.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    protected String getTenantAuthToken(HttpServletRequest request) throws SiteWhereException {
+	String token = request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
+	if (token == null) {
+	    token = request.getParameter(ISiteWhereWebConstants.REQUEST_TENANT_TOKEN);
+	    if (token == null) {
+		throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
+			HttpServletResponse.SC_UNAUTHORIZED);
+	    }
+	}
+	return token;
+    }
+
+    /**
+     * Send message back to called indicating successful add.
+     * 
+     * @param response
+     */
+    protected void handleSuccessfulAdd(HttpServletResponse response) {
+	response.setStatus(HttpServletResponse.SC_CREATED);
+	try {
+	    response.flushBuffer();
+	} catch (IOException e) {
+	    // Ignore failed flush.
+	}
+    }
+
+    /**
+     * Handles a system exception by setting the HTML response code and response
+     * headers.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleSystemException(SiteWhereException e, HttpServletRequest request,
+	    HttpServletResponse response) {
+	try {
+	    String flexMode = request.getHeader("X-SiteWhere-Error-Mode");
+	    if (flexMode != null) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getOutputStream(), e);
+		response.flushBuffer();
+	    } else {
+		if (e instanceof SiteWhereSystemException) {
+		    SiteWhereSystemException sse = (SiteWhereSystemException) e;
+		    String combined = sse.getCode() + ":" + e.getMessage();
+		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
+		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE,
+			    String.valueOf(sse.getCode()));
+		    if (sse.hasHttpResponseCode()) {
+			response.sendError(sse.getHttpResponseCode(), combined);
+		    } else {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, combined);
+		    }
 		} else {
-			return match;
+		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
+		    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 		}
+		LOGGER.error("Exception thrown during REST processing.", e);
+	    }
+	} catch (IOException e1) {
+	    e1.printStackTrace();
 	}
+    }
 
-	/**
-	 * Verify that the current user is authorized to interact with the given tenant id.
-	 * 
-	 * @param tenantId
-	 * @throws SiteWhereException
-	 */
-	protected ITenant assureAuthorizedTenantId(String tenantId) throws SiteWhereException {
-		ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
-		if (tenant == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
-		}
-		return assureAuthorizedTenant(tenant);
+    /**
+     * Handles uncaught runtime exceptions such as null pointers.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleRuntimeException(RuntimeException e, HttpServletResponse response) {
+	LOGGER.error("Unhandled runtime exception.", e);
+	try {
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    LOGGER.error("Unhandled runtime exception.", e);
+	} catch (IOException e1) {
+	    e1.printStackTrace();
 	}
+    }
 
-	/**
-	 * Verify that the current user is authorized to interact with the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ITenant assureAuthorizedTenant(ITenant tenant) throws SiteWhereException {
-		IUser user = LoginManager.getCurrentlyLoggedInUser();
-
-		// Tenant administrators do not have to be in the list of authorized users.
-		if (user.getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
-			return tenant;
-		}
-
-		// Tenant self-editors have to be in the list of authorized users.
-		if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
-			throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
-		}
-		return tenant;
+    /**
+     * Handles exception thrown when a tenant operation is requested on an
+     * unavailable tenant.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
+	LOGGER.error("Operation invoked on unavailable tenant.", e);
+	try {
+	    response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The requested tenant is not available.");
+	} catch (IOException e1) {
+	    LOGGER.error(e1);
 	}
+    }
 
-	/**
-	 * Get tenant authentication token from the servlet request.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected String getTenantAuthToken(HttpServletRequest request) throws SiteWhereException {
-		String token = request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
-		if (token == null) {
-			token = request.getParameter(ISiteWhereWebConstants.REQUEST_TENANT_TOKEN);
-			if (token == null) {
-				throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
-						HttpServletResponse.SC_UNAUTHORIZED);
-			}
-		}
-		return token;
+    /**
+     * Handles exceptions where a new resource is to be created, but an existing
+     * resource exists with the given key.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleResourceExists(ResourceExistsException e, HttpServletResponse response) {
+	try {
+	    sendErrorResponse(e, e.getCode(), HttpServletResponse.SC_CONFLICT, response);
+	    LOGGER.error("Resource with same key already exists.", e);
+	} catch (IOException e1) {
+	    e1.printStackTrace();
 	}
+    }
 
-	/**
-	 * Send message back to called indicating successful add.
-	 * 
-	 * @param response
-	 */
-	protected void handleSuccessfulAdd(HttpServletResponse response) {
-		response.setStatus(HttpServletResponse.SC_CREATED);
-		try {
-			response.flushBuffer();
-		} catch (IOException e) {
-			// Ignore failed flush.
-		}
-	}
+    /**
+     * Send error response including SiteWhere headers.
+     * 
+     * @param e
+     * @param errorCode
+     * @param responseCode
+     * @param response
+     * @throws IOException
+     */
+    protected void sendErrorResponse(Exception e, ErrorCode errorCode, int responseCode, HttpServletResponse response)
+	    throws IOException {
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
+	response.sendError(responseCode, errorCode.getMessage());
+    }
 
-	/**
-	 * Handles a system exception by setting the HTML response code and response headers.
-	 * 
-	 * @param e
-	 * @param response
-	 */
-	@ExceptionHandler
-	protected void handleSystemException(SiteWhereException e, HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			String flexMode = request.getHeader("X-SiteWhere-Error-Mode");
-			if (flexMode != null) {
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.writeValue(response.getOutputStream(), e);
-				response.flushBuffer();
-			} else {
-				if (e instanceof SiteWhereSystemException) {
-					SiteWhereSystemException sse = (SiteWhereSystemException) e;
-					String combined = sse.getCode() + ":" + e.getMessage();
-					response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
-					response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE,
-							String.valueOf(sse.getCode()));
-					if (sse.hasHttpResponseCode()) {
-						response.sendError(sse.getHttpResponseCode(), combined);
-					} else {
-						response.sendError(HttpServletResponse.SC_BAD_REQUEST, combined);
-					}
-				} else {
-					response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-				}
-				LOGGER.error("Exception thrown during REST processing.", e);
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+    /**
+     * Handles exceptions generated if {@link Secured} annotations are not
+     * satisfied.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleAccessDenied(AccessDeniedException e, HttpServletResponse response) {
+	try {
+	    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+	    LOGGER.error("Access denied.", e);
+	} catch (IOException e1) {
+	    e1.printStackTrace();
 	}
+    }
 
-	/**
-	 * Handles uncaught runtime exceptions such as null pointers.
-	 * 
-	 * @param e
-	 * @param response
-	 */
-	@ExceptionHandler
-	protected void handleRuntimeException(RuntimeException e, HttpServletResponse response) {
-		LOGGER.error("Unhandled runtime exception.", e);
-		try {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			LOGGER.error("Unhandled runtime exception.", e);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+    /**
+     * Handles situations where user does not pass exprected content for a POST.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
+	try {
+	    LOGGER.error("Error handling REST request..", e);
+	    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No body content passed for POST request.");
+	} catch (IOException e1) {
+	    e1.printStackTrace();
 	}
-
-	/**
-	 * Handles exception thrown when a tenant operation is requested on an unavailable
-	 * tenant.
-	 * 
-	 * @param e
-	 * @param response
-	 */
-	@ExceptionHandler
-	protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
-		LOGGER.error("Operation invoked on unavailable tenant.", e);
-		try {
-			response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-					"The requested tenant is not available.");
-		} catch (IOException e1) {
-			LOGGER.error(e1);
-		}
-	}
-
-	/**
-	 * Handles exceptions generated if {@link Secured} annotations are not satisfied.
-	 * 
-	 * @param e
-	 * @param response
-	 */
-	@ExceptionHandler
-	protected void handleAccessDenied(AccessDeniedException e, HttpServletResponse response) {
-		try {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
-			LOGGER.error("Access denied.", e);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
-	/**
-	 * Handles situations where user does not pass exprected content for a POST.
-	 * 
-	 * @param e
-	 * @param response
-	 */
-	@ExceptionHandler
-	protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
-		try {
-			LOGGER.error("Error handling REST request..", e);
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-					"No body content passed for POST request.");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
+    }
 }

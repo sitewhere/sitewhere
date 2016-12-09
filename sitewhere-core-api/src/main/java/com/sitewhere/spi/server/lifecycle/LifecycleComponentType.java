@@ -14,105 +14,117 @@ package com.sitewhere.spi.server.lifecycle;
  */
 public enum LifecycleComponentType {
 
-	/** Includes the entire system */
-	System,
+    /** Includes the entire system */
+    System,
 
-	/** Engine for a single tenant */
-	TenantEngine,
+    /** Engine for a single tenant */
+    TenantEngine,
 
-	/** Data store management */
-	DataStore,
+    /** Data store management */
+    DataStore,
 
-	/** Cache provider */
-	CacheProvider,
+    /** Cache provider */
+    CacheProvider,
 
-	/** Asset module manager */
-	AssetModuleManager,
+    /** Asset module manager */
+    AssetModuleManager,
 
-	/** Asset module */
-	AssetModule,
+    /** Asset module */
+    AssetModule,
 
-	/** Search provider manager */
-	SearchProviderManager,
+    /** Search provider manager */
+    SearchProviderManager,
 
-	/** Search provider */
-	SearchProvider,
+    /** Search provider */
+    SearchProvider,
 
-	/** Outbound processor chain */
-	OutboundProcessorChain,
+    /** Outbound processor chain */
+    OutboundProcessorChain,
 
-	/** Outbound event processor */
-	OutboundEventProcessor,
+    /** Outbound event processor */
+    OutboundEventProcessor,
 
-	/** Outbound event processor filter */
-	OutboundEventProcessorFilter,
+    /** Outbound event processor filter */
+    OutboundEventProcessorFilter,
 
-	/** Inbound processor chain */
-	InboundProcessorChain,
+    /** Inbound processor chain */
+    InboundProcessorChain,
 
-	/** Inbound event processor */
-	InboundEventProcessor,
+    /** Inbound event processor */
+    InboundEventProcessor,
 
-	/** Device communication subsystem */
-	DeviceCommunication,
+    /** Device communication subsystem */
+    DeviceCommunication,
 
-	/** Event processing subsystem */
-	EventProcessing,
+    /** Event processing subsystem */
+    EventProcessing,
 
-	/** Command processing strategy */
-	CommandProcessingStrategy,
+    /** Command processing strategy */
+    CommandProcessingStrategy,
 
-	/** Command destination */
-	CommandDestination,
+    /** Command destination */
+    CommandDestination,
 
-	/** Command execution builder */
-	CommandExecutionBuilder,
+    /** Command execution builder */
+    CommandExecutionBuilder,
 
-	/** Command execution encoder */
-	CommandExecutionEncoder,
+    /** Command execution encoder */
+    CommandExecutionEncoder,
 
-	/** Command target resolver */
-	CommandTargetResolver,
+    /** Command target resolver */
+    CommandTargetResolver,
 
-	/** Command delivery provider */
-	CommandDeliveryProvider,
+    /** Command delivery provider */
+    CommandDeliveryProvider,
 
-	/** Command router */
-	CommandRouter,
+    /** Command parameter extractor */
+    CommandParameterExtractor,
 
-	/** Outbound processing strategy */
-	OutboundProcessingStrategy,
+    /** Command router */
+    CommandRouter,
 
-	/** Registration manager */
-	RegistrationManager,
+    /** Outbound processing strategy */
+    OutboundProcessingStrategy,
 
-	/** Symbol generator manager */
-	SymbolGeneratorManager,
+    /** Registration manager */
+    RegistrationManager,
 
-	/** Symbol generator */
-	SymbolGenerator,
+    /** Symbol generator manager */
+    SymbolGeneratorManager,
 
-	/** Batch operation manager */
-	BatchOperationManager,
+    /** Symbol generator */
+    SymbolGenerator,
 
-	/** Device presence manager */
-	DevicePresenceManager,
+    /** Batch operation manager */
+    BatchOperationManager,
 
-	/** Device stream manager */
-	DeviceStreamManager,
+    /** Device presence manager */
+    DevicePresenceManager,
 
-	/** Schedule manager */
-	ScheduleManager,
+    /** Device stream manager */
+    DeviceStreamManager,
 
-	/** Inbound processing strategy */
-	InboundProcessingStrategy,
+    /** Schedule manager */
+    ScheduleManager,
 
-	/** Event source */
-	InboundEventSource,
+    /** Inbound processing strategy */
+    InboundProcessingStrategy,
 
-	/** Event receiver */
-	InboundEventReceiver,
+    /** Event source */
+    InboundEventSource,
 
-	/** Unclassified component */
-	Other,
+    /** Device event decoder */
+    DeviceEventDecoder,
+
+    /** Event receiver */
+    InboundEventReceiver,
+
+    /** Resource manager */
+    ResourceManager,
+
+    /** Tenant template manager */
+    TenantTemplateManager,
+
+    /** Unclassified component */
+    Other,
 }

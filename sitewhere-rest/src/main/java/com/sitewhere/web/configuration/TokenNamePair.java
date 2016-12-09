@@ -14,35 +14,35 @@ package com.sitewhere.web.configuration;
  */
 public class TokenNamePair implements Comparable<TokenNamePair> {
 
-	/** Token */
-	private String token;
+    /** Token */
+    private String token;
 
-	/** Name */
-	private String name;
+    /** Name */
+    private String name;
 
-	public String getToken() {
-		return token;
-	}
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(TokenNamePair other) {
-		return getName().compareTo(other.getName());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(TokenNamePair other) {
+	return getName().compareTo(other.getName());
+    }
 }

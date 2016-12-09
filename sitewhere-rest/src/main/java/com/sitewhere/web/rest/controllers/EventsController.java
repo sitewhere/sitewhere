@@ -9,7 +9,8 @@ package com.sitewhere.web.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,32 +47,31 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Events")
 public class EventsController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(EventsController.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Used by AJAX calls to find an event by unique id.
-	 * 
-	 * @param eventId
-	 * @return
-	 */
-	@RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get event by unique id")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
-			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),
-			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
-	public IDeviceEvent getEventById(
-			@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
-		try {
-			return SiteWhere.getServer().getDeviceEventManagement(
-					getTenant(servletRequest)).getDeviceEventById(eventId);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Used by AJAX calls to find an event by unique id.
+     * 
+     * @param eventId
+     * @return
+     */
+    @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get event by unique id")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
+	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),
+	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
+    public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		    .getDeviceEventById(eventId);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 }

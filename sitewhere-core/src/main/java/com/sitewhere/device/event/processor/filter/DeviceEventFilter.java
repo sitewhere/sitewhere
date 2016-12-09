@@ -7,11 +7,13 @@
  */
 package com.sitewhere.device.event.processor.filter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -21,33 +23,36 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public abstract class DeviceEventFilter extends TenantLifecycleComponent implements IDeviceEventFilter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteFilter.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	public DeviceEventFilter() {
-		super(LifecycleComponentType.OutboundEventProcessorFilter);
-	}
+    public DeviceEventFilter() {
+	super(LifecycleComponentType.OutboundEventProcessorFilter);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
 
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 }

@@ -24,174 +24,174 @@
  *******************************************************************************/
 package com.sitewhere.azure.device.communication.client;
 
-import org.apache.log4j.Logger;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EventHubReceiverTask {
 
-	private static Logger logger = Logger.getLogger(EventHubReceiverTask.class);
+    private static Logger logger = LogManager.getLogger();
 
-	@SuppressWarnings("unused")
-	private final UUID instanceId;
-	private final EventHubReceiverTaskConfig eventHubConfig;
-	private final int checkpointIntervalInSeconds;
+    @SuppressWarnings("unused")
+    private final UUID instanceId;
+    private final EventHubReceiverTaskConfig eventHubConfig;
+    private final int checkpointIntervalInSeconds;
 
-	private IStateStore stateStore;
-	private IPartitionCoordinator partitionCoordinator;
-	private IPartitionManagerFactory pmFactory;
-	private IEventHubReceiverFactory recvFactory;
-	private long lastCheckpointTime;
-	private int currentPartitionIndex = -1;
+    private IStateStore stateStore;
+    private IPartitionCoordinator partitionCoordinator;
+    private IPartitionManagerFactory pmFactory;
+    private IEventHubReceiverFactory recvFactory;
+    private long lastCheckpointTime;
+    private int currentPartitionIndex = -1;
 
-	public EventHubReceiverTask(EventHubReceiverTaskConfig config) {
-		this(config, null, null, null);
-	}
+    public EventHubReceiverTask(EventHubReceiverTaskConfig config) {
+	this(config, null, null, null);
+    }
 
-	@SuppressWarnings("serial")
-	public EventHubReceiverTask(EventHubReceiverTaskConfig config, IStateStore store,
-			IPartitionManagerFactory pmFactory, IEventHubReceiverFactory recvFactory) {
-		this.eventHubConfig = config;
-		this.instanceId = UUID.randomUUID();
-		this.checkpointIntervalInSeconds = config.getCheckpointIntervalInSeconds();
-		this.lastCheckpointTime = System.currentTimeMillis();
-		stateStore = store;
-		this.pmFactory = pmFactory;
-		if (this.pmFactory == null) {
-			this.pmFactory = new IPartitionManagerFactory() {
-				@Override
-				public IPartitionManager create(EventHubReceiverTaskConfig config, String partitionId,
-						IStateStore stateStore, IEventHubReceiver receiver) {
-					return new PartitionManager(config, partitionId, stateStore, receiver);
-				}
-			};
+    @SuppressWarnings("serial")
+    public EventHubReceiverTask(EventHubReceiverTaskConfig config, IStateStore store,
+	    IPartitionManagerFactory pmFactory, IEventHubReceiverFactory recvFactory) {
+	this.eventHubConfig = config;
+	this.instanceId = UUID.randomUUID();
+	this.checkpointIntervalInSeconds = config.getCheckpointIntervalInSeconds();
+	this.lastCheckpointTime = System.currentTimeMillis();
+	stateStore = store;
+	this.pmFactory = pmFactory;
+	if (this.pmFactory == null) {
+	    this.pmFactory = new IPartitionManagerFactory() {
+		@Override
+		public IPartitionManager create(EventHubReceiverTaskConfig config, String partitionId,
+			IStateStore stateStore, IEventHubReceiver receiver) {
+		    return new PartitionManager(config, partitionId, stateStore, receiver);
 		}
-		this.recvFactory = recvFactory;
-		if (this.recvFactory == null) {
-			this.recvFactory = new IEventHubReceiverFactory() {
-				@Override
-				public IEventHubReceiver create(EventHubReceiverTaskConfig config, String partitionId) {
-					return new EventHubReceiverImpl(config, partitionId);
-				}
-			};
+	    };
+	}
+	this.recvFactory = recvFactory;
+	if (this.recvFactory == null) {
+	    this.recvFactory = new IEventHubReceiverFactory() {
+		@Override
+		public IEventHubReceiver create(EventHubReceiverTaskConfig config, String partitionId) {
+		    return new EventHubReceiverImpl(config, partitionId);
 		}
-
+	    };
 	}
 
-	/**
-	 * This is a extracted method that is easy to test
-	 *
-	 * @throws Exception
-	 */
-	@SuppressWarnings("rawtypes")
-	private void preparePartitions(Map config, int totalTasks, int taskIndex) throws Exception {
-		if (stateStore == null) {
-			String zkEndpointAddress = eventHubConfig.getZkConnectionString();
-			stateStore = new ZookeeperStateStore(zkEndpointAddress);
-		}
+    }
 
-		stateStore.open();
-
-		partitionCoordinator =
-				new StaticPartitionCoordinator(eventHubConfig, taskIndex, totalTasks, stateStore, pmFactory,
-						recvFactory);
-
-		for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
-			partitionManager.open();
-		}
+    /**
+     * This is a extracted method that is easy to test
+     *
+     * @throws Exception
+     */
+    @SuppressWarnings("rawtypes")
+    private void preparePartitions(Map config, int totalTasks, int taskIndex) throws Exception {
+	if (stateStore == null) {
+	    String zkEndpointAddress = eventHubConfig.getZkConnectionString();
+	    stateStore = new ZookeeperStateStore(zkEndpointAddress);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public void open(Map context) {
-		logger.info("begin: open()");
-		int totalTasks;
-		totalTasks = (Integer) context.get(Constants.TotalTaskKey);
-		int taskIndex = (Integer) context.get(Constants.TaskIndexKey);
-		try {
-			preparePartitions(context, totalTasks, taskIndex);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new RuntimeException(e);
-		}
+	stateStore.open();
 
-		logger.info("end open()");
+	partitionCoordinator = new StaticPartitionCoordinator(eventHubConfig, taskIndex, totalTasks, stateStore,
+		pmFactory, recvFactory);
+
+	for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
+	    partitionManager.open();
+	}
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void open(Map context) {
+	logger.info("begin: open()");
+	int totalTasks;
+	totalTasks = (Integer) context.get(Constants.TotalTaskKey);
+	int taskIndex = (Integer) context.get(Constants.TaskIndexKey);
+	try {
+	    preparePartitions(context, totalTasks, taskIndex);
+	} catch (Exception e) {
+	    logger.error(e.getMessage());
+	    throw new RuntimeException(e);
 	}
 
-	public EventData receive() {
-		EventData eventData = null;
+	logger.info("end open()");
+    }
 
-		List<IPartitionManager> partitionManagers = partitionCoordinator.getMyPartitionManagers();
-		for (int i = 0; i < partitionManagers.size(); i++) {
-			currentPartitionIndex = (currentPartitionIndex + 1) % partitionManagers.size();
-			IPartitionManager partitionManager = partitionManagers.get(currentPartitionIndex);
+    public EventData receive() {
+	EventData eventData = null;
 
-			if (partitionManager == null) {
-				throw new RuntimeException("partitionManager doesn't exist.");
-			}
+	List<IPartitionManager> partitionManagers = partitionCoordinator.getMyPartitionManagers();
+	for (int i = 0; i < partitionManagers.size(); i++) {
+	    currentPartitionIndex = (currentPartitionIndex + 1) % partitionManagers.size();
+	    IPartitionManager partitionManager = partitionManagers.get(currentPartitionIndex);
 
-			eventData = partitionManager.receive();
+	    if (partitionManager == null) {
+		throw new RuntimeException("partitionManager doesn't exist.");
+	    }
 
-			if (eventData != null) {
-				break;
-			}
-		}
+	    eventData = partitionManager.receive();
 
-		if (eventData != null) {
-			MessageId messageId = eventData.getMessageId();
-			logger.info(messageId.toString());
-			ack(eventData.getMessageId());
-		}
-
-		checkpointIfNeeded();
-		return eventData;
-
-		// We don't need to sleep here because the IPartitionManager.receive() is
-		// a blocked call so it's fine to call this function in a tight loop.
+	    if (eventData != null) {
+		break;
+	    }
 	}
 
-	public void ack(Object msgId) {
-		MessageId messageId = (MessageId) msgId;
-		IPartitionManager partitionManager =
-				partitionCoordinator.getPartitionManager(messageId.getPartitionId());
-		String offset = messageId.getOffset();
-		partitionManager.ack(offset);
+	if (eventData != null) {
+	    MessageId messageId = eventData.getMessageId();
+	    logger.info(messageId.toString());
+	    ack(eventData.getMessageId());
 	}
 
-	public void fail(Object msgId) {
-		MessageId messageId = (MessageId) msgId;
-		IPartitionManager partitionManager =
-				partitionCoordinator.getPartitionManager(messageId.getPartitionId());
-		String offset = messageId.getOffset();
-		partitionManager.fail(offset);
-	}
+	checkpointIfNeeded();
+	return eventData;
 
-	public void deactivate() {
-		// let's checkpoint so that we can get the last checkpoint when restarting.
-		checkpoint();
-	}
+	// We don't need to sleep here because the IPartitionManager.receive()
+	// is
+	// a blocked call so it's fine to call this function in a tight loop.
+    }
 
-	public void close() {
-		for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
-			partitionManager.close();
-		}
-		stateStore.close();
-		stateStore = null;
-	}
+    public void ack(Object msgId) {
+	MessageId messageId = (MessageId) msgId;
+	IPartitionManager partitionManager = partitionCoordinator.getPartitionManager(messageId.getPartitionId());
+	String offset = messageId.getOffset();
+	partitionManager.ack(offset);
+    }
 
-	private void checkpointIfNeeded() {
-		long nextCheckpointTime = lastCheckpointTime + checkpointIntervalInSeconds * 1000;
-		if (nextCheckpointTime < System.currentTimeMillis()) {
+    public void fail(Object msgId) {
+	MessageId messageId = (MessageId) msgId;
+	IPartitionManager partitionManager = partitionCoordinator.getPartitionManager(messageId.getPartitionId());
+	String offset = messageId.getOffset();
+	partitionManager.fail(offset);
+    }
 
-			checkpoint();
-			lastCheckpointTime = System.currentTimeMillis();
-		}
-	}
+    public void deactivate() {
+	// let's checkpoint so that we can get the last checkpoint when
+	// restarting.
+	checkpoint();
+    }
 
-	private void checkpoint() {
-		for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
-			partitionManager.checkpoint();
-		}
+    public void close() {
+	for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
+	    partitionManager.close();
 	}
+	stateStore.close();
+	stateStore = null;
+    }
+
+    private void checkpointIfNeeded() {
+	long nextCheckpointTime = lastCheckpointTime + checkpointIntervalInSeconds * 1000;
+	if (nextCheckpointTime < System.currentTimeMillis()) {
+
+	    checkpoint();
+	    lastCheckpointTime = System.currentTimeMillis();
+	}
+    }
+
+    private void checkpoint() {
+	for (IPartitionManager partitionManager : partitionCoordinator.getMyPartitionManagers()) {
+	    partitionManager.checkpoint();
+	}
+    }
 }

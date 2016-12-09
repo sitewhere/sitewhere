@@ -7,68 +7,93 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implements {@link ICommandDeliveryParameterExtractor} for {@link MqttParameters},
- * allowing expressions to be defined such that the device hardware id may be included in
- * the topic name to target a specific device.
+ * Implements {@link ICommandDeliveryParameterExtractor} for
+ * {@link MqttParameters}, allowing expressions to be defined such that the
+ * device hardware id may be included in the topic name to target a specific
+ * device.
  * 
  * @author Derek
  */
-public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
+public class HardwareIdMqttParameterExtractor extends TenantLifecycleComponent
+	implements ICommandDeliveryParameterExtractor<MqttParameters> {
 
-	/** Default command topic */
-	public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default system topic */
-	public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
+    /** Default command topic */
+    public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
 
-	/** Command topic prefix */
-	private String commandTopicExpr = DEFAULT_COMMAND_TOPIC;
+    /** Default system topic */
+    public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
 
-	/** System topic prefix */
-	private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
+    /** Command topic prefix */
+    private String commandTopicExpr = DEFAULT_COMMAND_TOPIC;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
-	 */
-	@Override
-	public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDeviceCommandExecution execution) throws SiteWhereException {
-		MqttParameters params = new MqttParameters();
+    /** System topic prefix */
+    private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
 
-		String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
-		params.setCommandTopic(commandTopic);
+    public HardwareIdMqttParameterExtractor() {
+	super(LifecycleComponentType.CommandParameterExtractor);
+    }
 
-		String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
-		params.setSystemTopic(systemTopic);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.
+     * ICommandDeliveryParameterExtractor#
+     * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     */
+    @Override
+    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+	    IDeviceCommandExecution execution) throws SiteWhereException {
+	MqttParameters params = new MqttParameters();
 
-		return params;
-	}
+	String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
+	params.setCommandTopic(commandTopic);
 
-	public String getCommandTopicExpr() {
-		return commandTopicExpr;
-	}
+	String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
+	params.setSystemTopic(systemTopic);
 
-	public void setCommandTopicExpr(String commandTopicExpr) {
-		this.commandTopicExpr = commandTopicExpr;
-	}
+	return params;
+    }
 
-	public String getSystemTopicExpr() {
-		return systemTopicExpr;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public void setSystemTopicExpr(String systemTopicExpr) {
-		this.systemTopicExpr = systemTopicExpr;
-	}
+    public String getCommandTopicExpr() {
+	return commandTopicExpr;
+    }
+
+    public void setCommandTopicExpr(String commandTopicExpr) {
+	this.commandTopicExpr = commandTopicExpr;
+    }
+
+    public String getSystemTopicExpr() {
+	return systemTopicExpr;
+    }
+
+    public void setSystemTopicExpr(String systemTopicExpr) {
+	this.systemTopicExpr = systemTopicExpr;
+    }
 }

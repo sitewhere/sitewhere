@@ -26,87 +26,88 @@ import com.sitewhere.spi.device.batch.IBatchElement;
 @JsonInclude(Include.NON_NULL)
 public class BatchElement extends MetadataProvider implements IBatchElement, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 7080873473253195755L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 7080873473253195755L;
 
-	/** Token for parent batch operation */
-	private String batchOperationToken;
+    /** Token for parent batch operation */
+    private String batchOperationToken;
 
-	/** Hardware id */
-	private String hardwareId;
+    /** Hardware id */
+    private String hardwareId;
 
-	/** Element index */
-	private long index;
+    /** Element index */
+    private long index;
 
-	/** Processing status */
-	private ElementProcessingStatus processingStatus;
+    /** Processing status */
+    private ElementProcessingStatus processingStatus;
 
-	/** Date on which element was processed */
-	private Date processedDate;
+    /** Date on which element was processed */
+    private Date processedDate;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.batch.IBatchElement#getBatchOperationToken()
-	 */
-	public String getBatchOperationToken() {
-		return batchOperationToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.batch.IBatchElement#getBatchOperationToken()
+     */
+    public String getBatchOperationToken() {
+	return batchOperationToken;
+    }
 
-	public void setBatchOperationToken(String batchOperationToken) {
-		this.batchOperationToken = batchOperationToken;
-	}
+    public void setBatchOperationToken(String batchOperationToken) {
+	this.batchOperationToken = batchOperationToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.batch.IBatchElement#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.batch.IBatchElement#getHardwareId()
+     */
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.batch.IBatchElement#getIndex()
-	 */
-	public long getIndex() {
-		return index;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.batch.IBatchElement#getIndex()
+     */
+    public long getIndex() {
+	return index;
+    }
 
-	public void setIndex(long index) {
-		this.index = index;
-	}
+    public void setIndex(long index) {
+	this.index = index;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessingStatus()
-	 */
-	public ElementProcessingStatus getProcessingStatus() {
-		return processingStatus;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessingStatus()
+     */
+    public ElementProcessingStatus getProcessingStatus() {
+	return processingStatus;
+    }
 
-	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
-		this.processingStatus = processingStatus;
-	}
+    public void setProcessingStatus(ElementProcessingStatus processingStatus) {
+	this.processingStatus = processingStatus;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessedDate()
-	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getProcessedDate() {
-		return processedDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessedDate()
+     */
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getProcessedDate() {
+	return processedDate;
+    }
 
-	public void setProcessedDate(Date processedDate) {
-		this.processedDate = processedDate;
-	}
+    public void setProcessedDate(Date processedDate) {
+	this.processedDate = processedDate;
+    }
 }

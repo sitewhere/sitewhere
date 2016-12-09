@@ -16,6 +16,6 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMap;
  */
 public interface IAssetIdManager {
 
-	public UniqueIdCounterMap getAssetKeys();
+    public UniqueIdCounterMap getAssetKeys();
 
 }

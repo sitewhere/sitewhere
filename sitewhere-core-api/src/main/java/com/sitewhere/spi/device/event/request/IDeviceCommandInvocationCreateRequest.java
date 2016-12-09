@@ -20,52 +20,52 @@ import com.sitewhere.spi.device.event.CommandTarget;
  */
 public interface IDeviceCommandInvocationCreateRequest extends IDeviceEventCreateRequest {
 
-	/**
-	 * Get command initiator type.
-	 * 
-	 * @return
-	 */
-	public CommandInitiator getInitiator();
+    /**
+     * Get command initiator type.
+     * 
+     * @return
+     */
+    public CommandInitiator getInitiator();
 
-	/**
-	 * Get unique id of command inititator.
-	 * 
-	 * @return
-	 */
-	public String getInitiatorId();
+    /**
+     * Get unique id of command inititator.
+     * 
+     * @return
+     */
+    public String getInitiatorId();
 
-	/**
-	 * Get command target type.
-	 * 
-	 * @return
-	 */
-	public CommandTarget getTarget();
+    /**
+     * Get command target type.
+     * 
+     * @return
+     */
+    public CommandTarget getTarget();
 
-	/**
-	 * Get unique id of command target.
-	 * 
-	 * @return
-	 */
-	public String getTargetId();
+    /**
+     * Get unique id of command target.
+     * 
+     * @return
+     */
+    public String getTargetId();
 
-	/**
-	 * Get unique token for command to invoke.
-	 * 
-	 * @return
-	 */
-	public String getCommandToken();
+    /**
+     * Get unique token for command to invoke.
+     * 
+     * @return
+     */
+    public String getCommandToken();
 
-	/**
-	 * Get the list of parameter names mapped to values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getParameterValues();
+    /**
+     * Get the list of parameter names mapped to values.
+     * 
+     * @return
+     */
+    public Map<String, String> getParameterValues();
 
-	/**
-	 * Get status of command.
-	 * 
-	 * @return
-	 */
-	public CommandStatus getStatus();
+    /**
+     * Get status of command.
+     * 
+     * @return
+     */
+    public CommandStatus getStatus();
 }

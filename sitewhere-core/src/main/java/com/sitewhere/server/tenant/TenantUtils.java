@@ -12,6 +12,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 
 /**
@@ -21,49 +22,48 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
  */
 public class TenantUtils {
 
-	/**
-	 * Get byte[] representation of the active configuration for a tenant.
-	 * 
-	 * @param tenantId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static byte[] getActiveTenantConfiguration(String tenantId) throws SiteWhereException {
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
-		if (engine == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
-		}
-		return engine.getTenantConfigurationResolver().getActiveTenantConfiguration();
+    /**
+     * Get resource representation of the active configuration for a tenant.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IResource getActiveTenantConfiguration(String tenantId) throws SiteWhereException {
+	ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 	}
+	return engine.getTenantConfigurationResolver().getActiveTenantConfiguration();
+    }
 
-	/**
-	 * Get byte[] representation of the staged configuration for a tenant.
-	 * 
-	 * @param tenantId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static byte[] getStagedTenantConfiguration(String tenantId) throws SiteWhereException {
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
-		if (engine == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
-		}
-		return engine.getTenantConfigurationResolver().getStagedTenantConfiguration();
+    /**
+     * Get resource representation of the staged configuration for a tenant.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IResource getStagedTenantConfiguration(String tenantId) throws SiteWhereException {
+	ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 	}
+	return engine.getTenantConfigurationResolver().getStagedTenantConfiguration();
+    }
 
-	/**
-	 * Stage a new configuration for the given tenant.
-	 * 
-	 * @param tenantId
-	 * @param configuration
-	 * @throws SiteWhereException
-	 */
-	public static void stageTenantConfiguration(String tenantId, String configuration)
-			throws SiteWhereException {
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
-		if (engine == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
-		}
-		engine.getTenantConfigurationResolver().stageTenantConfiguration(configuration.getBytes());
+    /**
+     * Stage a new configuration for the given tenant.
+     * 
+     * @param tenantId
+     * @param configuration
+     * @throws SiteWhereException
+     */
+    public static void stageTenantConfiguration(String tenantId, String configuration) throws SiteWhereException {
+	ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 	}
+	engine.getTenantConfigurationResolver().stageTenantConfiguration(configuration.getBytes());
+    }
 }

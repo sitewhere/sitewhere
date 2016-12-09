@@ -10,10 +10,10 @@ import java.io.Serializable;
  */
 public interface IDeviceMappingAckCommand extends ISystemCommand, Serializable {
 
-	/**
-	 * Indicates result of device mapping operation.
-	 * 
-	 * @return
-	 */
-	public DeviceMappingResult getResult();
+    /**
+     * Indicates result of device mapping operation.
+     * 
+     * @return
+     */
+    public DeviceMappingResult getResult();
 }

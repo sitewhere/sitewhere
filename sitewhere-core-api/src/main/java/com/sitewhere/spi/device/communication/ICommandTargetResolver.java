@@ -22,14 +22,13 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ICommandTargetResolver extends ITenantLifecycleComponent {
 
-	/**
-	 * Resolves a command invocation to a list of assignments that should receive the
-	 * command.
-	 * 
-	 * @param invocation
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation)
-			throws SiteWhereException;
+    /**
+     * Resolves a command invocation to a list of assignments that should
+     * receive the command.
+     * 
+     * @param invocation
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException;
 }

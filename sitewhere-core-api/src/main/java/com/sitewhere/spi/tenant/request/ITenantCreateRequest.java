@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.tenant.request;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -16,47 +17,47 @@ import com.sitewhere.spi.common.IMetadataProvider;
  * 
  * @author Derek
  */
-public interface ITenantCreateRequest extends IMetadataProvider {
+public interface ITenantCreateRequest extends IMetadataProvider, Serializable {
 
-	/**
-	 * Get unique tenant id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get unique tenant id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get tenant name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get tenant name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get token that devices pass to identify tenant.
-	 * 
-	 * @return
-	 */
-	public String getAuthenticationToken();
+    /**
+     * Get token that devices pass to identify tenant.
+     * 
+     * @return
+     */
+    public String getAuthenticationToken();
 
-	/**
-	 * Get URL for tenant logo.
-	 * 
-	 * @return
-	 */
-	public String getLogoUrl();
+    /**
+     * Get URL for tenant logo.
+     * 
+     * @return
+     */
+    public String getLogoUrl();
 
-	/**
-	 * Get list of users authorized to access the tenant.
-	 * 
-	 * @return
-	 */
-	public List<String> getAuthorizedUserIds();
+    /**
+     * Get list of users authorized to access the tenant.
+     * 
+     * @return
+     */
+    public List<String> getAuthorizedUserIds();
 
-	/**
-	 * Get engine configuration details.
-	 * 
-	 * @return
-	 */
-	public String getEngineConfiguration();
+    /**
+     * Get id of template used to create tenant.
+     * 
+     * @return
+     */
+    public String getTenantTemplateId();
 }

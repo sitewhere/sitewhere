@@ -16,24 +16,24 @@ import java.io.Serializable;
  */
 public interface IAssetCategory extends Serializable {
 
-	/**
-	 * Get the unique module identifier.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get the unique module identifier.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get the module name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get the module name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Indicates the type of assets provided.
-	 * 
-	 * @return
-	 */
-	public AssetType getAssetType();
+    /**
+     * Indicates the type of assets provided.
+     * 
+     * @return
+     */
+    public AssetType getAssetType();
 }

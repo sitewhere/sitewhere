@@ -16,19 +16,19 @@ import com.sitewhere.spi.server.ISiteWhereServerState;
  */
 public class SiteWhereServerState implements ISiteWhereServerState {
 
-	/** Unique node id */
-	private String nodeId;
+    /** Unique node id */
+    private String nodeId;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServerState#getNodeId()
-	 */
-	public String getNodeId() {
-		return nodeId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServerState#getNodeId()
+     */
+    public String getNodeId() {
+	return nodeId;
+    }
 
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
-	}
+    public void setNodeId(String nodeId) {
+	this.nodeId = nodeId;
+    }
 }

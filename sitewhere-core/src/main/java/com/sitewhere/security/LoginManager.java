@@ -23,22 +23,21 @@ import com.sitewhere.spi.user.IUser;
  */
 public class LoginManager {
 
-	/**
-	 * Get the currently logged in user from Spring Security.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static IUser getCurrentlyLoggedInUser() throws SiteWhereException {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
-			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR, 401);
-		}
-		if (!(auth instanceof SitewhereAuthentication)) {
-			throw new SiteWhereException(
-					"Authentication was not of expected type: " + SitewhereAuthentication.class.getName()
-							+ " found " + auth.getClass().getName() + " instead.");
-		}
-		return (IUser) ((SitewhereAuthentication) auth).getPrincipal();
+    /**
+     * Get the currently logged in user from Spring Security.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IUser getCurrentlyLoggedInUser() throws SiteWhereException {
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	if (auth == null) {
+	    throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR, 401);
 	}
+	if (!(auth instanceof SitewhereAuthentication)) {
+	    throw new SiteWhereException("Authentication was not of expected type: "
+		    + SitewhereAuthentication.class.getName() + " found " + auth.getClass().getName() + " instead.");
+	}
+	return (IUser) ((SitewhereAuthentication) auth).getPrincipal();
+    }
 }

@@ -9,15 +9,18 @@ package com.sitewhere.spi.cache;
 
 public enum CacheType {
 
-	/** Caches site information */
-	SiteCache,
+    /** Caches site information */
+    SiteCache,
 
-	/** Caches device specification information */
-	DeviceSpecificationCache,
+    /** Caches device specification information */
+    DeviceSpecificationCache,
 
-	/** Caches device information */
-	DeviceCache,
+    /** Caches device information */
+    DeviceCache,
 
-	/** Caches device assignment information */
-	DeviceAssignmentCache;
+    /** Caches device assignment information */
+    DeviceAssignmentCache,
+
+    /** Caches asset category information */
+    AssetCategoryCache;
 }

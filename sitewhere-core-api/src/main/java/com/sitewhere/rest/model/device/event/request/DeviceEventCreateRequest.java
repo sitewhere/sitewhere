@@ -23,87 +23,88 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
  */
 public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -8906177904822194407L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -8906177904822194407L;
 
-	/** Date event occurred */
-	private Date eventDate;
+    /** Date event occurred */
+    private Date eventDate;
 
-	/** Indicates whether device assignment state should be updated */
-	private boolean updateState = false;
+    /** Indicates whether device assignment state should be updated */
+    private boolean updateState = false;
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Metadata values */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceEventCreateRequest#getEventDate()
-	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getEventDate() {
-		return eventDate;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceEventCreateRequest#getEventDate()
+     */
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getEventDate() {
+	return eventDate;
+    }
+
+    public void setEventDate(Date eventDate) {
+	this.eventDate = eventDate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
+     * isUpdateState()
+     */
+    public boolean isUpdateState() {
+	return updateState;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
+     * setUpdateState (boolean)
+     */
+    public void setUpdateState(boolean updateState) {
+	this.updateState = updateState;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
+     * getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
+
+    /**
+     * Uses builder pattern to create device event requests.
+     * 
+     * @author Derek
+     */
+    public abstract static class Builder<T extends DeviceEventCreateRequest> {
+
+	// Request type implemented in subclasses.
+	public abstract T getRequest();
+
+	// Build the create request.
+	public abstract T build();
+
+	public Builder<T> on(Date date) {
+	    getRequest().setEventDate(date);
+	    return this;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public Builder<T> trackState() {
+	    getRequest().setUpdateState(true);
+	    return this;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#isUpdateState()
-	 */
-	public boolean isUpdateState() {
-		return updateState;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#setUpdateState
-	 * (boolean)
-	 */
-	public void setUpdateState(boolean updateState) {
-		this.updateState = updateState;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
-
-	/**
-	 * Uses builder pattern to create device event requests.
-	 * 
-	 * @author Derek
-	 */
-	public abstract static class Builder<T extends DeviceEventCreateRequest> {
-
-		// Request type implemented in subclasses.
-		public abstract T getRequest();
-
-		// Build the create request.
-		public abstract T build();
-
-		public Builder<T> on(Date date) {
-			getRequest().setEventDate(date);
-			return this;
-		}
-
-		public Builder<T> trackState() {
-			getRequest().setUpdateState(true);
-			return this;
-		}
-	}
+    }
 }

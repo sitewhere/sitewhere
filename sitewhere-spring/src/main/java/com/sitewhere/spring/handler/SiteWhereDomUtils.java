@@ -16,17 +16,17 @@ import org.w3c.dom.Element;
  */
 public class SiteWhereDomUtils {
 
-	/**
-	 * Indicates if an element is from a SiteWhere namespace.
-	 * 
-	 * @param child
-	 * @return
-	 */
-	public static boolean hasSiteWhereNamespace(Element child) {
-		if (IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())
-				|| (IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI()))) {
-			return true;
-		}
-		return false;
+    /**
+     * Indicates if an element is from a SiteWhere namespace.
+     * 
+     * @param child
+     * @return
+     */
+    public static boolean hasSiteWhereNamespace(Element child) {
+	if (IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())
+		|| (IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI()))) {
+	    return true;
 	}
+	return false;
+    }
 }

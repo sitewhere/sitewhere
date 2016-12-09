@@ -16,7 +16,7 @@ import com.sitewhere.device.communication.CommandDestination;
  */
 public class CoapCommandDestination extends CommandDestination<byte[], CoapParameters> {
 
-	public CoapCommandDestination() {
-		setCommandDeliveryParameterExtractor(new MetadataCoapParameterExtractor());
-	}
+    public CoapCommandDestination() {
+	setCommandDeliveryParameterExtractor(new MetadataCoapParameterExtractor());
+    }
 }

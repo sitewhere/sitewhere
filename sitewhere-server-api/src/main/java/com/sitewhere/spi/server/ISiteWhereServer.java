@@ -21,12 +21,18 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
+import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
+import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -37,252 +43,273 @@ import com.sitewhere.spi.user.IUserManagement;
  * 
  * @author Derek
  */
-public interface ISiteWhereServer extends ILifecycleComponent {
+public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarchyRoot {
 
-	/**
-	 * Get version information.
-	 * 
-	 * @return
-	 */
-	public IVersion getVersion();
+    /** SiteWhere home environment variable name */
+    public static final String ENV_SITEWHERE_HOME = "sitewhere.home";
 
-	/**
-	 * Get Spring parser class name for handling bean definitions.
-	 * 
-	 * @return
-	 */
-	public String getConfigurationParserClassname();
+    /**
+     * Get version information.
+     * 
+     * @return
+     */
+    public IVersion getVersion();
 
-	/**
-	 * Get Spring parser class name for handling tenant bean definitions.
-	 * 
-	 * @return
-	 */
-	public String getTenantConfigurationParserClassname();
+    /**
+     * Get Spring parser class name for handling bean definitions.
+     * 
+     * @return
+     */
+    public String getConfigurationParserClassname();
 
-	/**
-	 * Get persistent server state information.
-	 * 
-	 * @return
-	 */
-	public ISiteWhereServerState getServerState();
+    /**
+     * Get Spring parser class name for handling tenant bean definitions.
+     * 
+     * @return
+     */
+    public String getTenantConfigurationParserClassname();
 
-	/**
-	 * Gets runtime information about the server.
-	 * 
-	 * @param includeHistorical
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
-			throws SiteWhereException;
+    /**
+     * Get persistent server state information.
+     * 
+     * @return
+     */
+    public ISiteWhereServerState getServerState();
 
-	/**
-	 * Initialize the server.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void initialize() throws SiteWhereException;
+    /**
+     * Gets runtime information about the server.
+     * 
+     * @param includeHistorical
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException;
 
-	/**
-	 * Returns exception if one was thrown on startup.
-	 * 
-	 * @return
-	 */
-	public ServerStartupException getServerStartupError();
+    /**
+     * Returns exception if one was thrown on startup.
+     * 
+     * @return
+     */
+    public ServerStartupException getServerStartupError();
 
-	/**
-	 * Set server startup error reason.
-	 * 
-	 * @param e
-	 */
-	public void setServerStartupError(ServerStartupException e);
+    /**
+     * Set server startup error reason.
+     * 
+     * @param e
+     */
+    public void setServerStartupError(ServerStartupException e);
 
-	/**
-	 * Get tracer for debug operations.
-	 * 
-	 * @return
-	 */
-	public ITracer getTracer();
+    /**
+     * Get tracer for debug operations.
+     * 
+     * @return
+     */
+    public ITracer getTracer();
 
-	/**
-	 * Get class that can be used to location the Spring configuration context.
-	 * 
-	 * @return
-	 */
-	public IGlobalConfigurationResolver getConfigurationResolver();
+    /**
+     * Get the Hazelcast configuration for this node.
+     * 
+     * @return
+     */
+    public IHazelcastConfiguration getHazelcastConfiguration();
 
-	/**
-	 * Get a tenant based on its authentication token.
-	 * 
-	 * @param authToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException;
+    /**
+     * Get the common Groovy configuration for this node.
+     * 
+     * @return
+     */
+    public IGroovyConfiguration getGroovyConfiguration();
 
-	/**
-	 * Get list of tenants a given user can access.
-	 * 
-	 * @param userId
-	 * @param requireStarted
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
-			throws SiteWhereException;
+    /**
+     * Get resource manager for bootstrapping the system.
+     * 
+     * @return
+     */
+    public IResourceManager getBootstrapResourceManager();
 
-	/**
-	 * Get a tenant engine by tenant id. If a tenant exists but the engine has not been
-	 * initialized, the tenant engine will be initialized and started.
-	 * 
-	 * @param tenantId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException;
+    /**
+     * Get resource manager for resolving runtime resource references.
+     * 
+     * @return
+     */
+    public IResourceManager getRuntimeResourceManager();
 
-	/**
-	 * Called when tenant information has been updated so that cached data is kept
-	 * current.
-	 * 
-	 * @param tenant
-	 * @throws SiteWhereException
-	 */
-	public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get class that can be used to location the Spring configuration context.
+     * 
+     * @return
+     */
+    public IGlobalConfigurationResolver getConfigurationResolver();
 
-	/**
-	 * Get the user management implementation.
-	 * 
-	 * @return
-	 */
-	public IUserManagement getUserManagement();
+    /**
+     * Get tenant template manager implementation.
+     * 
+     * @return
+     */
+    public ITenantTemplateManager getTenantTemplateManager();
 
-	/**
-	 * Get the tenant management implementation.
-	 * 
-	 * @return
-	 */
-	public ITenantManagement getTenantManagement();
+    /**
+     * Get a tenant based on its authentication token.
+     * 
+     * @param authToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException;
 
-	/**
-	 * Get device management implementation for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get list of tenants a given user can access.
+     * 
+     * @param userId
+     * @param requireStarted
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException;
 
-	/**
-	 * Get device event management implementation for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get a tenant engine by tenant id. If a tenant exists but the engine has
+     * not been initialized, the tenant engine will be initialized and started.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException;
 
-	/**
-	 * Get device management cache provider for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant)
-			throws SiteWhereException;
+    /**
+     * Called when tenant information has been updated so that cached data is
+     * kept current.
+     * 
+     * @param tenant
+     * @throws SiteWhereException
+     */
+    public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get asset management implementation for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get the user management implementation.
+     * 
+     * @return
+     */
+    public IUserManagement getUserManagement();
 
-	/**
-	 * Get schedule management implementation for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get the tenant management implementation.
+     * 
+     * @return
+     */
+    public ITenantManagement getTenantManagement();
 
-	/**
-	 * Get device communication subsystem for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get device management implementation for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get the event processing subsystem for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get device event management implementation for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get asset module manager for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get device management cache provider for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get search provider manager for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get asset management implementation for the given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get schedule manager for tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
+    /**
+     * Get schedule management implementation for the given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get list of components that have registered to participate in the server component
-	 * lifecycle.
-	 * 
-	 * @return
-	 */
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents();
+    /**
+     * Get device communication subsystem for the given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Gets an {@link ILifecycleComponent} by unique id.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public ILifecycleComponent getLifecycleComponentById(String id);
+    /**
+     * Get the event processing subsystem for the given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get the metrics registry.
-	 * 
-	 * @return
-	 */
-	public MetricRegistry getMetricRegistry();
+    /**
+     * Get asset module manager for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Get the health check registry.
-	 * 
-	 * @return
-	 */
-	public HealthCheckRegistry getHealthCheckRegistry();
+    /**
+     * Get search provider manager for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Get schedule manager for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Get Groovy configuration for tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Get the metrics registry.
+     * 
+     * @return
+     */
+    public MetricRegistry getMetricRegistry();
+
+    /**
+     * Get the health check registry.
+     * 
+     * @return
+     */
+    public HealthCheckRegistry getHealthCheckRegistry();
 }

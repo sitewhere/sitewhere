@@ -16,17 +16,17 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  */
 public interface IDeviceElementMapping {
 
-	/**
-	 * Get path in {@link IDeviceElementSchema} being mapped.
-	 * 
-	 * @return
-	 */
-	public String getDeviceElementSchemaPath();
+    /**
+     * Get path in {@link IDeviceElementSchema} being mapped.
+     * 
+     * @return
+     */
+    public String getDeviceElementSchemaPath();
 
-	/**
-	 * Get hardware id of {@link IDevice} being mapped.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get hardware id of {@link IDevice} being mapped.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 }

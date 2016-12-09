@@ -13,49 +13,50 @@ import java.util.Map;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * Entity that receives events from one or more {@link IInboundEventReceiver}, decodes
- * them, and forwards them for processing.
+ * Entity that receives events from one or more {@link IInboundEventReceiver},
+ * decodes them, and forwards them for processing.
  * 
  * @author Derek
  */
 public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
 
-	/**
-	 * Get unique id for event source.
-	 * 
-	 * @return
-	 */
-	public String getSourceId();
+    /**
+     * Get unique id for event source.
+     * 
+     * @return
+     */
+    public String getSourceId();
 
-	/**
-	 * Set the device event decoder.
-	 * 
-	 * @param decoder
-	 */
-	public void setDeviceEventDecoder(IDeviceEventDecoder<T> decoder);
+    /**
+     * Set the device event decoder.
+     * 
+     * @param decoder
+     */
+    public void setDeviceEventDecoder(IDeviceEventDecoder<T> decoder);
 
-	/**
-	 * Set the strategy for submitting inbound events into the bus.
-	 * 
-	 * @param strategy
-	 */
-	public void setInboundProcessingStrategy(IInboundProcessingStrategy strategy);
+    /**
+     * Set the strategy for submitting inbound events into the bus.
+     * 
+     * @param strategy
+     */
+    public void setInboundProcessingStrategy(IInboundProcessingStrategy strategy);
 
-	/**
-	 * Set the list of {@link IInboundEventReceiver} that feed this processor.
-	 * 
-	 * @param receivers
-	 */
-	public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
+    /**
+     * Set the list of {@link IInboundEventReceiver} that feed this processor.
+     * 
+     * @param receivers
+     */
+    public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
 
-	/**
-	 * Called by {@link IInboundEventReceiver} when an encoded event is received.
-	 * 
-	 * @param receiver
-	 * @param encodedEvent
-	 * @param metadata
-	 * @throws EventDecodeException
-	 */
-	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent,
-			Map<String, String> metadata) throws EventDecodeException;
+    /**
+     * Called by {@link IInboundEventReceiver} when an encoded event is
+     * received.
+     * 
+     * @param receiver
+     * @param encodedEvent
+     * @param metadata
+     * @throws EventDecodeException
+     */
+    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent, Map<String, Object> metadata)
+	    throws EventDecodeException;
 }

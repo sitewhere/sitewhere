@@ -16,38 +16,38 @@ import java.util.Date;
  */
 public interface ISiteWhereEntity {
 
-	/**
-	 * Get date when entity was created.
-	 * 
-	 * @return
-	 */
-	public Date getCreatedDate();
+    /**
+     * Get date when entity was created.
+     * 
+     * @return
+     */
+    public Date getCreatedDate();
 
-	/**
-	 * Get username that created entity.
-	 * 
-	 * @return
-	 */
-	public String getCreatedBy();
+    /**
+     * Get username that created entity.
+     * 
+     * @return
+     */
+    public String getCreatedBy();
 
-	/**
-	 * Get date when entity was last updated.
-	 * 
-	 * @return
-	 */
-	public Date getUpdatedDate();
+    /**
+     * Get date when entity was last updated.
+     * 
+     * @return
+     */
+    public Date getUpdatedDate();
 
-	/**
-	 * Get username that last updated entity.
-	 * 
-	 * @return
-	 */
-	public String getUpdatedBy();
+    /**
+     * Get username that last updated entity.
+     * 
+     * @return
+     */
+    public String getUpdatedBy();
 
-	/**
-	 * Indicates if entity has been deleted.
-	 * 
-	 * @return
-	 */
-	public boolean isDeleted();
+    /**
+     * Indicates if entity has been deleted.
+     * 
+     * @return
+     */
+    public boolean isDeleted();
 }

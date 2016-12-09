@@ -8,8 +8,10 @@
 package com.sitewhere.server.tenant;
 
 import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -19,107 +21,113 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class SiteWhereTenantEngineCommands {
 
-	public static enum Command {
-		Start("start", StartCommand.class), Stop("stop", StopCommand.class);
+    public static enum Command {
+	Start("start", StartCommand.class), Stop("stop", StopCommand.class);
 
-		/** Command string */
-		private String command;
+	/** Command string */
+	private String command;
 
-		/** Command class */
-		private Class<? extends TenantEngineCommand> commandClass;
+	/** Command class */
+	private Class<? extends TenantEngineCommand> commandClass;
 
-		private Command(String command, Class<? extends TenantEngineCommand> commandClass) {
-			this.command = command;
-			this.commandClass = commandClass;
-		}
+	private Command(String command, Class<? extends TenantEngineCommand> commandClass) {
+	    this.command = command;
+	    this.commandClass = commandClass;
+	}
 
-		public String getCommand() {
-			return command;
-		}
+	public String getCommand() {
+	    return command;
+	}
 
-		public void setCommand(String command) {
-			this.command = command;
-		}
+	public void setCommand(String command) {
+	    this.command = command;
+	}
 
-		public Class<? extends TenantEngineCommand> getCommandClass() {
-			return commandClass;
-		}
+	public Class<? extends TenantEngineCommand> getCommandClass() {
+	    return commandClass;
+	}
 
-		public void setCommandClass(Class<? extends TenantEngineCommand> commandClass) {
-			this.commandClass = commandClass;
-		}
-
-		/**
-		 * Based on the command phrase, return the implementing command class.
-		 * 
-		 * @param command
-		 * @return
-		 */
-		public static Class<? extends TenantEngineCommand> getCommandClass(String command) {
-			for (Command current : Command.values()) {
-				if (current.getCommand().equals(command)) {
-					return current.getCommandClass();
-				}
-			}
-			return null;
-		}
+	public void setCommandClass(Class<? extends TenantEngineCommand> commandClass) {
+	    this.commandClass = commandClass;
 	}
 
 	/**
-	 * Command that starts a tenant engine.
+	 * Based on the command phrase, return the implementing command class.
 	 * 
-	 * @author Derek
+	 * @param command
+	 * @return
 	 */
-	public static class StartCommand extends TenantEngineCommand {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.util.concurrent.Callable#call()
-		 */
-		@Override
-		public ICommandResponse call() throws Exception {
-			try {
-				if (getEngine().initialize()) {
-					getEngine().lifecycleStart();
-					if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
-						return new CommandResponse(CommandResult.Failed,
-								getEngine().getLifecycleError().getMessage());
-					}
-				} else {
-					return new CommandResponse(CommandResult.Failed, "Engine initialization failed.");
-				}
-			} catch (Exception e) {
-				return new CommandResponse(CommandResult.Failed, e.getMessage());
-			}
-			return new CommandResponse(CommandResult.Successful, "Tenant engine started.");
+	public static Class<? extends TenantEngineCommand> getCommandClass(String command) {
+	    for (Command current : Command.values()) {
+		if (current.getCommand().equals(command)) {
+		    return current.getCommandClass();
 		}
+	    }
+	    return null;
 	}
+    }
 
-	/**
-	 * Command that stops a tenant engine.
+    /**
+     * Command that starts a tenant engine.
+     * 
+     * @author Derek
+     */
+    public static class StartCommand extends TenantEngineCommand {
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see java.util.concurrent.Callable#call()
 	 */
-	public static class StopCommand extends TenantEngineCommand {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.util.concurrent.Callable#call()
-		 */
-		@Override
-		public ICommandResponse call() throws Exception {
-			try {
-				getEngine().lifecycleStop();
-				if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
-					return new CommandResponse(CommandResult.Failed,
-							getEngine().getLifecycleError().getMessage());
-				}
-			} catch (Exception e) {
-				return new CommandResponse(CommandResult.Failed, e.getMessage());
-			}
-			return new CommandResponse(CommandResult.Successful, "Tenant engine stopped.");
+	@Override
+	public ICommandResponse call() throws Exception {
+	    try {
+		getEngine().initialize(new LifecycleProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
+		getEngine().lifecycleStart(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+	    } catch (Exception e) {
+		return new CommandResponse(CommandResult.Failed, e.getMessage());
+	    }
+	    return new CommandResponse(CommandResult.Successful, "Tenant engine started.");
 	}
+    }
+
+    /**
+     * Command that stops a tenant engine.
+     * 
+     * @author Derek
+     */
+    public static class StopCommand extends TenantEngineCommand {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.concurrent.Callable#call()
+	 */
+	@Override
+	public ICommandResponse call() throws Exception {
+	    try {
+		getEngine().lifecycleStop(getProgressMonitor(), new PersistentShutdownConstraint());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+	    } catch (Exception e) {
+		return new CommandResponse(CommandResult.Failed, e.getMessage());
+	    }
+	    return new CommandResponse(CommandResult.Successful, "Tenant engine stopped.");
+	}
+    }
+
+    /**
+     * Marker class for indicating tenant shutdown should be persistent.
+     * 
+     * @author Derek
+     */
+    public static class PersistentShutdownConstraint implements ILifecycleConstraints {
+    }
 }

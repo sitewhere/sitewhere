@@ -17,61 +17,61 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IRowKeyBuilder {
 
-	/**
-	 * Get number of bytes (max of 8) saved as part of the record key.
-	 * 
-	 * @return
-	 */
-	public int getKeyIdLength();
+    /**
+     * Get number of bytes (max of 8) saved as part of the record key.
+     * 
+     * @return
+     */
+    public int getKeyIdLength();
 
-	/**
-	 * Throws an exception if an invalid key is referenced.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void throwInvalidKey() throws SiteWhereException;
+    /**
+     * Throws an exception if an invalid key is referenced.
+     * 
+     * @throws SiteWhereException
+     */
+    public void throwInvalidKey() throws SiteWhereException;
 
-	/**
-	 * Gets identifier that marks a row of the given type.
-	 * 
-	 * @return
-	 */
-	public byte getTypeIdentifier();
+    /**
+     * Gets identifier that marks a row of the given type.
+     * 
+     * @return
+     */
+    public byte getTypeIdentifier();
 
-	/**
-	 * Get identifier that marks a row as primary.
-	 * 
-	 * @return
-	 */
-	public byte getPrimaryIdentifier();
+    /**
+     * Get identifier that marks a row as primary.
+     * 
+     * @return
+     */
+    public byte getPrimaryIdentifier();
 
-	/**
-	 * Builds a primary entity row key based on a unique token.
-	 * 
-	 * @param context
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] buildPrimaryKey(IHBaseContext context, String token) throws SiteWhereException;
+    /**
+     * Builds a primary entity row key based on a unique token.
+     * 
+     * @param context
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] buildPrimaryKey(IHBaseContext context, String token) throws SiteWhereException;
 
-	/**
-	 * Builds a subordinate key based on the type indicator.
-	 * 
-	 * @param context
-	 * @param token
-	 * @param type
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] buildSubkey(IHBaseContext context, String token, byte type) throws SiteWhereException;
+    /**
+     * Builds a subordinate key based on the type indicator.
+     * 
+     * @param context
+     * @param token
+     * @param type
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] buildSubkey(IHBaseContext context, String token, byte type) throws SiteWhereException;
 
-	/**
-	 * Deletes a reference to a token.
-	 * 
-	 * @param context
-	 * @param token
-	 * @throws SiteWhereException
-	 */
-	public void deleteReference(IHBaseContext context, String token) throws SiteWhereException;
+    /**
+     * Deletes a reference to a token.
+     * 
+     * @param context
+     * @param token
+     * @throws SiteWhereException
+     */
+    public void deleteReference(IHBaseContext context, String token) throws SiteWhereException;
 }

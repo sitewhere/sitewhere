@@ -14,9 +14,9 @@ package com.sitewhere.spi.device;
  */
 public enum DeviceContainerPolicy {
 
-	/** Indicates a device that does not contain other devices */
-	Standalone,
+    /** Indicates a device that does not contain other devices */
+    Standalone,
 
-	/** Indicates a device that contains other devices */
-	Composite;
+    /** Indicates a device that contains other devices */
+    Composite;
 }

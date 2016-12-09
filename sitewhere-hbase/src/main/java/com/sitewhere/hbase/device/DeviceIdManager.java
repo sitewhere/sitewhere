@@ -20,179 +20,171 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class DeviceIdManager implements IDeviceIdManager {
 
-	/** Manager for site tokens */
-	private UniqueIdCounterMap siteKeys;
+    /** Manager for site tokens */
+    private UniqueIdCounterMap siteKeys;
 
-	/** Manager for device ids */
-	private UniqueIdCounterMap deviceKeys;
+    /** Manager for device ids */
+    private UniqueIdCounterMap deviceKeys;
 
-	/** Manager for device specification tokens */
-	private UniqueIdCounterMap specificationKeys;
+    /** Manager for device specification tokens */
+    private UniqueIdCounterMap specificationKeys;
 
-	/** Manager for device group tokens */
-	private UniqueIdCounterMap deviceGroupKeys;
+    /** Manager for device group tokens */
+    private UniqueIdCounterMap deviceGroupKeys;
 
-	/** Manager for batch operation tokens */
-	private UniqueIdCounterMap batchOperationKeys;
+    /** Manager for batch operation tokens */
+    private UniqueIdCounterMap batchOperationKeys;
 
-	/** Manager for command tokens */
-	private UuidRowKeyMap commandKeys;
+    /** Manager for command tokens */
+    private UuidRowKeyMap commandKeys;
 
-	/** Manager for zone ids */
-	private UuidRowKeyMap zoneKeys;
+    /** Manager for zone ids */
+    private UuidRowKeyMap zoneKeys;
 
-	/** Manager for device assignment ids */
-	private UuidRowKeyMap assignmentKeys;
+    /** Manager for device assignment ids */
+    private UuidRowKeyMap assignmentKeys;
 
-	/**
-	 * Load key managers from HBase.
-	 * 
-	 * @param context
-	 * @throws SiteWhereException
-	 */
-	public void load(IHBaseContext context) throws SiteWhereException {
-		siteKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.SiteKey.getIndicator(),
-						UniqueIdType.SiteValue.getIndicator());
-		siteKeys.refresh();
+    /**
+     * Load key managers from HBase.
+     * 
+     * @param context
+     * @throws SiteWhereException
+     */
+    public void load(IHBaseContext context) throws SiteWhereException {
+	siteKeys = new UniqueIdCounterMap(context, UniqueIdType.SiteKey.getIndicator(),
+		UniqueIdType.SiteValue.getIndicator());
+	siteKeys.refresh();
 
-		deviceKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.DeviceKey.getIndicator(),
-						UniqueIdType.DeviceValue.getIndicator());
-		deviceKeys.refresh();
+	deviceKeys = new UniqueIdCounterMap(context, UniqueIdType.DeviceKey.getIndicator(),
+		UniqueIdType.DeviceValue.getIndicator());
+	deviceKeys.refresh();
 
-		specificationKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.SpecificationKey.getIndicator(),
-						UniqueIdType.SpecificationValue.getIndicator());
-		specificationKeys.refresh();
+	specificationKeys = new UniqueIdCounterMap(context, UniqueIdType.SpecificationKey.getIndicator(),
+		UniqueIdType.SpecificationValue.getIndicator());
+	specificationKeys.refresh();
 
-		deviceGroupKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.DeviceGroupKey.getIndicator(),
-						UniqueIdType.DeviceGroupValue.getIndicator());
-		deviceGroupKeys.refresh();
+	deviceGroupKeys = new UniqueIdCounterMap(context, UniqueIdType.DeviceGroupKey.getIndicator(),
+		UniqueIdType.DeviceGroupValue.getIndicator());
+	deviceGroupKeys.refresh();
 
-		batchOperationKeys =
-				new UniqueIdCounterMap(context, UniqueIdType.BatchOperationKey.getIndicator(),
-						UniqueIdType.BatchOperationValue.getIndicator());
-		batchOperationKeys.refresh();
+	batchOperationKeys = new UniqueIdCounterMap(context, UniqueIdType.BatchOperationKey.getIndicator(),
+		UniqueIdType.BatchOperationValue.getIndicator());
+	batchOperationKeys.refresh();
 
-		commandKeys =
-				new UuidRowKeyMap(context, UniqueIdType.CommandKey.getIndicator(),
-						UniqueIdType.CommandValue.getIndicator());
-		commandKeys.refresh();
+	commandKeys = new UuidRowKeyMap(context, UniqueIdType.CommandKey.getIndicator(),
+		UniqueIdType.CommandValue.getIndicator());
+	commandKeys.refresh();
 
-		zoneKeys =
-				new UuidRowKeyMap(context, UniqueIdType.ZoneKey.getIndicator(),
-						UniqueIdType.ZoneValue.getIndicator());
-		zoneKeys.refresh();
+	zoneKeys = new UuidRowKeyMap(context, UniqueIdType.ZoneKey.getIndicator(),
+		UniqueIdType.ZoneValue.getIndicator());
+	zoneKeys.refresh();
 
-		assignmentKeys =
-				new UuidRowKeyMap(context, UniqueIdType.DeviceAssignmentKey.getIndicator(),
-						UniqueIdType.DeviceAssignmentValue.getIndicator());
-		assignmentKeys.refresh();
-	}
+	assignmentKeys = new UuidRowKeyMap(context, UniqueIdType.DeviceAssignmentKey.getIndicator(),
+		UniqueIdType.DeviceAssignmentValue.getIndicator());
+	assignmentKeys.refresh();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getSiteKeys()
-	 */
-	public UniqueIdCounterMap getSiteKeys() {
-		return siteKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getSiteKeys()
+     */
+    public UniqueIdCounterMap getSiteKeys() {
+	return siteKeys;
+    }
 
-	protected void setSiteKeys(UniqueIdCounterMap siteKeys) {
-		this.siteKeys = siteKeys;
-	}
+    protected void setSiteKeys(UniqueIdCounterMap siteKeys) {
+	this.siteKeys = siteKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceKeys()
-	 */
-	public UniqueIdCounterMap getDeviceKeys() {
-		return deviceKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceKeys()
+     */
+    public UniqueIdCounterMap getDeviceKeys() {
+	return deviceKeys;
+    }
 
-	protected void setDeviceKeys(UniqueIdCounterMap deviceKeys) {
-		this.deviceKeys = deviceKeys;
-	}
+    protected void setDeviceKeys(UniqueIdCounterMap deviceKeys) {
+	this.deviceKeys = deviceKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getSpecificationKeys()
-	 */
-	public UniqueIdCounterMap getSpecificationKeys() {
-		return specificationKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getSpecificationKeys()
+     */
+    public UniqueIdCounterMap getSpecificationKeys() {
+	return specificationKeys;
+    }
 
-	protected void setSpecificationKeys(UniqueIdCounterMap specificationKeys) {
-		this.specificationKeys = specificationKeys;
-	}
+    protected void setSpecificationKeys(UniqueIdCounterMap specificationKeys) {
+	this.specificationKeys = specificationKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getCommandKeys()
-	 */
-	public UuidRowKeyMap getCommandKeys() {
-		return commandKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getCommandKeys()
+     */
+    public UuidRowKeyMap getCommandKeys() {
+	return commandKeys;
+    }
 
-	public void setCommandKeys(UuidRowKeyMap commandKeys) {
-		this.commandKeys = commandKeys;
-	}
+    public void setCommandKeys(UuidRowKeyMap commandKeys) {
+	this.commandKeys = commandKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceGroupKeys()
-	 */
-	public UniqueIdCounterMap getDeviceGroupKeys() {
-		return deviceGroupKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceGroupKeys()
+     */
+    public UniqueIdCounterMap getDeviceGroupKeys() {
+	return deviceGroupKeys;
+    }
 
-	public void setDeviceGroupKeys(UniqueIdCounterMap deviceGroupKeys) {
-		this.deviceGroupKeys = deviceGroupKeys;
-	}
+    public void setDeviceGroupKeys(UniqueIdCounterMap deviceGroupKeys) {
+	this.deviceGroupKeys = deviceGroupKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getBatchOperationKeys()
-	 */
-	public UniqueIdCounterMap getBatchOperationKeys() {
-		return batchOperationKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getBatchOperationKeys()
+     */
+    public UniqueIdCounterMap getBatchOperationKeys() {
+	return batchOperationKeys;
+    }
 
-	public void setBatchOperationKeys(UniqueIdCounterMap batchOperationKeys) {
-		this.batchOperationKeys = batchOperationKeys;
-	}
+    public void setBatchOperationKeys(UniqueIdCounterMap batchOperationKeys) {
+	this.batchOperationKeys = batchOperationKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getZoneKeys()
-	 */
-	public UuidRowKeyMap getZoneKeys() {
-		return zoneKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getZoneKeys()
+     */
+    public UuidRowKeyMap getZoneKeys() {
+	return zoneKeys;
+    }
 
-	protected void setZoneKeys(UuidRowKeyMap zoneKeys) {
-		this.zoneKeys = zoneKeys;
-	}
+    protected void setZoneKeys(UuidRowKeyMap zoneKeys) {
+	this.zoneKeys = zoneKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getAssignmentKeys()
-	 */
-	public UuidRowKeyMap getAssignmentKeys() {
-		return assignmentKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.device.IDeviceIdManager#getAssignmentKeys()
+     */
+    public UuidRowKeyMap getAssignmentKeys() {
+	return assignmentKeys;
+    }
 
-	protected void setAssignmentKeys(UuidRowKeyMap assignmentKeys) {
-		this.assignmentKeys = assignmentKeys;
-	}
+    protected void setAssignmentKeys(UuidRowKeyMap assignmentKeys) {
+	this.assignmentKeys = assignmentKeys;
+    }
 }

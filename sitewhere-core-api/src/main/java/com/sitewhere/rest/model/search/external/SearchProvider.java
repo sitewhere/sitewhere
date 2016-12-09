@@ -16,48 +16,48 @@ import com.sitewhere.spi.search.external.ISearchProvider;
  */
 public class SearchProvider {
 
-	/** Provider id */
-	private String id;
+    /** Provider id */
+    private String id;
 
-	/** Provider name */
-	private String name;
+    /** Provider name */
+    private String name;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.external.ISearchProvider#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.external.ISearchProvider#getId()
+     */
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.external.ISearchProvider#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.external.ISearchProvider#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/**
-	 * Create copy of an {@link ISearchProvider} for marshaling.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static SearchProvider copy(ISearchProvider source) {
-		SearchProvider provider = new SearchProvider();
-		provider.setId(source.getId());
-		provider.setName(source.getName());
-		return provider;
-	}
+    /**
+     * Create copy of an {@link ISearchProvider} for marshaling.
+     * 
+     * @param source
+     * @return
+     */
+    public static SearchProvider copy(ISearchProvider source) {
+	SearchProvider provider = new SearchProvider();
+	provider.setId(source.getId());
+	provider.setName(source.getName());
+	return provider;
+    }
 }

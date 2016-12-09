@@ -29,118 +29,112 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
  */
 public class InfluxDbDeviceCommandResponse {
 
-	/** Tag for originating event id */
-	public static final String RSP_ORIGINATING_EVENT_ID = "origEvent";
+    /** Tag for originating event id */
+    public static final String RSP_ORIGINATING_EVENT_ID = "origEvent";
 
-	/** Tag for response event id */
-	public static final String RSP_RESPONSE_EVENT_ID = "respEvent";
+    /** Tag for response event id */
+    public static final String RSP_RESPONSE_EVENT_ID = "respEvent";
 
-	/** Field for response */
-	public static final String RSP_RESPONSE = "response";
+    /** Field for response */
+    public static final String RSP_RESPONSE = "response";
 
-	/**
-	 * Parse domain object from a value map.
-	 * 
-	 * @param values
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceCommandResponse parse(Map<String, Object> values) throws SiteWhereException {
-		DeviceCommandResponse cr = new DeviceCommandResponse();
-		InfluxDbDeviceCommandResponse.loadFromMap(cr, values);
-		return cr;
+    /**
+     * Parse domain object from a value map.
+     * 
+     * @param values
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandResponse parse(Map<String, Object> values) throws SiteWhereException {
+	DeviceCommandResponse cr = new DeviceCommandResponse();
+	InfluxDbDeviceCommandResponse.loadFromMap(cr, values);
+	return cr;
+    }
+
+    /**
+     * Load fields from value map.
+     * 
+     * @param event
+     * @param values
+     * @throws SiteWhereException
+     */
+    public static void loadFromMap(DeviceCommandResponse event, Map<String, Object> values) throws SiteWhereException {
+	event.setEventType(DeviceEventType.CommandResponse);
+	event.setOriginatingEventId(InfluxDbDeviceEvent.find(values, RSP_ORIGINATING_EVENT_ID));
+	event.setResponseEventId(InfluxDbDeviceEvent.find(values, RSP_RESPONSE_EVENT_ID, true));
+	event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE, true));
+
+	InfluxDbDeviceEvent.loadFromMap(event, values);
+    }
+
+    /**
+     * Save fields to builder.
+     * 
+     * @param event
+     * @param builder
+     * @throws SiteWhereException
+     */
+    public static void saveToBuilder(DeviceCommandResponse event, Point.Builder builder) throws SiteWhereException {
+	builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId());
+	if (event.getResponseEventId() != null) {
+	    builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId());
+	}
+	if (event.getResponse() != null) {
+	    builder.tag(RSP_RESPONSE, event.getResponse());
 	}
 
-	/**
-	 * Load fields from value map.
-	 * 
-	 * @param event
-	 * @param values
-	 * @throws SiteWhereException
-	 */
-	public static void loadFromMap(DeviceCommandResponse event, Map<String, Object> values)
-			throws SiteWhereException {
-		event.setEventType(DeviceEventType.CommandResponse);
-		event.setOriginatingEventId(InfluxDbDeviceEvent.find(values, RSP_ORIGINATING_EVENT_ID));
-		event.setResponseEventId(InfluxDbDeviceEvent.find(values, RSP_RESPONSE_EVENT_ID, true));
-		event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE, true));
+	InfluxDbDeviceEvent.saveToBuilder(event, builder);
+    }
 
-		InfluxDbDeviceEvent.loadFromMap(event, values);
-	}
+    /**
+     * Get responses for a command invocation.
+     * 
+     * @param originatingEventId
+     * @param influx
+     * @param database
+     * @return
+     * @throws SiteWhereException
+     */
+    public static SearchResults<IDeviceCommandResponse> getResponsesForInvocation(String originatingEventId,
+	    InfluxDB influx, String database) throws SiteWhereException {
+	Query query = queryResponsesForInvocation(originatingEventId, database);
+	QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
+	List<IDeviceCommandResponse> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceCommandResponse.class);
 
-	/**
-	 * Save fields to builder.
-	 * 
-	 * @param event
-	 * @param builder
-	 * @throws SiteWhereException
-	 */
-	public static void saveToBuilder(DeviceCommandResponse event, Point.Builder builder)
-			throws SiteWhereException {
-		builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId());
-		if (event.getResponseEventId() != null) {
-			builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId());
-		}
-		if (event.getResponse() != null) {
-			builder.tag(RSP_RESPONSE, event.getResponse());
-		}
+	Query countQuery = queryResponsesForInvocationCount(originatingEventId, database);
+	QueryResult countResponse = influx.query(countQuery);
+	long count = InfluxDbDeviceEvent.parseCount(countResponse);
+	return new SearchResults<IDeviceCommandResponse>(results, count);
+    }
 
-		InfluxDbDeviceEvent.saveToBuilder(event, builder);
-	}
+    /**
+     * Find the list of responses for a command invocation.
+     * 
+     * @param originatingEventId
+     * @param database
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Query queryResponsesForInvocation(String originatingEventId, String database)
+	    throws SiteWhereException {
+	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
+		+ DeviceEventType.CommandResponse + "' and " + InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID
+		+ "='" + originatingEventId + "' GROUP BY " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT
+		+ " ORDER BY time DESC", database);
+    }
 
-	/**
-	 * Get responses for a command invocation.
-	 * 
-	 * @param originatingEventId
-	 * @param influx
-	 * @param database
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static SearchResults<IDeviceCommandResponse> getResponsesForInvocation(String originatingEventId,
-			InfluxDB influx, String database) throws SiteWhereException {
-		Query query = queryResponsesForInvocation(originatingEventId, database);
-		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
-		List<IDeviceCommandResponse> results =
-				InfluxDbDeviceEvent.eventsOfType(response, IDeviceCommandResponse.class);
-
-		Query countQuery = queryResponsesForInvocationCount(originatingEventId, database);
-		QueryResult countResponse = influx.query(countQuery);
-		long count = InfluxDbDeviceEvent.parseCount(countResponse);
-		return new SearchResults<IDeviceCommandResponse>(results, count);
-	}
-
-	/**
-	 * Find the list of responses for a command invocation.
-	 * 
-	 * @param originatingEventId
-	 * @param database
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static Query queryResponsesForInvocation(String originatingEventId, String database)
-			throws SiteWhereException {
-		return new Query(
-				"SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-						+ DeviceEventType.CommandResponse + "' and "
-						+ InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID + "='" + originatingEventId
-						+ "' GROUP BY " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + " ORDER BY time DESC",
-				database);
-	}
-
-	/**
-	 * Count number of response for a command invocation.
-	 * 
-	 * @param originatingEventId
-	 * @param database
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static Query queryResponsesForInvocationCount(String originatingEventId, String database)
-			throws SiteWhereException {
-		return new Query("SELECT count(eid) FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-				+ DeviceEventType.CommandResponse + "' and "
-				+ InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID + "='" + originatingEventId
-				+ "' GROUP BY " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT, database);
-	}
+    /**
+     * Count number of response for a command invocation.
+     * 
+     * @param originatingEventId
+     * @param database
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Query queryResponsesForInvocationCount(String originatingEventId, String database)
+	    throws SiteWhereException {
+	return new Query("SELECT count(eid) FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
+		+ DeviceEventType.CommandResponse + "' and " + InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID
+		+ "='" + originatingEventId + "' GROUP BY " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT, database);
+    }
 }

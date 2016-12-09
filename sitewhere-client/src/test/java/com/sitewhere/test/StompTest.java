@@ -23,41 +23,41 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
  */
 public class StompTest {
 
-	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "1f344aea-5db0-4904-8331-76a15540b24b";
+    /** Hardware id for test message */
+    private static final String HARDWARE_ID = "1f344aea-5db0-4904-8331-76a15540b24b";
 
-	/** Mapper used for marshaling event create requests */
-	private static ObjectMapper MAPPER = new ObjectMapper();
+    /** Mapper used for marshaling event create requests */
+    private static ObjectMapper MAPPER = new ObjectMapper();
 
-	@Test
-	public void doStompTest() throws Exception {
-		StompConnection connection = new StompConnection();
-		connection.open("localhost", 2345);
-		connection.connect("system", "manager");
+    @Test
+    public void doStompTest() throws Exception {
+	StompConnection connection = new StompConnection();
+	connection.open("localhost", 2345);
+	connection.connect("system", "manager");
 
-		String payload = createMeasurementsJson(HARDWARE_ID);
+	String payload = createMeasurementsJson(HARDWARE_ID);
 
-		connection.begin("tx1");
-		connection.send("/queue/SITEWHERE.STOMP", payload, "tx1", null);
-		connection.commit("tx1");
+	connection.begin("tx1");
+	connection.send("/queue/SITEWHERE.STOMP", payload, "tx1", null);
+	connection.commit("tx1");
 
-		connection.disconnect();
-	}
+	connection.disconnect();
+    }
 
-	/**
-	 * Create a JSON request for creating a new measurements event.
-	 * 
-	 * @param hardwareId
-	 * @return
-	 * @throws Exception
-	 */
-	protected String createMeasurementsJson(String hardwareId) throws Exception {
-		DeviceEventBatch batch = new DeviceEventBatch();
-		batch.setHardwareId(hardwareId);
-		DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
-		request.setEventDate(new Date());
-		request.addOrReplaceMeasurement("engine.temp", 98.76);
-		batch.getMeasurements().add(request);
-		return MAPPER.writeValueAsString(batch);
-	}
+    /**
+     * Create a JSON request for creating a new measurements event.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws Exception
+     */
+    protected String createMeasurementsJson(String hardwareId) throws Exception {
+	DeviceEventBatch batch = new DeviceEventBatch();
+	batch.setHardwareId(hardwareId);
+	DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+	request.setEventDate(new Date());
+	request.addOrReplaceMeasurement("engine.temp", 98.76);
+	batch.getMeasurements().add(request);
+	return MAPPER.writeValueAsString(batch);
+    }
 }

@@ -16,51 +16,51 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public interface ISiteWhereHBase {
 
-	/***************
-	 * TABLE NAMES *
-	 ***************/
+    /***************
+     * TABLE NAMES *
+     ***************/
 
-	/** Sites table name */
-	public static final byte[] UID_TABLE_NAME = Bytes.toBytes("uids");
+    /** Sites table name */
+    public static final byte[] UID_TABLE_NAME = Bytes.toBytes("uids");
 
-	/** Sites table name */
-	public static final byte[] SITES_TABLE_NAME = Bytes.toBytes("sites");
+    /** Sites table name */
+    public static final byte[] SITES_TABLE_NAME = Bytes.toBytes("sites");
 
-	/** Events table name */
-	public static final byte[] EVENTS_TABLE_NAME = Bytes.toBytes("events");
+    /** Events table name */
+    public static final byte[] EVENTS_TABLE_NAME = Bytes.toBytes("events");
 
-	/** Devices table name */
-	public static final byte[] DEVICES_TABLE_NAME = Bytes.toBytes("devices");
+    /** Devices table name */
+    public static final byte[] DEVICES_TABLE_NAME = Bytes.toBytes("devices");
 
-	/** Device streams table name */
-	public static final byte[] STREAMS_TABLE_NAME = Bytes.toBytes("streams");
+    /** Device streams table name */
+    public static final byte[] STREAMS_TABLE_NAME = Bytes.toBytes("streams");
 
-	/** Users table name */
-	public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("users");
+    /** Users table name */
+    public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("users");
 
-	/** Assets table name */
-	public static final byte[] ASSETS_TABLE_NAME = Bytes.toBytes("assets");
+    /** Assets table name */
+    public static final byte[] ASSETS_TABLE_NAME = Bytes.toBytes("assets");
 
-	/** Schedules table name */
-	public static final byte[] SCHEDULES_TABLE_NAME = Bytes.toBytes("schedules");
+    /** Schedules table name */
+    public static final byte[] SCHEDULES_TABLE_NAME = Bytes.toBytes("schedules");
 
-	/*******************
-	 * COLUMN FAMILIES *
-	 *******************/
+    /*******************
+     * COLUMN FAMILIES *
+     *******************/
 
-	/** SiteWhere family id */
-	public static final byte[] FAMILY_ID = Bytes.toBytes("s");
+    /** SiteWhere family id */
+    public static final byte[] FAMILY_ID = Bytes.toBytes("s");
 
-	/*********************
-	 * COMMON QUALIFIERS *
-	 *********************/
+    /*********************
+     * COMMON QUALIFIERS *
+     *********************/
 
-	/** Column qualifier for object payload */
-	public static final byte[] PAYLOAD = Bytes.toBytes("z");
+    /** Column qualifier for object payload */
+    public static final byte[] PAYLOAD = Bytes.toBytes("z");
 
-	/** Column qualifier for object payload type */
-	public static final byte[] PAYLOAD_TYPE = Bytes.toBytes("q");
+    /** Column qualifier for object payload type */
+    public static final byte[] PAYLOAD_TYPE = Bytes.toBytes("q");
 
-	/** Column qualifier that indicates a deleted record */
-	public static final byte[] DELETED = Bytes.toBytes("x");
+    /** Column qualifier that indicates a deleted record */
+    public static final byte[] DELETED = Bytes.toBytes("x");
 }

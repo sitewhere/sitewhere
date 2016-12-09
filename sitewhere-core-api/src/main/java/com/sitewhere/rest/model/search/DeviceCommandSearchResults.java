@@ -13,18 +13,18 @@ import java.util.List;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 
 /**
- * Search results that contain device commands. Needed so that JSON marshaling has a
- * concrete class to inflate.
+ * Search results that contain device commands. Needed so that JSON marshaling
+ * has a concrete class to inflate.
  * 
  * @author dadams
  */
 public class DeviceCommandSearchResults extends SearchResults<DeviceCommand> {
 
-	public DeviceCommandSearchResults() {
-		super(new ArrayList<DeviceCommand>());
-	}
+    public DeviceCommandSearchResults() {
+	super(new ArrayList<DeviceCommand>());
+    }
 
-	public DeviceCommandSearchResults(List<DeviceCommand> results) {
-		super(results);
-	}
+    public DeviceCommandSearchResults(List<DeviceCommand> results) {
+	super(results);
+    }
 }

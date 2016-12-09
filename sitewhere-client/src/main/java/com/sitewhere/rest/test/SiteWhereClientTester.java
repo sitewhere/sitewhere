@@ -19,89 +19,88 @@ import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.device.event.AlertLevel;
 
 /**
- * Used to test performance of repeated calls to the SiteWhere REST services. Randomly
- * creates a given number of events for a given device assignment.
+ * Used to test performance of repeated calls to the SiteWhere REST services.
+ * Randomly creates a given number of events for a given device assignment.
  * 
  * @author Derek
  */
 public class SiteWhereClientTester implements Callable<TestResults> {
 
-	/** Token for assignment to receive events */
-	private String assignmentToken;
+    /** Token for assignment to receive events */
+    private String assignmentToken;
 
-	/** Number of events to generate */
-	private int eventCount;
+    /** Number of events to generate */
+    private int eventCount;
 
-	/** Indicates whether assignment state should be updated by event */
-	private boolean updateState;
+    /** Indicates whether assignment state should be updated by event */
+    private boolean updateState;
 
-	public SiteWhereClientTester(String assignmentToken, int eventCount, boolean updateState) {
-		this.assignmentToken = assignmentToken;
-		this.eventCount = eventCount;
-		this.updateState = updateState;
+    public SiteWhereClientTester(String assignmentToken, int eventCount, boolean updateState) {
+	this.assignmentToken = assignmentToken;
+	this.eventCount = eventCount;
+	this.updateState = updateState;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.util.concurrent.Callable#call()
+     */
+    @Override
+    public TestResults call() throws Exception {
+	ISiteWhereClient client = new SiteWhereClient("http://sw-swarm-master.cloudapp.net:8080/sitewhere/api/",
+		"admin", "password");
+	for (int i = 0; i < eventCount; i++) {
+	    int random = (int) Math.floor(Math.random() * 3);
+	    if (random == 0) {
+		DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
+		request.setEventDate(new Date());
+		request.setType("test.error");
+		request.setLevel(AlertLevel.Error);
+		request.setMessage("This is a test alert message.");
+		request.setUpdateState(updateState);
+		client.createDeviceAlert(getAssignmentToken(), request);
+	    } else if (random == 1) {
+		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
+		request.setEventDate(new Date());
+		request.setLatitude(33.7550);
+		request.setLongitude(-84.3900);
+		request.setElevation(1000.0);
+		request.setUpdateState(updateState);
+		client.createDeviceLocation(getAssignmentToken(), request);
+	    } else if (random == 2) {
+		DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+		request.setEventDate(new Date());
+		request.addOrReplaceMeasurement("first", 123.45);
+		request.addOrReplaceMeasurement("second", 987.65);
+		request.setUpdateState(updateState);
+		client.createDeviceMeasurements(getAssignmentToken(), request);
+	    }
 	}
+	return new TestResults();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@Override
-	public TestResults call() throws Exception {
-		ISiteWhereClient client =
-				new SiteWhereClient("http://sw-swarm-master.cloudapp.net:8080/sitewhere/api/", "admin",
-						"password");
-		for (int i = 0; i < eventCount; i++) {
-			int random = (int) Math.floor(Math.random() * 3);
-			if (random == 0) {
-				DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
-				request.setEventDate(new Date());
-				request.setType("test.error");
-				request.setLevel(AlertLevel.Error);
-				request.setMessage("This is a test alert message.");
-				request.setUpdateState(updateState);
-				client.createDeviceAlert(getAssignmentToken(), request);
-			} else if (random == 1) {
-				DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
-				request.setEventDate(new Date());
-				request.setLatitude(33.7550);
-				request.setLongitude(-84.3900);
-				request.setElevation(1000.0);
-				request.setUpdateState(updateState);
-				client.createDeviceLocation(getAssignmentToken(), request);
-			} else if (random == 2) {
-				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
-				request.setEventDate(new Date());
-				request.addOrReplaceMeasurement("first", 123.45);
-				request.addOrReplaceMeasurement("second", 987.65);
-				request.setUpdateState(updateState);
-				client.createDeviceMeasurements(getAssignmentToken(), request);
-			}
-		}
-		return new TestResults();
-	}
+    public String getAssignmentToken() {
+	return assignmentToken;
+    }
 
-	public String getAssignmentToken() {
-		return assignmentToken;
-	}
+    public void setAssignmentToken(String assignmentToken) {
+	this.assignmentToken = assignmentToken;
+    }
 
-	public void setAssignmentToken(String assignmentToken) {
-		this.assignmentToken = assignmentToken;
-	}
+    public int getEventCount() {
+	return eventCount;
+    }
 
-	public int getEventCount() {
-		return eventCount;
-	}
+    public void setEventCount(int eventCount) {
+	this.eventCount = eventCount;
+    }
 
-	public void setEventCount(int eventCount) {
-		this.eventCount = eventCount;
-	}
-
-	/**
-	 * Holds results from client test.
-	 * 
-	 * @author Derek
-	 */
-	public static class TestResults {
-	}
+    /**
+     * Holds results from client test.
+     * 
+     * @author Derek
+     */
+    public static class TestResults {
+    }
 }

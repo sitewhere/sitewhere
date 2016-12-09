@@ -19,50 +19,50 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UserIdManager implements IUserIdManager {
 
-	/** Manager for tenant ids */
-	private UniqueIdCounterMap tenantKeys;
+    /** Manager for tenant ids */
+    private UniqueIdCounterMap tenantKeys;
 
-	/** Manager for tenant group ids */
-	private UniqueIdCounterMap tenantGroupKeys;
+    /** Manager for tenant group ids */
+    private UniqueIdCounterMap tenantGroupKeys;
 
-	/**
-	 * Load existing keys from table.
-	 * 
-	 * @param context
-	 * @throws SiteWhereException
-	 */
-	public void load(IHBaseContext context) throws SiteWhereException {
-		tenantKeys = new UniqueIdCounterMap(context, UniqueIdType.TenantKey.getIndicator(),
-				UniqueIdType.TenantValue.getIndicator());
-		tenantKeys.refresh();
-		tenantGroupKeys = new UniqueIdCounterMap(context, UniqueIdType.TenantGroupKey.getIndicator(),
-				UniqueIdType.TenantGroupValue.getIndicator());
-		tenantGroupKeys.refresh();
-	}
+    /**
+     * Load existing keys from table.
+     * 
+     * @param context
+     * @throws SiteWhereException
+     */
+    public void load(IHBaseContext context) throws SiteWhereException {
+	tenantKeys = new UniqueIdCounterMap(context, UniqueIdType.TenantKey.getIndicator(),
+		UniqueIdType.TenantValue.getIndicator());
+	tenantKeys.refresh();
+	tenantGroupKeys = new UniqueIdCounterMap(context, UniqueIdType.TenantGroupKey.getIndicator(),
+		UniqueIdType.TenantGroupValue.getIndicator());
+	tenantGroupKeys.refresh();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.user.IUserIdManager#getTenantKeys()
-	 */
-	public UniqueIdCounterMap getTenantKeys() {
-		return tenantKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.user.IUserIdManager#getTenantKeys()
+     */
+    public UniqueIdCounterMap getTenantKeys() {
+	return tenantKeys;
+    }
 
-	public void setTenantKeys(UniqueIdCounterMap tenantKeys) {
-		this.tenantKeys = tenantKeys;
-	}
+    public void setTenantKeys(UniqueIdCounterMap tenantKeys) {
+	this.tenantKeys = tenantKeys;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.user.IUserIdManager#getTenantGroupKeys()
-	 */
-	public UniqueIdCounterMap getTenantGroupKeys() {
-		return tenantGroupKeys;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.user.IUserIdManager#getTenantGroupKeys()
+     */
+    public UniqueIdCounterMap getTenantGroupKeys() {
+	return tenantGroupKeys;
+    }
 
-	public void setTenantGroupKeys(UniqueIdCounterMap tenantGroupKeys) {
-		this.tenantGroupKeys = tenantGroupKeys;
-	}
+    public void setTenantGroupKeys(UniqueIdCounterMap tenantGroupKeys) {
+	this.tenantGroupKeys = tenantGroupKeys;
+    }
 }

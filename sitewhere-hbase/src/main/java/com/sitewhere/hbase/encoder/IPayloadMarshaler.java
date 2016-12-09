@@ -72,534 +72,534 @@ import com.sitewhere.spi.user.IUser;
  */
 public interface IPayloadMarshaler {
 
-	/**
-	 * Gets encoding type for the encoder.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public PayloadEncoding getEncoding() throws SiteWhereException;
+    /**
+     * Gets encoding type for the encoder.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public PayloadEncoding getEncoding() throws SiteWhereException;
 
-	/**
-	 * Encode an object.
-	 * 
-	 * @param obj
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encode(Object obj) throws SiteWhereException;
+    /**
+     * Encode an object.
+     * 
+     * @param obj
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encode(Object obj) throws SiteWhereException;
 
-	/**
-	 * Decode a payload into an object.
-	 * 
-	 * @param payload
-	 * @param type
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public <T> T decode(byte[] payload, Class<T> type) throws SiteWhereException;
+    /**
+     * Decode a payload into an object.
+     * 
+     * @param payload
+     * @param type
+     * @return
+     * @throws SiteWhereException
+     */
+    public <T> T decode(byte[] payload, Class<T> type) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link ISite}.
-	 * 
-	 * @param site
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeSite(ISite site) throws SiteWhereException;
+    /**
+     * Encode an {@link ISite}.
+     * 
+     * @param site
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeSite(ISite site) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link Site} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Site decodeSite(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link Site} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public Site decodeSite(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IZone}.
-	 * 
-	 * @param zone
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeZone(IZone zone) throws SiteWhereException;
+    /**
+     * Encode an {@link IZone}.
+     * 
+     * @param zone
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeZone(IZone zone) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link Zone} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Zone decodeZone(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link Zone} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public Zone decodeZone(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceSpecification}.
-	 * 
-	 * @param specification
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceSpecification(IDeviceSpecification specification) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceSpecification}.
+     * 
+     * @param specification
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceSpecification(IDeviceSpecification specification) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceSpecification} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification decodeDeviceSpecification(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceSpecification} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceSpecification decodeDeviceSpecification(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDevice}.
-	 * 
-	 * @param device
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDevice(IDevice device) throws SiteWhereException;
+    /**
+     * Encode an {@link IDevice}.
+     * 
+     * @param device
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDevice(IDevice device) throws SiteWhereException;
 
-	/**
-	 * Decodea {@link Device} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Device decodeDevice(byte[] payload) throws SiteWhereException;
+    /**
+     * Decodea {@link Device} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public Device decodeDevice(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceAssignment}.
-	 * 
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceAssignment(IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceAssignment}.
+     * 
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceAssignment(IDeviceAssignment assignment) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceAssignment} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment decodeDeviceAssignment(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceAssignment} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignment decodeDeviceAssignment(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceStream}.
-	 * 
-	 * @param stream
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceStream(IDeviceStream stream) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceStream}.
+     * 
+     * @param stream
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceStream(IDeviceStream stream) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceStream} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceStream} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceAssignmentState}.
-	 * 
-	 * @param state
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceAssignmentState(IDeviceAssignmentState state) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceAssignmentState}.
+     * 
+     * @param state
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceAssignmentState(IDeviceAssignmentState state) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceAssignmentState} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignmentState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceAssignmentState} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAssignmentState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceMeasurements}.
-	 * 
-	 * @param measurements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceMeasurements}.
+     * 
+     * @param measurements
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceMeasurements} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceMeasurements decodeDeviceMeasurements(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceMeasurements} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceMeasurements decodeDeviceMeasurements(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceLocation}.
-	 * 
-	 * @param location
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceLocation(IDeviceLocation location) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceLocation}.
+     * 
+     * @param location
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceLocation(IDeviceLocation location) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceLocation} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceLocation decodeDeviceLocation(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceLocation} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceLocation decodeDeviceLocation(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceAlert}.
-	 * 
-	 * @param alert
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceAlert(IDeviceAlert alert) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceAlert}.
+     * 
+     * @param alert
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceAlert(IDeviceAlert alert) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceAlert} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAlert decodeDeviceAlert(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceAlert} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceAlert decodeDeviceAlert(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceStreamData}.
-	 * 
-	 * @param streamData
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceStreamData}.
+     * 
+     * @param streamData
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceStreamData} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceStreamData} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceCommandInvocation}.
-	 * 
-	 * @param invocation
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceCommandInvocation}.
+     * 
+     * @param invocation
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceCommandInvocation} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandInvocation decodeDeviceCommandInvocation(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceCommandInvocation} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandInvocation decodeDeviceCommandInvocation(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceStateChange}.
-	 * 
-	 * @param change
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceStateChange(IDeviceStateChange change) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceStateChange}.
+     * 
+     * @param change
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceStateChange(IDeviceStateChange change) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceStateChange} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceStateChange decodeDeviceStateChange(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceStateChange} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceStateChange decodeDeviceStateChange(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceCommandResponse}.
-	 * 
-	 * @param response
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceCommandResponse}.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceCommandResponse} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommandResponse decodeDeviceCommandResponse(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceCommandResponse} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommandResponse decodeDeviceCommandResponse(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IBatchOperation}.
-	 * 
-	 * @param operation
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeBatchOperation(IBatchOperation operation) throws SiteWhereException;
+    /**
+     * Encode an {@link IBatchOperation}.
+     * 
+     * @param operation
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeBatchOperation(IBatchOperation operation) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link BatchOperation} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public BatchOperation decodeBatchOperation(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link BatchOperation} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public BatchOperation decodeBatchOperation(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IBatchElement}.
-	 * 
-	 * @param element
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeBatchElement(IBatchElement element) throws SiteWhereException;
+    /**
+     * Encode an {@link IBatchElement}.
+     * 
+     * @param element
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeBatchElement(IBatchElement element) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link BatchElement} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public BatchElement decodeBatchElement(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link BatchElement} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public BatchElement decodeBatchElement(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceGroup}.
-	 * 
-	 * @param group
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceGroup(IDeviceGroup group) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceGroup}.
+     * 
+     * @param group
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceGroup(IDeviceGroup group) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceGroup} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroup decodeDeviceGroup(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceGroup} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroup decodeDeviceGroup(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceGroupElement}.
-	 * 
-	 * @param element
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceGroupElement(IDeviceGroupElement element) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceGroupElement}.
+     * 
+     * @param element
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceGroupElement(IDeviceGroupElement element) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceGroupElement} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceGroupElement decodeDeviceGroupElement(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceGroupElement} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceGroupElement decodeDeviceGroupElement(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IDeviceCommand}.
-	 * 
-	 * @param command
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeDeviceCommand(IDeviceCommand command) throws SiteWhereException;
+    /**
+     * Encode an {@link IDeviceCommand}.
+     * 
+     * @param command
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeDeviceCommand(IDeviceCommand command) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link DeviceCommand} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommand decodeDeviceCommand(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link DeviceCommand} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public DeviceCommand decodeDeviceCommand(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IUser}.
-	 * 
-	 * @param user
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeUser(IUser user) throws SiteWhereException;
+    /**
+     * Encode an {@link IUser}.
+     * 
+     * @param user
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeUser(IUser user) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link User} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public User decodeUser(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link User} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public User decodeUser(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IGrantedAuthority}.
-	 * 
-	 * @param auth
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeGrantedAuthority(IGrantedAuthority auth) throws SiteWhereException;
+    /**
+     * Encode an {@link IGrantedAuthority}.
+     * 
+     * @param auth
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeGrantedAuthority(IGrantedAuthority auth) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link GrantedAuthority} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public GrantedAuthority decodeGrantedAuthority(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link GrantedAuthority} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public GrantedAuthority decodeGrantedAuthority(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IAssetCategory}.
-	 * 
-	 * @param category
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeAssetCategory(IAssetCategory category) throws SiteWhereException;
+    /**
+     * Encode an {@link IAssetCategory}.
+     * 
+     * @param category
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeAssetCategory(IAssetCategory category) throws SiteWhereException;
 
-	/**
-	 * Decode an {@link IAssetCategory} from the binary payload.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public AssetCategory decodeAssetCategory(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode an {@link IAssetCategory} from the binary payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public AssetCategory decodeAssetCategory(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IPersonAsset}.
-	 * 
-	 * @param asset
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodePersonAsset(IPersonAsset asset) throws SiteWhereException;
+    /**
+     * Encode an {@link IPersonAsset}.
+     * 
+     * @param asset
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodePersonAsset(IPersonAsset asset) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link PersonAsset}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public PersonAsset decodePersonAsset(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link PersonAsset}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public PersonAsset decodePersonAsset(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link IHardwareAsset}.
-	 * 
-	 * @param asset
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeHardwareAsset(IHardwareAsset asset) throws SiteWhereException;
+    /**
+     * Encode an {@link IHardwareAsset}.
+     * 
+     * @param asset
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeHardwareAsset(IHardwareAsset asset) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link HardwareAsset}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public HardwareAsset decodeHardwareAsset(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link HardwareAsset}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public HardwareAsset decodeHardwareAsset(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link ILocationAsset}.
-	 * 
-	 * @param asset
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeLocationAsset(ILocationAsset asset) throws SiteWhereException;
+    /**
+     * Encode an {@link ILocationAsset}.
+     * 
+     * @param asset
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeLocationAsset(ILocationAsset asset) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link LocationAsset}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link LocationAsset}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link ITenant}.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeTenant(ITenant tenant) throws SiteWhereException;
+    /**
+     * Encode an {@link ITenant}.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeTenant(ITenant tenant) throws SiteWhereException;
 
-	/**
-	 * Deocde a {@link Tenant}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Tenant decodeTenant(byte[] payload) throws SiteWhereException;
+    /**
+     * Deocde a {@link Tenant}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public Tenant decodeTenant(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link ITenantGroup}.
-	 * 
-	 * @param group
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeTenantGroup(ITenantGroup group) throws SiteWhereException;
+    /**
+     * Encode an {@link ITenantGroup}.
+     * 
+     * @param group
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeTenantGroup(ITenantGroup group) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link TenantGroup}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public TenantGroup decodeTenantGroup(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link TenantGroup}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public TenantGroup decodeTenantGroup(byte[] payload) throws SiteWhereException;
 
-	/**
-	 * Encode an {@link ITenantGroupElement}.
-	 * 
-	 * @param element
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] encodeTenantGroupElement(ITenantGroupElement element) throws SiteWhereException;
+    /**
+     * Encode an {@link ITenantGroupElement}.
+     * 
+     * @param element
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] encodeTenantGroupElement(ITenantGroupElement element) throws SiteWhereException;
 
-	/**
-	 * Decode a {@link TenantGroupElement}.
-	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public TenantGroupElement decodeTenantGroupElement(byte[] payload) throws SiteWhereException;
+    /**
+     * Decode a {@link TenantGroupElement}.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public TenantGroupElement decodeTenantGroupElement(byte[] payload) throws SiteWhereException;
 }

@@ -22,63 +22,61 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
  */
 public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 
-	public ScheduleManagementTriggers(IScheduleManagement delegate) {
-		super(delegate);
-	}
+    public ScheduleManagementTriggers(IScheduleManagement delegate) {
+	super(delegate);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.scheduling.ScheduleManagementDecorator#createSchedule(com.
-	 * sitewhere.spi.scheduling.request.IScheduleCreateRequest)
-	 */
-	@Override
-	public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
-		ISchedule schedule = super.createSchedule(request);
-		SiteWhere.getServer().getScheduleManager(getTenant()).scheduleAdded(schedule);
-		return schedule;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
+     * createSchedule(com.
+     * sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+     */
+    @Override
+    public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
+	ISchedule schedule = super.createSchedule(request);
+	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleAdded(schedule);
+	return schedule;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.scheduling.ScheduleManagementDecorator#deleteSchedule(java
-	 * .lang.String, boolean)
-	 */
-	@Override
-	public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
-		ISchedule schedule = super.deleteSchedule(token, force);
-		SiteWhere.getServer().getScheduleManager(getTenant()).scheduleRemoved(schedule);
-		return schedule;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
+     * deleteSchedule(java .lang.String, boolean)
+     */
+    @Override
+    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
+	ISchedule schedule = super.deleteSchedule(token, force);
+	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleRemoved(schedule);
+	return schedule;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.scheduling.ScheduleManagementDecorator#createScheduledJob(
-	 * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
-	 */
-	@Override
-	public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
-		IScheduledJob job = super.createScheduledJob(request);
-		SiteWhere.getServer().getScheduleManager(getTenant()).scheduleJob(job);
-		return job;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
+     * createScheduledJob(
+     * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
+     */
+    @Override
+    public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
+	IScheduledJob job = super.createScheduledJob(request);
+	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleJob(job);
+	return job;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.scheduling.ScheduleManagementDecorator#deleteScheduledJob(
-	 * java.lang.String, boolean)
-	 */
-	@Override
-	public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
-		IScheduledJob job = super.deleteScheduledJob(token, force);
-		SiteWhere.getServer().getScheduleManager(getTenant()).unscheduleJob(job);
-		return job;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
+     * deleteScheduledJob( java.lang.String, boolean)
+     */
+    @Override
+    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
+	IScheduledJob job = super.deleteScheduledJob(token, force);
+	SiteWhere.getServer().getScheduleManager(getTenant()).unscheduleJob(job);
+	return job;
+    }
 }

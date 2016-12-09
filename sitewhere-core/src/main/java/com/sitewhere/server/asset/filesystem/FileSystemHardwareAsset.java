@@ -23,80 +23,80 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemHardwareAsset {
 
-	@XmlAttribute
-	private String id;
+    @XmlAttribute
+    private String id;
 
-	@XmlAttribute
-	private String name;
+    @XmlAttribute
+    private String name;
 
-	@XmlAttribute
-	private String sku;
+    @XmlAttribute
+    private String sku;
 
-	@XmlAttribute
-	private boolean device;
+    @XmlAttribute
+    private boolean device;
 
-	@XmlElement
-	private String description;
+    @XmlElement
+    private String description;
 
-	@XmlElement(name = "image-url")
-	private String imageUrl;
+    @XmlElement(name = "image-url")
+    private String imageUrl;
 
-	@XmlElement(name = "property")
-	private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
+    @XmlElement(name = "property")
+    private List<FileSystemAssetProperty> properties = new ArrayList<FileSystemAssetProperty>();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getSku() {
-		return sku;
-	}
+    public String getSku() {
+	return sku;
+    }
 
-	public void setSku(String sku) {
-		this.sku = sku;
-	}
+    public void setSku(String sku) {
+	this.sku = sku;
+    }
 
-	public boolean isDevice() {
-		return device;
-	}
+    public boolean isDevice() {
+	return device;
+    }
 
-	public void setDevice(boolean device) {
-		this.device = device;
-	}
+    public void setDevice(boolean device) {
+	this.device = device;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	public List<FileSystemAssetProperty> getProperties() {
-		return properties;
-	}
+    public List<FileSystemAssetProperty> getProperties() {
+	return properties;
+    }
 
-	public void setProperties(List<FileSystemAssetProperty> properties) {
-		this.properties = properties;
-	}
+    public void setProperties(List<FileSystemAssetProperty> properties) {
+	this.properties = properties;
+    }
 }

@@ -19,45 +19,45 @@ import com.sitewhere.spi.device.command.ICommandParameter;
  */
 public interface IDeviceCommandCreateRequest {
 
-	/**
-	 * Get unique command token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique command token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Optional namespace for distinguishing commands.
-	 * 
-	 * @return
-	 */
-	public String getNamespace();
+    /**
+     * Optional namespace for distinguishing commands.
+     * 
+     * @return
+     */
+    public String getNamespace();
 
-	/**
-	 * Get command name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get command name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get command description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get command description.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get list of parameters.
-	 * 
-	 * @return
-	 */
-	public List<ICommandParameter> getParameters();
+    /**
+     * Get list of parameters.
+     * 
+     * @return
+     */
+    public List<ICommandParameter> getParameters();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

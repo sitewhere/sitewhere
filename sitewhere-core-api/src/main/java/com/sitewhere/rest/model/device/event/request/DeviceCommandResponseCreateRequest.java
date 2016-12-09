@@ -15,66 +15,66 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 
 /**
- * Model object used to create a new {@link IDeviceCommandResponse} via REST APIs.
+ * Model object used to create a new {@link IDeviceCommandResponse} via REST
+ * APIs.
  * 
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceCommandResponseCreateRequest, Serializable {
+public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest
+	implements IDeviceCommandResponseCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -9170930846188888841L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -9170930846188888841L;
 
-	/** Event id that generated response */
-	private String originatingEventId;
+    /** Event id that generated response */
+    private String originatingEventId;
 
-	/** Event sent in response */
-	private String responseEventId;
+    /** Event sent in response */
+    private String responseEventId;
 
-	/** Data sent for response */
-	private String response;
+    /** Data sent for response */
+    private String response;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest#
-	 * getOriginatingEventId()
-	 */
-	public String getOriginatingEventId() {
-		return originatingEventId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.
+     * IDeviceCommandResponseCreateRequest# getOriginatingEventId()
+     */
+    public String getOriginatingEventId() {
+	return originatingEventId;
+    }
 
-	public void setOriginatingEventId(String originatingEventId) {
-		this.originatingEventId = originatingEventId;
-	}
+    public void setOriginatingEventId(String originatingEventId) {
+	this.originatingEventId = originatingEventId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest#
-	 * getResponseEventId()
-	 */
-	public String getResponseEventId() {
-		return responseEventId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.
+     * IDeviceCommandResponseCreateRequest# getResponseEventId()
+     */
+    public String getResponseEventId() {
+	return responseEventId;
+    }
 
-	public void setResponseEventId(String responseEventId) {
-		this.responseEventId = responseEventId;
-	}
+    public void setResponseEventId(String responseEventId) {
+	this.responseEventId = responseEventId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest#getResponse
-	 * ()
-	 */
-	public String getResponse() {
-		return response;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.request.
+     * IDeviceCommandResponseCreateRequest#getResponse ()
+     */
+    public String getResponse() {
+	return response;
+    }
 
-	public void setResponse(String response) {
-		this.response = response;
-	}
+    public void setResponse(String response) {
+	this.response = response;
+    }
 }

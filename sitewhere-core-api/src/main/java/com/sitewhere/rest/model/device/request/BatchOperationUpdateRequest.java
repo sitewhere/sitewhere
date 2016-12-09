@@ -21,50 +21,50 @@ import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
  */
 public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 7636526750514669256L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 7636526750514669256L;
 
-	/** Processing status for operation */
-	private BatchOperationStatus processingStatus;
+    /** Processing status for operation */
+    private BatchOperationStatus processingStatus;
 
-	/** Date when operation processing started */
-	private Date processingStartedDate;
+    /** Date when operation processing started */
+    private Date processingStartedDate;
 
-	/** Date when operation processing ended */
-	private Date processingEndedDate;
+    /** Date when operation processing ended */
+    private Date processingEndedDate;
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Metadata values */
+    private Map<String, String> metadata;
 
-	public BatchOperationStatus getProcessingStatus() {
-		return processingStatus;
-	}
+    public BatchOperationStatus getProcessingStatus() {
+	return processingStatus;
+    }
 
-	public void setProcessingStatus(BatchOperationStatus processingStatus) {
-		this.processingStatus = processingStatus;
-	}
+    public void setProcessingStatus(BatchOperationStatus processingStatus) {
+	this.processingStatus = processingStatus;
+    }
 
-	public Date getProcessingStartedDate() {
-		return processingStartedDate;
-	}
+    public Date getProcessingStartedDate() {
+	return processingStartedDate;
+    }
 
-	public void setProcessingStartedDate(Date processingStartedDate) {
-		this.processingStartedDate = processingStartedDate;
-	}
+    public void setProcessingStartedDate(Date processingStartedDate) {
+	this.processingStartedDate = processingStartedDate;
+    }
 
-	public Date getProcessingEndedDate() {
-		return processingEndedDate;
-	}
+    public Date getProcessingEndedDate() {
+	return processingEndedDate;
+    }
 
-	public void setProcessingEndedDate(Date processingEndedDate) {
-		this.processingEndedDate = processingEndedDate;
-	}
+    public void setProcessingEndedDate(Date processingEndedDate) {
+	this.processingEndedDate = processingEndedDate;
+    }
 
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
 }

@@ -12,7 +12,8 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.sms.SmsParameters;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -21,6 +22,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
@@ -28,147 +30,139 @@ import com.twilio.sdk.resource.factory.MessageFactory;
 import com.twilio.sdk.resource.instance.Account;
 
 /**
- * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message via
- * Twilio.
+ * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message
+ * via Twilio.
  * 
  * @author Derek
  */
-public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent implements
-		ICommandDeliveryProvider<String, SmsParameters> {
+public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent
+	implements ICommandDeliveryProvider<String, SmsParameters> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(TwilioCommandDeliveryProvider.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Account SID */
-	private String accountSid;
+    /** Account SID */
+    private String accountSid;
 
-	/** Auth token */
-	private String authToken;
+    /** Auth token */
+    private String authToken;
 
-	/** Phone number to send command from */
-	private String fromPhoneNumber;
+    /** Phone number to send command from */
+    private String fromPhoneNumber;
 
-	/** Client for Twilio REST calls */
-	private TwilioRestClient twilio;
+    /** Client for Twilio REST calls */
+    private TwilioRestClient twilio;
 
-	/** Twilio account */
-	private Account account;
+    /** Twilio account */
+    private Account account;
 
-	public TwilioCommandDeliveryProvider() {
-		super(LifecycleComponentType.CommandDeliveryProvider);
+    public TwilioCommandDeliveryProvider() {
+	super(LifecycleComponentType.CommandDeliveryProvider);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getAccountSid() == null) {
+	    throw new SiteWhereException("Twilio command delivery provider missing account SID.");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		if (getAccountSid() == null) {
-			throw new SiteWhereException("Twilio command delivery provider missing account SID.");
-		}
-		if (getAuthToken() == null) {
-			throw new SiteWhereException("Twilio command delivery provider missing auth token.");
-		}
-		this.twilio = new TwilioRestClient(getAccountSid(), getAuthToken());
-		this.account = twilio.getAccount();
-		LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber()
-				+ ".");
+	if (getAuthToken() == null) {
+	    throw new SiteWhereException("Twilio command delivery provider missing auth token.");
 	}
+	this.twilio = new TwilioRestClient(getAccountSid(), getAuthToken());
+	this.account = twilio.getAccount();
+	LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber() + ".");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
+     * com.sitewhere .spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
+	    String encoded, SmsParameters params) throws SiteWhereException {
+	LOGGER.info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
+	sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(com.sitewhere
-	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
-	 * java.lang.Object)
-	 */
-	@Override
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, String encoded, SmsParameters params)
-			throws SiteWhereException {
-		LOGGER.info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
-		sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
+     * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, String encoded,
+	    SmsParameters params) throws SiteWhereException {
+	throw new UnsupportedOperationException();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliverSystemCommand
-	 * (com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			String encoded, SmsParameters params) throws SiteWhereException {
-		throw new UnsupportedOperationException();
+    /**
+     * Send an SMS message.
+     * 
+     * @param message
+     * @param from
+     * @param to
+     * @throws SiteWhereException
+     */
+    protected void sendSms(String message, String from, String to) throws SiteWhereException {
+	MessageFactory messageFactory = account.getMessageFactory();
+	List<NameValuePair> params = new ArrayList<NameValuePair>();
+	params.add(new BasicNameValuePair("To", to));
+	params.add(new BasicNameValuePair("From", from));
+	params.add(new BasicNameValuePair("Body", message));
+	try {
+	    messageFactory.create(params);
+	} catch (TwilioRestException e) {
+	    throw new SiteWhereException("Unable to send Twilio SMS message.", e);
 	}
+    }
 
-	/**
-	 * Send an SMS message.
-	 * 
-	 * @param message
-	 * @param from
-	 * @param to
-	 * @throws SiteWhereException
-	 */
-	protected void sendSms(String message, String from, String to) throws SiteWhereException {
-		MessageFactory messageFactory = account.getMessageFactory();
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("To", to));
-		params.add(new BasicNameValuePair("From", from));
-		params.add(new BasicNameValuePair("Body", message));
-		try {
-			messageFactory.create(params);
-		} catch (TwilioRestException e) {
-			throw new SiteWhereException("Unable to send Twilio SMS message.", e);
-		}
-	}
+    public String getAccountSid() {
+	return accountSid;
+    }
 
-	public String getAccountSid() {
-		return accountSid;
-	}
+    public void setAccountSid(String accountSid) {
+	this.accountSid = accountSid;
+    }
 
-	public void setAccountSid(String accountSid) {
-		this.accountSid = accountSid;
-	}
+    public String getAuthToken() {
+	return authToken;
+    }
 
-	public String getAuthToken() {
-		return authToken;
-	}
+    public void setAuthToken(String authToken) {
+	this.authToken = authToken;
+    }
 
-	public void setAuthToken(String authToken) {
-		this.authToken = authToken;
-	}
+    public String getFromPhoneNumber() {
+	return fromPhoneNumber;
+    }
 
-	public String getFromPhoneNumber() {
-		return fromPhoneNumber;
-	}
-
-	public void setFromPhoneNumber(String fromPhoneNumber) {
-		this.fromPhoneNumber = fromPhoneNumber;
-	}
+    public void setFromPhoneNumber(String fromPhoneNumber) {
+	this.fromPhoneNumber = fromPhoneNumber;
+    }
 }

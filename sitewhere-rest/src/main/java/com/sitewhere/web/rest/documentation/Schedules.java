@@ -26,99 +26,99 @@ import com.sitewhere.web.rest.documentation.ExampleData.ScheduledJob_Command1;
  */
 public class Schedules {
 
-	public static class CreateScheduleRequest {
+    public static class CreateScheduleRequest {
 
-		public Object generate() throws SiteWhereException {
-			ScheduleCreateRequest request = new ScheduleCreateRequest();
-			request.setToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
-			request.setName(ExampleData.SCHEDULE_SIMPLE1.getName());
-			request.setTriggerType(ExampleData.SCHEDULE_SIMPLE1.getTriggerType());
-			request.setTriggerConfiguration(ExampleData.SCHEDULE_SIMPLE1.getTriggerConfiguration());
-			request.setStartDate(ExampleData.SCHEDULE_SIMPLE1.getStartDate());
-			request.setEndDate(ExampleData.SCHEDULE_SIMPLE1.getEndDate());
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    ScheduleCreateRequest request = new ScheduleCreateRequest();
+	    request.setToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
+	    request.setName(ExampleData.SCHEDULE_SIMPLE1.getName());
+	    request.setTriggerType(ExampleData.SCHEDULE_SIMPLE1.getTriggerType());
+	    request.setTriggerConfiguration(ExampleData.SCHEDULE_SIMPLE1.getTriggerConfiguration());
+	    request.setStartDate(ExampleData.SCHEDULE_SIMPLE1.getStartDate());
+	    request.setEndDate(ExampleData.SCHEDULE_SIMPLE1.getEndDate());
+	    return request;
 	}
+    }
 
-	public static class CreateScheduleResponse {
+    public static class CreateScheduleResponse {
 
-		public Object generate() throws SiteWhereException {
-			return ExampleData.SCHEDULE_SIMPLE1;
-		}
+	public Object generate() throws SiteWhereException {
+	    return ExampleData.SCHEDULE_SIMPLE1;
 	}
+    }
 
-	public static class UpdateScheduleRequest {
+    public static class UpdateScheduleRequest {
 
-		public Object generate() throws SiteWhereException {
-			ScheduleCreateRequest request = new ScheduleCreateRequest();
-			request.setName(ExampleData.SCHEDULE_SIMPLE1.getName() + " Updated");
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    ScheduleCreateRequest request = new ScheduleCreateRequest();
+	    request.setName(ExampleData.SCHEDULE_SIMPLE1.getName() + " Updated");
+	    return request;
 	}
+    }
 
-	public static class UpdateScheduleResponse {
+    public static class UpdateScheduleResponse {
 
-		public Object generate() throws SiteWhereException {
-			Schedule_Simple1 schedule = new Schedule_Simple1();
-			schedule.setName(ExampleData.SCHEDULE_SIMPLE1.getName() + " Updated");
-			return schedule;
-		}
+	public Object generate() throws SiteWhereException {
+	    Schedule_Simple1 schedule = new Schedule_Simple1();
+	    schedule.setName(ExampleData.SCHEDULE_SIMPLE1.getName() + " Updated");
+	    return schedule;
 	}
+    }
 
-	public static class ListSchedulesResponse {
+    public static class ListSchedulesResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<ISchedule> list = new ArrayList<ISchedule>();
-			list.add(ExampleData.SCHEDULE_SIMPLE1);
-			list.add(ExampleData.SCHEDULE_CRON1);
-			return new SearchResults<ISchedule>(list, 2);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<ISchedule> list = new ArrayList<ISchedule>();
+	    list.add(ExampleData.SCHEDULE_SIMPLE1);
+	    list.add(ExampleData.SCHEDULE_CRON1);
+	    return new SearchResults<ISchedule>(list, 2);
 	}
+    }
 
-	public static class CreateScheduledJobRequest {
+    public static class CreateScheduledJobRequest {
 
-		public Object generate() throws SiteWhereException {
-			ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
-			request.setToken(ExampleData.JOB_COMMAND1.getToken());
-			request.setJobType(ExampleData.JOB_COMMAND1.getJobType());
-			request.setJobConfiguration(ExampleData.JOB_COMMAND1.getJobConfiguration());
-			request.setScheduleToken(ExampleData.JOB_COMMAND1.getScheduleToken());
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
+	    request.setToken(ExampleData.JOB_COMMAND1.getToken());
+	    request.setJobType(ExampleData.JOB_COMMAND1.getJobType());
+	    request.setJobConfiguration(ExampleData.JOB_COMMAND1.getJobConfiguration());
+	    request.setScheduleToken(ExampleData.JOB_COMMAND1.getScheduleToken());
+	    return request;
 	}
+    }
 
-	public static class CreateScheduledJobResponse {
+    public static class CreateScheduledJobResponse {
 
-		public Object generate() throws SiteWhereException {
-			return ExampleData.JOB_COMMAND1;
-		}
+	public Object generate() throws SiteWhereException {
+	    return ExampleData.JOB_COMMAND1;
 	}
+    }
 
-	public static class UpdateScheduledJobRequest {
+    public static class UpdateScheduledJobRequest {
 
-		public Object generate() throws SiteWhereException {
-			ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
-			request.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
-			return request;
-		}
+	public Object generate() throws SiteWhereException {
+	    ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
+	    request.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
+	    return request;
 	}
+    }
 
-	public static class UpdateScheduledJobResponse {
+    public static class UpdateScheduledJobResponse {
 
-		public Object generate() throws SiteWhereException {
-			ScheduledJob_Command1 job = new ScheduledJob_Command1();
-			job.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
-			return job;
-		}
+	public Object generate() throws SiteWhereException {
+	    ScheduledJob_Command1 job = new ScheduledJob_Command1();
+	    job.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
+	    return job;
 	}
+    }
 
-	public static class ListScheduledjobsResponse {
+    public static class ListScheduledjobsResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IScheduledJob> list = new ArrayList<IScheduledJob>();
-			list.add(ExampleData.JOB_COMMAND1);
-			list.add(ExampleData.JOB_COMMAND2);
-			return new SearchResults<IScheduledJob>(list, 2);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IScheduledJob> list = new ArrayList<IScheduledJob>();
+	    list.add(ExampleData.JOB_COMMAND1);
+	    list.add(ExampleData.JOB_COMMAND2);
+	    return new SearchResults<IScheduledJob>(list, 2);
 	}
+    }
 }

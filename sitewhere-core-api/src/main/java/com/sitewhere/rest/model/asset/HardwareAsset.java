@@ -18,44 +18,44 @@ import java.io.Serializable;
  */
 public class HardwareAsset extends Asset implements IHardwareAsset, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -9215203722090581894L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -9215203722090581894L;
 
-	/** SKU */
-	private String sku;
+    /** SKU */
+    private String sku;
 
-	/** Asset description */
-	private String description;
+    /** Asset description */
+    private String description;
 
-	public HardwareAsset() {
-		setType(AssetType.Hardware);
-	}
+    public HardwareAsset() {
+	setType(AssetType.Hardware);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IHardwareAsset#getSku()
-	 */
-	@Override
-	public String getSku() {
-		return sku;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IHardwareAsset#getSku()
+     */
+    @Override
+    public String getSku() {
+	return sku;
+    }
 
-	public void setSku(String sku) {
-		this.sku = sku;
-	}
+    public void setSku(String sku) {
+	this.sku = sku;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IHardwareAsset#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-		return this.description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IHardwareAsset#getDescription()
+     */
+    @Override
+    public String getDescription() {
+	return this.description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 }

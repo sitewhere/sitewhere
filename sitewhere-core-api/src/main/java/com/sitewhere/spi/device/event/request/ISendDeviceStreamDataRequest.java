@@ -14,17 +14,17 @@ package com.sitewhere.spi.device.event.request;
  */
 public interface ISendDeviceStreamDataRequest {
 
-	/**
-	 * Get stream id to send from.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get stream id to send from.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get sequence number of chunk to send.
-	 * 
-	 * @return
-	 */
-	public long getSequenceNumber();
+    /**
+     * Get sequence number of chunk to send.
+     * 
+     * @return
+     */
+    public long getSequenceNumber();
 }

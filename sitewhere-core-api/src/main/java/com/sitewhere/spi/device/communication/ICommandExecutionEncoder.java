@@ -15,7 +15,8 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * Encodes an {@link IDeviceCommandExecution} into a format that can be transmitted.
+ * Encodes an {@link IDeviceCommandExecution} into a format that can be
+ * transmitted.
  * 
  * @author Derek
  * 
@@ -25,27 +26,27 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ICommandExecutionEncoder<T> extends ITenantLifecycleComponent {
 
-	/**
-	 * Encodes a command execution.
-	 * 
-	 * @param command
-	 * @param nested
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Encodes a command execution.
+     * 
+     * @param command
+     * @param nested
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
+	    throws SiteWhereException;
 
-	/**
-	 * Encodes a SiteWhere system command.
-	 * 
-	 * @param command
-	 * @param nested
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Encodes a SiteWhere system command.
+     * 
+     * @param command
+     * @param nested
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested, IDeviceAssignment assignment)
+	    throws SiteWhereException;
 }

@@ -10,17 +10,17 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public interface IAssignmentsForAssetSearchCriteria extends ISearchCriteria {
 
-	/**
-	 * Limits search to a given site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Limits search to a given site.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Only return assignments with the given status.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentStatus getStatus();
+    /**
+     * Only return assignments with the given status.
+     * 
+     * @return
+     */
+    public DeviceAssignmentStatus getStatus();
 }

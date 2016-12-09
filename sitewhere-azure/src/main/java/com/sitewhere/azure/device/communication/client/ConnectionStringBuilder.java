@@ -38,84 +38,85 @@ public class ConnectionStringBuilder {
     private boolean ssl;
 
     // amqps://[username]:[password]@[namespace].servicebus.windows.net/ or
-    // amqps://[username]:[password]@[namespace].servicebus.chinacloudapi.cn in China
+    // amqps://[username]:[password]@[namespace].servicebus.chinacloudapi.cn in
+    // China
     public ConnectionStringBuilder(String connectionString) throws EventHubException {
-        this.connectionString = connectionString;
-        this.initialize();
+	this.connectionString = connectionString;
+	this.initialize();
     }
 
     public String getHost() {
-        return this.host;
+	return this.host;
     }
 
     public void setHost(String value) {
-        this.host = value;
+	this.host = value;
     }
 
     public int getPort() {
-        return this.port;
+	return this.port;
     }
 
     public void setPort(int value) {
-        this.port = value;
+	this.port = value;
     }
 
     public String getUserName() {
-        return this.userName;
+	return this.userName;
     }
 
     public void setUserName(String value) {
-        this.userName = value;
+	this.userName = value;
     }
 
     public String getPassword() {
-        return this.password;
+	return this.password;
     }
 
     public void setPassword(String value) {
-        this.password = value;
+	this.password = value;
     }
 
     public boolean getSsl() {
-        return this.ssl;
+	return this.ssl;
     }
 
     public void setSsl(boolean value) {
-        this.ssl = value;
+	this.ssl = value;
     }
 
     @SuppressWarnings("deprecation")
-	private void initialize() throws EventHubException {
+    private void initialize() throws EventHubException {
 
-        URL url;
-        try {
-            url = new URL(null, this.connectionString, new NullURLStreamHandler());
-        } catch (MalformedURLException e) {
-            throw new EventHubException("connectionString is not valid.", e);
-        }
+	URL url;
+	try {
+	    url = new URL(null, this.connectionString, new NullURLStreamHandler());
+	} catch (MalformedURLException e) {
+	    throw new EventHubException("connectionString is not valid.", e);
+	}
 
-        String protocol = url.getProtocol();
-        this.ssl = protocol.equalsIgnoreCase(Constants.SslScheme);
-        this.host = url.getHost();
-        this.port = url.getPort();
+	String protocol = url.getProtocol();
+	this.ssl = protocol.equalsIgnoreCase(Constants.SslScheme);
+	this.host = url.getHost();
+	this.port = url.getPort();
 
-        if (this.port == -1) {
-            this.port = this.ssl ? Constants.DefaultSslPort : Constants.DefaultPort;
-        }
+	if (this.port == -1) {
+	    this.port = this.ssl ? Constants.DefaultSslPort : Constants.DefaultPort;
+	}
 
-        String userInfo = url.getUserInfo();
-        if (userInfo != null) {
-            String[] credentials = userInfo.split(":", 2);
-            this.userName = URLDecoder.decode(credentials[0]);
-            this.password = URLDecoder.decode(credentials[1]);
-        }
+	String userInfo = url.getUserInfo();
+	if (userInfo != null) {
+	    String[] credentials = userInfo.split(":", 2);
+	    this.userName = URLDecoder.decode(credentials[0]);
+	    this.password = URLDecoder.decode(credentials[1]);
+	}
     }
 
     class NullURLStreamHandler extends URLStreamHandler {
 
-        @Override
-        protected URLConnection openConnection(URL u) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+	@Override
+	protected URLConnection openConnection(URL u) throws IOException {
+	    throw new UnsupportedOperationException("Not supported yet.");
+	}
     }
 }

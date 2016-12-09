@@ -7,17 +7,19 @@
  */
 package com.sitewhere.spi.tenant.request;
 
+import java.io.Serializable;
+
 /**
  * Information needed to create an element in a tenant group.
  * 
  * @author Derek
  */
-public interface ITenantGroupElementCreateRequest {
+public interface ITenantGroupElementCreateRequest extends Serializable {
 
-	/**
-	 * Get id of tenant referenced by element.
-	 * 
-	 * @return
-	 */
-	public String getTenantId();
+    /**
+     * Get id of tenant referenced by element.
+     * 
+     * @return
+     */
+    public String getTenantId();
 }

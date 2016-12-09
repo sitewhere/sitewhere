@@ -21,42 +21,42 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 public @interface Concerns {
 
-	public enum ConcernType {
+    public enum ConcernType {
 
-		/** Paging configuration */
-		Paging("Paged Results", "paging"),
+	/** Paging configuration */
+	Paging("Paged Results", "paging"),
 
-		/** Forced delete */
-		ForceDelete("Delete Policies", "overview-delete");
+	/** Forced delete */
+	ForceDelete("Delete Policies", "overview-delete");
 
-		/** Title shown for parameters */
-		private String title;
+	/** Title shown for parameters */
+	private String title;
 
-		/** In-document link into overview section */
-		private String link;
+	/** In-document link into overview section */
+	private String link;
 
-		private ConcernType(String title, String link) {
-			this.title = title;
-			this.link = link;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public void setTitle(String title) {
-			this.title = title;
-		}
-
-		public String getLink() {
-			return link;
-		}
-
-		public void setLink(String link) {
-			this.link = link;
-		}
+	private ConcernType(String title, String link) {
+	    this.title = title;
+	    this.link = link;
 	}
 
-	/** Concern types */
-	ConcernType[] values();
+	public String getTitle() {
+	    return title;
+	}
+
+	public void setTitle(String title) {
+	    this.title = title;
+	}
+
+	public String getLink() {
+	    return link;
+	}
+
+	public void setLink(String link) {
+	    this.link = link;
+	}
+    }
+
+    /** Concern types */
+    ConcernType[] values();
 }

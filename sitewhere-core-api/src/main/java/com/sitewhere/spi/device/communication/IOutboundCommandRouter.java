@@ -23,33 +23,33 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  */
 public interface IOutboundCommandRouter extends ILifecycleComponent {
 
-	/**
-	 * Initialize the router with destination information.
-	 * 
-	 * @param destinations
-	 * @throws SiteWhereException
-	 */
-	public void initialize(List<ICommandDestination<?, ?>> destinations) throws SiteWhereException;
+    /**
+     * Initialize the router with destination information.
+     * 
+     * @param destinations
+     * @throws SiteWhereException
+     */
+    public void initialize(List<ICommandDestination<?, ?>> destinations) throws SiteWhereException;
 
-	/**
-	 * Route a command to one of the available destinations.
-	 * 
-	 * @param execution
-	 * @param nesting
-	 * @param assignment
-	 * @throws SiteWhereException
-	 */
-	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Route a command to one of the available destinations.
+     * 
+     * @param execution
+     * @param nesting
+     * @param assignment
+     * @throws SiteWhereException
+     */
+    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException;
 
-	/**
-	 * Route a system command to one of the available destinations.
-	 * 
-	 * @param command
-	 * @param nesting
-	 * @param assignment
-	 * @throws SiteWhereException
-	 */
-	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Route a system command to one of the available destinations.
+     * 
+     * @param command
+     * @param nesting
+     * @param assignment
+     * @throws SiteWhereException
+     */
+    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+	    throws SiteWhereException;
 }

@@ -16,24 +16,24 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
  */
 public interface IDeviceSearchCriteria extends IDateRangeSearchCriteria {
 
-	/**
-	 * Get token if filtered by specification.
-	 * 
-	 * @return
-	 */
-	public String getSpecificationToken();
+    /**
+     * Get token if filtered by specification.
+     * 
+     * @return
+     */
+    public String getSpecificationToken();
 
-	/**
-	 * Get token if filtered by site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token if filtered by site.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Indicates whether assigned devices should be excluded.
-	 * 
-	 * @return
-	 */
-	public boolean isExcludeAssigned();
+    /**
+     * Indicates whether assigned devices should be excluded.
+     * 
+     * @return
+     */
+    public boolean isExcludeAssigned();
 }

@@ -24,138 +24,138 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
- * Device management facade using static sample data. This is used to generate JSON for
- * REST documentation.
+ * Device management facade using static sample data. This is used to generate
+ * JSON for REST documentation.
  * 
  * @author Derek
  */
 public class MockDeviceManagement extends DeviceManagementDecorator {
 
-	/** Sites by token */
-	private Map<String, Site> sites = new HashMap<String, Site>();
+    /** Sites by token */
+    private Map<String, Site> sites = new HashMap<String, Site>();
 
-	/** Specifications by token */
-	private Map<String, DeviceSpecification> specifications = new HashMap<String, DeviceSpecification>();
+    /** Specifications by token */
+    private Map<String, DeviceSpecification> specifications = new HashMap<String, DeviceSpecification>();
 
-	/** Devices by hardware id */
-	private Map<String, Device> devices = new HashMap<String, Device>();
+    /** Devices by hardware id */
+    private Map<String, Device> devices = new HashMap<String, Device>();
 
-	/** Assignments by token */
-	private Map<String, DeviceAssignment> assignments = new HashMap<String, DeviceAssignment>();
+    /** Assignments by token */
+    private Map<String, DeviceAssignment> assignments = new HashMap<String, DeviceAssignment>();
 
-	/** Device commands by token */
-	private Map<String, DeviceCommand> commands = new HashMap<String, DeviceCommand>();
+    /** Device commands by token */
+    private Map<String, DeviceCommand> commands = new HashMap<String, DeviceCommand>();
 
-	public MockDeviceManagement() {
-		super(null);
+    public MockDeviceManagement() {
+	super(null);
 
-		sites.put(ExampleData.SITE_CONSTRUCTION.getToken(), ExampleData.SITE_CONSTRUCTION);
+	sites.put(ExampleData.SITE_CONSTRUCTION.getToken(), ExampleData.SITE_CONSTRUCTION);
 
-		specifications.put(ExampleData.SPEC_MEITRACK.getToken(), ExampleData.SPEC_MEITRACK);
-		specifications.put(ExampleData.SPEC_HEART_MONITOR.getToken(), ExampleData.SPEC_HEART_MONITOR);
+	specifications.put(ExampleData.SPEC_MEITRACK.getToken(), ExampleData.SPEC_MEITRACK);
+	specifications.put(ExampleData.SPEC_HEART_MONITOR.getToken(), ExampleData.SPEC_HEART_MONITOR);
 
-		commands.put(ExampleData.COMMAND_GET_FW_VER.getToken(), ExampleData.COMMAND_GET_FW_VER);
-		commands.put(ExampleData.COMMAND_SET_RPT_INTV.getToken(), ExampleData.COMMAND_SET_RPT_INTV);
+	commands.put(ExampleData.COMMAND_GET_FW_VER.getToken(), ExampleData.COMMAND_GET_FW_VER);
+	commands.put(ExampleData.COMMAND_SET_RPT_INTV.getToken(), ExampleData.COMMAND_SET_RPT_INTV);
 
-		devices.put(ExampleData.TRACKER.getHardwareId(), ExampleData.TRACKER);
-		devices.put(ExampleData.HEART_MONITOR.getHardwareId(), ExampleData.HEART_MONITOR);
+	devices.put(ExampleData.TRACKER.getHardwareId(), ExampleData.TRACKER);
+	devices.put(ExampleData.HEART_MONITOR.getHardwareId(), ExampleData.HEART_MONITOR);
 
-		assignments.put(ExampleData.TRACKER_TO_DEREK.getToken(), ExampleData.TRACKER_TO_DEREK);
-		assignments.put(ExampleData.HEART_MONITOR_TO_DEREK.getToken(), ExampleData.HEART_MONITOR_TO_DEREK);
-	}
+	assignments.put(ExampleData.TRACKER_TO_DEREK.getToken(), ExampleData.TRACKER_TO_DEREK);
+	assignments.put(ExampleData.HEART_MONITOR_TO_DEREK.getToken(), ExampleData.HEART_MONITOR_TO_DEREK);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getSiteByToken(java.lang.String)
-	 */
-	@Override
-	public ISite getSiteByToken(String token) throws SiteWhereException {
-		return sites.get(token);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getSiteByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ISite getSiteByToken(String token) throws SiteWhereException {
+	return sites.get(token);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceSpecificationByToken(java
-	 * .lang.String)
-	 */
-	@Override
-	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-		return specifications.get(token);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.DeviceManagementDecorator#
+     * getDeviceSpecificationByToken(java .lang.String)
+     */
+    @Override
+    public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+	return specifications.get(token);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceByHardwareId(java.lang.
-	 * String)
-	 */
-	@Override
-	public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-		return devices.get(hardwareId);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getDeviceByHardwareId(java
+     * .lang. String)
+     */
+    @Override
+    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
+	return devices.get(hardwareId);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceAssignmentByToken(java.
-	 * lang.String)
-	 */
-	@Override
-	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-		return assignments.get(token);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getDeviceAssignmentByToken
+     * (java. lang.String)
+     */
+    @Override
+    public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
+	return assignments.get(token);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceCommandByToken(java.lang
-	 * .String)
-	 */
-	@Override
-	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-		return commands.get(token);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getDeviceCommandByToken(
+     * java.lang .String)
+     */
+    @Override
+    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+	return commands.get(token);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getCurrentDeviceAssignment(com.sitewhere
-	 * .spi.device.IDevice)
-	 */
-	@Override
-	public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-		return getDeviceAssignmentByToken(device.getAssignmentToken());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getCurrentDeviceAssignment
+     * (com.sitewhere .spi.device.IDevice)
+     */
+    @Override
+    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
+	return getDeviceAssignmentByToken(device.getAssignmentToken());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceForAssignment(com.sitewhere
-	 * .spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return getDeviceByHardwareId(assignment.getDeviceHardwareId());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getDeviceForAssignment(com
+     * .sitewhere .spi.device.IDeviceAssignment)
+     */
+    @Override
+    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
+	return getDeviceByHardwareId(assignment.getDeviceHardwareId());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#getSiteForAssignment(com.sitewhere
-	 * .spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return getSiteByToken(assignment.getSiteToken());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#getSiteForAssignment(com.
+     * sitewhere .spi.device.IDeviceAssignment)
+     */
+    @Override
+    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
+	return getSiteByToken(assignment.getSiteToken());
+    }
 }

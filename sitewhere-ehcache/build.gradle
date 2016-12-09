@@ -1,8 +1,0 @@
-
-description = 'SiteWhere EHCache Integration'
-dependencies {
-    compile project(':sitewhere-client')
-    compile project(':sitewhere-core')
-    compile group: 'net.sf.ehcache', name: 'ehcache-core', version:'2.6.11'
-    compile group: 'org.springframework', name: 'spring-beans'
-}

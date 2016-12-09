@@ -14,33 +14,33 @@ package com.sitewhere.wso2.identity.scim;
  */
 public interface IScimFields {
 
-	/** Resources section */
-	public static final String RESOURCES = "Resources";
+    /** Resources section */
+    public static final String RESOURCES = "Resources";
 
-	/** Username field */
-	public static final String ID = "id";
+    /** Username field */
+    public static final String ID = "id";
 
-	/** Username field */
-	public static final String USERNAME = "userName";
+    /** Username field */
+    public static final String USERNAME = "userName";
 
-	/** Name section */
-	public static final String NAME = "name";
+    /** Name section */
+    public static final String NAME = "name";
 
-	/** Family name field */
-	public static final String FAMILY_NAME = "familyName";
+    /** Family name field */
+    public static final String FAMILY_NAME = "familyName";
 
-	/** Given name field */
-	public static final String GIVEN_NAME = "givenName";
+    /** Given name field */
+    public static final String GIVEN_NAME = "givenName";
 
-	/** Profile URL field */
-	public static final String PROFILE_URL = "profileUrl";
+    /** Profile URL field */
+    public static final String PROFILE_URL = "profileUrl";
 
-	/** Emails section */
-	public static final String EMAILS = "emails";
+    /** Emails section */
+    public static final String EMAILS = "emails";
 
-	/** Groups section */
-	public static final String GROUPS = "groups";
+    /** Groups section */
+    public static final String GROUPS = "groups";
 
-	/** Indicator for role name */
-	public static final String DISPLAY = "display";
+    /** Indicator for role name */
+    public static final String DISPLAY = "display";
 }

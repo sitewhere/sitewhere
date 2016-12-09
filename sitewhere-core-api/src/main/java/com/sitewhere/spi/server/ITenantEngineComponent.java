@@ -19,38 +19,38 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public interface ITenantEngineComponent extends Serializable {
 
-	/**
-	 * Get component id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get component id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get component name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get component name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get component type.
-	 * 
-	 * @return
-	 */
-	public LifecycleComponentType getType();
+    /**
+     * Get component type.
+     * 
+     * @return
+     */
+    public LifecycleComponentType getType();
 
-	/**
-	 * Get component status.
-	 * 
-	 * @return
-	 */
-	public LifecycleStatus getStatus();
+    /**
+     * Get component status.
+     * 
+     * @return
+     */
+    public LifecycleStatus getStatus();
 
-	/**
-	 * Get parent component id.
-	 * 
-	 * @return
-	 */
-	public String getParentId();
+    /**
+     * Get parent component id.
+     * 
+     * @return
+     */
+    public String getParentId();
 }

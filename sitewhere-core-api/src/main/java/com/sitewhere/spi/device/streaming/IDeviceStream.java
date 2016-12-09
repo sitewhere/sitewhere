@@ -16,24 +16,24 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface IDeviceStream extends IMetadataProviderEntity {
 
-	/**
-	 * Get assignment stream belongs to.
-	 * 
-	 * @return
-	 */
-	public String getAssignmentToken();
+    /**
+     * Get assignment stream belongs to.
+     * 
+     * @return
+     */
+    public String getAssignmentToken();
 
-	/**
-	 * Get unique identifier for stream within assignment.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get unique identifier for stream within assignment.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get content type of stream data.
-	 * 
-	 * @return
-	 */
-	public String getContentType();
+    /**
+     * Get content type of stream data.
+     * 
+     * @return
+     */
+    public String getContentType();
 }

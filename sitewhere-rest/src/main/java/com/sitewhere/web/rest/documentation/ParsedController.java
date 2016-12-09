@@ -17,69 +17,69 @@ import java.util.List;
  */
 public class ParsedController {
 
-	/** Controller name */
-	private String name;
+    /** Controller name */
+    private String name;
 
-	/** Resource type */
-	private String resource;
+    /** Resource type */
+    private String resource;
 
-	/** Base URI for methods */
-	private String baseUri;
+    /** Base URI for methods */
+    private String baseUri;
 
-	/** Description */
-	private String description;
+    /** Description */
+    private String description;
 
-	/** List of methods */
-	private List<ParsedMethod> methods = new ArrayList<ParsedMethod>();
+    /** List of methods */
+    private List<ParsedMethod> methods = new ArrayList<ParsedMethod>();
 
-	/** Indicates global controller */
-	private boolean global;
+    /** Indicates global controller */
+    private boolean global;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getResource() {
-		return resource;
-	}
+    public String getResource() {
+	return resource;
+    }
 
-	public void setResource(String resource) {
-		this.resource = resource;
-	}
+    public void setResource(String resource) {
+	this.resource = resource;
+    }
 
-	public String getBaseUri() {
-		return baseUri;
-	}
+    public String getBaseUri() {
+	return baseUri;
+    }
 
-	public void setBaseUri(String baseUri) {
-		this.baseUri = baseUri;
-	}
+    public void setBaseUri(String baseUri) {
+	this.baseUri = baseUri;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public List<ParsedMethod> getMethods() {
-		return methods;
-	}
+    public List<ParsedMethod> getMethods() {
+	return methods;
+    }
 
-	public void setMethods(List<ParsedMethod> methods) {
-		this.methods = methods;
-	}
+    public void setMethods(List<ParsedMethod> methods) {
+	this.methods = methods;
+    }
 
-	public boolean isGlobal() {
-		return global;
-	}
+    public boolean isGlobal() {
+	return global;
+    }
 
-	public void setGlobal(boolean global) {
-		this.global = global;
-	}
+    public void setGlobal(boolean global) {
+	this.global = global;
+    }
 }

@@ -13,32 +13,32 @@ import java.util.List;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
 /**
- * Holds information about a Siddhi query including callbacks that should be registered
- * for it.
+ * Holds information about a Siddhi query including callbacks that should be
+ * registered for it.
  * 
  * @author Derek
  */
 public class SiddhiQuery {
 
-	/** Selector expression */
-	private String selector;
+    /** Selector expression */
+    private String selector;
 
-	/** Map of callbacks by stream name */
-	private List<StreamCallback> callbacks = new ArrayList<StreamCallback>();
+    /** Map of callbacks by stream name */
+    private List<StreamCallback> callbacks = new ArrayList<StreamCallback>();
 
-	public String getSelector() {
-		return selector;
-	}
+    public String getSelector() {
+	return selector;
+    }
 
-	public void setSelector(String selector) {
-		this.selector = selector;
-	}
+    public void setSelector(String selector) {
+	this.selector = selector;
+    }
 
-	public List<StreamCallback> getCallbacks() {
-		return callbacks;
-	}
+    public List<StreamCallback> getCallbacks() {
+	return callbacks;
+    }
 
-	public void setCallbacks(List<StreamCallback> callbacks) {
-		this.callbacks = callbacks;
-	}
+    public void setCallbacks(List<StreamCallback> callbacks) {
+	this.callbacks = callbacks;
+    }
 }

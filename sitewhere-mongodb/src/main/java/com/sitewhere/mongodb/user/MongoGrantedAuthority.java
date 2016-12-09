@@ -19,72 +19,72 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  */
 public class MongoGrantedAuthority {
 
-	/** Property for authority name */
-	public static final String PROP_AUTHORITY = "authority";
+    /** Property for authority name */
+    public static final String PROP_AUTHORITY = "authority";
 
-	/** Property for authority description */
-	public static final String PROP_DESCRIPTION = "description";
+    /** Property for authority description */
+    public static final String PROP_DESCRIPTION = "description";
 
-	/** Property for parent */
-	public static final String PROP_PARENT = "parent";
+    /** Property for parent */
+    public static final String PROP_PARENT = "parent";
 
-	/** Property for group indicator */
-	public static final String PROP_GROUP = "group";
+    /** Property for group indicator */
+    public static final String PROP_GROUP = "group";
 
-	/**
-	 * Copy information from SPI into Mongo DBObject.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void toDBObject(IGrantedAuthority source, BasicDBObject target) {
-		target.append(PROP_AUTHORITY, source.getAuthority());
-		target.append(PROP_DESCRIPTION, source.getDescription());
-		target.append(PROP_PARENT, source.getParent());
-		target.append(PROP_GROUP, source.isGroup());
+    /**
+     * Copy information from SPI into Mongo DBObject.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void toDBObject(IGrantedAuthority source, BasicDBObject target) {
+	target.append(PROP_AUTHORITY, source.getAuthority());
+	target.append(PROP_DESCRIPTION, source.getDescription());
+	target.append(PROP_PARENT, source.getParent());
+	target.append(PROP_GROUP, source.isGroup());
+    }
+
+    /**
+     * Copy information from Mongo DBObject to model object.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void fromDBObject(DBObject source, GrantedAuthority target) {
+	String authority = (String) source.get(PROP_AUTHORITY);
+	String description = (String) source.get(PROP_DESCRIPTION);
+	String parent = (String) source.get(PROP_PARENT);
+	Boolean group = (Boolean) source.get(PROP_GROUP);
+
+	target.setAuthority(authority);
+	target.setDescription(description);
+	target.setParent(parent);
+	if (group != null) {
+	    target.setGroup(group.booleanValue());
 	}
+    }
 
-	/**
-	 * Copy information from Mongo DBObject to model object.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void fromDBObject(DBObject source, GrantedAuthority target) {
-		String authority = (String) source.get(PROP_AUTHORITY);
-		String description = (String) source.get(PROP_DESCRIPTION);
-		String parent = (String) source.get(PROP_PARENT);
-		Boolean group = (Boolean) source.get(PROP_GROUP);
+    /**
+     * Convert SPI object to Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public static BasicDBObject toDBObject(IGrantedAuthority source) {
+	BasicDBObject result = new BasicDBObject();
+	MongoGrantedAuthority.toDBObject(source, result);
+	return result;
+    }
 
-		target.setAuthority(authority);
-		target.setDescription(description);
-		target.setParent(parent);
-		if (group != null) {
-			target.setGroup(group.booleanValue());
-		}
-	}
-
-	/**
-	 * Convert SPI object to Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static BasicDBObject toDBObject(IGrantedAuthority source) {
-		BasicDBObject result = new BasicDBObject();
-		MongoGrantedAuthority.toDBObject(source, result);
-		return result;
-	}
-
-	/**
-	 * Convert a DBObject into the SPI equivalent.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static GrantedAuthority fromDBObject(DBObject source) {
-		GrantedAuthority result = new GrantedAuthority();
-		MongoGrantedAuthority.fromDBObject(source, result);
-		return result;
-	}
+    /**
+     * Convert a DBObject into the SPI equivalent.
+     * 
+     * @param source
+     * @return
+     */
+    public static GrantedAuthority fromDBObject(DBObject source) {
+	GrantedAuthority result = new GrantedAuthority();
+	MongoGrantedAuthority.fromDBObject(source, result);
+	return result;
+    }
 }

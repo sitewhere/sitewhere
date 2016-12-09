@@ -14,10 +14,10 @@ package com.sitewhere.spi.server;
  */
 public interface ISiteWhereServerState {
 
-	/**
-	 * Get the unique node id.
-	 * 
-	 * @return
-	 */
-	public String getNodeId();
+    /**
+     * Get the unique node id.
+     * 
+     * @return
+     */
+    public String getNodeId();
 }

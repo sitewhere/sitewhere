@@ -15,23 +15,23 @@ import org.junit.Test;
 
 public class WebSocketServerTest {
 
-	/**
-	 * Starts a WebSocket server that has two endpoints, one that generates String
-	 * payloads and another that generates binary payloads.
-	 */
-	@Test
-	public void startWebSocketServer() {
-		Server server = new Server("localhost", 6543, "/sitewhere", null, WebSocketConfiguration.class);
+    /**
+     * Starts a WebSocket server that has two endpoints, one that generates
+     * String payloads and another that generates binary payloads.
+     */
+    @Test
+    public void startWebSocketServer() {
+	Server server = new Server("localhost", 6543, "/sitewhere", null, WebSocketConfiguration.class);
 
-		try {
-			server.start();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Please press a key to stop the server.");
-			reader.readLine();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			server.stop();
-		}
+	try {
+	    server.start();
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	    System.out.print("Please press a key to stop the server.");
+	    reader.readLine();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	} finally {
+	    server.stop();
 	}
+    }
 }

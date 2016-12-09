@@ -18,17 +18,17 @@ import java.util.List;
  */
 public interface ISearchResults<T> {
 
-	/**
-	 * Get the total number of results.
-	 * 
-	 * @return
-	 */
-	public long getNumResults();
+    /**
+     * Get the total number of results.
+     * 
+     * @return
+     */
+    public long getNumResults();
 
-	/**
-	 * Get the results.
-	 * 
-	 * @return
-	 */
-	public List<T> getResults();
+    /**
+     * Get the results.
+     * 
+     * @return
+     */
+    public List<T> getResults();
 }

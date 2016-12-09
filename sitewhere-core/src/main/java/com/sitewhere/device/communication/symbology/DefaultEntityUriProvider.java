@@ -24,81 +24,81 @@ import com.sitewhere.spi.device.symbology.IEntityUriProvider;
  */
 public class DefaultEntityUriProvider implements IEntityUriProvider {
 
-	/** SiteWhere protocol prefix */
-	public static final String SITEWHERE_PROTOCOL = "sitewhere://";
+    /** SiteWhere protocol prefix */
+    public static final String SITEWHERE_PROTOCOL = "sitewhere://";
 
-	/** Singleton instance */
-	public static DefaultEntityUriProvider INSTANCE;
+    /** Singleton instance */
+    public static DefaultEntityUriProvider INSTANCE;
 
-	protected DefaultEntityUriProvider() {
+    protected DefaultEntityUriProvider() {
+    }
+
+    public static DefaultEntityUriProvider getInstance() {
+	if (INSTANCE == null) {
+	    INSTANCE = new DefaultEntityUriProvider();
 	}
+	return INSTANCE;
+    }
 
-	public static DefaultEntityUriProvider getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new DefaultEntityUriProvider();
-		}
-		return INSTANCE;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getSiteIdentifier(
+     * com.sitewhere .spi.device.ISite)
+     */
+    @Override
+    public URI getSiteIdentifier(ISite site) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "site/" + site.getToken());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.IEntityUriProvider#getSiteIdentifier(com.sitewhere
-	 * .spi.device.ISite)
-	 */
-	@Override
-	public URI getSiteIdentifier(ISite site) throws SiteWhereException {
-		return createUri(SITEWHERE_PROTOCOL + "site/" + site.getToken());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
+     * getDeviceSpecificationIdentifier
+     * (com.sitewhere.spi.device.IDeviceSpecification)
+     */
+    @Override
+    public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "specification/" + specification.getToken());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.IEntityUriProvider#getDeviceSpecificationIdentifier
-	 * (com.sitewhere.spi.device.IDeviceSpecification)
-	 */
-	@Override
-	public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException {
-		return createUri(SITEWHERE_PROTOCOL + "specification/" + specification.getToken());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getDeviceIdentifier
+     * (com.sitewhere .spi.device.IDevice)
+     */
+    @Override
+    public URI getDeviceIdentifier(IDevice device) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "device/" + device.getHardwareId());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.IEntityUriProvider#getDeviceIdentifier(com.sitewhere
-	 * .spi.device.IDevice)
-	 */
-	@Override
-	public URI getDeviceIdentifier(IDevice device) throws SiteWhereException {
-		return createUri(SITEWHERE_PROTOCOL + "device/" + device.getHardwareId());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
+     * getDeviceAssignmentIdentifier
+     * (com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "assignment/" + assignment.getToken());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.symbology.IEntityUriProvider#getDeviceAssignmentIdentifier
-	 * (com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException {
-		return createUri(SITEWHERE_PROTOCOL + "assignment/" + assignment.getToken());
+    /**
+     * Create a URI.
+     * 
+     * @param uri
+     * @return
+     */
+    protected URI createUri(String uri) {
+	try {
+	    return new URI(uri);
+	} catch (URISyntaxException e) {
+	    throw new RuntimeException(e);
 	}
-
-	/**
-	 * Create a URI.
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	protected URI createUri(String uri) {
-		try {
-			return new URI(uri);
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    }
 }

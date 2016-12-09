@@ -14,25 +14,25 @@ package com.sitewhere.cloud.providers.initialstate;
  */
 public class BucketCreateRequest {
 
-	/** Unique bucket key */
-	private String bucketKey;
+    /** Unique bucket key */
+    private String bucketKey;
 
-	/** Human-readable bucket name */
-	private String bucketName;
+    /** Human-readable bucket name */
+    private String bucketName;
 
-	public String getBucketKey() {
-		return bucketKey;
-	}
+    public String getBucketKey() {
+	return bucketKey;
+    }
 
-	public void setBucketKey(String bucketKey) {
-		this.bucketKey = bucketKey;
-	}
+    public void setBucketKey(String bucketKey) {
+	this.bucketKey = bucketKey;
+    }
 
-	public String getBucketName() {
-		return bucketName;
-	}
+    public String getBucketName() {
+	return bucketName;
+    }
 
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    public void setBucketName(String bucketName) {
+	this.bucketName = bucketName;
+    }
 }

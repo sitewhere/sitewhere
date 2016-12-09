@@ -12,154 +12,138 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that reads events from a Hazelcast
- * queue and pushes them into the processing pipeline.
+ * Implementation of {@link IInboundEventReceiver} that reads events from a
+ * Hazelcast queue and pushes them into the processing pipeline.
  * 
  * @author Derek
  */
-public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRequest<?>>
-		implements ITenantHazelcastAware {
+public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRequest<?>> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HazelcastQueueReceiver.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Queue of events to be processed */
-	private IQueue<DecodedDeviceRequest<?>> eventQueue;
+    /** Queue of events to be processed */
+    private IQueue<DecodedDeviceRequest<?>> eventQueue;
 
-	/** Injected Hazelcast configuration */
-	private ITenantHazelcastConfiguration hazelcastConfiguration;
+    /** Used to queue processing in a separate thread */
+    private ExecutorService executor;
 
-	/** Used to queue processing in a separate thread */
-	private ExecutorService executor;
+    /** Name of Hazelcast queue to listen on */
+    private String queueName = ISiteWhereHazelcast.QUEUE_ALL_EVENTS;
 
-	/** Name of Hazelcast queue to listen on */
-	private String queueName = ISiteWhereHazelcast.QUEUE_ALL_EVENTS;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
+		.getQueue(getQueueName());
+	LOGGER.info("Receiver listening for events on Hazelcast queue: " + getQueueName());
+	this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
+	executor.submit(new HazelcastQueueProcessor());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (executor != null) {
+	    executor.shutdownNow();
+	}
+	this.executor = null;
+    }
+
+    /**
+     * Handles Hazelcast queue processing in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class HazelcastQueueProcessor implements Runnable {
+
 	@Override
-	public void start() throws SiteWhereException {
-		if (getHazelcastConfiguration() == null) {
-			throw new SiteWhereException("No Hazelcast configuration provided.");
+	public void run() {
+	    while (true) {
+		try {
+		    DecodedDeviceRequest<?> payload = getEventQueue().take();
+		    EventProcessingLogic.processRawPayload(HazelcastQueueReceiver.this, payload, null);
+		    LOGGER.debug("Processed event from " + payload.getHardwareId() + " from Hazelcast event queue.");
+		} catch (InterruptedException e) {
+		    LOGGER.warn("Hazelcast queue processor interrupted.");
+		    return;
 		}
-		this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
-		LOGGER.info("Receiver listening for events on Hazelcast queue: " + getQueueName());
-		this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
-		executor.submit(new HazelcastQueueProcessor());
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		if (executor != null) {
-			executor.shutdownNow();
-		}
-		this.executor = null;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getDisplayName()
+     */
+    @Override
+    public String getDisplayName() {
+	return "Hazelcast";
+    }
+
+    /** Used for naming processor threads */
+    private class ProcessorsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere Hazelcast(" + getEventSource().getSourceId() + ") Receiver "
+		    + counter.incrementAndGet());
 	}
+    }
 
-	/**
-	 * Handles Hazelcast queue processing in a separate thread.
-	 * 
-	 * @author Derek
-	 */
-	private class HazelcastQueueProcessor implements Runnable {
+    public IQueue<DecodedDeviceRequest<?>> getEventQueue() {
+	return eventQueue;
+    }
 
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					DecodedDeviceRequest<?> payload = getEventQueue().take();
-					EventProcessingLogic.processRawPayload(HazelcastQueueReceiver.this, payload, null);
-					LOGGER.debug("Processed event from " + payload.getHardwareId()
-							+ " from Hazelcast event queue.");
-				} catch (InterruptedException e) {
-					LOGGER.warn("Hazelcast queue processor interrupted.");
-					return;
-				}
-			}
-		}
-	}
+    public void setEventQueue(IQueue<DecodedDeviceRequest<?>> eventQueue) {
+	this.eventQueue = eventQueue;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    public String getQueueName() {
+	return queueName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
-	 */
-	@Override
-	public String getDisplayName() {
-		return "Hazelcast";
-	}
-
-	/** Used for naming processor threads */
-	private class ProcessorsThreadFactory implements ThreadFactory {
-
-		/** Counts threads */
-		private AtomicInteger counter = new AtomicInteger();
-
-		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere Hazelcast(" + getEventSource().getSourceId() + ") Receiver "
-					+ counter.incrementAndGet());
-		}
-	}
-
-	public IQueue<DecodedDeviceRequest<?>> getEventQueue() {
-		return eventQueue;
-	}
-
-	public void setEventQueue(IQueue<DecodedDeviceRequest<?>> eventQueue) {
-		this.eventQueue = eventQueue;
-	}
-
-	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
-		return hazelcastConfiguration;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
-	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-	 */
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
-		this.hazelcastConfiguration = hazelcastConfiguration;
-	}
-
-	public String getQueueName() {
-		return queueName;
-	}
-
-	public void setQueueName(String queueName) {
-		this.queueName = queueName;
-	}
+    public void setQueueName(String queueName) {
+	this.queueName = queueName;
+    }
 }

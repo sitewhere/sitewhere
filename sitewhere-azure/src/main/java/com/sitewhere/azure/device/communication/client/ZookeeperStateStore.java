@@ -39,64 +39,64 @@ public class ZookeeperStateStore implements IStateStore {
     private final CuratorFramework curatorFramework;
 
     public ZookeeperStateStore(String zookeeperConnectionString) {
-        this(zookeeperConnectionString, 3, 100);
+	this(zookeeperConnectionString, 3, 100);
     }
 
     public ZookeeperStateStore(String connectionString, int retries, int retryInterval) {
-        if (connectionString == null) {
-            zookeeperConnectionString = "localhost:2181";
-        } else {
-            zookeeperConnectionString = connectionString;
-        }
+	if (connectionString == null) {
+	    zookeeperConnectionString = "localhost:2181";
+	} else {
+	    zookeeperConnectionString = connectionString;
+	}
 
-        RetryPolicy retryPolicy = new RetryNTimes(retries, retryInterval);
-        curatorFramework = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
+	RetryPolicy retryPolicy = new RetryNTimes(retries, retryInterval);
+	curatorFramework = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
     }
 
     @Override
     public void open() {
-        curatorFramework.start();
+	curatorFramework.start();
     }
 
     @Override
     public void close() {
-        curatorFramework.close();
+	curatorFramework.close();
     }
 
     @Override
     public void saveData(String statePath, String data) {
-        data = data == null ? "" : data;
-        byte[] bytes = data.getBytes();
+	data = data == null ? "" : data;
+	byte[] bytes = data.getBytes();
 
-        try {
-            if (curatorFramework.checkExists().forPath(statePath) == null) {
-                curatorFramework.create().creatingParentsIfNeeded().forPath(statePath, bytes);
-            } else {
-                curatorFramework.setData().forPath(statePath, bytes);
-            }
+	try {
+	    if (curatorFramework.checkExists().forPath(statePath) == null) {
+		curatorFramework.create().creatingParentsIfNeeded().forPath(statePath, bytes);
+	    } else {
+		curatorFramework.setData().forPath(statePath, bytes);
+	    }
 
-            logger.info(String.format("data was saved. path: %s, data: %s.", statePath, data));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+	    logger.info(String.format("data was saved. path: %s, data: %s.", statePath, data));
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
     }
 
     @Override
     public String readData(String statePath) {
-        try {
-            if (curatorFramework.checkExists().forPath(statePath) == null) {
-                // do we want to throw an exception if path doesn't exist??
-                return null;
-            } else {
-                byte[] bytes = curatorFramework.getData().forPath(statePath);
-                String data = new String(bytes);
+	try {
+	    if (curatorFramework.checkExists().forPath(statePath) == null) {
+		// do we want to throw an exception if path doesn't exist??
+		return null;
+	    } else {
+		byte[] bytes = curatorFramework.getData().forPath(statePath);
+		String data = new String(bytes);
 
-                logger.info(String.format("data was retrieved. path: %s, data: %s.", statePath, data));
+		logger.info(String.format("data was retrieved. path: %s, data: %s.", statePath, data));
 
-                return data;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		return data;
+	    }
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
     }
 }

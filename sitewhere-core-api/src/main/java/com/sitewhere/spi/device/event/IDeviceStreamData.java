@@ -14,24 +14,24 @@ package com.sitewhere.spi.device.event;
  */
 public interface IDeviceStreamData extends IDeviceEvent {
 
-	/**
-	 * Get id that ties all related chunks together.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get id that ties all related chunks together.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get sequence number for ordering chunks.
-	 * 
-	 * @return
-	 */
-	public Long getSequenceNumber();
+    /**
+     * Get sequence number for ordering chunks.
+     * 
+     * @return
+     */
+    public Long getSequenceNumber();
 
-	/**
-	 * Get chunk data.
-	 * 
-	 * @return
-	 */
-	public byte[] getData();
+    /**
+     * Get chunk data.
+     * 
+     * @return
+     */
+    public byte[] getData();
 }

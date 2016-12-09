@@ -9,6 +9,7 @@ package com.sitewhere.server.lifecycle;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
@@ -18,37 +19,55 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public abstract class TenantLifecycleComponent extends LifecycleComponent implements
-		ITenantLifecycleComponent {
+public abstract class TenantLifecycleComponent extends LifecycleComponent implements ITenantLifecycleComponent {
 
-	public TenantLifecycleComponent(LifecycleComponentType type) {
-		super(type);
+    public TenantLifecycleComponent(LifecycleComponentType type) {
+	super(type);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#
+     * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	if (component instanceof ITenantLifecycleComponent) {
+	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
+	super.initializeNestedComponent(component, monitor);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(com.sitewhere
-	 * .spi.server.lifecycle.ILifecycleComponent, java.lang.String, boolean)
-	 */
-	@Override
-	public void startNestedComponent(ILifecycleComponent component, String errorMessage, boolean require)
-			throws SiteWhereException {
-		if (component instanceof ITenantLifecycleComponent) {
-			((ITenantLifecycleComponent) component).setTenant(getTenant());
-		}
-		super.startNestedComponent(component, errorMessage, require);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * java.lang.String, boolean)
+     */
+    @Override
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
+	if (component instanceof ITenantLifecycleComponent) {
+	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
+	super.startNestedComponent(component, monitor, errorMessage, require);
+    }
 
-	/** Tenant associated with component */
-	private ITenant tenant;
+    /** Tenant associated with component */
+    private ITenant tenant;
 
-	public ITenant getTenant() {
-		return tenant;
-	}
+    public ITenant getTenant() {
+	return tenant;
+    }
 
-	public void setTenant(ITenant tenant) {
-		this.tenant = tenant;
-	}
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
+    }
 }

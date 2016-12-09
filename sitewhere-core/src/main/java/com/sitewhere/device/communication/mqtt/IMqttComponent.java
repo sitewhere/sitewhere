@@ -16,38 +16,38 @@ import com.sitewhere.spi.common.IInternetConnected;
  */
 public interface IMqttComponent extends IInternetConnected {
 
-	/**
-	 * Get protocol used to access the broker.
-	 * 
-	 * @return
-	 */
-	public String getProtocol();
+    /**
+     * Get protocol used to access the broker.
+     * 
+     * @return
+     */
+    public String getProtocol();
 
-	/**
-	 * Get broker username.
-	 * 
-	 * @return
-	 */
-	public String getUsername();
+    /**
+     * Get broker username.
+     * 
+     * @return
+     */
+    public String getUsername();
 
-	/**
-	 * Get broker password.
-	 * 
-	 * @return
-	 */
-	public String getPassword();
+    /**
+     * Get broker password.
+     * 
+     * @return
+     */
+    public String getPassword();
 
-	/**
-	 * Get full path to trust store for TLS/SSL.
-	 * 
-	 * @return
-	 */
-	public String getTrustStorePath();
+    /**
+     * Get full path to trust store for TLS/SSL.
+     * 
+     * @return
+     */
+    public String getTrustStorePath();
 
-	/**
-	 * Get password for TLS/SSL trust store.
-	 * 
-	 * @return
-	 */
-	public String getTrustStorePassword();
+    /**
+     * Get password for TLS/SSL trust store.
+     * 
+     * @return
+     */
+    public String getTrustStorePassword();
 }

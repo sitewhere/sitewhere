@@ -11,7 +11,7 @@ import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 
 public class MockDeviceSpecificationMarshalHelper extends DeviceSpecificationMarshalHelper {
 
-	public MockDeviceSpecificationMarshalHelper() {
-		super(null);
-	}
+    public MockDeviceSpecificationMarshalHelper() {
+	super(null);
+    }
 }

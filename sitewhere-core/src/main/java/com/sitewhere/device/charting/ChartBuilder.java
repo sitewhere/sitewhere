@@ -27,57 +27,58 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 public class ChartBuilder {
 
-	/** Map of measurement names to series */
-	private Map<String, IChartSeries<Double>> seriesByMeasurementName;
+    /** Map of measurement names to series */
+    private Map<String, IChartSeries<Double>> seriesByMeasurementName;
 
-	/**
-	 * Process measurements into a list of charts series.
-	 * 
-	 * @param matches
-	 * @return
-	 */
-	public List<IChartSeries<Double>> process(List<IDeviceMeasurements> matches, String[] measurementIds) {
-		seriesByMeasurementName = new HashMap<String, IChartSeries<Double>>();
-		List<String> mxids = null;
-		if ((measurementIds != null) && (measurementIds.length > 0)) {
-			mxids = Arrays.asList(measurementIds);
-		}
-
-		// Add all measurements.
-		for (IDeviceMeasurements measurements : matches) {
-			for (String key : measurements.getMeasurements().keySet()) {
-				addSeriesEntry(key, measurements.getMeasurement(key), measurements.getEventDate());
-			}
-		}
-		// Sort entries by date.
-		List<IChartSeries<Double>> results = new ArrayList<IChartSeries<Double>>();
-		for (IChartSeries<Double> series : seriesByMeasurementName.values()) {
-			if ((mxids == null) || (mxids.contains(series.getMeasurementId()))) {
-				Collections.sort(series.getEntries());
-				results.add(series);
-			}
-		}
-		return results;
+    /**
+     * Process measurements into a list of charts series.
+     * 
+     * @param matches
+     * @return
+     */
+    public List<IChartSeries<Double>> process(List<IDeviceMeasurements> matches, String[] measurementIds) {
+	seriesByMeasurementName = new HashMap<String, IChartSeries<Double>>();
+	List<String> mxids = null;
+	if ((measurementIds != null) && (measurementIds.length > 0)) {
+	    mxids = Arrays.asList(measurementIds);
 	}
 
-	/**
-	 * Add a new measurement entry. Create a new series if one does not already exist.
-	 * 
-	 * @param key
-	 * @param value
-	 * @param date
-	 */
-	protected void addSeriesEntry(String key, Double value, Date date) {
-		IChartSeries<Double> series = seriesByMeasurementName.get(key);
-		if (series == null) {
-			ChartSeries<Double> newSeries = new ChartSeries<Double>();
-			newSeries.setMeasurementId(key);
-			seriesByMeasurementName.put(key, newSeries);
-			series = newSeries;
-		}
-		ChartEntry<Double> seriesEntry = new ChartEntry<Double>();
-		seriesEntry.setValue(value);
-		seriesEntry.setMeasurementDate(date);
-		series.getEntries().add(seriesEntry);
+	// Add all measurements.
+	for (IDeviceMeasurements measurements : matches) {
+	    for (String key : measurements.getMeasurements().keySet()) {
+		addSeriesEntry(key, measurements.getMeasurement(key), measurements.getEventDate());
+	    }
 	}
+	// Sort entries by date.
+	List<IChartSeries<Double>> results = new ArrayList<IChartSeries<Double>>();
+	for (IChartSeries<Double> series : seriesByMeasurementName.values()) {
+	    if ((mxids == null) || (mxids.contains(series.getMeasurementId()))) {
+		Collections.sort(series.getEntries());
+		results.add(series);
+	    }
+	}
+	return results;
+    }
+
+    /**
+     * Add a new measurement entry. Create a new series if one does not already
+     * exist.
+     * 
+     * @param key
+     * @param value
+     * @param date
+     */
+    protected void addSeriesEntry(String key, Double value, Date date) {
+	IChartSeries<Double> series = seriesByMeasurementName.get(key);
+	if (series == null) {
+	    ChartSeries<Double> newSeries = new ChartSeries<Double>();
+	    newSeries.setMeasurementId(key);
+	    seriesByMeasurementName.put(key, newSeries);
+	    series = newSeries;
+	}
+	ChartEntry<Double> seriesEntry = new ChartEntry<Double>();
+	seriesEntry.setValue(value);
+	seriesEntry.setMeasurementDate(date);
+	series.getEntries().add(seriesEntry);
+    }
 }

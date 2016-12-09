@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.device.event;
 
-
 /**
  * Single measurement associated with a device assignment.
  * 

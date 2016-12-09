@@ -30,47 +30,44 @@ import com.sitewhere.version.VersionHelper;
 @EnableWebMvc
 public class SiteWhereSwaggerConfig {
 
-	/** Title for API page */
-	private static final String API_TITLE = "SiteWhere REST APIs";
+    /** Title for API page */
+    private static final String API_TITLE = "SiteWhere REST APIs";
 
-	/** Description for API page */
-	private static final String API_DESCRIPTION =
-			"Operations that allow remote clients to interact with the core SiteWhere data model.";
+    /** Description for API page */
+    private static final String API_DESCRIPTION = "Operations that allow remote clients to interact with the core SiteWhere data model.";
 
-	/** Contact email for API questions */
-	private static final String API_CONTACT_EMAIL = "derek.adams@sitewhere.com";
+    /** Contact email for API questions */
+    private static final String API_CONTACT_EMAIL = "derek.adams@sitewhere.com";
 
-	/** License type information */
-	private static final String API_LICENSE_TYPE = "Common Public Attribution License Version 1.0 (CPAL-1.0)";
+    /** License type information */
+    private static final String API_LICENSE_TYPE = "Common Public Attribution License Version 1.0 (CPAL-1.0)";
 
-	/** Contact email for API questions */
-	private static final String API_LICENSE_URL =
-			"https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
+    /** Contact email for API questions */
+    private static final String API_LICENSE_URL = "https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
 
-	/** Swagger configuration */
-	private SpringSwaggerConfig springSwaggerConfig;
+    /** Swagger configuration */
+    private SpringSwaggerConfig springSwaggerConfig;
 
-	/** SiteWhere path provider */
-	private SiteWherePathProvider pathProvider;
+    /** SiteWhere path provider */
+    private SiteWherePathProvider pathProvider;
 
-	@Autowired
-	public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
-		this.springSwaggerConfig = springSwaggerConfig;
-	}
+    @Autowired
+    public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
+	this.springSwaggerConfig = springSwaggerConfig;
+    }
 
-	@Autowired
-	public void setServletContext(ServletContext servletContext) {
-		this.pathProvider = new SiteWherePathProvider(servletContext);
-	}
+    @Autowired
+    public void setServletContext(ServletContext servletContext) {
+	this.pathProvider = new SiteWherePathProvider(servletContext);
+    }
 
-	@Bean
-	public SwaggerSpringMvcPlugin customImplementation() {
-		ApiInfo apiInfo =
-				new ApiInfo(
-						API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
-								+ VersionHelper.getVersion().getEditionIdentifier() + ")",
-						API_DESCRIPTION, null, API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
-		return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).pathProvider(pathProvider).apiInfo(
-				apiInfo).apiVersion(VersionHelper.getVersion().getVersionIdentifier());
-	}
+    @Bean
+    public SwaggerSpringMvcPlugin customImplementation() {
+	ApiInfo apiInfo = new ApiInfo(
+		API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
+			+ VersionHelper.getVersion().getEditionIdentifier() + ")",
+		API_DESCRIPTION, null, API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
+	return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).pathProvider(pathProvider).apiInfo(apiInfo)
+		.apiVersion(VersionHelper.getVersion().getVersionIdentifier());
+    }
 }

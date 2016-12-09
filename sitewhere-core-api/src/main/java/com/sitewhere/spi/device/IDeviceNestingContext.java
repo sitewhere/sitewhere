@@ -16,24 +16,26 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  */
 public interface IDeviceNestingContext {
 
-	/**
-	 * Get gateway device that should be contacted.
-	 * 
-	 * @return
-	 */
-	public IDevice getGateway();
+    /**
+     * Get gateway device that should be contacted.
+     * 
+     * @return
+     */
+    public IDevice getGateway();
 
-	/**
-	 * Get nested device being addressed. In standalone devices, this value will be null.
-	 * 
-	 * @return
-	 */
-	public IDevice getNested();
+    /**
+     * Get nested device being addressed. In standalone devices, this value will
+     * be null.
+     * 
+     * @return
+     */
+    public IDevice getNested();
 
-	/**
-	 * Get path in parent device {@link IDeviceElementSchema} mapped to target device.
-	 * 
-	 * @return
-	 */
-	public String getPath();
+    /**
+     * Get path in parent device {@link IDeviceElementSchema} mapped to target
+     * device.
+     * 
+     * @return
+     */
+    public String getPath();
 }

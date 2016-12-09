@@ -18,64 +18,65 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  */
 public class DeviceStream extends MetadataProviderEntity implements IDeviceStream {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -5721420122887571143L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -5721420122887571143L;
 
-	/** Parent assignment token */
-	private String assignmentToken;
+    /** Parent assignment token */
+    private String assignmentToken;
 
-	/** Stream id */
-	private String streamId;
+    /** Stream id */
+    private String streamId;
 
-	/** Stream content type */
-	private String contentType;
+    /** Stream content type */
+    private String contentType;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.streaming.IDeviceStream#getAssignmentToken()
-	 */
-	public String getAssignmentToken() {
-		return assignmentToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.streaming.IDeviceStream#getAssignmentToken()
+     */
+    public String getAssignmentToken() {
+	return assignmentToken;
+    }
 
-	public void setAssignmentToken(String assignmentToken) {
-		this.assignmentToken = assignmentToken;
-	}
+    public void setAssignmentToken(String assignmentToken) {
+	this.assignmentToken = assignmentToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.streaming.IDeviceStream#getStreamId()
-	 */
-	public String getStreamId() {
-		return streamId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.streaming.IDeviceStream#getStreamId()
+     */
+    public String getStreamId() {
+	return streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public void setStreamId(String streamId) {
+	this.streamId = streamId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.streaming.IDeviceStream#getContentType()
-	 */
-	public String getContentType() {
-		return contentType;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.streaming.IDeviceStream#getContentType()
+     */
+    public String getContentType() {
+	return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+	this.contentType = contentType;
+    }
 
-	public static DeviceStream copy(IDeviceStream input) throws SiteWhereException {
-		DeviceStream result = new DeviceStream();
-		result.setAssignmentToken(input.getAssignmentToken());
-		result.setStreamId(input.getStreamId());
-		result.setContentType(input.getContentType());
+    public static DeviceStream copy(IDeviceStream input) throws SiteWhereException {
+	DeviceStream result = new DeviceStream();
+	result.setAssignmentToken(input.getAssignmentToken());
+	result.setStreamId(input.getStreamId());
+	result.setContentType(input.getContentType());
 
-		MetadataProviderEntity.copy(input, result);
-		return result;
-	}
+	MetadataProviderEntity.copy(input, result);
+	return result;
+    }
 }

@@ -10,40 +10,40 @@ package com.sitewhere.rest.model.search;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
- * Common criteria used in searches that return a list of results. Includes parameters for
- * paging of results.
+ * Common criteria used in searches that return a list of results. Includes
+ * parameters for paging of results.
  * 
  * @author Derek
  */
 public class SearchCriteria implements ISearchCriteria {
-	
-	/** Search criteria for getting all records */
-	public static SearchCriteria ALL = new SearchCriteria(1, 0);
 
-	/** Page number to view */
-	private Integer pageNumber;
+    /** Search criteria for getting all records */
+    public static SearchCriteria ALL = new SearchCriteria(1, 0);
 
-	/** Number of records in a page of results */
-	private Integer pageSize;
+    /** Page number to view */
+    private Integer pageNumber;
 
-	public SearchCriteria(int pageNumber, int pageSize) {
-		this.pageNumber = pageNumber;
-		this.pageSize = pageSize;
-	}
+    /** Number of records in a page of results */
+    private Integer pageSize;
 
-	public Integer getPageNumber() {
-		return pageNumber;
-	}
+    public SearchCriteria(int pageNumber, int pageSize) {
+	this.pageNumber = pageNumber;
+	this.pageSize = pageSize;
+    }
 
-	public void setPageNumber(Integer pageNumber) {
-		this.pageNumber = pageNumber;
-	}
+    public Integer getPageNumber() {
+	return pageNumber;
+    }
 
-	public Integer getPageSize() {
-		return pageSize;
-	}
+    public void setPageNumber(Integer pageNumber) {
+	this.pageNumber = pageNumber;
+    }
 
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
+    public Integer getPageSize() {
+	return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+	this.pageSize = pageSize;
+    }
 }

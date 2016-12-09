@@ -18,24 +18,24 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  */
 public interface IDeviceStreamCreateRequest {
 
-	/**
-	 * Get unique identifier for stream within assignment.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get unique identifier for stream within assignment.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get content type of stream data.
-	 * 
-	 * @return
-	 */
-	public String getContentType();
+    /**
+     * Get content type of stream data.
+     * 
+     * @return
+     */
+    public String getContentType();
 
-	/**
-	 * Get metadata associated with stream.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata associated with stream.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

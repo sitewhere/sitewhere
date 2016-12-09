@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns="http://www.sitewhere.com/schema/sitewhere/ce/tenant"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce" targetNamespace="http://www.sitewhere.com/schema/sitewhere/ce/tenant"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce"
+	targetNamespace="http://www.sitewhere.com/schema/sitewhere/ce/tenant"
 	elementFormDefault="qualified" attributeFormDefault="unqualified"
 	xmlns:pref="http://www.sitewhere.com/schema/sitewhere/ce">
 
-	<xsd:import schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	<xsd:import
+		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
 		namespace="http://www.springframework.org/schema/beans">
 	</xsd:import>
-	<xsd:import schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd"
+	<xsd:import
+		schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd"
 		namespace="http://www.sitewhere.com/schema/sitewhere/ce"></xsd:import>
 
 	<xsd:element name="tenant-configuration" type="tenantConfigurationType">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides configuration information for a SiteWhere server tenant.
+				Provides configuration information for a SiteWhere
+				server tenant.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -24,94 +28,85 @@
 			<xsd:element name="globals" type="globalsType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Global configuration settings for external services that SiteWhere
-						interacts with.
+						Global configuration settings for external
+						services that SiteWhere interacts with.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="tenant-datastore" type="tenantDatastoreType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Provides information about how tenant-specific SiteWhere data is
-						to be persisted and how the core service provider interfaces are implemented.
-						Caching of persisted data is also configured in this section.
+						Provides information about how tenant-specific
+						SiteWhere data is to be persisted and how the core service
+						provider interfaces are implemented. Caching of persisted data is
+						also configured in this section.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element ref="abstract-communication-subsystem-implementation"/>
-			<xsd:element ref="abstract-event-processing-subsystem-implementation"/>
-			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
-				minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
-						DEPRECATED: Inbound processing chain has moved to event processing
-						subsystem.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
-				minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
-						DEPRECATED: Outbound processing chain has moved to event
-						processing subsystem.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-communication-subsystem-implementation" />
+			<xsd:element ref="abstract-event-processing-subsystem-implementation" />
 			<xsd:element name="asset-management" type="assetManagementType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Specifies details related to the asset management subsystem
-						including the asset manager implementation and the list of asset modules that should
-						be used for device assignments.
+						Specifies details related to the asset
+						management subsystem including the asset manager implementation
+						and the list of asset modules that should be used for device
+						assignments.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="search-providers" type="searchProvidersType" minOccurs="0">
+			<xsd:element name="search-providers" type="searchProvidersType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Specifies a list of external search providers that have indexed
-						SiteWhere data and may be queried via the REST services, returning a list of
-						SiteWhere events.
+						Specifies a list of external search providers
+						that have indexed SiteWhere data and may be queried via the REST
+						services, returning a list of SiteWhere events.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
-	
+
+
 	<!-- =============== -->
 	<!-- GLOBAL ELEMENTS -->
 	<!-- =============== -->
-	
+
 	<!-- Contains global configuration elements -->
 	<xsd:complexType name="globalsType">
 		<xsd:sequence>
-			<xsd:element ref="sw:abstract-global" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="sw:abstract-global" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
-	
+
+
 	<!-- ========================= -->
 	<!-- TENANT DATASTORE ELEMENTS -->
 	<!-- ========================= -->
 
 	<xsd:complexType name="tenantDatastoreType">
 		<xsd:all>
-			<xsd:element ref="abstract-tenant-datastore"/>
-			<xsd:element ref="abstract-cache" minOccurs="0"/>
-			<xsd:element ref="abstract-device-model-initializer" minOccurs="0"/>
-			<xsd:element minOccurs="0" name="default-asset-model-initializer" type="defaultAssetModelInitializerType">
+			<xsd:element ref="abstract-tenant-datastore" />
+			<xsd:element ref="abstract-cache" minOccurs="0" />
+			<xsd:element ref="abstract-device-model-initializer"
+				minOccurs="0" />
+			<xsd:element minOccurs="0" name="default-asset-model-initializer"
+				type="defaultAssetModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Initializes asset model with data if database is empty.
+						Initializes asset model with data if database is
+						empty.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" name="default-schedule-model-initializer" type="defaultScheduleModelInitializerType">
+			<xsd:element minOccurs="0"
+				name="default-schedule-model-initializer" type="defaultScheduleModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Initializes schedule model with data if database is empty.
+						Initializes schedule model with data if database
+						is empty.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -127,15 +122,16 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common tenant datastore information -->
-	<xsd:complexType name="abstractTenantDatastoreType"/>
+	<xsd:complexType name="abstractTenantDatastoreType" />
 
 	<!-- Configuration data for a MongoDB tenant datastore -->
 	<xsd:element name="mongo-tenant-datastore" type="mongoTenantDatastoreType"
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Tenant datastore that uses MongoDB for data persistence.
+			<xsd:documentation>Tenant datastore that uses MongoDB for data
+				persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -144,14 +140,15 @@
 			<xsd:extension base="abstractTenantDatastoreType">
 				<xsd:attribute name="useBulkEventInserts" type="xsd:boolean">
 					<xsd:annotation>
-						<xsd:documentation>Use MongoDB bulk APIs to insert events in batches.
+						<xsd:documentation>Use MongoDB bulk APIs to insert events in
+							batches.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="bulkInsertMaxChunkSize" type="sw:substitutableInt">
 					<xsd:annotation>
-						<xsd:documentation>When 'useBulkEventInserts' is true, specifies the maximum number
-							of events to send in a single call.
+						<xsd:documentation>When 'useBulkEventInserts' is true, specifies
+							the maximum number of events to send in a single call.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -162,10 +159,10 @@
 	<!-- Filter operation type -->
 	<xsd:simpleType name="influxDbLogLevels">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="none"/>
-			<xsd:enumeration value="basic"/>
-			<xsd:enumeration value="headers"/>
-			<xsd:enumeration value="full"/>
+			<xsd:enumeration value="none" />
+			<xsd:enumeration value="basic" />
+			<xsd:enumeration value="headers" />
+			<xsd:enumeration value="full" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -201,11 +198,12 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="logLevel" type="influxDbLogLevels" use="optional">
+		<xsd:attribute name="logLevel" type="influxDbLogLevels"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					Indicates the amount of logging output for debugging interactions
-					with InfluxDB.
+					Indicates the amount of logging output for
+					debugging interactions with InfluxDB.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -229,29 +227,31 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Configuration data for a MongoDB tenant datastore with InfluxDB event storage -->
+	<!-- Configuration data for a MongoDB tenant datastore with InfluxDB event 
+		storage -->
 	<xsd:element name="mongo-influxdb-tenant-datastore" type="mongoInfluxDbTenantDatastoreType"
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for storing device
-				management data and InfluxDB for storing event data.
+			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for
+				storing device management data and InfluxDB for storing event data.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="mongoInfluxDbTenantDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractTenantDatastoreType">
-				<xsd:attributeGroup ref="influxDbAttributes"/>
+				<xsd:attributeGroup ref="influxDbAttributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Configuration data for a MongoDB tenant datastore with Hazelcast event storage -->
+	<!-- Configuration data for a MongoDB tenant datastore with Hazelcast event 
+		storage -->
 	<xsd:element name="mongo-hazelcast-tenant-datastore" type="mongoHazelcastDbTenantDatastoreType"
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for storing device
-				management data and Hazelcast for storing event data.
+			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for
+				storing device management data and Hazelcast for storing event data.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -260,20 +260,21 @@
 			<xsd:extension base="abstractTenantDatastoreType">
 				<xsd:attribute name="expirationInMin" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Number of minutes events are kept in memory before they are
-							evicted.
+						<xsd:documentation>Number of minutes events are kept in memory
+							before they are evicted.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Configuration data for an HBase tenant datastore -->
 	<xsd:element name="hbase-tenant-datastore" type="hbaseTenantDatastoreType"
 		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Datastore that uses Apache HBase for tenant data persistence.
+			<xsd:documentation>Datastore that uses Apache HBase for tenant data
+				persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -285,22 +286,25 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for device management caches to allow substitutionGroups -->
-	<xsd:element name="abstract-cache" abstract="true" type="abstractCacheType">
+	<xsd:element name="abstract-cache" abstract="true"
+		type="abstractCacheType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for device management cache elements.
+				A placeholder for device management cache
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common cache information -->
-	<xsd:complexType name="abstractCacheType"/>
+	<xsd:complexType name="abstractCacheType" />
 
 	<!-- Configuration data for EHCache cache provider -->
 	<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"
 		substitutionGroup="abstract-cache">
 		<xsd:annotation>
-			<xsd:documentation>Device management cache that uses Ehcache for the underlying cache
+			<xsd:documentation>Device management cache that uses Ehcache for the
+				underlying cache
 				mechanism.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -310,12 +314,15 @@
 			<xsd:extension base="abstractCacheType">
 				<xsd:attribute name="siteCacheMaxEntries" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Maximum number of entries in the site cache.</xsd:documentation>
+						<xsd:documentation>Maximum number of entries in the site cache.
+						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="deviceSpecificationCacheMaxEntries" type="xsd:int">
+				<xsd:attribute name="deviceSpecificationCacheMaxEntries"
+					type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Maximum number of entries in the device specification cache.
+						<xsd:documentation>Maximum number of entries in the device
+							specification cache.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -325,9 +332,11 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="deviceAssignmentCacheMaxEntries" type="xsd:int">
+				<xsd:attribute name="deviceAssignmentCacheMaxEntries"
+					type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Maximum number of entries in the device assignment cache.
+						<xsd:documentation>Maximum number of entries in the device
+							assignment cache.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -337,9 +346,11 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="deviceSpecificationCacheTtl" type="xsd:int">
+				<xsd:attribute name="deviceSpecificationCacheTtl"
+					type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Time to live for device specification cache entries.
+						<xsd:documentation>Time to live for device specification cache
+							entries.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -351,19 +362,21 @@
 				</xsd:attribute>
 				<xsd:attribute name="deviceAssignmentCacheTtl" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Time to live for device assignment cache entries.
+						<xsd:documentation>Time to live for device assignment cache
+							entries.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Configuration data for Hazelcast cache provider -->
 	<xsd:element name="hazelcast-cache" type="hazelcastCacheType"
 		substitutionGroup="abstract-cache">
 		<xsd:annotation>
-			<xsd:documentation>Device management cache that uses Hazelcast for the underlying cache
+			<xsd:documentation>Device management cache that uses Hazelcast for
+				the underlying cache
 				mechanism.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -376,25 +389,27 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for device model initializers to allow substitutionGroups -->
-	<xsd:element name="abstract-device-model-initializer" abstract="true"
-		type="abstractDeviceModelInitializerType">
+	<xsd:element name="abstract-device-model-initializer"
+		abstract="true" type="abstractDeviceModelInitializerType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for device model initializer elements.
+				A placeholder for device model initializer
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common device model initializer information -->
 	<xsd:complexType name="abstractDeviceModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
-	
+
 	<!-- Default device model initializer -->
 	<xsd:element name="default-device-model-initializer" type="defaultDeviceModelInitializerType"
 		substitutionGroup="abstract-device-model-initializer">
 		<xsd:annotation>
-			<xsd:documentation>Device model initializer that loads the default device data
+			<xsd:documentation>Device model initializer that loads the default
+				device data
 				referenced in many examples.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -405,12 +420,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Groovy device model initializer -->
 	<xsd:element name="groovy-device-model-initializer" type="groovyDeviceModelInitializerType"
 		substitutionGroup="abstract-device-model-initializer">
 		<xsd:annotation>
-			<xsd:documentation>Device model initializer that delegates creation logic to a Groovy
+			<xsd:documentation>Device model initializer that delegates creation
+				logic to a Groovy
 				script.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -418,10 +434,12 @@
 	<xsd:complexType name="groovyDeviceModelInitializerType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDeviceModelInitializerType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that executes logic needed to create
+							Path to a Groovy script that executes logic
+							needed to create
 							device model.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -429,33 +447,35 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Creates default asset model data -->
 	<xsd:complexType name="defaultAssetModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
-	
+
 	<!-- Creates default schedule model data -->
 	<xsd:complexType name="defaultScheduleModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
-	
-	
+
+
 	<!-- ========================== -->
 	<!-- EVENT PROCESSING SUBSYSTEM -->
 	<!-- ========================== -->
 
-	<!-- Used as a placeholder for event processing subsystem implementations to allow substitutionGroups -->
+	<!-- Used as a placeholder for event processing subsystem implementations 
+		to allow substitutionGroups -->
 	<xsd:element name="abstract-event-processing-subsystem-implementation"
 		abstract="true" type="abstractEventProcessingSubsystemType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for event processing subsystem implementation
+				A placeholder for event processing subsystem
+				implementation
 				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common information for event processing subsystem implementations -->
 	<xsd:complexType name="abstractEventProcessingSubsystemType">
 		<xsd:sequence>
@@ -463,8 +483,10 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						The inbound processing strategy controls how events are moved from
-						event sources into the inbound processing chain.
+						The inbound processing strategy controls how
+						events are moved from
+						event sources into the inbound processing
+						chain.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -472,8 +494,10 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						A chain of processors through which all inbound device information
-						is passed. Each processor handles some piece of processing and passes information on
+						A chain of processors through which all inbound
+						device information
+						is passed. Each processor handles some piece of
+						processing and passes information on
 						to the next.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -482,7 +506,8 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						The outbound processing strategy controls how stored events are
+						The outbound processing strategy controls how
+						stored events are
 						moved into the outbound processing chain.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -491,20 +516,23 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						A chain of processors through which all outbound device events are
-						passed. Each processor handles some piece of processing and passes information on to
+						A chain of processors through which all outbound
+						device events are
+						passed. Each processor handles some piece of
+						processing and passes information on to
 						the next.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<!-- Default event processing implementation -->
 	<xsd:element name="event-processing" type="defaultEventProcessingSubsystemType"
 		substitutionGroup="abstract-event-processing-subsystem-implementation">
 		<xsd:annotation>
-			<xsd:documentation>Specifies the default device communication subsystem implementation.
+			<xsd:documentation>Specifies the default device communication
+				subsystem implementation.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -518,34 +546,35 @@
 	<!-- Contains inbound processing strategy implementation -->
 	<xsd:complexType name="inboundProcessingStrategyType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-inbound-processing-strategy"/>
+			<xsd:element ref="abstract-inbound-processing-strategy" />
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for inbound processing strategies to allow substitutionGroups -->
-	<xsd:element name="abstract-inbound-processing-strategy" abstract="true"
-		type="abstractInboundProcessingStrategyType">
+	<xsd:element name="abstract-inbound-processing-strategy"
+		abstract="true" type="abstractInboundProcessingStrategyType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for inbound processing strategy elements.
+				A placeholder for inbound processing strategy
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common inbound processing strategy information -->
-	<xsd:complexType name="abstractInboundProcessingStrategyType"/>
-	
+	<xsd:complexType name="abstractInboundProcessingStrategyType" />
+
 	<!-- Configures the default inbound processing strategy -->
-	<xsd:element name="default-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
-		substitutionGroup="abstract-inbound-processing-strategy">
+	<xsd:element name="default-inbound-processing-strategy"
+		type="defaultInboundProcessingStrategyType" substitutionGroup="abstract-inbound-processing-strategy">
 		<xsd:annotation>
 			<xsd:documentation>DEPRECATED: Equivalent of
 				blocking-queue-inbound-processing-strategy.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:element name="blocking-queue-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
-		substitutionGroup="abstract-inbound-processing-strategy">
+	<xsd:element name="blocking-queue-inbound-processing-strategy"
+		type="defaultInboundProcessingStrategyType" substitutionGroup="abstract-inbound-processing-strategy">
 		<xsd:annotation>
 			<xsd:documentation>Configures the default inbound processing strategy
 			</xsd:documentation>
@@ -556,28 +585,33 @@
 			<xsd:extension base="abstractInboundProcessingStrategyType">
 				<xsd:attribute name="maxQueueSize" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Controls the maximum number of inbound events that can be queued
+						<xsd:documentation>Controls the maximum number of inbound events
+							that can be queued
 							before blocking occurs.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Controls the number of threads that submit queued events to the
+						<xsd:documentation>Controls the number of threads that submit
+							queued events to the
 							inbound processing chain.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="enableMonitoring" type="xsd:boolean">
 					<xsd:annotation>
-						<xsd:documentation>Enables monitoring output for debugging event processing.
+						<xsd:documentation>Enables monitoring output for debugging event
+							processing.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="monitoringIntervalSec" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Number of seconds between monitoring log statements. The
-							'enableMonitoring' attribute must be set to true for this to have an effect.
+						<xsd:documentation>Number of seconds between monitoring log
+							statements. The
+							'enableMonitoring' attribute must be set to true
+							for this to have an effect.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -588,37 +622,40 @@
 	<!-- Contains outbound processing strategy implementation -->
 	<xsd:complexType name="outboundProcessingStrategyType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-processing-strategy"/>
+			<xsd:element ref="abstract-outbound-processing-strategy" />
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound processing strategies to allow substitutionGroups -->
-	<xsd:element name="abstract-outbound-processing-strategy" abstract="true"
-		type="abstractOutboundProcessingStrategyType">
+	<xsd:element name="abstract-outbound-processing-strategy"
+		abstract="true" type="abstractOutboundProcessingStrategyType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for outbound processing strategy elements.
+				A placeholder for outbound processing strategy
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common outbound processing strategy information -->
-	<xsd:complexType name="abstractOutboundProcessingStrategyType"/>
-	
+	<xsd:complexType name="abstractOutboundProcessingStrategyType" />
+
 	<!-- Configures the default inbound processing strategy -->
-	<xsd:element name="default-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
-		substitutionGroup="abstract-outbound-processing-strategy">
+	<xsd:element name="default-outbound-processing-strategy"
+		type="blockingQueueOutboundProcessingStrategyType" substitutionGroup="abstract-outbound-processing-strategy">
 		<xsd:annotation>
 			<xsd:documentation>DEPRECATED: Equivalent of
 				blocking-queue-outbound-processing-strategy.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:element name="blocking-queue-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
-		substitutionGroup="abstract-outbound-processing-strategy">
+	<xsd:element name="blocking-queue-outbound-processing-strategy"
+		type="blockingQueueOutboundProcessingStrategyType" substitutionGroup="abstract-outbound-processing-strategy">
 		<xsd:annotation>
-			<xsd:documentation>Uses a fixed-length queue to store events to be submitted to the
-				outbound processing chain and a fixed pool of threads to process the queue.
+			<xsd:documentation>Uses a fixed-length queue to store events to be
+				submitted to the
+				outbound processing chain and a fixed pool of
+				threads to process the queue.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -627,14 +664,16 @@
 			<xsd:extension base="abstractOutboundProcessingStrategyType">
 				<xsd:attribute name="maxQueueSize" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Controls the maximum number of outbound events that can be queued
+						<xsd:documentation>Controls the maximum number of outbound events
+							that can be queued
 							before blocking occurs.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
 					<xsd:annotation>
-						<xsd:documentation>Controls the number of threads that submit queued events to the
+						<xsd:documentation>Controls the number of threads that submit
+							queued events to the
 							outbound processing chain.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -652,9 +691,9 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common inbound processor element information -->
-	<xsd:complexType name="abstractInboundProcessorType"/>
+	<xsd:complexType name="abstractInboundProcessorType" />
 
 	<xsd:complexType name="inboundProcessingChainType">
 		<xsd:sequence>
@@ -662,11 +701,12 @@
 				<xsd:element name="inbound-event-processor" type="inboundProcessorReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom inbound event processor implementation.
+							References a custom inbound event processor
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element ref="abstract-inbound-processor"/>
+				<xsd:element ref="abstract-inbound-processor" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -680,9 +720,12 @@
 		substitutionGroup="abstract-inbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Stores device events via the device management implementation. If
-				not configured, all events from inbound processing will be ignored. This does not
-				affect ability to create events via REST calls.
+				Stores device events via the device management
+				implementation. If
+				not configured, all events from inbound processing
+				will be ignored. This does not
+				affect ability to create events via
+				REST calls.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -698,8 +741,10 @@
 		substitutionGroup="abstract-inbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides device registration functionality. If this processor is not
-				enabled, device registration requests will be ignored.
+				Provides device registration functionality. If
+				this processor is not
+				enabled, device registration requests will be
+				ignored.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -715,8 +760,10 @@
 		substitutionGroup="abstract-inbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides support for creating and writing to device streams. If this
-				processor is not enabled, device stream requests will be ignored.
+				Provides support for creating and writing to
+				device streams. If this
+				processor is not enabled, device stream
+				requests will be ignored.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -732,10 +779,14 @@
 		substitutionGroup="abstract-inbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends all events to a Hazelcast queue. Generally, if this processor
-				is configured, the other processors such as storage and registration are not used
-				since the subordinate SiteWhere instances listening on the queue will be taking care
-				of storage and registration.
+				Sends all events to a Hazelcast queue. Generally,
+				if this processor
+				is configured, the other processors such as storage
+				and registration are not used
+				since the subordinate SiteWhere
+				instances listening on the queue will be taking care
+				of storage and
+				registration.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -746,32 +797,36 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for outbound processor filter elements to allow substitutionGroups -->
-	<xsd:element name="abstract-outbound-processor-filter" abstract="true"
-		type="abstractOutboundProcessorFilterType">
+	<!-- Used as a placeholder for outbound processor filter elements to allow 
+		substitutionGroups -->
+	<xsd:element name="abstract-outbound-processor-filter"
+		abstract="true" type="abstractOutboundProcessorFilterType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for outbound processor filter elements.
+				A placeholder for outbound processor filter
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common outbound processor filter element information -->
-	<xsd:complexType name="abstractOutboundProcessorFilterType"/>
+	<xsd:complexType name="abstractOutboundProcessorFilterType" />
 
 	<!-- Filter operation type -->
 	<xsd:simpleType name="filterOperationType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="include"/>
-			<xsd:enumeration value="exclude"/>
+			<xsd:enumeration value="include" />
+			<xsd:enumeration value="exclude" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<!-- Filters outbound events associated with a site -->
-	<xsd:element name="site-filter" type="siteFilterType" substitutionGroup="abstract-outbound-processor-filter">
+	<xsd:element name="site-filter" type="siteFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
 		<xsd:annotation>
 			<xsd:documentation>
-				Includes or excludes device events depending on whether the device
+				Includes or excludes device events depending on
+				whether the device
 				is associated with a given site.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -786,10 +841,12 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="operation" type="filterOperationType" use="optional">
+				<xsd:attribute name="operation" type="filterOperationType"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Indicates whether matches should be included or excluded from the
+							Indicates whether matches should be included or
+							excluded from the
 							result set.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -797,13 +854,14 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Filters outbound events associated with a device specification -->
 	<xsd:element name="specification-filter" type="specificationFilterType"
 		substitutionGroup="abstract-outbound-processor-filter">
 		<xsd:annotation>
 			<xsd:documentation>
-				Includes or excludes device events depending on whether the device
+				Includes or excludes device events depending on
+				whether the device
 				is based on a given specififation.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -811,17 +869,21 @@
 	<xsd:complexType name="specificationFilterType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorFilterType">
-				<xsd:attribute name="specification" type="xsd:string" use="required">
+				<xsd:attribute name="specification" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique token for the specification to be filtered.
+							Unique token for the specification to be
+							filtered.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="operation" type="filterOperationType" use="optional">
+				<xsd:attribute name="operation" type="filterOperationType"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Indicates whether matches should be included or excluded from the
+							Indicates whether matches should be included or
+							excluded from the
 							result set.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -829,13 +891,16 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Chooses events to filter based on a Groovy script -->
-	<xsd:element name="groovy-filter" type="groovyFilterType" substitutionGroup="abstract-outbound-processor-filter">
+	<xsd:element name="groovy-filter" type="groovyFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
 		<xsd:annotation>
 			<xsd:documentation>
-				Executes a Groovy script which should return a boolean result. True
-				indicates the event is to be included in the result set, false indicates it should be
+				Executes a Groovy script which should return a
+				boolean result. True
+				indicates the event is to be included in the
+				result set, false indicates it should be
 				filtered.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -843,11 +908,14 @@
 	<xsd:complexType name="groovyFilterType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorFilterType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Script that determines whether events are included or filtered.
-							The script should return true if the event is to be included or false if the event
+							Script that determines whether events are
+							included or filtered.
+							The script should return true if the event
+							is to be included or false if the event
 							is to be filtered.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -859,8 +927,8 @@
 	<!-- Element that contains a list of outbound processor filters -->
 	<xsd:complexType name="outboundProcessorFilterList">
 		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-processor-filter" minOccurs="0"
-				maxOccurs="unbounded"/>
+			<xsd:element ref="abstract-outbound-processor-filter"
+				minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -873,34 +941,39 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common multicaster element information -->
-	<xsd:complexType name="abstractOutboundMulticasterType"/>
-	
+	<xsd:complexType name="abstractOutboundMulticasterType" />
+
 	<!-- Multicasts events to all devices that use a given specification -->
-	<xsd:element name="all-with-specification-multicaster" type="allWithSpecificationMulticasterType"
-		substitutionGroup="abstract-outbound-multicaster">
+	<xsd:element name="all-with-specification-multicaster"
+		type="allWithSpecificationMulticasterType" substitutionGroup="abstract-outbound-multicaster">
 		<xsd:annotation>
 			<xsd:documentation>
-				Multicasts to all devices that use a given specification.
+				Multicasts to all devices that use a given
+				specification.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="allWithSpecificationMulticasterType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundMulticasterType">
-				<xsd:attribute name="specification" type="xsd:string" use="required">
+				<xsd:attribute name="specification" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique token for device specification.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="scriptPath" type="xsd:string" use="optional">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that returns a String value indicating
-							the calculated route or null if event should not be routed.
+							Path to a Groovy script that returns a String
+							value indicating
+							the calculated route or null if event should not
+							be routed.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -908,19 +981,20 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for outbound route builder elements to allow substitutionGroups -->
-	<xsd:element name="abstract-outbound-route-builder" abstract="true"
-		type="abstractOutboundRouteBuilderType">
+	<!-- Used as a placeholder for outbound route builder elements to allow 
+		substitutionGroups -->
+	<xsd:element name="abstract-outbound-route-builder"
+		abstract="true" type="abstractOutboundRouteBuilderType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for outbound route builder elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common route builder element information -->
-	<xsd:complexType name="abstractOutboundRouteBuilderType"/>
-	
+	<xsd:complexType name="abstractOutboundRouteBuilderType" />
+
 	<!-- Routes events based on results from a Groovy script -->
 	<xsd:element name="groovy-route-builder" type="groovyRouteBuilderType"
 		substitutionGroup="abstract-outbound-route-builder">
@@ -933,10 +1007,12 @@
 	<xsd:complexType name="groovyRouteBuilderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundRouteBuilderType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="optional">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that returns a String value indicating
+							Path to a Groovy script that returns a String
+							value indicating
 							the calculated route.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -954,19 +1030,21 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common outbound processor element information -->
-	<xsd:complexType name="abstractOutboundProcessorType"/>
+	<xsd:complexType name="abstractOutboundProcessorType" />
 
 	<!-- Adds ability to add nested filters for outbound processors -->
 	<xsd:complexType name="filteredOutboundProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorType">
 				<xsd:sequence>
-					<xsd:element name="filters" type="outboundProcessorFilterList" minOccurs="0">
+					<xsd:element name="filters" type="outboundProcessorFilterList"
+						minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
-								List of filters that will be applied to outbound traffic.
+								List of filters that will be applied to
+								outbound traffic.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
@@ -981,11 +1059,12 @@
 				<xsd:element name="outbound-event-processor" type="outboundProcessorReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom outbound event processor implementation.
+							References a custom outbound event processor
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element ref="abstract-outbound-processor"/>
+				<xsd:element ref="abstract-outbound-processor" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -999,18 +1078,21 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				DEPRECATED: Use 'command-delivery-event-processor' instead.
+				DEPRECATED: Use 'command-delivery-event-processor'
+				instead.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Command delivery outbound event processor -->
 	<xsd:element name="command-delivery-event-processor" type="commandDeliveryEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Hands off outbound device command events to the device communication
-				subsystem. If this event processor is not configured, no commands will be sent to
+				Hands off outbound device command events to the
+				device communication
+				subsystem. If this event processor is not
+				configured, no commands will be sent to
 				devices.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1021,8 +1103,10 @@
 				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Sets the number of threads used to process provisioning commands.
-							Increase for situations where the load of device commands is high.
+							Sets the number of threads used to process
+							provisioning commands.
+							Increase for situations where the load of
+							device commands is high.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1035,9 +1119,12 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				For each location event, applies a series of tests to determine
-				whether the location meets a condition of being inside or outside of a given zone. If
-				the condition is met, an alert is fired.
+				For each location event, applies a series of tests
+				to determine
+				whether the location meets a condition of being inside
+				or outside of a given zone. If
+				the condition is met, an alert is
+				fired.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -1045,10 +1132,12 @@
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
-					<xsd:element name="zone-test" type="zoneTestType" maxOccurs="unbounded">
+					<xsd:element name="zone-test" type="zoneTestType"
+						maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
-								Tests a location for inclusion/exclusion from a zone and fires
+								Tests a location for inclusion/exclusion from
+								a zone and fires
 								an alert if the condition is met.
 							</xsd:documentation>
 						</xsd:annotation>
@@ -1071,15 +1160,18 @@
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-outbound-multicaster" minOccurs="0">
+					<xsd:element ref="abstract-outbound-multicaster"
+						minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
-								Allows a multicaster to be configured so that events can be
+								Allows a multicaster to be configured so that
+								events can be
 								broadcast to many different topics.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element ref="abstract-outbound-route-builder" minOccurs="0">
+					<xsd:element ref="abstract-outbound-route-builder"
+						minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
 								Allows customization of route building logic.
@@ -1087,11 +1179,12 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
-				<xsd:attributeGroup ref="mqtt-broker-attributes"/>
+				<xsd:attributeGroup ref="mqtt-broker-attributes" />
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
-							MQTT topic used if no multicaster or route builder is configured.
+							MQTT topic used if no multicaster or route
+							builder is configured.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1112,15 +1205,18 @@
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-outbound-multicaster" minOccurs="0">
+					<xsd:element ref="abstract-outbound-multicaster"
+						minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
-								Allows a multicaster to be configured so that events can be
+								Allows a multicaster to be configured so that
+								events can be
 								broadcast to many different exchanges.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element ref="abstract-outbound-route-builder" minOccurs="0">
+					<xsd:element ref="abstract-outbound-route-builder"
+						minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
 								Allows customization of route building logic.
@@ -1131,7 +1227,8 @@
 				<xsd:attribute name="connectionUri" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
-							URI that provides information about the RabbitMQ instance to
+							URI that provides information about the
+							RabbitMQ instance to
 							connect to.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -1139,7 +1236,8 @@
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
-							Name of topic to publish to if route builder is not
+							Name of topic to publish to if route builder is
+							not
 							configured.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -1153,7 +1251,8 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends outbound events to Hazelcast topics for processing by external
+				Sends outbound events to Hazelcast topics for
+				processing by external
 				consumers.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1170,8 +1269,10 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Delegates event processing to a Groovy script. The script can apply
-				conditional logic or interact with SiteWhere interfaces to create new events or
+				Delegates event processing to a Groovy script. The
+				script can apply
+				conditional logic or interact with SiteWhere
+				interfaces to create new events or
 				perform other tasks.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1179,7 +1280,8 @@
 	<xsd:complexType name="groovyEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Path to script used for processing each event.
@@ -1211,7 +1313,8 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends outbound events to an Azure EventHub using AMQP 1.0.
+				Sends outbound events to an Azure EventHub using
+				AMQP 1.0.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -1232,7 +1335,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="serviceBusName" type="xsd:string" use="required">
+				<xsd:attribute name="serviceBusName" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Set the service bus to connect to (e.g.
@@ -1240,7 +1344,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="eventHubName" type="xsd:string" use="required">
+				<xsd:attribute name="eventHubName" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Name of EventHub to connect to.
@@ -1256,7 +1361,8 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends events to the InitialState.com cloud service where they can be
+				Sends events to the InitialState.com cloud service
+				where they can be
 				viewed in a customized dashboard.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1264,11 +1370,14 @@
 	<xsd:complexType name="initialStateEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
-				<xsd:attribute name="streamingAccessKey" type="xsd:string" use="required">
+				<xsd:attribute name="streamingAccessKey" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Access key obtained from the InitialState.com website that
-							specifies the account that the events will be associated with.
+							Access key obtained from the InitialState.com
+							website that
+							specifies the account that the events will be
+							associated with.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1281,7 +1390,8 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends events to the Dweet.io cloud service where they can be viewed
+				Sends events to the Dweet.io cloud service where
+				they can be viewed
 				and integrated with other services.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1308,14 +1418,16 @@
 				<xsd:attribute name="accessKey" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Amazon AWS access key for account owning SQS queue.
+							Amazon AWS access key for account owning SQS
+							queue.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="secretKey" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Amazon AWS secret key for account owning SQS queue.
+							Amazon AWS secret key for account owning SQS
+							queue.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1335,7 +1447,8 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Sends events to streams on an external WSO2 CEP instance for
+				Sends events to streams on an external WSO2 CEP
+				instance for
 				processing.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1374,13 +1487,14 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Siddhi CEP outbound event processor -->
 	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Processes events through an embedded Siddhi instance to allow
+				Processes events through an embedded Siddhi
+				instance to allow
 				complex event processing (CEP) funcitonality.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1411,24 +1525,26 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common Siddhi callback element information -->
 	<xsd:complexType name="abstractSiddhiCallbackType">
 		<xsd:attribute name="stream" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
-					Name of stream for which a callback will be registered.
+					Name of stream for which a callback will be
+					registered.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
-	
+
 	<!-- Siddhi debug callback -->
 	<xsd:element name="stream-debugger" type="siddhiStreamDebuggerType"
 		substitutionGroup="abstract-siddhi-callback">
 		<xsd:annotation>
 			<xsd:documentation>
-				Debugs Siddhi streams by printing events to the log.
+				Debugs Siddhi streams by printing events to the
+				log.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -1438,20 +1554,22 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Siddhi Groovy stream processor -->
 	<xsd:element name="groovy-stream-processor" type="siddhiGroovyStreamProcessorType"
 		substitutionGroup="abstract-siddhi-callback">
 		<xsd:annotation>
 			<xsd:documentation>
-				Processes events from a Siddhi stream using a Groovy script.
+				Processes events from a Siddhi stream using a
+				Groovy script.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="siddhiGroovyStreamProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractSiddhiCallbackType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Path to script used for processing each event.
@@ -1464,12 +1582,14 @@
 
 	<xsd:complexType name="siddhiQueryType">
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" ref="abstract-siddhi-callback"/>
+			<xsd:element minOccurs="0" maxOccurs="unbounded"
+				ref="abstract-siddhi-callback" />
 		</xsd:sequence>
 		<xsd:attribute name="selector" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
-					Selector expression that contains processing logic.
+					Selector expression that contains processing
+					logic.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -1477,51 +1597,57 @@
 
 	<xsd:simpleType name="zoneContainmentType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="inside"/>
-			<xsd:enumeration value="outside"/>
+			<xsd:enumeration value="inside" />
+			<xsd:enumeration value="outside" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="alertLevelType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="info"/>
-			<xsd:enumeration value="warning"/>
-			<xsd:enumeration value="error"/>
-			<xsd:enumeration value="critical"/>
+			<xsd:enumeration value="info" />
+			<xsd:enumeration value="warning" />
+			<xsd:enumeration value="error" />
+			<xsd:enumeration value="critical" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:complexType name="zoneTestType">
 		<xsd:attribute name="zoneToken" type="xsd:string" use="required"></xsd:attribute>
-		<xsd:attribute name="condition" type="zoneContainmentType" use="required"/>
+		<xsd:attribute name="condition" type="zoneContainmentType"
+			use="required" />
 		<xsd:attribute name="alertType" type="xsd:string" use="required"></xsd:attribute>
-		<xsd:attribute name="alertLevel" type="alertLevelType" use="optional"/>
-		<xsd:attribute name="alertMessage" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="alertLevel" type="alertLevelType"
+			use="optional" />
+		<xsd:attribute name="alertMessage" type="xsd:string"
+			use="required"></xsd:attribute>
 	</xsd:complexType>
-	
-	
+
+
 	<!-- ============================== -->
 	<!-- DEVICE COMMUNICATION SUBSYSTEM -->
 	<!-- ============================== -->
 
-	<!-- Used as a placeholder for communication subsystem implementations to allow substitutionGroups -->
-	<xsd:element name="abstract-communication-subsystem-implementation" abstract="true"
-		type="abstractCommunicationSubsystemType">
+	<!-- Used as a placeholder for communication subsystem implementations to 
+		allow substitutionGroups -->
+	<xsd:element name="abstract-communication-subsystem-implementation"
+		abstract="true" type="abstractCommunicationSubsystemType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for device communication subsystem implementation
+				A placeholder for device communication subsystem
+				implementation
 				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common information for device communication subsystem implementations -->
 	<xsd:complexType name="abstractCommunicationSubsystemType">
 		<xsd:sequence>
 			<xsd:element name="event-sources" type="eventSourcesType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Event sources receive and decode events so that they may be
+						Event sources receive and decode events so that
+						they may be
 						processed by SiteWhere.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -1530,7 +1656,8 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						DEPRECATED: Inbound processing strategy has been moved into the
+						DEPRECATED: Inbound processing strategy has been
+						moved into the
 						event processing subsystem.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -1539,39 +1666,48 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						DEPRECATED: Outbound processing strategy has been moved into the
+						DEPRECATED: Outbound processing strategy has
+						been moved into the
 						event processing subsystem.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="registration" type="deviceServicesType" minOccurs="0">
+			<xsd:element name="registration" type="deviceServicesType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						DEPRECATED: Registration has been renamed to 'device services' to
+						DEPRECATED: Registration has been renamed to
+						'device services' to
 						allow for the addition of other services.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="device-services" type="deviceServicesType" minOccurs="0">
+			<xsd:element name="device-services" type="deviceServicesType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Contains various device-related services such as registration and
+						Contains various device-related services such as
+						registration and
 						symbology management.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="batch-operations" type="batchOperationsType" minOccurs="0">
+			<xsd:element name="batch-operations" type="batchOperationsType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Batch operations are operations executed on a large number of
+						Batch operations are operations executed on a
+						large number of
 						devices concurrently in an asynchronous fashion.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="command-routing" type="commandRoutingType" minOccurs="0">
+			<xsd:element name="command-routing" type="commandRoutingType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Command routing determines which destination is used for
+						Command routing determines which destination is
+						used for
 						processing a given command invocation.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -1580,7 +1716,8 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Command destinations process command invocation events, encoding
+						Command destinations process command invocation
+						events, encoding
 						them then delivering them to devices.
 					</xsd:documentation>
 				</xsd:annotation>
@@ -1597,12 +1734,13 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Default device communication implementation -->
 	<xsd:element name="device-communication" type="defaultCommunicationSubsystemType"
 		substitutionGroup="abstract-communication-subsystem-implementation">
 		<xsd:annotation>
-			<xsd:documentation>Specifies the default device communication subsystem implementation.
+			<xsd:documentation>Specifies the default device communication
+				subsystem implementation.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -1616,27 +1754,29 @@
 	<!-- Contains information about inbound event sources -->
 	<xsd:complexType name="eventSourcesType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-event-source" maxOccurs="unbounded"/>
+			<xsd:element ref="abstract-event-source" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for decoders to allow substitutionGroups -->
-	<xsd:element name="abstract-decoder" abstract="true" type="abstractDecoderType">
+	<xsd:element name="abstract-decoder" abstract="true"
+		type="abstractDecoderType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for decoder elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common decoder information -->
-	<xsd:complexType name="abstractDecoderType"/>
-	
+	<xsd:complexType name="abstractDecoderType" />
+
 	<!-- Reference to an event decoder defined as a Spring bean -->
 	<xsd:element name="event-decoder" type="eventDecoderReferenceType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>References a decoder defined in an external bean</xsd:documentation>
+			<xsd:documentation>References a decoder defined in an external bean
+			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="eventDecoderReferenceType">
@@ -1646,12 +1786,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Decode using the standard SiteWhere Google Protocol Buffer definition -->
 	<xsd:element name="protobuf-event-decoder" type="swProtobufDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>Decoder that expects a message in the SiteWhere Google Protocol
+			<xsd:documentation>Decoder that expects a message in the SiteWhere
+				Google Protocol
 				Buffer format.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1662,7 +1803,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Decode using the standard SiteWhere JSON device interaction representation -->
 	<xsd:element name="json-device-request-decoder" type="swJsonDeviceRequestDecoderType"
 		substitutionGroup="abstract-decoder">
@@ -1677,12 +1818,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Decode using the standard SiteWhere JSON batch representation -->
 	<xsd:element name="json-event-decoder" type="swJsonEventBatchDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>DEPRECATED: Use json-batch=event-decoder for JSON batch event
+			<xsd:documentation>DEPRECATED: Use json-batch=event-decoder for JSON
+				batch event
 				processing.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1700,12 +1842,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Decode binary payload using a Groovy script -->
 	<xsd:element name="groovy-event-decoder" type="swGroovyDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>Decoder that uses a Groovy script to parse a binary payload into
+			<xsd:documentation>Decoder that uses a Groovy script to parse a
+				binary payload into
 				decoded events.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1713,7 +1856,8 @@
 	<xsd:complexType name="swGroovyDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Path to script used for decoding payload.
@@ -1723,12 +1867,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Decode String payload using a Groovy script -->
 	<xsd:element name="groovy-string-event-decoder" type="swGroovyStringDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>Decoder that uses a Groovy script to parse a String payload into
+			<xsd:documentation>Decoder that uses a Groovy script to parse a
+				String payload into
 				decoded events.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1736,7 +1881,8 @@
 	<xsd:complexType name="swGroovyStringDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Path to script used for decoding payload.
@@ -1746,12 +1892,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Echo String payload for debugging purposes -->
 	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>Decoder for event receivers with String payloads that simply echoes
+			<xsd:documentation>Decoder for event receivers with String payloads
+				that simply echoes
 				the payload to the log.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1763,18 +1910,141 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for device metadata extractors to allow substitutionGroups -->
+	<xsd:element name="abstract-device-metadata-extractor"
+		abstract="true" type="abstractDeviceMetadataExtractorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for device metadata extractor
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common device metadata extractor information -->
+	<xsd:complexType name="abstractDeviceMetadataExtractorType" />
+
+	<!-- Groovy device metadata extractor -->
+	<xsd:element name="groovy-device-metadata-extractor" type="swGroovyDeviceMetadataExtractorType"
+		substitutionGroup="abstract-device-metadata-extractor">
+		<xsd:annotation>
+			<xsd:documentation>Uses a Groovy script to extract device/payload
+				information from a message.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyDeviceMetadataExtractorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeviceMetadataExtractorType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that extracts metadata
+							such as hardware id from the message.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for composite decoder choices to allow substitutionGroups -->
+	<xsd:element name="abstract-decoder-choice" abstract="true"
+		type="abstractCompositeDecoderChoiceType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder a choice available to a composite
+				decoder.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common composite decoder choice information -->
+	<xsd:complexType name="abstractCompositeDecoderChoiceType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-decoder">
+				<xsd:annotation>
+					<xsd:documentation>Decoder used if choice criteria is met.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Composite decoder choice based on device specification -->
+	<xsd:element name="device-specification-decoder-choice"
+		type="swDeviceSpecificationDecoderChoiceType" substitutionGroup="abstract-decoder-choice">
+		<xsd:annotation>
+			<xsd:documentation>Uses device specification token as the criteria
+				for choosing the associated decoder.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swDeviceSpecificationDecoderChoiceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCompositeDecoderChoiceType">
+				<xsd:attribute name="token" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Token for device specification to match.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- List of choices for a composite event decoder -->
+	<xsd:complexType name="swCompositeDecoderChoicesType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-decoder-choice" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Decoder that extracts metadata and delegates to sub-decoders -->
+	<xsd:element name="composite-decoder" type="swCompositeDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that extracts metadata from the initial
+				message in order to determine which of a list of sub-decoders should
+				be used to decode the message.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swCompositeDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+				<xsd:all>
+					<xsd:element ref="abstract-device-metadata-extractor" />
+					<xsd:element name="choices" type="swCompositeDecoderChoicesType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								List of choices available for the composite
+								decoder.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:all>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
-	<xsd:element name="abstract-event-source" abstract="true" type="abstractEventSourceType">
+	<xsd:element name="abstract-event-source" abstract="true"
+		type="abstractEventSourceType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for event source elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common event source information -->
-	<xsd:complexType name="abstractEventSourceType"/>
-	
+	<xsd:complexType name="abstractEventSourceType" />
+
 	<!-- Attributes common to all event sources -->
 	<xsd:attributeGroup name="event-source-attributes">
 		<xsd:attribute name="sourceId" type="xsd:token" use="required">
@@ -1790,7 +2060,8 @@
 	<xsd:element name="event-source" type="eventSourceReferenceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source defined externally as a Spring bean</xsd:documentation>
+			<xsd:documentation>Event source defined externally as a Spring bean
+			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="eventSourceReferenceType">
@@ -1801,11 +2072,13 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Event source that pulls binary information from an MQTT topic and decodes it -->
+	<!-- Event source that pulls binary information from an MQTT topic and decodes 
+		it -->
 	<xsd:element name="mqtt-event-source" type="mqttEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from an MQTT topic and
+			<xsd:documentation>Event source that pulls binary information from an
+				MQTT topic and
 				decodes it
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1814,10 +2087,10 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
-				<xsd:attributeGroup ref="mqtt-broker-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
+				<xsd:attributeGroup ref="mqtt-broker-attributes" />
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -1828,7 +2101,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Attributes used for inbound MQTT processing -->
 	<xsd:attributeGroup name="mqtt-broker-attributes">
 		<xsd:attribute name="protocol" type="xsd:string" use="optional">
@@ -1845,7 +2118,8 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
+		<xsd:attribute name="port" type="sw:substitutableInt"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker port.
@@ -1866,29 +2140,35 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="trustStorePath" type="xsd:string" use="optional">
+		<xsd:attribute name="trustStorePath" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					For secured connections. Provides the full path to the Java
+					For secured connections. Provides the full path
+					to the Java
 					TrustStore used for the secure connection.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="trustStorePassword" type="xsd:string" use="optional">
+		<xsd:attribute name="trustStorePassword" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					For secured connections. Provides the password to the Java
+					For secured connections. Provides the password to
+					the Java
 					TrustStore used for the secure connection.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Event source that pulls binary information from a RabbitMQ queue and decodes it -->
+	<!-- Event source that pulls binary information from a RabbitMQ queue and 
+		decodes it -->
 	<xsd:element name="rabbit-mq-event-source" type="rabbitMqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from a RabbitMQ queue and
+			<xsd:documentation>Event source that pulls binary information from a
+				RabbitMQ queue and
 				decodes it.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1897,13 +2177,14 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="connectionUri" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
-							URI that provides information about the RabbitMQ instance to
+							URI that provides information about the
+							RabbitMQ instance to
 							connect to.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -1918,14 +2199,16 @@
 				<xsd:attribute name="durable" type="xsd:boolean">
 					<xsd:annotation>
 						<xsd:documentation>
-							Indicates whether the queue should survive broker restarts.
+							Indicates whether the queue should survive
+							broker restarts.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="numConsumers" type="xsd:int">
 					<xsd:annotation>
 						<xsd:documentation>
-							Number of consumer threads used to consume the queue.
+							Number of consumer threads used to consume the
+							queue.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1933,11 +2216,13 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-    <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
+	<!-- Event source that pulls binary information from an EventHub endpoint 
+		and decodes it -->
 	<xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from an Azure EventHub
+			<xsd:documentation>Event source that pulls binary information from an
+				Azure EventHub
 				endpoint and
 				decodes it
 			</xsd:documentation>
@@ -1947,15 +2232,15 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
-				<xsd:attributeGroup ref="azure-eventhub-inbound-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
+				<xsd:attributeGroup ref="azure-eventhub-inbound-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
-    <!-- Attributes used for inbound eventhub processing -->
+	<!-- Attributes used for inbound eventhub processing -->
 	<xsd:attributeGroup name="azure-eventhub-inbound-attributes">
 		<xsd:attribute name="targetFqn" type="xsd:string">
 			<xsd:annotation>
@@ -1988,7 +2273,8 @@
 		<xsd:attribute name="zkStateStore" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					zookeeper store url for EventHub state persistence.
+					zookeeper store url for EventHub state
+					persistence.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2012,8 +2298,10 @@
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that creates an embedded ActiveMQ broker and listens
-				for messages on a transport specified by the transport URI.
+			<xsd:documentation>Event source that creates an embedded ActiveMQ
+				broker and listens
+				for messages on a transport specified by the
+				transport URI.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2021,35 +2309,41 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
-				<xsd:attribute name="transportUri" type="xsd:string" use="required">
+				<xsd:attributeGroup ref="event-source-attributes" />
+				<xsd:attribute name="transportUri" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							URI used to configure the transport for the embedded ActiveMQ
+							URI used to configure the transport for the
+							embedded ActiveMQ
 							broker.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="dataDirectory" type="xsd:string" use="optional">
+				<xsd:attribute name="dataDirectory" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Data directory used to store persistent message queues.
+							Data directory used to store persistent message
+							queues.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="queueName" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Name of JMS queue for consumers to pull messages from.
+							Name of JMS queue for consumers to pull
+							messages from.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Number of consumers used to read data from the queue into
+							Number of consumers used to read data from the
+							queue into
 							SiteWhere.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2062,7 +2356,8 @@
 	<xsd:element name="activemq-client-event-source" type="activeMQClientEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source connects to a remote broker and consumes messages from
+			<xsd:documentation>Event source connects to a remote broker and
+				consumes messages from
 				it.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -2071,9 +2366,9 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="remoteUri" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2084,14 +2379,16 @@
 				<xsd:attribute name="queueName" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Name of JMS queue for consumers to pull messages from.
+							Name of JMS queue for consumers to pull
+							messages from.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Number of consumers used to read data from the queue into
+							Number of consumers used to read data from the
+							queue into
 							SiteWhere.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2104,16 +2401,19 @@
 	<xsd:element name="hazelcast-queue-event-source" type="hazelcastQueueEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls decoded events from a Hazelcast queue.
-				Primarily used to allow one instance of SiteWhere to decode events and feed them to
-				multiple subordinate instances for processing.
+			<xsd:documentation>Event source that pulls decoded events from a
+				Hazelcast queue.
+				Primarily used to allow one instance of SiteWhere to
+				decode events and feed them to
+				multiple subordinate instances for
+				processing.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="hazelcastQueueEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -2122,8 +2422,10 @@
 	<xsd:element name="polling-rest-event-source" type="pollingRestEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that supports connecting to REST services and parsing
-				the response data with a Groovy script in order to generate event payloads.
+			<xsd:documentation>Event source that supports connecting to REST
+				services and parsing
+				the response data with a Groovy script in order
+				to generate event payloads.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2131,28 +2433,32 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
-				<xsd:attribute name="pollIntervalMs" type="xsd:int" use="required">
+				<xsd:attributeGroup ref="event-source-attributes" />
+				<xsd:attribute name="pollIntervalMs" type="xsd:int"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Interval (in milliseconds) to wait between polling requests.
+							Interval (in milliseconds) to wait between
+							polling requests.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that executes logic needed to generate
-							REST request and parse response.
+							Path to a Groovy script that executes logic
+							needed to generate REST request and parse response.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="baseUrl" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Base URL used for REST requests. Within Groovy script, any REST
+							Base URL used for REST requests. Within Groovy
+							script, any REST
 							calls are assumed relative to this base value.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2160,14 +2466,16 @@
 				<xsd:attribute name="username" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Username if REST services requires authentication.
+							Username if REST services requires
+							authentication.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="password" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Password if REST services requires authentication.
+							Password if REST services requires
+							authentication.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -2180,7 +2488,8 @@
 		<xsd:attribute name="ref" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
-					Bean that implements the ISocketInteractionHandler interface.
+					Bean that implements the
+					ISocketInteractionHandler interface.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2199,17 +2508,20 @@
 		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
-					Path to a Groovy script that handles socket interactions.
+					Path to a Groovy script that handles socket
+					interactions.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<!-- Event source that pulls binary information from a server socket and decodes it -->
+	<!-- Event source that pulls binary information from a server socket and 
+		decodes it -->
 	<xsd:element name="socket-event-source" type="socketEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from connections to a
+			<xsd:documentation>Event source that pulls binary information from
+				connections to a
 				TCP/IP server socket.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -2219,40 +2531,52 @@
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
 					<xsd:choice>
-						<xsd:element name="interaction-handler-factory" type="interactionHandlerFactoryReferenceType">
+						<xsd:element name="interaction-handler-factory"
+							type="interactionHandlerFactoryReferenceType">
 							<xsd:annotation>
-								<xsd:documentation>Reference to an interaction handler factory defined in an
-									external Spring bean. Factory must implement ISocketInteractionHandlerFactory
+								<xsd:documentation>Reference to an interaction handler factory
+									defined in an
+									external Spring bean. Factory must implement
+									ISocketInteractionHandlerFactory
 									interface.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element name="read-all-interaction-handler-factory" type="readAllInteractionHandlerFactoryType">
+						<xsd:element name="read-all-interaction-handler-factory"
+							type="readAllInteractionHandlerFactoryType">
 							<xsd:annotation>
-								<xsd:documentation>Interaction handler that reads all content from the client
-									socket and delivers it to the decoder as a byte array.
+								<xsd:documentation>Interaction handler that reads all content
+									from the client
+									socket and delivers it to the decoder as a byte
+									array.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element name="http-interaction-handler-factory" type="httpInteractionHandlerFactoryType">
+						<xsd:element name="http-interaction-handler-factory"
+							type="httpInteractionHandlerFactoryType">
 							<xsd:annotation>
-								<xsd:documentation>Interaction handler that treats a socket request as an HTTP
-									message and delivers the entity payload to the decoder as a byte array. A 200 OK
-									response is sent back to the requestor.
+								<xsd:documentation>Interaction handler that treats a socket
+									request as an HTTP
+									message and delivers the entity payload to
+									the decoder as a byte array. A 200 OK
+									response is sent back to
+									the requestor.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element name="groovy-interaction-handler-factory" type="groovyInteractionHandlerFactoryType">
+						<xsd:element name="groovy-interaction-handler-factory"
+							type="groovyInteractionHandlerFactoryType">
 							<xsd:annotation>
-								<xsd:documentation>Interaction handler that hands off socket interactions to a
+								<xsd:documentation>Interaction handler that hands off socket
+									interactions to a
 									Groovy script.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 					</xsd:choice>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="port" type="xsd:int" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2263,7 +2587,8 @@
 				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Number of threads used to handle client connections to the server
+							Number of threads used to handle client
+							connections to the server
 							socket.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2293,8 +2618,8 @@
 	<!-- Types of payloads that may be processed by a web socket event source -->
 	<xsd:simpleType name="webSocketPayloadType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="binary"/>
-			<xsd:enumeration value="string"/>
+			<xsd:enumeration value="binary" />
+			<xsd:enumeration value="string" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -2310,23 +2635,27 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
-					<xsd:element name="header" type="webSocketHeaderType" minOccurs="0">
+					<xsd:element ref="abstract-decoder" />
+					<xsd:element name="header" type="webSocketHeaderType"
+						minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Header that is passed to the web socket for configuration.
+							<xsd:documentation>Header that is passed to the web socket for
+								configuration.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
-				<xsd:attribute name="webSocketUrl" type="xsd:string" use="required">
+				<xsd:attributeGroup ref="event-source-attributes" />
+				<xsd:attribute name="webSocketUrl" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							URL of the web socket to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="payloadType" type="webSocketPayloadType" use="required"/>
+				<xsd:attribute name="payloadType" type="webSocketPayloadType"
+					use="required" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -2335,7 +2664,8 @@
 	<xsd:element name="coap-server-event-source" type="coapServerEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that accepts CoAP requests for SiteWhere resources.
+			<xsd:documentation>Event source that accepts CoAP requests for
+				SiteWhere resources.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2343,9 +2673,9 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder"/>
+					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="hostname" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2366,7 +2696,8 @@
 
 	<xsd:complexType name="deviceServicesType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-registration-manager" minOccurs="0"/>
+			<xsd:element ref="abstract-registration-manager"
+				minOccurs="0" />
 			<xsd:element name="symbol-generator-manager" type="symbolGeneratorManagerType"
 				minOccurs="0">
 				<xsd:annotation>
@@ -2375,7 +2706,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element ref="abstract-presence-manager" minOccurs="0"/>
+			<xsd:element ref="abstract-presence-manager" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -2388,16 +2719,17 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common registration manager element information -->
-	<xsd:complexType name="abstractRegistrationManagerType"/>
-	
+	<xsd:complexType name="abstractRegistrationManagerType" />
+
 	<!-- Registration manager reference -->
 	<xsd:element name="registration-manager" type="registrationManagerReferenceType"
 		substitutionGroup="abstract-registration-manager">
 		<xsd:annotation>
 			<xsd:documentation>
-				Allows a custom registration manager to be installed.
+				Allows a custom registration manager to be
+				installed.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2407,20 +2739,22 @@
 				<xsd:attribute name="ref" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Identifies bean that implements registration manager.
+							Identifies bean that implements registration
+							manager.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Default registration manager implementation -->
 	<xsd:element name="default-registration-manager" type="defaultRegistrationManagerType"
 		substitutionGroup="abstract-registration-manager">
 		<xsd:annotation>
 			<xsd:documentation>
-				Installs the default registration manager implementation.
+				Installs the default registration manager
+				implementation.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2429,23 +2763,28 @@
 			<xsd:extension base="abstractRegistrationManagerType">
 				<xsd:attribute name="allowNewDevices" type="xsd:boolean">
 					<xsd:annotation>
-						<xsd:documentation>Indicates whether new devices should be allowed to register. If
+						<xsd:documentation>Indicates whether new devices should be allowed
+							to register. If
 							set
-							to false, devices not already in the system will be rejected.
+							to false, devices not already in the system
+							will be rejected.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="autoAssignSite" type="xsd:boolean">
 					<xsd:annotation>
-						<xsd:documentation>Indicates whether the site should automatically be chosen if not
+						<xsd:documentation>Indicates whether the site should automatically
+							be chosen if not
 							passed with registration request.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="autoAssignToken" type="xsd:string">
 					<xsd:annotation>
-						<xsd:documentation>Token for site used in auto assignment. If not set and
-							'autoAssignSite' is set to true, the first site will be used.
+						<xsd:documentation>Token for site used in auto assignment. If not
+							set and
+							'autoAssignSite' is set to true, the first site will be
+							used.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -2462,15 +2801,15 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common symbol generator element information -->
-	<xsd:complexType name="abstractSymbolGeneratorType"/>
+	<xsd:complexType name="abstractSymbolGeneratorType" />
 
 	<!-- Configures the symbol generator manager -->
 	<xsd:complexType name="symbolGeneratorManagerType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element ref="abstract-symbol-generator"/>
+				<xsd:element ref="abstract-symbol-generator" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -2515,14 +2854,16 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="backgroundColor" type="xsd:string" use="optional">
+				<xsd:attribute name="backgroundColor" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Background color for QR code image.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="foregroundColor" type="xsd:string" use="optional">
+				<xsd:attribute name="foregroundColor" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Foreground color for QR code image.
@@ -2542,9 +2883,9 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common presence manager element information -->
-	<xsd:complexType name="abstractPresenceManagerType"/>
+	<xsd:complexType name="abstractPresenceManagerType" />
 
 	<!-- Default presence manager implementation -->
 	<xsd:element name="default-presence-manager" type="defaultPresenceManagerType"
@@ -2558,20 +2899,27 @@
 	<xsd:complexType name="defaultPresenceManagerType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractPresenceManagerType">
-				<xsd:attribute name="checkInterval" type="xsd:string" use="optional">
+				<xsd:attribute name="checkInterval" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Amount of time to wait between presence check cycles. Uses
-							ISO8601 duration format. (e.g. T1H30M is 1 hour and 30 minutes)
+							Amount of time to wait between presence check
+							cycles. Uses
+							ISO8601 duration format. (e.g. T1H30M is 1 hour and
+							30 minutes)
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="presenceMissingInterval" type="xsd:string" use="optional">
+				<xsd:attribute name="presenceMissingInterval" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Amount of time since last interaction date at which a device is
-							considered non-present. Uses ISO8601 duration format. (e.g. P2DT3H5M20S is 2 days,
-							3 hours, 5 minutes, and 20 seconds)
+							Amount of time since last interaction date at
+							which a device is
+							considered non-present. Uses ISO8601 duration
+							format. (e.g. P2DT3H5M20S is 2 days,
+							3 hours, 5 minutes, and 20
+							seconds)
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -2585,14 +2933,17 @@
 				<xsd:element name="batch-operation-manager" type="batchOperationManagerReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom batch operation manager implementation.
+							References a custom batch operation manager
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="default-batch-operation-manager" type="defaultBatchOperationManagerType">
+				<xsd:element name="default-batch-operation-manager"
+					type="defaultBatchOperationManagerType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures the default batch operation manager implementation.
+							Configures the default batch operation manager
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -2607,9 +2958,12 @@
 	<xsd:complexType name="defaultBatchOperationManagerType">
 		<xsd:attribute name="throttleDelayMs" type="xsd:int">
 			<xsd:annotation>
-				<xsd:documentation>Indicates the amount of time in milliseconds between command
-					invocations when invoking a batch of commands. Used to lower system load generated by
-					submitting a large number of command invocations concurrently.
+				<xsd:documentation>Indicates the amount of time in milliseconds
+					between command
+					invocations when invoking a batch of commands. Used
+					to lower system load generated by
+					submitting a large number of
+					command invocations concurrently.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2621,15 +2975,18 @@
 				<xsd:element name="command-router" type="commandRouterReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom command router implementation.
+							References a custom command router
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="specification-mapping-router" type="specificationMappingRouterType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Command router that distributes commands to destinations based on
-							a mapping of specification token to command agent id.
+							Command router that distributes commands to
+							destinations based on
+							a mapping of specification token to command
+							agent id.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -2647,15 +3004,18 @@
 				minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation>
-						Mapping of a specification token to a destination id.
+						Mapping of a specification token to a
+						destination id.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-		<xsd:attribute name="defaultDestination" type="xsd:token" use="optional">
+		<xsd:attribute name="defaultDestination" type="xsd:token"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					Allows a default destination to be set for specifications that do
+					Allows a default destination to be set for
+					specifications that do
 					not have a specific mapping.
 				</xsd:documentation>
 			</xsd:annotation>
@@ -2674,7 +3034,8 @@
 				<xsd:element name="command-destination" type="commandDestinationReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom command destination implementation.
+							References a custom command destination
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -2688,24 +3049,27 @@
 				<xsd:element name="coap-command-destination" type="coapCommandDestinationType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Destination that delivers commands via CoAP client request.
+							Destination that delivers commands via CoAP
+							client request.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="twilio-command-destination" type="twilioCommandDestinationType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Destination that delivers commands via Twilio SMS messages.
+							Destination that delivers commands via Twilio
+							SMS messages.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<!-- Attributes common to all command destinations -->
 	<xsd:attributeGroup name="command-destination-attributes">
-		<xsd:attribute name="destinationId" type="xsd:token" use="required">
+		<xsd:attribute name="destinationId" type="xsd:token"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique identifier for command destination.
@@ -2728,15 +3092,16 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common command encoder information -->
-	<xsd:complexType name="abstractCommandEncoderType"/>
-	
+	<xsd:complexType name="abstractCommandEncoderType" />
+
 	<!-- Reference to a command encoder defined as a Spring bean -->
 	<xsd:element name="command-encoder" type="commandEncoderReferenceType"
 		substitutionGroup="abstract-command-encoder">
 		<xsd:annotation>
-			<xsd:documentation>References a command encoder defined in an external bean
+			<xsd:documentation>References a command encoder defined in an
+				external bean
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2747,12 +3112,14 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
-	<!-- Encodes commands using standard SiteWhere Google Protocol Buffer naming convention -->
+
+	<!-- Encodes commands using standard SiteWhere Google Protocol Buffer naming 
+		convention -->
 	<xsd:element name="protobuf-command-encoder" type="swProtobufCommandEncoderType"
 		substitutionGroup="abstract-command-encoder">
 		<xsd:annotation>
-			<xsd:documentation>Command encoder that encodes commands based on standard SiteWhere
+			<xsd:documentation>Command encoder that encodes commands based on
+				standard SiteWhere
 				Google Protocol Buffer naming convention.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -2763,14 +3130,16 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
-	<!-- Encodes commands using protbuf for system commands and Java serialization for custom commands -->
+
+	<!-- Encodes commands using protbuf for system commands and Java serialization 
+		for custom commands -->
 	<xsd:element name="java-protobuf-hybrid-encoder" type="swJavaProtobufHybridEncoderType"
 		substitutionGroup="abstract-command-encoder">
 		<xsd:annotation>
-			<xsd:documentation>Command encoder that encodes system commands using protocol buffers
-				but encodes custom commands using serialized Java objects. This allows Java clients to
-				use the commands directly rather than having to recompile stubs based on a proto.
+			<xsd:documentation>Command encoder that encodes system commands using
+				protocol buffers but encodes custom commands using serialized Java
+				objects. This allows Java clients to use the commands directly
+				rather than having to recompile stubs based on a proto.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2780,13 +3149,13 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<!-- Encodes commands using JSON serialization -->
 	<xsd:element name="json-command-encoder" type="swJsonCommandEncoderType"
 		substitutionGroup="abstract-command-encoder">
 		<xsd:annotation>
-			<xsd:documentation>Command encoder that encodes both system and custom commands as JSON
-				for simplified client use.
+			<xsd:documentation>Command encoder that encodes both system and
+				custom commands as JSON for simplified client use.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2797,32 +3166,87 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Encodes commands using a Groovy script -->
+	<xsd:element name="groovy-command-encoder" type="swGroovyCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that hands off system and custom
+				commands to a Groovy script which applies logic to encode the
+				payload to a byte array.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic
+							needed to encode system and custom commands.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using a Groovy script returning a String -->
+	<xsd:element name="groovy-string-command-encoder" type="swGroovyStringCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that hands off system and custom
+				commands to a Groovy script which applies logic to encode the
+				payload to a String.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyStringCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic
+							needed to encode system and custom commands.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Command destination that delivers commands via MQTT -->
 	<xsd:complexType name="mqttCommandDestinationType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-command-encoder"/>
+			<xsd:element ref="abstract-command-encoder" />
 			<xsd:choice minOccurs="0">
-				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+				<xsd:element name="parameter-extractor"
+					type="commandDeliveryParameterExtractorReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom command delivery parameter extractor
-							implementation that extracts MQTT delivery information from the
-							device.
+							References a custom command delivery parameter
+							extractor implementation that extracts MQTT delivery information
+							from the device.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="hardware-id-topic-extractor" type="hardwareIdMqttParameterExtractorType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Substitutes device hardware id into expressions to determine the
-							outbound topics to which MQTT messages will be sent.
+							Substitutes device hardware id into expressions
+							to determine the
+							outbound topics to which MQTT messages will be
+							sent.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attributeGroup ref="command-destination-attributes"/>
-		<xsd:attributeGroup ref="mqtt-broker-attributes"/>
+		<xsd:attributeGroup ref="command-destination-attributes" />
+		<xsd:attributeGroup ref="mqtt-broker-attributes" />
 	</xsd:complexType>
 
 	<!-- MQTT parameter extractor that substitutes device hardware id into expressions -->
@@ -2834,49 +3258,68 @@
 	<!-- Command destination that delivers commands via CoAP -->
 	<xsd:complexType name="coapCommandDestinationType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-command-encoder"/>
+			<xsd:element ref="abstract-command-encoder" />
 			<xsd:choice minOccurs="0">
-				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+				<xsd:element name="parameter-extractor"
+					type="commandDeliveryParameterExtractorReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom command delivery parameter extractor
-							implementation that extracts CoAP delivery information from the
-							device.
+							References a custom command delivery parameter
+							extractor implementation that extracts CoAP delivery information
+							from the device.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="metadata-coap-parameter-extractor" type="metadataCoapParameterExtractorType">
+				<xsd:element name="metadata-coap-parameter-extractor"
+					type="metadataCoapParameterExtractorType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Extracts CoAP connection information from device metadata.
+							Extracts CoAP connection information from
+							device metadata.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attributeGroup ref="command-destination-attributes"/>
+		<xsd:attributeGroup ref="command-destination-attributes" />
 	</xsd:complexType>
 
-	<!-- CoAP parameter extractor that pulls connection information from device metadata -->
+	<!-- CoAP parameter extractor that pulls connection information from device 
+		metadata -->
 	<xsd:complexType name="metadataCoapParameterExtractorType">
 		<xsd:attribute name="hostnameMetadataField" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					Metadata field that holds hostname for CoAP client connection.
+					Metadata field that holds hostname for CoAP
+					client connection.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="portMetadataField" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					Metadata field that holds port for CoAP client connection.
+					Metadata field that holds port for CoAP client
+					connection.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="urlMetadataField" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					Metadata field that holds URL for CoAP client connection.
+					Metadata field that holds URL for CoAP client
+					connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Groovy script that extracts SMS parameters -->
+	<xsd:complexType name="swGroovySmsParameterExtractorType">
+		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Path to a Groovy script that executes logic
+					needed to extract SMS parameters from the current assignment.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2885,18 +3328,29 @@
 	<!-- Command destination that delivers commands via Twilio SMS message -->
 	<xsd:complexType name="twilioCommandDestinationType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-command-encoder"/>
-			<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command delivery parameter extractor
-						implementation that extracts SMS delivery information from the
-						device.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-command-encoder" />
+			<xsd:choice minOccurs="0">
+				<xsd:element name="parameter-extractor"
+					type="commandDeliveryParameterExtractorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command delivery parameter
+							extractor implementation that extracts CoAP delivery information
+							from the device.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="groovy-sms-parameter-extractor" type="swGroovySmsParameterExtractorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Extracts SMS parameter information using a
+							Groovy script.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attributeGroup ref="command-destination-attributes"/>
+		<xsd:attributeGroup ref="command-destination-attributes" />
 		<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>
@@ -2921,14 +3375,16 @@
 				<xsd:element name="asset-module" type="assetModuleReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom asset module implementation.
+							References a custom asset module
+							implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="wso2-identity-asset-module" type="wso2IdentityAssetModuleType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures an asset module that pulls information from WSO2
+							Configures an asset module that pulls
+							information from WSO2
 							Identity Server.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2936,28 +3392,34 @@
 				<xsd:element name="filesystem-device-asset-module" type="fileSystemDeviceAssetModuleType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures a filesystem device asset module instance.
+							Configures a filesystem device asset module
+							instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="filesystem-hardware-asset-module" type="fileSystemHardwareAssetModuleType">
+				<xsd:element name="filesystem-hardware-asset-module"
+					type="fileSystemHardwareAssetModuleType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures a filesystem hardware asset module instance.
+							Configures a filesystem hardware asset module
+							instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="filesystem-person-asset-module" type="fileSystemPersonAssetModuleType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures a filesystem person asset module instance.
+							Configures a filesystem person asset module
+							instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="filesystem-location-asset-module" type="fileSystemLocationAssetModuleType">
+				<xsd:element name="filesystem-location-asset-module"
+					type="fileSystemLocationAssetModuleType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Configures a filesystem location asset module instance.
+							Configures a filesystem location asset module
+							instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -2989,21 +3451,24 @@
 		<xsd:attribute name="username" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					Basic authentication username for web service calls.
+					Basic authentication username for web service
+					calls.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="password" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					Basic authentication password for web service calls.
+					Basic authentication password for web service
+					calls.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="ignoreBadCertificate" type="xsd:boolean">
 			<xsd:annotation>
 				<xsd:documentation>
-					Indicates whether an invalid SSL certificate on the server should
+					Indicates whether an invalid SSL certificate on
+					the server should
 					be ignored.
 				</xsd:documentation>
 			</xsd:annotation>
@@ -3040,9 +3505,9 @@
 
 	<!-- Common configuration for filesystem asset modules -->
 	<xsd:complexType name="fileSystemAssetModuleType">
-		<xsd:attribute name="moduleId" type="xsd:string" use="optional"/>
-		<xsd:attribute name="moduleName" type="xsd:string" use="optional"/>
-		<xsd:attribute name="filename" type="xsd:string" use="optional"/>
+		<xsd:attribute name="moduleId" type="xsd:string" use="optional" />
+		<xsd:attribute name="moduleName" type="xsd:string" use="optional" />
+		<xsd:attribute name="filename" type="xsd:string" use="optional" />
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for search provider elements to allow substitutionGroups -->
@@ -3054,7 +3519,7 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 	<!-- Common search provider element information -->
 	<xsd:complexType name="abstractSearchProviderType">
 		<xsd:attribute name="id" type="xsd:string" use="required">
@@ -3072,11 +3537,12 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
-	
+
 	<!-- Specifies list of search providers -->
 	<xsd:complexType name="searchProvidersType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-search-provider" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="abstract-search-provider" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3085,7 +3551,8 @@
 		substitutionGroup="abstract-search-provider">
 		<xsd:annotation>
 			<xsd:documentation>
-				Search provider that sends search requests to Apache Solr and
+				Search provider that sends search requests to
+				Apache Solr and
 				returns the results as matching SiteWhere events.
 			</xsd:documentation>
 		</xsd:annotation>

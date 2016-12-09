@@ -14,18 +14,18 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.User;
 
 /**
- * Search results that contain users. Needed so that JSON marshaling has a concrete class
- * to inflate.
+ * Search results that contain users. Needed so that JSON marshaling has a
+ * concrete class to inflate.
  * 
  * @author dadams
  */
 public class UserSearchResults extends SearchResults<User> {
 
-	public UserSearchResults() {
-		super(new ArrayList<User>());
-	}
+    public UserSearchResults() {
+	super(new ArrayList<User>());
+    }
 
-	public UserSearchResults(List<User> results) {
-		super(results);
-	}
+    public UserSearchResults(List<User> results) {
+	super(results);
+    }
 }

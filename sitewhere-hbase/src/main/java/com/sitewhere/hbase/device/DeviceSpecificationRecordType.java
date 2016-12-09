@@ -14,33 +14,33 @@ package com.sitewhere.hbase.device;
  */
 public enum DeviceSpecificationRecordType {
 
-	/** Device specification record */
-	DeviceSpecification((byte) 0x00),
+    /** Device specification record */
+    DeviceSpecification((byte) 0x00),
 
-	/** Device command record */
-	DeviceCommand((byte) 0x01),
+    /** Device command record */
+    DeviceCommand((byte) 0x01),
 
-	/** End marker for scan ranges */
-	End((byte) 0x02);
+    /** End marker for scan ranges */
+    End((byte) 0x02);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param type
-	 */
-	private DeviceSpecificationRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param type
+     */
+    private DeviceSpecificationRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

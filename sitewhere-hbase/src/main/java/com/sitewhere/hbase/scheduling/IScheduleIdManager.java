@@ -16,7 +16,7 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMap;
  */
 public interface IScheduleIdManager {
 
-	public UniqueIdCounterMap getScheduleKeys();
+    public UniqueIdCounterMap getScheduleKeys();
 
-	public UniqueIdCounterMap getScheduledJobKeys();
+    public UniqueIdCounterMap getScheduledJobKeys();
 }

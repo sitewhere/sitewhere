@@ -16,17 +16,17 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  */
 public interface ISearchProvider extends ILifecycleComponent {
 
-	/**
-	 * Get unique id of search provider.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get unique id of search provider.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get a human-readable name for the search provider.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get a human-readable name for the search provider.
+     * 
+     * @return
+     */
+    public String getName();
 }

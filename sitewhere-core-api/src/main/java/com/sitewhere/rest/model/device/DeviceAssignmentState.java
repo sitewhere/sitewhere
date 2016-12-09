@@ -33,114 +33,117 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 @JsonInclude(Include.NON_NULL)
 public class DeviceAssignmentState implements IDeviceAssignmentState, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -8536671667872805013L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -8536671667872805013L;
 
-	/** Date of last interaction with assignment */
-	private Date lastInteractionDate;
+    /** Date of last interaction with assignment */
+    private Date lastInteractionDate;
 
-	/** Date presence was determined to be missing */
-	private Date presenceMissingDate;
+    /** Date presence was determined to be missing */
+    private Date presenceMissingDate;
 
-	/** Last location event */
-	private DeviceLocation lastLocation;
+    /** Last location event */
+    private DeviceLocation lastLocation;
 
-	/** Last measurement event for each measurement id */
-	private List<DeviceMeasurement> latestMeasurements = new ArrayList<DeviceMeasurement>();
+    /** Last measurement event for each measurement id */
+    private List<DeviceMeasurement> latestMeasurements = new ArrayList<DeviceMeasurement>();
 
-	/** Last alert event for each alert type */
-	private List<DeviceAlert> latestAlerts = new ArrayList<DeviceAlert>();
+    /** Last alert event for each alert type */
+    private List<DeviceAlert> latestAlerts = new ArrayList<DeviceAlert>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastInteractionDate()
-	 */
-	@Override
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getLastInteractionDate() {
-		return lastInteractionDate;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceAssignmentState#getLastInteractionDate()
+     */
+    @Override
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getLastInteractionDate() {
+	return lastInteractionDate;
+    }
+
+    public void setLastInteractionDate(Date lastInteractionDate) {
+	this.lastInteractionDate = lastInteractionDate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceAssignmentState#getPresenceMissingDate()
+     */
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getPresenceMissingDate() {
+	return presenceMissingDate;
+    }
+
+    public void setPresenceMissingDate(Date presenceMissingDate) {
+	this.presenceMissingDate = presenceMissingDate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastLocation()
+     */
+    @Override
+    public IDeviceLocation getLastLocation() {
+	return lastLocation;
+    }
+
+    public void setLastLocation(DeviceLocation lastLocation) {
+	this.lastLocation = lastLocation;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceAssignmentState#getLatestMeasurements()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<IDeviceMeasurement> getLatestMeasurements() {
+	return (List<IDeviceMeasurement>) (List<? extends IDeviceMeasurement>) latestMeasurements;
+    }
+
+    public void setLatestMeasurements(List<DeviceMeasurement> latestMeasurements) {
+	this.latestMeasurements = latestMeasurements;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLatestAlerts()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<IDeviceAlert> getLatestAlerts() {
+	return (List<IDeviceAlert>) (List<? extends IDeviceAlert>) latestAlerts;
+    }
+
+    public void setLatestAlerts(List<DeviceAlert> latestAlerts) {
+	this.latestAlerts = latestAlerts;
+    }
+
+    public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
+	DeviceAssignmentState target = new DeviceAssignmentState();
+	target.setLastInteractionDate(source.getLastInteractionDate());
+	target.setPresenceMissingDate(source.getPresenceMissingDate());
+	if (source.getLastLocation() != null) {
+	    target.setLastLocation(DeviceLocation.copy(source.getLastLocation()));
 	}
-
-	public void setLastInteractionDate(Date lastInteractionDate) {
-		this.lastInteractionDate = lastInteractionDate;
+	List<DeviceMeasurement> measurements = new ArrayList<DeviceMeasurement>();
+	for (IDeviceMeasurement sm : source.getLatestMeasurements()) {
+	    measurements.add(DeviceMeasurement.copy(sm));
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getPresenceMissingDate()
-	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getPresenceMissingDate() {
-		return presenceMissingDate;
+	target.setLatestMeasurements(measurements);
+	List<DeviceAlert> alerts = new ArrayList<DeviceAlert>();
+	for (IDeviceAlert sa : source.getLatestAlerts()) {
+	    alerts.add(DeviceAlert.copy(sa));
 	}
-
-	public void setPresenceMissingDate(Date presenceMissingDate) {
-		this.presenceMissingDate = presenceMissingDate;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastLocation()
-	 */
-	@Override
-	public IDeviceLocation getLastLocation() {
-		return lastLocation;
-	}
-
-	public void setLastLocation(DeviceLocation lastLocation) {
-		this.lastLocation = lastLocation;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLatestMeasurements()
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<IDeviceMeasurement> getLatestMeasurements() {
-		return (List<IDeviceMeasurement>) (List<? extends IDeviceMeasurement>) latestMeasurements;
-	}
-
-	public void setLatestMeasurements(List<DeviceMeasurement> latestMeasurements) {
-		this.latestMeasurements = latestMeasurements;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLatestAlerts()
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<IDeviceAlert> getLatestAlerts() {
-		return (List<IDeviceAlert>) (List<? extends IDeviceAlert>) latestAlerts;
-	}
-
-	public void setLatestAlerts(List<DeviceAlert> latestAlerts) {
-		this.latestAlerts = latestAlerts;
-	}
-
-	public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
-		DeviceAssignmentState target = new DeviceAssignmentState();
-		target.setLastInteractionDate(source.getLastInteractionDate());
-		target.setPresenceMissingDate(source.getPresenceMissingDate());
-		if (source.getLastLocation() != null) {
-			target.setLastLocation(DeviceLocation.copy(source.getLastLocation()));
-		}
-		List<DeviceMeasurement> measurements = new ArrayList<DeviceMeasurement>();
-		for (IDeviceMeasurement sm : source.getLatestMeasurements()) {
-			measurements.add(DeviceMeasurement.copy(sm));
-		}
-		target.setLatestMeasurements(measurements);
-		List<DeviceAlert> alerts = new ArrayList<DeviceAlert>();
-		for (IDeviceAlert sa : source.getLatestAlerts()) {
-			alerts.add(DeviceAlert.copy(sa));
-		}
-		target.setLatestAlerts(alerts);
-		return target;
-	}
+	target.setLatestAlerts(alerts);
+	return target;
+    }
 }

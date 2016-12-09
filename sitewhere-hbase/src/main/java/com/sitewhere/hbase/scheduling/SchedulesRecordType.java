@@ -14,30 +14,30 @@ package com.sitewhere.hbase.scheduling;
  */
 public enum SchedulesRecordType {
 
-	/** Schedule record */
-	Schedule((byte) 0x00),
+    /** Schedule record */
+    Schedule((byte) 0x00),
 
-	/** Scheduled job record */
-	ScheduledJob((byte) 0x01);
+    /** Scheduled job record */
+    ScheduledJob((byte) 0x01);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private SchedulesRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private SchedulesRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

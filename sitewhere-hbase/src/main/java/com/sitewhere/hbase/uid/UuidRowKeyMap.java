@@ -19,43 +19,43 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UuidRowKeyMap extends UniqueIdMap<String, byte[]> {
 
-	public UuidRowKeyMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
-		super(context, keyIndicator, valueIndicator);
-	}
+    public UuidRowKeyMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
+	super(context, keyIndicator, valueIndicator);
+    }
 
-	/**
-	 * Create a UUID and associate it with the given row key.
-	 * 
-	 * @param rowkey
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public String createUniqueId(byte[] rowkey) throws SiteWhereException {
-		String uuid = UUID.randomUUID().toString();
-		create(uuid, rowkey);
-		return uuid;
-	}
+    /**
+     * Create a UUID and associate it with the given row key.
+     * 
+     * @param rowkey
+     * @return
+     * @throws SiteWhereException
+     */
+    public String createUniqueId(byte[] rowkey) throws SiteWhereException {
+	String uuid = UUID.randomUUID().toString();
+	create(uuid, rowkey);
+	return uuid;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.uid.UniqueIdMap#convertName(byte[])
-	 */
-	public String convertName(byte[] bytes) {
-		return new String(bytes);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.uid.UniqueIdMap#convertName(byte[])
+     */
+    public String convertName(byte[] bytes) {
+	return new String(bytes);
+    }
 
-	@Override
-	public byte[] convertName(String name) {
-		return name.getBytes();
-	}
+    @Override
+    public byte[] convertName(String name) {
+	return name.getBytes();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.hbase.uid.UniqueIdMap#convertValue(byte[])
-	 */
-	public byte[] convertValue(byte[] bytes) {
-		return bytes;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.hbase.uid.UniqueIdMap#convertValue(byte[])
+     */
+    public byte[] convertValue(byte[] bytes) {
+	return bytes;
+    }
 }

@@ -14,36 +14,57 @@ package com.sitewhere.device.communication.coap;
  */
 public class CoapParameters {
 
-	/** Hostname */
-	private String hostname;
+    /** Hostname */
+    private String hostname;
 
-	/** Port */
-	private int port = 5683;
+    /** Port */
+    private int port = 5683;
 
-	/** URL where command is posted */
-	private String url = "";
+    /** URL where command is posted */
+    private String url = "";
 
-	public String getHostname() {
-		return hostname;
-	}
+    /** HTTP method used */
+    private String method = "POST";
 
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+    public String getHostname() {
+	return hostname;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public int getPort() {
+	return port;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public void setPort(int port) {
+	this.port = port;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public String getUrl() {
+	return url;
+    }
+
+    public void setUrl(String url) {
+	this.url = url;
+    }
+
+    public String getMethod() {
+	return method;
+    }
+
+    public void setMethod(String method) {
+	this.method = method;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+	return "CoAP request: " + getMethod().toUpperCase() + " Host: " + getHostname() + " Port: " + getPort()
+		+ " URL: " + getUrl();
+    }
 }

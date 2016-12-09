@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.tenant.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
@@ -14,33 +16,33 @@ import com.sitewhere.spi.common.IMetadataProvider;
  * 
  * @author Derek
  */
-public interface ITenantGroupCreateRequest extends IMetadataProvider {
+public interface ITenantGroupCreateRequest extends IMetadataProvider, Serializable {
 
-	/**
-	 * Get unique token for group. Leave null to auto-generate.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique token for group. Leave null to auto-generate.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get name for group.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get name for group.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get description for group.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get description for group.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get URL for image associated with group.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get URL for image associated with group.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 }

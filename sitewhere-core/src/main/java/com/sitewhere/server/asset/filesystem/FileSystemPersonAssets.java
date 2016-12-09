@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Object used to marshal an XML file on the filesystem so it can be used to define a list of person assets.
+ * Object used to marshal an XML file on the filesystem so it can be used to
+ * define a list of person assets.
  * 
  * @author Derek Adams
  */
@@ -24,14 +25,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemPersonAssets {
 
-	@XmlElement(name = "person-asset")
-	private List<FileSystemPersonAsset> personAssets = new ArrayList<FileSystemPersonAsset>();
+    @XmlElement(name = "person-asset")
+    private List<FileSystemPersonAsset> personAssets = new ArrayList<FileSystemPersonAsset>();
 
-	public List<FileSystemPersonAsset> getPersonAssets() {
-		return personAssets;
-	}
+    public List<FileSystemPersonAsset> getPersonAssets() {
+	return personAssets;
+    }
 
-	public void setPersonAssets(List<FileSystemPersonAsset> personAssets) {
-		this.personAssets = personAssets;
-	}
+    public void setPersonAssets(List<FileSystemPersonAsset> personAssets) {
+	this.personAssets = personAssets;
+    }
 }

@@ -10,10 +10,11 @@ package com.sitewhere.web.mvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.view.JstlView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
+import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
 
@@ -21,25 +22,28 @@ import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
 @ComponentScan(basePackageClasses = { AdminInterfaceController.class })
 public class MvcConfiguration extends WebMvcConfigurationSupport {
 
-	/**
-	 * Ignore path extension on URLs.
-	 */
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer.favorPathExtension(false);
-	}
+    /**
+     * Ignore path extension on URLs.
+     */
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+	configurer.favorPathExtension(false);
+    }
 
-	/**
-	 * Set up the JSP view resolver.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public UrlBasedViewResolver viewResolver() {
-		UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-		resolver.setViewClass(JstlView.class);
-		resolver.setPrefix("/WEB-INF/jsp/");
-		resolver.setSuffix(".jsp");
-		return resolver;
-	}
+    @Bean
+    public ViewResolver viewResolver() {
+	VelocityViewResolver bean = new VelocityViewResolver();
+	bean.setCache(true);
+	bean.setPrefix("/");
+	bean.setSuffix(".vm");
+	bean.setRequestContextAttribute("request");
+	return bean;
+    }
+
+    @Bean
+    public VelocityConfigurer velocityConfig() {
+	VelocityConfigurer velocityConfigurer = new VelocityConfigurer();
+	velocityConfigurer.setResourceLoaderPath("/WEB-INF/views/");
+	return velocityConfigurer;
+    }
 }

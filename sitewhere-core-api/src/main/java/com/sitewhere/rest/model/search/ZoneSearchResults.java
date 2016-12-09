@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.Zone;
  */
 public class ZoneSearchResults extends SearchResults<Zone> {
 
-	public ZoneSearchResults() {
-		super(new ArrayList<Zone>());
-	}
+    public ZoneSearchResults() {
+	super(new ArrayList<Zone>());
+    }
 
-	public ZoneSearchResults(List<Zone> results) {
-		super(results);
-	}
+    public ZoneSearchResults(List<Zone> results) {
+	super(results);
+    }
 }

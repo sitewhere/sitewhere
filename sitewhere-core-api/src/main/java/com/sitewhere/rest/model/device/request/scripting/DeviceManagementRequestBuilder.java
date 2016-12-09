@@ -37,93 +37,98 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
  */
 public class DeviceManagementRequestBuilder {
 
-	/** Device management implementation */
-	private IDeviceManagement deviceManagement;
+    /** Device management implementation */
+    private IDeviceManagement deviceManagement;
 
-	public DeviceManagementRequestBuilder(IDeviceManagement deviceManagement) {
-		this.deviceManagement = deviceManagement;
-	}
+    public DeviceManagementRequestBuilder(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
 
-	public SiteCreateRequest.Builder newSite(String token, String name) {
-		return new SiteCreateRequest.Builder(token, name);
-	}
+    public SiteCreateRequest.Builder newSite(String token, String name) {
+	return new SiteCreateRequest.Builder(token, name);
+    }
 
-	public ISite persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
-		return getDeviceManagement().createSite(builder.build());
-	}
+    public ISite persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createSite(builder.build());
+    }
 
-	public ZoneCreateRequest.Builder newZone(String name) {
-		return new ZoneCreateRequest.Builder(name);
-	}
+    public ZoneCreateRequest.Builder newZone(String name) {
+	return new ZoneCreateRequest.Builder(name);
+    }
 
-	public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
-		return getDeviceManagement().createZone(site, builder.build());
-	}
+    public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createZone(site, builder.build());
+    }
 
-	public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name,
-			String assetModuleId, String assetId) {
-		return new DeviceSpecificationCreateRequest.Builder(token, name, assetModuleId, assetId);
-	}
+    public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name, String assetModuleId,
+	    String assetId) {
+	return new DeviceSpecificationCreateRequest.Builder(token, name, assetModuleId, assetId);
+    }
 
-	public IDeviceSpecification persist(DeviceSpecificationCreateRequest.Builder builder)
-			throws SiteWhereException {
-		return getDeviceManagement().createDeviceSpecification(builder.build());
-	}
+    public IDeviceSpecification persist(DeviceSpecificationCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDeviceSpecification(builder.build());
+    }
 
-	public DeviceCommandCreateRequest.Builder newCommand(String token, String namespace, String name) {
-		return new DeviceCommandCreateRequest.Builder(token, namespace, name);
-	}
+    public DeviceCommandCreateRequest.Builder newCommand(String token, String namespace, String name) {
+	return new DeviceCommandCreateRequest.Builder(token, namespace, name);
+    }
 
-	public IDeviceCommand persist(IDeviceSpecification specification,
-			DeviceCommandCreateRequest.Builder builder) throws SiteWhereException {
-		return getDeviceManagement().createDeviceCommand(specification, builder.build());
-	}
+    public IDeviceCommand persist(IDeviceSpecification specification, DeviceCommandCreateRequest.Builder builder)
+	    throws SiteWhereException {
+	return getDeviceManagement().createDeviceCommand(specification, builder.build());
+    }
 
-	public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken,
-			String hardwareId) {
-		return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
-	}
+    public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken, String hardwareId) {
+	return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
+    }
 
-	public IDevice persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
-		return getDeviceManagement().createDevice(builder.build());
-	}
+    public DeviceCreateRequest.Builder fromDevice(IDevice device) {
+	return new DeviceCreateRequest.Builder(device);
+    }
 
-	public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String assetModuleId,
-			String assetId) {
-		return new DeviceAssignmentCreateRequest.Builder(hardwareId, assetModuleId, assetId);
-	}
+    public IDevice persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDevice(builder.build());
+    }
 
-	public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder)
-			throws SiteWhereException {
-		return getDeviceManagement().createDeviceAssignment(builder.build());
-	}
+    public IDevice update(IDevice device, DeviceCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().updateDevice(device.getHardwareId(), builder.build());
+    }
 
-	public DeviceGroupCreateRequest.Builder newGroup(String token, String name) {
-		return new DeviceGroupCreateRequest.Builder(token, name);
-	}
+    public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String assetModuleId,
+	    String assetId) {
+	return new DeviceAssignmentCreateRequest.Builder(hardwareId, assetModuleId, assetId);
+    }
 
-	public IDeviceGroup persist(DeviceGroupCreateRequest.Builder builder) throws SiteWhereException {
-		return getDeviceManagement().createDeviceGroup(builder.build());
-	}
+    public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDeviceAssignment(builder.build());
+    }
 
-	public DeviceGroupElementCreateRequest.Builder newGroupElement(String id) {
-		return new DeviceGroupElementCreateRequest.Builder(id);
-	}
+    public DeviceGroupCreateRequest.Builder newGroup(String token, String name) {
+	return new DeviceGroupCreateRequest.Builder(token, name);
+    }
 
-	public List<IDeviceGroupElement> persist(IDeviceGroup group,
-			List<DeviceGroupElementCreateRequest.Builder> builders) throws SiteWhereException {
-		List<IDeviceGroupElementCreateRequest> elements = new ArrayList<IDeviceGroupElementCreateRequest>();
-		for (DeviceGroupElementCreateRequest.Builder builder : builders) {
-			elements.add(builder.build());
-		}
-		return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements);
-	}
+    public IDeviceGroup persist(DeviceGroupCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDeviceGroup(builder.build());
+    }
 
-	public IDeviceManagement getDeviceManagement() {
-		return deviceManagement;
-	}
+    public DeviceGroupElementCreateRequest.Builder newGroupElement(String id) {
+	return new DeviceGroupElementCreateRequest.Builder(id);
+    }
 
-	public void setDeviceManagement(IDeviceManagement deviceManagement) {
-		this.deviceManagement = deviceManagement;
+    public List<IDeviceGroupElement> persist(IDeviceGroup group, List<DeviceGroupElementCreateRequest.Builder> builders)
+	    throws SiteWhereException {
+	List<IDeviceGroupElementCreateRequest> elements = new ArrayList<IDeviceGroupElementCreateRequest>();
+	for (DeviceGroupElementCreateRequest.Builder builder : builders) {
+	    elements.add(builder.build());
 	}
+	return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements, true);
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
 }

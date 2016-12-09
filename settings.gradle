@@ -6,9 +6,7 @@ include ':sitewhere-client'
 include ':sitewhere-cloud'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
-include ':sitewhere-ehcache'
 include ':sitewhere-hbase'
-include ':sitewhere-groovy'
 include ':sitewhere-influx'
 include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
@@ -21,6 +19,7 @@ include ':sitewhere-spark'
 include ':sitewhere-spring'
 include ':sitewhere-twilio'
 include ':sitewhere-web'
+include ':sitewhere-web-admin'
 include ':sitewhere-wso2'
 
 project(':sitewhere-activemq').projectDir = "$rootDir/sitewhere-activemq" as File
@@ -30,9 +29,7 @@ project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
 project(':sitewhere-cloud').projectDir = "$rootDir/sitewhere-cloud" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
-project(':sitewhere-ehcache').projectDir = "$rootDir/sitewhere-ehcache" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
-project(':sitewhere-groovy').projectDir = "$rootDir/sitewhere-groovy" as File
 project(':sitewhere-influx').projectDir = "$rootDir/sitewhere-influx" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
@@ -45,4 +42,5 @@ project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
 project(':sitewhere-spring').projectDir = "$rootDir/sitewhere-spring" as File
 project(':sitewhere-twilio').projectDir = "$rootDir/sitewhere-twilio" as File
 project(':sitewhere-web').projectDir = "$rootDir/sitewhere-web" as File
+project(':sitewhere-web-admin').projectDir = "$rootDir/sitewhere-web-admin" as File
 project(':sitewhere-wso2').projectDir = "$rootDir/sitewhere-wso2" as File

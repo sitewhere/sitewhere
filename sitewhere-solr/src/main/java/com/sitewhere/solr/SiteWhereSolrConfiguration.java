@@ -7,12 +7,14 @@
  */
 package com.sitewhere.solr;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -20,71 +22,64 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class SiteWhereSolrConfiguration extends TenantLifecycleComponent implements
-		IDiscoverableTenantLifecycleComponent {
+public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
+	implements IDiscoverableTenantLifecycleComponent {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereSolrConfiguration.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Bean name where global Solr configuration is expected */
-	public static final String SOLR_CONFIGURATION_BEAN = "swSolrConfiguration";
+    /** Bean name where global Solr configuration is expected */
+    public static final String SOLR_CONFIGURATION_BEAN = "swSolrConfiguration";
 
-	/** Default URL for contacting Solr server */
-	private static final String DEFAULT_SOLR_URL = "http://localhost:8983/solr";
+    /** Default URL for contacting Solr server */
+    private static final String DEFAULT_SOLR_URL = "http://localhost:8983/solr";
 
-	/** URL used to interact with Solr server */
-	private String solrServerUrl = DEFAULT_SOLR_URL;
+    /** URL used to interact with Solr server */
+    private String solrServerUrl = DEFAULT_SOLR_URL;
 
-	/** Solr server instance */
-	private HttpSolrServer solrServer;
+    /** Solr server instance */
+    private HttpSolrServer solrServer;
 
-	public SiteWhereSolrConfiguration() {
-		super(LifecycleComponentType.Other);
-	}
+    public SiteWhereSolrConfiguration() {
+	super(LifecycleComponentType.Other);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		LOGGER.info("Solr initializing with URL: " + getSolrServerUrl());
-		setSolrServer(new HttpSolrServer(getSolrServerUrl()));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	LOGGER.info("Solr initializing with URL: " + getSolrServerUrl());
+	setSolrServer(new HttpSolrServer(getSolrServerUrl()));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    public String getSolrServerUrl() {
+	return solrServerUrl;
+    }
 
-	public String getSolrServerUrl() {
-		return solrServerUrl;
-	}
+    public void setSolrServerUrl(String solrServerUrl) {
+	this.solrServerUrl = solrServerUrl;
+    }
 
-	public void setSolrServerUrl(String solrServerUrl) {
-		this.solrServerUrl = solrServerUrl;
-	}
+    public HttpSolrServer getSolrServer() {
+	return solrServer;
+    }
 
-	public HttpSolrServer getSolrServer() {
-		return solrServer;
-	}
-
-	public void setSolrServer(HttpSolrServer solrServer) {
-		this.solrServer = solrServer;
-	}
+    public void setSolrServer(HttpSolrServer solrServer) {
+	this.solrServer = solrServer;
+    }
 }

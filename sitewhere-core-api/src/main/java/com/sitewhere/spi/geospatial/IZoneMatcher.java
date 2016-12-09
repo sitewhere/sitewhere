@@ -18,25 +18,25 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
  */
 public interface IZoneMatcher {
 
-	/**
-	 * Get location being matched.
-	 * 
-	 * @return
-	 */
-	public IDeviceLocation getLocation();
+    /**
+     * Get location being matched.
+     * 
+     * @return
+     */
+    public IDeviceLocation getLocation();
 
-	/**
-	 * Get the map of all relationships.
-	 * 
-	 * @return
-	 */
-	public Map<String, IZoneRelationship> getRelationships();
+    /**
+     * Get the map of all relationships.
+     * 
+     * @return
+     */
+    public Map<String, IZoneRelationship> getRelationships();
 
-	/**
-	 * Get relationship with the given zone.
-	 * 
-	 * @param zoneId
-	 * @return
-	 */
-	public IZoneRelationship getRelationship(String zoneId);
+    /**
+     * Get relationship with the given zone.
+     * 
+     * @param zoneId
+     * @return
+     */
+    public IZoneRelationship getRelationship(String zoneId);
 }

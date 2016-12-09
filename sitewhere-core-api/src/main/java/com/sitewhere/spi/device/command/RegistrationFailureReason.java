@@ -14,12 +14,12 @@ package com.sitewhere.spi.device.command;
  */
 public enum RegistrationFailureReason {
 
-	/** Registration manager does not allow new devices */
-	NewDevicesNotAllowed,
+    /** Registration manager does not allow new devices */
+    NewDevicesNotAllowed,
 
-	/** Invalid specification token was passed */
-	InvalidSpecificationToken,
+    /** Invalid specification token was passed */
+    InvalidSpecificationToken,
 
-	/** Site token was required */
-	SiteTokenRequired;
+    /** Site token was required */
+    SiteTokenRequired;
 }

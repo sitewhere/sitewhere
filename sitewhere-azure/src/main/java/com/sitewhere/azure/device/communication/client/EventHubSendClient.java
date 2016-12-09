@@ -28,48 +28,49 @@ public class EventHubSendClient {
 
     public static void main(String[] args) throws Exception {
 
-        if (args == null || args.length < 7) {
-            throw new IllegalArgumentException(
-                    "arguments are missing. [username] [password] [namespace] [entityPath] [partitionId] [messageSize] [messageCount] are required.");
-        }
+	if (args == null || args.length < 7) {
+	    throw new IllegalArgumentException(
+		    "arguments are missing. [username] [password] [namespace] [entityPath] [partitionId] [messageSize] [messageCount] are required.");
+	}
 
-        String username = args[0];
-        String password = args[1];
-        String namespace = args[2];
-        String entityPath = args[3];
-        String partitionId = args[4];
-        int messageSize = Integer.parseInt(args[5]);
-        int messageCount = Integer.parseInt(args[6]);
-        assert (messageSize > 0);
-        assert (messageCount > 0);
+	String username = args[0];
+	String password = args[1];
+	String namespace = args[2];
+	String entityPath = args[3];
+	String partitionId = args[4];
+	int messageSize = Integer.parseInt(args[5]);
+	int messageCount = Integer.parseInt(args[6]);
+	assert (messageSize > 0);
+	assert (messageCount > 0);
 
-        if (partitionId.equals("-1")) {
-            // -1 means we want to send data to partitions in round-robin fashion.
-            partitionId = null;
-        }
+	if (partitionId.equals("-1")) {
+	    // -1 means we want to send data to partitions in round-robin
+	    // fashion.
+	    partitionId = null;
+	}
 
-        try {
-            String connectionString = EventHubReceiverTaskConfig.buildConnectionString(username, password, namespace);
-            EventHubClient client = EventHubClient.create(connectionString, entityPath);
-            EventHubSender sender = client.createPartitionSender(partitionId);
+	try {
+	    String connectionString = EventHubReceiverTaskConfig.buildConnectionString(username, password, namespace);
+	    EventHubClient client = EventHubClient.create(connectionString, entityPath);
+	    EventHubSender sender = client.createPartitionSender(partitionId);
 
-            StringBuilder sb = new StringBuilder(messageSize);
-            for (int i = 1; i < messageCount + 1; ++i) {
-                while (sb.length() < messageSize) {
-                    sb.append(" current message: " + i);
-                }
-                sb.setLength(messageSize);
-                sender.send(sb.toString());
-                sb.setLength(0);
-                if (i % 1000 == 0) {
-                    System.out.println("Number of messages sent: " + i);
-                }
-            }
-            System.out.println("Total Number of messages sent: " + messageCount);
-        } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
-        }
+	    StringBuilder sb = new StringBuilder(messageSize);
+	    for (int i = 1; i < messageCount + 1; ++i) {
+		while (sb.length() < messageSize) {
+		    sb.append(" current message: " + i);
+		}
+		sb.setLength(messageSize);
+		sender.send(sb.toString());
+		sb.setLength(0);
+		if (i % 1000 == 0) {
+		    System.out.println("Number of messages sent: " + i);
+		}
+	    }
+	    System.out.println("Total Number of messages sent: " + messageCount);
+	} catch (Exception e) {
+	    System.out.println("Exception: " + e.getMessage());
+	}
 
-        System.out.println("done");
+	System.out.println("done");
     }
 }

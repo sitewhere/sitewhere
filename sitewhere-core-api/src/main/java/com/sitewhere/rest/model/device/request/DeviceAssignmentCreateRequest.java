@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -24,115 +25,146 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -6880578458870122016L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -6880578458870122016L;
 
-	/** Device hardware id */
-	private String deviceHardwareId;
+    /** Token */
+    private String token;
 
-	/** Type of assignment */
-	private DeviceAssignmentType assignmentType;
+    /** Device hardware id */
+    private String deviceHardwareId;
 
-	/** Asset module id */
-	private String assetModuleId;
+    /** Type of assignment */
+    private DeviceAssignmentType assignmentType;
 
-	/** Unique asset id */
-	private String assetId;
+    /** Asset module id */
+    private String assetModuleId;
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Unique asset id */
+    private String assetId;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getDeviceHardwareId
-	 * ()
-	 */
-	public String getDeviceHardwareId() {
-		return deviceHardwareId;
+    /** Metadata values */
+    private Map<String, String> metadata;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getToken(
+     * )
+     */
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getDeviceHardwareId ()
+     */
+    public String getDeviceHardwareId() {
+	return deviceHardwareId;
+    }
+
+    public void setDeviceHardwareId(String deviceHardwareId) {
+	this.deviceHardwareId = deviceHardwareId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getAssignmentType()
+     */
+    public DeviceAssignmentType getAssignmentType() {
+	return assignmentType;
+    }
+
+    public void setAssignmentType(DeviceAssignmentType assignmentType) {
+	this.assignmentType = assignmentType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getAssetModuleId()
+     */
+    public String getAssetModuleId() {
+	return assetModuleId;
+    }
+
+    public void setAssetModuleId(String assetModuleId) {
+	this.assetModuleId = assetModuleId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getAssetId()
+     */
+    public String getAssetId() {
+	return assetId;
+    }
+
+    public void setAssetId(String assetId) {
+	this.assetId = assetId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
+
+	public Builder(IDeviceAssignment api) {
+	    request.setToken(api.getToken());
+	    request.setDeviceHardwareId(api.getDeviceHardwareId());
+	    request.setAssetModuleId(api.getAssetModuleId());
+	    request.setAssetId(api.getAssetId());
+	    request.setAssignmentType(api.getAssignmentType());
+	    if (api.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(api.getMetadata());
+	    }
 	}
 
-	public void setDeviceHardwareId(String deviceHardwareId) {
-		this.deviceHardwareId = deviceHardwareId;
+	public Builder(String hardwareId, String assetModuleId, String assetId) {
+	    request.setDeviceHardwareId(hardwareId);
+	    request.setAssetModuleId(assetModuleId);
+	    request.setAssetId(assetId);
+	    request.setAssignmentType(DeviceAssignmentType.Associated);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAssignmentType()
-	 */
-	public DeviceAssignmentType getAssignmentType() {
-		return assignmentType;
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
 	}
 
-	public void setAssignmentType(DeviceAssignmentType assignmentType) {
-		this.assignmentType = assignmentType;
+	public DeviceAssignmentCreateRequest build() {
+	    return request;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAssetModuleId()
-	 */
-	public String getAssetModuleId() {
-		return assetModuleId;
-	}
-
-	public void setAssetModuleId(String assetModuleId) {
-		this.assetModuleId = assetModuleId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAssetId()
-	 */
-	public String getAssetId() {
-		return assetId;
-	}
-
-	public void setAssetId(String assetId) {
-		this.assetId = assetId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
-	
-	public static class Builder {
-
-		/** Request being built */
-		private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
-
-		public Builder(String hardwareId, String assetModuleId, String assetId) {
-			request.setDeviceHardwareId(hardwareId);
-			request.setAssetModuleId(assetModuleId);
-			request.setAssetId(assetId); 
-			request.setAssignmentType(DeviceAssignmentType.Associated);
-		}
-
-		public Builder metadata(String name, String value) {
-			if (request.getMetadata() == null) {
-				request.setMetadata(new HashMap<String, String>());
-			}
-			request.getMetadata().put(name, value);
-			return this;
-		}
-
-		public DeviceAssignmentCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

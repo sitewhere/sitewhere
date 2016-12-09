@@ -20,31 +20,31 @@ import com.sitewhere.spi.device.batch.IBatchOperation;
  */
 public interface IBatchOperationUpdateRequest {
 
-	/**
-	 * Get updated processing status for the batch operation.
-	 * 
-	 * @return
-	 */
-	public BatchOperationStatus getProcessingStatus();
+    /**
+     * Get updated processing status for the batch operation.
+     * 
+     * @return
+     */
+    public BatchOperationStatus getProcessingStatus();
 
-	/**
-	 * Get updated processing start date.
-	 * 
-	 * @return
-	 */
-	public Date getProcessingStartedDate();
+    /**
+     * Get updated processing start date.
+     * 
+     * @return
+     */
+    public Date getProcessingStartedDate();
 
-	/**
-	 * Get updated processing end date.
-	 * 
-	 * @return
-	 */
-	public Date getProcessingEndedDate();
+    /**
+     * Get updated processing end date.
+     * 
+     * @return
+     */
+    public Date getProcessingEndedDate();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

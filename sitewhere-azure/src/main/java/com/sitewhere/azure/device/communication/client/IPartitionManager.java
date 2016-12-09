@@ -41,5 +41,5 @@ public interface IPartitionManager {
     void fail(String offset);
 
     @SuppressWarnings("rawtypes")
-	Map getMetricsData();
+    Map getMetricsData();
 }

@@ -20,90 +20,90 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 
 /**
- * Helper class for building {@link IScheduledJobCreateRequest} instances based on job
- * types.
+ * Helper class for building {@link IScheduledJobCreateRequest} instances based
+ * on job types.
  * 
  * @author Derek
  */
 public class ScheduledJobHelper {
 
-	/**
-	 * Create job that will invoke a command on an assignment.
-	 * 
-	 * @param token
-	 * @param assignmentToken
-	 * @param commandToken
-	 * @param parameters
-	 * @param scheduleToken
-	 * @return
-	 */
-	public static IScheduledJobCreateRequest createCommandInvocationJob(String token, String assignmentToken,
-			String commandToken, Map<String, String> parameters, String scheduleToken) {
-		ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
+    /**
+     * Create job that will invoke a command on an assignment.
+     * 
+     * @param token
+     * @param assignmentToken
+     * @param commandToken
+     * @param parameters
+     * @param scheduleToken
+     * @return
+     */
+    public static IScheduledJobCreateRequest createCommandInvocationJob(String token, String assignmentToken,
+	    String commandToken, Map<String, String> parameters, String scheduleToken) {
+	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
 
-		job.setToken(token);
-		job.setJobType(ScheduledJobType.CommandInvocation);
+	job.setToken(token);
+	job.setJobType(ScheduledJobType.CommandInvocation);
 
-		Map<String, String> config = new HashMap<String, String>();
-		config.put(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN, assignmentToken);
-		config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, commandToken);
-		for (String key : parameters.keySet()) {
-			String value = parameters.get(key);
-			config.put(JobConstants.CommandInvocation.PARAMETER_PREFIX + key, value);
-		}
-		job.setJobConfiguration(config);
-		job.setScheduleToken(scheduleToken);
+	Map<String, String> config = new HashMap<String, String>();
+	config.put(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN, assignmentToken);
+	config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, commandToken);
+	for (String key : parameters.keySet()) {
+	    String value = parameters.get(key);
+	    config.put(JobConstants.CommandInvocation.PARAMETER_PREFIX + key, value);
+	}
+	job.setJobConfiguration(config);
+	job.setScheduleToken(scheduleToken);
 
-		return job;
+	return job;
+    }
+
+    /**
+     * Create request for a job that uses criteria to choose a list of devices
+     * on which a command will be invoked.
+     * 
+     * @param token
+     * @param request
+     * @param scheduleToken
+     * @return
+     */
+    public static IScheduledJobCreateRequest createBatchCommandInvocationJobByCriteria(String token,
+	    BatchCommandForCriteriaRequest request, String scheduleToken) {
+	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
+
+	job.setToken(token);
+	job.setJobType(ScheduledJobType.BatchCommandInvocation);
+
+	Map<String, String> config = new HashMap<String, String>();
+
+	// Store command information.
+	config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, request.getCommandToken());
+	for (String key : request.getParameterValues().keySet()) {
+	    String value = request.getParameterValues().get(key);
+	    config.put(JobConstants.CommandInvocation.PARAMETER_PREFIX + key, value);
 	}
 
-	/**
-	 * Create request for a job that uses criteria to choose a list of devices on which a
-	 * command will be invoked.
-	 * 
-	 * @param token
-	 * @param request
-	 * @param scheduleToken
-	 * @return
-	 */
-	public static IScheduledJobCreateRequest createBatchCommandInvocationJobByCriteria(String token,
-			BatchCommandForCriteriaRequest request, String scheduleToken) {
-		ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
-
-		job.setToken(token);
-		job.setJobType(ScheduledJobType.BatchCommandInvocation);
-
-		Map<String, String> config = new HashMap<String, String>();
-
-		// Store command information.
-		config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, request.getCommandToken());
-		for (String key : request.getParameterValues().keySet()) {
-			String value = request.getParameterValues().get(key);
-			config.put(JobConstants.CommandInvocation.PARAMETER_PREFIX + key, value);
-		}
-
-		// Store criteria information.
-		config.put(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN, request.getSpecificationToken());
-		if (!StringUtils.isEmpty(request.getSiteToken())) {
-			config.put(JobConstants.BatchCommandInvocation.SITE_TOKEN, request.getSiteToken());
-		}
-		if (!StringUtils.isEmpty(request.getGroupToken())) {
-			config.put(JobConstants.BatchCommandInvocation.GROUP_TOKEN, request.getGroupToken());
-		}
-		if (!StringUtils.isEmpty(request.getGroupsWithRole())) {
-			config.put(JobConstants.BatchCommandInvocation.GROUP_ROLE, request.getGroupsWithRole());
-		}
-		if (request.getStartDate() != null) {
-			config.put(JobConstants.BatchCommandInvocation.START_DATE,
-					JsonDateSerializer.serialize(request.getStartDate()));
-		}
-		if (request.getEndDate() != null) {
-			config.put(JobConstants.BatchCommandInvocation.END_DATE,
-					JsonDateSerializer.serialize(request.getEndDate()));
-		}
-		job.setJobConfiguration(config);
-		job.setScheduleToken(scheduleToken);
-
-		return job;
+	// Store criteria information.
+	config.put(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN, request.getSpecificationToken());
+	if (!StringUtils.isEmpty(request.getSiteToken())) {
+	    config.put(JobConstants.BatchCommandInvocation.SITE_TOKEN, request.getSiteToken());
 	}
+	if (!StringUtils.isEmpty(request.getGroupToken())) {
+	    config.put(JobConstants.BatchCommandInvocation.GROUP_TOKEN, request.getGroupToken());
+	}
+	if (!StringUtils.isEmpty(request.getGroupsWithRole())) {
+	    config.put(JobConstants.BatchCommandInvocation.GROUP_ROLE, request.getGroupsWithRole());
+	}
+	if (request.getStartDate() != null) {
+	    config.put(JobConstants.BatchCommandInvocation.START_DATE,
+		    JsonDateSerializer.serialize(request.getStartDate()));
+	}
+	if (request.getEndDate() != null) {
+	    config.put(JobConstants.BatchCommandInvocation.END_DATE,
+		    JsonDateSerializer.serialize(request.getEndDate()));
+	}
+	job.setJobConfiguration(config);
+	job.setScheduleToken(scheduleToken);
+
+	return job;
+    }
 }

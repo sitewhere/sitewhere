@@ -11,43 +11,91 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link InboundEventSource} where event receivers return decoded
- * events and the decoder just passes the events through without changing them.
+ * Implementation of {@link InboundEventSource} where event receivers return
+ * decoded events and the decoder just passes the events through without
+ * changing them.
  * 
  * @author Derek
  */
 public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceRequest<?>> {
 
-	public DecodedInboundEventSource() {
-		setDeviceEventDecoder(new NoOpDecoder());
+    public DecodedInboundEventSource() {
+	setDeviceEventDecoder(new NoOpDecoder());
+    }
+
+    /**
+     * Decoder that just returns the decoded events.
+     * 
+     * @author Derek
+     */
+    public static class NoOpDecoder extends TenantLifecycleComponent
+	    implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public NoOpDecoder() {
+	    super(LifecycleComponentType.DeviceEventDecoder);
 	}
 
-	/**
-	 * Decoder that just returns the decoded events.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(
+	 * java.lang. Object, java.util.Map)
 	 */
-	public class NoOpDecoder implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.
-		 * Object, java.util.Map)
-		 */
-		@Override
-		public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload,
-				Map<String, String> metadata) throws EventDecodeException {
-			List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
-			results.add(payload);
-			return results;
-		}
+	@Override
+	public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload, Map<String, Object> metadata)
+		throws EventDecodeException {
+	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
+	    results.add(payload);
+	    return results;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+	 */
+	@Override
+	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+	 */
+	@Override
+	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
 }

@@ -14,12 +14,12 @@ package com.sitewhere.solr;
  */
 public enum SolrEventType {
 
-	/** Event represents IDeviceMeasurements */
-	Measurements,
+    /** Event represents IDeviceMeasurements */
+    Measurements,
 
-	/** Event represents IDeviceLocation */
-	Location,
+    /** Event represents IDeviceLocation */
+    Location,
 
-	/** Event represents IDeviceAlert */
-	Alert;
+    /** Event represents IDeviceAlert */
+    Alert;
 }

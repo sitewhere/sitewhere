@@ -21,99 +21,97 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IScheduleManagement extends ITenantLifecycleComponent {
 
-	/**
-	 * Create a new schedule.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new schedule.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Update an existing schedule.
-	 * 
-	 * @param token
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException;
+    /**
+     * Update an existing schedule.
+     * 
+     * @param token
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get a schedule by unique token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISchedule getScheduleByToken(String token) throws SiteWhereException;
+    /**
+     * Get a schedule by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISchedule getScheduleByToken(String token) throws SiteWhereException;
 
-	/**
-	 * List schedules that match the given criteria.
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException;
+    /**
+     * List schedules that match the given criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Delete an existing schedule.
-	 * 
-	 * @param token
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException;
+    /**
+     * Delete an existing schedule.
+     * 
+     * @param token
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException;
 
-	/**
-	 * Create a new scheduled job.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException;
+    /**
+     * Create a new scheduled job.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Update an existing scheduled job.
-	 * 
-	 * @param token
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
-			throws SiteWhereException;
+    /**
+     * Update an existing scheduled job.
+     * 
+     * @param token
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request) throws SiteWhereException;
 
-	/**
-	 * Get a scheduled job by unique token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException;
+    /**
+     * Get a scheduled job by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException;
 
-	/**
-	 * List scheduled jobs that match the given criteria.
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria)
-			throws SiteWhereException;
+    /**
+     * List scheduled jobs that match the given criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException;
 
-	/**
-	 * Delete an existing scheduled job.
-	 * 
-	 * @param token
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException;
+    /**
+     * Delete an existing scheduled job.
+     * 
+     * @param token
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException;
 }

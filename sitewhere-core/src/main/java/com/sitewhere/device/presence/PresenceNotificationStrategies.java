@@ -19,29 +19,30 @@ import com.sitewhere.spi.device.presence.IPresenceNotificationStrategy;
  */
 public class PresenceNotificationStrategies {
 
-	/**
-	 * Only stores/sends a single presence missing notification and keeps state. If
-	 * presence is regained, the state will be reset.
-	 * 
-	 * @author Derek
-	 *
-	 */
-	public static class SendOnceNotificationStrategy implements IPresenceNotificationStrategy {
+    /**
+     * Only stores/sends a single presence missing notification and keeps state.
+     * If presence is regained, the state will be reset.
+     * 
+     * @author Derek
+     *
+     */
+    public static class SendOnceNotificationStrategy implements IPresenceNotificationStrategy {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.device.presence.IPresenceNotificationStrategy#
-		 * shouldGenerateEvent(com.sitewhere.spi.device.IDeviceAssignment,
-		 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
-		 */
-		@Override
-		public boolean shouldGenerateEvent(IDeviceAssignment assignment,
-				IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-			if (assignment.getState().getPresenceMissingDate() != null) {
-				return false;
-			}
-			return true;
-		}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.presence.IPresenceNotificationStrategy#
+	 * shouldGenerateEvent(com.sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public boolean shouldGenerateEvent(IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request)
+		throws SiteWhereException {
+	    if (assignment.getState().getPresenceMissingDate() != null) {
+		return false;
+	    }
+	    return true;
 	}
+    }
 }

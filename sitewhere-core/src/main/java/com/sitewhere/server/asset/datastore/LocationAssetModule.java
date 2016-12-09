@@ -15,37 +15,58 @@ import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.ILocationAsset;
 
 /**
- * Implementation of {@link IAssetModule} that loads location assets from a datastore.
+ * Implementation of {@link IAssetModule} that loads location assets from a
+ * datastore.
  * 
  * @author Derek
  */
-public class LocationAssetModule extends DataStoreAssetModule<ILocationAsset> implements
-		IAssetModule<ILocationAsset> {
+public class LocationAssetModule extends DataStoreAssetModule<ILocationAsset> implements IAssetModule<ILocationAsset> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 8162055977499293110L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8162055977499293110L;
 
-	public LocationAssetModule(IAssetCategory category) {
-		super(category);
-	}
+    public LocationAssetModule(IAssetCategory category) {
+	super(category);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
-	 */
-	@Override
-	public ILocationAsset getAssetById(String id) throws SiteWhereException {
-		return doGetAsset(id);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#getAsset(java.lang.String)
+     */
+    @Override
+    public ILocationAsset getAsset(String id) throws SiteWhereException {
+	return doGetAsset(id);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
-	 */
-	@Override
-	public List<ILocationAsset> search(String criteria) throws SiteWhereException {
-		return doSearch(criteria);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#putAsset(java.lang.String,
+     * com.sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public void putAsset(String id, ILocationAsset asset) throws SiteWhereException {
+	doPutAsset(id, asset);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#removeAsset(java.lang.String)
+     */
+    @Override
+    public void removeAsset(String id) throws SiteWhereException {
+	doRemoveAsset(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
+     */
+    @Override
+    public List<ILocationAsset> search(String criteria) throws SiteWhereException {
+	return doSearch(criteria);
+    }
 }

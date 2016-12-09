@@ -14,30 +14,30 @@ package com.sitewhere.hbase.asset;
  */
 public enum AssetCategorySubtype {
 
-	/** Asset category record */
-	AssetCategory((byte) 0x00),
+    /** Asset category record */
+    AssetCategory((byte) 0x00),
 
-	/** Asset record */
-	Asset((byte) 0x01);
+    /** Asset record */
+    Asset((byte) 0x01);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private AssetCategorySubtype(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private AssetCategorySubtype(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

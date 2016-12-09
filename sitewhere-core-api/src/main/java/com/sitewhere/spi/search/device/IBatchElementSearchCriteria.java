@@ -17,10 +17,10 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public interface IBatchElementSearchCriteria extends ISearchCriteria {
 
-	/**
-	 * Gets processing status to match. Null matches all.
-	 * 
-	 * @return
-	 */
-	public ElementProcessingStatus getProcessingStatus();
+    /**
+     * Gets processing status to match. Null matches all.
+     * 
+     * @return
+     */
+    public ElementProcessingStatus getProcessingStatus();
 }

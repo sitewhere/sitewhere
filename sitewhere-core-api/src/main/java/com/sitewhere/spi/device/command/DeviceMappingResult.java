@@ -7,9 +7,9 @@ package com.sitewhere.spi.device.command;
  */
 public enum DeviceMappingResult {
 
-	/** Indicates a mapping was successfully created */
-	MappingCreated,
+    /** Indicates a mapping was successfully created */
+    MappingCreated,
 
-	/** Indicates mapping not created since one already exists */
-	MappingFailedDueToExisting;
+    /** Indicates mapping not created since one already exists */
+    MappingFailedDueToExisting;
 }

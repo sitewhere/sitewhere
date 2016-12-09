@@ -28,60 +28,58 @@ import com.sitewhere.spi.user.IUserManagement;
  */
 public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 
-	/** User management implementation */
-	private IUserManagement userManagement;
+    /** User management implementation */
+    private IUserManagement userManagement;
 
-	public SitewhereAuthenticationProvider(IUserManagement userManagement) {
-		this.userManagement = userManagement;
-	}
+    public SitewhereAuthenticationProvider(IUserManagement userManagement) {
+	this.userManagement = userManagement;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.springframework.security.providers.AuthenticationProvider#authenticate(org.
-	 * springframework.security. Authentication)
-	 */
-	public Authentication authenticate(Authentication input) throws AuthenticationException {
-		try {
-			if (input instanceof UsernamePasswordAuthenticationToken) {
-				String username = (String) input.getPrincipal();
-				String password = (String) input.getCredentials();
-				if (getUserManagement() == null) {
-					throw new AuthenticationServiceException(
-							"User management not available. Check logs for details.");
-				}
-				IUser user = getUserManagement().authenticate(username, password);
-				List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
-				SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
-				return new SitewhereAuthentication(details, password);
-			} else if (input instanceof SitewhereAuthentication) {
-				return input;
-			} else {
-				throw new AuthenticationServiceException(
-						"Unknown authentication: " + input.getClass().getName());
-			}
-		} catch (SiteWhereException e) {
-			throw new BadCredentialsException("Unable to authenticate.", e);
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.springframework.security.providers.AuthenticationProvider#
+     * authenticate(org. springframework.security. Authentication)
+     */
+    public Authentication authenticate(Authentication input) throws AuthenticationException {
+	try {
+	    if (input instanceof UsernamePasswordAuthenticationToken) {
+		String username = (String) input.getPrincipal();
+		String password = (String) input.getCredentials();
+		if (getUserManagement() == null) {
+		    throw new AuthenticationServiceException("User management not available. Check logs for details.");
 		}
+		IUser user = getUserManagement().authenticate(username, password);
+		List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
+		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
+		return new SitewhereAuthentication(details, password);
+	    } else if (input instanceof SitewhereAuthentication) {
+		return input;
+	    } else {
+		throw new AuthenticationServiceException("Unknown authentication: " + input.getClass().getName());
+	    }
+	} catch (SiteWhereException e) {
+	    throw new BadCredentialsException("Unable to authenticate.", e);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.providers.AuthenticationProvider#supports(java.lang
-	 * .Class)
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class clazz) {
-		return true;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.security.providers.AuthenticationProvider#supports(
+     * java.lang .Class)
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean supports(Class clazz) {
+	return true;
+    }
 
-	public IUserManagement getUserManagement() {
-		return userManagement;
-	}
+    public IUserManagement getUserManagement() {
+	return userManagement;
+    }
 
-	public void setUserManagement(IUserManagement userManagement) {
-		this.userManagement = userManagement;
-	}
+    public void setUserManagement(IUserManagement userManagement) {
+	this.userManagement = userManagement;
+    }
 }

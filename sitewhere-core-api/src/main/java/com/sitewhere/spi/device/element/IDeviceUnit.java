@@ -16,17 +16,17 @@ import java.util.List;
  */
 public interface IDeviceUnit extends IDeviceElement {
 
-	/**
-	 * Get list of slots associated with the unit.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceSlot> getDeviceSlots();
+    /**
+     * Get list of slots associated with the unit.
+     * 
+     * @return
+     */
+    public List<IDeviceSlot> getDeviceSlots();
 
-	/**
-	 * Get list of subordinate units associated with the unit.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceUnit> getDeviceUnits();
+    /**
+     * Get list of subordinate units associated with the unit.
+     * 
+     * @return
+     */
+    public List<IDeviceUnit> getDeviceUnits();
 }

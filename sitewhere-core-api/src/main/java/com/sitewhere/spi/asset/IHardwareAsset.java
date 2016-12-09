@@ -14,17 +14,17 @@ package com.sitewhere.spi.asset;
  */
 public interface IHardwareAsset extends IAsset {
 
-	/**
-	 * Get the stock keeping unit (SKU).
-	 * 
-	 * @return
-	 */
-	public String getSku();
+    /**
+     * Get the stock keeping unit (SKU).
+     * 
+     * @return
+     */
+    public String getSku();
 
-	/**
-	 * Get the asset description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the asset description.
+     * 
+     * @return
+     */
+    public String getDescription();
 }

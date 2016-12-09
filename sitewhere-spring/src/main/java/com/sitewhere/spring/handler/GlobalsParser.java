@@ -9,6 +9,8 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -18,7 +20,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
 /**
@@ -28,136 +29,121 @@ import com.sitewhere.solr.SiteWhereSolrConfiguration;
  */
 public class GlobalsParser extends AbstractBeanDefinitionParser {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#parseInternal
-	 * (org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)
-	 */
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		List<Element> dsChildren = DomUtils.getChildElements(element);
-		for (Element child : dsChildren) {
-			if (!SiteWhereDomUtils.hasSiteWhereNamespace(child)) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
-				if (nested != null) {
-					nested.parse(child, context);
-					continue;
-				} else {
-					throw new RuntimeException(
-							"Invalid nested element found in 'globals' section: " + child.toString());
-				}
-			}
-			Elements type = Elements.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown globals element: " + child.getLocalName());
-			}
-			switch (type) {
-			case HazelcastConfiguration: {
-				// Hazelcast is no longer configured globally.
-				break;
-			}
-			case SolrConfiguration: {
-				parseSolrConfiguration(child, context);
-				break;
-			}
-			case GroovyConfiguration: {
-				parseGroovyConfiguration(child, context);
-				break;
-			}
-			}
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
+     */
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    if (!SiteWhereDomUtils.hasSiteWhereNamespace(child)) {
+		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+			.resolve(child.getNamespaceURI());
+		if (nested != null) {
+		    nested.parse(child, context);
+		    continue;
+		} else {
+		    throw new RuntimeException(
+			    "Invalid nested element found in 'globals' section: " + child.toString());
 		}
-		return null;
+	    }
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown globals element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case HazelcastConfiguration: {
+		// Hazelcast is no longer configured globally.
+		break;
+	    }
+	    case SolrConfiguration: {
+		parseSolrConfiguration(child, context);
+		break;
+	    }
+	    case GroovyConfiguration: {
+		parseGroovyConfiguration(child, context);
+		break;
+	    }
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Parse the global Solr configuration.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseSolrConfiguration(Element element, ParserContext context) {
+	BeanDefinitionBuilder config = BeanDefinitionBuilder.rootBeanDefinition(SiteWhereSolrConfiguration.class);
+
+	Attr solrServerUrl = element.getAttributeNode("solrServerUrl");
+	if (solrServerUrl != null) {
+	    config.addPropertyValue("solrServerUrl", solrServerUrl.getValue());
 	}
 
-	/**
-	 * Parse the global Solr configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseSolrConfiguration(Element element, ParserContext context) {
-		BeanDefinitionBuilder config =
-				BeanDefinitionBuilder.rootBeanDefinition(SiteWhereSolrConfiguration.class);
+	context.getRegistry().registerBeanDefinition(SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN,
+		config.getBeanDefinition());
+    }
 
-		Attr solrServerUrl = element.getAttributeNode("solrServerUrl");
-		if (solrServerUrl != null) {
-			config.addPropertyValue("solrServerUrl", solrServerUrl.getValue());
-		}
+    /**
+     * Parse the global Groovy configuration.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseGroovyConfiguration(Element element, ParserContext context) {
+	LOGGER.warn("Groovy configuration element has been deprecated.");
+    }
 
-		context.getRegistry().registerBeanDefinition(SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN,
-				config.getBeanDefinition());
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** Global Hazelcast configuration */
+	@Deprecated
+	HazelcastConfiguration("hazelcast-configuration"),
+
+	/** Global Solr configuration */
+	SolrConfiguration("solr-configuration"),
+
+	/** Global Groovy configuration */
+	@Deprecated
+	GroovyConfiguration("groovy-configuration");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
 	}
 
-	/**
-	 * Parse the global Groovy configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseGroovyConfiguration(Element element, ParserContext context) {
-		BeanDefinitionBuilder config = BeanDefinitionBuilder.rootBeanDefinition(GroovyConfiguration.class);
-
-		Attr debug = element.getAttributeNode("debug");
-		if (debug != null) {
-			config.addPropertyValue("debug", debug.getValue());
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
 		}
-
-		Attr verbose = element.getAttributeNode("verbose");
-		if (verbose != null) {
-			config.addPropertyValue("verbose", verbose.getValue());
-		}
-
-		Attr externalScriptRoot = element.getAttributeNode("externalScriptRoot");
-		if (externalScriptRoot != null) {
-			config.addPropertyValue("externalScriptRoot", externalScriptRoot.getValue());
-		}
-
-		context.getRegistry().registerBeanDefinition(GroovyConfiguration.GROOVY_CONFIGURATION_BEAN,
-				config.getBeanDefinition());
+	    }
+	    return null;
 	}
 
-	/**
-	 * Expected child elements.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Elements {
-
-		/** Global Hazelcast configuration */
-		@Deprecated HazelcastConfiguration("hazelcast-configuration"),
-
-		/** Global Solr configuration */
-		SolrConfiguration("solr-configuration"),
-
-		/** Global Groovy configuration */
-		GroovyConfiguration("groovy-configuration");
-
-		/** Event code */
-		private String localName;
-
-		private Elements(String localName) {
-			this.localName = localName;
-		}
-
-		public static Elements getByLocalName(String localName) {
-			for (Elements value : Elements.values()) {
-				if (value.getLocalName().equals(localName)) {
-					return value;
-				}
-			}
-			return null;
-		}
-
-		public String getLocalName() {
-			return localName;
-		}
-
-		public void setLocalName(String localName) {
-			this.localName = localName;
-		}
+	public String getLocalName() {
+	    return localName;
 	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

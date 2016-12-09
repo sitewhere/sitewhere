@@ -24,89 +24,91 @@ import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 /**
- * Handles underlying logic to make common actions simpler to invoke from scripts.
+ * Handles underlying logic to make common actions simpler to invoke from
+ * scripts.
  * 
  * @author Derek
  */
 public class DeviceActions implements IDeviceActions {
 
-	/** Device management implementation */
-	private IDeviceManagement deviceManagement;
+    /** Device management implementation */
+    private IDeviceManagement deviceManagement;
 
-	/** Device event management implementation */
-	private IDeviceEventManagement deviceEventManagement;
+    /** Device event management implementation */
+    private IDeviceEventManagement deviceEventManagement;
 
-	public DeviceActions(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement) {
-		this.deviceManagement = deviceManagement;
-		this.deviceEventManagement = deviceEventManagement;
+    public DeviceActions(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement) {
+	this.deviceManagement = deviceManagement;
+	this.deviceEventManagement = deviceEventManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceActions#createLocation(java.lang.String,
+     * double, double, double, boolean)
+     */
+    @Override
+    public void createLocation(String assignmentToken, double latitude, double longitude, double elevation,
+	    boolean updateState) throws SiteWhereException {
+	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
+	location.setLatitude(latitude);
+	location.setLongitude(longitude);
+	location.setElevation(elevation);
+	location.setEventDate(new Date());
+	location.setUpdateState(updateState);
+	getDeviceEventManagement().addDeviceLocation(assignmentToken, location);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceActions#sendCommand(java.lang.String,
+     * java.lang.String, java.util.Map)
+     */
+    @Override
+    public void sendCommand(String assignmentToken, String commandName, Map<String, String> parameters)
+	    throws SiteWhereException {
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
+	if (assignment == null) {
+	    throw new SiteWhereException("Command not executed. Assignment not found: " + assignmentToken);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceActions#createLocation(java.lang.String,
-	 * double, double, double, boolean)
-	 */
-	@Override
-	public void createLocation(String assignmentToken, double latitude, double longitude, double elevation,
-			boolean updateState) throws SiteWhereException {
-		DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
-		location.setLatitude(latitude);
-		location.setLongitude(longitude);
-		location.setElevation(elevation);
-		location.setEventDate(new Date());
-		location.setUpdateState(updateState);
-		getDeviceEventManagement().addDeviceLocation(assignmentToken, location);
+	IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getSpecificationToken(), false);
+	IDeviceCommand match = null;
+	for (IDeviceCommand command : commands) {
+	    if (command.getName().equals(commandName)) {
+		match = command;
+	    }
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceActions#sendCommand(java.lang.String,
-	 * java.lang.String, java.util.Map)
-	 */
-	@Override
-	public void sendCommand(String assignmentToken, String commandName, Map<String, String> parameters)
-			throws SiteWhereException {
-		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-		if (assignment == null) {
-			throw new SiteWhereException("Command not executed. Assignment not found: " + assignmentToken);
-		}
-		IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
-		List<IDeviceCommand> commands =
-				getDeviceManagement().listDeviceCommands(device.getSpecificationToken(), false);
-		IDeviceCommand match = null;
-		for (IDeviceCommand command : commands) {
-			if (command.getName().equals(commandName)) {
-				match = command;
-			}
-		}
-		if (match == null) {
-			throw new SiteWhereException("Command not executed. No command found matching: " + commandName);
-		}
-		DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
-		create.setCommandToken(match.getToken());
-		create.setParameterValues(parameters);
-		create.setInitiator(CommandInitiator.Script);
-		create.setTarget(CommandTarget.Assignment);
-		create.setTargetId(assignment.getToken());
-		create.setEventDate(new Date());
-		getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
+	if (match == null) {
+	    throw new SiteWhereException("Command not executed. No command found matching: " + commandName);
 	}
+	DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
+	create.setCommandToken(match.getToken());
+	create.setParameterValues(parameters);
+	create.setInitiator(CommandInitiator.Script);
+	create.setTarget(CommandTarget.Assignment);
+	create.setTargetId(assignment.getToken());
+	create.setEventDate(new Date());
+	getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
+    }
 
-	public IDeviceManagement getDeviceManagement() {
-		return deviceManagement;
-	}
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
 
-	public void setDeviceManagement(IDeviceManagement deviceManagement) {
-		this.deviceManagement = deviceManagement;
-	}
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
 
-	public IDeviceEventManagement getDeviceEventManagement() {
-		return deviceEventManagement;
-	}
+    public IDeviceEventManagement getDeviceEventManagement() {
+	return deviceEventManagement;
+    }
 
-	public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
-		this.deviceEventManagement = deviceEventManagement;
-	}
+    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+	this.deviceEventManagement = deviceEventManagement;
+    }
 }

@@ -14,15 +14,15 @@ package com.sitewhere.spi.asset;
  */
 public enum AssetType {
 
-	/** Device asset (hardware used for monitoring) */
-	Device,
+    /** Device asset (hardware used for monitoring) */
+    Device,
 
-	/** Asset represents a person */
-	Person,
+    /** Asset represents a person */
+    Person,
 
-	/** Asset represents a piece of hardware */
-	Hardware,
+    /** Asset represents a piece of hardware */
+    Hardware,
 
-	/** Asset represents a location */
-	Location;
+    /** Asset represents a location */
+    Location;
 }

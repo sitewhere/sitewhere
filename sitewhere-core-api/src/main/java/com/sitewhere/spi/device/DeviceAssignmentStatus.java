@@ -14,12 +14,12 @@ package com.sitewhere.spi.device;
  */
 public enum DeviceAssignmentStatus {
 
-	/** Device is active */
-	Active,
+    /** Device is active */
+    Active,
 
-	/** Device reported missing */
-	Missing,
+    /** Device reported missing */
+    Missing,
 
-	/** Device released */
-	Released;
+    /** Device released */
+    Released;
 }

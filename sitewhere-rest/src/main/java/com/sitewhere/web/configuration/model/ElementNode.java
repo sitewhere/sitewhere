@@ -23,139 +23,155 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ElementNode extends XmlNode {
 
-	/** List of attribute nodes */
-	private List<AttributeNode> attributes;
+    /** List of attribute nodes */
+    private List<AttributeNode> attributes;
 
-	/** Element role */
-	private String role;
+    /** Element role */
+    private String role;
 
-	/** Message shown to warn users before deleting element */
-	private String onDeleteWarning;
+    /** Message shown to warn users before deleting element */
+    private String onDeleteWarning;
 
-	/** Indicates roles that require specific subtypes */
-	private Map<String, String> specializes;
+    /** Indicates roles that require specific subtypes */
+    private Map<String, String> specializes;
 
-	/** Maps attribute group names to titles */
-	private Map<String, String> attributeGroups;
+    /** Maps attribute group names to titles */
+    private Map<String, String> attributeGroups;
 
-	public ElementNode() {
-		super(NodeType.Element);
-	}
+    /** Indicates if the element is deprecated */
+    private boolean deprecated;
 
-	public List<AttributeNode> getAttributes() {
-		return attributes;
-	}
+    public ElementNode() {
+	super(NodeType.Element);
+    }
 
-	public void setAttributes(List<AttributeNode> attributes) {
-		this.attributes = attributes;
-	}
+    public List<AttributeNode> getAttributes() {
+	return attributes;
+    }
 
-	public String getRole() {
-		return role;
-	}
+    public void setAttributes(List<AttributeNode> attributes) {
+	this.attributes = attributes;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public String getRole() {
+	return role;
+    }
 
-	public String getOnDeleteWarning() {
-		return onDeleteWarning;
-	}
+    public void setRole(String role) {
+	this.role = role;
+    }
 
-	public void setOnDeleteWarning(String onDeleteWarning) {
-		this.onDeleteWarning = onDeleteWarning;
-	}
+    public String getOnDeleteWarning() {
+	return onDeleteWarning;
+    }
 
-	public Map<String, String> getSpecializes() {
-		return specializes;
-	}
+    public void setOnDeleteWarning(String onDeleteWarning) {
+	this.onDeleteWarning = onDeleteWarning;
+    }
 
-	public void setSpecializes(Map<String, String> specializes) {
-		this.specializes = specializes;
-	}
+    public Map<String, String> getSpecializes() {
+	return specializes;
+    }
 
-	public Map<String, String> getAttributeGroups() {
-		return attributeGroups;
-	}
+    public void setSpecializes(Map<String, String> specializes) {
+	this.specializes = specializes;
+    }
 
-	public void setAttributeGroups(Map<String, String> attributeGroups) {
-		this.attributeGroups = attributeGroups;
-	}
+    public Map<String, String> getAttributeGroups() {
+	return attributeGroups;
+    }
 
-	/**
-	 * If an attribute is used as an index, return the name.
-	 * 
-	 * @return
-	 */
-	public String getIndexAttribute() {
-		if (attributes != null) {
-			for (AttributeNode attribute : attributes) {
-				if (attribute.isIndex()) {
-					return attribute.getLocalName();
-				}
-			}
+    public void setAttributeGroups(Map<String, String> attributeGroups) {
+	this.attributeGroups = attributeGroups;
+    }
+
+    public boolean isDeprecated() {
+	return deprecated;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+	this.deprecated = deprecated;
+    }
+
+    /**
+     * If an attribute is used as an index, return the name.
+     * 
+     * @return
+     */
+    public String getIndexAttribute() {
+	if (attributes != null) {
+	    for (AttributeNode attribute : attributes) {
+		if (attribute.isIndex()) {
+		    return attribute.getLocalName();
 		}
-		return null;
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Builder for creating element nodes.
+     * 
+     * @author Derek
+     */
+    public static class Builder {
+
+	private ElementNode element;
+
+	public Builder(String name, String localName, String icon, ElementRole role) {
+	    this.element = new ElementNode();
+	    element.setName(name);
+	    element.setLocalName(localName);
+	    element.setIcon(icon);
+	    element.setRole(role.name());
 	}
 
-	/**
-	 * Builder for creating element nodes.
-	 * 
-	 * @author Derek
-	 */
-	public static class Builder {
-
-		private ElementNode element;
-
-		public Builder(String name, String localName, String icon, ElementRole role) {
-			this.element = new ElementNode();
-			element.setName(name);
-			element.setLocalName(localName);
-			element.setIcon(icon);
-			element.setRole(role.name());
-		}
-
-		public Builder description(String description) {
-			element.setDescription(description);
-			return this;
-		}
-
-		public Builder namespace(String namespace) {
-			element.setNamespace(namespace);
-			return this;
-		}
-
-		public Builder attribute(AttributeNode attribute) {
-			if (element.getAttributes() == null) {
-				element.setAttributes(new ArrayList<AttributeNode>());
-			}
-			element.getAttributes().add(attribute);
-			return this;
-		}
-
-		public Builder specializes(ElementRole type, ElementRole subtype) {
-			if (element.getSpecializes() == null) {
-				element.setSpecializes(new HashMap<String, String>());
-			}
-			element.getSpecializes().put(type.name(), subtype.name());
-			return this;
-		}
-
-		public Builder attributeGroup(String id, String name) {
-			if (element.getAttributeGroups() == null) {
-				element.setAttributeGroups(new HashMap<String, String>());
-			}
-			element.getAttributeGroups().put(id, name);
-			return this;
-		}
-
-		public Builder warnOnDelete(String warning) {
-			element.setOnDeleteWarning(warning);
-			return this;
-		}
-
-		public ElementNode build() {
-			return element;
-		}
+	public Builder description(String description) {
+	    element.setDescription(description);
+	    return this;
 	}
+
+	public Builder namespace(String namespace) {
+	    element.setNamespace(namespace);
+	    return this;
+	}
+
+	public Builder attribute(AttributeNode attribute) {
+	    if (element.getAttributes() == null) {
+		element.setAttributes(new ArrayList<AttributeNode>());
+	    }
+	    element.getAttributes().add(attribute);
+	    return this;
+	}
+
+	public Builder specializes(ElementRole type, ElementRole subtype) {
+	    if (element.getSpecializes() == null) {
+		element.setSpecializes(new HashMap<String, String>());
+	    }
+	    element.getSpecializes().put(type.name(), subtype.name());
+	    return this;
+	}
+
+	public Builder attributeGroup(String id, String name) {
+	    if (element.getAttributeGroups() == null) {
+		element.setAttributeGroups(new HashMap<String, String>());
+	    }
+	    element.getAttributeGroups().put(id, name);
+	    return this;
+	}
+
+	public Builder warnOnDelete(String warning) {
+	    element.setOnDeleteWarning(warning);
+	    return this;
+	}
+
+	public Builder makeDeprecated() {
+	    element.setDeprecated(true);
+	    return this;
+	}
+
+	public ElementNode build() {
+	    return element;
+	}
+    }
 }

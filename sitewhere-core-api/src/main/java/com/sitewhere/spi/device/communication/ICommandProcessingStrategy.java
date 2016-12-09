@@ -19,31 +19,32 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface ICommandProcessingStrategy extends ITenantLifecycleComponent {
 
-	/**
-	 * Get the {@link ICommandTargetResolver} implementation.
-	 * 
-	 * @return
-	 */
-	public ICommandTargetResolver getCommandTargetResolver();
+    /**
+     * Get the {@link ICommandTargetResolver} implementation.
+     * 
+     * @return
+     */
+    public ICommandTargetResolver getCommandTargetResolver();
 
-	/**
-	 * Send a command using the given communication subsystem implementation.
-	 * 
-	 * @param communication
-	 * @param invocation
-	 * @throws SiteWhereException
-	 */
-	public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
-			throws SiteWhereException;
+    /**
+     * Send a command using the given communication subsystem implementation.
+     * 
+     * @param communication
+     * @param invocation
+     * @throws SiteWhereException
+     */
+    public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException;
 
-	/**
-	 * Delivers a system command using the given communication subsystem implementation.
-	 * 
-	 * @param communication
-	 * @param hardwareId
-	 * @param command
-	 * @throws SiteWhereException
-	 */
-	public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId,
-			ISystemCommand command) throws SiteWhereException;
+    /**
+     * Delivers a system command using the given communication subsystem
+     * implementation.
+     * 
+     * @param communication
+     * @param hardwareId
+     * @param command
+     * @throws SiteWhereException
+     */
+    public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId, ISystemCommand command)
+	    throws SiteWhereException;
 }

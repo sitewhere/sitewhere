@@ -9,7 +9,8 @@ package com.sitewhere.server.jvm;
 
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServer;
@@ -22,86 +23,86 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
  */
 public class JvmHistoryMonitor implements Runnable {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(JvmHistoryMonitor.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Number of measurements in history */
-	private static final int HISTORY_LENGTH = 300;
+    /** Number of measurements in history */
+    private static final int HISTORY_LENGTH = 300;
 
-	/** Update interval in milliseconds */
-	private static final int UPDATE_INTERVAL = 3 * 1000;
+    /** Update interval in milliseconds */
+    private static final int UPDATE_INTERVAL = 3 * 1000;
 
-	/** Server being monitored */
-	private ISiteWhereServer server;
+    /** Server being monitored */
+    private ISiteWhereServer server;
 
-	/** Buffer for history of JVM total memory */
-	private LinkedList<Long> totalMemory = new LinkedList<Long>();
+    /** Buffer for history of JVM total memory */
+    private LinkedList<Long> totalMemory = new LinkedList<Long>();
 
-	/** Buffer for history of JVM available memory */
-	private LinkedList<Long> freeMemory = new LinkedList<Long>();
+    /** Buffer for history of JVM available memory */
+    private LinkedList<Long> freeMemory = new LinkedList<Long>();
 
-	public JvmHistoryMonitor(ISiteWhereServer server) {
-		this.server = server;
-	}
+    public JvmHistoryMonitor(ISiteWhereServer server) {
+	this.server = server;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		LOGGER.info("Starting JVM history monitor.");
-		while (true) {
-			try {
-				// Get current server state.
-				ISiteWhereServerRuntime runtime = getServer().getServerRuntimeInformation(false);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public void run() {
+	LOGGER.info("Starting JVM history monitor.");
+	while (true) {
+	    try {
+		// Get current server state.
+		ISiteWhereServerRuntime runtime = getServer().getServerRuntimeInformation(false);
 
-				// Store the latest entry and remove oldest if at limit.
-				totalMemory.addLast(runtime.getJava().getJvmTotalMemory());
-				if (totalMemory.size() > HISTORY_LENGTH) {
-					totalMemory.removeFirst();
-				}
-
-				// Store the latest entry and remove oldest if at limit.
-				freeMemory.addLast(runtime.getJava().getJvmFreeMemory());
-				if (freeMemory.size() > HISTORY_LENGTH) {
-					freeMemory.removeFirst();
-				}
-			} catch (SiteWhereException e) {
-				LOGGER.error("Unable to query server state.", e);
-			}
-
-			try {
-				Thread.sleep(UPDATE_INTERVAL);
-			} catch (InterruptedException e) {
-				LOGGER.error("JVM history monitoring interrupted.");
-				return;
-			}
+		// Store the latest entry and remove oldest if at limit.
+		totalMemory.addLast(runtime.getJava().getJvmTotalMemory());
+		if (totalMemory.size() > HISTORY_LENGTH) {
+		    totalMemory.removeFirst();
 		}
-	}
 
-	public ISiteWhereServer getServer() {
-		return server;
-	}
+		// Store the latest entry and remove oldest if at limit.
+		freeMemory.addLast(runtime.getJava().getJvmFreeMemory());
+		if (freeMemory.size() > HISTORY_LENGTH) {
+		    freeMemory.removeFirst();
+		}
+	    } catch (SiteWhereException e) {
+		LOGGER.error("Unable to query server state.", e);
+	    }
 
-	public void setServer(ISiteWhereServer server) {
-		this.server = server;
+	    try {
+		Thread.sleep(UPDATE_INTERVAL);
+	    } catch (InterruptedException e) {
+		LOGGER.error("JVM history monitoring interrupted.");
+		return;
+	    }
 	}
+    }
 
-	public LinkedList<Long> getTotalMemory() {
-		return totalMemory;
-	}
+    public ISiteWhereServer getServer() {
+	return server;
+    }
 
-	public void setTotalMemory(LinkedList<Long> totalMemory) {
-		this.totalMemory = totalMemory;
-	}
+    public void setServer(ISiteWhereServer server) {
+	this.server = server;
+    }
 
-	public LinkedList<Long> getFreeMemory() {
-		return freeMemory;
-	}
+    public LinkedList<Long> getTotalMemory() {
+	return totalMemory;
+    }
 
-	public void setFreeMemory(LinkedList<Long> freeMemory) {
-		this.freeMemory = freeMemory;
-	}
+    public void setTotalMemory(LinkedList<Long> totalMemory) {
+	this.totalMemory = totalMemory;
+    }
+
+    public LinkedList<Long> getFreeMemory() {
+	return freeMemory;
+    }
+
+    public void setFreeMemory(LinkedList<Long> freeMemory) {
+	this.freeMemory = freeMemory;
+    }
 }

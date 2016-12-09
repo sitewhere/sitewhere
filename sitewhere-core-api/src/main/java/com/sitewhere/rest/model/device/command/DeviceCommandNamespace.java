@@ -20,40 +20,41 @@ import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
  */
 public class DeviceCommandNamespace implements IDeviceCommandNamespace {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 4615235653915060558L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 4615235653915060558L;
 
-	/** Namespace value */
-	private String value;
+    /** Namespace value */
+    private String value;
 
-	/** List of commands */
-	private List<IDeviceCommand> commands = new ArrayList<IDeviceCommand>();
+    /** List of commands */
+    private List<IDeviceCommand> commands = new ArrayList<IDeviceCommand>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommandNamespace#getValue()
-	 */
-	@Override
-	public String getValue() {
-		return value;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IDeviceCommandNamespace#getValue()
+     */
+    @Override
+    public String getValue() {
+	return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+	this.value = value;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IDeviceCommandNamespace#getCommands()
-	 */
-	@Override
-	public List<IDeviceCommand> getCommands() {
-		return commands;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.command.IDeviceCommandNamespace#getCommands()
+     */
+    @Override
+    public List<IDeviceCommand> getCommands() {
+	return commands;
+    }
 
-	public void setCommands(List<IDeviceCommand> commands) {
-		this.commands = commands;
-	}
+    public void setCommands(List<IDeviceCommand> commands) {
+	this.commands = commands;
+    }
 }

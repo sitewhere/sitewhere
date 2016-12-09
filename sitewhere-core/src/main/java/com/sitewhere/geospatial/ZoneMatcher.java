@@ -25,48 +25,47 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class ZoneMatcher implements IZoneMatcher {
 
-	/** Device location */
-	private IDeviceLocation location;
+    /** Device location */
+    private IDeviceLocation location;
 
-	/** Relationships by zone id */
-	private Map<String, IZoneRelationship> relationships = new HashMap<String, IZoneRelationship>();
+    /** Relationships by zone id */
+    private Map<String, IZoneRelationship> relationships = new HashMap<String, IZoneRelationship>();
 
-	public <T extends IZone> ZoneMatcher(IDeviceLocation location, List<T> zones) {
-		this.location = location;
-		for (IZone zone : zones) {
-			Polygon zonePoly = GeoUtils.createPolygonForZone(zone);
-			ZoneContainment containment =
-					(zonePoly.contains(GeoUtils.createPointForLocation(location))) ? ZoneContainment.Inside
-							: ZoneContainment.Outside;
-			ZoneRelationship relationship = new ZoneRelationship(location, zone, containment);
-			relationships.put(zone.getToken(), relationship);
-		}
+    public <T extends IZone> ZoneMatcher(IDeviceLocation location, List<T> zones) {
+	this.location = location;
+	for (IZone zone : zones) {
+	    Polygon zonePoly = GeoUtils.createPolygonForZone(zone);
+	    ZoneContainment containment = (zonePoly.contains(GeoUtils.createPointForLocation(location)))
+		    ? ZoneContainment.Inside : ZoneContainment.Outside;
+	    ZoneRelationship relationship = new ZoneRelationship(location, zone, containment);
+	    relationships.put(zone.getToken(), relationship);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneMatcher#getLocation()
-	 */
-	public IDeviceLocation getLocation() {
-		return location;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneMatcher#getLocation()
+     */
+    public IDeviceLocation getLocation() {
+	return location;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneMatcher#getRelationships()
-	 */
-	public Map<String, IZoneRelationship> getRelationships() {
-		return relationships;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneMatcher#getRelationships()
+     */
+    public Map<String, IZoneRelationship> getRelationships() {
+	return relationships;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.geo.IZoneMatcher#getRelationship(java.lang.String)
-	 */
-	public IZoneRelationship getRelationship(String zoneId) {
-		return relationships.get(zoneId);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.geo.IZoneMatcher#getRelationship(java.lang.String)
+     */
+    public IZoneRelationship getRelationship(String zoneId) {
+	return relationships.get(zoneId);
+    }
 }

@@ -25,26 +25,25 @@ import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
  */
 public class Invocations {
 
-	public static class GetDeviceCommandInvocationSummary {
+    public static class GetDeviceCommandInvocationSummary {
 
-		public Object generate() throws SiteWhereException {
-			MockDeviceCommandInvocationMarshalHelper helper = new MockDeviceCommandInvocationMarshalHelper();
-			helper.setIncludeCommand(true);
-			DeviceCommandInvocation converted = helper.convert(ExampleData.INVOCATION_GET_FW_VER);
-			List<IDeviceCommandResponse> list =
-					Arrays.asList(new IDeviceCommandResponse[] { ExampleData.RESPONSE_GET_FW_VER });
-			ISearchResults<IDeviceCommandResponse> responses =
-					new SearchResults<IDeviceCommandResponse>(list, 1);
-			return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), null);
-		}
+	public Object generate() throws SiteWhereException {
+	    MockDeviceCommandInvocationMarshalHelper helper = new MockDeviceCommandInvocationMarshalHelper();
+	    helper.setIncludeCommand(true);
+	    DeviceCommandInvocation converted = helper.convert(ExampleData.INVOCATION_GET_FW_VER);
+	    List<IDeviceCommandResponse> list = Arrays
+		    .asList(new IDeviceCommandResponse[] { ExampleData.RESPONSE_GET_FW_VER });
+	    ISearchResults<IDeviceCommandResponse> responses = new SearchResults<IDeviceCommandResponse>(list, 1);
+	    return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), null);
 	}
+    }
 
-	public static class GetDeviceCommandInvocationResponsesResponse {
+    public static class GetDeviceCommandInvocationResponsesResponse {
 
-		public Object generate() throws SiteWhereException {
-			List<IDeviceCommandResponse> list = new ArrayList<IDeviceCommandResponse>();
-			list.add(ExampleData.RESPONSE_GET_FW_VER);
-			return new SearchResults<IDeviceCommandResponse>(list, 1);
-		}
+	public Object generate() throws SiteWhereException {
+	    List<IDeviceCommandResponse> list = new ArrayList<IDeviceCommandResponse>();
+	    list.add(ExampleData.RESPONSE_GET_FW_VER);
+	    return new SearchResults<IDeviceCommandResponse>(list, 1);
 	}
+    }
 }

@@ -19,52 +19,52 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  */
 public interface IDeviceSpecificationCreateRequest {
 
-	/**
-	 * Get name that describes specification.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get name that describes specification.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get id for asset module.
-	 * 
-	 * @return
-	 */
-	public String getAssetModuleId();
+    /**
+     * Get id for asset module.
+     * 
+     * @return
+     */
+    public String getAssetModuleId();
 
-	/**
-	 * Get id for specification asset type.
-	 * 
-	 * @return
-	 */
-	public String getAssetId();
+    /**
+     * Get id for specification asset type.
+     * 
+     * @return
+     */
+    public String getAssetId();
 
-	/**
-	 * Allows the specification id to be specified. (Optional)
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Allows the specification id to be specified. (Optional)
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get container policy.
-	 * 
-	 * @return
-	 */
-	public DeviceContainerPolicy getContainerPolicy();
+    /**
+     * Get container policy.
+     * 
+     * @return
+     */
+    public DeviceContainerPolicy getContainerPolicy();
 
-	/**
-	 * Get {@link IDeviceElementSchema} for locating nested devices.
-	 * 
-	 * @return
-	 */
-	public IDeviceElementSchema getDeviceElementSchema();
+    /**
+     * Get {@link IDeviceElementSchema} for locating nested devices.
+     * 
+     * @return
+     */
+    public IDeviceElementSchema getDeviceElementSchema();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

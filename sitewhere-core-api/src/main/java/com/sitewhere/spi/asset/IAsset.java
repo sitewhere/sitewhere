@@ -17,45 +17,45 @@ import java.util.Map;
  */
 public interface IAsset extends Comparable<IAsset>, Serializable {
 
-	/**
-	 * Unique asset id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Unique asset id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get asset name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get asset name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get the asset type indicator.
-	 * 
-	 * @return
-	 */
-	public AssetType getType();
+    /**
+     * Get the asset type indicator.
+     * 
+     * @return
+     */
+    public AssetType getType();
 
-	/**
-	 * Get id of parent asset category.
-	 * 
-	 * @return
-	 */
-	public String getAssetCategoryId();
+    /**
+     * Get id of parent asset category.
+     * 
+     * @return
+     */
+    public String getAssetCategoryId();
 
-	/**
-	 * Get URL for asset image.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get URL for asset image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
-	/**
-	 * Get properties associated with asset.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getProperties();
+    /**
+     * Get properties associated with asset.
+     * 
+     * @return
+     */
+    public Map<String, String> getProperties();
 }

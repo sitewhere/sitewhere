@@ -10,17 +10,17 @@ package com.sitewhere.spi.device.asset;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
- * Extends device event information with extra data from the asset associated with its
- * assignment.
+ * Extends device event information with extra data from the asset associated
+ * with its assignment.
  * 
  * @author Derek
  */
 public interface IDeviceEventWithAsset extends IDeviceEvent {
 
-	/**
-	 * Get human-readable asset name.
-	 * 
-	 * @return
-	 */
-	public String getAssetName();
+    /**
+     * Get human-readable asset name.
+     * 
+     * @return
+     */
+    public String getAssetName();
 }

@@ -17,31 +17,31 @@ import com.sitewhere.spi.device.event.AlertSource;
  */
 public interface IDeviceAlertCreateRequest extends IDeviceEventCreateRequest {
 
-	/**
-	 * Get source of device alert.
-	 * 
-	 * @return
-	 */
-	public AlertSource getSource();
+    /**
+     * Get source of device alert.
+     * 
+     * @return
+     */
+    public AlertSource getSource();
 
-	/**
-	 * Get alert severity.
-	 * 
-	 * @return
-	 */
-	public AlertLevel getLevel();
+    /**
+     * Get alert severity.
+     * 
+     * @return
+     */
+    public AlertLevel getLevel();
 
-	/**
-	 * Get the alert type indicator.
-	 * 
-	 * @return
-	 */
-	public String getType();
+    /**
+     * Get the alert type indicator.
+     * 
+     * @return
+     */
+    public String getType();
 
-	/**
-	 * Get the alert message.
-	 * 
-	 * @return
-	 */
-	public String getMessage();
+    /**
+     * Get the alert message.
+     * 
+     * @return
+     */
+    public String getMessage();
 }

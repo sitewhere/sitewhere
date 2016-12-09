@@ -14,39 +14,39 @@ package com.sitewhere.hbase.user;
  */
 public enum UserRecordType {
 
-	/** User record */
-	User((byte) 0x01),
+    /** User record */
+    User((byte) 0x01),
 
-	/** Granted authority record */
-	GrantedAuthority((byte) 0x02),
+    /** Granted authority record */
+    GrantedAuthority((byte) 0x02),
 
-	/** Tenant record */
-	Tenant((byte) 0x03),
+    /** Tenant record */
+    Tenant((byte) 0x03),
 
-	/** Tenant group record */
-	TenantGroup((byte) 0x04),
+    /** Tenant group record */
+    TenantGroup((byte) 0x04),
 
-	/** Marker for scans */
-	End((byte) 0x05);
+    /** Marker for scans */
+    End((byte) 0x05);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private UserRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private UserRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

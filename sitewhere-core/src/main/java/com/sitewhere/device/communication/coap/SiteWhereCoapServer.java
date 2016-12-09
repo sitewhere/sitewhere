@@ -21,10 +21,10 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
  */
 public class SiteWhereCoapServer extends CoapServer {
 
-	public SiteWhereCoapServer(IInboundEventReceiver<byte[]> receiver, String hostname, int port) {
-		super();
-		setMessageDeliverer(new SiteWhereMessageDeliverer(receiver));
-		InetSocketAddress bindToAddress = new InetSocketAddress(hostname, port);
-		addEndpoint(new CoapEndpoint(bindToAddress));
-	}
+    public SiteWhereCoapServer(IInboundEventReceiver<byte[]> receiver, String hostname, int port) {
+	super();
+	setMessageDeliverer(new SiteWhereMessageDeliverer(receiver));
+	InetSocketAddress bindToAddress = new InetSocketAddress(hostname, port);
+	addEndpoint(new CoapEndpoint(bindToAddress));
+    }
 }

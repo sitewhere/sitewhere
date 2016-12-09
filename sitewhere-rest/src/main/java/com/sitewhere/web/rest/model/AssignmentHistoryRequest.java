@@ -17,36 +17,36 @@ import java.util.List;
  */
 public class AssignmentHistoryRequest {
 
-	/** Assignment tokens to load */
-	private List<String> assignmentTokens;
-	
-	/** Start date for search */
-	private Date startDate;
-	
-	/** End date for search */
-	private Date endDate;
+    /** Assignment tokens to load */
+    private List<String> assignmentTokens;
 
-	public List<String> getAssignmentTokens() {
-		return assignmentTokens;
-	}
+    /** Start date for search */
+    private Date startDate;
 
-	public void setAssignmentTokens(List<String> assignmentTokens) {
-		this.assignmentTokens = assignmentTokens;
-	}
+    /** End date for search */
+    private Date endDate;
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public List<String> getAssignmentTokens() {
+	return assignmentTokens;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setAssignmentTokens(List<String> assignmentTokens) {
+	this.assignmentTokens = assignmentTokens;
+    }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+    public Date getStartDate() {
+	return startDate;
+    }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+    public void setStartDate(Date startDate) {
+	this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+	return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+	this.endDate = endDate;
+    }
 }

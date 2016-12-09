@@ -18,43 +18,43 @@ import java.io.Serializable;
  */
 public class LocationAsset extends Asset implements ILocationAsset, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 4622767499562304759L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 4622767499562304759L;
 
-	/** Latitude */
-	private Double latitude;
+    /** Latitude */
+    private Double latitude;
 
-	/** Longitude */
-	private Double longitude;
+    /** Longitude */
+    private Double longitude;
 
-	/** Elevation */
-	private Double elevation;
+    /** Elevation */
+    private Double elevation;
 
-	public LocationAsset() {
-		setType(AssetType.Location);
-	}
+    public LocationAsset() {
+	setType(AssetType.Location);
+    }
 
-	public Double getLatitude() {
-		return latitude;
-	}
+    public Double getLatitude() {
+	return latitude;
+    }
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(Double latitude) {
+	this.latitude = latitude;
+    }
 
-	public Double getLongitude() {
-		return longitude;
-	}
+    public Double getLongitude() {
+	return longitude;
+    }
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(Double longitude) {
+	this.longitude = longitude;
+    }
 
-	public Double getElevation() {
-		return elevation;
-	}
+    public Double getElevation() {
+	return elevation;
+    }
 
-	public void setElevation(Double elevation) {
-		this.elevation = elevation;
-	}
+    public void setElevation(Double elevation) {
+	this.elevation = elevation;
+    }
 }

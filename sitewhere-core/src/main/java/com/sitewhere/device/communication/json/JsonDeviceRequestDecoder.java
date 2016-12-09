@@ -12,61 +12,84 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Decodes binary device messages in JSON format into device requests for processing.
+ * Decodes binary device messages in JSON format into device requests for
+ * processing.
  * 
  * @author Derek
  */
-public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
+public class JsonDeviceRequestDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
-	/** Used to map data into an object based on JSON parsing */
-	private static ObjectMapper MAPPER = getObjectMapper();
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
-	 * java.util.Map)
-	 */
-	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws EventDecodeException {
-		try {
-			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-			DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
-			events.add(decoded);
-			return events;
-		} catch (JsonParseException e) {
-			throw new EventDecodeException(e);
-		} catch (JsonMappingException e) {
-			throw new EventDecodeException(e);
-		} catch (IOException e) {
-			throw new EventDecodeException(e);
-		}
+    /** Used to map data into an object based on JSON parsing */
+    private static ObjectMapper MAPPER = getObjectMapper();
+
+    public JsonDeviceRequestDecoder() {
+	super(LifecycleComponentType.DeviceEventDecoder);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * lang.Object, java.util.Map)
+     */
+    @Override
+    public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, Object> metadata)
+	    throws EventDecodeException {
+	try {
+	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
+	    DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
+	    events.add(decoded);
+	    return events;
+	} catch (JsonParseException e) {
+	    throw new EventDecodeException(e);
+	} catch (JsonMappingException e) {
+	    throw new EventDecodeException(e);
+	} catch (IOException e) {
+	    throw new EventDecodeException(e);
 	}
+    }
 
-	/**
-	 * Get configured {@link ObjectMapper}.
-	 * 
-	 * @return
-	 */
-	public static ObjectMapper getObjectMapper() {
-		if (MAPPER == null) {
-			MAPPER = new ObjectMapper();
-			SimpleModule module = new SimpleModule();
-			module.addDeserializer(DecodedDeviceRequest.class, new JsonDeviceRequestMarshaler());
-			MAPPER.registerModule(module);
-		}
-		return MAPPER;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /**
+     * Get configured {@link ObjectMapper}.
+     * 
+     * @return
+     */
+    public static ObjectMapper getObjectMapper() {
+	if (MAPPER == null) {
+	    MAPPER = new ObjectMapper();
+	    SimpleModule module = new SimpleModule();
+	    module.addDeserializer(DecodedDeviceRequest.class, new JsonDeviceRequestMarshaler());
+	    MAPPER.registerModule(module);
 	}
+	return MAPPER;
+    }
 }

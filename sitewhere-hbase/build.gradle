@@ -1,17 +1,14 @@
+description = 'SiteWhere HBase Implementation'
 
 apply plugin: 'nebula.provided-base'
 
-description = 'SiteWhere HBase Implementation'
 dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
-    compile (group: 'org.apache.hbase', name: 'hbase-client', version:'0.98.4-hadoop2') {
-        exclude (module: 'jaxb-impl')   
-    }
-    compile (group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.6.0') {
-        exclude module: 'jaxb-impl'
-        exclude group: 'tomcat'
-        exclude module: 'jsp-api'
+	compile (group: 'org.apache.hbase', name: 'hbase-client', version:'1.2.2') {
+		exclude (module: 'jaxb-impl')   
+ 		exclude (module: 'log4j')   
+ 		exclude (module: 'slf4j-log4j12')   
     }
     compile group: 'com.google.protobuf', name: 'protobuf-java'
     compile group: 'org.springframework', name: 'spring-beans'
@@ -21,5 +18,5 @@ dependencies {
     compile group: 'commons-codec', name: 'commons-codec'
     compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
     
-    provided group: 'javax.servlet', name: 'servlet-api'
+    provided group: 'javax.servlet', name: 'javax.servlet-api'
 }

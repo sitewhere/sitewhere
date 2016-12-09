@@ -19,6 +19,7 @@ message Model {
 		optional double elevation = 4;
 		optional fixed64 eventDate = 5;
 		repeated Metadata metadata = 6;
+		optional bool updateState = 7;
 	}
 
 	// Report device alert.
@@ -28,6 +29,7 @@ message Model {
 		required string alertMessage = 3;
 		optional fixed64 eventDate = 4;
 		repeated Metadata metadata = 5;
+		optional bool updateState = 6;
 	}
 	
 	// A single measurement.
@@ -42,6 +44,7 @@ message Model {
 		repeated Measurement measurement = 2;
 		optional fixed64 eventDate = 3;
 		repeated Metadata metadata = 4;
+		optional bool updateState = 5;
 	}
 	
 	// Create a device stream.

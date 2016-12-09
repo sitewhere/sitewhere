@@ -8,30 +8,31 @@
 package com.sitewhere.spi.device.batch;
 
 /**
- * Indicates the type of operation being performed in an {@link IBatchOperation}.
+ * Indicates the type of operation being performed in an
+ * {@link IBatchOperation}.
  * 
  * @author Derek
  */
 public enum OperationType {
 
-	/** Operation invokes a command on multiple devices */
-	InvokeCommand("Batch Command Invocation"),
+    /** Operation invokes a command on multiple devices */
+    InvokeCommand("Batch Command Invocation"),
 
-	/** Operation updates firmware on multiple devices */
-	UpdateFirmware("Batch Firmware Update");
+    /** Operation updates firmware on multiple devices */
+    UpdateFirmware("Batch Firmware Update");
 
-	/** Operation description */
-	private String description;
+    /** Operation description */
+    private String description;
 
-	private OperationType(String description) {
-		this.description = description;
-	}
+    private OperationType(String description) {
+	this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 }

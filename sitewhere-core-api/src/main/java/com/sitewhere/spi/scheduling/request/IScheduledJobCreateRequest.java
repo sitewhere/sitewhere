@@ -20,45 +20,45 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  */
 public interface IScheduledJobCreateRequest extends Serializable {
 
-	/**
-	 * Get unique job token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique job token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get unique schedule token.
-	 * 
-	 * @return
-	 */
-	public String getScheduleToken();
+    /**
+     * Get unique schedule token.
+     * 
+     * @return
+     */
+    public String getScheduleToken();
 
-	/**
-	 * Get job type.
-	 * 
-	 * @return
-	 */
-	public ScheduledJobType getJobType();
+    /**
+     * Get job type.
+     * 
+     * @return
+     */
+    public ScheduledJobType getJobType();
 
-	/**
-	 * Get job configuration values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getJobConfiguration();
+    /**
+     * Get job configuration values.
+     * 
+     * @return
+     */
+    public Map<String, String> getJobConfiguration();
 
-	/**
-	 * Get job scheduling state.
-	 * 
-	 * @return
-	 */
-	public ScheduledJobState getJobState();
+    /**
+     * Get job scheduling state.
+     * 
+     * @return
+     */
+    public ScheduledJobState getJobState();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -20,135 +21,137 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link IOutboundProcessingStrategy} that sends messages directly to
- * the {@link IOutboundEventProcessorChain}.
+ * Implementation of {@link IOutboundProcessingStrategy} that sends messages
+ * directly to the {@link IOutboundEventProcessorChain}.
  * 
  * @author Derek
  */
-public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent
-		implements IOutboundProcessingStrategy {
+public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent implements IOutboundProcessingStrategy {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DirectOutboundProcessingStrategy.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Cached reference to outbound processor chain */
-	private IOutboundEventProcessorChain outbound;
+    /** Cached reference to outbound processor chain */
+    private IOutboundEventProcessorChain outbound;
 
-	public DirectOutboundProcessingStrategy() {
-		super(LifecycleComponentType.OutboundProcessingStrategy);
+    public DirectOutboundProcessingStrategy() {
+	super(LifecycleComponentType.OutboundProcessingStrategy);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onMeasurements (com.sitewhere.spi.device.event.IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	getOutboundEventProcessorChain().onMeasurements(measurements);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onLocation(com .sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	getOutboundEventProcessorChain().onLocation(location);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(
+     * com. sitewhere .spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	getOutboundEventProcessorChain().onAlert(alert);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandInvocation
+     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	getOutboundEventProcessorChain().onCommandInvocation(invocation);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandResponse (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     */
+    @Override
+    public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	getOutboundEventProcessorChain().onCommandResponse(response);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onStateChange(com. sitewhere.spi.device.event.IDeviceStateChange)
+     */
+    @Override
+    public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+	getOutboundEventProcessorChain().onStateChange(state);
+    }
+
+    /**
+     * Cache the registration manager implementation rather than looking it up
+     * each time.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IOutboundEventProcessorChain getOutboundEventProcessorChain() throws SiteWhereException {
+	if (outbound == null) {
+	    outbound = SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundEventProcessorChain();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-		getOutboundEventProcessorChain().onMeasurements(measurements);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
-	 * .sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
-		getOutboundEventProcessorChain().onLocation(location);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
-	 * sitewhere .spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
-		getOutboundEventProcessorChain().onAlert(alert);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		getOutboundEventProcessorChain().onCommandInvocation(invocation);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
-	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
-	 */
-	@Override
-	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
-		getOutboundEventProcessorChain().onCommandResponse(response);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
-	 * sitewhere.spi.device.event.IDeviceStateChange)
-	 */
-	@Override
-	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
-		getOutboundEventProcessorChain().onStateChange(state);
-	}
-
-	/**
-	 * Cache the registration manager implementation rather than looking it up each time.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IOutboundEventProcessorChain getOutboundEventProcessorChain() throws SiteWhereException {
-		if (outbound == null) {
-			outbound = SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundEventProcessorChain();
-		}
-		return outbound;
-	}
+	return outbound;
+    }
 }

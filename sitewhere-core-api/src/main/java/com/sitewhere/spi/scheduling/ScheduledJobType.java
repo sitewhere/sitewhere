@@ -14,9 +14,9 @@ package com.sitewhere.spi.scheduling;
  */
 public enum ScheduledJobType {
 
-	/** Scheduled command invocation */
-	CommandInvocation,
+    /** Scheduled command invocation */
+    CommandInvocation,
 
-	/** Scheduled batch command invocation */
-	BatchCommandInvocation;
+    /** Scheduled batch command invocation */
+    BatchCommandInvocation;
 }

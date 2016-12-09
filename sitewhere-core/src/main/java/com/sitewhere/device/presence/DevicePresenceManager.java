@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
@@ -37,6 +38,7 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.presence.IPresenceNotificationStrategy;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -46,189 +48,183 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DevicePresenceManager extends TenantLifecycleComponent implements IDevicePresenceManager {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DevicePresenceManager.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default presence check interval (10 min) */
-	private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
+    /** Default presence check interval (10 min) */
+    private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
 
-	/** Default presence missing interval (1 hour) */
-	private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "8h";
+    /** Default presence missing interval (1 hour) */
+    private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "8h";
 
-	/** Used to format durations for output */
-	private static final PeriodFormatter PERIOD_FORMATTER =
-			new PeriodFormatterBuilder().appendWeeks().appendSuffix("w").appendSeparator(
-					" ").appendDays().appendSuffix("d").appendSeparator(" ").appendHours().appendSuffix(
-							"h").appendSeparator(" ").appendMinutes().appendSuffix("m").appendSeparator(
-									" ").appendSeconds().appendSuffix("s").toFormatter();
+    /** Used to format durations for output */
+    private static final PeriodFormatter PERIOD_FORMATTER = new PeriodFormatterBuilder().appendWeeks().appendSuffix("w")
+	    .appendSeparator(" ").appendDays().appendSuffix("d").appendSeparator(" ").appendHours().appendSuffix("h")
+	    .appendSeparator(" ").appendMinutes().appendSuffix("m").appendSeparator(" ").appendSeconds()
+	    .appendSuffix("s").toFormatter();
 
-	/** Presence check interval */
-	private String presenceCheckInterval = DEFAULT_PRESENCE_CHECK_INTERVAL;
+    /** Presence check interval */
+    private String presenceCheckInterval = DEFAULT_PRESENCE_CHECK_INTERVAL;
 
-	/** Presence missing interval */
-	private String presenceMissingInterval = DEFAULT_PRESENCE_MISSING_INTERVAL;
+    /** Presence missing interval */
+    private String presenceMissingInterval = DEFAULT_PRESENCE_MISSING_INTERVAL;
 
-	/** Chooses how presence state is stored and how often notifications are sent */
-	private IPresenceNotificationStrategy presenceNotificationStrategy =
-			new PresenceNotificationStrategies.SendOnceNotificationStrategy();
+    /**
+     * Chooses how presence state is stored and how often notifications are sent
+     */
+    private IPresenceNotificationStrategy presenceNotificationStrategy = new PresenceNotificationStrategies.SendOnceNotificationStrategy();
 
-	/** Executor service for threading */
-	private ExecutorService executor;
+    /** Executor service for threading */
+    private ExecutorService executor;
 
-	/** Device management implementation */
-	private IDeviceManagement devices;
+    /** Device management implementation */
+    private IDeviceManagement devices;
 
-	/** Inbound processing strategy for tenant */
-	private IInboundProcessingStrategy inbound;
+    /** Inbound processing strategy for tenant */
+    private IInboundProcessingStrategy inbound;
 
-	public DevicePresenceManager() {
-		super(LifecycleComponentType.DevicePresenceManager);
+    public DevicePresenceManager() {
+	super(LifecycleComponentType.DevicePresenceManager);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.devices = SiteWhere.getServer().getDeviceManagement(getTenant());
+	this.inbound = SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy();
+
+	this.executor = Executors.newSingleThreadExecutor();
+	executor.execute(new PresenceChecker());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (executor != null) {
+	    executor.shutdownNow();
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /**
+     * Thread that checks for device presence.
+     * 
+     * @author Derek
+     */
+    private class PresenceChecker implements Runnable {
+
 	@Override
-	public void start() throws SiteWhereException {
-		this.devices = SiteWhere.getServer().getDeviceManagement(getTenant());
-		this.inbound = SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy();
+	public void run() {
 
-		// Launch a presence checker thread per site.
-		List<ISite> sites = devices.listSites(new SearchCriteria(1, 0)).getResults();
-		this.executor = Executors.newFixedThreadPool(sites.size());
-		for (ISite site : sites) {
-			executor.execute(new PresenceChecker(site));
-		}
-	}
+	    Period missingInterval;
+	    try {
+		missingInterval = Period.parse(getPresenceMissingInterval(), ISOPeriodFormat.standard());
+	    } catch (IllegalArgumentException e) {
+		missingInterval = PERIOD_FORMATTER.parsePeriod(getPresenceMissingInterval());
+	    }
+	    int missingIntervalSecs = missingInterval.toStandardSeconds().getSeconds();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		if (executor != null) {
-			executor.shutdownNow();
-		}
-	}
+	    Period checkInterval;
+	    try {
+		checkInterval = Period.parse(getPresenceCheckInterval(), ISOPeriodFormat.standard());
+	    } catch (IllegalArgumentException e) {
+		checkInterval = PERIOD_FORMATTER.parsePeriod(getPresenceCheckInterval());
+	    }
+	    int checkIntervalSecs = checkInterval.toStandardSeconds().getSeconds();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+	    LOGGER.info("Presence manager checking every " + PERIOD_FORMATTER.print(checkInterval) + " ("
+		    + checkIntervalSecs + " seconds) " + "for devices with last interaction date of more than "
+		    + PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) " + ".");
 
-	/**
-	 * Thread that checks for device presence.
-	 * 
-	 * @author Derek
-	 */
-	private class PresenceChecker implements Runnable {
+	    while (true) {
 
-		/** Site whose assignments are checked */
-		private ISite site;
-
-		public PresenceChecker(ISite site) {
-			this.site = site;
-		}
-
-		@Override
-		public void run() {
-
-			Period missingInterval;
-			try {
-				missingInterval = Period.parse(getPresenceMissingInterval(), ISOPeriodFormat.standard());
-			} catch (IllegalArgumentException e) {
-				missingInterval = PERIOD_FORMATTER.parsePeriod(getPresenceMissingInterval());
+		try {
+		    // Loop through all sites and detect presence changes.
+		    List<ISite> sites = devices.listSites(SearchCriteria.ALL).getResults();
+		    for (ISite site : sites) {
+			// Calculate time window for presence calculation.
+			Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
+			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
+			ISearchResults<IDeviceAssignment> missing = devices
+				.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
+			if (missing.getNumResults() > 0) {
+			    LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
+				    + missing.getNumResults() + " events for non-present devices.");
 			}
-			int missingIntervalSecs = missingInterval.toStandardSeconds().getSeconds();
+			for (IDeviceAssignment assignment : missing.getResults()) {
+			    DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
+				    StateChangeCategory.Presence, StateChangeType.Presence_Updated,
+				    PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
+			    create.setUpdateState(true);
 
-			Period checkInterval;
-			try {
-				checkInterval = Period.parse(getPresenceCheckInterval(), ISOPeriodFormat.standard());
-			} catch (IllegalArgumentException e) {
-				checkInterval = PERIOD_FORMATTER.parsePeriod(getPresenceCheckInterval());
+			    // Only send an event if the strategy permits it.
+			    if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
+				IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
+					assignment.getDeviceHardwareId(), null, create);
+				inbound.processDeviceStateChange(decoded);
+			    }
 			}
-			int checkIntervalSecs = checkInterval.toStandardSeconds().getSeconds();
-
-			LOGGER.info("Presence manager for '" + site.getName() + "' checking every "
-					+ PERIOD_FORMATTER.print(checkInterval) + " (" + checkIntervalSecs + " seconds) "
-					+ "for devices with last interaction date of more than "
-					+ PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) "
-					+ ".");
-
-			while (true) {
-
-				try {
-					// Calculate time window for presence calculation.
-					Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
-					DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
-					ISearchResults<IDeviceAssignment> missing =
-							devices.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
-					LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
-							+ missing.getNumResults() + " events for non-present devices.");
-					for (IDeviceAssignment assignment : missing.getResults()) {
-						DeviceStateChangeCreateRequest create =
-								new DeviceStateChangeCreateRequest(StateChangeCategory.Presence,
-										StateChangeType.Presence_Updated, PresenceState.PRESENT.name(),
-										PresenceState.NOT_PRESENT.name());
-						create.setUpdateState(true);
-
-						// Only send an event if the strategy permits it.
-						if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
-							IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded =
-									new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
-											assignment.getDeviceHardwareId(), null, create);
-							inbound.processDeviceStateChange(decoded);
-						}
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error("Error processing presence query.", e);
-				}
-
-				try {
-					Thread.sleep(checkIntervalSecs * 1000);
-				} catch (InterruptedException e) {
-					LOGGER.info("Presence check thread shut down.");
-				}
-			}
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error("Error processing presence query.", e);
 		}
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.presence.IDevicePresenceManager#
-	 * getPresenceNotificationStrategy()
-	 */
-	public IPresenceNotificationStrategy getPresenceNotificationStrategy() {
-		return presenceNotificationStrategy;
+		try {
+		    Thread.sleep(checkIntervalSecs * 1000);
+		} catch (InterruptedException e) {
+		    LOGGER.info("Presence check thread shut down.");
+		}
+	    }
 	}
+    }
 
-	public void setPresenceNotificationStrategy(IPresenceNotificationStrategy presenceNotificationStrategy) {
-		this.presenceNotificationStrategy = presenceNotificationStrategy;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.presence.IDevicePresenceManager#
+     * getPresenceNotificationStrategy()
+     */
+    public IPresenceNotificationStrategy getPresenceNotificationStrategy() {
+	return presenceNotificationStrategy;
+    }
 
-	public String getPresenceCheckInterval() {
-		return presenceCheckInterval;
-	}
+    public void setPresenceNotificationStrategy(IPresenceNotificationStrategy presenceNotificationStrategy) {
+	this.presenceNotificationStrategy = presenceNotificationStrategy;
+    }
 
-	public void setPresenceCheckInterval(String presenceCheckInterval) {
-		this.presenceCheckInterval = presenceCheckInterval;
-	}
+    public String getPresenceCheckInterval() {
+	return presenceCheckInterval;
+    }
 
-	public String getPresenceMissingInterval() {
-		return presenceMissingInterval;
-	}
+    public void setPresenceCheckInterval(String presenceCheckInterval) {
+	this.presenceCheckInterval = presenceCheckInterval;
+    }
 
-	public void setPresenceMissingInterval(String presenceMissingInterval) {
-		this.presenceMissingInterval = presenceMissingInterval;
-	}
+    public String getPresenceMissingInterval() {
+	return presenceMissingInterval;
+    }
+
+    public void setPresenceMissingInterval(String presenceMissingInterval) {
+	this.presenceMissingInterval = presenceMissingInterval;
+    }
 }

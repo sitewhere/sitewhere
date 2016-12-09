@@ -26,110 +26,110 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 @JsonInclude(Include.NON_NULL)
 public class DeviceGroupElement implements IDeviceGroupElement, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -5565956152579362877L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -5565956152579362877L;
 
-	/** Parent group token */
-	private String groupToken;
+    /** Parent group token */
+    private String groupToken;
 
-	/** Element index */
-	private long index;
+    /** Element index */
+    private long index;
 
-	/** Element type */
-	private GroupElementType type;
+    /** Element type */
+    private GroupElementType type;
 
-	/** Element type */
-	private String elementId;
+    /** Element type */
+    private String elementId;
 
-	/** List of roles for the element */
-	private List<String> roles = new ArrayList<String>();
+    /** List of roles for the element */
+    private List<String> roles = new ArrayList<String>();
 
-	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
-	/** Referenced device */
-	private Device device;
+    /** Referenced device */
+    private Device device;
 
-	/** Referenced device group */
-	private DeviceGroup deviceGroup;
+    /** Referenced device group */
+    private DeviceGroup deviceGroup;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getGroupToken()
-	 */
-	public String getGroupToken() {
-		return groupToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getGroupToken()
+     */
+    public String getGroupToken() {
+	return groupToken;
+    }
 
-	public void setGroupToken(String groupToken) {
-		this.groupToken = groupToken;
-	}
+    public void setGroupToken(String groupToken) {
+	this.groupToken = groupToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getIndex()
-	 */
-	public long getIndex() {
-		return index;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getIndex()
+     */
+    public long getIndex() {
+	return index;
+    }
 
-	public void setIndex(long index) {
-		this.index = index;
-	}
+    public void setIndex(long index) {
+	this.index = index;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getType()
-	 */
-	public GroupElementType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getType()
+     */
+    public GroupElementType getType() {
+	return type;
+    }
 
-	public void setType(GroupElementType type) {
-		this.type = type;
-	}
+    public void setType(GroupElementType type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getElementId()
-	 */
-	public String getElementId() {
-		return elementId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getElementId()
+     */
+    public String getElementId() {
+	return elementId;
+    }
 
-	public void setElementId(String elementId) {
-		this.elementId = elementId;
-	}
+    public void setElementId(String elementId) {
+	this.elementId = elementId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getRoles()
-	 */
-	public List<String> getRoles() {
-		return roles;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getRoles()
+     */
+    public List<String> getRoles() {
+	return roles;
+    }
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(List<String> roles) {
+	this.roles = roles;
+    }
 
-	public Device getDevice() {
-		return device;
-	}
+    public Device getDevice() {
+	return device;
+    }
 
-	public void setDevice(Device device) {
-		this.device = device;
-	}
+    public void setDevice(Device device) {
+	this.device = device;
+    }
 
-	public DeviceGroup getDeviceGroup() {
-		return deviceGroup;
-	}
+    public DeviceGroup getDeviceGroup() {
+	return deviceGroup;
+    }
 
-	public void setDeviceGroup(DeviceGroup deviceGroup) {
-		this.deviceGroup = deviceGroup;
-	}
+    public void setDeviceGroup(DeviceGroup deviceGroup) {
+	this.deviceGroup = deviceGroup;
+    }
 }

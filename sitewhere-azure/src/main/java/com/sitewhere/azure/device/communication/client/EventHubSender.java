@@ -45,55 +45,56 @@ public class EventHubSender {
     private Sender sender;
 
     public EventHubSender(Session session, String entityPath, String partitionId) {
-        this.session = session;
-        this.entityPath = entityPath;
-        this.partitionId = partitionId;
-        this.destinationAddress = this.getDestinationAddress();
+	this.session = session;
+	this.entityPath = entityPath;
+	this.partitionId = partitionId;
+	this.destinationAddress = this.getDestinationAddress();
     }
 
     public void send(String data) throws EventHubException {
-        try {
-            if (this.sender == null) {
-                this.ensureSenderCreated();
-            }
+	try {
+	    if (this.sender == null) {
+		this.ensureSenderCreated();
+	    }
 
-            Message message = new Message(data);
-            this.sender.send(message);
+	    Message message = new Message(data);
+	    this.sender.send(message);
 
-        } catch (LinkDetachedException e) {
-            logger.error(e.getMessage());
+	} catch (LinkDetachedException e) {
+	    logger.error(e.getMessage());
 
-            EventHubException eventHubException = new EventHubException("Sender has been closed");
-            throw eventHubException;
-        } catch (TimeoutException e) {
-            logger.error(e.getMessage());
+	    EventHubException eventHubException = new EventHubException("Sender has been closed");
+	    throw eventHubException;
+	} catch (TimeoutException e) {
+	    logger.error(e.getMessage());
 
-            EventHubException eventHubException = new EventHubException("Timed out while waiting to get credit to send");
-            throw eventHubException;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+	    EventHubException eventHubException = new EventHubException(
+		    "Timed out while waiting to get credit to send");
+	    throw eventHubException;
+	} catch (Exception e) {
+	    logger.error(e.getMessage());
+	}
     }
 
     public void close() {
-        try {
-            this.sender.close();
-        } catch (Sender.SenderClosingException e) {
-            logger.error("Closing a sender encountered error: " + e.getMessage());
-        }
+	try {
+	    this.sender.close();
+	} catch (Sender.SenderClosingException e) {
+	    logger.error("Closing a sender encountered error: " + e.getMessage());
+	}
     }
 
     private String getDestinationAddress() {
-        if (this.partitionId == null || this.partitionId.equals("")) {
-            return this.entityPath;
-        } else {
-            return String.format(Constants.DestinationAddressFormatString, this.entityPath, this.partitionId);
-        }
+	if (this.partitionId == null || this.partitionId.equals("")) {
+	    return this.entityPath;
+	} else {
+	    return String.format(Constants.DestinationAddressFormatString, this.entityPath, this.partitionId);
+	}
     }
 
     private synchronized void ensureSenderCreated() throws Exception {
-        if (this.sender == null) {
-            this.sender = this.session.createSender(this.destinationAddress);
-        }
+	if (this.sender == null) {
+	    this.sender = this.session.createSender(this.destinationAddress);
+	}
     }
 }

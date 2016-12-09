@@ -14,9 +14,9 @@ package com.sitewhere.spi.device.group;
  */
 public enum GroupElementType {
 
-	/** Individual device element */
-	Device,
+    /** Individual device element */
+    Device,
 
-	/** Group element */
-	Group;
+    /** Group element */
+    Group;
 }

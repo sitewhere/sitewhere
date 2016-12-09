@@ -11,7 +11,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 /**
- * Interface for classes that can convert Mongo objects to SiteWhere SPI objects.
+ * Interface for classes that can convert Mongo objects to SiteWhere SPI
+ * objects.
  * 
  * @author Derek
  * 
@@ -19,19 +20,19 @@ import com.mongodb.DBObject;
  */
 public interface MongoConverter<I> {
 
-	/**
-	 * Create a Mongo {@link BasicDBObject} based on SPI input.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public BasicDBObject convert(I source);
+    /**
+     * Create a Mongo {@link BasicDBObject} based on SPI input.
+     * 
+     * @param source
+     * @return
+     */
+    public BasicDBObject convert(I source);
 
-	/**
-	 * Create the REST object from a Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public I convert(DBObject source);
+    /**
+     * Create the REST object from a Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public I convert(DBObject source);
 }

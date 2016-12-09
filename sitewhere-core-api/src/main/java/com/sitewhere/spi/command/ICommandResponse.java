@@ -16,17 +16,17 @@ import java.io.Serializable;
  */
 public interface ICommandResponse extends Serializable {
 
-	/**
-	 * Get the command result.
-	 * 
-	 * @return
-	 */
-	public CommandResult getResult();
+    /**
+     * Get the command result.
+     * 
+     * @return
+     */
+    public CommandResult getResult();
 
-	/**
-	 * Get a detail message for the result.
-	 * 
-	 * @return
-	 */
-	public String getMessage();
+    /**
+     * Get a detail message for the result.
+     * 
+     * @return
+     */
+    public String getMessage();
 }

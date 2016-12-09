@@ -17,26 +17,26 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class SystemCommand implements ISystemCommand {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -7968782253104914645L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -7968782253104914645L;
 
-	/** Command type */
-	private SystemCommandType type;
+    /** Command type */
+    private SystemCommandType type;
 
-	public SystemCommand(SystemCommandType type) {
-		this.type = type;
-	}
+    public SystemCommand(SystemCommandType type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.ISystemCommand#getType()
-	 */
-	public SystemCommandType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.ISystemCommand#getType()
+     */
+    public SystemCommandType getType() {
+	return type;
+    }
 
-	public void setType(SystemCommandType type) {
-		this.type = type;
-	}
+    public void setType(SystemCommandType type) {
+	this.type = type;
+    }
 }

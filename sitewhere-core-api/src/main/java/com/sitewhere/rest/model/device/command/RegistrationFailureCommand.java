@@ -18,42 +18,44 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class RegistrationFailureCommand extends SystemCommand implements IRegistrationFailureCommand {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -2141636538202966306L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -2141636538202966306L;
 
-	/** Failure reason */
-	private RegistrationFailureReason reason;
+    /** Failure reason */
+    private RegistrationFailureReason reason;
 
-	/** Error message */
-	private String errorMessage;
+    /** Error message */
+    private String errorMessage;
 
-	public RegistrationFailureCommand() {
-		super(SystemCommandType.RegistrationFailure);
-	}
+    public RegistrationFailureCommand() {
+	super(SystemCommandType.RegistrationFailure);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IRegistrationFailureCommand#getReason()
-	 */
-	public RegistrationFailureReason getReason() {
-		return reason;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.command.IRegistrationFailureCommand#getReason()
+     */
+    public RegistrationFailureReason getReason() {
+	return reason;
+    }
 
-	public void setReason(RegistrationFailureReason reason) {
-		this.reason = reason;
-	}
+    public void setReason(RegistrationFailureReason reason) {
+	this.reason = reason;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.command.IRegistrationFailureCommand#getErrorMessage()
-	 */
-	public String getErrorMessage() {
-		return errorMessage;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.command.IRegistrationFailureCommand#
+     * getErrorMessage()
+     */
+    public String getErrorMessage() {
+	return errorMessage;
+    }
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+    public void setErrorMessage(String errorMessage) {
+	this.errorMessage = errorMessage;
+    }
 }

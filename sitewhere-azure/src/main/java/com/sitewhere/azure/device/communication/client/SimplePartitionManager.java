@@ -45,97 +45,94 @@ public class SimplePartitionManager implements IPartitionManager {
     private final IStateStore stateStore;
     private final String statePath;
 
-    public SimplePartitionManager(
-            EventHubReceiverTaskConfig spoutConfig,
-            String partitionId,
-            IStateStore stateStore,
-            IEventHubReceiver receiver) {
-        this.receiver = receiver;
-        this.config = spoutConfig;
-        this.partitionId = partitionId;
-        this.statePath = this.getPartitionStatePath();
-        this.stateStore = stateStore;
+    public SimplePartitionManager(EventHubReceiverTaskConfig spoutConfig, String partitionId, IStateStore stateStore,
+	    IEventHubReceiver receiver) {
+	this.receiver = receiver;
+	this.config = spoutConfig;
+	this.partitionId = partitionId;
+	this.statePath = this.getPartitionStatePath();
+	this.stateStore = stateStore;
     }
 
     @Override
     public void open() throws Exception {
 
-        //read from state store, if not found, use startingOffset
-        String offset = stateStore.readData(statePath);
-        logger.info("read offset from state store: " + offset);
-        if (offset == null) {
-            offset = Constants.DefaultStartingOffset;
-        }
+	// read from state store, if not found, use startingOffset
+	String offset = stateStore.readData(statePath);
+	logger.info("read offset from state store: " + offset);
+	if (offset == null) {
+	    offset = Constants.DefaultStartingOffset;
+	}
 
-        EventHubReceiverFilter filter = new EventHubReceiverFilter();
-        if (offset.equals(Constants.DefaultStartingOffset)
-                && config.getEnqueueTimeFilter() != 0) {
-            filter.setEnqueueTime(config.getEnqueueTimeFilter());
-        } else {
-            filter.setOffset(offset);
-        }
+	EventHubReceiverFilter filter = new EventHubReceiverFilter();
+	if (offset.equals(Constants.DefaultStartingOffset) && config.getEnqueueTimeFilter() != 0) {
+	    filter.setEnqueueTime(config.getEnqueueTimeFilter());
+	} else {
+	    filter.setOffset(offset);
+	}
 
-        receiver.open(filter);
+	receiver.open(filter);
     }
 
     @Override
     public void close() {
-        this.receiver.close();
-        this.checkpoint();
+	this.receiver.close();
+	this.checkpoint();
     }
 
     @Override
     public void checkpoint() {
-        String completedOffset = getCompletedOffset();
-        if (!committedOffset.equals(completedOffset)) {
-            logger.info("saving state " + completedOffset);
-            stateStore.saveData(statePath, completedOffset);
-            committedOffset = completedOffset;
-        }
+	String completedOffset = getCompletedOffset();
+	if (!committedOffset.equals(completedOffset)) {
+	    logger.info("saving state " + completedOffset);
+	    stateStore.saveData(statePath, completedOffset);
+	    committedOffset = completedOffset;
+	}
     }
 
     protected String getCompletedOffset() {
-        return lastOffset;
+	return lastOffset;
     }
 
     @Override
     public EventData receive() {
-        EventData eventData = receiver.receive(5000);
-        if (eventData != null) {
-            lastOffset = eventData.getMessageId().getOffset();
-        }
-        return eventData;
+	EventData eventData = receiver.receive(5000);
+	if (eventData != null) {
+	    lastOffset = eventData.getMessageId().getOffset();
+	}
+	return eventData;
     }
 
     @Override
     public void ack(String offset) {
-        //do nothing
+	// do nothing
     }
 
     @Override
     public void fail(String offset) {
-        logger.warn("fail on " + offset);
-        //do nothing
+	logger.warn("fail on " + offset);
+	// do nothing
     }
 
     private String getPartitionStatePath() {
 
-        // Partition state path =
-        // "/{prefix}/{topologyName}/{namespace}/{entityPath}/partitions/{partitionId}/state";
-        String namespace = config.getNamespace();
-        String entityPath = config.getEntityPath();
-        //String topologyName = config.getTopologyName();
+	// Partition state path =
+	// "/{prefix}/{topologyName}/{namespace}/{entityPath}/partitions/{partitionId}/state";
+	String namespace = config.getNamespace();
+	String entityPath = config.getEntityPath();
+	// String topologyName = config.getTopologyName();
 
-        String partitionStatePath = statePathPrefix + "/" + namespace + "/" + entityPath + "/partitions/" + this.partitionId;
+	String partitionStatePath = statePathPrefix + "/" + namespace + "/" + entityPath + "/partitions/"
+		+ this.partitionId;
 
-        logger.info("partition state path: " + partitionStatePath);
+	logger.info("partition state path: " + partitionStatePath);
 
-        return partitionStatePath;
+	return partitionStatePath;
     }
 
- 	@Override
+    @Override
     @SuppressWarnings("rawtypes")
     public Map getMetricsData() {
-        return receiver.getMetricsData();
+	return receiver.getMetricsData();
     }
 }

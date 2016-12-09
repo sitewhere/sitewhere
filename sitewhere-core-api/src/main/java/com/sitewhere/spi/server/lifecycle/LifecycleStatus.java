@@ -14,24 +14,27 @@ package com.sitewhere.spi.server.lifecycle;
  */
 public enum LifecycleStatus {
 
-	/** Component is stopped */
-	Stopped,
+    /** Component is initializing */
+    Initializing,
 
-	/** Component is starting */
-	Starting,
+    /** Component is stopped */
+    Stopped,
 
-	/** Component is started */
-	Started,
+    /** Component is starting */
+    Starting,
 
-	/** Component is pausing */
-	Pausing,
+    /** Component is started */
+    Started,
 
-	/** Component is paused */
-	Paused,
+    /** Component is pausing */
+    Pausing,
 
-	/** Component is stopping */
-	Stopping,
+    /** Component is paused */
+    Paused,
 
-	/** Component startup failed with an error */
-	Error;
+    /** Component is stopping */
+    Stopping,
+
+    /** Component startup failed with an error */
+    Error;
 }

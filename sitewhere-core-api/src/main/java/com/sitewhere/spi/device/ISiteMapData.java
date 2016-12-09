@@ -16,10 +16,10 @@ import com.sitewhere.spi.common.IMetadataProvider;
  */
 public interface ISiteMapData extends IMetadataProvider {
 
-	/**
-	 * Get the map type.
-	 * 
-	 * @return
-	 */
-	public String getType();
+    /**
+     * Get the map type.
+     * 
+     * @return
+     */
+    public String getType();
 }

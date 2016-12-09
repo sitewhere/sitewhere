@@ -10,7 +10,7 @@ package com.sitewhere.spi.tenant;
 import java.util.List;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
-import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.ITenantRuntimeState;
 
 /**
  * Interface for information about a tenant.
@@ -19,52 +19,52 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
  */
 public interface ITenant extends IMetadataProviderEntity {
 
-	/**
-	 * Get unique tenant id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get unique tenant id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get tenant name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get tenant name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get token that devices pass to identify tenant.
-	 * 
-	 * @return
-	 */
-	public String getAuthenticationToken();
+    /**
+     * Get token that devices pass to identify tenant.
+     * 
+     * @return
+     */
+    public String getAuthenticationToken();
 
-	/**
-	 * Get URL for tenant logo.
-	 * 
-	 * @return
-	 */
-	public String getLogoUrl();
+    /**
+     * Get URL for tenant logo.
+     * 
+     * @return
+     */
+    public String getLogoUrl();
 
-	/**
-	 * Get list of users authorized to access the tenant.
-	 * 
-	 * @return
-	 */
-	public List<String> getAuthorizedUserIds();
+    /**
+     * Get list of users authorized to access the tenant.
+     * 
+     * @return
+     */
+    public List<String> getAuthorizedUserIds();
 
-	/**
-	 * Get engine configuration details.
-	 * 
-	 * @return
-	 */
-	public String getEngineConfiguration();
+    /**
+     * Get id of template used to create tenant.
+     * 
+     * @return
+     */
+    public String getTenantTemplateId();
 
-	/**
-	 * Get runtime state of tenant engine.
-	 * 
-	 * @return
-	 */
-	public ISiteWhereTenantEngineState getEngineState();
+    /**
+     * Get runtime state of tenant engine.
+     * 
+     * @return
+     */
+    public ITenantRuntimeState getEngineState();
 }

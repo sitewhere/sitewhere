@@ -21,15 +21,14 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public interface IRouteBuilder<T> {
 
-	/**
-	 * Build a route based on information about a device event.
-	 * 
-	 * @param event
-	 * @param device
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public T build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException;
+    /**
+     * Build a route based on information about a device event.
+     * 
+     * @param event
+     * @param device
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public T build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment) throws SiteWhereException;
 }

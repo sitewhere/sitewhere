@@ -14,51 +14,51 @@ package com.sitewhere.web.configuration.model;
  */
 public class ConfigurationNode {
 
-	/** Display name */
-	private String name;
+    /** Display name */
+    private String name;
 
-	/** Display icon */
-	private String icon = "gears";
+    /** Display icon */
+    private String icon = "gears";
 
-	/** Display description */
-	private String description;
+    /** Display description */
+    private String description;
 
-	/** Node type */
-	private NodeType nodeType;
+    /** Node type */
+    private NodeType nodeType;
 
-	public ConfigurationNode(NodeType nodeType) {
-		this.nodeType = nodeType;
-	}
+    public ConfigurationNode(NodeType nodeType) {
+	this.nodeType = nodeType;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getIcon() {
-		return icon;
-	}
+    public String getIcon() {
+	return icon;
+    }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+    public void setIcon(String icon) {
+	this.icon = icon;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public NodeType getNodeType() {
-		return nodeType;
-	}
+    public NodeType getNodeType() {
+	return nodeType;
+    }
 
-	public void setNodeType(NodeType nodeType) {
-		this.nodeType = nodeType;
-	}
+    public void setNodeType(NodeType nodeType) {
+	this.nodeType = nodeType;
+    }
 }

@@ -16,10 +16,10 @@ import java.io.Serializable;
  */
 public interface IDeviceEventOriginator extends Serializable {
 
-	/**
-	 * Gets event id of originator.
-	 * 
-	 * @return
-	 */
-	public String getEventId();
+    /**
+     * Gets event id of originator.
+     * 
+     * @return
+     */
+    public String getEventId();
 }

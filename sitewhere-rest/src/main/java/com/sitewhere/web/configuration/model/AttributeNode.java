@@ -21,127 +21,127 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class AttributeNode extends XmlNode {
 
-	/** Attribute type */
-	private AttributeType type;
+    /** Attribute type */
+    private AttributeType type;
 
-	/** Default value */
-	private String defaultValue;
+    /** Default value */
+    private String defaultValue;
 
-	/** Indicates if field is the unique index */
-	private boolean index;
+    /** Indicates if field is the unique index */
+    private boolean index;
 
-	/** Choices available for attribute */
-	private List<String> choices;
+    /** Choices available for attribute */
+    private List<String> choices;
 
-	/** Indicates if attribute is required */
-	private boolean required;
+    /** Indicates if attribute is required */
+    private boolean required;
 
-	/** Name for grouping related attributes */
-	private String group;
+    /** Name for grouping related attributes */
+    private String group;
 
-	public AttributeNode() {
-		super(NodeType.Attribute);
+    public AttributeNode() {
+	super(NodeType.Attribute);
+    }
+
+    public AttributeType getType() {
+	return type;
+    }
+
+    public void setType(AttributeType type) {
+	this.type = type;
+    }
+
+    public String getDefaultValue() {
+	return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+	this.defaultValue = defaultValue;
+    }
+
+    public boolean isIndex() {
+	return index;
+    }
+
+    public void setIndex(boolean index) {
+	this.index = index;
+    }
+
+    public List<String> getChoices() {
+	return choices;
+    }
+
+    public void setChoices(List<String> choices) {
+	this.choices = choices;
+    }
+
+    public boolean isRequired() {
+	return required;
+    }
+
+    public void setRequired(boolean required) {
+	this.required = required;
+    }
+
+    public String getGroup() {
+	return group;
+    }
+
+    public void setGroup(String group) {
+	this.group = group;
+    }
+
+    /**
+     * Builder for creating attribute nodes.
+     * 
+     * @author Derek
+     */
+    public static class Builder {
+
+	private AttributeNode attribute;
+
+	public Builder(String name, String localName, AttributeType type) {
+	    this.attribute = new AttributeNode();
+	    attribute.setName(name);
+	    attribute.setLocalName(localName);
+	    attribute.setType(type);
 	}
 
-	public AttributeType getType() {
-		return type;
+	public Builder description(String description) {
+	    attribute.setDescription(description);
+	    return this;
 	}
 
-	public void setType(AttributeType type) {
-		this.type = type;
+	public Builder defaultValue(String value) {
+	    attribute.setDefaultValue(value);
+	    return this;
 	}
 
-	public String getDefaultValue() {
-		return defaultValue;
+	public Builder makeRequired() {
+	    attribute.setRequired(true);
+	    return this;
 	}
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
+	public Builder makeIndex() {
+	    attribute.setIndex(true);
+	    return this;
 	}
 
-	public boolean isIndex() {
-		return index;
+	public Builder choice(String choice) {
+	    if (attribute.getChoices() == null) {
+		attribute.setChoices(new ArrayList<String>());
+	    }
+	    attribute.getChoices().add(choice);
+	    return this;
 	}
 
-	public void setIndex(boolean index) {
-		this.index = index;
+	public Builder group(String group) {
+	    attribute.setGroup(group);
+	    return this;
 	}
 
-	public List<String> getChoices() {
-		return choices;
+	public AttributeNode build() {
+	    return attribute;
 	}
-
-	public void setChoices(List<String> choices) {
-		this.choices = choices;
-	}
-
-	public boolean isRequired() {
-		return required;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
-
-	public String getGroup() {
-		return group;
-	}
-
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	/**
-	 * Builder for creating attribute nodes.
-	 * 
-	 * @author Derek
-	 */
-	public static class Builder {
-
-		private AttributeNode attribute;
-
-		public Builder(String name, String localName, AttributeType type) {
-			this.attribute = new AttributeNode();
-			attribute.setName(name);
-			attribute.setLocalName(localName);
-			attribute.setType(type);
-		}
-
-		public Builder description(String description) {
-			attribute.setDescription(description);
-			return this;
-		}
-
-		public Builder defaultValue(String value) {
-			attribute.setDefaultValue(value);
-			return this;
-		}
-
-		public Builder makeRequired() {
-			attribute.setRequired(true);
-			return this;
-		}
-
-		public Builder makeIndex() {
-			attribute.setIndex(true);
-			return this;
-		}
-
-		public Builder choice(String choice) {
-			if (attribute.getChoices() == null) {
-				attribute.setChoices(new ArrayList<String>());
-			}
-			attribute.getChoices().add(choice);
-			return this;
-		}
-
-		public Builder group(String group) {
-			attribute.setGroup(group);
-			return this;
-		}
-
-		public AttributeNode build() {
-			return attribute;
-		}
-	}
+    }
 }

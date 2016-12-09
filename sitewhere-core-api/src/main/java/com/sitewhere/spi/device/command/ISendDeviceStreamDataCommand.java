@@ -16,31 +16,31 @@ import java.io.Serializable;
  */
 public interface ISendDeviceStreamDataCommand extends ISystemCommand, Serializable {
 
-	/**
-	 * Hardware id of device to receive data.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Hardware id of device to receive data.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get id of stream data belongs to.
-	 * 
-	 * @return
-	 */
-	public String getStreamId();
+    /**
+     * Get id of stream data belongs to.
+     * 
+     * @return
+     */
+    public String getStreamId();
 
-	/**
-	 * Get sequence number of data chunk.
-	 * 
-	 * @return
-	 */
-	public long getSequenceNumber();
+    /**
+     * Get sequence number of data chunk.
+     * 
+     * @return
+     */
+    public long getSequenceNumber();
 
-	/**
-	 * Get data.
-	 * 
-	 * @return
-	 */
-	public byte[] getData();
+    /**
+     * Get data.
+     * 
+     * @return
+     */
+    public byte[] getData();
 }

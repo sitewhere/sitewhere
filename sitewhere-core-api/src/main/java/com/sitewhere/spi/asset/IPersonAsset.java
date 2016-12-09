@@ -16,25 +16,25 @@ import java.util.List;
  */
 public interface IPersonAsset extends IAsset {
 
-	/**
-	 * Get the unique username.
-	 * 
-	 * @return
-	 */
-	public String getUserName();
+    /**
+     * Get the unique username.
+     * 
+     * @return
+     */
+    public String getUserName();
 
-	//
-	/**
-	 * Get the email address.
-	 * 
-	 * @return
-	 */
-	public String getEmailAddress();
+    //
+    /**
+     * Get the email address.
+     * 
+     * @return
+     */
+    public String getEmailAddress();
 
-	/**
-	 * Get a list of roles for the person.
-	 * 
-	 * @return
-	 */
-	public List<String> getRoles();
+    /**
+     * Get a list of roles for the person.
+     * 
+     * @return
+     */
+    public List<String> getRoles();
 }

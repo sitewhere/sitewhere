@@ -17,13 +17,13 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public interface IAssetManagementMongoClient {
 
-	/** Default collection name for SiteWhere asset categories */
-	public static final String DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME = "assetcategories";
+    /** Default collection name for SiteWhere asset categories */
+    public static final String DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME = "assetcategories";
 
-	/** Default collection name for SiteWhere assets */
-	public static final String DEFAULT_ASSETS_COLLECTION_NAME = "assets";
+    /** Default collection name for SiteWhere assets */
+    public static final String DEFAULT_ASSETS_COLLECTION_NAME = "assets";
 
-	public DBCollection getAssetCategoriesCollection(ITenant tenant);
+    public DBCollection getAssetCategoriesCollection(ITenant tenant);
 
-	public DBCollection getAssetsCollection(ITenant tenant);
+    public DBCollection getAssetsCollection(ITenant tenant);
 }

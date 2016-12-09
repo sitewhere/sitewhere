@@ -18,24 +18,24 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
  */
 public class BatchElementSearchCriteria extends SearchCriteria implements IBatchElementSearchCriteria {
 
-	/** Element processing status */
-	private ElementProcessingStatus processingStatus;
+    /** Element processing status */
+    private ElementProcessingStatus processingStatus;
 
-	public BatchElementSearchCriteria(int pageNumber, int pageSize) {
-		super(pageNumber, pageSize);
-	}
+    public BatchElementSearchCriteria(int pageNumber, int pageSize) {
+	super(pageNumber, pageSize);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.search.device.IBatchElementSearchCriteria#getProcessingStatus()
-	 */
-	public ElementProcessingStatus getProcessingStatus() {
-		return processingStatus;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.device.IBatchElementSearchCriteria#
+     * getProcessingStatus()
+     */
+    public ElementProcessingStatus getProcessingStatus() {
+	return processingStatus;
+    }
 
-	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
-		this.processingStatus = processingStatus;
-	}
+    public void setProcessingStatus(ElementProcessingStatus processingStatus) {
+	this.processingStatus = processingStatus;
+    }
 }

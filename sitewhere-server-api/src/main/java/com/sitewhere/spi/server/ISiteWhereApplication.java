@@ -16,11 +16,11 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface ISiteWhereApplication {
 
-	/**
-	 * Get SiteWhere server class managed by this application.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public Class<? extends ISiteWhereServer> getServerClass() throws SiteWhereException;
+    /**
+     * Get SiteWhere server class managed by this application.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public Class<? extends ISiteWhereServer> getServerClass() throws SiteWhereException;
 }

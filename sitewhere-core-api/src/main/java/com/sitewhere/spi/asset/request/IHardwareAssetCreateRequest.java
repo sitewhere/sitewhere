@@ -16,17 +16,17 @@ import com.sitewhere.spi.asset.IHardwareAsset;
  */
 public interface IHardwareAssetCreateRequest extends IAssetCreateRequest {
 
-	/**
-	 * Get the stock keeping unit (SKU).
-	 * 
-	 * @return
-	 */
-	public String getSku();
+    /**
+     * Get the stock keeping unit (SKU).
+     * 
+     * @return
+     */
+    public String getSku();
 
-	/**
-	 * Get the asset description.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get the asset description.
+     * 
+     * @return
+     */
+    public String getDescription();
 }

@@ -25,15 +25,15 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @DocumentedController(name = "Overview", global = true)
 public class Overview {
 
-	@RequestMapping(value = "/overview/calling", method = RequestMethod.GET)
-	@ApiOperation(value = "Calling SiteWhere REST Services")
-	@Documented
-	public void calling() {
-	}
+    @RequestMapping(value = "/overview/calling", method = RequestMethod.GET)
+    @ApiOperation(value = "Calling SiteWhere REST Services")
+    @Documented
+    public void calling() {
+    }
 
-	@RequestMapping(value = "/overview/paging", method = RequestMethod.GET)
-	@ApiOperation(value = "Paged Results")
-	@Documented
-	public void paging() {
-	}
+    @RequestMapping(value = "/overview/paging", method = RequestMethod.GET)
+    @ApiOperation(value = "Paged Results")
+    @Documented
+    public void paging() {
+    }
 }

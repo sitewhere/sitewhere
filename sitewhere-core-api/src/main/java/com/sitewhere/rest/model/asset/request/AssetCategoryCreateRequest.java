@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.asset.request;
 
 import com.sitewhere.spi.asset.AssetType;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 
 /**
@@ -17,54 +18,98 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
  */
 public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 8950287661317676377L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8950287661317676377L;
 
-	/** Category id */
-	private String id;
+    /** Category id */
+    private String id;
 
-	/** Category name */
-	private String name;
+    /** Category name */
+    private String name;
 
-	/** Category asset type */
-	private AssetType assetType;
+    /** Category asset type */
+    private AssetType assetType;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getId()
-	 */
-	public String getId() {
-		return id;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getId()
+     */
+    public String getId() {
+	return id;
+    }
+
+    public void setId(String id) {
+	this.id = id;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getName()
+     */
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getAssetType(
+     * )
+     */
+    public AssetType getAssetType() {
+	return assetType;
+    }
+
+    public void setAssetType(AssetType assetType) {
+	this.assetType = assetType;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private AssetCategoryCreateRequest request = new AssetCategoryCreateRequest();
+
+	public Builder(IAssetCategory category) {
+	    this(category.getId(), category.getName());
+	    request.setAssetType(category.getAssetType());
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public Builder(String id, String name) {
+	    request.setId(id);
+	    request.setName(name);
+	    request.setAssetType(AssetType.Hardware);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getName()
-	 */
-	public String getName() {
-		return name;
+	public Builder forHardwareAssets() {
+	    request.setAssetType(AssetType.Hardware);
+	    return this;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Builder forDeviceAssets() {
+	    request.setAssetType(AssetType.Device);
+	    return this;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getAssetType()
-	 */
-	public AssetType getAssetType() {
-		return assetType;
+	public Builder forLocationAssets() {
+	    request.setAssetType(AssetType.Location);
+	    return this;
 	}
 
-	public void setAssetType(AssetType assetType) {
-		this.assetType = assetType;
+	public Builder forPersonAssets() {
+	    request.setAssetType(AssetType.Person);
+	    return this;
 	}
+
+	public AssetCategoryCreateRequest build() {
+	    return request;
+	}
+    }
 }

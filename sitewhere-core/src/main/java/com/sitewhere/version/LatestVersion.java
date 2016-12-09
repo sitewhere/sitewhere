@@ -16,66 +16,66 @@ import java.util.List;
  */
 public class LatestVersion {
 
-	/** List of products */
-	private List<Product> products;
+    /** List of products */
+    private List<Product> products;
 
-	public List<Product> getProducts() {
-		return products;
+    public List<Product> getProducts() {
+	return products;
+    }
+
+    public void setProducts(List<Product> products) {
+	this.products = products;
+    }
+
+    /**
+     * Contains information about a SiteWhere product.
+     * 
+     * @author Derek
+     */
+    public static class Product {
+
+	/** Product type */
+	private String type;
+
+	/** Product name */
+	private String name;
+
+	/** Product edition */
+	private String edition;
+
+	/** Product version */
+	private String currentVersion;
+
+	public String getType() {
+	    return type;
 	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
+	public void setType(String type) {
+	    this.type = type;
 	}
 
-	/**
-	 * Contains information about a SiteWhere product.
-	 * 
-	 * @author Derek
-	 */
-	public static class Product {
-
-		/** Product type */
-		private String type;
-
-		/** Product name */
-		private String name;
-
-		/** Product edition */
-		private String edition;
-
-		/** Product version */
-		private String currentVersion;
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getEdition() {
-			return edition;
-		}
-
-		public void setEdition(String edition) {
-			this.edition = edition;
-		}
-
-		public String getCurrentVersion() {
-			return currentVersion;
-		}
-
-		public void setCurrentVersion(String currentVersion) {
-			this.currentVersion = currentVersion;
-		}
+	public String getName() {
+	    return name;
 	}
+
+	public void setName(String name) {
+	    this.name = name;
+	}
+
+	public String getEdition() {
+	    return edition;
+	}
+
+	public void setEdition(String edition) {
+	    this.edition = edition;
+	}
+
+	public String getCurrentVersion() {
+	    return currentVersion;
+	}
+
+	public void setCurrentVersion(String currentVersion) {
+	    this.currentVersion = currentVersion;
+	}
+    }
 }

@@ -16,89 +16,89 @@ import com.sitewhere.spi.system.IVersion;
  */
 public class Version implements IVersion {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -1056887925751094237L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -1056887925751094237L;
 
-	/** Full edition */
-	private String edition;
+    /** Full edition */
+    private String edition;
 
-	/** Edition identifier */
-	private String editionIdentifier;
+    /** Edition identifier */
+    private String editionIdentifier;
 
-	/** Version identifier */
-	private String versionIdentifier;
+    /** Version identifier */
+    private String versionIdentifier;
 
-	/** Build timestamp */
-	private String buildTimestamp;
+    /** Build timestamp */
+    private String buildTimestamp;
 
-	/** Server implementation class */
-	private Class<?> serverClass;
+    /** Server implementation class */
+    private Class<?> serverClass;
 
-	public Version() {
-	}
+    public Version() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getEdition()
-	 */
-	public String getEdition() {
-		return edition;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getEdition()
+     */
+    public String getEdition() {
+	return edition;
+    }
 
-	public void setEdition(String edition) {
-		this.edition = edition;
-	}
+    public void setEdition(String edition) {
+	this.edition = edition;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
-	 */
-	public String getEditionIdentifier() {
-		return editionIdentifier;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
+     */
+    public String getEditionIdentifier() {
+	return editionIdentifier;
+    }
 
-	public void setEditionIdentifier(String editionIdentifier) {
-		this.editionIdentifier = editionIdentifier;
-	}
+    public void setEditionIdentifier(String editionIdentifier) {
+	this.editionIdentifier = editionIdentifier;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
-	 */
-	public String getVersionIdentifier() {
-		return versionIdentifier;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
+     */
+    public String getVersionIdentifier() {
+	return versionIdentifier;
+    }
 
-	public void setVersionIdentifier(String versionIdentifier) {
-		this.versionIdentifier = versionIdentifier;
-	}
+    public void setVersionIdentifier(String versionIdentifier) {
+	this.versionIdentifier = versionIdentifier;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
-	 */
-	public String getBuildTimestamp() {
-		return buildTimestamp;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
+     */
+    public String getBuildTimestamp() {
+	return buildTimestamp;
+    }
 
-	public void setBuildTimestamp(String buildTimestamp) {
-		this.buildTimestamp = buildTimestamp;
-	}
+    public void setBuildTimestamp(String buildTimestamp) {
+	this.buildTimestamp = buildTimestamp;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.system.IVersion#getServerClass()
-	 */
-	public Class<?> getServerClass() {
-		return serverClass;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.system.IVersion#getServerClass()
+     */
+    public Class<?> getServerClass() {
+	return serverClass;
+    }
 
-	public void setServerClass(Class<?> serverClass) {
-		this.serverClass = serverClass;
-	}
+    public void setServerClass(Class<?> serverClass) {
+	this.serverClass = serverClass;
+    }
 }

@@ -20,82 +20,82 @@ import com.sitewhere.spi.asset.IHardwareAsset;
  */
 public class MongoHardwareAsset implements MongoConverter<IHardwareAsset> {
 
-	/** Property for asset SKU */
-	public static final String PROP_SKU = "sku";
+    /** Property for asset SKU */
+    public static final String PROP_SKU = "sku";
 
-	/** Property for asset description */
-	public static final String PROP_DESCRIPTION = "description";
+    /** Property for asset description */
+    public static final String PROP_DESCRIPTION = "description";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
-	 */
-	@Override
-	public BasicDBObject convert(IHardwareAsset source) {
-		return MongoHardwareAsset.toDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    @Override
+    public BasicDBObject convert(IHardwareAsset source) {
+	return MongoHardwareAsset.toDBObject(source);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
-	 */
-	@Override
-	public IHardwareAsset convert(DBObject source) {
-		return MongoHardwareAsset.fromDBObject(source);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     */
+    @Override
+    public IHardwareAsset convert(DBObject source) {
+	return MongoHardwareAsset.fromDBObject(source);
+    }
 
-	/**
-	 * Copy information from SPI into Mongo DBObject.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void toDBObject(IHardwareAsset source, BasicDBObject target) {
-		MongoAsset.toDBObject(source, target);
-		
-		target.append(PROP_SKU, source.getSku());
-		target.append(PROP_DESCRIPTION, source.getDescription());
-	}
+    /**
+     * Copy information from SPI into Mongo DBObject.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void toDBObject(IHardwareAsset source, BasicDBObject target) {
+	MongoAsset.toDBObject(source, target);
 
-	/**
-	 * Copy information from Mongo DBObject to model object.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void fromDBObject(DBObject source, HardwareAsset target) {
-		MongoAsset.fromDBObject(source, target);
-		
-		String sku = (String) source.get(PROP_SKU);
-		String description = (String) source.get(PROP_DESCRIPTION);
+	target.append(PROP_SKU, source.getSku());
+	target.append(PROP_DESCRIPTION, source.getDescription());
+    }
 
-		target.setSku(sku);
-		target.setDescription(description);
-	}
+    /**
+     * Copy information from Mongo DBObject to model object.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void fromDBObject(DBObject source, HardwareAsset target) {
+	MongoAsset.fromDBObject(source, target);
 
-	/**
-	 * Convert SPI object to Mongo DBObject.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static BasicDBObject toDBObject(IHardwareAsset source) {
-		BasicDBObject result = new BasicDBObject();
-		MongoHardwareAsset.toDBObject(source, result);
-		return result;
-	}
+	String sku = (String) source.get(PROP_SKU);
+	String description = (String) source.get(PROP_DESCRIPTION);
 
-	/**
-	 * Convert a DBObject into the SPI equivalent.
-	 * 
-	 * @param source
-	 * @return
-	 */
-	public static HardwareAsset fromDBObject(DBObject source) {
-		HardwareAsset result = new HardwareAsset();
-		MongoHardwareAsset.fromDBObject(source, result);
-		return result;
-	}
+	target.setSku(sku);
+	target.setDescription(description);
+    }
+
+    /**
+     * Convert SPI object to Mongo DBObject.
+     * 
+     * @param source
+     * @return
+     */
+    public static BasicDBObject toDBObject(IHardwareAsset source) {
+	BasicDBObject result = new BasicDBObject();
+	MongoHardwareAsset.toDBObject(source, result);
+	return result;
+    }
+
+    /**
+     * Convert a DBObject into the SPI equivalent.
+     * 
+     * @param source
+     * @return
+     */
+    public static HardwareAsset fromDBObject(DBObject source) {
+	HardwareAsset result = new HardwareAsset();
+	MongoHardwareAsset.fromDBObject(source, result);
+	return result;
+    }
 }

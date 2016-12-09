@@ -48,4 +48,3 @@ if hash java 2>/dev/null; then
 else
 	echo You do not have the Java Runtime Environment installed, please install Java JRE from java.com/en/download and try again.
 fi
-

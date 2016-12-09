@@ -8,8 +8,9 @@
 package com.sitewhere.hbase;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.Table;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -21,48 +22,58 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public interface ISiteWhereHBaseClient {
 
-	/**
-	 * Get client configuration.
-	 * 
-	 * @return
-	 */
-	public Configuration getConfiguration();
+    /**
+     * Get client configuration.
+     * 
+     * @return
+     */
+    public Configuration getConfiguration();
 
-	/**
-	 * Get HBase admin interface.
-	 * 
-	 * @return
-	 */
-	public HBaseAdmin getAdmin();
+    /**
+     * Get HBase admin interface.
+     * 
+     * @return
+     */
+    public Admin getAdmin();
 
-	/**
-	 * Get a table that has global scope.
-	 * 
-	 * @param tableName
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException;
+    /**
+     * Get a table that has global scope.
+     * 
+     * @param tableName
+     * @return
+     * @throws SiteWhereException
+     */
+    public Table getTableInterface(byte[] tableName) throws SiteWhereException;
 
-	/**
-	 * Get a table with tenant scope. Auto flush is disabled.
-	 * 
-	 * @param tenant
-	 * @param tableName
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
+    /**
+     * Get a table with tenant scope. Auto flush is disabled.
+     * 
+     * @param tenant
+     * @param tableName
+     * @return
+     * @throws SiteWhereException
+     */
+    public Table getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
 
-	/**
-	 * Get a table with tenant scope.
-	 * 
-	 * @param tenant
-	 * @param tableName
-	 * @param autoFlush
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
-			throws SiteWhereException;
+    /**
+     * Get a table with tenant scope.
+     * 
+     * @param tenant
+     * @param tableName
+     * @param autoFlush
+     * @return
+     * @throws SiteWhereException
+     */
+    @Deprecated
+    public Table getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush) throws SiteWhereException;
+
+    /**
+     * Get buffered mutator with tenant scope.
+     * 
+     * @param tenant
+     * @param tableName
+     * @return
+     * @throws SiteWhereException
+     */
+    public BufferedMutator getBufferedMutator(ITenant tenant, byte[] tableName) throws SiteWhereException;
 }

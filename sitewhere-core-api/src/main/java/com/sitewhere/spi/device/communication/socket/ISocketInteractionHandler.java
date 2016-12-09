@@ -21,13 +21,14 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
  */
 public interface ISocketInteractionHandler<T> {
 
-	/**
-	 * Delegates processing of socket information. Commands parsed from the socket should
-	 * be passed to {@link IInboundEventReceiver} onEventPayloadReceived() method.
-	 * 
-	 * @param socket
-	 * @param receiver
-	 * @throws SiteWhereException
-	 */
-	public void process(Socket socket, IInboundEventReceiver<T> receiver) throws SiteWhereException;
+    /**
+     * Delegates processing of socket information. Commands parsed from the
+     * socket should be passed to {@link IInboundEventReceiver}
+     * onEventPayloadReceived() method.
+     * 
+     * @param socket
+     * @param receiver
+     * @throws SiteWhereException
+     */
+    public void process(Socket socket, IInboundEventReceiver<T> receiver) throws SiteWhereException;
 }

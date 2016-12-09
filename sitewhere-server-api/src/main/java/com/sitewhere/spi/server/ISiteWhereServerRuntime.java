@@ -16,115 +16,115 @@ import java.util.List;
  */
 public interface ISiteWhereServerRuntime {
 
-	public IGeneralInformation getGeneral();
+    public IGeneralInformation getGeneral();
 
-	public IJavaInformation getJava();
+    public IJavaInformation getJava();
 
-	/**
-	 * General server information.
-	 */
-	public static interface IGeneralInformation {
-
-		/**
-		 * Get full edition name.
-		 */
-		public String getEdition();
-
-		/**
-		 * Get the short identifier for edition.
-		 * 
-		 * @return
-		 */
-		public String getEditionIdentifier();
-
-		/**
-		 * Gets the Maven version identifier.
-		 * 
-		 * @return
-		 */
-		public String getVersionIdentifier();
-
-		/**
-		 * Gets the build timestamp.
-		 * 
-		 * @return
-		 */
-		public String getBuildTimestamp();
-
-		/**
-		 * Get the amount of time in milliseconds the server has been up.
-		 * 
-		 * @return
-		 */
-		public Long getUptime();
-
-		/**
-		 * Get operating system name.
-		 * 
-		 * @return
-		 */
-		public String getOperatingSystemName();
-
-		/**
-		 * Get operating system version.
-		 * 
-		 * @return
-		 */
-		public String getOperatingSystemVersion();
-	}
+    /**
+     * General server information.
+     */
+    public static interface IGeneralInformation {
 
 	/**
-	 * Get information about Java VM.
+	 * Get full edition name.
 	 */
-	public static interface IJavaInformation {
+	public String getEdition();
 
-		/**
-		 * Get the JVM vendor.
-		 * 
-		 * @return
-		 */
-		public String getJvmVendor();
+	/**
+	 * Get the short identifier for edition.
+	 * 
+	 * @return
+	 */
+	public String getEditionIdentifier();
 
-		/**
-		 * Get the JVM version.
-		 * 
-		 * @return
-		 */
-		public String getJvmVersion();
+	/**
+	 * Gets the Maven version identifier.
+	 * 
+	 * @return
+	 */
+	public String getVersionIdentifier();
 
-		/**
-		 * Get total memory allocated to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmTotalMemory();
+	/**
+	 * Gets the build timestamp.
+	 * 
+	 * @return
+	 */
+	public String getBuildTimestamp();
 
-		/**
-		 * Get recent historical values for JVM total memory.
-		 * 
-		 * @return
-		 */
-		public List<Long> getJvmTotalMemoryHistory();
+	/**
+	 * Get the amount of time in milliseconds the server has been up.
+	 * 
+	 * @return
+	 */
+	public Long getUptime();
 
-		/**
-		 * Get free memory available to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmFreeMemory();
+	/**
+	 * Get operating system name.
+	 * 
+	 * @return
+	 */
+	public String getOperatingSystemName();
 
-		/**
-		 * Get recent historical values for JVM free memory.
-		 * 
-		 * @return
-		 */
-		public List<Long> getJvmFreeMemoryHistory();
+	/**
+	 * Get operating system version.
+	 * 
+	 * @return
+	 */
+	public String getOperatingSystemVersion();
+    }
 
-		/**
-		 * Get max memory available to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmMaxMemory();
-	}
+    /**
+     * Get information about Java VM.
+     */
+    public static interface IJavaInformation {
+
+	/**
+	 * Get the JVM vendor.
+	 * 
+	 * @return
+	 */
+	public String getJvmVendor();
+
+	/**
+	 * Get the JVM version.
+	 * 
+	 * @return
+	 */
+	public String getJvmVersion();
+
+	/**
+	 * Get total memory allocated to JVM.
+	 * 
+	 * @return
+	 */
+	public Long getJvmTotalMemory();
+
+	/**
+	 * Get recent historical values for JVM total memory.
+	 * 
+	 * @return
+	 */
+	public List<Long> getJvmTotalMemoryHistory();
+
+	/**
+	 * Get free memory available to JVM.
+	 * 
+	 * @return
+	 */
+	public Long getJvmFreeMemory();
+
+	/**
+	 * Get recent historical values for JVM free memory.
+	 * 
+	 * @return
+	 */
+	public List<Long> getJvmFreeMemoryHistory();
+
+	/**
+	 * Get max memory available to JVM.
+	 * 
+	 * @return
+	 */
+	public Long getJvmMaxMemory();
+    }
 }

@@ -16,36 +16,36 @@ import com.sitewhere.web.rest.annotations.Example.Stage;
  */
 public class ParsedExample {
 
-	/** Description */
-	private String description;
+    /** Description */
+    private String description;
 
-	/** Formatted JSON */
-	private String json;
+    /** Formatted JSON */
+    private String json;
 
-	/** Stage example applies to */
-	private Stage stage;
+    /** Stage example applies to */
+    private Stage stage;
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	public String getJson() {
-		return json;
-	}
+    public String getJson() {
+	return json;
+    }
 
-	public void setJson(String json) {
-		this.json = json;
-	}
+    public void setJson(String json) {
+	this.json = json;
+    }
 
-	public Stage getStage() {
-		return stage;
-	}
+    public Stage getStage() {
+	return stage;
+    }
 
-	public void setStage(Stage stage) {
-		this.stage = stage;
-	}
+    public void setStage(Stage stage) {
+	this.stage = stage;
+    }
 }

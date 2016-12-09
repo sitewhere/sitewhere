@@ -2,7 +2,7 @@
 def tenant = tenantBuilder.getTenant 'default'
 if (tenant == null) {
 	tenant = tenantBuilder.newTenant 'default', 'Default Tenant', 'sitewhere1234567890',
-		'https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png'
+		'https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png', 'construction'
 	tenant.withAuthorizedUserId 'admin' 
 	tenant.withAuthorizedUserId 'noadmin'
 	tenant = tenantBuilder.persist tenant

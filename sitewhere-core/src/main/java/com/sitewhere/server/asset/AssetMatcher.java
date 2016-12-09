@@ -20,87 +20,87 @@ import com.sitewhere.spi.asset.IPersonAsset;
  */
 public class AssetMatcher {
 
-	/**
-	 * Delegate match criteria by type.
-	 * 
-	 * @param type
-	 * @param asset
-	 * @param criteria
-	 * @return
-	 */
-	public boolean isMatch(AssetType type, IAsset asset, String criteria) {
-		switch (type) {
-		case Device: {
-			return isHardwareMatch((IHardwareAsset) asset, criteria);
-		}
-		case Hardware: {
-			return isHardwareMatch((IHardwareAsset) asset, criteria);
-		}
-		case Person: {
-			return isPersonMatch((IPersonAsset) asset, criteria);
-		}
-		case Location: {
-			return isLocationMatch((ILocationAsset) asset, criteria);
-		}
-		}
-		return false;
+    /**
+     * Delegate match criteria by type.
+     * 
+     * @param type
+     * @param asset
+     * @param criteria
+     * @return
+     */
+    public boolean isMatch(AssetType type, IAsset asset, String criteria) {
+	switch (type) {
+	case Device: {
+	    return isHardwareMatch((IHardwareAsset) asset, criteria);
 	}
+	case Hardware: {
+	    return isHardwareMatch((IHardwareAsset) asset, criteria);
+	}
+	case Person: {
+	    return isPersonMatch((IPersonAsset) asset, criteria);
+	}
+	case Location: {
+	    return isLocationMatch((ILocationAsset) asset, criteria);
+	}
+	}
+	return false;
+    }
 
-	/**
-	 * Indicates if hardware asset matches the given criteria.
-	 * 
-	 * @param asset
-	 * @param criteria
-	 * @return
-	 */
-	public boolean isHardwareMatch(IHardwareAsset asset, String criteria) {
-		if ((contains(asset.getName(), criteria)) || (contains(asset.getDescription(), criteria))
-				|| (contains(asset.getId(), criteria))) {
-			return true;
-		}
-		return false;
+    /**
+     * Indicates if hardware asset matches the given criteria.
+     * 
+     * @param asset
+     * @param criteria
+     * @return
+     */
+    public boolean isHardwareMatch(IHardwareAsset asset, String criteria) {
+	if ((contains(asset.getName(), criteria)) || (contains(asset.getDescription(), criteria))
+		|| (contains(asset.getId(), criteria))) {
+	    return true;
 	}
+	return false;
+    }
 
-	/**
-	 * Indicates if hardware asset matches the given criteria.
-	 * 
-	 * @param asset
-	 * @param criteria
-	 * @return
-	 */
-	public boolean isPersonMatch(IPersonAsset asset, String criteria) {
-		if ((contains(asset.getName(), criteria)) || (contains(asset.getEmailAddress(), criteria))
-				|| (contains(asset.getUserName(), criteria)) || (contains(asset.getId(), criteria))) {
-			return true;
-		}
-		return false;
+    /**
+     * Indicates if hardware asset matches the given criteria.
+     * 
+     * @param asset
+     * @param criteria
+     * @return
+     */
+    public boolean isPersonMatch(IPersonAsset asset, String criteria) {
+	if ((contains(asset.getName(), criteria)) || (contains(asset.getEmailAddress(), criteria))
+		|| (contains(asset.getUserName(), criteria)) || (contains(asset.getId(), criteria))) {
+	    return true;
 	}
+	return false;
+    }
 
-	/**
-	 * Indicates if location asset matches the given criteria.
-	 * 
-	 * @param asset
-	 * @param criteria
-	 * @return
-	 */
-	public boolean isLocationMatch(ILocationAsset asset, String criteria) {
-		if (contains(asset.getName(), criteria)) {
-			return true;
-		}
-		return false;
+    /**
+     * Indicates if location asset matches the given criteria.
+     * 
+     * @param asset
+     * @param criteria
+     * @return
+     */
+    public boolean isLocationMatch(ILocationAsset asset, String criteria) {
+	if (contains(asset.getName(), criteria)) {
+	    return true;
 	}
+	return false;
+    }
 
-	/**
-	 * Simplifies comparing possibly null non-case sensitive values.
-	 * 
-	 * @param field
-	 * @param value
-	 * @return
-	 */
-	protected boolean contains(String field, String value) {
-		if (field == null) {
-			return false;
-		}
-		return field.trim().toLowerCase().indexOf(value.toLowerCase()) != -1;
+    /**
+     * Simplifies comparing possibly null non-case sensitive values.
+     * 
+     * @param field
+     * @param value
+     * @return
+     */
+    protected boolean contains(String field, String value) {
+	if (field == null) {
+	    return false;
 	}
+	return field.trim().toLowerCase().indexOf(value.toLowerCase()) != -1;
+    }
 }

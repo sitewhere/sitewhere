@@ -14,36 +14,36 @@ package com.sitewhere.hbase.device;
  */
 public enum SiteRecordType {
 
-	/** Primary site record */
-	Site((byte) 0x00),
+    /** Primary site record */
+    Site((byte) 0x00),
 
-	/** Zone record */
-	Zone((byte) 0x01),
+    /** Zone record */
+    Zone((byte) 0x01),
 
-	/** Assignment record */
-	Assignment((byte) 0x02),
+    /** Assignment record */
+    Assignment((byte) 0x02),
 
-	/** End marker for scan ranges */
-	End((byte) 0x03);
+    /** End marker for scan ranges */
+    End((byte) 0x03);
 
-	/** Type indicator */
-	private byte type;
+    /** Type indicator */
+    private byte type;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private SiteRecordType(byte type) {
-		this.type = type;
-	}
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private SiteRecordType(byte type) {
+	this.type = type;
+    }
 
-	/**
-	 * Get the record type indicator.
-	 * 
-	 * @return
-	 */
-	public byte getType() {
-		return type;
-	}
+    /**
+     * Get the record type indicator.
+     * 
+     * @return
+     */
+    public byte getType() {
+	return type;
+    }
 }

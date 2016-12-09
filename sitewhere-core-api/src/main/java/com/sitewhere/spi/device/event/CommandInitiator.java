@@ -14,15 +14,15 @@ package com.sitewhere.spi.device.event;
  */
 public enum CommandInitiator {
 
-	/** Command initiated by REST call */
-	REST,
+    /** Command initiated by REST call */
+    REST,
 
-	/** Command initiated by batch operation */
-	BatchOperation,
+    /** Command initiated by batch operation */
+    BatchOperation,
 
-	/** Command initiated by script */
-	Script,
+    /** Command initiated by script */
+    Script,
 
-	/** Command initiated by scheduler */
-	Scheduler,
+    /** Command initiated by scheduler */
+    Scheduler,
 }

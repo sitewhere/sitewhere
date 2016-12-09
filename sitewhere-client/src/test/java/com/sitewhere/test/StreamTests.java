@@ -25,61 +25,61 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class StreamTests {
 
-	/** Device assignment token */
-	public static final String ASSN_TOKEN = "6b8d692f-e50e-4beb-85bf-c196ac3b0913";
+    /** Device assignment token */
+    public static final String ASSN_TOKEN = "6b8d692f-e50e-4beb-85bf-c196ac3b0913";
 
-	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-	@Test
-	public void testCreateStreamAndReadWrite() throws SiteWhereException {
-		SiteWhereClient client = new SiteWhereClient();
+    @Test
+    public void testCreateStreamAndReadWrite() throws SiteWhereException {
+	SiteWhereClient client = new SiteWhereClient();
 
-		String streamId = UUID.randomUUID().toString();
-		DeviceStreamCreateRequest screate = new DeviceStreamCreateRequest();
-		screate.setStreamId(streamId);
-		screate.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		client.createDeviceStream(ASSN_TOKEN, screate);
+	String streamId = UUID.randomUUID().toString();
+	DeviceStreamCreateRequest screate = new DeviceStreamCreateRequest();
+	screate.setStreamId(streamId);
+	screate.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+	client.createDeviceStream(ASSN_TOKEN, screate);
 
-		byte[] chunk1 = "This is the first chunk of data.".getBytes();
-		byte[] chunk2 = "This is the second chunk of data.".getBytes();
-		byte[] chunk3 = "This is the third chunk of data.".getBytes();
+	byte[] chunk1 = "This is the first chunk of data.".getBytes();
+	byte[] chunk2 = "This is the second chunk of data.".getBytes();
+	byte[] chunk3 = "This is the third chunk of data.".getBytes();
 
-		int sequenceNumber = 0;
-		client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk1);
-		client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk2);
-		client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk3);
+	int sequenceNumber = 0;
+	client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk1);
+	client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk2);
+	client.addDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++, chunk3);
 
-		sequenceNumber = 0;
-		byte[] result1 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
-		byte[] result2 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
-		byte[] result3 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
+	sequenceNumber = 0;
+	byte[] result1 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
+	byte[] result2 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
+	byte[] result3 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
 
-		Assert.assertArrayEquals(chunk1, result1);
-		Assert.assertArrayEquals(chunk2, result2);
-		Assert.assertArrayEquals(chunk3, result3);
+	Assert.assertArrayEquals(chunk1, result1);
+	Assert.assertArrayEquals(chunk2, result2);
+	Assert.assertArrayEquals(chunk3, result3);
 
-		byte[] result4 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
-		Assert.assertNull(result4);
+	byte[] result4 = client.getDeviceStreamData(ASSN_TOKEN, streamId, sequenceNumber++);
+	Assert.assertNull(result4);
 
-		// Required since there is buffering in the HBase implementation.
-		try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
-		}
-
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
-		byte[] all = client.listDeviceStreamData(ASSN_TOKEN, streamId, criteria);
-		System.out.println(new String(all));
+	// Required since there is buffering in the HBase implementation.
+	try {
+	    Thread.sleep(300);
+	} catch (InterruptedException e) {
 	}
 
-	public static String bytesToHex(byte[] bytes) {
-		char[] hexChars = new char[bytes.length * 2];
-		int v;
-		for (int j = 0; j < bytes.length; j++) {
-			v = bytes[j] & 0xFF;
-			hexChars[j * 2] = hexArray[v >>> 4];
-			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-		}
-		return new String(hexChars);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
+	byte[] all = client.listDeviceStreamData(ASSN_TOKEN, streamId, criteria);
+	System.out.println(new String(all));
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+	char[] hexChars = new char[bytes.length * 2];
+	int v;
+	for (int j = 0; j < bytes.length; j++) {
+	    v = bytes[j] & 0xFF;
+	    hexChars[j * 2] = hexArray[v >>> 4];
+	    hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 	}
+	return new String(hexChars);
+    }
 }

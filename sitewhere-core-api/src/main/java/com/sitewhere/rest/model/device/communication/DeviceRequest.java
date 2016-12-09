@@ -14,79 +14,79 @@ package com.sitewhere.rest.model.device.communication;
  */
 public class DeviceRequest {
 
-	/** Hardware id the request applies to */
-	private String hardwareId;
+    /** Hardware id the request applies to */
+    private String hardwareId;
 
-	/** Originating invocation if available */
-	private String originator;
+    /** Originating invocation if available */
+    private String originator;
 
-	/** Request type */
-	private Type type;
+    /** Request type */
+    private Type type;
 
-	/** Event create request */
-	private Object request;
+    /** Event create request */
+    private Object request;
 
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	public String getOriginator() {
-		return originator;
-	}
+    public String getOriginator() {
+	return originator;
+    }
 
-	public void setOriginator(String originator) {
-		this.originator = originator;
-	}
+    public void setOriginator(String originator) {
+	this.originator = originator;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+	return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+	this.type = type;
+    }
 
-	public Object getRequest() {
-		return request;
-	}
+    public Object getRequest() {
+	return request;
+    }
 
-	public void setRequest(Object request) {
-		this.request = request;
-	}
+    public void setRequest(Object request) {
+	this.request = request;
+    }
 
-	/**
-	 * Enumerates types of expected requests.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Type {
+    /**
+     * Enumerates types of expected requests.
+     * 
+     * @author Derek
+     */
+    public static enum Type {
 
-		/** Register a device */
-		RegisterDevice,
+	/** Register a device */
+	RegisterDevice,
 
-		/** Send a device location event */
-		DeviceLocation,
+	/** Send a device location event */
+	DeviceLocation,
 
-		/** Send a device alert event */
-		DeviceAlert,
+	/** Send a device alert event */
+	DeviceAlert,
 
-		/** Send a device measurements event */
-		DeviceMeasurements,
+	/** Send a device measurements event */
+	DeviceMeasurements,
 
-		/** Send a device steam create request */
-		DeviceStream,
+	/** Send a device steam create request */
+	DeviceStream,
 
-		/** Send a device stream data event */
-		DeviceStreamData,
+	/** Send a device stream data event */
+	DeviceStreamData,
 
-		/** Send a command acknowledgement */
-		Acknowledge,
+	/** Send a command acknowledgement */
+	Acknowledge,
 
-		/** Map a device to a slot on a composite device */
-		MapDevice,
-	}
+	/** Map a device to a slot on a composite device */
+	MapDevice,
+    }
 }

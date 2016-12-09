@@ -10,6 +10,7 @@ package com.sitewhere.server.tenant;
 import java.util.concurrent.Callable;
 
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 
 /**
@@ -19,14 +20,25 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
  */
 public abstract class TenantEngineCommand implements Callable<ICommandResponse> {
 
-	/** Tenant engine */
-	private ISiteWhereTenantEngine engine;
+    /** Progress monitor for commands */
+    private ILifecycleProgressMonitor progressMonitor;
 
-	public ISiteWhereTenantEngine getEngine() {
-		return engine;
-	}
+    /** Tenant engine */
+    private ISiteWhereTenantEngine engine;
 
-	public void setEngine(ISiteWhereTenantEngine engine) {
-		this.engine = engine;
-	}
+    public ILifecycleProgressMonitor getProgressMonitor() {
+	return progressMonitor;
+    }
+
+    public void setProgressMonitor(ILifecycleProgressMonitor progressMonitor) {
+	this.progressMonitor = progressMonitor;
+    }
+
+    public ISiteWhereTenantEngine getEngine() {
+	return engine;
+    }
+
+    public void setEngine(ISiteWhereTenantEngine engine) {
+	this.engine = engine;
+    }
 }

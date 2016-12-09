@@ -18,45 +18,45 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface IDeviceCommand extends IMetadataProviderEntity {
 
-	/**
-	 * Get the unique command token.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get the unique command token.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get token for the parent specification.
-	 * 
-	 * @return
-	 */
-	public String getSpecificationToken();
+    /**
+     * Get token for the parent specification.
+     * 
+     * @return
+     */
+    public String getSpecificationToken();
 
-	/**
-	 * Optional namespace for distinguishing commands.
-	 * 
-	 * @return
-	 */
-	public String getNamespace();
+    /**
+     * Optional namespace for distinguishing commands.
+     * 
+     * @return
+     */
+    public String getNamespace();
 
-	/**
-	 * Get command name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get command name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get a description of the command.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get a description of the command.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get list of parameters.
-	 * 
-	 * @return
-	 */
-	public List<ICommandParameter> getParameters();
+    /**
+     * Get list of parameters.
+     * 
+     * @return
+     */
+    public List<ICommandParameter> getParameters();
 }

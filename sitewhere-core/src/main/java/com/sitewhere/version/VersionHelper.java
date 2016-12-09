@@ -16,35 +16,35 @@ import com.sitewhere.spi.system.IVersion;
  */
 public class VersionHelper {
 
-	/** Classname for Community Edition version information */
-	private static final String CE_CLASSNAME = "com.sitewhere.Version";
+    /** Classname for Community Edition version information */
+    private static final String CE_CLASSNAME = "com.sitewhere.Version";
 
-	/** Classname for Enterprise Edition version information */
-	private static final String EE_CLASSNAME = "com.sitewhere.ee.Version";
+    /** Classname for Enterprise Edition version information */
+    private static final String EE_CLASSNAME = "com.sitewhere.ee.Version";
 
-	/**
-	 * Hacky method of accessing a version file that is created at build time.
-	 * 
-	 * @return
-	 */
-	public static IVersion getVersion() {
-		Class<?> clazz;
-		try {
-			clazz = Class.forName(EE_CLASSNAME);
-		} catch (ClassNotFoundException e) {
-			try {
-				clazz = Class.forName(CE_CLASSNAME);
-			} catch (ClassNotFoundException ex) {
-				throw new RuntimeException("Neither EE or CE version information was found on classpath.");
-			}
-		}
-		try {
-			IVersion version = (IVersion) clazz.newInstance();
-			return version;
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+    /**
+     * Hacky method of accessing a version file that is created at build time.
+     * 
+     * @return
+     */
+    public static IVersion getVersion() {
+	Class<?> clazz;
+	try {
+	    clazz = Class.forName(EE_CLASSNAME);
+	} catch (ClassNotFoundException e) {
+	    try {
+		clazz = Class.forName(CE_CLASSNAME);
+	    } catch (ClassNotFoundException ex) {
+		throw new RuntimeException("Neither EE or CE version information was found on classpath.");
+	    }
 	}
+	try {
+	    IVersion version = (IVersion) clazz.newInstance();
+	    return version;
+	} catch (InstantiationException e) {
+	    throw new RuntimeException(e);
+	} catch (IllegalAccessException e) {
+	    throw new RuntimeException(e);
+	}
+    }
 }

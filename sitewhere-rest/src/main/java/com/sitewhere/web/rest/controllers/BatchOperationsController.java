@@ -13,7 +13,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -70,194 +71,186 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Batch Operations")
 public class BatchOperationsController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BatchOperationsController.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	@RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get batch operation by unique token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
-	public IBatchOperation getBatchOperationByToken(
-			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getBatchOperationByToken", LOGGER);
-		try {
-			IBatchOperation batch =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getBatchOperation(
-							batchToken);
-			if (batch == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
-			}
-			return BatchOperation.copy(batch);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    @RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get batch operation by unique token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
+    public IBatchOperation getBatchOperationByToken(
+	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getBatchOperationByToken", LOGGER);
+	try {
+	    IBatchOperation batch = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .getBatchOperation(batchToken);
+	    if (batch == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
+	    }
+	    return BatchOperation.copy(batch);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List batch operations")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
-	public ISearchResults<IBatchOperation> listBatchOperations(
-			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IBatchOperation> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listBatchOperations(
-							includeDeleted, criteria);
-			List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
-			for (IBatchOperation op : results.getResults()) {
-				opsConv.add(BatchOperation.copy(op));
-			}
-			return new SearchResults<IBatchOperation>(opsConv, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List batch operations")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
+    public ISearchResults<IBatchOperation> listBatchOperations(
+	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
+	try {
+	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	    ISearchResults<IBatchOperation> results = SiteWhere.getServer()
+		    .getDeviceManagement(getTenant(servletRequest)).listBatchOperations(includeDeleted, criteria);
+	    List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
+	    for (IBatchOperation op : results.getResults()) {
+		opsConv.add(BatchOperation.copy(op));
+	    }
+	    return new SearchResults<IBatchOperation>(opsConv, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	@RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List batch operation elements")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
-	public ISearchResults<IBatchElement> listBatchOperationElements(
-			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
-		try {
-			BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
-			ISearchResults<IBatchElement> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listBatchElements(
-							operationToken, criteria);
-			return results;
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    @RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List batch operation elements")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
+    public ISearchResults<IBatchElement> listBatchOperationElements(
+	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
+	try {
+	    BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
+	    ISearchResults<IBatchElement> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .listBatchElements(operationToken, criteria);
+	    return results;
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	@RequestMapping(value = "/command", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new batch command invocation")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationCreateRequest.class, description = "createBatchCommandInvocationRequest.md"),
-			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandInvocationResponse.md") })
-	public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandInvocation", LOGGER);
-		try {
-			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).createBatchCommandInvocation(request);
-			return BatchOperation.copy(result);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    @RequestMapping(value = "/command", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create new batch command invocation")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationCreateRequest.class, description = "createBatchCommandInvocationRequest.md"),
+	    @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandInvocationResponse.md") })
+    public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createBatchCommandInvocation", LOGGER);
+	try {
+	    IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .createBatchCommandInvocation(request);
+	    return BatchOperation.copy(result);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Create a batch operation that invokes a command for all devices that match the
-	 * given criteria.
-	 * 
-	 * @param request
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create batch command operation based on criteria")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaSpecRequest.class, description = "createBatchCommandByCriteriaSpecRequest.md"),
-			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRequest.class, description = "createBatchCommandByCriteriaGroupRequest.md"),
-			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRoleRequest.class, description = "createBatchCommandByCriteriaGroupRoleRequest.md"),
-			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandByCriteriaResponse.md") })
-	public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandByCriteria", LOGGER);
-		try {
-			// Resolve hardware ids for devices matching criteria.
-			List<String> hardwareIds = BatchUtils.getHardwareIds(request, getTenant(servletRequest));
+    /**
+     * Create a batch operation that invokes a command for all devices that
+     * match the given criteria.
+     * 
+     * @param request
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create batch command operation based on criteria")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaSpecRequest.class, description = "createBatchCommandByCriteriaSpecRequest.md"),
+	    @Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRequest.class, description = "createBatchCommandByCriteriaGroupRequest.md"),
+	    @Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRoleRequest.class, description = "createBatchCommandByCriteriaGroupRoleRequest.md"),
+	    @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandByCriteriaResponse.md") })
+    public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createBatchCommandByCriteria", LOGGER);
+	try {
+	    // Resolve hardware ids for devices matching criteria.
+	    List<String> hardwareIds = BatchUtils.getHardwareIds(request, getTenant(servletRequest));
 
-			// Create batch command invocation.
-			BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
-			invoke.setToken(request.getToken());
-			invoke.setCommandToken(request.getCommandToken());
-			invoke.setParameterValues(request.getParameterValues());
-			invoke.setHardwareIds(hardwareIds);
+	    // Create batch command invocation.
+	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
+	    invoke.setToken(request.getToken());
+	    invoke.setCommandToken(request.getCommandToken());
+	    invoke.setParameterValues(request.getParameterValues());
+	    invoke.setHardwareIds(hardwareIds);
 
-			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(
-							getTenant(servletRequest)).createBatchCommandInvocation(invoke);
-			return BatchOperation.copy(result);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .createBatchCommandInvocation(invoke);
+	    return BatchOperation.copy(result);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Schedule job that will create a new batch command invocation based on the given
-	 * criteria.
-	 * 
-	 * @param request
-	 * @param scheduleToken
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/command/criteria/schedules/{scheduleToken}", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Schedule batch command operation based on criteria")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented
-	public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-			@ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "scheduleBatchCommandByCriteria", LOGGER);
-		try {
-			assureDeviceCommand(request.getCommandToken(), servletRequest);
-			IScheduledJobCreateRequest job =
-					ScheduledJobHelper.createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
-							request, scheduleToken);
-			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(
-					job);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Schedule job that will create a new batch command invocation based on the
+     * given criteria.
+     * 
+     * @param request
+     * @param scheduleToken
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/command/criteria/schedules/{scheduleToken}", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Schedule batch command operation based on criteria")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented
+    public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
+	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "scheduleBatchCommandByCriteria", LOGGER);
+	try {
+	    assureDeviceCommand(request.getCommandToken(), servletRequest);
+	    IScheduledJobCreateRequest job = ScheduledJobHelper
+		    .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(), request, scheduleToken);
+	    return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get a device command by unique token. Throw an exception if not found.
-	 * 
-	 * @param token
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		IDeviceCommand command =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
-						token);
-		if (command == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
-		}
-		return command;
+    /**
+     * Get a device command by unique token. Throw an exception if not found.
+     * 
+     * @param token
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	IDeviceCommand command = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.getDeviceCommandByToken(token);
+	if (command == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
+	return command;
+    }
 }

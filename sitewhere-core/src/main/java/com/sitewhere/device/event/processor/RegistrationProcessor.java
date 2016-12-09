@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,59 +24,59 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
  */
 public class RegistrationProcessor extends InboundEventProcessor {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RegistrationProcessor.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Cached registration manager */
-	private IRegistrationManager registration;
+    /** Cached registration manager */
+    private IRegistrationManager registration;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
-	 * onRegistrationRequest (java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
-	 */
-	@Override
-	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
-			throws SiteWhereException {
-		getRegistrationManager().handleDeviceRegistration(request);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+     * onRegistrationRequest (java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+     */
+    @Override
+    public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+	    throws SiteWhereException {
+	getRegistrationManager().handleDeviceRegistration(request);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+     * onDeviceMappingCreateRequest(java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
+     */
+    @Override
+    public void onDeviceMappingCreateRequest(String hardwareId, String originator, IDeviceMappingCreateRequest request)
+	    throws SiteWhereException {
+	getRegistrationManager().handleDeviceMapping(hardwareId, request);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /**
+     * Cache the registration manager implementation rather than looking it up
+     * each time.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IRegistrationManager getRegistrationManager() throws SiteWhereException {
+	if (registration == null) {
+	    registration = SiteWhere.getServer().getDeviceCommunication(getTenant()).getRegistrationManager();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
-	 * onDeviceMappingCreateRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
-	 */
-	@Override
-	public void onDeviceMappingCreateRequest(String hardwareId, String originator, IDeviceMappingCreateRequest request)
-			throws SiteWhereException {
-		getRegistrationManager().handleDeviceMapping(hardwareId, request);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	/**
-	 * Cache the registration manager implementation rather than looking it up
-	 * each time.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IRegistrationManager getRegistrationManager() throws SiteWhereException {
-		if (registration == null) {
-			registration = SiteWhere.getServer().getDeviceCommunication(getTenant()).getRegistrationManager();
-		}
-		return registration;
-	}
+	return registration;
+    }
 }

@@ -8,10 +8,14 @@
 package com.sitewhere.rabbitmq;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -20,9 +24,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownSignalException;
+import com.rabbitmq.client.ShutdownListener;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Binary inbound event source that consumes messages from a RabbitMQ broker.
@@ -31,144 +38,228 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(RabbitMqInboundEventReceiver.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Default connection URI */
-	private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
+    /** Default connection URI */
+    private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
 
-	/** Default queue name */
-	private static final String DEFAULT_QUEUE_NAME = "sitewhere.input";
+    /** Default queue name */
+    private static final String DEFAULT_QUEUE_NAME = "sitewhere.input";
 
-	/** Default number of consumers if not specified */
-	private static final int DEFAULT_NUM_CONSUMERS = 5;
+    /** Default number of consumers if not specified */
+    private static final int DEFAULT_NUM_CONSUMERS = 5;
 
-	/** Connection URI */
-	private String connectionUri = DEFAULT_CONNECTION_URI;
+    /** Default period in which to attempt connects/re-connects to RabbitMQ */
+    private static final int DEFAULT_RECONNECT_INTERVAL = 10;
 
-	/** Queue name */
-	private String queueName = DEFAULT_QUEUE_NAME;
+    /** Connection URI */
+    private String connectionUri = DEFAULT_CONNECTION_URI;
 
-	/** Number of consumers to use */
-	private int numConsumers = DEFAULT_NUM_CONSUMERS;
+    /** Queue name */
+    private String queueName = DEFAULT_QUEUE_NAME;
 
-	/** Indicates if queue should be durable */
-	private boolean durable = false;
+    /** Number of consumers to use */
+    private int numConsumers = DEFAULT_NUM_CONSUMERS;
 
-	/** RabbitMQ connection */
-	private Connection connection;
+    /** Reconnect interval */
+    private int reconnectInterval = DEFAULT_RECONNECT_INTERVAL;
 
-	/** RabbitMQ channel */
-	private Channel channel;
+    /** Indicates if queue should be durable */
+    private boolean durable = false;
 
-	/** Used for consumer thread pool */
-	private ExecutorService executors;
+    /** RabbitMQ connection factory **/
+    private ConnectionFactory factory;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		executors = Executors.newFixedThreadPool(getNumConsumers());
-		try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setUri(getConnectionUri());
-			this.connection = factory.newConnection(executors);
-			this.channel = connection.createChannel();
+    /** RabbitMQ connection */
+    private Connection connection;
 
-			LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
+    /** RabbitMQ channel */
+    private Channel channel;
 
-			channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
+    /** Used for consumer thread pool */
+    private ExecutorService executors;
 
-			LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: "
-					+ getQueueName());
+    /** Holds reference to scheduled reconnection task */
+    private ScheduledFuture<?> connectionFuture;
 
-			// Add consumer callback for channel.
-			Consumer consumer = new DefaultConsumer(channel) {
+    /** Shedules reconnection attempts */
+    private ScheduledExecutorService connectionExecutor;
 
-				@Override
-				public void handleDelivery(String consumerTag, Envelope envelope,
-						AMQP.BasicProperties properties, byte[] body) throws IOException {
-					EventProcessingLogic.processRawPayload(RabbitMqInboundEventReceiver.this, body, null);
-				}
-			};
-			channel.basicConsume(getQueueName(), true, consumer);
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to start RabbitMQ event receiver.", e);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	executors = Executors.newFixedThreadPool(getNumConsumers());
+	connectionExecutor = Executors.newScheduledThreadPool(1);
+	factory = new ConnectionFactory();
+
+	try {
+	    factory.setUri(getConnectionUri());
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to start RabbitMQ event receiver.", e);
+	}
+
+	connect();
+    }
+
+    /*
+     * Schedules a reconnect attempt after network interruption
+     */
+    private void scheduleReconnect() {
+
+	if (connectionFuture != null) {
+	    connectionFuture.cancel(true);
+	}
+
+	LOGGER.info("Scheduling reconnect");
+
+	Runnable task = () -> connect();
+	connectionFuture = connectionExecutor.schedule(task, this.getReconnectInterval(), TimeUnit.SECONDS);
+
+    }
+
+    /*
+     * Connect to RabbitMQ
+     */
+    private void connect() {
+
+	try {
+
+	    this.connection = factory.newConnection(executors);
+
+	    connection.addShutdownListener(new ShutdownListener() {
+		public void shutdownCompleted(ShutdownSignalException cause) {
+		    LOGGER.info("shutdown signal received", cause);
+
+		    // Do nothing if SiteWhere initiated the connection close
+		    if (!cause.isInitiatedByApplication()) {
+			connection = null;
+			scheduleReconnect();
+		    }
 		}
-	}
+	    });
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		try {
-			if (channel != null) {
-				channel.close();
-			}
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (Exception e) {
-			throw new SiteWhereException("Error stopping RabbitMQ event receiver.", e);
+	    this.channel = connection.createChannel();
+
+	    LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
+
+	    channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
+
+	    LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: " + getQueueName());
+
+	    // Add consumer callback for channel.
+	    Consumer consumer = new DefaultConsumer(channel) {
+		@Override
+		public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+			byte[] body) throws IOException {
+		    EventProcessingLogic.processRawPayload(RabbitMqInboundEventReceiver.this, body, null);
 		}
-		executors.shutdownNow();
+	    };
+
+	    channel.basicConsume(getQueueName(), true, consumer);
+
+	} catch (Exception e) {
+	    LOGGER.error("Connection Error", e);
+	    connection = null;
+	    scheduleReconnect();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+
+	// cancel any reconnection tasks that may be in progress
+	if (connectionFuture != null && !connectionFuture.isDone()) {
+	    connectionFuture.cancel(true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
-	 */
-	@Override
-	public String getDisplayName() {
-		return "RabbitMQ uri=" + getConnectionUri() + " queue=" + getQueueName();
+	try {
+	    if (channel != null) {
+		channel.close();
+	    }
+	    if (connection != null) {
+		connection.close();
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Error stopping RabbitMQ event receiver.", e);
 	}
 
-	public String getConnectionUri() {
-		return connectionUri;
-	}
+	connectionExecutor.shutdownNow();
+	executors.shutdownNow();
+    }
 
-	public void setConnectionUri(String connectionUri) {
-		this.connectionUri = connectionUri;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	public String getQueueName() {
-		return queueName;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getDisplayName()
+     */
+    @Override
+    public String getDisplayName() {
+	return "RabbitMQ uri=" + getConnectionUri() + " queue=" + getQueueName();
+    }
 
-	public void setQueueName(String queueName) {
-		this.queueName = queueName;
-	}
+    public int getReconnectInterval() {
+	return this.reconnectInterval;
+    }
 
-	public int getNumConsumers() {
-		return numConsumers;
-	}
+    public void setReconnectInterval(int reconnectInterval) {
+	this.reconnectInterval = reconnectInterval;
+    }
 
-	public void setNumConsumers(int numConsumers) {
-		this.numConsumers = numConsumers;
-	}
+    public String getConnectionUri() {
+	return connectionUri;
+    }
 
-	public boolean isDurable() {
-		return durable;
-	}
+    public void setConnectionUri(String connectionUri) {
+	this.connectionUri = connectionUri;
+    }
 
-	public void setDurable(boolean durable) {
-		this.durable = durable;
-	}
+    public String getQueueName() {
+	return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+	this.queueName = queueName;
+    }
+
+    public int getNumConsumers() {
+	return numConsumers;
+    }
+
+    public void setNumConsumers(int numConsumers) {
+	this.numConsumers = numConsumers;
+    }
+
+    public boolean isDurable() {
+	return durable;
+    }
+
+    public void setDurable(boolean durable) {
+	this.durable = durable;
+    }
 }

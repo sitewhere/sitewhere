@@ -14,18 +14,18 @@ package com.sitewhere.spring.handler;
  */
 public interface IConfigurationElements {
 
-	/** SiteWhere community edition namespace */
-	public static final String SITEWHERE_COMMUNITY_NS = "http://www.sitewhere.com/schema/sitewhere/ce";
+    /** SiteWhere community edition namespace */
+    public static final String SITEWHERE_COMMUNITY_NS = "http://www.sitewhere.com/schema/sitewhere/ce";
 
-	/** SiteWhere enterprise edition namespace */
-	public static final String SITEWHERE_ENTERPRISE_NS = "http://www.sitewhere.com/schema/sitewhere/ee";
+    /** SiteWhere enterprise edition namespace */
+    public static final String SITEWHERE_ENTERPRISE_NS = "http://www.sitewhere.com/schema/sitewhere/ee";
 
-	/** SiteWhere community edition tenant namespace */
-	public static final String SITEWHERE_CE_TENANT_NS = "http://www.sitewhere.com/schema/sitewhere/ce/tenant";
+    /** SiteWhere community edition tenant namespace */
+    public static final String SITEWHERE_CE_TENANT_NS = "http://www.sitewhere.com/schema/sitewhere/ce/tenant";
 
-	/** Constant for top-level configuration element */
-	public static final String CONFIGURATION = "configuration";
+    /** Constant for top-level configuration element */
+    public static final String CONFIGURATION = "configuration";
 
-	/** Constant for top-level tenant configuration element */
-	public static final String TENANT_CONFIGURATION = "tenant-configuration";
+    /** Constant for top-level tenant configuration element */
+    public static final String TENANT_CONFIGURATION = "tenant-configuration";
 }

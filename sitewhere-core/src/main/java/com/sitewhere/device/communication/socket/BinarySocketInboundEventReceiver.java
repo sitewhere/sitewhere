@@ -8,13 +8,14 @@
 package com.sitewhere.device.communication.socket;
 
 /**
- * Implementation of {@link SocketInboundEventReceiver} that produces binary data.
+ * Implementation of {@link SocketInboundEventReceiver} that produces binary
+ * data.
  * 
  * @author Derek
  */
 public class BinarySocketInboundEventReceiver extends SocketInboundEventReceiver<byte[]> {
 
-	public BinarySocketInboundEventReceiver() {
-		setHandlerFactory(new ReadAllInteractionHandler.Factory());
-	}
+    public BinarySocketInboundEventReceiver() {
+	setHandlerFactory(new ReadAllInteractionHandler.Factory());
+    }
 }

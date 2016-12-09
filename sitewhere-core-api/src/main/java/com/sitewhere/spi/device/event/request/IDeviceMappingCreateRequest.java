@@ -7,17 +7,17 @@ package com.sitewhere.spi.device.event.request;
  */
 public interface IDeviceMappingCreateRequest {
 
-	/**
-	 * Get hardware id of composite device that will add device mapping.
-	 * 
-	 * @return
-	 */
-	public String getCompositeDeviceHardwareId();
+    /**
+     * Get hardware id of composite device that will add device mapping.
+     * 
+     * @return
+     */
+    public String getCompositeDeviceHardwareId();
 
-	/**
-	 * Get path in device element schema to be mapped.
-	 * 
-	 * @return
-	 */
-	public String getMappingPath();
+    /**
+     * Get path in device element schema to be mapped.
+     * 
+     * @return
+     */
+    public String getMappingPath();
 }

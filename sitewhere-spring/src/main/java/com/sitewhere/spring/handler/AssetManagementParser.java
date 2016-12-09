@@ -34,233 +34,229 @@ import com.sitewhere.wso2.identity.scim.Wso2ScimAssetModule;
  */
 public class AssetManagementParser extends AbstractBeanDefinitionParser {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#parseInternal
-	 * (org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)
-	 */
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(AssetModuleManager.class);
-		List<Element> children = DomUtils.getChildElements(element);
-		List<Object> modules = new ManagedList<Object>();
-		for (Element child : children) {
-			Elements type = Elements.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown asset management element: " + child.getLocalName());
-			}
-			switch (type) {
-			case AssetModuleReference: {
-				modules.add(parseAssetModuleReference(child, context));
-				break;
-			}
-			case Wso2IdentityAssetModule: {
-				modules.add(parseWso2IdentityAssetModule(child, context));
-				break;
-			}
-			case FilesystemDeviceAssetModule: {
-				modules.add(parseFilesystemDeviceAssetModule(child, context));
-				break;
-			}
-			case FilesystemHardwareAssetModule: {
-				modules.add(parseFilesystemHardwareAssetModule(child, context));
-				break;
-			}
-			case FilesystemPersonAssetModule: {
-				modules.add(parseFilesystemPersonAssetModule(child, context));
-				break;
-			}
-			case FilesystemLocationAssetModule: {
-				modules.add(parseFilesystemLocationAssetModule(child, context));
-				break;
-			}
-			}
-		}
-		manager.addPropertyValue("modules", modules);
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER,
-				manager.getBeanDefinition());
-		return null;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
+     */
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(AssetModuleManager.class);
+	List<Element> children = DomUtils.getChildElements(element);
+	List<Object> modules = new ManagedList<Object>();
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown asset management element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case AssetModuleReference: {
+		modules.add(parseAssetModuleReference(child, context));
+		break;
+	    }
+	    case Wso2IdentityAssetModule: {
+		modules.add(parseWso2IdentityAssetModule(child, context));
+		break;
+	    }
+	    case FilesystemDeviceAssetModule: {
+		modules.add(parseFilesystemDeviceAssetModule(child, context));
+		break;
+	    }
+	    case FilesystemHardwareAssetModule: {
+		modules.add(parseFilesystemHardwareAssetModule(child, context));
+		break;
+	    }
+	    case FilesystemPersonAssetModule: {
+		modules.add(parseFilesystemPersonAssetModule(child, context));
+		break;
+	    }
+	    case FilesystemLocationAssetModule: {
+		modules.add(parseFilesystemLocationAssetModule(child, context));
+		break;
+	    }
+	    }
+	}
+	manager.addPropertyValue("modules", modules);
+	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER,
+		manager.getBeanDefinition());
+	return null;
+    }
+
+    /**
+     * Parse an asset module reference.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected RuntimeBeanReference parseAssetModuleReference(Element element, ParserContext context) {
+	Attr ref = element.getAttributeNode("ref");
+	if (ref != null) {
+	    return new RuntimeBeanReference(ref.getValue());
+	}
+	throw new RuntimeException("Asset module reference does not have ref defined.");
+    }
+
+    /**
+     * Parse a fileystem device asset module configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseWso2IdentityAssetModule(Element element, ParserContext context) {
+	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(Wso2ScimAssetModule.class);
+
+	Attr moduleId = element.getAttributeNode("moduleId");
+	if (moduleId != null) {
+	    module.addPropertyValue("moduleId", moduleId.getValue());
 	}
 
-	/**
-	 * Parse an asset module reference.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected RuntimeBeanReference parseAssetModuleReference(Element element, ParserContext context) {
-		Attr ref = element.getAttributeNode("ref");
-		if (ref != null) {
-			return new RuntimeBeanReference(ref.getValue());
-		}
-		throw new RuntimeException("Asset module reference does not have ref defined.");
+	Attr scimUsersUrl = element.getAttributeNode("scimUsersUrl");
+	if (scimUsersUrl != null) {
+	    module.addPropertyValue("scimUsersUrl", scimUsersUrl.getValue());
 	}
 
-	/**
-	 * Parse a fileystem device asset module configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected AbstractBeanDefinition parseWso2IdentityAssetModule(Element element, ParserContext context) {
-		BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(Wso2ScimAssetModule.class);
-
-		Attr moduleId = element.getAttributeNode("moduleId");
-		if (moduleId != null) {
-			module.addPropertyValue("moduleId", moduleId.getValue());
-		}
-
-		Attr scimUsersUrl = element.getAttributeNode("scimUsersUrl");
-		if (scimUsersUrl != null) {
-			module.addPropertyValue("scimUsersUrl", scimUsersUrl.getValue());
-		}
-
-		Attr username = element.getAttributeNode("username");
-		if (username != null) {
-			module.addPropertyValue("username", username.getValue());
-		}
-
-		Attr password = element.getAttributeNode("password");
-		if (password != null) {
-			module.addPropertyValue("password", password.getValue());
-		}
-
-		Attr ignoreBadCertificate = element.getAttributeNode("ignoreBadCertificate");
-		if (ignoreBadCertificate != null) {
-			module.addPropertyValue("ignoreBadCertificate", ignoreBadCertificate.getValue());
-		}
-
-		return module.getBeanDefinition();
+	Attr username = element.getAttributeNode("username");
+	if (username != null) {
+	    module.addPropertyValue("username", username.getValue());
 	}
 
-	/**
-	 * Parse a fileystem device asset module configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected AbstractBeanDefinition parseFilesystemDeviceAssetModule(Element element, ParserContext context) {
-		BeanDefinitionBuilder module =
-				BeanDefinitionBuilder.rootBeanDefinition(FileSystemDeviceAssetModule.class);
-		setCommonFilesystemAssetModuleProperties(module, element);
-		return module.getBeanDefinition();
+	Attr password = element.getAttributeNode("password");
+	if (password != null) {
+	    module.addPropertyValue("password", password.getValue());
 	}
 
-	/**
-	 * Parse a fileystem hardware asset module configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected AbstractBeanDefinition parseFilesystemHardwareAssetModule(Element element, ParserContext context) {
-		BeanDefinitionBuilder module =
-				BeanDefinitionBuilder.rootBeanDefinition(FileSystemHardwareAssetModule.class);
-		setCommonFilesystemAssetModuleProperties(module, element);
-		return module.getBeanDefinition();
+	Attr ignoreBadCertificate = element.getAttributeNode("ignoreBadCertificate");
+	if (ignoreBadCertificate != null) {
+	    module.addPropertyValue("ignoreBadCertificate", ignoreBadCertificate.getValue());
 	}
 
-	/**
-	 * Parse a fileystem person asset module configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected AbstractBeanDefinition parseFilesystemPersonAssetModule(Element element, ParserContext context) {
-		BeanDefinitionBuilder module =
-				BeanDefinitionBuilder.rootBeanDefinition(FileSystemPersonAssetModule.class);
-		setCommonFilesystemAssetModuleProperties(module, element);
-		return module.getBeanDefinition();
+	return module.getBeanDefinition();
+    }
+
+    /**
+     * Parse a fileystem device asset module configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseFilesystemDeviceAssetModule(Element element, ParserContext context) {
+	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemDeviceAssetModule.class);
+	setCommonFilesystemAssetModuleProperties(module, element);
+	return module.getBeanDefinition();
+    }
+
+    /**
+     * Parse a fileystem hardware asset module configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseFilesystemHardwareAssetModule(Element element, ParserContext context) {
+	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemHardwareAssetModule.class);
+	setCommonFilesystemAssetModuleProperties(module, element);
+	return module.getBeanDefinition();
+    }
+
+    /**
+     * Parse a fileystem person asset module configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseFilesystemPersonAssetModule(Element element, ParserContext context) {
+	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemPersonAssetModule.class);
+	setCommonFilesystemAssetModuleProperties(module, element);
+	return module.getBeanDefinition();
+    }
+
+    /**
+     * Parse a fileystem location asset module configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseFilesystemLocationAssetModule(Element element, ParserContext context) {
+	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemLocationAssetModule.class);
+	setCommonFilesystemAssetModuleProperties(module, element);
+	return module.getBeanDefinition();
+    }
+
+    /**
+     * Sets properties common to all filesystem asset module types.
+     * 
+     * @param module
+     * @param element
+     */
+    protected void setCommonFilesystemAssetModuleProperties(BeanDefinitionBuilder module, Element element) {
+	Attr moduleId = element.getAttributeNode("moduleId");
+	if (moduleId != null) {
+	    module.addPropertyValue("moduleId", moduleId.getValue());
+	}
+	Attr moduleName = element.getAttributeNode("moduleName");
+	if (moduleName != null) {
+	    module.addPropertyValue("moduleName", moduleName.getValue());
+	}
+	Attr filename = element.getAttributeNode("filename");
+	if (filename != null) {
+	    module.addPropertyValue("filename", filename.getValue());
+	}
+    }
+
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** References an asset module defined as a Spring bean */
+	AssetModuleReference("asset-module"),
+
+	/** Asset module that pulls data from WSO2 Identity Server */
+	Wso2IdentityAssetModule("wso2-identity-asset-module"),
+
+	/** Configures a filesystem device asset module */
+	FilesystemDeviceAssetModule("filesystem-device-asset-module"),
+
+	/** Configures a filesystem hardware asset module */
+	FilesystemHardwareAssetModule("filesystem-hardware-asset-module"),
+
+	/** Configures a filesystem person asset module */
+	FilesystemPersonAssetModule("filesystem-person-asset-module"),
+
+	/** Configures a filesystem location asset module */
+	FilesystemLocationAssetModule("filesystem-location-asset-module");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
 	}
 
-	/**
-	 * Parse a fileystem location asset module configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected AbstractBeanDefinition parseFilesystemLocationAssetModule(Element element, ParserContext context) {
-		BeanDefinitionBuilder module =
-				BeanDefinitionBuilder.rootBeanDefinition(FileSystemLocationAssetModule.class);
-		setCommonFilesystemAssetModuleProperties(module, element);
-		return module.getBeanDefinition();
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
 	}
 
-	/**
-	 * Sets properties common to all filesystem asset module types.
-	 * 
-	 * @param module
-	 * @param element
-	 */
-	protected void setCommonFilesystemAssetModuleProperties(BeanDefinitionBuilder module, Element element) {
-		Attr moduleId = element.getAttributeNode("moduleId");
-		if (moduleId != null) {
-			module.addPropertyValue("moduleId", moduleId.getValue());
-		}
-		Attr moduleName = element.getAttributeNode("moduleName");
-		if (moduleName != null) {
-			module.addPropertyValue("moduleName", moduleName.getValue());
-		}
-		Attr filename = element.getAttributeNode("filename");
-		if (filename != null) {
-			module.addPropertyValue("filename", filename.getValue());
-		}
+	public String getLocalName() {
+	    return localName;
 	}
 
-	/**
-	 * Expected child elements.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Elements {
-
-		/** References an asset module defined as a Spring bean */
-		AssetModuleReference("asset-module"),
-
-		/** Asset module that pulls data from WSO2 Identity Server */
-		Wso2IdentityAssetModule("wso2-identity-asset-module"),
-
-		/** Configures a filesystem device asset module */
-		FilesystemDeviceAssetModule("filesystem-device-asset-module"),
-
-		/** Configures a filesystem hardware asset module */
-		FilesystemHardwareAssetModule("filesystem-hardware-asset-module"),
-
-		/** Configures a filesystem person asset module */
-		FilesystemPersonAssetModule("filesystem-person-asset-module"),
-
-		/** Configures a filesystem location asset module */
-		FilesystemLocationAssetModule("filesystem-location-asset-module");
-
-		/** Event code */
-		private String localName;
-
-		private Elements(String localName) {
-			this.localName = localName;
-		}
-
-		public static Elements getByLocalName(String localName) {
-			for (Elements value : Elements.values()) {
-				if (value.getLocalName().equals(localName)) {
-					return value;
-				}
-			}
-			return null;
-		}
-
-		public String getLocalName() {
-			return localName;
-		}
-
-		public void setLocalName(String localName) {
-			this.localName = localName;
-		}
+	public void setLocalName(String localName) {
+	    this.localName = localName;
 	}
+    }
 }

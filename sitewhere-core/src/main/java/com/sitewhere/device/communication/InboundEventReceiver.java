@@ -9,10 +9,10 @@ package com.sitewhere.device.communication;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
@@ -27,83 +27,66 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class InboundEventReceiver<T> extends TenantLifecycleComponent implements IInboundEventReceiver<T> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(InboundEventReceiver.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Parent event source */
-	private IInboundEventSource<T> eventSource;
+    /** Parent event source */
+    private IInboundEventSource<T> eventSource;
 
-	public InboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
+    public InboundEventReceiver() {
+	super(LifecycleComponentType.InboundEventReceiver);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getDisplayName()
+     */
+    @Override
+    public String getDisplayName() {
+	return getClass().getName();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * onEventPayloadReceived (java.lang.Object, java.util.Map)
+     */
+    @Override
+    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) throws EventDecodeException {
+	getEventSource().onEncodedEventReceived(InboundEventReceiver.this, payload, metadata);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
-	 */
-	@Override
-	public String getDisplayName() {
-		return getClass().getName();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * getEventSource()
+     */
+    public IInboundEventSource<T> getEventSource() {
+	return eventSource;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException {
-		getEventSource().onEncodedEventReceived(InboundEventReceiver.this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	public IInboundEventSource<T> getEventSource() {
-		return eventSource;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com.
-	 * sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	public void setEventSource(IInboundEventSource<T> eventSource) {
-		this.eventSource = eventSource;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+     * setEventSource(com.
+     * sitewhere.spi.device.communication.IInboundEventSource)
+     */
+    public void setEventSource(IInboundEventSource<T> eventSource) {
+	this.eventSource = eventSource;
+    }
 }

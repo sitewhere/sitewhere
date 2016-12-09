@@ -14,12 +14,12 @@ package com.sitewhere.spi.scheduling;
  */
 public enum ScheduledJobState {
 
-	/** Job not yet submitted to scheduler */
-	Unsubmitted,
+    /** Job not yet submitted to scheduler */
+    Unsubmitted,
 
-	/** Job submitted to scheduler */
-	Active,
+    /** Job submitted to scheduler */
+    Active,
 
-	/** Job complete */
-	Complete;
+    /** Job complete */
+    Complete;
 }

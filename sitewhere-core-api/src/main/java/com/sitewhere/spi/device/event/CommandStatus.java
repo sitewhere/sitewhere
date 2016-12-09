@@ -14,15 +14,15 @@ package com.sitewhere.spi.device.event;
  */
 public enum CommandStatus {
 
-	/** Command is pending delivery */
-	Pending,
+    /** Command is pending delivery */
+    Pending,
 
-	/** Command has started processing */
-	Processing,
+    /** Command has started processing */
+    Processing,
 
-	/** Command has been sent on the underlying transport */
-	Sent,
+    /** Command has been sent on the underlying transport */
+    Sent,
 
-	/** Response message has been received */
-	Responded;
+    /** Response message has been received */
+    Responded;
 }

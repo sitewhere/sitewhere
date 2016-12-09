@@ -20,51 +20,51 @@ import com.sitewhere.spi.device.charting.IChartEntry;
  */
 public class ChartEntry<T> implements IChartEntry<T> {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -6397130714223000353L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -6397130714223000353L;
 
-	/** Entry value */
-	private T value;
+    /** Entry value */
+    private T value;
 
-	/** Date of measurement */
-	private Date measurementDate;
+    /** Date of measurement */
+    private Date measurementDate;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.charting.IChartEntry#getValue()
-	 */
-	@Override
-	public T getValue() {
-		return value;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.charting.IChartEntry#getValue()
+     */
+    @Override
+    public T getValue() {
+	return value;
+    }
 
-	public void setValue(T value) {
-		this.value = value;
-	}
+    public void setValue(T value) {
+	this.value = value;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.charting.IChartEntry#getMeasurementDate()
-	 */
-	@Override
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getMeasurementDate() {
-		return measurementDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.charting.IChartEntry#getMeasurementDate()
+     */
+    @Override
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getMeasurementDate() {
+	return measurementDate;
+    }
 
-	public void setMeasurementDate(Date measurementDate) {
-		this.measurementDate = measurementDate;
-	}
+    public void setMeasurementDate(Date measurementDate) {
+	this.measurementDate = measurementDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(IChartEntry<T> other) {
-		return this.getMeasurementDate().compareTo(other.getMeasurementDate());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(IChartEntry<T> other) {
+	return this.getMeasurementDate().compareTo(other.getMeasurementDate());
+    }
 }

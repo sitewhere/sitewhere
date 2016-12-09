@@ -14,12 +14,12 @@ package com.sitewhere.spi.device.command;
  */
 public enum DeviceStreamStatus {
 
-	/** New stream was successfully created */
-	DeviceStreamCreated,
+    /** New stream was successfully created */
+    DeviceStreamCreated,
 
-	/** Existing stream found for stream id */
-	DeviceStreamExists,
+    /** Existing stream found for stream id */
+    DeviceStreamExists,
 
-	/** Unable to create stream */
-	DeviceStreamFailed;
+    /** Unable to create stream */
+    DeviceStreamFailed;
 }

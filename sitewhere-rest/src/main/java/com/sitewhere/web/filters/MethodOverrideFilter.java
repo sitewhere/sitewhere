@@ -24,50 +24,46 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class MethodOverrideFilter extends OncePerRequestFilter {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(
+     * javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
+     */
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	    throws ServletException, IOException {
+	String method = request.getHeader("X-HTTP-Method-Override");
+	if (method != null) {
+	    HttpServletRequest wrapper = new HttpMethodRequestWrapper(request, method);
+	    filterChain.doFilter(wrapper, response);
+	} else {
+	    filterChain.doFilter(request, response);
+	}
+    }
+
+    /**
+     * Allows http method to be overriden.
+     * 
+     * @author Derek Adams
+     */
+    private static class HttpMethodRequestWrapper extends HttpServletRequestWrapper {
+
+	private final String method;
+
+	public HttpMethodRequestWrapper(HttpServletRequest request, String method) {
+	    super(request);
+	    this.method = method;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(
-	 * javax.servlet.http.HttpServletRequest,
-	 * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
+	 * @see javax.servlet.http.HttpServletRequestWrapper#getMethod()
 	 */
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		String method = request.getHeader("X-HTTP-Method-Override");
-		if (method != null) {
-			HttpServletRequest wrapper = new HttpMethodRequestWrapper(request,
-					method);
-			filterChain.doFilter(wrapper, response);
-		} else {
-			filterChain.doFilter(request, response);
-		}
+	public String getMethod() {
+	    return this.method;
 	}
-
-	/**
-	 * Allows http method to be overriden.
-	 * 
-	 * @author Derek Adams
-	 */
-	private static class HttpMethodRequestWrapper extends
-			HttpServletRequestWrapper {
-
-		private final String method;
-
-		public HttpMethodRequestWrapper(HttpServletRequest request,
-				String method) {
-			super(request);
-			this.method = method;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.servlet.http.HttpServletRequestWrapper#getMethod()
-		 */
-		public String getMethod() {
-			return this.method;
-		}
-	}
+    }
 }

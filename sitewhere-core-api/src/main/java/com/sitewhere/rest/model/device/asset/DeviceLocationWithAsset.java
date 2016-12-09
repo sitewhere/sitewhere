@@ -13,48 +13,47 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
- * Wraps a {@link DeviceLocation} so that information about the asset associated with its
- * assignment is available.
+ * Wraps a {@link DeviceLocation} so that information about the asset associated
+ * with its assignment is available.
  * 
  * @author Derek
  */
 public class DeviceLocationWithAsset extends DeviceEventWithAsset implements IDeviceLocation {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -8449689938042640635L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -8449689938042640635L;
 
-	public DeviceLocationWithAsset(IDeviceLocation wrapped, IAssetModuleManager assets)
-			throws SiteWhereException {
-		super(wrapped, assets);
-	}
+    public DeviceLocationWithAsset(IDeviceLocation wrapped, IAssetModuleManager assets) throws SiteWhereException {
+	super(wrapped, assets);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceLocation#getLatitude()
-	 */
-	@Override
-	public Double getLatitude() {
-		return ((IDeviceLocation) getWrapped()).getLatitude();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceLocation#getLatitude()
+     */
+    @Override
+    public Double getLatitude() {
+	return ((IDeviceLocation) getWrapped()).getLatitude();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceLocation#getLongitude()
-	 */
-	@Override
-	public Double getLongitude() {
-		return ((IDeviceLocation) getWrapped()).getLongitude();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceLocation#getLongitude()
+     */
+    @Override
+    public Double getLongitude() {
+	return ((IDeviceLocation) getWrapped()).getLongitude();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceLocation#getElevation()
-	 */
-	@Override
-	public Double getElevation() {
-		return ((IDeviceLocation) getWrapped()).getElevation();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceLocation#getElevation()
+     */
+    @Override
+    public Double getElevation() {
+	return ((IDeviceLocation) getWrapped()).getElevation();
+    }
 }

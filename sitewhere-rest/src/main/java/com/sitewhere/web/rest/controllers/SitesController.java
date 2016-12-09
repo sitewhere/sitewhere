@@ -13,7 +13,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.device.marshaling.SiteMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
@@ -86,566 +88,576 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Sites")
 public class SitesController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SitesController.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Create a new site.
-	 * 
-	 * @param input
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Sites.CreateSiteRequest.class, description = "createSiteRequest.md"),
-			@Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "createSiteResponse.md") })
-	public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createSite", LOGGER);
-		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createSite(input);
-			return Site.copy(site);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Create a new site.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create new site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Sites.CreateSiteRequest.class, description = "createSiteRequest.md"),
+	    @Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "createSiteResponse.md") })
+    public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createSite", LOGGER);
+	try {
+	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createSite(input);
+	    return Site.copy(site);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get information for a given site based on site token.
-	 * 
-	 * @param siteToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get site by unique token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "getSiteByTokenResponse.md") })
-	public Site getSiteByToken(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getSiteByToken", LOGGER);
-		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
-			if (site == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-			}
-			return Site.copy(site);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Get information for a given site based on site token.
+     * 
+     * @param siteToken
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get site by unique token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "getSiteByTokenResponse.md") })
+    public Site getSiteByToken(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getSiteByToken", LOGGER);
+	try {
+	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
+	    if (site == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    }
+	    return Site.copy(site);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Update information for a site.
-	 * 
-	 * @param input
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
-	@ResponseBody
-	@ApiOperation(value = "Update existing site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Sites.UpdateSiteRequest.class, description = "updateSiteRequest.md"),
-			@Example(stage = Stage.Response, json = Sites.UpdateSiteResponse.class, description = "updateSiteResponse.md") })
-	public Site updateSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@RequestBody SiteCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "updateSite", LOGGER);
-		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateSite(siteToken,
-					request);
-			return Site.copy(site);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Update information for a site.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Update existing site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Sites.UpdateSiteRequest.class, description = "updateSiteRequest.md"),
+	    @Example(stage = Stage.Response, json = Sites.UpdateSiteResponse.class, description = "updateSiteResponse.md") })
+    public Site updateSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @RequestBody SiteCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "updateSite", LOGGER);
+	try {
+	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateSite(siteToken,
+		    request);
+	    return Site.copy(site);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Delete information for a given site based on site token.
-	 * 
-	 * @param siteToken
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@ApiOperation(value = "Delete site by unique token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "deleteSiteByTokenResponse.md") })
-	public Site deleteSiteByToken(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "deleteSiteByToken", LOGGER);
-		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteSite(siteToken,
-					force);
-			return Site.copy(site);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Delete information for a given site based on site token.
+     * 
+     * @param siteToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Delete site by unique token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "deleteSiteByTokenResponse.md") })
+    public Site deleteSiteByToken(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteSiteByToken", LOGGER);
+	try {
+	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteSite(siteToken,
+		    force);
+	    return Site.copy(site);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * List all sites and wrap as search results.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List sites matching criteria")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Sites.ListSitesResponse.class, description = "listSitesResponse.md") })
-	public ISearchResults<ISite> listSites(
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listSites", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listSites(criteria);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * List all sites and wrap as search results.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List sites matching criteria")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Sites.ListSitesResponse.class, description = "listSitesResponse.md") })
+    public ISearchResults<ISite> listSites(
+	    @ApiParam(value = "Include zones", required = false) @RequestParam(defaultValue = "false") boolean includeZones,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listSites", LOGGER);
+	try {
+	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	    ISearchResults<ISite> matches = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .listSites(criteria);
+	    SiteMarshalHelper helper = new SiteMarshalHelper(getTenant(servletRequest));
+	    helper.setIncludeZones(includeZones);
+
+	    List<ISite> results = new ArrayList<ISite>();
+	    for (ISite site : matches.getResults()) {
+		results.add(helper.convert(site));
+	    }
+	    return new SearchResults<ISite>(results, matches.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device measurements for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List measurements for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listDeviceMeasurementsForSiteResponse.md") })
-	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceMeasurementsForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceMeasurements> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest))
-					.listDeviceMeasurementsForSite(siteToken, criteria);
+    /**
+     * Get device measurements for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List measurements for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listDeviceMeasurementsForSiteResponse.md") })
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceMeasurementsForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceMeasurements> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest))
+		    .listDeviceMeasurementsForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceMeasurements result : results.getResults()) {
-				wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceMeasurements result : results.getResults()) {
+		wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device locations for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List locations for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listDeviceLocationsForSiteResponse.md") })
-	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceLocationsForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceLocation> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest))
-					.listDeviceLocationsForSite(siteToken, criteria);
+    /**
+     * Get device locations for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List locations for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listDeviceLocationsForSiteResponse.md") })
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceLocationsForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceLocation> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest))
+		    .listDeviceLocationsForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceLocation result : results.getResults()) {
-				wrapped.add(new DeviceLocationWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceLocation result : results.getResults()) {
+		wrapped.add(new DeviceLocationWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device alerts for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List alerts for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.ListAssignmenAlertsResponse.class, description = "listDeviceAlertsForSiteResponse.md") })
-	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceAlertsForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceAlert> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlertsForSite(siteToken, criteria);
+    /**
+     * Get device alerts for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List alerts for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListAssignmenAlertsResponse.class, description = "listDeviceAlertsForSiteResponse.md") })
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceAlertsForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceAlert> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlertsForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceAlert result : results.getResults()) {
-				wrapped.add(new DeviceAlertWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceAlert result : results.getResults()) {
+		wrapped.add(new DeviceAlertWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device command invocations for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List command invocations for a site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.ListCommandInvocationsResponse.class, description = "listDeviceCommandInvocationsForSiteResponse.md") })
-	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandInvocationsForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceCommandInvocation> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest))
-					.listDeviceCommandInvocationsForSite(siteToken, criteria);
+    /**
+     * Get device command invocations for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List command invocations for a site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListCommandInvocationsResponse.class, description = "listDeviceCommandInvocationsForSiteResponse.md") })
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandInvocationsForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceCommandInvocation> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest))
+		    .listDeviceCommandInvocationsForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceCommandInvocation result : results.getResults()) {
-				wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceCommandInvocation result : results.getResults()) {
+		wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device command responses for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List command responses for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Assignments.ListCommandResponsesResponse.class, description = "listDeviceCommandResponsesForSiteResponse.md") })
-	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandResponsesForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceCommandResponse> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest))
-					.listDeviceCommandResponsesForSite(siteToken, criteria);
+    /**
+     * Get device command responses for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List command responses for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListCommandResponsesResponse.class, description = "listDeviceCommandResponsesForSiteResponse.md") })
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandResponsesForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceCommandResponse> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest))
+		    .listDeviceCommandResponsesForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceCommandResponse result : results.getResults()) {
-				wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceCommandResponse result : results.getResults()) {
+		wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get device state changes for a given site.
-	 * 
-	 * @param siteToken
-	 * @param count
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List state changes associated with a site")
-	@Secured({ SiteWhereRoles.REST })
-	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDeviceStateChangesForSite", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceStateChange> results = SiteWhere.getServer()
-					.getDeviceEventManagement(getTenant(servletRequest))
-					.listDeviceStateChangesForSite(siteToken, criteria);
+    /**
+     * Get device state changes for a given site.
+     * 
+     * @param siteToken
+     * @param count
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List state changes associated with a site")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceStateChangesForSite", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceStateChange> results = SiteWhere.getServer()
+		    .getDeviceEventManagement(getTenant(servletRequest))
+		    .listDeviceStateChangesForSite(siteToken, criteria);
 
-			// Marshal with asset info since multiple assignments might match.
-			List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
-			for (IDeviceStateChange result : results.getResults()) {
-				wrapped.add(new DeviceStateChangeWithAsset(result, assets));
-			}
-			return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+	    // Marshal with asset info since multiple assignments might match.
+	    List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
+	    IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
+	    for (IDeviceStateChange result : results.getResults()) {
+		wrapped.add(new DeviceStateChangeWithAsset(result, assets));
+	    }
+	    return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Find device assignments associated with a site.
-	 * 
-	 * @param siteToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List device assignments for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Sites.ListAssignmentsForSiteResponse.class, description = "findAssignmentsForSiteResponse.md") })
-	public ISearchResults<DeviceAssignment> listAssignmentsForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
-			@ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
-			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
-			@ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "false") boolean includeSite,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listAssignmentsForSite", LOGGER);
-		try {
-			AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(page, pageSize);
-			DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
-			if (decodedStatus != null) {
-				criteria.setStatus(decodedStatus);
-			}
-			ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
-					.getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentsForSite(siteToken, criteria);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-			helper.setIncludeAsset(includeAsset);
-			helper.setIncludeDevice(includeDevice);
-			helper.setIncludeSite(includeSite);
-			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-			for (IDeviceAssignment assignment : matches.getResults()) {
-				converted.add(helper.convert(assignment,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
-			}
-			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Find device assignments associated with a site.
+     * 
+     * @param siteToken
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List device assignments for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Sites.ListAssignmentsForSiteResponse.class, description = "findAssignmentsForSiteResponse.md") })
+    public ISearchResults<DeviceAssignment> listAssignmentsForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
+	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "false") boolean includeSite,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listAssignmentsForSite", LOGGER);
+	try {
+	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(page, pageSize);
+	    DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
+	    if (decodedStatus != null) {
+		criteria.setStatus(decodedStatus);
+	    }
+	    ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
+		    .getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentsForSite(siteToken, criteria);
+	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	    helper.setIncludeAsset(includeAsset);
+	    helper.setIncludeDevice(includeDevice);
+	    helper.setIncludeSite(includeSite);
+	    List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
+	    for (IDeviceAssignment assignment : matches.getResults()) {
+		converted.add(helper.convert(assignment,
+			SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    }
+	    return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	@RequestMapping(value = "/{siteToken}/assignments/lastinteraction", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List device assignments for site with qualifying last interaction date")
-	@Secured({ SiteWhereRoles.REST })
-	public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			@ApiParam(value = "Interactions after", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "Interactions before", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listAssignmentsWithLastInteractionDate", LOGGER);
-		try {
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
-					.getDeviceManagement(getTenant(servletRequest))
-					.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-			helper.setIncludeAsset(false);
-			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-			for (IDeviceAssignment assignment : matches.getResults()) {
-				converted.add(helper.convert(assignment,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
-			}
-			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    @RequestMapping(value = "/{siteToken}/assignments/lastinteraction", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List device assignments for site with qualifying last interaction date")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Interactions after", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @ApiParam(value = "Interactions before", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listAssignmentsWithLastInteractionDate", LOGGER);
+	try {
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
+		    .getDeviceManagement(getTenant(servletRequest))
+		    .getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
+	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	    helper.setIncludeAsset(false);
+	    List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
+	    for (IDeviceAssignment assignment : matches.getResults()) {
+		converted.add(helper.convert(assignment,
+			SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    }
+	    return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * List device assignments marked as missing by the presence manager.
-	 * 
-	 * @param siteToken
-	 * @param page
-	 * @param pageSize
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/assignments/missing", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List device assignments marked as missing")
-	@Secured({ SiteWhereRoles.REST })
-	public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listMissingDeviceAssignments", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
-					.getDeviceManagement(getTenant(servletRequest)).getMissingDeviceAssignments(siteToken, criteria);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-			helper.setIncludeAsset(false);
-			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-			for (IDeviceAssignment assignment : matches.getResults()) {
-				converted.add(helper.convert(assignment,
-						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
-			}
-			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * List device assignments marked as missing by the presence manager.
+     * 
+     * @param siteToken
+     * @param page
+     * @param pageSize
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/assignments/missing", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List device assignments marked as missing")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listMissingDeviceAssignments", LOGGER);
+	try {
+	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	    ISearchResults<IDeviceAssignment> matches = SiteWhere.getServer()
+		    .getDeviceManagement(getTenant(servletRequest)).getMissingDeviceAssignments(siteToken, criteria);
+	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	    helper.setIncludeAsset(false);
+	    List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
+	    for (IDeviceAssignment assignment : matches.getResults()) {
+		converted.add(helper.convert(assignment,
+			SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    }
+	    return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Create a new zone for a site.
-	 * 
-	 * @param input
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new zone for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Sites.CreateZoneRequest.class, description = "createZoneRequest.md"),
-			@Example(stage = Stage.Response, json = Sites.CreateZoneResponse.class, description = "createZoneResponse.md") })
-	public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
-			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createZone", LOGGER);
-		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
-			if (site == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-			}
-			IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createZone(site, request);
-			return Zone.copy(zone);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Create a new zone for a site.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create new zone for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Sites.CreateZoneRequest.class, description = "createZoneRequest.md"),
+	    @Example(stage = Stage.Response, json = Sites.CreateZoneResponse.class, description = "createZoneResponse.md") })
+    public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
+	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createZone", LOGGER);
+	try {
+	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
+	    if (site == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    }
+	    IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createZone(site, request);
+	    return Zone.copy(zone);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * List all zones for a site.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List zones for site")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Sites.ListZonesForSiteResponse.class, description = "listZonesForSiteResponse.md") })
-	public ISearchResults<IZone> listZonesForSite(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-					ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listZonesForSite", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listZones(siteToken, criteria);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * List all zones for a site.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List zones for site")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Sites.ListZonesForSiteResponse.class, description = "listZonesForSiteResponse.md") })
+    public ISearchResults<IZone> listZonesForSite(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+		    ConcernType.Paging }) int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+		    ConcernType.Paging }) int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listZonesForSite", LOGGER);
+	try {
+	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listZones(siteToken, criteria);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 }

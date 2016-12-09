@@ -43,48 +43,42 @@ public class StaticPartitionCoordinator implements IPartitionCoordinator {
     protected final Map<String, IPartitionManager> partitionManagerMap;
     protected final IStateStore stateStore;
 
-    public StaticPartitionCoordinator(
-            EventHubReceiverTaskConfig eventHubReceiverConfig,
-            int taskIndex,
-            int totalTasks,
-            IStateStore stateStore,
-            IPartitionManagerFactory pmFactory,
-            IEventHubReceiverFactory recvFactory) {
+    public StaticPartitionCoordinator(EventHubReceiverTaskConfig eventHubReceiverConfig, int taskIndex, int totalTasks,
+	    IStateStore stateStore, IPartitionManagerFactory pmFactory, IEventHubReceiverFactory recvFactory) {
 
-        this.config = eventHubReceiverConfig;
-        this.taskIndex = taskIndex;
-        this.totalTasks = totalTasks;
-        this.stateStore = stateStore;
-        List<String> partitionIds = calculateParititionIdsToOwn();
-        partitionManagerMap = new HashMap<String, IPartitionManager>();
-        partitionManagers = new ArrayList<IPartitionManager>();
+	this.config = eventHubReceiverConfig;
+	this.taskIndex = taskIndex;
+	this.totalTasks = totalTasks;
+	this.stateStore = stateStore;
+	List<String> partitionIds = calculateParititionIdsToOwn();
+	partitionManagerMap = new HashMap<String, IPartitionManager>();
+	partitionManagers = new ArrayList<IPartitionManager>();
 
-        for (String partitionId : partitionIds) {
-            IEventHubReceiver receiver = recvFactory.create(config, partitionId);
-            IPartitionManager partitionManager = pmFactory.create(
-                    config, partitionId, stateStore, receiver);
-            partitionManagerMap.put(partitionId, partitionManager);
-            partitionManagers.add(partitionManager);
-        }
+	for (String partitionId : partitionIds) {
+	    IEventHubReceiver receiver = recvFactory.create(config, partitionId);
+	    IPartitionManager partitionManager = pmFactory.create(config, partitionId, stateStore, receiver);
+	    partitionManagerMap.put(partitionId, partitionManager);
+	    partitionManagers.add(partitionManager);
+	}
     }
 
     @Override
     public List<IPartitionManager> getMyPartitionManagers() {
-        return partitionManagers;
+	return partitionManagers;
     }
 
     @Override
     public IPartitionManager getPartitionManager(String partitionId) {
-        return partitionManagerMap.get(partitionId);
+	return partitionManagerMap.get(partitionId);
     }
 
     protected List<String> calculateParititionIdsToOwn() {
-        List<String> taskPartitions = new ArrayList<String>();
-        for (int i = this.taskIndex; i < config.getPartitionCount(); i += this.totalTasks) {
-            taskPartitions.add(Integer.toString(i));
-            logger.info(String.format("taskIndex %d owns partitionId %d.", this.taskIndex, i));
-        }
+	List<String> taskPartitions = new ArrayList<String>();
+	for (int i = this.taskIndex; i < config.getPartitionCount(); i += this.totalTasks) {
+	    taskPartitions.add(Integer.toString(i));
+	    logger.info(String.format("taskIndex %d owns partitionId %d.", this.taskIndex, i));
+	}
 
-        return taskPartitions;
+	return taskPartitions;
     }
 }

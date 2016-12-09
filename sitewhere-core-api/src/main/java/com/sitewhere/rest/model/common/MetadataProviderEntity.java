@@ -22,99 +22,98 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 1858151633970096161L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 1858151633970096161L;
 
-	/** Date entity was created */
-	private Date createdDate;
+    /** Date entity was created */
+    private Date createdDate;
 
-	/** Username for creator */
-	private String createdBy;
+    /** Username for creator */
+    private String createdBy;
 
-	/** Date entity was last updated */
-	private Date updatedDate;
+    /** Date entity was last updated */
+    private Date updatedDate;
 
-	/** Username that updated entity */
-	private String updatedBy;
+    /** Username that updated entity */
+    private String updatedBy;
 
-	/** Indicates if entity has been deleted */
-	private boolean deleted;
+    /** Indicates if entity has been deleted */
+    private boolean deleted;
 
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getCreatedDate() {
-		return createdDate;
-	}
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getCreatedDate() {
+	return createdDate;
+    }
 
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
+    public void setCreatedDate(Date createdDate) {
+	this.createdDate = createdDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.ISiteWhereEntity#getCreatedBy()
-	 */
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getCreatedBy()
+     */
+    public String getCreatedBy() {
+	return createdBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(String createdBy) {
+	this.createdBy = createdBy;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedDate()
-	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getUpdatedDate() {
-		return updatedDate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedDate()
+     */
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getUpdatedDate() {
+	return updatedDate;
+    }
 
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
+    public void setUpdatedDate(Date updatedDate) {
+	this.updatedDate = updatedDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedBy()
-	 */
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedBy()
+     */
+    public String getUpdatedBy() {
+	return updatedBy;
+    }
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
+    public void setUpdatedBy(String updatedBy) {
+	this.updatedBy = updatedBy;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.common.ISiteWhereEntity#isDeleted()
-	 */
-	public boolean isDeleted() {
-		return deleted;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#isDeleted()
+     */
+    public boolean isDeleted() {
+	return deleted;
+    }
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(boolean deleted) {
+	this.deleted = deleted;
+    }
 
-	/**
-	 * Copy fields from source to target.
-	 * 
-	 * @param source
-	 * @param target
-	 */
-	public static void copy(IMetadataProviderEntity source, MetadataProviderEntity target)
-			throws SiteWhereException {
-		target.setCreatedDate(source.getCreatedDate());
-		target.setCreatedBy(source.getCreatedBy());
-		target.setUpdatedDate(source.getUpdatedDate());
-		target.setUpdatedBy(source.getUpdatedBy());
-		target.setDeleted(source.isDeleted());
-		MetadataProvider.copy(source, target);
-	}
+    /**
+     * Copy fields from source to target.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void copy(IMetadataProviderEntity source, MetadataProviderEntity target) throws SiteWhereException {
+	target.setCreatedDate(source.getCreatedDate());
+	target.setCreatedBy(source.getCreatedBy());
+	target.setUpdatedDate(source.getUpdatedDate());
+	target.setUpdatedBy(source.getUpdatedBy());
+	target.setDeleted(source.isDeleted());
+	MetadataProvider.copy(source, target);
+    }
 }

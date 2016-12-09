@@ -18,24 +18,24 @@ import com.sitewhere.spi.asset.AssetType;
  */
 public interface IAssetCategoryCreateRequest extends Serializable {
 
-	/**
-	 * Get category id.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get category id.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get category name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get category name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get type of assets held in category.
-	 * 
-	 * @return
-	 */
-	public AssetType getAssetType();
+    /**
+     * Get type of assets held in category.
+     * 
+     * @return
+     */
+    public AssetType getAssetType();
 }

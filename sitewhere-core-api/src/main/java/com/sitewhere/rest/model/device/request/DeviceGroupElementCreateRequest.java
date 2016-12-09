@@ -14,6 +14,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
 /**
@@ -24,64 +25,73 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 652319724175005277L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 652319724175005277L;
 
-	/** Element type */
-	private GroupElementType type;
+    /** Element type */
+    private GroupElementType type;
 
-	/** Element id */
-	private String elementId;
+    /** Element id */
+    private String elementId;
 
-	/** List of roles for element */
-	private List<String> roles = new ArrayList<String>();
+    /** List of roles for element */
+    private List<String> roles = new ArrayList<String>();
 
-	public GroupElementType getType() {
-		return type;
+    public GroupElementType getType() {
+	return type;
+    }
+
+    public void setType(GroupElementType type) {
+	this.type = type;
+    }
+
+    public String getElementId() {
+	return elementId;
+    }
+
+    public void setElementId(String elementId) {
+	this.elementId = elementId;
+    }
+
+    public List<String> getRoles() {
+	return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+	this.roles = roles;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+
+	public Builder(IDeviceGroupElement api) {
+	    request.setElementId(api.getElementId());
+	    request.setType(api.getType());
+	    if (api.getRoles() != null) {
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().addAll(api.getRoles());
+	    }
 	}
 
-	public void setType(GroupElementType type) {
-		this.type = type;
+	public Builder(String id) {
+	    request.setElementId(id);
+	    request.setType(GroupElementType.Device);
 	}
 
-	public String getElementId() {
-		return elementId;
+	public Builder withRole(String role) {
+	    request.getRoles().add(role);
+	    return this;
 	}
 
-	public void setElementId(String elementId) {
-		this.elementId = elementId;
+	public Builder asGroup() {
+	    request.setType(GroupElementType.Group);
+	    return this;
 	}
 
-	public List<String> getRoles() {
-		return roles;
+	public DeviceGroupElementCreateRequest build() {
+	    return request;
 	}
-
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
-
-	public static class Builder {
-
-		/** Request being built */
-		private DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
-
-		public Builder(String id) {
-			request.setElementId(id);
-			request.setType(GroupElementType.Device);
-		}
-
-		public Builder withRole(String role) {
-			request.getRoles().add(role);
-			return this;
-		}
-
-		public Builder asGroup() {
-			request.setType(GroupElementType.Group);
-			return this;
-		}
-
-		public DeviceGroupElementCreateRequest build() {
-			return request;
-		}
-	}
+    }
 }

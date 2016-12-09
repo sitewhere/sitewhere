@@ -14,9 +14,9 @@ package com.sitewhere.spi.device.command;
  */
 public enum RegistrationSuccessReason {
 
-	/** Indicates a new device registration */
-	NewRegistration,
+    /** Indicates a new device registration */
+    NewRegistration,
 
-	/** Indicates device was already registered in the system */
-	AlreadyRegistered;
+    /** Indicates device was already registered in the system */
+    AlreadyRegistered;
 }

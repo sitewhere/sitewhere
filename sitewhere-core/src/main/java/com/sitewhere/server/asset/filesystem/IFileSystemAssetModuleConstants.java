@@ -15,6 +15,6 @@ package com.sitewhere.server.asset.filesystem;
  */
 public interface IFileSystemAssetModuleConstants {
 
-	/** Assets subfolder name */
-	public static final String ASSETS_FOLDER = "assets";
+    /** Assets subfolder name */
+    public static final String ASSETS_FOLDER = "assets";
 }

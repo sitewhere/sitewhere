@@ -19,45 +19,45 @@ import com.sitewhere.spi.common.ILocation;
  */
 public interface IZoneCreateRequest {
 
-	/**
-	 * Get zone name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get zone name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get zone coordinates.
-	 * 
-	 * @return
-	 */
-	public List<ILocation> getCoordinates();
+    /**
+     * Get zone coordinates.
+     * 
+     * @return
+     */
+    public List<ILocation> getCoordinates();
 
-	/**
-	 * Get border color for UI.
-	 * 
-	 * @return
-	 */
-	public String getBorderColor();
+    /**
+     * Get border color for UI.
+     * 
+     * @return
+     */
+    public String getBorderColor();
 
-	/**
-	 * Get fill color for UI.
-	 * 
-	 * @return
-	 */
-	public String getFillColor();
+    /**
+     * Get fill color for UI.
+     * 
+     * @return
+     */
+    public String getFillColor();
 
-	/**
-	 * Get opacity for UI.
-	 * 
-	 * @return
-	 */
-	public Double getOpacity();
+    /**
+     * Get opacity for UI.
+     * 
+     * @return
+     */
+    public Double getOpacity();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

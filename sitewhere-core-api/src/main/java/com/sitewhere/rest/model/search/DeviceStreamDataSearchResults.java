@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.event.DeviceStreamData;
  */
 public class DeviceStreamDataSearchResults extends SearchResults<DeviceStreamData> {
 
-	public DeviceStreamDataSearchResults() {
-		super(new ArrayList<DeviceStreamData>());
-	}
+    public DeviceStreamDataSearchResults() {
+	super(new ArrayList<DeviceStreamData>());
+    }
 
-	public DeviceStreamDataSearchResults(List<DeviceStreamData> results) {
-		super(results);
-	}
+    public DeviceStreamDataSearchResults(List<DeviceStreamData> results) {
+	super(results);
+    }
 }

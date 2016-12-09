@@ -19,23 +19,23 @@ import java.util.Map;
  */
 public class ConfigurationModel extends ElementNode {
 
-	/** Map of elements by role */
-	private Map<String, List<ElementNode>> elementsByRole = new HashMap<String, List<ElementNode>>();
+    /** Map of elements by role */
+    private Map<String, List<ElementNode>> elementsByRole = new HashMap<String, List<ElementNode>>();
 
-	public void addElement(ElementNode element) {
-		List<ElementNode> elements = getElementsByRole().get(element.getRole());
-		if (elements == null) {
-			elements = new ArrayList<ElementNode>();
-			getElementsByRole().put(element.getRole(), elements);
-		}
-		elements.add(element);
+    public void addElement(ElementNode element) {
+	List<ElementNode> elements = getElementsByRole().get(element.getRole());
+	if (elements == null) {
+	    elements = new ArrayList<ElementNode>();
+	    getElementsByRole().put(element.getRole(), elements);
 	}
+	elements.add(element);
+    }
 
-	public Map<String, List<ElementNode>> getElementsByRole() {
-		return elementsByRole;
-	}
+    public Map<String, List<ElementNode>> getElementsByRole() {
+	return elementsByRole;
+    }
 
-	public void setElementsByRole(Map<String, List<ElementNode>> elementsByRole) {
-		this.elementsByRole = elementsByRole;
-	}
+    public void setElementsByRole(Map<String, List<ElementNode>> elementsByRole) {
+	this.elementsByRole = elementsByRole;
+    }
 }

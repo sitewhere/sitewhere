@@ -23,37 +23,36 @@ import javax.websocket.Session;
  */
 public class StringSender extends Endpoint {
 
-	/** Used for sending in background thread */
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
+    /** Used for sending in background thread */
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	@Override
-	public void onClose(Session session, CloseReason closeReason) {
-		executor.shutdownNow();
-	}
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+	executor.shutdownNow();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
-	 * javax.websocket.EndpointConfig)
-	 */
-	@Override
-	public void onOpen(final Session session, EndpointConfig config) {
-		executor.execute(new Runnable() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
+     * javax.websocket.EndpointConfig)
+     */
+    @Override
+    public void onOpen(final Session session, EndpointConfig config) {
+	executor.execute(new Runnable() {
 
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						session.getBasicRemote().sendText(
-								"LOC,f5fac881-1b9b-4aed-8e65-4476574db5ab,33.7550,-84.3900");
-						Thread.sleep(1000);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		});
-	}
+	    @Override
+	    public void run() {
+		while (true) {
+		    try {
+			session.getBasicRemote().sendText("LOC,f5fac881-1b9b-4aed-8e65-4476574db5ab,33.7550,-84.3900");
+			Thread.sleep(1000);
+		    } catch (IOException e) {
+			e.printStackTrace();
+		    } catch (InterruptedException e) {
+		    }
+		}
+	    }
+	});
+    }
 }

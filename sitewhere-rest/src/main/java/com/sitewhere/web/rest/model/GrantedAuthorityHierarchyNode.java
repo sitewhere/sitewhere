@@ -17,52 +17,52 @@ import java.util.List;
  */
 public class GrantedAuthorityHierarchyNode implements Comparable<GrantedAuthorityHierarchyNode> {
 
-	/** Authority id */
-	private String id;
+    /** Authority id */
+    private String id;
 
-	/** Text description */
-	private String text;
+    /** Text description */
+    private String text;
 
-	/** Flag for group */
-	private boolean group;
+    /** Flag for group */
+    private boolean group;
 
-	/** List of contained authorities */
-	private List<GrantedAuthorityHierarchyNode> items = new ArrayList<GrantedAuthorityHierarchyNode>();
+    /** List of contained authorities */
+    private List<GrantedAuthorityHierarchyNode> items = new ArrayList<GrantedAuthorityHierarchyNode>();
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+	return text;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+	this.text = text;
+    }
 
-	public boolean isGroup() {
-		return group;
-	}
+    public boolean isGroup() {
+	return group;
+    }
 
-	public void setGroup(boolean group) {
-		this.group = group;
-	}
+    public void setGroup(boolean group) {
+	this.group = group;
+    }
 
-	public List<GrantedAuthorityHierarchyNode> getItems() {
-		return items;
-	}
+    public List<GrantedAuthorityHierarchyNode> getItems() {
+	return items;
+    }
 
-	public void setItems(List<GrantedAuthorityHierarchyNode> items) {
-		this.items = items;
-	}
+    public void setItems(List<GrantedAuthorityHierarchyNode> items) {
+	this.items = items;
+    }
 
-	@Override
-	public int compareTo(GrantedAuthorityHierarchyNode o) {
-		return getText().compareTo(o.getText());
-	}
+    @Override
+    public int compareTo(GrantedAuthorityHierarchyNode o) {
+	return getText().compareTo(o.getText());
+    }
 }

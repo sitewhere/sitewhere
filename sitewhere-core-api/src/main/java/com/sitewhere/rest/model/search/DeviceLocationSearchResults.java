@@ -19,11 +19,11 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
  */
 public class DeviceLocationSearchResults extends SearchResults<DeviceLocation> {
 
-	public DeviceLocationSearchResults() {
-		super(new ArrayList<DeviceLocation>());
-	}
+    public DeviceLocationSearchResults() {
+	super(new ArrayList<DeviceLocation>());
+    }
 
-	public DeviceLocationSearchResults(List<DeviceLocation> results) {
-		super(results);
-	}
+    public DeviceLocationSearchResults(List<DeviceLocation> results) {
+	super(results);
+    }
 }

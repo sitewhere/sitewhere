@@ -23,105 +23,109 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class ScheduledJobCreateRequest implements IScheduledJobCreateRequest {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -627595397893118687L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -627595397893118687L;
 
-	/** Unique token */
-	private String token;
+    /** Unique token */
+    private String token;
 
-	/** Token for associated schedule */
-	private String scheduleToken;
+    /** Token for associated schedule */
+    private String scheduleToken;
 
-	/** Job type */
-	private ScheduledJobType jobType;
+    /** Job type */
+    private ScheduledJobType jobType;
 
-	/** Job configuration */
-	private Map<String, String> jobConfiguration;
+    /** Job configuration */
+    private Map<String, String> jobConfiguration;
 
-	/** Job state */
-	private ScheduledJobState jobState;
+    /** Job state */
+    private ScheduledJobState jobState;
 
-	/** Metadata */
-	private Map<String, String> metadata;
+    /** Metadata */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getToken()
-	 */
-	public String getToken() {
-		return token;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getToken(
+     * )
+     */
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getScheduleToken()
-	 */
-	public String getScheduleToken() {
-		return scheduleToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
+     * getScheduleToken()
+     */
+    public String getScheduleToken() {
+	return scheduleToken;
+    }
 
-	public void setScheduleToken(String scheduleToken) {
-		this.scheduleToken = scheduleToken;
-	}
+    public void setScheduleToken(String scheduleToken) {
+	this.scheduleToken = scheduleToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getJobType()
-	 */
-	public ScheduledJobType getJobType() {
-		return jobType;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
+     * getJobType()
+     */
+    public ScheduledJobType getJobType() {
+	return jobType;
+    }
 
-	public void setJobType(ScheduledJobType jobType) {
-		this.jobType = jobType;
-	}
+    public void setJobType(ScheduledJobType jobType) {
+	this.jobType = jobType;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getJobConfiguration
-	 * ()
-	 */
-	public Map<String, String> getJobConfiguration() {
-		return jobConfiguration;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
+     * getJobConfiguration ()
+     */
+    public Map<String, String> getJobConfiguration() {
+	return jobConfiguration;
+    }
 
-	public void setJobConfiguration(Map<String, String> jobConfiguration) {
-		this.jobConfiguration = jobConfiguration;
-	}
+    public void setJobConfiguration(Map<String, String> jobConfiguration) {
+	this.jobConfiguration = jobConfiguration;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getJobState()
-	 */
-	public ScheduledJobState getJobState() {
-		return jobState;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
+     * getJobState()
+     */
+    public ScheduledJobState getJobState() {
+	return jobState;
+    }
 
-	public void setJobState(ScheduledJobState jobState) {
-		this.jobState = jobState;
-	}
+    public void setJobState(ScheduledJobState jobState) {
+	this.jobState = jobState;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
+     * getMetadata()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
 }

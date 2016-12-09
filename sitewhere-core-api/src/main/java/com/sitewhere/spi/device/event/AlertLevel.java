@@ -14,15 +14,15 @@ package com.sitewhere.spi.device.event;
  */
 public enum AlertLevel {
 
-	/** Informational alert */
-	Info,
+    /** Informational alert */
+    Info,
 
-	/** Warning condition */
-	Warning,
+    /** Warning condition */
+    Warning,
 
-	/** Error condition */
-	Error,
+    /** Error condition */
+    Error,
 
-	/** Critical error */
-	Critical;
+    /** Critical error */
+    Critical;
 }

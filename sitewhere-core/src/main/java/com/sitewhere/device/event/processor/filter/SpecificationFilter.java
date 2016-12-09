@@ -19,42 +19,43 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class SpecificationFilter extends DeviceEventFilter {
 
-	/** Specification token to match */
-	private String specificationToken;
+    /** Specification token to match */
+    private String specificationToken;
 
-	/** Operation filter performs */
-	private FilterOperation operation = FilterOperation.Include;
+    /** Operation filter performs */
+    private FilterOperation operation = FilterOperation.Include;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(com.sitewhere
-	 * .spi.device.event.IDeviceEvent, com.sitewhere.spi.device.IDevice,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
-	 */
-	@Override
-	public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		if (getSpecificationToken().equals(device.getSpecificationToken())) {
-			return (getOperation() != FilterOperation.Include);
-		}
-		return (getOperation() == FilterOperation.Include);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
+     * com.sitewhere .spi.device.event.IDeviceEvent,
+     * com.sitewhere.spi.device.IDevice,
+     * com.sitewhere.spi.device.IDeviceAssignment)
+     */
+    @Override
+    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
+	    throws SiteWhereException {
+	if (getSpecificationToken().equals(device.getSpecificationToken())) {
+	    return (getOperation() != FilterOperation.Include);
 	}
+	return (getOperation() == FilterOperation.Include);
+    }
 
-	public String getSpecificationToken() {
-		return specificationToken;
-	}
+    public String getSpecificationToken() {
+	return specificationToken;
+    }
 
-	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
-	}
+    public void setSpecificationToken(String specificationToken) {
+	this.specificationToken = specificationToken;
+    }
 
-	public FilterOperation getOperation() {
-		return operation;
-	}
+    public FilterOperation getOperation() {
+	return operation;
+    }
 
-	public void setOperation(FilterOperation operation) {
-		this.operation = operation;
-	}
+    public void setOperation(FilterOperation operation) {
+	this.operation = operation;
+    }
 }

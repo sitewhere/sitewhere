@@ -21,36 +21,36 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ElementContent extends XmlContent {
 
-	/** Create a random UUID for the element */
-	private String id = UUID.randomUUID().toString();
+    /** Create a random UUID for the element */
+    private String id = UUID.randomUUID().toString();
 
-	/** List of children for this element */
-	private List<ElementContent> children;
+    /** List of children for this element */
+    private List<ElementContent> children;
 
-	/** List of attributes for this element */
-	private List<AttributeContent> attributes;
+    /** List of attributes for this element */
+    private List<AttributeContent> attributes;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	public List<ElementContent> getChildren() {
-		return children;
-	}
+    public List<ElementContent> getChildren() {
+	return children;
+    }
 
-	public void setChildren(List<ElementContent> children) {
-		this.children = children;
-	}
+    public void setChildren(List<ElementContent> children) {
+	this.children = children;
+    }
 
-	public List<AttributeContent> getAttributes() {
-		return attributes;
-	}
+    public List<AttributeContent> getAttributes() {
+	return attributes;
+    }
 
-	public void setAttributes(List<AttributeContent> attributes) {
-		this.attributes = attributes;
-	}
+    public void setAttributes(List<AttributeContent> attributes) {
+	this.attributes = attributes;
+    }
 }

@@ -22,39 +22,39 @@ import com.sitewhere.spi.device.ISite;
  */
 public interface IEntityUriProvider {
 
-	/**
-	 * Get unique identifier for a site.
-	 * 
-	 * @param site
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getSiteIdentifier(ISite site) throws SiteWhereException;
+    /**
+     * Get unique identifier for a site.
+     * 
+     * @param site
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getSiteIdentifier(ISite site) throws SiteWhereException;
 
-	/**
-	 * Get unique identifier for a device specification.
-	 * 
-	 * @param specification
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException;
+    /**
+     * Get unique identifier for a device specification.
+     * 
+     * @param specification
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException;
 
-	/**
-	 * Get unique identifier for a device.
-	 * 
-	 * @param device
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getDeviceIdentifier(IDevice device) throws SiteWhereException;
+    /**
+     * Get unique identifier for a device.
+     * 
+     * @param device
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getDeviceIdentifier(IDevice device) throws SiteWhereException;
 
-	/**
-	 * Get unique identifier for a device assignment.
-	 * 
-	 * @param assignment
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException;
+    /**
+     * Get unique identifier for a device assignment.
+     * 
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException;
 }

@@ -37,43 +37,47 @@ public class EventHubConsumerGroup {
     private Session session;
 
     public EventHubConsumerGroup(Connection connection, String entityPath, String consumerGroupName) {
-        this.connection = connection;
-        this.entityPath = entityPath;
-        this.consumerGroupName = consumerGroupName;
+	this.connection = connection;
+	this.entityPath = entityPath;
+	this.consumerGroupName = consumerGroupName;
     }
 
-    public EventHubReceiver createReceiver(String partitionId, String startingOffset, int defaultCredits) throws EventHubException {
-        this.ensureSessionCreated();
+    public EventHubReceiver createReceiver(String partitionId, String startingOffset, int defaultCredits)
+	    throws EventHubException {
+	this.ensureSessionCreated();
 
-        if (startingOffset == null || startingOffset.equals("")) {
-            startingOffset = Constants.DefaultStartingOffset;
-        }
+	if (startingOffset == null || startingOffset.equals("")) {
+	    startingOffset = Constants.DefaultStartingOffset;
+	}
 
-        String filterStr = String.format(Constants.OffsetFilterFormatString, startingOffset);
-        return new EventHubReceiver(this.session, this.entityPath, this.consumerGroupName, partitionId, filterStr, defaultCredits);
+	String filterStr = String.format(Constants.OffsetFilterFormatString, startingOffset);
+	return new EventHubReceiver(this.session, this.entityPath, this.consumerGroupName, partitionId, filterStr,
+		defaultCredits);
     }
 
-    public EventHubReceiver createReceiver(String partitionId, long timeAfter, int defaultCredits) throws EventHubException {
-        this.ensureSessionCreated();
+    public EventHubReceiver createReceiver(String partitionId, long timeAfter, int defaultCredits)
+	    throws EventHubException {
+	this.ensureSessionCreated();
 
-        String filterStr = String.format(Constants.EnqueueTimeFilterFormatString, timeAfter);
-        return new EventHubReceiver(this.session, this.entityPath, this.consumerGroupName, partitionId, filterStr, defaultCredits);
+	String filterStr = String.format(Constants.EnqueueTimeFilterFormatString, timeAfter);
+	return new EventHubReceiver(this.session, this.entityPath, this.consumerGroupName, partitionId, filterStr,
+		defaultCredits);
     }
 
     public void close() {
-        if (this.session != null) {
-            this.session.close();
-        }
+	if (this.session != null) {
+	    this.session.close();
+	}
     }
 
     synchronized void ensureSessionCreated() throws EventHubException {
 
-        try {
-            if (this.session == null) {
-                this.session = this.connection.createSession();
-            }
-        } catch (ConnectionException e) {
-            throw new EventHubException(e);
-        }
+	try {
+	    if (this.session == null) {
+		this.session = this.connection.createSession();
+	    }
+	} catch (ConnectionException e) {
+	    throw new EventHubException(e);
+	}
     }
 }

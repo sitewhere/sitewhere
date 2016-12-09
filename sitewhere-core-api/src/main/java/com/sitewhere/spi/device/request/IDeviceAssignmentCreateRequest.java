@@ -18,38 +18,45 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
  */
 public interface IDeviceAssignmentCreateRequest {
 
-	/**
-	 * Get the unique device hardware id.
-	 * 
-	 * @return
-	 */
-	public String getDeviceHardwareId();
+    /**
+     * Get token for assignment. (Auto-assign if null).
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get assignment type.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentType getAssignmentType();
+    /**
+     * Get the unique device hardware id.
+     * 
+     * @return
+     */
+    public String getDeviceHardwareId();
 
-	/**
-	 * Get asset module id.
-	 * 
-	 * @return
-	 */
-	public String getAssetModuleId();
+    /**
+     * Get assignment type.
+     * 
+     * @return
+     */
+    public DeviceAssignmentType getAssignmentType();
 
-	/**
-	 * Get assigned asset id.
-	 * 
-	 * @return
-	 */
-	public String getAssetId();
+    /**
+     * Get asset module id.
+     * 
+     * @return
+     */
+    public String getAssetModuleId();
 
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
+    /**
+     * Get assigned asset id.
+     * 
+     * @return
+     */
+    public String getAssetId();
+
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

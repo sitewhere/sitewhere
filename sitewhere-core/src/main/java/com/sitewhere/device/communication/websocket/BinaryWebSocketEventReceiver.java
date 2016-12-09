@@ -15,79 +15,80 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link WebSocketEventReceiver} that operates on binary payloads.
+ * Implementation of {@link WebSocketEventReceiver} that operates on binary
+ * payloads.
  * 
  * @author Derek
  */
 public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(BinaryWebSocketEventReceiver.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.websocket.WebSocketEventReceiver#
+     * getWebSocketClientClass()
+     */
+    @Override
+    public Class<? extends Endpoint> getWebSocketClientClass() {
+	return BinaryWebSocketClient.class;
+    }
+
+    /**
+     * Implementation of {@link Endpoint} that operates on byte[] payloads.
+     * 
+     * @author Derek
+     */
+    public static class BinaryWebSocketClient extends Endpoint {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.websocket.WebSocketEventReceiver#
-	 * getWebSocketClientClass()
+	 * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
+	 * javax.websocket.EndpointConfig)
 	 */
 	@Override
-	public Class<? extends Endpoint> getWebSocketClientClass() {
-		return BinaryWebSocketClient.class;
+	public void onOpen(Session session, final EndpointConfig config) {
+	    session.addMessageHandler(new MessageHandler.Whole<ByteBuffer>() {
+
+		@SuppressWarnings("unchecked")
+		public void onMessage(ByteBuffer payload) {
+		    IInboundEventReceiver<byte[]> receiver = (IInboundEventReceiver<byte[]>) config.getUserProperties()
+			    .get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
+		    EventProcessingLogic.processRawPayload(receiver, payload.array(), null);
+		}
+	    });
 	}
 
-	/**
-	 * Implementation of {@link Endpoint} that operates on byte[] payloads.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see javax.websocket.Endpoint#onClose(javax.websocket.Session,
+	 * javax.websocket.CloseReason)
 	 */
-	public static class BinaryWebSocketClient extends Endpoint {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onOpen(javax.websocket.Session,
-		 * javax.websocket.EndpointConfig)
-		 */
-		@Override
-		public void onOpen(Session session, final EndpointConfig config) {
-			session.addMessageHandler(new MessageHandler.Whole<ByteBuffer>() {
-
-				@SuppressWarnings("unchecked")
-				public void onMessage(ByteBuffer payload) {
-					IInboundEventReceiver<byte[]> receiver =
-							(IInboundEventReceiver<byte[]>) config.getUserProperties().get(
-									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-					EventProcessingLogic.processRawPayload(receiver, payload.array(), null);
-				}
-			});
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onClose(javax.websocket.Session,
-		 * javax.websocket.CloseReason)
-		 */
-		@Override
-		public void onClose(Session session, CloseReason closeReason) {
-			LOGGER.info("Web socket closed.");
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javax.websocket.Endpoint#onError(javax.websocket.Session,
-		 * java.lang.Throwable)
-		 */
-		@Override
-		public void onError(Session session, Throwable e) {
-			LOGGER.error("Web socket error.", e);
-		}
+	@Override
+	public void onClose(Session session, CloseReason closeReason) {
+	    LOGGER.info("Web socket closed.");
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.websocket.Endpoint#onError(javax.websocket.Session,
+	 * java.lang.Throwable)
+	 */
+	@Override
+	public void onError(Session session, Throwable e) {
+	    LOGGER.error("Web socket error.", e);
+	}
+    }
 }

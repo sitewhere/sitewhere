@@ -7,7 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,59 +23,59 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
  */
 public class DeviceStreamProcessor extends InboundEventProcessor {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceStreamProcessor.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
-	 * onDeviceStreamCreateRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
-	 */
-	@Override
-	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamRequest(
-				hardwareId, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+     * onDeviceStreamCreateRequest(java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+     */
+    @Override
+    public void onDeviceStreamCreateRequest(String hardwareId, String originator, IDeviceStreamCreateRequest request)
+	    throws SiteWhereException {
+	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+		.handleDeviceStreamRequest(hardwareId, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
-	 * onDeviceStreamDataCreateRequest(java.lang.String, java.lang.String,
-	 * java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
-	 */
-	@Override
-	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
-			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamDataRequest(
-				hardwareId, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+     * onDeviceStreamDataCreateRequest(java.lang.String, java.lang.String,
+     * java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+     */
+    @Override
+    public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
+	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+		.handleDeviceStreamDataRequest(hardwareId, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
-	 * onSendDeviceStreamDataRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest)
-	 */
-	@Override
-	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
-			ISendDeviceStreamDataRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleSendDeviceStreamDataRequest(
-				hardwareId, request);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+     * onSendDeviceStreamDataRequest(java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest)
+     */
+    @Override
+    public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
+	    ISendDeviceStreamDataRequest request) throws SiteWhereException {
+	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
+		.handleSendDeviceStreamDataRequest(hardwareId, request);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 }

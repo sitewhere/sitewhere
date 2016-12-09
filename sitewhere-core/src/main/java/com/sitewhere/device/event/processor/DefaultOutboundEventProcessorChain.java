@@ -10,7 +10,8 @@ package com.sitewhere.device.event.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,10 +23,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
-import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Default implementation of {@link IOutboundEventProcessorChain} interface.
@@ -33,259 +33,246 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * @author Derek
  */
 public class DefaultOutboundEventProcessorChain extends TenantLifecycleComponent
-		implements IOutboundEventProcessorChain, ITenantHazelcastAware {
+	implements IOutboundEventProcessorChain {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultOutboundEventProcessorChain.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Indicates whether processing is enabled */
-	private boolean processingEnabled = false;
+    /** Indicates whether processing is enabled */
+    private boolean processingEnabled = false;
 
-	/** List of event processors */
-	private List<IOutboundEventProcessor> processors = new ArrayList<IOutboundEventProcessor>();
+    /** List of event processors */
+    private List<IOutboundEventProcessor> processors = new ArrayList<IOutboundEventProcessor>();
 
-	public DefaultOutboundEventProcessorChain() {
-		super(LifecycleComponentType.OutboundProcessorChain);
+    public DefaultOutboundEventProcessorChain() {
+	super(LifecycleComponentType.OutboundProcessorChain);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLifecycleComponents().clear();
+	for (IOutboundEventProcessor processor : getProcessors()) {
+	    startNestedComponent(processor, monitor, false);
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		getLifecycleComponents().clear();
-		for (IOutboundEventProcessor processor : getProcessors()) {
-			startNestedComponent(processor, false);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	for (IOutboundEventProcessor processor : getProcessors()) {
+	    processor.lifecycleStop(monitor);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#
+     * setProcessingEnabled(boolean)
+     */
+    @Override
+    public void setProcessingEnabled(boolean enabled) {
+	this.processingEnabled = enabled;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#
+     * isProcessingEnabled()
+     */
+    @Override
+    public boolean isProcessingEnabled() {
+	return processingEnabled;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onMeasurements (com.sitewhere.spi.device.event.IDeviceMeasurements)
+     */
+    @Override
+    public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onMeasurements(measurements);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		for (IOutboundEventProcessor processor : getProcessors()) {
-			processor.lifecycleStop();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onLocation(com .sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onLocation(location);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#
-	 * setProcessingEnabled(boolean)
-	 */
-	@Override
-	public void setProcessingEnabled(boolean enabled) {
-		this.processingEnabled = enabled;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#
-	 * isProcessingEnabled()
-	 */
-	@Override
-	public boolean isProcessingEnabled() {
-		return processingEnabled;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
-	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
-	 */
-	@Override
-	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
-		for (IOutboundEventProcessor processor : getProcessors()) {
-			if (processor instanceof ITenantHazelcastAware) {
-				((ITenantHazelcastAware) processor).setHazelcastConfiguration(configuration);
-			}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(
+     * com. sitewhere .spi.device.event.IDeviceAlert)
+     */
+    @Override
+    public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onAlert(alert);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onMeasurements(measurements);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandInvocation
+     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     */
+    @Override
+    public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onCommandInvocation(invocation);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
-	 * .sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onLocation(location);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onCommandResponse (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     */
+    @Override
+    public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onCommandResponse(response);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
-	 * sitewhere .spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onAlert(alert);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+     * onStateChange(com. sitewhere.spi.device.event.IDeviceStateChange)
+     */
+    @Override
+    public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+	if (isProcessingEnabled()) {
+	    for (IOutboundEventProcessor processor : getProcessors()) {
+		try {
+		    if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+			processor.onStateChange(state);
+		    } else {
+			logSkipped(processor);
+		    }
+		} catch (SiteWhereException e) {
+		    LOGGER.error(e);
 		}
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-	 */
-	@Override
-	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onCommandInvocation(invocation);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
+    /**
+     * Output log message indicating a processor was skipped.
+     * 
+     * @param processor
+     */
+    protected void logSkipped(IOutboundEventProcessor processor) {
+	getLogger().warn("Skipping event processor " + processor.getComponentName() + " because its state is '"
+		+ processor.getLifecycleStatus() + "'");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
-	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
-	 */
-	@Override
-	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onCommandResponse(response);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#
+     * getProcessors ()
+     */
+    @Override
+    public List<IOutboundEventProcessor> getProcessors() {
+	return processors;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
-	 * sitewhere.spi.device.event.IDeviceStateChange)
-	 */
-	@Override
-	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
-						processor.onStateChange(state);
-					} else {
-						logSkipped(processor);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Output log message indicating a processor was skipped.
-	 * 
-	 * @param processor
-	 */
-	protected void logSkipped(IOutboundEventProcessor processor) {
-		getLogger().warn("Skipping event processor " + processor.getComponentName()
-				+ " because its state is '" + processor.getLifecycleStatus() + "'");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain#getProcessors
-	 * ()
-	 */
-	@Override
-	public List<IOutboundEventProcessor> getProcessors() {
-		return processors;
-	}
-
-	public void setProcessors(List<IOutboundEventProcessor> processors) {
-		this.processors = processors;
-	}
+    public void setProcessors(List<IOutboundEventProcessor> processors) {
+	this.processors = processors;
+    }
 }

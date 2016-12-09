@@ -10,7 +10,8 @@ package com.sitewhere.web.rest.controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -53,104 +54,101 @@ import com.wordnik.swagger.annotations.ApiParam;
 @DocumentedController(name = "Device Commands")
 public class CommandsController extends RestController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(CommandsController.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Update an existing device command.
-	 * 
-	 * @param token
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-	@ResponseBody
-	@ApiOperation(value = "Update an existing device command")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Commands.DeviceCommandUpdateRequest.class, description = "updateDeviceCommandRequest.md"),
-			@Example(stage = Stage.Response, json = Commands.DeviceCommandUpdateResponse.class, description = "updateDeviceCommandResponse.md") })
-	public IDeviceCommand updateDeviceCommand(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "updateDeviceCommand", LOGGER);
-		try {
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(
-					token, request);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Update an existing device command.
+     * 
+     * @param token
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Update an existing device command")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Request, json = Commands.DeviceCommandUpdateRequest.class, description = "updateDeviceCommandRequest.md"),
+	    @Example(stage = Stage.Response, json = Commands.DeviceCommandUpdateResponse.class, description = "updateDeviceCommandResponse.md") })
+    public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "updateDeviceCommand", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(token,
+		    request);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Get a device command by unique token.
-	 * 
-	 * @param hardwareId
-	 * @return
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Get device command by unique token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
-	public IDeviceCommand getDeviceCommandByToken(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
-		try {
-			return assertDeviceCommandByToken(token, servletRequest);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Get a device command by unique token.
+     * 
+     * @param hardwareId
+     * @return
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get device command by unique token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
+    public IDeviceCommand getDeviceCommandByToken(
+	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
+	try {
+	    return assertDeviceCommandByToken(token, servletRequest);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Delete an existing device command.
-	 * 
-	 * @param token
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@ApiOperation(value = "Delete device command by unique token")
-	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = {
-			@Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
-	public IDeviceCommand deleteDeviceCommand(
-			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceCommand", LOGGER);
-		try {
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(
-					token, force);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
+    /**
+     * Delete an existing device command.
+     * 
+     * @param token
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Delete device command by unique token")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
+    public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteDeviceCommand", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(token,
+		    force);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
+    }
 
-	/**
-	 * Gets a device command by token and throws an exception if not found.
-	 * 
-	 * @param token
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IDeviceCommand assertDeviceCommandByToken(String token, HttpServletRequest servletRequest)
-			throws SiteWhereException {
-		IDeviceCommand result =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
-						token);
-		if (result == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
-					HttpServletResponse.SC_NOT_FOUND);
-		}
-		return result;
+    /**
+     * Gets a device command by token and throws an exception if not found.
+     * 
+     * @param token
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceCommand assertDeviceCommandByToken(String token, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	IDeviceCommand result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.getDeviceCommandByToken(token);
+	if (result == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	return result;
+    }
 }

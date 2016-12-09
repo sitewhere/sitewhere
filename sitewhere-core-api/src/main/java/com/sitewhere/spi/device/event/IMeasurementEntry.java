@@ -14,17 +14,17 @@ package com.sitewhere.spi.device.event;
  */
 public interface IMeasurementEntry {
 
-	/**
-	 * Get measurement name.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get measurement name.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get measurement value.
-	 * 
-	 * @return
-	 */
-	public Double getValue();
+    /**
+     * Get measurement value.
+     * 
+     * @return
+     */
+    public Double getValue();
 }

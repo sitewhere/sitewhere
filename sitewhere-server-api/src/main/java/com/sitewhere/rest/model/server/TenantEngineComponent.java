@@ -12,93 +12,93 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
- * Used for marshaling information about the component hierarchy so that it can be
- * rendered in a tree.
+ * Used for marshaling information about the component hierarchy so that it can
+ * be rendered in a tree.
  * 
  * @author Derek
  */
 public class TenantEngineComponent implements ITenantEngineComponent {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -5074018616141612387L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -5074018616141612387L;
 
-	/** Component id */
-	private String id;
+    /** Component id */
+    private String id;
 
-	/** Component name */
-	private String name;
+    /** Component name */
+    private String name;
 
-	/** Component type */
-	private LifecycleComponentType type;
+    /** Component type */
+    private LifecycleComponentType type;
 
-	/** Component status */
-	private LifecycleStatus status;
+    /** Component status */
+    private LifecycleStatus status;
 
-	/** Parent component id */
-	private String parentId;
+    /** Parent component id */
+    private String parentId;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ITenantEngineComponent#getId()
-	 */
-	public String getId() {
-		return id;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ITenantEngineComponent#getId()
+     */
+    public String getId() {
+	return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+	this.id = id;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ITenantEngineComponent#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ITenantEngineComponent#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ITenantEngineComponent#getType()
-	 */
-	public LifecycleComponentType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ITenantEngineComponent#getType()
+     */
+    public LifecycleComponentType getType() {
+	return type;
+    }
 
-	public void setType(LifecycleComponentType type) {
-		this.type = type;
-	}
+    public void setType(LifecycleComponentType type) {
+	this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ITenantEngineComponent#getStatus()
-	 */
-	public LifecycleStatus getStatus() {
-		return status;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ITenantEngineComponent#getStatus()
+     */
+    public LifecycleStatus getStatus() {
+	return status;
+    }
 
-	public void setStatus(LifecycleStatus status) {
-		this.status = status;
-	}
+    public void setStatus(LifecycleStatus status) {
+	this.status = status;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ITenantEngineComponent#getParentId()
-	 */
-	public String getParentId() {
-		return parentId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ITenantEngineComponent#getParentId()
+     */
+    public String getParentId() {
+	return parentId;
+    }
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    public void setParentId(String parentId) {
+	this.parentId = parentId;
+    }
 }

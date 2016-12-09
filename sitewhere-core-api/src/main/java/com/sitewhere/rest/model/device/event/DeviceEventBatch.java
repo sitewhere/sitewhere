@@ -29,74 +29,73 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class DeviceEventBatch implements IDeviceEventBatch, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -6779882564394545114L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -6779882564394545114L;
 
-	/** Device hardware id */
-	private String hardwareId;
+    /** Device hardware id */
+    private String hardwareId;
 
-	/** List of measurements requests */
-	private List<DeviceMeasurementsCreateRequest> measurements =
-			new ArrayList<DeviceMeasurementsCreateRequest>();
+    /** List of measurements requests */
+    private List<DeviceMeasurementsCreateRequest> measurements = new ArrayList<DeviceMeasurementsCreateRequest>();
 
-	/** List of location requests */
-	private List<DeviceLocationCreateRequest> locations = new ArrayList<DeviceLocationCreateRequest>();
+    /** List of location requests */
+    private List<DeviceLocationCreateRequest> locations = new ArrayList<DeviceLocationCreateRequest>();
 
-	/** List of alert requests */
-	private List<DeviceAlertCreateRequest> alerts = new ArrayList<DeviceAlertCreateRequest>();
+    /** List of alert requests */
+    private List<DeviceAlertCreateRequest> alerts = new ArrayList<DeviceAlertCreateRequest>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatch#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceEventBatch#getHardwareId()
+     */
+    public String getHardwareId() {
+	return hardwareId;
+    }
 
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
+    public void setHardwareId(String hardwareId) {
+	this.hardwareId = hardwareId;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatch#getMeasurements()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceMeasurementsCreateRequest> getMeasurements() {
-		return (List<IDeviceMeasurementsCreateRequest>) (List<? extends IDeviceMeasurementsCreateRequest>) measurements;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceEventBatch#getMeasurements()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceMeasurementsCreateRequest> getMeasurements() {
+	return (List<IDeviceMeasurementsCreateRequest>) (List<? extends IDeviceMeasurementsCreateRequest>) measurements;
+    }
 
-	public void setMeasurements(List<DeviceMeasurementsCreateRequest> measurements) {
-		this.measurements = measurements;
-	}
+    public void setMeasurements(List<DeviceMeasurementsCreateRequest> measurements) {
+	this.measurements = measurements;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatch#getLocations()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceLocationCreateRequest> getLocations() {
-		return (List<IDeviceLocationCreateRequest>) (List<? extends IDeviceLocationCreateRequest>) locations;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceEventBatch#getLocations()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceLocationCreateRequest> getLocations() {
+	return (List<IDeviceLocationCreateRequest>) (List<? extends IDeviceLocationCreateRequest>) locations;
+    }
 
-	public void setLocations(List<DeviceLocationCreateRequest> locations) {
-		this.locations = locations;
-	}
+    public void setLocations(List<DeviceLocationCreateRequest> locations) {
+	this.locations = locations;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatch#getAlerts()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<IDeviceAlertCreateRequest> getAlerts() {
-		return (List<IDeviceAlertCreateRequest>) (List<? extends IDeviceAlertCreateRequest>) alerts;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceEventBatch#getAlerts()
+     */
+    @SuppressWarnings("unchecked")
+    public List<IDeviceAlertCreateRequest> getAlerts() {
+	return (List<IDeviceAlertCreateRequest>) (List<? extends IDeviceAlertCreateRequest>) alerts;
+    }
 
-	public void setAlerts(List<DeviceAlertCreateRequest> alerts) {
-		this.alerts = alerts;
-	}
+    public void setAlerts(List<DeviceAlertCreateRequest> alerts) {
+	this.alerts = alerts;
+    }
 }

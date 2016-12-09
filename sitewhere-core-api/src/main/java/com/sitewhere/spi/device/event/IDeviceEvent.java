@@ -20,66 +20,66 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
  */
 public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent>, Serializable {
 
-	/**
-	 * Get a string that uniquely identifies the event.
-	 * 
-	 * @return
-	 */
-	public String getId();
+    /**
+     * Get a string that uniquely identifies the event.
+     * 
+     * @return
+     */
+    public String getId();
 
-	/**
-	 * Get event type indicator.
-	 * 
-	 * @return
-	 */
-	public DeviceEventType getEventType();
+    /**
+     * Get event type indicator.
+     * 
+     * @return
+     */
+    public DeviceEventType getEventType();
 
-	/**
-	 * Get token for site the event pertains to.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token for site the event pertains to.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 
-	/**
-	 * Get the device assignment the event pertains to.
-	 * 
-	 * @return
-	 */
-	public String getDeviceAssignmentToken();
+    /**
+     * Get the device assignment the event pertains to.
+     * 
+     * @return
+     */
+    public String getDeviceAssignmentToken();
 
-	/**
-	 * Get assignment type.
-	 * 
-	 * @return
-	 */
-	public DeviceAssignmentType getAssignmentType();
+    /**
+     * Get assignment type.
+     * 
+     * @return
+     */
+    public DeviceAssignmentType getAssignmentType();
 
-	/**
-	 * Get id of asset module.
-	 * 
-	 * @return
-	 */
-	public String getAssetModuleId();
+    /**
+     * Get id of asset module.
+     * 
+     * @return
+     */
+    public String getAssetModuleId();
 
-	/**
-	 * Get id of asset if associated.
-	 * 
-	 * @return
-	 */
-	public String getAssetId();
+    /**
+     * Get id of asset if associated.
+     * 
+     * @return
+     */
+    public String getAssetId();
 
-	/**
-	 * Get the date the event occurred.
-	 * 
-	 * @return
-	 */
-	public Date getEventDate();
+    /**
+     * Get the date the event occurred.
+     * 
+     * @return
+     */
+    public Date getEventDate();
 
-	/**
-	 * Get the date this event was received.
-	 * 
-	 * @return
-	 */
-	public Date getReceivedDate();
+    /**
+     * Get the date this event was received.
+     * 
+     * @return
+     */
+    public Date getReceivedDate();
 }

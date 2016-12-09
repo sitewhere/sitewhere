@@ -17,24 +17,24 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
  */
 public interface IZoneRelationship {
 
-	/**
-	 * Get device location.
-	 * 
-	 * @return
-	 */
-	public IDeviceLocation getLocation();
+    /**
+     * Get device location.
+     * 
+     * @return
+     */
+    public IDeviceLocation getLocation();
 
-	/**
-	 * Get zone.
-	 * 
-	 * @return
-	 */
-	public IZone getZone();
+    /**
+     * Get zone.
+     * 
+     * @return
+     */
+    public IZone getZone();
 
-	/**
-	 * Get containment indicator.
-	 * 
-	 * @return
-	 */
-	public ZoneContainment getContainment();
+    /**
+     * Get containment indicator.
+     * 
+     * @return
+     */
+    public ZoneContainment getContainment();
 }

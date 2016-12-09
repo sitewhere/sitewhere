@@ -26,107 +26,107 @@ import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
 @JsonInclude(Include.NON_NULL)
 public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -7139262971572322676L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -7139262971572322676L;
 
-	/** Token for operation */
-	private String token;
+    /** Token for operation */
+    private String token;
 
-	/** Token for command to execute */
-	private String commandToken;
+    /** Token for command to execute */
+    private String commandToken;
 
-	/** Map of parameter values */
-	private Map<String, String> parameterValues = new HashMap<String, String>();
+    /** Map of parameter values */
+    private Map<String, String> parameterValues = new HashMap<String, String>();
 
-	/** Specification token to limit by */
-	private String specificationToken;
+    /** Specification token to limit by */
+    private String specificationToken;
 
-	/** Group token to limit by */
-	private String groupToken;
+    /** Group token to limit by */
+    private String groupToken;
 
-	/** Groups with role to limit by */
-	private String groupsWithRole;
+    /** Groups with role to limit by */
+    private String groupsWithRole;
 
-	/** Site token to limit by */
-	private String siteToken;
+    /** Site token to limit by */
+    private String siteToken;
 
-	/** Start date for create date window */
-	private Date startDate;
+    /** Start date for create date window */
+    private Date startDate;
 
-	/** End date for create date window */
-	private Date endDate;
+    /** End date for create date window */
+    private Date endDate;
 
-	public String getToken() {
-		return token;
-	}
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	public String getCommandToken() {
-		return commandToken;
-	}
+    public String getCommandToken() {
+	return commandToken;
+    }
 
-	public void setCommandToken(String commandToken) {
-		this.commandToken = commandToken;
-	}
+    public void setCommandToken(String commandToken) {
+	this.commandToken = commandToken;
+    }
 
-	public Map<String, String> getParameterValues() {
-		return parameterValues;
-	}
+    public Map<String, String> getParameterValues() {
+	return parameterValues;
+    }
 
-	public void setParameterValues(Map<String, String> parameterValues) {
-		this.parameterValues = parameterValues;
-	}
+    public void setParameterValues(Map<String, String> parameterValues) {
+	this.parameterValues = parameterValues;
+    }
 
-	public String getSpecificationToken() {
-		return specificationToken;
-	}
+    public String getSpecificationToken() {
+	return specificationToken;
+    }
 
-	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
-	}
+    public void setSpecificationToken(String specificationToken) {
+	this.specificationToken = specificationToken;
+    }
 
-	public String getGroupToken() {
-		return groupToken;
-	}
+    public String getGroupToken() {
+	return groupToken;
+    }
 
-	public void setGroupToken(String groupToken) {
-		this.groupToken = groupToken;
-	}
+    public void setGroupToken(String groupToken) {
+	this.groupToken = groupToken;
+    }
 
-	public String getGroupsWithRole() {
-		return groupsWithRole;
-	}
+    public String getGroupsWithRole() {
+	return groupsWithRole;
+    }
 
-	public void setGroupsWithRole(String groupsWithRole) {
-		this.groupsWithRole = groupsWithRole;
-	}
+    public void setGroupsWithRole(String groupsWithRole) {
+	this.groupsWithRole = groupsWithRole;
+    }
 
-	public String getSiteToken() {
-		return siteToken;
-	}
+    public String getSiteToken() {
+	return siteToken;
+    }
 
-	public void setSiteToken(String siteToken) {
-		this.siteToken = siteToken;
-	}
+    public void setSiteToken(String siteToken) {
+	this.siteToken = siteToken;
+    }
 
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getStartDate() {
-		return startDate;
-	}
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getStartDate() {
+	return startDate;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setStartDate(Date startDate) {
+	this.startDate = startDate;
+    }
 
-	@JsonSerialize(using = JsonDateSerializer.class)
-	public Date getEndDate() {
-		return endDate;
-	}
+    @JsonSerialize(using = JsonDateSerializer.class)
+    public Date getEndDate() {
+	return endDate;
+    }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+    public void setEndDate(Date endDate) {
+	this.endDate = endDate;
+    }
 }

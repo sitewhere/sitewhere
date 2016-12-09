@@ -10,9 +10,14 @@ package com.sitewhere.web;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Handles server shutdown logic when servlet context is destroyed.
@@ -21,29 +26,39 @@ import com.sitewhere.SiteWhere;
  */
 public class ShutdownListener implements ServletContextListener {
 
-	/** Static logger instance */
-	@SuppressWarnings("unused")
-	private static Logger LOGGER = Logger.getLogger(ShutdownListener.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent
-	 * )
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent event) {
-		SiteWhere.getServer().lifecycleStop();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
+     * ServletContextEvent )
+     */
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+	// TODO: What monitors shutdown?
+	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
+	SiteWhere.getServer().lifecycleStop(monitor);
+
+	// Verify shutdown was successful.
+	if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Stopped) {
+	    LOGGER.info("Server shut down successfully.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
-	 * ServletContextEvent)
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent event) {
-	}
+	// Shut down Log4J manually.
+	LoggerContext context = (LoggerContext) LogManager.getContext();
+	Configurator.shutdown(context);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.servlet.ServletContextListener#contextInitialized(javax.servlet.
+     * ServletContextEvent)
+     */
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+    }
 }

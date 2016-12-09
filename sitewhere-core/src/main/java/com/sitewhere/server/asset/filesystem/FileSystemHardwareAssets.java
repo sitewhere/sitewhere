@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Object used to marshal an XML file on the filesystem so it can be used to define a list of hardware assets.
+ * Object used to marshal an XML file on the filesystem so it can be used to
+ * define a list of hardware assets.
  * 
  * @author Derek Adams
  */
@@ -24,14 +25,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileSystemHardwareAssets {
 
-	@XmlElement(name = "hardware-asset")
-	private List<FileSystemHardwareAsset> hardwareAssets = new ArrayList<FileSystemHardwareAsset>();
+    @XmlElement(name = "hardware-asset")
+    private List<FileSystemHardwareAsset> hardwareAssets = new ArrayList<FileSystemHardwareAsset>();
 
-	public List<FileSystemHardwareAsset> getHardwareAssets() {
-		return hardwareAssets;
-	}
+    public List<FileSystemHardwareAsset> getHardwareAssets() {
+	return hardwareAssets;
+    }
 
-	public void setHardwareAssets(List<FileSystemHardwareAsset> hardwareAssets) {
-		this.hardwareAssets = hardwareAssets;
-	}
+    public void setHardwareAssets(List<FileSystemHardwareAsset> hardwareAssets) {
+	this.hardwareAssets = hardwareAssets;
+    }
 }

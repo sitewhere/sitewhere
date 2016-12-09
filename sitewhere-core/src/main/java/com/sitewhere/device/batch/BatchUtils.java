@@ -30,50 +30,46 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class BatchUtils {
 
-	/**
-	 * Get hardware ids based on the given criteria.
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria, ITenant tenant)
-			throws SiteWhereException {
-		if (criteria.getSpecificationToken() == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
-		}
-
-		boolean hasGroup = false;
-		boolean hasGroupsWithRole = false;
-		if ((criteria.getGroupToken() != null) && (criteria.getGroupToken().trim().length() > 0)) {
-			hasGroup = true;
-		}
-		if ((criteria.getGroupsWithRole() != null) && (criteria.getGroupsWithRole().trim().length() > 0)) {
-			hasGroupsWithRole = true;
-		}
-		if (hasGroup && hasGroupsWithRole) {
-			throw new SiteWhereException("Only one of groupToken or groupsWithRole may be specified.");
-		}
-
-		IDeviceSearchCriteria deviceSearch =
-				new DeviceSearchCriteria(criteria.getSpecificationToken(), criteria.getSiteToken(), false, 1,
-						0, criteria.getStartDate(), criteria.getEndDate());
-
-		Collection<IDevice> matches;
-		if (hasGroup) {
-			matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, tenant);
-		} else if (hasGroupsWithRole) {
-			matches =
-					DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
-							tenant);
-		} else {
-			matches =
-					SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, deviceSearch).getResults();
-		}
-		List<String> hardwareIds = new ArrayList<String>();
-		for (IDevice match : matches) {
-			hardwareIds.add(match.getHardwareId());
-		}
-		return hardwareIds;
+    /**
+     * Get hardware ids based on the given criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria, ITenant tenant)
+	    throws SiteWhereException {
+	if (criteria.getSpecificationToken() == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 	}
+
+	boolean hasGroup = false;
+	boolean hasGroupsWithRole = false;
+	if ((criteria.getGroupToken() != null) && (criteria.getGroupToken().trim().length() > 0)) {
+	    hasGroup = true;
+	}
+	if ((criteria.getGroupsWithRole() != null) && (criteria.getGroupsWithRole().trim().length() > 0)) {
+	    hasGroupsWithRole = true;
+	}
+	if (hasGroup && hasGroupsWithRole) {
+	    throw new SiteWhereException("Only one of groupToken or groupsWithRole may be specified.");
+	}
+
+	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getSpecificationToken(),
+		criteria.getSiteToken(), false, 1, 0, criteria.getStartDate(), criteria.getEndDate());
+
+	Collection<IDevice> matches;
+	if (hasGroup) {
+	    matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, tenant);
+	} else if (hasGroupsWithRole) {
+	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch, tenant);
+	} else {
+	    matches = SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, deviceSearch).getResults();
+	}
+	List<String> hardwareIds = new ArrayList<String>();
+	for (IDevice match : matches) {
+	    hardwareIds.add(match.getHardwareId());
+	}
+	return hardwareIds;
+    }
 }

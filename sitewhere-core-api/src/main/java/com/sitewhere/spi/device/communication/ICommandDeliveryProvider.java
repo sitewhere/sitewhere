@@ -19,35 +19,37 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  * 
  * @param <T>
- *            type of data that was encoded by the {@link ICommandExecutionEncoder}/
+ *            type of data that was encoded by the
+ *            {@link ICommandExecutionEncoder}/
  * @param <P>
  *            parameters specific to the delivery provider
  */
 public interface ICommandDeliveryProvider<T, P> extends ITenantLifecycleComponent {
 
-	/**
-	 * Deliver the given encoded invocation. The device, assignment and invocation details
-	 * are included since they may contain metadata important to the delivery mechanism.
-	 * 
-	 * @param nested
-	 * @param assignment
-	 * @param execution
-	 * @param encoded
-	 * @param parameters
-	 * @throws SiteWhereException
-	 */
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, T encoded, P parameters) throws SiteWhereException;
+    /**
+     * Deliver the given encoded invocation. The device, assignment and
+     * invocation details are included since they may contain metadata important
+     * to the delivery mechanism.
+     * 
+     * @param nested
+     * @param assignment
+     * @param execution
+     * @param encoded
+     * @param parameters
+     * @throws SiteWhereException
+     */
+    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
+	    T encoded, P parameters) throws SiteWhereException;
 
-	/**
-	 * Delivers a system command.
-	 * 
-	 * @param nested
-	 * @param assignment
-	 * @param encoded
-	 * @param parameters
-	 * @throws SiteWhereException
-	 */
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, T encoded,
-			P parameters) throws SiteWhereException;
+    /**
+     * Delivers a system command.
+     * 
+     * @param nested
+     * @param assignment
+     * @param encoded
+     * @param parameters
+     * @throws SiteWhereException
+     */
+    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, T encoded,
+	    P parameters) throws SiteWhereException;
 }

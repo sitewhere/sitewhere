@@ -33,8 +33,6 @@ import java.io.Serializable;
  * An interface of factory method to create IPartitionManager
  */
 public interface IPartitionManagerFactory extends Serializable {
-    IPartitionManager create(EventHubReceiverTaskConfig spoutConfig,
-                             String partitionId,
-                             IStateStore stateStore,
-                             IEventHubReceiver receiver);
+    IPartitionManager create(EventHubReceiverTaskConfig spoutConfig, String partitionId, IStateStore stateStore,
+	    IEventHubReceiver receiver);
 }

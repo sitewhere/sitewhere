@@ -16,43 +16,43 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public enum PayloadEncoding {
 
-	Json(Bytes.toBytes("j")),
+    Json(Bytes.toBytes("j")),
 
-	ProtocolBuffers(Bytes.toBytes("p"));
+    ProtocolBuffers(Bytes.toBytes("p"));
 
-	/** Type indicator */
-	private byte[] indicator;
+    /** Type indicator */
+    private byte[] indicator;
 
-	/**
-	 * Create a unique id type with the given byte value.
-	 * 
-	 * @param value
-	 */
-	private PayloadEncoding(byte[] indicator) {
-		this.indicator = indicator;
+    /**
+     * Create a unique id type with the given byte value.
+     * 
+     * @param value
+     */
+    private PayloadEncoding(byte[] indicator) {
+	this.indicator = indicator;
+    }
+
+    /**
+     * Get the UID type indicator.
+     * 
+     * @return
+     */
+    public byte[] getIndicator() {
+	return indicator;
+    }
+
+    /**
+     * Get encoding based on indicator value.
+     * 
+     * @param indicator
+     * @return
+     */
+    public static PayloadEncoding getEncoding(byte[] indicator) {
+	for (PayloadEncoding encoding : PayloadEncoding.values()) {
+	    if (Bytes.equals(indicator, encoding.getIndicator())) {
+		return encoding;
+	    }
 	}
-
-	/**
-	 * Get the UID type indicator.
-	 * 
-	 * @return
-	 */
-	public byte[] getIndicator() {
-		return indicator;
-	}
-
-	/**
-	 * Get encoding based on indicator value.
-	 * 
-	 * @param indicator
-	 * @return
-	 */
-	public static PayloadEncoding getEncoding(byte[] indicator) {
-		for (PayloadEncoding encoding : PayloadEncoding.values()) {
-			if (Bytes.equals(indicator, encoding.getIndicator())) {
-				return encoding;
-			}
-		}
-		return null;
-	}
+	return null;
+    }
 }

@@ -14,9 +14,9 @@ package com.sitewhere.spi.device.event;
  */
 public enum AlertSource {
 
-	/** Device generated */
-	Device,
+    /** Device generated */
+    Device,
 
-	/** System generated */
-	System;
+    /** System generated */
+    System;
 }

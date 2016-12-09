@@ -16,31 +16,31 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  */
 public interface ITenantGroup extends IMetadataProviderEntity {
 
-	/**
-	 * Get unique token for group.
-	 * 
-	 * @return
-	 */
-	public String getToken();
+    /**
+     * Get unique token for group.
+     * 
+     * @return
+     */
+    public String getToken();
 
-	/**
-	 * Get name for group.
-	 * 
-	 * @return
-	 */
-	public String getName();
+    /**
+     * Get name for group.
+     * 
+     * @return
+     */
+    public String getName();
 
-	/**
-	 * Get description for group.
-	 * 
-	 * @return
-	 */
-	public String getDescription();
+    /**
+     * Get description for group.
+     * 
+     * @return
+     */
+    public String getDescription();
 
-	/**
-	 * Get URL for image associated with group.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
+    /**
+     * Get URL for image associated with group.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 }

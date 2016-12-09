@@ -19,17 +19,17 @@ import java.util.Date;
  */
 public interface IChartEntry<T> extends Comparable<IChartEntry<T>>, Serializable {
 
-	/**
-	 * Get value for the entry.
-	 * 
-	 * @return
-	 */
-	public T getValue();
+    /**
+     * Get value for the entry.
+     * 
+     * @return
+     */
+    public T getValue();
 
-	/**
-	 * Get date the value was measured.
-	 * 
-	 * @return
-	 */
-	public Date getMeasurementDate();
+    /**
+     * Get date the value was measured.
+     * 
+     * @return
+     */
+    public Date getMeasurementDate();
 }

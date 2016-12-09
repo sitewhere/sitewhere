@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -23,83 +24,116 @@ import com.sitewhere.spi.device.ISite;
 @JsonInclude(Include.NON_NULL)
 public class Site extends MetadataProviderEntity implements ISite, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 3080612757299957486L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 3080612757299957486L;
 
-	/** Unique token */
-	private String token;
+    /** Unique token */
+    private String token;
 
-	/** Site name */
-	private String name;
+    /** Site name */
+    private String name;
 
-	/** Site description */
-	private String description;
+    /** Site description */
+    private String description;
 
-	/** Image URL */
-	private String imageUrl;
+    /** Image URL */
+    private String imageUrl;
 
-	/** Map data */
-	private SiteMapData map = new SiteMapData();
+    /** Map data */
+    private SiteMapData map = new SiteMapData();
 
-	public String getToken() {
-		return token;
-	}
+    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    /** List of zones for site */
+    private List<Zone> zones;
 
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.ISite#getToken()
+     */
+    public String getToken() {
+	return token;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.ISite#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.ISite#getDescription()
+     */
+    public String getDescription() {
+	return description;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.ISite#getMap()
-	 */
-	public SiteMapData getMap() {
-		return map;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.ISite#getImageUrl()
+     */
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setMap(SiteMapData map) {
-		this.map = map;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static Site copy(ISite input) throws SiteWhereException {
-		Site result = new Site();
-		result.setToken(input.getToken());
-		result.setName(input.getName());
-		result.setDescription(input.getDescription());
-		result.setImageUrl(input.getImageUrl());
-		result.setMap(SiteMapData.copy(input.getMap()));
-		MetadataProviderEntity.copy(input, result);
-		return result;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.ISite#getMap()
+     */
+    public SiteMapData getMap() {
+	return map;
+    }
+
+    public void setMap(SiteMapData map) {
+	this.map = map;
+    }
+
+    public List<Zone> getZones() {
+	return zones;
+    }
+
+    public void setZones(List<Zone> zones) {
+	this.zones = zones;
+    }
+
+    /**
+     * Create a copy of an SPI object. Used by web services for marshaling.
+     * 
+     * @param input
+     * @return
+     */
+    public static Site copy(ISite input) throws SiteWhereException {
+	Site result = new Site();
+	result.setToken(input.getToken());
+	result.setName(input.getName());
+	result.setDescription(input.getDescription());
+	result.setImageUrl(input.getImageUrl());
+	result.setMap(SiteMapData.copy(input.getMap()));
+	MetadataProviderEntity.copy(input, result);
+	return result;
+    }
 }

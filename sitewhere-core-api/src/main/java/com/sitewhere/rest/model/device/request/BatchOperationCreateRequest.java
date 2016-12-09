@@ -23,87 +23,92 @@ import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
  */
 public class BatchOperationCreateRequest implements IBatchOperationCreateRequest, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 276630436113821199L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = 276630436113821199L;
 
-	/** Unqiue token */
-	private String token;
+    /** Unqiue token */
+    private String token;
 
-	/** Operation type requested */
-	private OperationType operationType;
+    /** Operation type requested */
+    private OperationType operationType;
 
-	/** Operation parameters */
-	private Map<String, String> parameters = new HashMap<String, String>();
+    /** Operation parameters */
+    private Map<String, String> parameters = new HashMap<String, String>();
 
-	/** List of hardware ids of affected devices */
-	private List<String> hardwareIds = new ArrayList<String>();
+    /** List of hardware ids of affected devices */
+    private List<String> hardwareIds = new ArrayList<String>();
 
-	/** Metadata values */
-	private Map<String, String> metadata;
+    /** Metadata values */
+    private Map<String, String> metadata;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getToken()
-	 */
-	public String getToken() {
-		return token;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getToken()
+     */
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getOperationType()
-	 */
-	public OperationType getOperationType() {
-		return operationType;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
+     * getOperationType()
+     */
+    public OperationType getOperationType() {
+	return operationType;
+    }
 
-	public void setOperationType(OperationType operationType) {
-		this.operationType = operationType;
-	}
+    public void setOperationType(OperationType operationType) {
+	this.operationType = operationType;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getParameters()
-	 */
-	public Map<String, String> getParameters() {
-		return parameters;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
+     * getParameters()
+     */
+    public Map<String, String> getParameters() {
+	return parameters;
+    }
 
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
-	}
+    public void setParameters(Map<String, String> parameters) {
+	this.parameters = parameters;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getHardwareIds()
-	 */
-	public List<String> getHardwareIds() {
-		return hardwareIds;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
+     * getHardwareIds()
+     */
+    public List<String> getHardwareIds() {
+	return hardwareIds;
+    }
 
-	public void setHardwareIds(List<String> hardwareIds) {
-		this.hardwareIds = hardwareIds;
-	}
+    public void setHardwareIds(List<String> hardwareIds) {
+	this.hardwareIds = hardwareIds;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getMetadata()
-	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getMetadata
+     * ()
+     */
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
 
-	public void setMetadata(Map<String, String> metadata) {
-		this.metadata = metadata;
-	}
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
 }

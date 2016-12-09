@@ -18,25 +18,25 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class XmlContent {
 
-	/** XML local name */
-	private String name;
+    /** XML local name */
+    private String name;
 
-	/** XML namespace */
-	private String namespace;
+    /** XML namespace */
+    private String namespace;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public String getNamespace() {
-		return namespace;
-	}
+    public String getNamespace() {
+	return namespace;
+    }
 
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
+    public void setNamespace(String namespace) {
+	this.namespace = namespace;
+    }
 }

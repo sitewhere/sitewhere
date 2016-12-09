@@ -7,7 +7,8 @@
  */
 package com.sitewhere.server.scheduling;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.server.SiteWhereServer;
@@ -16,83 +17,81 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
 
 /**
- * Used to load default schedule data into the datastore. The server only offers this
- * functionality if no schedules already exist.
+ * Used to load default schedule data into the datastore. The server only offers
+ * this functionality if no schedules already exist.
  * 
  * @author Derek
  */
 public class DefaultScheduleModelInitializer implements IScheduleModelInitializer {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultScheduleModelInitializer.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Schedule management implementation */
-	private IScheduleManagement scheduleManagement;
+    /** Schedule management implementation */
+    private IScheduleManagement scheduleManagement;
 
-	/** Indiates whether model should be initialized if no console is available for input */
-	private boolean initializeIfNoConsole = false;
+    /**
+     * Indiates whether model should be initialized if no console is available
+     * for input
+     */
+    private boolean initializeIfNoConsole = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.scheduling.IScheduleModelInitializer#initialize(com.sitewhere
-	 * .spi.scheduling.IScheduleManagement)
-	 */
-	@Override
-	public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
-		this.scheduleManagement = scheduleManagement;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.scheduling.IScheduleModelInitializer#initialize(
+     * com.sitewhere .spi.scheduling.IScheduleManagement)
+     */
+    @Override
+    public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
+	this.scheduleManagement = scheduleManagement;
 
-		// Use the system account for logging "created by" on created elements.
-		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
+	// Use the system account for logging "created by" on created elements.
+	SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
-		createDefaultSchedules();
+	createDefaultSchedules();
 
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+	SecurityContextHolder.getContext().setAuthentication(null);
+    }
 
-	/**
-	 * Create schedules included by default.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	protected void createDefaultSchedules() throws SiteWhereException {
-		LOGGER.info("Creating default schedule data.");
-		getScheduleManagement().createSchedule(
-				ScheduleHelper.createSimpleSchedule("95ff6a81-3d92-4b10-b8af-957c172ad97b",
-						"Every thirty seconds", null, null, new Long(30 * 1000), 0));
-		getScheduleManagement().createSchedule(
-				ScheduleHelper.createSimpleSchedule("20f5e855-d8a2-431d-a68b-61f4549dbb80", "Every minute",
-						null, null, new Long(60 * 1000), 0));
-		getScheduleManagement().createSchedule(
-				ScheduleHelper.createSimpleSchedule("2c82d6d5-6a0a-48be-99ab-7451a69e3ba7",
-						"Every 10 minutes", null, null, new Long(10 * 60 * 1000), 0));
-		getScheduleManagement().createSchedule(
-				ScheduleHelper.createCronSchedule("ee23196c-5bc3-4685-8c9d-6dcbb3062ec2", "On the half hour",
-						null, null, "0 0/30 * 1/1 * ? *"));
-		getScheduleManagement().createSchedule(
-				ScheduleHelper.createCronSchedule("de305d54-75b4-431b-adb2-eb6b9e546014", "On the hour",
-						null, null, "0 0 0/1 1/1 * ? *"));
-	}
+    /**
+     * Create schedules included by default.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void createDefaultSchedules() throws SiteWhereException {
+	LOGGER.info("Creating default schedule data.");
+	getScheduleManagement().createSchedule(ScheduleHelper.createSimpleSchedule(
+		"95ff6a81-3d92-4b10-b8af-957c172ad97b", "Every thirty seconds", null, null, new Long(30 * 1000), 0));
+	getScheduleManagement().createSchedule(ScheduleHelper.createSimpleSchedule(
+		"20f5e855-d8a2-431d-a68b-61f4549dbb80", "Every minute", null, null, new Long(60 * 1000), 0));
+	getScheduleManagement().createSchedule(ScheduleHelper.createSimpleSchedule(
+		"2c82d6d5-6a0a-48be-99ab-7451a69e3ba7", "Every 10 minutes", null, null, new Long(10 * 60 * 1000), 0));
+	getScheduleManagement().createSchedule(ScheduleHelper.createCronSchedule("ee23196c-5bc3-4685-8c9d-6dcbb3062ec2",
+		"On the half hour", null, null, "0 0/30 * 1/1 * ? *"));
+	getScheduleManagement().createSchedule(ScheduleHelper.createCronSchedule("de305d54-75b4-431b-adb2-eb6b9e546014",
+		"On the hour", null, null, "0 0 0/1 1/1 * ? *"));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
-	 */
-	public boolean isInitializeIfNoConsole() {
-		return initializeIfNoConsole;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
+     */
+    public boolean isInitializeIfNoConsole() {
+	return initializeIfNoConsole;
+    }
 
-	public void setInitializeIfNoConsole(boolean initializeIfNoConsole) {
-		this.initializeIfNoConsole = initializeIfNoConsole;
-	}
+    public void setInitializeIfNoConsole(boolean initializeIfNoConsole) {
+	this.initializeIfNoConsole = initializeIfNoConsole;
+    }
 
-	public IScheduleManagement getScheduleManagement() {
-		return scheduleManagement;
-	}
+    public IScheduleManagement getScheduleManagement() {
+	return scheduleManagement;
+    }
 
-	public void setScheduleManagement(IScheduleManagement scheduleManagement) {
-		this.scheduleManagement = scheduleManagement;
-	}
+    public void setScheduleManagement(IScheduleManagement scheduleManagement) {
+	this.scheduleManagement = scheduleManagement;
+    }
 }

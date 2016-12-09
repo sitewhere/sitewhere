@@ -14,24 +14,24 @@ package com.sitewhere.spi.device.event.request;
  */
 public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequest {
 
-	/**
-	 * Get hardware id to be registered.
-	 * 
-	 * @return
-	 */
-	public String getHardwareId();
+    /**
+     * Get hardware id to be registered.
+     * 
+     * @return
+     */
+    public String getHardwareId();
 
-	/**
-	 * Get token for device hardware specification.
-	 * 
-	 * @return
-	 */
-	public String getSpecificationToken();
+    /**
+     * Get token for device hardware specification.
+     * 
+     * @return
+     */
+    public String getSpecificationToken();
 
-	/**
-	 * Get token for site to which device should be assigned.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
+    /**
+     * Get token for site to which device should be assigned.
+     * 
+     * @return
+     */
+    public String getSiteToken();
 }

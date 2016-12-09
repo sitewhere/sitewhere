@@ -15,45 +15,45 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
- * Holds event state for a device assignment including most recent location, measurements
- * and alerts.
+ * Holds event state for a device assignment including most recent location,
+ * measurements and alerts.
  * 
  * @author Derek
  */
 public interface IDeviceAssignmentState {
 
-	/**
-	 * Date of last interaction with device.
-	 * 
-	 * @return
-	 */
-	public Date getLastInteractionDate();
+    /**
+     * Date of last interaction with device.
+     * 
+     * @return
+     */
+    public Date getLastInteractionDate();
 
-	/**
-	 * Date when presence was determined to be missing.
-	 * 
-	 * @return
-	 */
-	public Date getPresenceMissingDate();
+    /**
+     * Date when presence was determined to be missing.
+     * 
+     * @return
+     */
+    public Date getPresenceMissingDate();
 
-	/**
-	 * Get last device location.
-	 * 
-	 * @return
-	 */
-	public IDeviceLocation getLastLocation();
+    /**
+     * Get last device location.
+     * 
+     * @return
+     */
+    public IDeviceLocation getLastLocation();
 
-	/**
-	 * Get last measurement for each measurement id.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceMeasurement> getLatestMeasurements();
+    /**
+     * Get last measurement for each measurement id.
+     * 
+     * @return
+     */
+    public List<IDeviceMeasurement> getLatestMeasurements();
 
-	/**
-	 * Get last alert for each alert type.
-	 * 
-	 * @return
-	 */
-	public List<IDeviceAlert> getLatestAlerts();
+    /**
+     * Get last alert for each alert type.
+     * 
+     * @return
+     */
+    public List<IDeviceAlert> getLatestAlerts();
 }

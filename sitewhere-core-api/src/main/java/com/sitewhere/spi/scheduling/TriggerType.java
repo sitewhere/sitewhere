@@ -14,9 +14,9 @@ package com.sitewhere.spi.scheduling;
  */
 public enum TriggerType {
 
-	/** Simple trigger */
-	SimpleTrigger,
+    /** Simple trigger */
+    SimpleTrigger,
 
-	/** Trigger based on cron expression */
-	CronTrigger;
+    /** Trigger based on cron expression */
+    CronTrigger;
 }

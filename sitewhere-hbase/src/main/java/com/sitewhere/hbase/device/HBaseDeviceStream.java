@@ -11,12 +11,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.log4j.Logger;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
@@ -45,167 +46,166 @@ import com.sitewhere.spi.server.debug.TracerCategory;
  */
 public class HBaseDeviceStream {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceStream.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/**
-	 * Create a new {@link IDeviceStream}.
-	 * 
-	 * @param context
-	 * @param assignmentToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static IDeviceStream createDeviceStream(IHBaseContext context, String assignmentToken,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "createDeviceStream (HBase)", LOGGER);
-		try {
-			// Verify that the assignment token is valid.
-			DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
-			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
-			if (assignment == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-			}
+    /**
+     * Create a new {@link IDeviceStream}.
+     * 
+     * @param context
+     * @param assignmentToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IDeviceStream createDeviceStream(IHBaseContext context, String assignmentToken,
+	    IDeviceStreamCreateRequest request) throws SiteWhereException {
+	Tracer.push(TracerCategory.DeviceManagementApiCall, "createDeviceStream (HBase)", LOGGER);
+	try {
+	    // Verify that the assignment token is valid.
+	    DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
+	    byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	    if (assignment == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+	    }
 
-			// Verify that the device stream does not exist.
-			DeviceStream stream =
-					HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
-			if (stream != null) {
-				throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
-			}
+	    // Verify that the device stream does not exist.
+	    DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
+	    if (stream != null) {
+		throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
+	    }
 
-			byte[] streamKey = getDeviceStreamKey(assnKey, request.getStreamId());
+	    byte[] streamKey = getDeviceStreamKey(assnKey, request.getStreamId());
 
-			DeviceStream newStream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
-			byte[] payload = context.getPayloadMarshaler().encode(newStream);
+	    DeviceStream newStream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
+	    byte[] payload = context.getPayloadMarshaler().encode(newStream);
 
-			HTableInterface sites = null;
-			try {
-				sites = getSitesTableInterface(context);
-				Put put = new Put(streamKey);
-				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-				sites.put(put);
-			} catch (IOException e) {
-				throw new SiteWhereException("Unable to create device stream.", e);
-			} finally {
-				HBaseUtils.closeCleanly(sites);
-			}
+	    Table sites = null;
+	    try {
+		sites = getSitesTableInterface(context);
+		Put put = new Put(streamKey);
+		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+		sites.put(put);
+	    } catch (IOException e) {
+		throw new SiteWhereException("Unable to create device stream.", e);
+	    } finally {
+		HBaseUtils.closeCleanly(sites);
+	    }
 
-			return newStream;
-		} finally {
-			Tracer.pop(LOGGER);
-		}
+	    return newStream;
+	} finally {
+	    Tracer.pop(LOGGER);
+	}
+    }
+
+    /**
+     * Get a {@link DeviceStream} based on assignment and stream id.
+     * 
+     * @param context
+     * @param assignmentToken
+     * @param streamId
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStream getDeviceStream(IHBaseContext context, String assignmentToken, String streamId)
+	    throws SiteWhereException {
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	if (assnKey == null) {
+	    return null;
+	}
+	byte[] streamKey = getDeviceStreamKey(assnKey, streamId);
+
+	Table sites = null;
+	try {
+	    sites = getSitesTableInterface(context);
+	    Get get = new Get(streamKey);
+	    HBaseUtils.addPayloadFields(get);
+	    Result result = sites.get(get);
+
+	    byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+	    byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+	    if ((type == null) || (payload == null)) {
+		return null;
+	    }
+
+	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceStream(payload);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to load device stream by token.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(sites);
+	}
+    }
+
+    /**
+     * List all device streams for an assignment.
+     * 
+     * @param context
+     * @param assignmentToken
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context, String assignmentToken,
+	    ISearchCriteria criteria) throws SiteWhereException {
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	if (assnKey == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
 
-	/**
-	 * Get a {@link DeviceStream} based on assignment and stream id.
-	 * 
-	 * @param context
-	 * @param assignmentToken
-	 * @param streamId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceStream getDeviceStream(IHBaseContext context, String assignmentToken, String streamId)
-			throws SiteWhereException {
-		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
-		if (assnKey == null) {
-			return null;
+	Table sites = null;
+	ResultScanner scanner = null;
+	try {
+	    sites = getSitesTableInterface(context);
+	    Scan scan = new Scan();
+	    scan.setStartRow(HBaseDeviceAssignment.getStreamRowkey(assnKey));
+	    scan.setStopRow(HBaseDeviceAssignment.getEndMarkerKey(assnKey));
+	    scanner = sites.getScanner(scan);
+
+	    Pager<IDeviceStream> pager = new Pager<IDeviceStream>(criteria);
+	    for (Result result : scanner) {
+		byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+		byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
+		if ((payloadType != null) && (payload != null)) {
+		    pager.process((IDeviceStream) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType)
+			    .decodeDeviceStream(payload));
 		}
-		byte[] streamKey = getDeviceStreamKey(assnKey, streamId);
-
-		HTableInterface sites = null;
-		try {
-			sites = getSitesTableInterface(context);
-			Get get = new Get(streamKey);
-			HBaseUtils.addPayloadFields(get);
-			Result result = sites.get(get);
-
-			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
-			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-			if ((type == null) || (payload == null)) {
-				return null;
-			}
-
-			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceStream(payload);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to load device stream by token.", e);
-		} finally {
-			HBaseUtils.closeCleanly(sites);
-		}
+	    }
+	    return new SearchResults<IDeviceStream>(pager.getResults(), pager.getTotal());
+	} catch (IOException e) {
+	    throw new SiteWhereException("Error scanning device stream rows.", e);
+	} finally {
+	    if (scanner != null) {
+		scanner.close();
+	    }
+	    HBaseUtils.closeCleanly(sites);
 	}
+    }
 
-	/**
-	 * List all device streams for an assignment.
-	 * 
-	 * @param context
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context,
-			String assignmentToken, ISearchCriteria criteria) throws SiteWhereException {
-		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
-		if (assnKey == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-		}
+    /**
+     * Get a
+     * 
+     * @param assnKey
+     * @param streamId
+     * @return
+     */
+    public static byte[] getDeviceStreamKey(byte[] assnKey, String streamId) {
+	byte[] streamBase = HBaseDeviceAssignment.getStreamRowkey(assnKey);
+	byte[] streamIdBytes = streamId.getBytes();
+	ByteBuffer buffer = ByteBuffer.allocate(streamBase.length + streamIdBytes.length);
+	buffer.put(streamBase);
+	buffer.put(streamIdBytes);
+	return buffer.array();
+    }
 
-		HTableInterface sites = null;
-		ResultScanner scanner = null;
-		try {
-			sites = getSitesTableInterface(context);
-			Scan scan = new Scan();
-			scan.setStartRow(HBaseDeviceAssignment.getStreamRowkey(assnKey));
-			scan.setStopRow(HBaseDeviceAssignment.getEndMarkerKey(assnKey));
-			scanner = sites.getScanner(scan);
-
-			Pager<IDeviceStream> pager = new Pager<IDeviceStream>(criteria);
-			for (Result result : scanner) {
-				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
-				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-
-				if ((payloadType != null) && (payload != null)) {
-					pager.process((IDeviceStream) PayloadMarshalerResolver.getInstance().getMarshaler(
-							payloadType).decodeDeviceStream(payload));
-				}
-			}
-			return new SearchResults<IDeviceStream>(pager.getResults(), pager.getTotal());
-		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device stream rows.", e);
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-			HBaseUtils.closeCleanly(sites);
-		}
-	}
-
-	/**
-	 * Get a
-	 * 
-	 * @param assnKey
-	 * @param streamId
-	 * @return
-	 */
-	public static byte[] getDeviceStreamKey(byte[] assnKey, String streamId) {
-		byte[] streamBase = HBaseDeviceAssignment.getStreamRowkey(assnKey);
-		byte[] streamIdBytes = streamId.getBytes();
-		ByteBuffer buffer = ByteBuffer.allocate(streamBase.length + streamIdBytes.length);
-		buffer.put(streamBase);
-		buffer.put(streamIdBytes);
-		return buffer.array();
-	}
-
-	/**
-	 * Get sites table based on context.
-	 * 
-	 * @param context
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
-		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
-	}
+    /**
+     * Get sites table based on context.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static Table getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+	return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
+    }
 }

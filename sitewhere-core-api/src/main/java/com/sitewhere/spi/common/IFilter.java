@@ -14,11 +14,11 @@ package com.sitewhere.spi.common;
  */
 public interface IFilter<T> {
 
-	/**
-	 * Indicates whether the item is excluded.
-	 * 
-	 * @param item
-	 * @return
-	 */
-	public boolean isExcluded(T item);
+    /**
+     * Indicates whether the item is excluded.
+     * 
+     * @param item
+     * @return
+     */
+    public boolean isExcluded(T item);
 }

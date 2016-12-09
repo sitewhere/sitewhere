@@ -7,9 +7,8 @@
  */
 package com.sitewhere.spi.configuration;
 
-import java.net.URI;
-
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.resource.IResource;
 
 /**
  * Pluggable resolver for interacting with global configuration data.
@@ -18,84 +17,96 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface ITenantConfigurationResolver {
 
-	/**
-	 * Get the global configuration resolver.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IGlobalConfigurationResolver getGlobalConfigurationResolver() throws SiteWhereException;
+    /**
+     * Get the global configuration resolver.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IGlobalConfigurationResolver getGlobalConfigurationResolver() throws SiteWhereException;
 
-	/**
-	 * Indicates a configuration exists for the tenant.
-	 * 
-	 * @return
-	 */
-	public boolean hasValidConfiguration();
+    /**
+     * Indicates a configuration exists for the tenant.
+     * 
+     * @return
+     */
+    public boolean hasValidConfiguration();
 
-	/**
-	 * Indicates if a staged configuration exists for the tenant.
-	 * 
-	 * @return
-	 */
-	public boolean hasStagedConfiguration();
+    /**
+     * Indicates if a staged configuration exists for the tenant.
+     * 
+     * @return
+     */
+    public boolean hasStagedConfiguration();
 
-	/**
-	 * Get URI for locating asset resources.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getAssetResourcesRoot() throws SiteWhereException;
+    /**
+     * Get tenant resource that corresponds to path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource getResourceForPath(String path) throws SiteWhereException;
 
-	/**
-	 * Get URI for locating script resources.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getScriptResourcesRoot() throws SiteWhereException;
+    /**
+     * Get an asset resource based on relative path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource getAssetResource(String path) throws SiteWhereException;
 
-	/**
-	 * Gets the active configuration for a given tenant.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getActiveTenantConfiguration() throws SiteWhereException;
+    /**
+     * Get a script resource based on relative path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource getScriptResource(String path) throws SiteWhereException;
 
-	/**
-	 * Create a default configuration for a new tenant.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] createDefaultTenantConfiguration() throws SiteWhereException;
+    /**
+     * Gets the active configuration resource for a given tenant.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource getActiveTenantConfiguration() throws SiteWhereException;
 
-	/**
-	 * Gets the staged configuration for a given tenant. Returns null if no configuration
-	 * is staged.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getStagedTenantConfiguration() throws SiteWhereException;
+    /**
+     * Copies all resources from the tenant template into the tenant.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource copyTenantTemplateResources() throws SiteWhereException;
 
-	/**
-	 * Stage a new tenant configuration. This stores the new configuration separately from
-	 * the active configuration. The staged configuration will be made active the next
-	 * time the tenant is restarted.
-	 * 
-	 * @param configuration
-	 * @throws SiteWhereException
-	 */
-	public void stageTenantConfiguration(byte[] configuration) throws SiteWhereException;
+    /**
+     * Gets the staged configuration resource for a given tenant. Returns null
+     * if no configuration is staged.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource getStagedTenantConfiguration() throws SiteWhereException;
 
-	/**
-	 * Transition the staged tenant configuration to the active tenant configuration,
-	 * backing up the active configuration in the process.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void transitionStagedToActiveTenantConfiguration() throws SiteWhereException;
+    /**
+     * Stage a new tenant configuration. This stores the new configuration
+     * separately from the active configuration. The staged configuration will
+     * be made active the next time the tenant is restarted.
+     * 
+     * @param content
+     * @return
+     * @throws SiteWhereException
+     */
+    public IResource stageTenantConfiguration(byte[] content) throws SiteWhereException;
+
+    /**
+     * Transition the staged tenant configuration to the active tenant
+     * configuration, backing up the active configuration in the process.
+     * 
+     * @throws SiteWhereException
+     */
+    public void transitionStagedToActiveTenantConfiguration() throws SiteWhereException;
 }

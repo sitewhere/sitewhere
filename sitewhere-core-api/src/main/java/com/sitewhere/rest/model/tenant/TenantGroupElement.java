@@ -21,51 +21,51 @@ import com.sitewhere.spi.tenant.ITenantGroupElement;
 @JsonInclude(Include.NON_NULL)
 public class TenantGroupElement implements ITenantGroupElement, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = -4104618841338632112L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -4104618841338632112L;
 
-	/** Tenant group associated with element */
-	private String tenantGroupToken;
+    /** Tenant group associated with element */
+    private String tenantGroupToken;
 
-	/** Tenant associated with element */
-	private String tenantId;
+    /** Tenant associated with element */
+    private String tenantId;
 
-	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
-	/** Device specification */
-	private Tenant tenant;
+    /** Device specification */
+    private Tenant tenant;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantGroupToken()
-	 */
-	public String getTenantGroupToken() {
-		return tenantGroupToken;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantGroupToken()
+     */
+    public String getTenantGroupToken() {
+	return tenantGroupToken;
+    }
 
-	public void setTenantGroupToken(String tenantGroupToken) {
-		this.tenantGroupToken = tenantGroupToken;
-	}
+    public void setTenantGroupToken(String tenantGroupToken) {
+	this.tenantGroupToken = tenantGroupToken;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantId()
-	 */
-	public String getTenantId() {
-		return tenantId;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantId()
+     */
+    public String getTenantId() {
+	return tenantId;
+    }
 
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
+    public void setTenantId(String tenantId) {
+	this.tenantId = tenantId;
+    }
 
-	public Tenant getTenant() {
-		return tenant;
-	}
+    public Tenant getTenant() {
+	return tenant;
+    }
 
-	public void setTenant(Tenant tenant) {
-		this.tenant = tenant;
-	}
+    public void setTenant(Tenant tenant) {
+	this.tenant = tenant;
+    }
 }

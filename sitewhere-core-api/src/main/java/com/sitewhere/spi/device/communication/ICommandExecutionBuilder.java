@@ -14,21 +14,21 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Used to build an {@link IDeviceCommandExecution} from an {@link IDeviceCommand} and a
- * {@link IDeviceCommandInvocation}.
+ * Used to build an {@link IDeviceCommandExecution} from an
+ * {@link IDeviceCommand} and a {@link IDeviceCommandInvocation}.
  * 
  * @author Derek
  */
 public interface ICommandExecutionBuilder extends ILifecycleComponent {
 
-	/**
-	 * Create an execution from a command and invocation details.
-	 * 
-	 * @param command
-	 * @param invocation
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
-			throws SiteWhereException;
+    /**
+     * Create an execution from a command and invocation details.
+     * 
+     * @param command
+     * @param invocation
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException;
 }

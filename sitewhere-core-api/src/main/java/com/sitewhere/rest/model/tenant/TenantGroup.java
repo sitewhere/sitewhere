@@ -20,80 +20,80 @@ import com.sitewhere.spi.tenant.ITenantGroup;
  */
 public class TenantGroup extends MetadataProviderEntity implements ITenantGroup, Serializable {
 
-	/** Serial version UID */
-	private static final long serialVersionUID = 8286511120595519596L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8286511120595519596L;
 
-	/** Unique tenant group token */
-	private String token;
+    /** Unique tenant group token */
+    private String token;
 
-	/** Group name */
-	private String name;
+    /** Group name */
+    private String name;
 
-	/** Group description */
-	private String description;
+    /** Group description */
+    private String description;
 
-	/** Group image URL */
-	private String imageUrl;
+    /** Group image URL */
+    private String imageUrl;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroup#getToken()
-	 */
-	public String getToken() {
-		return token;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroup#getToken()
+     */
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroup#getName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroup#getName()
+     */
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroup#getDescription()
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroup#getDescription()
+     */
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroup#getImageUrl()
-	 */
-	public String getImageUrl() {
-		return imageUrl;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.tenant.ITenantGroup#getImageUrl()
+     */
+    public String getImageUrl() {
+	return imageUrl;
+    }
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
 
-	public static TenantGroup copy(ITenantGroup input) throws SiteWhereException {
-		TenantGroup result = new TenantGroup();
-		result.setToken(input.getToken());
-		result.setName(input.getName());
-		result.setDescription(input.getDescription());
-		result.setImageUrl(input.getImageUrl());
-		MetadataProviderEntity.copy(input, result);
-		return result;
-	}
+    public static TenantGroup copy(ITenantGroup input) throws SiteWhereException {
+	TenantGroup result = new TenantGroup();
+	result.setToken(input.getToken());
+	result.setName(input.getName());
+	result.setDescription(input.getDescription());
+	result.setImageUrl(input.getImageUrl());
+	MetadataProviderEntity.copy(input, result);
+	return result;
+    }
 }

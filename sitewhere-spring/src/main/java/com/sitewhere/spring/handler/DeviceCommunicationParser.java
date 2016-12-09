@@ -27,200 +27,202 @@ import com.sitewhere.spi.device.communication.IDeviceCommunication;
  */
 public class DeviceCommunicationParser extends SiteWhereBeanDefinitionParser {
 
-	public DeviceCommunicationParser() {
-		getBeanMappings().put(IDeviceCommunication.class, DefaultDeviceCommunication.class);
+    public DeviceCommunicationParser() {
+	getBeanMappings().put(IDeviceCommunication.class, DefaultDeviceCommunication.class);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
+     */
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	BeanDefinitionBuilder communication = getBuilderFor(IDeviceCommunication.class);
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown communication subsystem element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case EventSources: {
+		ManagedList<?> sources = parseEventSources(child, context);
+		communication.addPropertyValue("inboundEventSources", sources);
+		break;
+	    }
+	    case InboundProcessingStrategy: {
+		Object strategy = parseInboundProcessingStrategy(child, context);
+		communication.addPropertyValue("inboundProcessingStrategy", strategy);
+		break;
+	    }
+	    case OutboundProcessingStrategy: {
+		Object strategy = parseOutboundProcessingStrategy(child, context);
+		communication.addPropertyValue("outboundProcessingStrategy", strategy);
+		break;
+	    }
+	    case Registration:
+	    case DeviceServices: {
+		parseDeviceServices(communication, child, context);
+		break;
+	    }
+	    case BatchOperations: {
+		Object manager = parseBatchOperations(child, context);
+		communication.addPropertyValue("batchOperationManager", manager);
+		break;
+	    }
+	    case CommandRouting: {
+		Object router = parseCommandRouting(child, context);
+		communication.addPropertyValue("outboundCommandRouter", router);
+		break;
+	    }
+	    case CommandDestinations: {
+		ManagedList<?> destinations = parseCommandDestinations(child, context);
+		communication.addPropertyValue("commandDestinations", destinations);
+		break;
+	    }
+	    }
+	}
+	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION,
+		communication.getBeanDefinition());
+	return null;
+    }
+
+    /**
+     * Parse the list of event sources.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected ManagedList<?> parseEventSources(Element element, ParserContext context) {
+	return new EventSourcesParser().parse(element, context);
+    }
+
+    /**
+     * Parse the inbound processing strategy configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parseInboundProcessingStrategy(Element element, ParserContext context) {
+	return new InboundProcessingStrategyParser().parse(element, context);
+    }
+
+    /**
+     * Parse the outbound processing strategy configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
+	return new OutboundProcessingStrategyParser().parse(element, context);
+    }
+
+    /**
+     * Parse the device services configuration.
+     * 
+     * @param dcomm
+     * @param element
+     * @param context
+     */
+    protected void parseDeviceServices(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
+	new DeviceServicesParser().parse(dcomm, element, context);
+    }
+
+    /**
+     * Parse the batch operations configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parseBatchOperations(Element element, ParserContext context) {
+	return new BatchOperationsParser().parse(element, context);
+    }
+
+    /**
+     * Parse the command routing configuration.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected Object parseCommandRouting(Element element, ParserContext context) {
+	return new CommandRoutingParser().parse(element, context);
+    }
+
+    /**
+     * Parse the list of command destinations.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected ManagedList<?> parseCommandDestinations(Element element, ParserContext context) {
+	return new CommandDestinationsParser().parse(element, context);
+    }
+
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** Event sources list */
+	EventSources("event-sources"),
+
+	/** Inbound processing strategy (moved into event processing) */
+	@Deprecated
+	InboundProcessingStrategy("inbound-processing-strategy"),
+
+	/** Outbound processing strategy (moved into event processing) */
+	@Deprecated
+	OutboundProcessingStrategy("outbound-processing-strategy"),
+
+	/** Device registration (renamed to device services) */
+	@Deprecated
+	Registration("registration"),
+
+	/** Device services */
+	DeviceServices("device-services"),
+
+	/** Batch operations */
+	BatchOperations("batch-operations"),
+
+	/** Command routing configuration */
+	CommandRouting("command-routing"),
+
+	/** Command destinations list */
+	CommandDestinations("command-destinations");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#parseInternal
-	 * (org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)
-	 */
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder communication = getBuilderFor(IDeviceCommunication.class);
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			Elements type = Elements.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException(
-						"Unknown communication subsystem element: " + child.getLocalName());
-			}
-			switch (type) {
-			case EventSources: {
-				ManagedList<?> sources = parseEventSources(child, context);
-				communication.addPropertyValue("inboundEventSources", sources);
-				break;
-			}
-			case InboundProcessingStrategy: {
-				Object strategy = parseInboundProcessingStrategy(child, context);
-				communication.addPropertyValue("inboundProcessingStrategy", strategy);
-				break;
-			}
-			case OutboundProcessingStrategy: {
-				Object strategy = parseOutboundProcessingStrategy(child, context);
-				communication.addPropertyValue("outboundProcessingStrategy", strategy);
-				break;
-			}
-			case Registration:
-			case DeviceServices: {
-				parseDeviceServices(communication, child, context);
-				break;
-			}
-			case BatchOperations: {
-				Object manager = parseBatchOperations(child, context);
-				communication.addPropertyValue("batchOperationManager", manager);
-				break;
-			}
-			case CommandRouting: {
-				Object router = parseCommandRouting(child, context);
-				communication.addPropertyValue("outboundCommandRouter", router);
-				break;
-			}
-			case CommandDestinations: {
-				ManagedList<?> destinations = parseCommandDestinations(child, context);
-				communication.addPropertyValue("commandDestinations", destinations);
-				break;
-			}
-			}
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
 		}
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION,
-				communication.getBeanDefinition());
-		return null;
+	    }
+	    return null;
 	}
 
-	/**
-	 * Parse the list of event sources.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected ManagedList<?> parseEventSources(Element element, ParserContext context) {
-		return new EventSourcesParser().parse(element, context);
+	public String getLocalName() {
+	    return localName;
 	}
 
-	/**
-	 * Parse the inbound processing strategy configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parseInboundProcessingStrategy(Element element, ParserContext context) {
-		return new InboundProcessingStrategyParser().parse(element, context);
+	public void setLocalName(String localName) {
+	    this.localName = localName;
 	}
-
-	/**
-	 * Parse the outbound processing strategy configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
-		return new OutboundProcessingStrategyParser().parse(element, context);
-	}
-
-	/**
-	 * Parse the device services configuration.
-	 * 
-	 * @param dcomm
-	 * @param element
-	 * @param context
-	 */
-	protected void parseDeviceServices(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
-		new DeviceServicesParser().parse(dcomm, element, context);
-	}
-
-	/**
-	 * Parse the batch operations configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parseBatchOperations(Element element, ParserContext context) {
-		return new BatchOperationsParser().parse(element, context);
-	}
-
-	/**
-	 * Parse the command routing configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected Object parseCommandRouting(Element element, ParserContext context) {
-		return new CommandRoutingParser().parse(element, context);
-	}
-
-	/**
-	 * Parse the list of command destinations.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected ManagedList<?> parseCommandDestinations(Element element, ParserContext context) {
-		return new CommandDestinationsParser().parse(element, context);
-	}
-
-	/**
-	 * Expected child elements.
-	 * 
-	 * @author Derek
-	 */
-	public static enum Elements {
-
-		/** Event sources list */
-		EventSources("event-sources"),
-
-		/** Inbound processing strategy (moved into event processing) */
-		@Deprecated InboundProcessingStrategy("inbound-processing-strategy"),
-
-		/** Outbound processing strategy (moved into event processing) */
-		@Deprecated OutboundProcessingStrategy("outbound-processing-strategy"),
-
-		/** Device registration (renamed to device services) */
-		@Deprecated Registration("registration"),
-
-		/** Device services */
-		DeviceServices("device-services"),
-
-		/** Batch operations */
-		BatchOperations("batch-operations"),
-
-		/** Command routing configuration */
-		CommandRouting("command-routing"),
-
-		/** Command destinations list */
-		CommandDestinations("command-destinations");
-
-		/** Event code */
-		private String localName;
-
-		private Elements(String localName) {
-			this.localName = localName;
-		}
-
-		public static Elements getByLocalName(String localName) {
-			for (Elements value : Elements.values()) {
-				if (value.getLocalName().equals(localName)) {
-					return value;
-				}
-			}
-			return null;
-		}
-
-		public String getLocalName() {
-			return localName;
-		}
-
-		public void setLocalName(String localName) {
-			this.localName = localName;
-		}
-	}
+    }
 }

@@ -13,6 +13,7 @@ if (DeviceRequest.Type.RegisterDevice.name().equals(type)) {
 	registration.setHardwareId(fields.get("hwid"));
 	registration.setSpecificationToken(fields.get("spec"));
 	registration.setSiteToken(fields.get("site"));
+	addMetadata(registration, fields);
 	
 	DecodedDeviceRequest<DeviceRegistrationRequest> request = new DecodedDeviceRequest<DeviceRegistrationRequest>()
 	request.setHardwareId(registration.getHardwareId())
@@ -28,6 +29,7 @@ else if (DeviceRequest.Type.DeviceMeasurements.name().equals(type)) {
 	for (String key : fields.keySet()) {
 		mxs.addOrReplaceMeasurement(key, Double.parseDouble(fields.get(key)));
 	}
+	addMetadata(mxs, fields);
 	
 	DecodedDeviceRequest<DeviceMeasurementsCreateRequest> request = new DecodedDeviceRequest<DeviceMeasurementsCreateRequest>()
 	request.setHardwareId(hwid)
@@ -42,12 +44,28 @@ else if (DeviceRequest.Type.DeviceAlert.name().equals(type)) {
 	DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	alert.setType(fields.get("type"));
 	alert.setMessage(fields.get("message"));
+	addMetadata(alert, fields);
 	
 	DecodedDeviceRequest<DeviceAlertCreateRequest> request = new DecodedDeviceRequest<DeviceAlertCreateRequest>()
 	request.setHardwareId(hwid)
 	request.setRequest(alert)
 	events.add(request)
 	logger.info("Added device alert request for ${hwid}.")
+}
+
+// Parse device ack message in format "orig=xxx,response=yyy"
+else if (DeviceRequest.Type.Acknowledge.name().equals(type)) {
+	def fields = parseFields(new String(payload))
+	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
+	ack.setOriginatingEventId(fields.get("orig"));
+	ack.setResponse(fields.get("response"));
+	addMetadata(ack, fields);
+	
+	DecodedDeviceRequest<DeviceCommandResponseCreateRequest> request = new DecodedDeviceRequest<DeviceCommandResponseCreateRequest>()
+	request.setHardwareId(hwid)
+	request.setRequest(ack)
+	events.add(request)
+	logger.info("Added device ack request for ${hwid}.")
 }
 
 // Parse device location message in format "lat=12.3,lon=23.4,ele=0.0"
@@ -57,6 +75,7 @@ else if (DeviceRequest.Type.DeviceLocation.name().equals(type)) {
 	location.setLatitude(Double.parseDouble(fields.get("lat")));
 	location.setLongitude(Double.parseDouble(fields.get("lon")));
 	location.setElevation(Double.parseDouble(fields.get("ele")));
+	addMetadata(location, fields);
 	
 	DecodedDeviceRequest<DeviceLocationCreateRequest> request = new DecodedDeviceRequest<DeviceLocationCreateRequest>()
 	request.setHardwareId(hwid)
@@ -74,4 +93,18 @@ Map<String, String> parseFields(String input) {
 		result.put(parts[0], parts[1])
 	}
 	return result
+}
+
+// Add metadata by extracting fields starting with 'm:'.
+void addMetadata(DeviceEventCreateRequest request, Map<String, String> fields) {
+	for (String key : fields.keySet()) {
+		if (key.startsWith('m:')) {
+		    if (request.getMetadata() == null) {
+		    	request.setMetadata(new HashMap<String, String>());
+		    }
+			String metaKey = key.substring(2);
+			String value = fields.get(key);
+			request.getMetadata().put(metaKey, value);
+		}
+	}
 }

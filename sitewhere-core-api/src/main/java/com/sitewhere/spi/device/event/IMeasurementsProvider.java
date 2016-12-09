@@ -16,39 +16,39 @@ import java.util.Map;
  */
 public interface IMeasurementsProvider {
 
-	/**
-	 * Add or replace measurement data.
-	 * 
-	 * @param name
-	 * @param value
-	 */
-	public void addOrReplaceMeasurement(String name, Double value);
+    /**
+     * Add or replace measurement data.
+     * 
+     * @param name
+     * @param value
+     */
+    public void addOrReplaceMeasurement(String name, Double value);
 
-	/**
-	 * Remove a measurement.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public Double removeMeasurement(String name);
+    /**
+     * Remove a measurement.
+     * 
+     * @param name
+     * @return
+     */
+    public Double removeMeasurement(String name);
 
-	/**
-	 * Get measurement by name.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public Double getMeasurement(String name);
+    /**
+     * Get measurement by name.
+     * 
+     * @param name
+     * @return
+     */
+    public Double getMeasurement(String name);
 
-	/**
-	 * Get map of all measurements.
-	 * 
-	 * @return
-	 */
-	public Map<String, Double> getMeasurements();
+    /**
+     * Get map of all measurements.
+     * 
+     * @return
+     */
+    public Map<String, Double> getMeasurements();
 
-	/**
-	 * Clear all measurements.
-	 */
-	public void clearMeasurements();
+    /**
+     * Clear all measurements.
+     */
+    public void clearMeasurements();
 }

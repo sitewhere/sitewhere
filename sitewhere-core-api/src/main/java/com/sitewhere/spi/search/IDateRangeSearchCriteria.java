@@ -16,17 +16,17 @@ import java.util.Date;
  */
 public interface IDateRangeSearchCriteria extends ISearchCriteria {
 
-	/**
-	 * Get date range start.
-	 * 
-	 * @return
-	 */
-	public Date getStartDate();
+    /**
+     * Get date range start.
+     * 
+     * @return
+     */
+    public Date getStartDate();
 
-	/**
-	 * Get date range end.
-	 * 
-	 * @return
-	 */
-	public Date getEndDate();
+    /**
+     * Get date range end.
+     * 
+     * @return
+     */
+    public Date getEndDate();
 }

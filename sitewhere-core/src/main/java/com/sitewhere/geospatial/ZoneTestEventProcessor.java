@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
@@ -23,101 +24,103 @@ import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.geospatial.ZoneContainment;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Implementation of {@link IOutboundEventProcessor} that performs a series of tests for
- * whether a location is inside or outside of zones, firing alerts if the criteria is met.
+ * Implementation of {@link IOutboundEventProcessor} that performs a series of
+ * tests for whether a location is inside or outside of zones, firing alerts if
+ * the criteria is met.
  * 
  * @author Derek
  */
 public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ZoneTestEventProcessor.class);
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-	/** Map of polygons by zone token */
-	private Map<String, Polygon> zoneMap = new HashMap<String, Polygon>();
+    /** Map of polygons by zone token */
+    private Map<String, Polygon> zoneMap = new HashMap<String, Polygon>();
 
-	/** List of tests to perform */
-	private List<ZoneTest> zoneTests = new ArrayList<ZoneTest>();
+    /** List of tests to perform */
+    private List<ZoneTest> zoneTests = new ArrayList<ZoneTest>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		// Required for filters.
-		super.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Required for filters.
+	super.start(monitor);
 
-		LOGGER.info("Starting zone test processor with " + zoneTests.size() + " tests.");
+	LOGGER.info("Starting zone test processor with " + zoneTests.size() + " tests.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     */
+    @Override
+    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+	for (ZoneTest test : zoneTests) {
+	    Polygon poly = getZonePolygon(test.getZoneToken());
+	    ZoneContainment containment = (poly.contains(GeoUtils.createPointForLocation(location)))
+		    ? ZoneContainment.Inside : ZoneContainment.Outside;
+	    if (test.getCondition() == containment) {
+		DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
+		alert.setType(test.getAlertType());
+		alert.setLevel(test.getAlertLevel());
+		alert.setMessage(test.getAlertMessage());
+		alert.setUpdateState(false);
+		alert.setEventDate(new Date());
+		SiteWhere.getServer().getDeviceEventManagement(getTenant())
+			.addDeviceAlert(location.getDeviceAssignmentToken(), alert);
+	    }
 	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return LOGGER;
+    /**
+     * Get cached zone polygon or try to load from datastore.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Polygon getZonePolygon(String token) throws SiteWhereException {
+	Polygon poly = zoneMap.get(token);
+	if (poly != null) {
+	    return poly;
 	}
+	IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant()).getZone(token);
+	if (zone != null) {
+	    poly = GeoUtils.createPolygonForZone(zone);
+	    zoneMap.put(token, poly);
+	    return poly;
+	}
+	throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": " + token);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
-		for (ZoneTest test : zoneTests) {
-			Polygon poly = getZonePolygon(test.getZoneToken());
-			ZoneContainment containment =
-					(poly.contains(GeoUtils.createPointForLocation(location))) ? ZoneContainment.Inside
-							: ZoneContainment.Outside;
-			if (test.getCondition() == containment) {
-				DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
-				alert.setType(test.getAlertType());
-				alert.setLevel(test.getAlertLevel());
-				alert.setMessage(test.getAlertMessage());
-				alert.setUpdateState(false);
-				alert.setEventDate(new Date());
-				SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceAlert(
-						location.getDeviceAssignmentToken(), alert);
-			}
-		}
-	}
+    public List<ZoneTest> getZoneTests() {
+	return zoneTests;
+    }
 
-	/**
-	 * Get cached zone polygon or try to load from datastore.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected Polygon getZonePolygon(String token) throws SiteWhereException {
-		Polygon poly = zoneMap.get(token);
-		if (poly != null) {
-			return poly;
-		}
-		IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant()).getZone(token);
-		if (zone != null) {
-			poly = GeoUtils.createPolygonForZone(zone);
-			zoneMap.put(token, poly);
-			return poly;
-		}
-		throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": "
-				+ token);
-	}
-
-	public List<ZoneTest> getZoneTests() {
-		return zoneTests;
-	}
-
-	public void setZoneTests(List<ZoneTest> zoneTests) {
-		this.zoneTests = zoneTests;
-	}
+    public void setZoneTests(List<ZoneTest> zoneTests) {
+	this.zoneTests = zoneTests;
+    }
 }

@@ -22,83 +22,83 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
  */
 public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup, Serializable {
 
-	/** Serialization version identifier */
-	private static final long serialVersionUID = -4993194128786517276L;
+    /** Serialization version identifier */
+    private static final long serialVersionUID = -4993194128786517276L;
 
-	/** Unique token */
-	private String token;
+    /** Unique token */
+    private String token;
 
-	/** Group name */
-	private String name;
+    /** Group name */
+    private String name;
 
-	/** Group description */
-	private String description;
+    /** Group description */
+    private String description;
 
-	/** List of roles */
-	private List<String> roles = new ArrayList<String>();
+    /** List of roles */
+    private List<String> roles = new ArrayList<String>();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getToken()
-	 */
-	@Override
-	public String getToken() {
-		return token;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroup#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setToken(String token) {
+	this.token = token;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroup#getName()
+     */
+    @Override
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-		return description;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroup#getDescription()
+     */
+    @Override
+    public String getDescription() {
+	return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+	this.description = description;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getRoles()
-	 */
-	public List<String> getRoles() {
-		return roles;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.group.IDeviceGroup#getRoles()
+     */
+    public List<String> getRoles() {
+	return roles;
+    }
 
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(List<String> roles) {
+	this.roles = roles;
+    }
 
-	public static DeviceGroup copy(IDeviceGroup input) throws SiteWhereException {
-		DeviceGroup result = new DeviceGroup();
-		result.setToken(input.getToken());
-		result.setName(input.getName());
-		result.setDescription(input.getDescription());
-		result.getRoles().addAll(input.getRoles());
-		MetadataProviderEntity.copy(input, result);
-		return result;
-	}
+    public static DeviceGroup copy(IDeviceGroup input) throws SiteWhereException {
+	DeviceGroup result = new DeviceGroup();
+	result.setToken(input.getToken());
+	result.setName(input.getName());
+	result.setDescription(input.getDescription());
+	result.getRoles().addAll(input.getRoles());
+	MetadataProviderEntity.copy(input, result);
+	return result;
+    }
 }
