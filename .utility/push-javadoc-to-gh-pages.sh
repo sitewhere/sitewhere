@@ -6,7 +6,6 @@ if [ "$TRAVIS_REPO_SLUG" == "sitewhere/sitewhere" ] && [ "$TRAVIS_PULL_REQUEST" 
 
   cp -R sitewhere-core-api/build/docs/javadoc $HOME/sitewhere-core-api
   cp -R sitewhere-server-api/build/docs/javadoc $HOME/sitewhere-server-api
-  cp -R sitewhere-web/build/rest $HOME
 
   cd $HOME
   git config --global user.email "travis@travis-ci.org"
@@ -19,7 +18,6 @@ if [ "$TRAVIS_REPO_SLUG" == "sitewhere/sitewhere" ] && [ "$TRAVIS_PULL_REQUEST" 
   mkdir javadoc
   cp -Rf $HOME/sitewhere-core-api ./javadoc/sitewhere-core-api
   cp -Rf $HOME/sitewhere-server-api ./javadoc/sitewhere-server-api
-  cp -Rf $HOME/rest ./rest
   git add -f .
   git commit -m "Latest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to sitewhere.github.io."
   git push -fq origin master > /dev/null
