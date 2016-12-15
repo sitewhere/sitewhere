@@ -39,7 +39,7 @@ docker {
 
 allprojects {
     group = 'com.sitewhere'
-	version = '1.9.0'
+	version = '1.10.0'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
