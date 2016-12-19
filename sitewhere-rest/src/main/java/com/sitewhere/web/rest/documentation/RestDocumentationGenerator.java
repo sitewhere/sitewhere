@@ -75,7 +75,9 @@ public class RestDocumentationGenerator {
 	    if (!resources.exists()) {
 		throw new SiteWhereException("Unable to find REST documentation resources folder.");
 	    }
-	    List<ParsedController> controllers = parseControllers(resources);
+	    String controllerPackage = (args.length > 2) ? args[2] : "com.sitewhere.web.rest.controllers";
+	    String contextRoot = (args.length > 3) ? args[3] : "/sitewhere/api";
+	    List<ParsedController> controllers = parseControllers(resources, controllerPackage, contextRoot);
 	    generateRestDocumentation(controllers, resources, args[1]);
 	} catch (SiteWhereException e) {
 	    System.err.println("Unable to generate SiteWhere REST documentation.");
@@ -88,15 +90,18 @@ public class RestDocumentationGenerator {
      * Parse all controllers using the {@link DocumentedController} annotation.
      * 
      * @param resourcesFolder
+     * @param controllerPackage
+     * @param contextRoot
      * @return
      * @throws SiteWhereException
      */
-    protected static List<ParsedController> parseControllers(File resourcesFolder) throws SiteWhereException {
-	Reflections reflections = new Reflections("com.sitewhere.web.rest.controllers");
+    protected static List<ParsedController> parseControllers(File resourcesFolder, String controllerPackage,
+	    String contextRoot) throws SiteWhereException {
+	Reflections reflections = new Reflections(controllerPackage);
 	Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(DocumentedController.class);
 	List<ParsedController> results = new ArrayList<ParsedController>();
 	for (Class<?> controller : controllers) {
-	    results.add(parseController(controller, resourcesFolder));
+	    results.add(parseController(controller, resourcesFolder, contextRoot));
 	}
 	Collections.sort(results, new Comparator<ParsedController>() {
 
@@ -411,10 +416,11 @@ public class RestDocumentationGenerator {
      * 
      * @param controller
      * @param resourcesFolder
+     * @param contextRoot
      * @return
      * @throws SiteWhereException
      */
-    protected static ParsedController parseController(Class<?> controller, File resourcesFolder)
+    protected static ParsedController parseController(Class<?> controller, File resourcesFolder, String contextRoot)
 	    throws SiteWhereException {
 	ParsedController parsed = new ParsedController();
 
@@ -435,7 +441,7 @@ public class RestDocumentationGenerator {
 	    throw new SiteWhereException(
 		    "Spring RequestMapping annotation missing on documented controller: " + controller.getName());
 	}
-	parsed.setBaseUri("/sitewhere/api" + mapping.value()[0]);
+	parsed.setBaseUri(contextRoot + mapping.value()[0]);
 
 	// Verify controller markdown file.
 	File markdownFile = new File(resourcesFolder, parsed.getResource() + ".md");

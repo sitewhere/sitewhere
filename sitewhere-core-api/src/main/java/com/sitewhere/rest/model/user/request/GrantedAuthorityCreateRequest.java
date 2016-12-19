@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.user.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 
@@ -15,6 +17,7 @@ import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateRequest {
 
     /** Serial version UID */

@@ -13,6 +13,7 @@ import java.util.List;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
 
 /**
  * Example of REST request for interacting with user authorities.
@@ -29,6 +30,7 @@ public class Authorities {
 	public CreateAuthorityRequest() throws SiteWhereException {
 	    setAuthority(ExampleData.AUTH_ADMIN_REST.getAuthority());
 	    setDescription(ExampleData.AUTH_ADMIN_REST.getDescription());
+	    setParent(ExampleData.AUTH_ADMIN_REST.getParent());
 	}
     }
 
@@ -46,6 +48,17 @@ public class Authorities {
 	    auths.add(ExampleData.AUTH_ADMIN_REST);
 	    auths.add(ExampleData.AUTH_ADMIN_USERS);
 	    return auths;
+	}
+    }
+
+    public static class AuthoritiesHierarchy {
+
+	public Object generate() throws SiteWhereException {
+	    List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
+	    auths.add(ExampleData.AUTH_USERS);
+	    auths.add(ExampleData.AUTH_ADMIN_USERS);
+	    auths.add(ExampleData.AUTH_ADMIN_SELF);
+	    return GrantedAuthorityHierarchyBuilder.build(auths);
 	}
     }
 }

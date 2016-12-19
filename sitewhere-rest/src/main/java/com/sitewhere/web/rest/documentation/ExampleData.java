@@ -211,10 +211,16 @@ public class ExampleData {
     public static Search_Solr SEARCH_SOLR = new Search_Solr();
 
     /** Authority */
+    public static Auth_Users AUTH_USERS = new Auth_Users();
+
+    /** Authority */
     public static Auth_AdminRest AUTH_ADMIN_REST = new Auth_AdminRest();
 
     /** Authority */
     public static Auth_AdminUsers AUTH_ADMIN_USERS = new Auth_AdminUsers();
+
+    /** Authority */
+    public static Auth_AdminUserSelf AUTH_ADMIN_SELF = new Auth_AdminUserSelf();
 
     /** User */
     public static User_Admin USER_ADMIN = new User_Admin();
@@ -987,6 +993,16 @@ public class ExampleData {
 	}
     }
 
+    public static class Auth_Users extends GrantedAuthority {
+
+	public Auth_Users() {
+	    setAuthority(SiteWhereAuthority.Users.getName());
+	    setDescription(SiteWhereAuthority.Users.getDescription());
+	    setParent(SiteWhereAuthority.Users.getParent());
+	    setGroup(SiteWhereAuthority.Users.isGroup());
+	}
+    }
+
     public static class Auth_AdminUsers extends GrantedAuthority {
 
 	public Auth_AdminUsers() {
@@ -994,6 +1010,16 @@ public class ExampleData {
 	    setDescription(SiteWhereAuthority.AdminUsers.getDescription());
 	    setParent(SiteWhereAuthority.AdminUsers.getParent());
 	    setGroup(SiteWhereAuthority.AdminUsers.isGroup());
+	}
+    }
+
+    public static class Auth_AdminUserSelf extends GrantedAuthority {
+
+	public Auth_AdminUserSelf() {
+	    setAuthority(SiteWhereAuthority.AdminSelf.getName());
+	    setDescription(SiteWhereAuthority.AdminSelf.getDescription());
+	    setParent(SiteWhereAuthority.AdminSelf.getParent());
+	    setGroup(SiteWhereAuthority.AdminSelf.isGroup());
 	}
     }
 

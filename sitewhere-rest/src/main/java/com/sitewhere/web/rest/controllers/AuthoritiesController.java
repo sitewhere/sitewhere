@@ -158,6 +158,8 @@ public class AuthoritiesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get authorities hierarchy")
     @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
 	try {
