@@ -102,9 +102,14 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	// Required for filters.
 	super.start(monitor);
 
-	// Start the multicaster implementation.
+	// Start multicaster if configured.
 	if (multicaster != null) {
 	    startNestedComponent(multicaster, monitor, true);
+	}
+
+	// Start route builder if configured.
+	if (routeBuilder != null) {
+	    startNestedComponent(routeBuilder, monitor, true);
 	}
 
 	// Use common MQTT configuration setup.
@@ -131,6 +136,16 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Stop multicaster if configured.
+	if (multicaster != null) {
+	    multicaster.lifecycleStop(monitor);
+	}
+
+	// Stop route builder if configured.
+	if (routeBuilder != null) {
+	    routeBuilder.lifecycleStop(monitor);
+	}
+
 	if (connection != null) {
 	    try {
 		connection.disconnect();

@@ -87,6 +87,16 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
+
+	// Start multicaster if configured.
+	if (multicaster != null) {
+	    startNestedComponent(multicaster, monitor, true);
+	}
+
+	// Start route builder if configured.
+	if (routeBuilder != null) {
+	    startNestedComponent(routeBuilder, monitor, true);
+	}
 	try {
 	    ConnectionFactory factory = new ConnectionFactory();
 	    factory.setUri(getConnectionUri());
@@ -109,6 +119,16 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Stop multicaster if configured.
+	if (multicaster != null) {
+	    multicaster.lifecycleStop(monitor);
+	}
+
+	// Stop route builder if configured.
+	if (routeBuilder != null) {
+	    routeBuilder.lifecycleStop(monitor);
+	}
+
 	try {
 	    if (channel != null) {
 		channel.close();
