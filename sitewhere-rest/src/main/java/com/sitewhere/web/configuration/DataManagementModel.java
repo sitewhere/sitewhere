@@ -7,8 +7,8 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.TenantConfigurationParser;
-import com.sitewhere.spring.handler.TenantDatastoreParser;
+import com.sitewhere.spring.handler.ITenantConfigurationParser;
+import com.sitewhere.spring.handler.ITenantDatastoreParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
@@ -48,7 +48,7 @@ public class DataManagementModel extends ConfigurationModel {
      */
     protected ElementNode createDataManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Data Management",
-		TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
+		ITenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
 		ElementRole.DataManagement);
 	builder.description(
 		"Configure the datastore and related aspects such as caching and " + "data model initialization.");
@@ -62,7 +62,7 @@ public class DataManagementModel extends ConfigurationModel {
      */
     protected ElementNode createMongoTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Tenant Datastore",
-		TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
+		ITenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
 		ElementRole.DataManagement_Datastore);
 
 	builder.description("Store tenant data using a MongoDB database. Note that the "
@@ -86,7 +86,7 @@ public class DataManagementModel extends ConfigurationModel {
      */
     protected ElementNode createMongoInfluxDbTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB/InfluxDB Tenant Datastore",
-		TenantDatastoreParser.Elements.MongoInfluxDbTenantDatastore.getLocalName(), "database",
+		ITenantDatastoreParser.Elements.MongoInfluxDbTenantDatastore.getLocalName(), "database",
 		ElementRole.DataManagement_Datastore);
 
 	builder.description("Store tenant master data using a MongoDB database and store tenant event "
@@ -129,7 +129,7 @@ public class DataManagementModel extends ConfigurationModel {
      */
     protected ElementNode createHBaseTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HBase Tenant Datastore",
-		TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
+		ITenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
 		ElementRole.DataManagement_Datastore);
 	builder.description("Store tenant data using tables in an HBase instance. Note that the "
 		+ "global datastore must be configured to use HBase if this tenant datastore is to "
@@ -145,7 +145,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createHazelcastCacheElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Distributed Cache Provider",
-		TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
+		ITenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 		ElementRole.DataManagement_CacheProvider);
 	builder.description("Cache device management data using Hazelcast distributed maps. "
 		+ "This cache allows data to be shared between clustered SiteWhere instances. "
@@ -162,7 +162,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createEHCacheElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("EHCache Cache Provider",
-		TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(), "folder-open-o",
+		ITenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(), "folder-open-o",
 		ElementRole.DataManagement_CacheProvider);
 	builder.description("Cache device management data using EHCache. Note that this "
 		+ "cache is not intended for use on clustered installations. "
@@ -211,7 +211,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createDefaultDeviceModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Device Model Initializer",
-		TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
+		ITenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
 		ElementRole.DataManagement_DeviceModelInitializer);
 	builder.description("This component creates sample data when no existing device data "
 		+ "is detected in the datastore. A site with device specifications, devices, "
@@ -229,7 +229,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createGroovyDeviceModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Device Model Initializer",
-		TenantDatastoreParser.Elements.GroovyDeviceModelInitializer.getLocalName(), "cogs",
+		ITenantDatastoreParser.Elements.GroovyDeviceModelInitializer.getLocalName(), "cogs",
 		ElementRole.DataManagement_DeviceModelInitializer);
 	builder.description(
 		"Generates sample data for the device model by delegating creation logic to a Groovy script. "
@@ -248,7 +248,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createDefaultAssetModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Asset Model Initializer",
-		TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
+		ITenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
 		ElementRole.DataManagement_AssetModelInitializer);
 	builder.description("This component creates sample data when no existing asset data "
 		+ "is detected in the datastore. If using the <strong>device model initializer</strong> "
@@ -266,7 +266,7 @@ public class DataManagementModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createDefaultScheduleModelInitializerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Schedule Model Initializer",
-		TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(), "flash",
+		ITenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(), "flash",
 		ElementRole.DataManagement_ScheduleModelInitializer);
 	builder.description("This component creates sample data when no existing schedule data "
 		+ "is detected in the datastore. It provides examples of both simple and cron-based "

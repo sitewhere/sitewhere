@@ -7,13 +7,13 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.BatchOperationsParser;
-import com.sitewhere.spring.handler.CommandDestinationsParser;
-import com.sitewhere.spring.handler.CommandRoutingParser;
-import com.sitewhere.spring.handler.DeviceCommunicationParser;
-import com.sitewhere.spring.handler.DeviceServicesParser;
-import com.sitewhere.spring.handler.EventSourcesParser;
-import com.sitewhere.spring.handler.TenantConfigurationParser;
+import com.sitewhere.spring.handler.IBatchOperationsParser;
+import com.sitewhere.spring.handler.ICommandDestinationsParser;
+import com.sitewhere.spring.handler.ICommandRoutingParser;
+import com.sitewhere.spring.handler.IDeviceCommunicationParser;
+import com.sitewhere.spring.handler.IDeviceServicesParser;
+import com.sitewhere.spring.handler.IEventSourcesParser;
+import com.sitewhere.spring.handler.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
@@ -109,7 +109,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createDeviceCommunication() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Communication",
-		TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
+		ITenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
 		ElementRole.DeviceCommunication);
 	builder.description("Configure how information is received from devices, how data is queued "
 		+ "for processing, and how commands are sent to devices.");
@@ -123,7 +123,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createEventSourcesElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Event Sources",
-		DeviceCommunicationParser.Elements.EventSources.getLocalName(), "sign-in",
+		IDeviceCommunicationParser.Elements.EventSources.getLocalName(), "sign-in",
 		ElementRole.DeviceCommunication_EventSources);
 
 	builder.description("Event sources are responsible for bringing data into SiteWhere. They "
@@ -139,7 +139,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createMqttEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Event Source",
-		EventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Listen for events on an MQTT topic.");
@@ -163,7 +163,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createRabbitMqEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Event Source",
-		EventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Listen for events on an RabbitMQ queue.");
@@ -231,7 +231,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createAzureEventHubEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Azure EventHub Event Source",
-		EventSourcesParser.Elements.AzureEventHubEventSource.getLocalName(), "cloud",
+		IEventSourcesParser.Elements.AzureEventHubEventSource.getLocalName(), "cloud",
 		ElementRole.EventSources_EventSource);
 
 	builder.description(
@@ -266,7 +266,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createActiveMQEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Event Source",
-		EventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Event source that pulls binary information from an ActiveMQ queue and decodes it.");
@@ -295,7 +295,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createActiveMQClientEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Client Event Source",
-		EventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Event source that uses ActiveMQ consumers to ingest "
@@ -322,7 +322,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createReadAllSocketInteractionHandlerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Read-All Socket Interaction Handler Factory",
-		EventSourcesParser.BinarySocketInteractionHandlers.ReadAllInteractionHandlerFactory.getLocalName(),
+		IEventSourcesParser.BinarySocketInteractionHandlers.ReadAllInteractionHandlerFactory.getLocalName(),
 		"cog", ElementRole.EventSources_SocketInteractionHandlerFactory);
 
 	builder.description("Interaction handler that reads all content from the client socket and delivers it "
@@ -338,7 +338,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createHttpSocketInteractionHandlerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HTTP Socket Interaction Handler Factory",
-		EventSourcesParser.BinarySocketInteractionHandlers.HttpInteractionHandlerFactory.getLocalName(), "cog",
+		IEventSourcesParser.BinarySocketInteractionHandlers.HttpInteractionHandlerFactory.getLocalName(), "cog",
 		ElementRole.EventSources_SocketInteractionHandlerFactory);
 
 	builder.description("Interaction handler that reads HTTP content from the client socket and delivers "
@@ -355,7 +355,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovySocketInteractionHandlerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Socket Interaction Handler Factory",
-		EventSourcesParser.BinarySocketInteractionHandlers.GroovySocketInteractionHandlerFactory.getLocalName(),
+		IEventSourcesParser.BinarySocketInteractionHandlers.GroovySocketInteractionHandlerFactory
+			.getLocalName(),
 		"cog", ElementRole.EventSources_SocketInteractionHandlerFactory);
 
 	builder.description("Interaction handler uses a Groovy script to handle socket interactions.");
@@ -372,7 +373,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createSocketEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Socket Event Source",
-		EventSourcesParser.Elements.SocketEventSource.getLocalName(), "plug",
+		IEventSourcesParser.Elements.SocketEventSource.getLocalName(), "plug",
 		ElementRole.EventSources_SocketEventSource);
 
 	builder.description("Event source that pulls binary information from connections to a TCP/IP server socket.");
@@ -417,7 +418,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createWebSocketEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("WebSocket Event Source",
-		EventSourcesParser.Elements.WebSocketEventSource.getLocalName(), "plug",
+		IEventSourcesParser.Elements.WebSocketEventSource.getLocalName(), "plug",
 		ElementRole.EventSources_WebSocketEventSource);
 
 	builder.description("Event source that pulls data from a web socket. Note that the event decoder needs "
@@ -440,7 +441,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createHazelcastQueueEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Queue Event Source",
-		EventSourcesParser.Elements.HazelcastQueueEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.HazelcastQueueEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
@@ -460,7 +461,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCoapServerEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Server Event Source",
-		EventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Event source that acts as a CoAP server, allowing events to be created "
@@ -485,7 +486,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createPollingRestEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Polling REST Event Source",
-		EventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in",
 		ElementRole.EventSources_EventSource);
 
 	builder.description("Event source that polls a REST service at a given interval to generate payloads. "
@@ -520,7 +521,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createProtobufEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Google Protocol Buffers Event Decoder",
-		EventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_BinaryEventDecoder);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
@@ -536,7 +537,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createJsonDeviceRequestDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Device Request Decoder",
-		EventSourcesParser.BinaryDecoders.JsonDeviceRequestDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.BinaryDecoders.JsonDeviceRequestDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_BinaryEventDecoder);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
@@ -551,7 +552,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createJsonBatchEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Batch Event Decoder",
-		EventSourcesParser.BinaryDecoders.JsonBatchEventDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.BinaryDecoders.JsonBatchEventDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_BinaryEventDecoder);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
@@ -566,7 +567,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Binary Event Decoder",
-		EventSourcesParser.BinaryDecoders.GroovyEventDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.BinaryDecoders.GroovyEventDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_BinaryEventDecoder);
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
@@ -582,7 +583,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyStringEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy String Event Decoder",
-		EventSourcesParser.StringDecoders.GroovyStringDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.StringDecoders.GroovyStringDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_StringEventDecoder);
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
@@ -598,7 +599,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createEchoStringEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Echo String Event Decoder",
-		EventSourcesParser.StringDecoders.EchoStringDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.StringDecoders.EchoStringDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_StringEventDecoder);
 
 	builder.description(
@@ -613,7 +614,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCompositeEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Composite Event Decoder (Binary)",
-		EventSourcesParser.BinaryDecoders.CompositeDecoder.getLocalName(), "cogs",
+		IEventSourcesParser.BinaryDecoders.CompositeDecoder.getLocalName(), "cogs",
 		ElementRole.EventSource_CompositeEventDecoder);
 
 	builder.description("Decoder that extracts device metadata from the binary payload, then delegates "
@@ -642,7 +643,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createDeviceSpecificationDecoderChoiceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Match Device Specification",
-		EventSourcesParser.CompositeDecoderChoiceElements.DeviceSpecificationDecoderChoice.getLocalName(),
+		IEventSourcesParser.CompositeDecoderChoiceElements.DeviceSpecificationDecoderChoice.getLocalName(),
 		"cogs", ElementRole.CompositeEventDecoder_DecoderChoice);
 
 	builder.description("Composite event decoder choice that applies when the device specification from the "
@@ -661,7 +662,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyMetadataExtractorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Metadata Extractor (Binary)",
-		EventSourcesParser.CompositeDecoderMetadataExtractorElements.GroovyDeviceMetadataExtractor
+		IEventSourcesParser.CompositeDecoderMetadataExtractorElements.GroovyDeviceMetadataExtractor
 			.getLocalName(),
 		"cogs", ElementRole.CompositeEventDecoder_MetadataExtractor);
 
@@ -680,7 +681,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createDeviceServicesElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Interaction Services",
-		DeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "star",
+		IDeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "star",
 		ElementRole.DeviceCommunication_DeviceServices);
 
 	builder.description("Manages services that control various types of device interactions. "
@@ -697,7 +698,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createDefaultRegistrationManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Registration Manager",
-		DeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
+		IDeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
 		ElementRole.DeviceServices_RegistrationManager);
 
 	builder.description("Provides device registration management functionality.");
@@ -724,7 +725,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createSymbolGeneratorManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Symbol Generator Manager",
-		DeviceServicesParser.Elements.SymbolGeneratorManager.getLocalName(), "qrcode",
+		IDeviceServicesParser.Elements.SymbolGeneratorManager.getLocalName(), "qrcode",
 		ElementRole.DeviceServices_SymbolGeneratorManager);
 
 	builder.description("Manages how symbols such as QR-Codes are generated for devices "
@@ -740,7 +741,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createQRCodeSymbolGeneratorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("QR-Code Symbol Generator",
-		DeviceServicesParser.SymbolGenerators.QRCodeSymbolGenerator.getLocalName(), "qrcode",
+		IDeviceServicesParser.SymbolGenerators.QRCodeSymbolGenerator.getLocalName(), "qrcode",
 		ElementRole.SymbolGeneratorManager_SymbolGenerator);
 
 	builder.description("Generates QR-Codes for devices and other SiteWhere entities. The generated "
@@ -769,7 +770,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createDefaultPresenceManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Presence Manager",
-		DeviceServicesParser.Elements.DefaultPresenceManager.getLocalName(), "bullseye",
+		IDeviceServicesParser.Elements.DefaultPresenceManager.getLocalName(), "bullseye",
 		ElementRole.DeviceServices_PresenceManager);
 
 	builder.description("Determines device presence information by monitoring the last interaction date"
@@ -793,7 +794,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createBatchOperationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management",
-		DeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
+		IDeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
 		ElementRole.DeviceCommunication_BatchOperations);
 
 	builder.description("Manages how batch operations are processed. Batch operations are "
@@ -809,7 +810,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createBatchOperationManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Manager",
-		BatchOperationsParser.Elements.DefaultBatchOperationManager.getLocalName(), "server",
+		IBatchOperationsParser.Elements.DefaultBatchOperationManager.getLocalName(), "server",
 		ElementRole.BatchOperations_BatchOperationManager);
 
 	builder.description("Manages how batch operations are processed.");
@@ -827,7 +828,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCommandRoutingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Routing",
-		DeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap fa-rotate-270",
+		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap fa-rotate-270",
 		ElementRole.DeviceCommunication_CommandRouting);
 
 	builder.description("Determines how commands are routed to command destinations.");
@@ -841,7 +842,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createSpecificationMappingRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Mapping Router",
-		CommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap fa-rotate-270",
+		ICommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap fa-rotate-270",
 		ElementRole.CommandRouting_SpecificationMappingRouter);
 
 	builder.description("Routes commands based on a direct mapping from device specification token "
@@ -878,7 +879,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCommandDestinationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Destinations",
-		DeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "sign-out",
+		IDeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "sign-out",
 		ElementRole.DeviceCommunication_CommandDestinations);
 
 	builder.description("Command destinations provide the information SiteWhere needs "
@@ -904,7 +905,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createMqttCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Command Destination",
-		CommandDestinationsParser.Elements.MqttCommandDestination.getLocalName(), "sign-out",
+		ICommandDestinationsParser.Elements.MqttCommandDestination.getLocalName(), "sign-out",
 		ElementRole.CommandDestinations_CommandDestination);
 
 	builder.description("Sends commands to remote devices using the MQTT protocol. Commands are first encoded "
@@ -935,7 +936,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCoapCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Command Destination",
-		CommandDestinationsParser.Elements.CoapCommandDestination.getLocalName(), "sign-out",
+		ICommandDestinationsParser.Elements.CoapCommandDestination.getLocalName(), "sign-out",
 		ElementRole.CommandDestinations_CommandDestination);
 
 	builder.description("Sends commands to remote devices using the CoAP protocol. Commands are first encoded "
@@ -963,7 +964,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createTwilioCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Twilio Command Destination",
-		CommandDestinationsParser.Elements.TwilioCommandDestination.getLocalName(), "phone",
+		ICommandDestinationsParser.Elements.TwilioCommandDestination.getLocalName(), "phone",
 		ElementRole.CommandDestinations_CommandDestination);
 
 	builder.description("Destination that delivers commands via Twilio SMS messages.");
@@ -996,7 +997,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createProtobufCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Google Protocol Buffers Command Encoder",
-		CommandDestinationsParser.BinaryCommandEncoders.ProtobufEncoder.getLocalName(), "cogs",
+		ICommandDestinationsParser.BinaryCommandEncoders.ProtobufEncoder.getLocalName(), "cogs",
 		ElementRole.CommandDestinations_BinaryCommandEncoder);
 
 	builder.description("Encodes a command using the default Google Protocol Buffers representation. "
@@ -1013,7 +1014,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createProtobufHybridCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Java/Protobuf Hybrid Command Encoder",
-		CommandDestinationsParser.BinaryCommandEncoders.JavaHybridProtobufEncoder.getLocalName(), "cogs",
+		ICommandDestinationsParser.BinaryCommandEncoders.JavaHybridProtobufEncoder.getLocalName(), "cogs",
 		ElementRole.CommandDestinations_BinaryCommandEncoder);
 
 	builder.description("Command encoder that encodes system commands using protocol buffers but encodes "
@@ -1030,7 +1031,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createJsonCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Command Encoder",
-		CommandDestinationsParser.BinaryCommandEncoders.JsonCommandEncoder.getLocalName(), "cogs",
+		ICommandDestinationsParser.BinaryCommandEncoders.JsonCommandEncoder.getLocalName(), "cogs",
 		ElementRole.CommandDestinations_BinaryCommandEncoder);
 
 	builder.description(
@@ -1046,7 +1047,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Encoder",
-		CommandDestinationsParser.BinaryCommandEncoders.GroovyCommandEncoder.getLocalName(), "cogs",
+		ICommandDestinationsParser.BinaryCommandEncoders.GroovyCommandEncoder.getLocalName(), "cogs",
 		ElementRole.CommandDestinations_BinaryCommandEncoder);
 
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "
@@ -1064,7 +1065,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyStringCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy String Command Encoder",
-		CommandDestinationsParser.StringCommandEncoders.GroovyStringCommandEncoder.getLocalName(), "cogs",
+		ICommandDestinationsParser.StringCommandEncoders.GroovyStringCommandEncoder.getLocalName(), "cogs",
 		ElementRole.CommandDestinations_StringCommandEncoder);
 
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "

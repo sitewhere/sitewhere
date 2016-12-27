@@ -7,8 +7,8 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.AssetManagementParser;
-import com.sitewhere.spring.handler.TenantConfigurationParser;
+import com.sitewhere.spring.handler.IAssetManagementParser;
+import com.sitewhere.spring.handler.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
@@ -38,7 +38,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createAssetManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Asset Management",
-		TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag", ElementRole.AssetManagment);
+		ITenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag", ElementRole.AssetManagment);
 	builder.description("Configure asset management features.");
 	return builder.build();
     }
@@ -60,7 +60,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createWso2IdentityAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
-		AssetManagementParser.Elements.Wso2IdentityAssetModule.getLocalName(), "users",
+		IAssetManagementParser.Elements.Wso2IdentityAssetModule.getLocalName(), "users",
 		ElementRole.AssetManagment_AssetModule);
 
 	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
@@ -102,7 +102,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createXmlDeviceAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("XML Device Asset Module",
-		AssetManagementParser.Elements.FilesystemDeviceAssetModule.getLocalName(), "tablet",
+		IAssetManagementParser.Elements.FilesystemDeviceAssetModule.getLocalName(), "tablet",
 		ElementRole.AssetManagment_AssetModule);
 
 	builder.description("List of device assets stored in XML format on the local filesystem.");
@@ -119,7 +119,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createXmlHardwareAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("XML Hardware Asset Module",
-		AssetManagementParser.Elements.FilesystemHardwareAssetModule.getLocalName(), "laptop",
+		IAssetManagementParser.Elements.FilesystemHardwareAssetModule.getLocalName(), "laptop",
 		ElementRole.AssetManagment_AssetModule);
 
 	builder.description("List of hardware assets stored in XML format on the local filesystem.");
@@ -136,7 +136,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createXmlPersonAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("XML Person Asset Module",
-		AssetManagementParser.Elements.FilesystemPersonAssetModule.getLocalName(), "users",
+		IAssetManagementParser.Elements.FilesystemPersonAssetModule.getLocalName(), "users",
 		ElementRole.AssetManagment_AssetModule);
 
 	builder.description("List of person assets stored in XML format on the local filesystem.");
@@ -153,7 +153,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createXmlLocationAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("XML Location Asset Module",
-		AssetManagementParser.Elements.FilesystemLocationAssetModule.getLocalName(), "map-pin",
+		IAssetManagementParser.Elements.FilesystemLocationAssetModule.getLocalName(), "map-pin",
 		ElementRole.AssetManagment_AssetModule);
 
 	builder.description("List of location assets stored in XML format on the local filesystem.");

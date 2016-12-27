@@ -17,6 +17,7 @@ include ':sitewhere-siddhi'
 include ':sitewhere-solr'
 include ':sitewhere-spark'
 include ':sitewhere-spring'
+include ':sitewhere-spring-spi'
 include ':sitewhere-twilio'
 include ':sitewhere-web'
 include ':sitewhere-web-admin'
@@ -40,6 +41,7 @@ project(':sitewhere-siddhi').projectDir = "$rootDir/sitewhere-siddhi" as File
 project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
 project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
 project(':sitewhere-spring').projectDir = "$rootDir/sitewhere-spring" as File
+project(':sitewhere-spring-spi').projectDir = "$rootDir/sitewhere-spring-spi" as File
 project(':sitewhere-twilio').projectDir = "$rootDir/sitewhere-twilio" as File
 project(':sitewhere-web').projectDir = "$rootDir/sitewhere-web" as File
 project(':sitewhere-web-admin').projectDir = "$rootDir/sitewhere-web-admin" as File

@@ -1,6 +1,11 @@
 apply plugin: 'nebula.provided-base'
 
 description = 'SiteWhere Core Library'
+
+configurations {
+    compile.exclude module: 'spring-boot-starter-logging'
+}
+
 dependencies {
     compile project(':sitewhere-core-api')
     compile project(':sitewhere-server-api')

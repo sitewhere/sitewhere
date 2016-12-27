@@ -21,6 +21,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
+import com.sitewhere.spring.handler.IGlobalsParser.Elements;
 
 /**
  * Parses configuration information for the 'globals' section.
@@ -40,6 +41,7 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
      * org.springframework.beans.factory.xml.ParserContext)
      */
     @Override
+    @SuppressWarnings("deprecation")
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> dsChildren = DomUtils.getChildElements(element);
 	for (Element child : dsChildren) {
@@ -102,48 +104,5 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
      */
     protected void parseGroovyConfiguration(Element element, ParserContext context) {
 	LOGGER.warn("Groovy configuration element has been deprecated.");
-    }
-
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
-    public static enum Elements {
-
-	/** Global Hazelcast configuration */
-	@Deprecated
-	HazelcastConfiguration("hazelcast-configuration"),
-
-	/** Global Solr configuration */
-	SolrConfiguration("solr-configuration"),
-
-	/** Global Groovy configuration */
-	@Deprecated
-	GroovyConfiguration("groovy-configuration");
-
-	/** Event code */
-	private String localName;
-
-	private Elements(String localName) {
-	    this.localName = localName;
-	}
-
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
-		if (value.getLocalName().equals(localName)) {
-		    return value;
-		}
-	    }
-	    return null;
-	}
-
-	public String getLocalName() {
-	    return localName;
-	}
-
-	public void setLocalName(String localName) {
-	    this.localName = localName;
-	}
     }
 }

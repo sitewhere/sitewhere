@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.device.communication.DefaultDeviceCommunication;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spring.handler.IDeviceCommunicationParser.Elements;
 
 /**
  * Parses configuration data from SiteWhere device communication subsystem.
@@ -39,6 +40,7 @@ public class DeviceCommunicationParser extends SiteWhereBeanDefinitionParser {
      * org.springframework.beans.factory.xml.ParserContext)
      */
     @Override
+    @SuppressWarnings("deprecation")
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	BeanDefinitionBuilder communication = getBuilderFor(IDeviceCommunication.class);
 	List<Element> children = DomUtils.getChildElements(element);
@@ -165,64 +167,5 @@ public class DeviceCommunicationParser extends SiteWhereBeanDefinitionParser {
      */
     protected ManagedList<?> parseCommandDestinations(Element element, ParserContext context) {
 	return new CommandDestinationsParser().parse(element, context);
-    }
-
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
-    public static enum Elements {
-
-	/** Event sources list */
-	EventSources("event-sources"),
-
-	/** Inbound processing strategy (moved into event processing) */
-	@Deprecated
-	InboundProcessingStrategy("inbound-processing-strategy"),
-
-	/** Outbound processing strategy (moved into event processing) */
-	@Deprecated
-	OutboundProcessingStrategy("outbound-processing-strategy"),
-
-	/** Device registration (renamed to device services) */
-	@Deprecated
-	Registration("registration"),
-
-	/** Device services */
-	DeviceServices("device-services"),
-
-	/** Batch operations */
-	BatchOperations("batch-operations"),
-
-	/** Command routing configuration */
-	CommandRouting("command-routing"),
-
-	/** Command destinations list */
-	CommandDestinations("command-destinations");
-
-	/** Event code */
-	private String localName;
-
-	private Elements(String localName) {
-	    this.localName = localName;
-	}
-
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
-		if (value.getLocalName().equals(localName)) {
-		    return value;
-		}
-	    }
-	    return null;
-	}
-
-	public String getLocalName() {
-	    return localName;
-	}
-
-	public void setLocalName(String localName) {
-	    this.localName = localName;
-	}
     }
 }

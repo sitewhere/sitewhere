@@ -7,9 +7,9 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.GlobalsParser;
 import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.handler.TenantConfigurationParser;
+import com.sitewhere.spring.handler.IGlobalsParser;
+import com.sitewhere.spring.handler.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
@@ -36,7 +36,7 @@ public class GlobalsModel extends ConfigurationModel {
      */
     protected ElementNode createGlobals() {
 	ElementNode.Builder builder = new ElementNode.Builder("Global Overrides",
-		TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs", ElementRole.Globals);
+		ITenantConfigurationParser.Elements.Globals.getLocalName(), "cogs", ElementRole.Globals);
 	builder.description("Allow tenant-specific changes to global configuration elements.");
 	return builder.build();
     }
@@ -48,7 +48,7 @@ public class GlobalsModel extends ConfigurationModel {
      */
     protected ElementNode createSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Solr Configuration",
-		GlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
+		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
 
 	builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 	builder.description("Overrides global Solr settings for a tenant.");
@@ -67,7 +67,7 @@ public class GlobalsModel extends ConfigurationModel {
     @SuppressWarnings("deprecation")
     protected ElementNode createGroovyConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Groovy Configuration",
-		GlobalsParser.Elements.GroovyConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
+		IGlobalsParser.Elements.GroovyConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
 
 	builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 	builder.description("Overrides global Groovy settings for a tenant. <strong>This element is no longer "

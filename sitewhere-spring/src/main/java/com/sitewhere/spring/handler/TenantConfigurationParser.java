@@ -16,6 +16,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.spring.handler.ITenantConfigurationParser.Elements;
+
 /**
  * Parses the top-level element for SiteWhere tenant Spring configuration.
  * 
@@ -31,6 +33,7 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
      * org.springframework.beans.factory.xml.ParserContext)
      */
     @Override
+    @SuppressWarnings("deprecation")
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
@@ -141,59 +144,5 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
      */
     protected void parseSearchProviders(Element child, ParserContext context) {
 	new SearchProvidersParser().parse(child, context);
-    }
-
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
-    public static enum Elements {
-
-	/** Globals */
-	Globals("globals"),
-
-	/** Tenant datastore */
-	TenantDatastore("tenant-datastore"),
-
-	/** Provisioning (DEPRECATED) */
-	@Deprecated
-	Provisioning("provisioning"),
-
-	/** Device Communication Subsystem */
-	DeviceCommunication("device-communication"),
-
-	/** Event processing Subsystem */
-	EventProcessing("event-processing"),
-
-	/** Asset management */
-	AssetManagement("asset-management"),
-
-	/** Search providers */
-	SearchProviders("search-providers");
-
-	/** Event code */
-	private String localName;
-
-	private Elements(String localName) {
-	    this.localName = localName;
-	}
-
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
-		if (value.getLocalName().equals(localName)) {
-		    return value;
-		}
-	    }
-	    return null;
-	}
-
-	public String getLocalName() {
-	    return localName;
-	}
-
-	public void setLocalName(String localName) {
-	    this.localName = localName;
-	}
     }
 }

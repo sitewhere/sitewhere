@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.device.event.EventProcessing;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.spi.device.event.IEventProcessing;
+import com.sitewhere.spring.handler.IEventProcessingParser.Elements;
 
 /**
  * Parses configuration data from SiteWhere event processing subsystem.
@@ -116,49 +117,5 @@ public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
      */
     protected Object parseOutboundProcessingChain(Element element, ParserContext context) {
 	return new OutboundProcessingChainParser().parseInternal(element, context);
-    }
-
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
-    public static enum Elements {
-
-	/** Inbound processing strategy */
-	InboundProcessingStrategy("inbound-processing-strategy"),
-
-	/** Outbound processing strategy */
-	OutboundProcessingStrategy("outbound-processing-strategy"),
-
-	/** Inbound processing chain */
-	InboundProcessingChain("inbound-processing-chain"),
-
-	/** Outbound processing chain */
-	OutboundProcessingChain("outbound-processing-chain");
-
-	/** Event code */
-	private String localName;
-
-	private Elements(String localName) {
-	    this.localName = localName;
-	}
-
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
-		if (value.getLocalName().equals(localName)) {
-		    return value;
-		}
-	    }
-	    return null;
-	}
-
-	public String getLocalName() {
-	    return localName;
-	}
-
-	public void setLocalName(String localName) {
-	    this.localName = localName;
-	}
     }
 }

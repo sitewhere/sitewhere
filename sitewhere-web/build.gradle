@@ -7,21 +7,9 @@ configurations {
 }
 
 dependencies {
-    compile project(':sitewhere-activemq')
-    compile project(':sitewhere-azure')
+    compile project(':sitewhere-client')
     compile project(':sitewhere-core')
-    compile project(':sitewhere-hbase')
-    compile project(':sitewhere-influx')
-    compile project(':sitewhere-mongodb')
-    compile project(':sitewhere-protobuf')
-    compile project(':sitewhere-rabbit-mq')
     compile project(':sitewhere-rest')
-    compile project(':sitewhere-siddhi')
-    compile project(':sitewhere-solr')
-    compile project(':sitewhere-spark')
-    compile project(':sitewhere-spring')
-    compile project(':sitewhere-twilio')
-    compile project(':sitewhere-wso2')
     
 	compile ('org.springframework.boot:spring-boot-starter-web')
  	compile ('org.apache.velocity:velocity')
