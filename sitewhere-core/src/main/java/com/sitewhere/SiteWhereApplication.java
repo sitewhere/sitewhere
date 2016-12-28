@@ -7,8 +7,7 @@
  */
 package com.sitewhere;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +27,6 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
-import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.ServerStartupException;
@@ -51,7 +49,8 @@ public class SiteWhereApplication implements ISiteWhereApplication {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public SiteWhereApplication() {
+    @PostConstruct
+    public void start() {
 	try {
 	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
 	    SiteWhere.start(this, monitor);
@@ -59,29 +58,29 @@ public class SiteWhereApplication implements ISiteWhereApplication {
 	    SiteWhere.getServer().logState();
 	} catch (ServerStartupException e) {
 	    SiteWhere.getServer().setServerStartupError(e);
-	    List<String> messages = new ArrayList<String>();
-	    messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-	    messages.add("");
-	    messages.add("Component: " + e.getDescription());
-	    messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
-	    String message = Boilerplate.boilerplate(messages, '*', 60);
-	    LOGGER.info("\n" + message + "\n");
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("\n!!!! SiteWhere Server Failed to Start !!!!\n");
+	    builder.append("\n");
+	    builder.append("Component: " + e.getDescription() + "\n");
+	    builder.append("Error: " + e.getComponent().getLifecycleError().getMessage() + "\n");
+	    LOGGER.info("\n" + builder.toString() + "\n");
+	    System.exit(1);
 	} catch (SiteWhereException e) {
 	    LOGGER.error("Exception on server startup.", e);
-	    List<String> messages = new ArrayList<String>();
-	    messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-	    messages.add("");
-	    messages.add("Error: " + e.getMessage());
-	    String message = Boilerplate.boilerplate(messages, '*', 60);
-	    LOGGER.info("\n" + message + "\n");
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("\n!!!! SiteWhere Server Failed to Start !!!!\n");
+	    builder.append("\n");
+	    builder.append("Error: " + e.getMessage() + "\n");
+	    LOGGER.info("\n" + builder.toString() + "\n");
+	    System.exit(2);
 	} catch (Throwable e) {
 	    LOGGER.error("Unhandled exception in server startup.", e);
-	    List<String> messages = new ArrayList<String>();
-	    messages.add("!!!! Unhandled Exception !!!!");
-	    messages.add("");
-	    messages.add("Error: " + e.getMessage());
-	    String message = Boilerplate.boilerplate(messages, '*', 60);
-	    LOGGER.info("\n" + message + "\n");
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("\n!!!! Unhandled Exception !!!!\n");
+	    builder.append("\n");
+	    builder.append("Error: " + e.getMessage() + "\n");
+	    LOGGER.info("\n" + builder.toString() + "\n");
+	    System.exit(3);
 	}
     }
 
