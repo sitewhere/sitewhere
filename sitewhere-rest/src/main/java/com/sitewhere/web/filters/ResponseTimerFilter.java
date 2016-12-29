@@ -41,7 +41,7 @@ public class ResponseTimerFilter extends OncePerRequestFilter {
 	long start = System.currentTimeMillis();
 	chain.doFilter(request, response);
 	long time = System.currentTimeMillis() - start;
-	LOGGER.info("Call for " + request.getMethod() + " to '" + request.getRequestURL() + "' returned in " + time
+	LOGGER.debug("Call for " + request.getMethod() + " to '" + request.getRequestURL() + "' returned in " + time
 		+ " ms.");
     }
 }
