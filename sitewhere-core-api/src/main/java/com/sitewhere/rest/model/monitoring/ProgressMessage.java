@@ -12,6 +12,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class ProgressMessage implements IProgressMessage {
 
+    /** Serial version UID */
+    private static final long serialVersionUID = 293429181916222135L;
+
     /** Task name */
     private String taskName;
 
