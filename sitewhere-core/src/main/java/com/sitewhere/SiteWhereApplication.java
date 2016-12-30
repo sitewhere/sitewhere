@@ -39,6 +39,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereApplication;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Root Spring Boot application that loads all other SiteWhere artifacts.
@@ -71,7 +72,7 @@ public class SiteWhereApplication implements ISiteWhereApplication {
 	    @Override
 	    public Void call() {
 		try {
-		    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
+		    ILifecycleProgressMonitor monitor = createStartupProgressMonitor();
 		    SiteWhere.start(SiteWhereApplication.this, monitor);
 		    LOGGER.info("Server started successfully.");
 		    SiteWhere.getServer().logState();
@@ -121,6 +122,17 @@ public class SiteWhereApplication implements ISiteWhereApplication {
     @Override
     public Class<? extends SiteWhereServer> getServerClass() throws SiteWhereException {
 	return SiteWhereServer.class;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereApplication#
+     * createStartupProgressMonitor()
+     */
+    @Override
+    public ILifecycleProgressMonitor createStartupProgressMonitor() {
+	return new LifecycleProgressMonitor();
     }
 
     public static void main(String[] args) {

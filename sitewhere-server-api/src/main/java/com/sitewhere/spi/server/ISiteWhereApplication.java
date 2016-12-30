@@ -8,6 +8,7 @@
 package com.sitewhere.spi.server;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Common interface implemented by SiteWhere applications.
@@ -23,4 +24,11 @@ public interface ISiteWhereApplication {
      * @throws SiteWhereException
      */
     public Class<? extends ISiteWhereServer> getServerClass() throws SiteWhereException;
+
+    /**
+     * Creates progress monitor used when the application is started.
+     * 
+     * @return
+     */
+    public ILifecycleProgressMonitor createStartupProgressMonitor();
 }
