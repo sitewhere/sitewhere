@@ -7,6 +7,9 @@
  */
 package com.sitewhere;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereApplication;
 import com.sitewhere.spi.server.ISiteWhereServer;
@@ -19,6 +22,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public class SiteWhere {
+
+    /** Private logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Singleton server instance */
     private static ISiteWhereServer SERVER;
@@ -35,10 +41,15 @@ public class SiteWhere {
 	Class<? extends ISiteWhereServer> clazz = application.getServerClass();
 	try {
 	    SERVER = clazz.newInstance();
-	    SERVER.initialize(monitor);
-	    SERVER.lifecycleStart(monitor);
 
-	    // Handle errors that prevent server startup.
+	    // Initialize server.
+	    SERVER.lifecycleInitialize(monitor);
+	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+		LOGGER.error("Exception while initializing server.", SERVER.getLifecycleError());
+	    }
+
+	    // Start server.
+	    SERVER.lifecycleStart(monitor);
 	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
 		throw SERVER.getLifecycleError();
 	    }
@@ -56,11 +67,16 @@ public class SiteWhere {
      * @throws SiteWhereException
      */
     public static void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getServer().lifecycleStop(monitor);
-
-	// Handle errors that prevent server shutdown.
+	// Stop server.
+	SERVER.lifecycleStop(monitor);
 	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
-	    throw SERVER.getLifecycleError();
+	    LOGGER.error("Exception while shutting down server.", SERVER.getLifecycleError());
+	}
+
+	// Terminate server.
+	SERVER.lifecycleTerminate(monitor);
+	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	    LOGGER.error("Exception while terminating server.", SERVER.getLifecycleError());
 	}
     }
 

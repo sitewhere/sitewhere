@@ -333,6 +333,54 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleTerminate
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecycleTerminate(ILifecycleProgressMonitor monitor) {
+	setLifecycleStatus(LifecycleStatus.Terminating);
+	getLogger().info(getComponentName() + " state transitioned to TERMINATING.");
+	try {
+	    terminate(monitor);
+	    setLifecycleStatus(LifecycleStatus.Terminated);
+	    getLogger().info(getComponentName() + " state transitioned to TERMINATED.");
+	} catch (SiteWhereException e) {
+	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleError(e);
+	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+	} catch (Throwable t) {
+	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleError(new SiteWhereException(t));
+	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#terminate(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
+     * lifecycleStatusChanged(com.sitewhere.spi.server.lifecycle.
+     * LifecycleStatus, com.sitewhere.spi.server.lifecycle.LifecycleStatus)
+     */
+    @Override
+    public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * findComponentsOfType(com
      * .sitewhere.spi.server.lifecycle.LifecycleComponentType)

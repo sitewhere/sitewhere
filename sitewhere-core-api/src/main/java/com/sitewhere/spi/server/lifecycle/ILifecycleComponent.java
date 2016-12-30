@@ -165,6 +165,28 @@ public interface ILifecycleComponent {
     public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException;
 
     /**
+     * Terminates the component while keeping up with lifecycle information.
+     * 
+     * @param monitor
+     */
+    public void lifecycleTerminate(ILifecycleProgressMonitor monitor);
+
+    /**
+     * Terminate the component.
+     * 
+     * @throws SiteWhereException
+     */
+    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Called to track component lifecycle changes.
+     * 
+     * @param before
+     * @param after
+     */
+    public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after);
+
+    /**
      * Find components (including this component and nested components) that are
      * of the given type.
      * 

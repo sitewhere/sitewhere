@@ -35,6 +35,12 @@ public enum LifecycleStatus {
     /** Component is stopping */
     Stopping,
 
+    /** Component is terminating */
+    Terminating,
+
+    /** Component is terminated */
+    Terminated,
+
     /** Component startup failed with an error */
     Error;
 }
