@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -110,7 +111,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	cacheConfigurationResources();
 
 	// Start watching for filesystem changes in background.
-	executor = Executors.newSingleThreadExecutor();
+	executor = Executors.newSingleThreadExecutor(new ResourceManagementThreadFactory());
 	watcher = new FileSystemWatcher();
 	executor.execute(watcher);
     }
@@ -869,5 +870,13 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
 	/** Serial version UID */
 	private static final long serialVersionUID = -7209786156575267473L;
+    }
+
+    /** Used for naming SiteWhere threads */
+    private static class ResourceManagementThreadFactory implements ThreadFactory {
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Resource Management");
+	}
     }
 }

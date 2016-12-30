@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,7 +106,7 @@ import com.sitewhere.version.VersionHelper;
 public class SiteWhereServer extends LifecycleComponent implements ISiteWhereServer {
 
     /** Number of threads in pool for starting tenants */
-    private static final int TENANT_STARTUP_PARALLELISM = 5;
+    private static final int TENANT_OPERATION_PARALLELISM = 5;
 
     /** Private logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -182,7 +184,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     private ExecutorService executor;
 
     /** Thread pool for starting tenants in parallel */
-    private ExecutorService tenantStarters;
+    private ExecutorService tenantOperations;
 
     /** Supports migrating old server version to new format */
     private IBackwardCompatibilityService backwardCompatibilityService = new BackwardCompatibilityService();
@@ -1060,10 +1062,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		initializeTenantEngines();
 
 		// Create thread pool for starting tenants in parallel.
-		if (tenantStarters != null) {
-		    tenantStarters.shutdownNow();
+		if (tenantOperations != null) {
+		    tenantOperations.shutdownNow();
 		}
-		tenantStarters = Executors.newFixedThreadPool(TENANT_STARTUP_PARALLELISM);
+		tenantOperations = Executors.newFixedThreadPool(TENANT_OPERATION_PARALLELISM,
+			new TenantOperationsThreadFactory());
 
 		// Start tenant engines.
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
@@ -1080,7 +1083,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		    // Do not start if desired state is 'Stopped'.
 		    if (state.getDesiredState() != LifecycleStatus.Stopped) {
-			tenantStarters.execute(new Runnable() {
+			tenantOperations.execute(new Runnable() {
 
 			    @Override
 			    public void run() {
@@ -1272,13 +1275,43 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+
+		// Create thread pool for stopping tenants in parallel.
+		if (tenantOperations != null) {
+		    tenantOperations.shutdownNow();
+		}
+		tenantOperations = Executors.newFixedThreadPool(TENANT_OPERATION_PARALLELISM,
+			new TenantOperationsThreadFactory());
+
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
-		    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
-			engine.lifecycleStop(monitor);
-		    }
+		    tenantOperations.execute(new Runnable() {
+
+			@Override
+			public void run() {
+			    try {
+				stopTenantEngine(engine, monitor);
+			    } catch (SiteWhereException e) {
+				LOGGER.error("Tenant engine shutdown failed.", e);
+			    }
+			}
+		    });
 		}
 	    }
 	});
+    }
+
+    /**
+     * Stop a tenant engine.
+     * 
+     * @param engine
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    protected void stopTenantEngine(ISiteWhereTenantEngine engine, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
+	    engine.lifecycleStop(monitor);
+	}
     }
 
     /*
@@ -1396,6 +1429,17 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    return;
 	} catch (SiteWhereException e) {
 	    LOGGER.warn("Error verifying tenant model.", e);
+	}
+    }
+
+    /** Used for naming tenant operation threads */
+    private class TenantOperationsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Tenant Lifecycle " + counter.incrementAndGet());
 	}
     }
 }

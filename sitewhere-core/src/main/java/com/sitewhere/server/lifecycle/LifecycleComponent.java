@@ -484,7 +484,12 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+	LifecycleStatus old = this.lifecycleStatus;
 	this.lifecycleStatus = lifecycleStatus;
+
+	if (old != lifecycleStatus) {
+	    lifecycleStatusChanged(old, lifecycleStatus);
+	}
     }
 
     /*
