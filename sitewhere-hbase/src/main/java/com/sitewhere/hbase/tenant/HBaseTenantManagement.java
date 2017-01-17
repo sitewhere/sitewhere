@@ -7,8 +7,6 @@
  */
 package com.sitewhere.hbase.tenant;
 
-import java.util.List;
-
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,18 +20,13 @@ import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.hbase.user.UserIdManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantGroup;
-import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
-import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
  * HBase implementation of SiteWhere tenant management.
@@ -172,104 +165,6 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
     @Override
     public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
 	return HBaseTenant.deleteTenant(context, tenantId, force);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#createTenantGroup(com.
-     * sitewhere.spi.tenant.request.ITenantGroupCreateRequest)
-     */
-    @Override
-    public ITenantGroup createTenantGroup(ITenantGroupCreateRequest request) throws SiteWhereException {
-	return HBaseTenantGroup.createTenantGroup(context, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenantGroup(java.lang.
-     * String, com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest)
-     */
-    @Override
-    public ITenantGroup updateTenantGroup(String id, ITenantGroupCreateRequest request) throws SiteWhereException {
-	return HBaseTenantGroup.updateTenantGroup(context, id, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantGroupById(java.lang.
-     * String)
-     */
-    @Override
-    public ITenantGroup getTenantGroupByToken(String token) throws SiteWhereException {
-	return HBaseTenantGroup.getTenantGroupByToken(context, token);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#listTenantGroups(com.sitewhere
-     * .spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<ITenantGroup> listTenantGroups(ISearchCriteria criteria) throws SiteWhereException {
-	return HBaseTenantGroup.listTenantGroups(context, false, criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenantGroup(java.lang.
-     * String, boolean)
-     */
-    @Override
-    public ITenantGroup deleteTenantGroup(String groupId, boolean force) throws SiteWhereException {
-	return HBaseTenantGroup.deleteTenantGroup(context, groupId, force);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#addTenantGroupElements(java.
-     * lang.String, java.util.List)
-     */
-    @Override
-    public List<ITenantGroupElement> addTenantGroupElements(String groupId,
-	    List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
-	return HBaseTenantGroupElement.createTenantGroupElements(context, groupId, elements);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#removeTenantGroupElements(java
-     * .lang.String, java.util.List)
-     */
-    @Override
-    public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
-	    List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
-	return HBaseTenantGroupElement.removeTenantGroupElements(context, groupId, elements);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#listTenantGroupElements(java.
-     * lang.String, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseTenantGroupElement.listTenantGroupElements(context, groupId, criteria);
     }
 
     public ISiteWhereHBaseClient getClient() {

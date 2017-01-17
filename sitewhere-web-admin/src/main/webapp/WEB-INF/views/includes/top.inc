@@ -174,8 +174,6 @@
 									Users</a></li>
 							<!-- #end -->
 							<!-- #if ($authorities.administerTenants) -->
-							<li><a href="${request.contextPath}/admin/tgroups/list.html">Manage
-									Tenant Groups</a></li>
 							<li><a href="${request.contextPath}/admin/tenants/list.html">Manage
 									Tenants</a></li>
 							<!-- #end -->

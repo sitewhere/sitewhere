@@ -7,20 +7,13 @@
  */
 package com.sitewhere.server.tenant;
 
-import java.util.List;
-
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantGroup;
-import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
-import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
  * Uses decorator pattern to allow behaviors to be injected around tenant
@@ -107,103 +100,5 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
     @Override
     public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
 	return delegate.deleteTenant(tenantId, force);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#createTenantGroup(com.
-     * sitewhere.spi. tenant.request.ITenantGroupCreateRequest)
-     */
-    @Override
-    public ITenantGroup createTenantGroup(ITenantGroupCreateRequest request) throws SiteWhereException {
-	return delegate.createTenantGroup(request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenantGroup(java.lang.
-     * String, com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest)
-     */
-    @Override
-    public ITenantGroup updateTenantGroup(String id, ITenantGroupCreateRequest request) throws SiteWhereException {
-	return delegate.updateTenantGroup(id, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantGroupByToken(java.
-     * lang.String)
-     */
-    @Override
-    public ITenantGroup getTenantGroupByToken(String token) throws SiteWhereException {
-	return delegate.getTenantGroupByToken(token);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#listTenantGroups(com.sitewhere
-     * .spi. search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<ITenantGroup> listTenantGroups(ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listTenantGroups(criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenantGroup(java.lang.
-     * String, boolean)
-     */
-    @Override
-    public ITenantGroup deleteTenantGroup(String groupId, boolean force) throws SiteWhereException {
-	return delegate.deleteTenantGroup(groupId, force);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#addTenantGroupElements(java.
-     * lang.String, java.util.List)
-     */
-    @Override
-    public List<ITenantGroupElement> addTenantGroupElements(String groupId,
-	    List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
-	return delegate.addTenantGroupElements(groupId, elements);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#removeTenantGroupElements(java
-     * .lang. String, java.util.List)
-     */
-    @Override
-    public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
-	    List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
-	return delegate.removeTenantGroupElements(groupId, elements);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#listTenantGroupElements(java.
-     * lang. String, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.listTenantGroupElements(groupId, criteria);
     }
 }

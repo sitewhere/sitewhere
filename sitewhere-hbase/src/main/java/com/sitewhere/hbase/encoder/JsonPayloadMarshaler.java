@@ -32,8 +32,6 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.tenant.Tenant;
-import com.sitewhere.rest.model.tenant.TenantGroup;
-import com.sitewhere.rest.model.tenant.TenantGroupElement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
@@ -61,8 +59,6 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantGroup;
-import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -704,51 +700,5 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     @Override
     public Tenant decodeTenant(byte[] payload) throws SiteWhereException {
 	return MarshalUtils.unmarshalJson(payload, Tenant.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeTenantGroup(com.
-     * sitewhere.spi.tenant.ITenantGroup)
-     */
-    @Override
-    public byte[] encodeTenantGroup(ITenantGroup group) throws SiteWhereException {
-	return MarshalUtils.marshalJson(group);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeTenantGroup(byte[])
-     */
-    @Override
-    public TenantGroup decodeTenantGroup(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, TenantGroup.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeTenantGroupElement(
-     * com.sitewhere.spi.tenant.ITenantGroupElement)
-     */
-    @Override
-    public byte[] encodeTenantGroupElement(ITenantGroupElement element) throws SiteWhereException {
-	return MarshalUtils.marshalJson(element);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeTenantGroupElement(
-     * byte[])
-     */
-    @Override
-    public TenantGroupElement decodeTenantGroupElement(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, TenantGroupElement.class);
     }
 }

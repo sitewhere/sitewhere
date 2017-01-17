@@ -447,28 +447,6 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#
-     * getTenantGroupsCollection()
-     */
-    @Override
-    public DBCollection getTenantGroupsCollection() {
-	return getGlobalDatabase().getCollection(getTenantGroupsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#
-     * getTenantGroupElementsCollection()
-     */
-    @Override
-    public DBCollection getTenantGroupElementsCollection() {
-	return getGlobalDatabase().getCollection(getTenantGroupElementsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.mongodb.IAssetManagementMongoClient#
      * getAssetCategoriesCollection( com.sitewhere.spi.user.ITenant)
      */

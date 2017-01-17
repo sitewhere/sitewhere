@@ -48,7 +48,6 @@ import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantGroup;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.version.VersionHelper;
@@ -789,46 +788,6 @@ public class AdminInterfaceController extends MvcController {
 	    addTenantData(tenant, data);
 
 	    return new ModelAndView("tenants/detail", data);
-	} catch (SiteWhereException e) {
-	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
-    }
-
-    /**
-     * Display the "list tenant groups" page.
-     * 
-     * @param request
-     * @return
-     */
-    @RequestMapping("/tgroups/list")
-    @Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
-    public ModelAndView listTenantGroups(HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listTenantGroups", LOGGER);
-	try {
-	    Map<String, Object> data = createBaseData(request);
-	    return new ModelAndView("tgroups/list", data);
-	} catch (SiteWhereException e) {
-	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
-    }
-
-    @RequestMapping("/tgroups/{token}")
-    public ModelAndView viewTenantGroup(@PathVariable("token") String token, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "viewTenantGroup", LOGGER);
-	try {
-	    Map<String, Object> data = createBaseData(request);
-
-	    ITenantGroup tgroup = SiteWhere.getServer().getTenantManagement().getTenantGroupByToken(token);
-	    if (tgroup == null) {
-		showError("Invalid tenant group token.");
-	    }
-	    data.put("tgroup", tgroup);
-
-	    return new ModelAndView("tgroups/detail", data);
 	} catch (SiteWhereException e) {
 	    return showError(e);
 	} finally {

@@ -7,19 +7,11 @@
  */
 package com.sitewhere.rest.model.tenant.request.scripting;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
-import com.sitewhere.rest.model.tenant.request.TenantGroupCreateRequest;
-import com.sitewhere.rest.model.tenant.request.TenantGroupElementCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantGroup;
-import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
  * Builder that supports creating tenant management entities.
@@ -96,89 +88,6 @@ public class TenantManagementRequestBuilder {
      */
     public boolean hasTenant(String id) throws SiteWhereException {
 	return getTenant(id) != null;
-    }
-
-    /**
-     * Create builder for new tenant group request. This version allows a token
-     * to be auto-generated.
-     * 
-     * @param name
-     * @return
-     */
-    public TenantGroupCreateRequest.Builder newTenantGroup(String name) {
-	return new TenantGroupCreateRequest.Builder(name);
-    }
-
-    /**
-     * Create builder for new tenant group request.
-     * 
-     * @param token
-     * @param name
-     * @return
-     */
-    public TenantGroupCreateRequest.Builder newTenantGroup(String token, String name) {
-	return new TenantGroupCreateRequest.Builder(token, name);
-    }
-
-    /**
-     * Persist tenant group contructed via builder.
-     * 
-     * @param builder
-     * @return
-     * @throws SiteWhereException
-     */
-    public ITenantGroup persist(TenantGroupCreateRequest.Builder builder) throws SiteWhereException {
-	return getTenantManagement().createTenantGroup(builder.build());
-    }
-
-    /**
-     * Get a tenant group by token.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    public ITenantGroup getTenantGroup(String token) throws SiteWhereException {
-	return getTenantManagement().getTenantGroupByToken(token);
-    }
-
-    /**
-     * Indicates whether a tenant group exists for the given id.
-     * 
-     * @param id
-     * @return
-     * @throws SiteWhereException
-     */
-    public boolean hasTenantGroup(String id) throws SiteWhereException {
-	return getTenantGroup(id) != null;
-    }
-
-    /**
-     * Create builder for a tenant group element.
-     * 
-     * @param tenantGroupId
-     * @param tenantId
-     * @return
-     */
-    public TenantGroupElementCreateRequest.Builder newTenantGroupElement(String tenantId) {
-	return new TenantGroupElementCreateRequest.Builder(tenantId);
-    }
-
-    /**
-     * Add elements to a tenant group.
-     * 
-     * @param group
-     * @param builders
-     * @return
-     * @throws SiteWhereException
-     */
-    public List<ITenantGroupElement> persist(ITenantGroup group, List<TenantGroupElementCreateRequest.Builder> builders)
-	    throws SiteWhereException {
-	List<ITenantGroupElementCreateRequest> elements = new ArrayList<ITenantGroupElementCreateRequest>();
-	for (TenantGroupElementCreateRequest.Builder builder : builders) {
-	    elements.add(builder.build());
-	}
-	return getTenantManagement().addTenantGroupElements(group.getToken(), elements);
     }
 
     public ITenantManagement getTenantManagement() {

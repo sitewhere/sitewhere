@@ -51,18 +51,4 @@ public interface IGlobalManagementMongoClient {
      * @return
      */
     public DBCollection getTenantsCollection();
-
-    /**
-     * Get the collection for tenant groups.
-     * 
-     * @return
-     */
-    public DBCollection getTenantGroupsCollection();
-
-    /**
-     * Get the collection for tenant group elements.
-     * 
-     * @return
-     */
-    public DBCollection getTenantGroupElementsCollection();
 }
