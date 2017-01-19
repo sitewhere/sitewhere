@@ -115,6 +115,11 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="authDatabaseName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Authentication database name.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 		<xsd:attribute name="username" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Username used to authenticate.</xsd:documentation>

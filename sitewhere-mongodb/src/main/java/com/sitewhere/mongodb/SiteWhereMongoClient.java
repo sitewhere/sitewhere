@@ -52,6 +52,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /** Default database name */
     private static final String DEFAULT_DATABASE_NAME = "sitewhere";
 
+    /** Default authentication database name */
+    private static final String DEFAULT_AUTH_DATABASE_NAME = "admin";
+
     /** Mongo client */
     private MongoClient client;
 
@@ -69,6 +72,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     /** Database that holds sitewhere collections */
     private String databaseName = DEFAULT_DATABASE_NAME;
+
+    /** Database that holds user credentials */
+    private String authDatabaseName = DEFAULT_AUTH_DATABASE_NAME;
 
     /** Injected name used for device specifications collection */
     private String deviceSpecificationsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
@@ -154,7 +160,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
 	    // Handle authenticated access.
 	    if ((getUsername() != null) && (getPassword() != null)) {
-		MongoCredential credential = MongoCredential.createCredential(getUsername(), getDatabaseName(),
+		MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
 			getPassword().toCharArray());
 		this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), Arrays.asList(credential),
 			builder.build());
@@ -546,6 +552,14 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     public void setDatabaseName(String databaseName) {
 	this.databaseName = databaseName;
+    }
+
+    public String getAuthDatabaseName() {
+	return authDatabaseName;
+    }
+
+    public void setAuthDatabaseName(String authDatabaseName) {
+	this.authDatabaseName = authDatabaseName;
     }
 
     public String getDeviceSpecificationsCollectionName() {

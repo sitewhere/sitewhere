@@ -160,6 +160,11 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 	    client.addPropertyValue("username", username.getValue());
 	    client.addPropertyValue("password", password.getValue());
 	}
+
+	Attr authDatabaseName = element.getAttributeNode("authDatabaseName");
+	if (authDatabaseName != null) {
+	    client.addPropertyValue("authDatabaseName", authDatabaseName.getValue());
+	}
     }
 
     /**
