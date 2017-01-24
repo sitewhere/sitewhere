@@ -216,8 +216,14 @@ public enum ElementRole {
     /** Asset Management element. */
     AssetManagment(null, false, false, false, new ElementRole[] { AssetManagment_AssetModule }, new ElementRole[0], true),
 
+    /** Search Providers. Search provider. */
+    SearchProviders_SearchProvider("Search Providers", true, true, true),
+
+    /** Search providers element. */
+    SearchProviders("Search Providers", true, false, false, new ElementRole[] { SearchProviders_SearchProvider }, new ElementRole[0], true),
+
     /** Top level element. */
-    Root(null, false, false, false, new ElementRole[] { Globals, DataManagement, DeviceCommunication, EventProcessing, AssetManagment });
+    Root(null, false, false, false, new ElementRole[] { Globals, DataManagement, DeviceCommunication, EventProcessing, AssetManagment, SearchProviders });
 
     /** Role name */
     private String name;

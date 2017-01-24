@@ -9,6 +9,7 @@ package com.sitewhere.spi.search.external;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -29,6 +30,15 @@ public interface IDeviceEventSearchProvider extends ISearchProvider {
      * @throws SiteWhereException
      */
     public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException;
+
+    /**
+     * Execute a query, returning a raw response from the provider.
+     * 
+     * @param query
+     * @return
+     * @throws SiteWhereException
+     */
+    public JsonNode executeQueryWithRawResponse(String query) throws SiteWhereException;
 
     /**
      * Get a list of device locations near the given lat/long in the given time

@@ -9,7 +9,8 @@ package com.sitewhere.solr;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -37,8 +38,8 @@ public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
     /** URL used to interact with Solr server */
     private String solrServerUrl = DEFAULT_SOLR_URL;
 
-    /** Solr server instance */
-    private HttpSolrServer solrServer;
+    /** Solr client instance */
+    private SolrClient solrClient;
 
     public SiteWhereSolrConfiguration() {
 	super(LifecycleComponentType.Other);
@@ -54,7 +55,7 @@ public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	LOGGER.info("Solr initializing with URL: " + getSolrServerUrl());
-	setSolrServer(new HttpSolrServer(getSolrServerUrl()));
+	setSolrClient(new HttpSolrClient.Builder(getSolrServerUrl()).build());
     }
 
     /*
@@ -75,11 +76,11 @@ public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
 	this.solrServerUrl = solrServerUrl;
     }
 
-    public HttpSolrServer getSolrServer() {
-	return solrServer;
+    public SolrClient getSolrClient() {
+	return solrClient;
     }
 
-    public void setSolrServer(HttpSolrServer solrServer) {
-	this.solrServer = solrServer;
+    public void setSolrClient(SolrClient solrClient) {
+	this.solrClient = solrClient;
     }
 }

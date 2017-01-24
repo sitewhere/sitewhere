@@ -69,7 +69,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	}
 	try {
 	    LOGGER.info("Attempting to ping Solr server to verify availability...");
-	    SolrPingResponse response = getSolr().getSolrServer().ping();
+	    SolrPingResponse response = getSolr().getSolrClient().ping();
 	    int pingTime = response.getQTime();
 	    LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
@@ -155,10 +155,10 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 		    SolrInputDocument document = queue.take();
 		    try {
 			LOGGER.debug("Indexing document in Solr...");
-			UpdateResponse response = getSolr().getSolrServer().add(document);
+			UpdateResponse response = getSolr().getSolrClient().add(document);
 			if (response.getStatus() == 0) {
 			    LOGGER.debug("Indexed document successfully. " + response.toString());
-			    getSolr().getSolrServer().commit();
+			    getSolr().getSolrClient().commit();
 			} else {
 			    LOGGER.warn("Bad response code indexing document: " + response.getStatus());
 			}

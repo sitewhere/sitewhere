@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
@@ -22,6 +23,7 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.MultiMapSolrParams;
 import org.apache.solr.servlet.SolrRequestParsers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SiteWhereSolrFactory;
@@ -79,7 +81,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	}
 	try {
 	    LOGGER.info("Attempting to ping Solr server to verify availability...");
-	    SolrPingResponse response = getSolr().getSolrServer().ping();
+	    SolrPingResponse response = getSolr().getSolrClient().ping();
 	    int pingTime = response.getQTime();
 	    LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
@@ -112,14 +114,39 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	try {
 	    LOGGER.info("About to execute Solr search with query string: " + query);
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
-	    MultiMapSolrParams params = SolrRequestParsers.parseQueryString(query);
-	    QueryResponse response = getSolr().getSolrServer().query(params);
+	    SolrQuery solrQuery = new SolrQuery();
+	    solrQuery.setQuery(query);
+	    QueryResponse response = getSolr().getSolrClient().query(solrQuery);
 	    SolrDocumentList docs = response.getResults();
 	    for (SolrDocument doc : docs) {
 		results.add(SiteWhereSolrFactory.parseDocument(doc));
 	    }
 	    return results;
 	} catch (SolrServerException e) {
+	    throw new SiteWhereException("Unable to execute query.", e);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to execute query.", e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.search.external.IDeviceEventSearchProvider#
+     * executeQueryWithRawResponse(java.lang.String)
+     */
+    @Override
+    public JsonNode executeQueryWithRawResponse(String query) throws SiteWhereException {
+	try {
+	    LOGGER.info("About to execute Solr search with query string: " + query);
+	    MultiMapSolrParams params = SolrRequestParsers.parseQueryString(query);
+	    QueryResponse response = getSolr().getSolrClient().query(params);
+	    SolrDocumentList docs = response.getResults();
+	    LOGGER.info("Search response contained " + docs.getNumFound() + " documents.");
+	    return null;
+	} catch (SolrServerException e) {
+	    throw new SiteWhereException("Unable to execute query.", e);
+	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to execute query.", e);
 	}
     }
@@ -136,7 +163,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	ModifiableSolrParams params = new ModifiableSolrParams();
 	try {
-	    QueryResponse response = getSolr().getSolrServer().query(params);
+	    QueryResponse response = getSolr().getSolrClient().query(params);
 	    SolrDocumentList docs = response.getResults();
 	    while (docs.iterator().hasNext()) {
 		SolrDocument doc = docs.iterator().next();
@@ -146,6 +173,8 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    return results;
 	} catch (SolrServerException e) {
 	    throw new SiteWhereException("Unable to execute 'getLocationsNear' query.", e);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to execute query.", e);
 	}
     }
 

@@ -18,8 +18,8 @@
 			required="true" multiValued="false" />
 		<field name="receivedDate" type="date" indexed="true" stored="true"
 			required="true" multiValued="false" />
-		<field name="location" type="location" indexed="true" stored="true"
-			multiValued="true" />
+		<field name="location" type="location_rpt" indexed="true"
+			stored="true" multiValued="true" />
 		<field name="elevation" type="double" indexed="true" stored="true"
 			multiValued="false" />
 		<field name="alertType" type="string" indexed="true" stored="true"
@@ -85,6 +85,11 @@
 			data added to them will be ignored outright. -->
 		<fieldtype name="ignored" stored="false" indexed="false"
 			multiValued="true" class="solr.StrField" />
+
+		<fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+			spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+			autoIndex="true" validationRule="repairBuffer0" distErrPct="0.025"
+			maxDistErr="0.001" distanceUnits="kilometers" />
 
 		<fieldType name="point" class="solr.PointType" dimension="2"
 			subFieldSuffix="_d" />

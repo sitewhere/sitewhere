@@ -23,6 +23,7 @@ import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.search.SolrSearchProvider;
+import com.sitewhere.spring.handler.ISearchProvidersParser.Elements;
 
 /**
  * Parses configuration information for the 'search-providers' section.
@@ -61,7 +62,7 @@ public class SearchProvidersParser extends AbstractBeanDefinitionParser {
 	ManagedList<Object> result = new ManagedList<Object>();
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
 			.resolve(child.getNamespaceURI());
 		if (nested != null) {
@@ -114,40 +115,5 @@ public class SearchProvidersParser extends AbstractBeanDefinitionParser {
 	provider.addPropertyReference("solr", SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN);
 
 	return provider.getBeanDefinition();
-    }
-
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
-    public static enum Elements {
-
-	/** Solr search provider */
-	SolrSearchProvider("solr-search-provider");
-
-	/** Event code */
-	private String localName;
-
-	private Elements(String localName) {
-	    this.localName = localName;
-	}
-
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
-		if (value.getLocalName().equals(localName)) {
-		    return value;
-		}
-	    }
-	    return null;
-	}
-
-	public String getLocalName() {
-	    return localName;
-	}
-
-	public void setLocalName(String localName) {
-	    this.localName = localName;
-	}
     }
 }

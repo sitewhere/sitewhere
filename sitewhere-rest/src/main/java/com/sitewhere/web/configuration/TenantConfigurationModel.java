@@ -30,5 +30,6 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	getElementsByRole().putAll(new DeviceCommunicationModel().getElementsByRole());
 	getElementsByRole().putAll(new EventProcessingModel().getElementsByRole());
 	getElementsByRole().putAll(new AssetManagementModel().getElementsByRole());
+	getElementsByRole().putAll(new SearchProvidersModel().getElementsByRole());
     }
 }
