@@ -9,21 +9,28 @@ package com.sitewhere.solr.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.NoOpResponseParser;
+import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.MultiMapSolrParams;
-import org.apache.solr.servlet.SolrRequestParsers;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.NamedList;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SiteWhereSolrFactory;
@@ -58,6 +65,9 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 
     /** Provider name */
     private String name = NAME;
+
+    /** For JSON marshaling */
+    private static ObjectMapper MAPPER = new ObjectMapper();
 
     /** Solr configuration */
     private SiteWhereSolrConfiguration solr;
@@ -102,20 +112,36 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	return LOGGER;
     }
 
+    /**
+     * Create Solr parameters from an arbitrary query string.
+     * 
+     * @param queryString
+     * @return
+     */
+    protected SolrParams createParamsFromQueryString(String queryString) {
+	MultiValueMap<String, String> parsed = UriComponentsBuilder.fromHttpUrl("http://localhost?" + queryString)
+		.build().getQueryParams();
+	Map<String, String[]> params = new HashMap<String, String[]>();
+	for (String key : parsed.keySet()) {
+	    params.put(key, parsed.get(key).toArray(new String[0]));
+	}
+	return new ModifiableSolrParams(params);
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see
      * com.sitewhere.spi.search.external.IDeviceEventSearchProvider#executeQuery
-     * (java. lang.String)
+     * (java.lang.String)
      */
     @Override
-    public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException {
+    public List<IDeviceEvent> executeQuery(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.info("About to execute Solr search with query string: " + query);
+	    LOGGER.info("About to execute Solr search with query string: " + queryString);
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
 	    SolrQuery solrQuery = new SolrQuery();
-	    solrQuery.setQuery(query);
+	    solrQuery.setQuery(queryString);
 	    QueryResponse response = getSolr().getSolrClient().query(solrQuery);
 	    SolrDocumentList docs = response.getResults();
 	    for (SolrDocument doc : docs) {
@@ -136,14 +162,19 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      * executeQueryWithRawResponse(java.lang.String)
      */
     @Override
-    public JsonNode executeQueryWithRawResponse(String query) throws SiteWhereException {
+    public JsonNode executeQueryWithRawResponse(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.info("About to execute Solr search with query string: " + query);
-	    MultiMapSolrParams params = SolrRequestParsers.parseQueryString(query);
-	    QueryResponse response = getSolr().getSolrClient().query(params);
-	    SolrDocumentList docs = response.getResults();
-	    LOGGER.info("Search response contained " + docs.getNumFound() + " documents.");
-	    return null;
+	    LOGGER.info("About to execute Solr search with query string: " + queryString);
+
+	    NoOpResponseParser rawJsonResponseParser = new NoOpResponseParser();
+	    rawJsonResponseParser.setWriterType("json");
+
+	    SolrQuery query = new SolrQuery();
+	    query.add(createParamsFromQueryString(queryString));
+	    QueryRequest request = new QueryRequest(query);
+	    request.setResponseParser(rawJsonResponseParser);
+	    NamedList<?> results = getSolr().getSolrClient().request(request);
+	    return MAPPER.readTree((String) results.get("response"));
 	} catch (SolrServerException e) {
 	    throw new SiteWhereException("Unable to execute query.", e);
 	} catch (IOException e) {
