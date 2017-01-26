@@ -9,10 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -34,11 +38,22 @@ public class SiteMarshalHelper {
     /** Tenant */
     private ITenant tenant;
 
+    /** Indicates whether assignments for site should be included */
+    private boolean includeAssignements = false;
+
     /** Indicates whether zones are to be included */
     private boolean includeZones = false;
 
+    /** Device assignment marshal helper */
+    private DeviceAssignmentMarshalHelper assignmentHelper;
+
     public SiteMarshalHelper(ITenant tenant) {
 	this.tenant = tenant;
+
+	this.assignmentHelper = new DeviceAssignmentMarshalHelper(tenant);
+	assignmentHelper.setIncludeDevice(true);
+	assignmentHelper.setIncludeAsset(true);
+	assignmentHelper.setIncludeSite(false);
     }
 
     /**
@@ -50,6 +65,17 @@ public class SiteMarshalHelper {
      */
     public Site convert(ISite source) throws SiteWhereException {
 	Site site = Site.copy(source);
+	if (isIncludeAssignements()) {
+	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
+	    criteria.setStatus(DeviceAssignmentStatus.Active);
+	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement(getTenant())
+		    .getDeviceAssignmentsForSite(site.getToken(), criteria);
+	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
+	    for (IDeviceAssignment match : matches.getResults()) {
+		assignments.add(assignmentHelper.convert(match, SiteWhere.getServer().getAssetModuleManager(tenant)));
+	    }
+	    site.setDeviceAssignments(assignments);
+	}
 	if (isIncludeZones()) {
 	    ISearchResults<IZone> matches = getDeviceManagement(getTenant()).listZones(source.getToken(),
 		    SearchCriteria.ALL);
@@ -87,6 +113,14 @@ public class SiteMarshalHelper {
 
     public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
+    }
+
+    public boolean isIncludeAssignements() {
+	return includeAssignements;
+    }
+
+    public void setIncludeAssignements(boolean includeAssignements) {
+	this.includeAssignements = includeAssignements;
     }
 
     public boolean isIncludeZones() {

@@ -212,6 +212,7 @@ public class SitesController extends RestController {
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Sites.ListSitesResponse.class, description = "listSitesResponse.md") })
     public ISearchResults<ISite> listSites(
+	    @ApiParam(value = "Include assignments", required = false) @RequestParam(defaultValue = "false") boolean includeAssignments,
 	    @ApiParam(value = "Include zones", required = false) @RequestParam(defaultValue = "false") boolean includeZones,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
 		    ConcernType.Paging }) int page,
@@ -225,6 +226,7 @@ public class SitesController extends RestController {
 		    .listSites(criteria);
 	    SiteMarshalHelper helper = new SiteMarshalHelper(getTenant(servletRequest));
 	    helper.setIncludeZones(includeZones);
+	    helper.setIncludeAssignements(includeAssignments);
 
 	    List<ISite> results = new ArrayList<ISite>();
 	    for (ISite site : matches.getResults()) {

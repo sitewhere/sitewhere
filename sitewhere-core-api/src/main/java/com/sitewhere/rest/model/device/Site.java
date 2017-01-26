@@ -44,6 +44,9 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 
     /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
+    /** List of assignments for site */
+    private List<DeviceAssignment> deviceAssignments;
+
     /** List of zones for site */
     private List<Zone> zones;
 
@@ -110,6 +113,14 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 
     public void setMap(SiteMapData map) {
 	this.map = map;
+    }
+
+    public List<DeviceAssignment> getDeviceAssignments() {
+	return deviceAssignments;
+    }
+
+    public void setDeviceAssignments(List<DeviceAssignment> deviceAssignments) {
+	this.deviceAssignments = deviceAssignments;
     }
 
     public List<Zone> getZones() {
