@@ -46,6 +46,7 @@ import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -413,6 +414,41 @@ public class AssignmentsController extends RestController {
 	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocations(token,
 		    criteria);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Push latest location value as current location state for assignment.
+     * 
+     * @param token
+     * @param servletRequest
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/locations/latest/push", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Push most recent location to current state")
+    @Secured({ SiteWhereRoles.REST })
+    @Documented(examples = {
+	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
+    public void pushLatestLocationToState(
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "pushLatestLocationToState", LOGGER);
+	try {
+	    IDeviceAssignment assignment = getDeviceAssignment(token, servletRequest);
+	    DeviceAssignmentState state = (DeviceAssignmentState) assignment.getState();
+	    ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest);
+	    if (locations.getNumResults() > 0) {
+		DeviceLocation location = (DeviceLocation) locations.getResults().get(0);
+		if (state == null) {
+		    state = new DeviceAssignmentState();
+		}
+		state.setLastLocation(location);
+		SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
+			state);
+	    }
 	} finally {
 	    Tracer.stop(LOGGER);
 	}
