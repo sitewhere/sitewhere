@@ -507,6 +507,16 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
+     * Add a tag to an existing object
+     * @param tagName
+     * @param tagValue
+     * @param builder
+     */
+    public static void addUserDefinedTag(String tagName, String tagValue, Point.Builder builder){
+	    builder.tag(tagName, tagValue);
+    }
+
+    /**
      * Parse a date field.
      * 
      * @param values
