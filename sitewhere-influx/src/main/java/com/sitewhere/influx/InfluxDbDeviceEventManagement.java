@@ -9,6 +9,7 @@ package com.sitewhere.influx;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -112,6 +113,9 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /** Log level */
     private String logLevel;
 
+    /** Prefix to compare against when adding user defined tags from assignment meta data*/
+    private final String ASSIGNMENT_META_DATA_TAG_PREFIX = "INFLUX_TAG_";
+
     public InfluxDbDeviceEventManagement() {
 	super(LifecycleComponentType.DataStore);
     }
@@ -193,6 +197,38 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
     }
 
+    /**
+     *  Add any user defined tags from assignment metadata.
+     *  A tag should be prefixed with ASSIGNMENT_META_DATA_TAG_PREFIX i.e INFLUX_TAG_displayName.
+     *  The prefix will be removed and a new tag created using the remaining characters as the tag name with value
+     *  metadata.key assigned to it.
+     *
+     *  @param assignment
+     *  @param builder
+     */
+    protected void addUserDefinedTags(IDeviceAssignment assignment, Point.Builder builder){
+	    Map<String,String> assignmentMetaData = assignment.getMetadata();
+
+	    if(assignmentMetaData != null){
+	        for(Map.Entry<String,String> metaData : assignmentMetaData.entrySet()){
+	            String metaDataKey = metaData.getKey().trim();
+	            if(metaDataKey.length() == 0) { continue; }
+
+	            String metaDataValue = metaData.getValue();
+	            if(metaDataValue == null) { continue; }
+
+	            metaDataValue = metaDataValue.trim();
+	            if(metaDataValue.length() == 0) { continue; }
+
+	            if(metaDataKey.startsWith(ASSIGNMENT_META_DATA_TAG_PREFIX) && 
+	                metaDataKey.length() > ASSIGNMENT_META_DATA_TAG_PREFIX.length()){
+	                    InfluxDbDeviceEvent.addUserDefinedTag(
+	                        metaDataKey.replaceFirst(ASSIGNMENT_META_DATA_TAG_PREFIX,""), metaDataValue, builder);
+	            }
+	        }
+	    }
+	}
+
     /*
      * (non-Javadoc)
      * 
@@ -234,6 +270,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	mxs.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 
 	// Update assignment state if requested.
@@ -287,6 +324,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	location.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceLocation.saveToBuilder(location, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 
 	// Update assignment state if requested.
@@ -354,6 +392,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	alert.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceAlert.saveToBuilder(alert, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 
 	// Update assignment state if requested.
@@ -450,6 +489,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	ci.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 	return ci;
     }
@@ -510,6 +550,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	cr.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 	return cr;
     }
@@ -557,6 +598,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	sc.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
+	addUserDefinedTags(assignment, builder);
 	influx.write(getDatabase(), getRetention(), builder.build());
 
 	// Update assignment state if requested.
