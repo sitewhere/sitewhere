@@ -113,7 +113,10 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /** Log level */
     private String logLevel;
 
-    /** Prefix to compare against when adding user defined tags from assignment meta data*/
+    /**
+     * Prefix to compare against when adding user defined tags from assignment
+     * meta data
+     */
     private final String ASSIGNMENT_META_DATA_TAG_PREFIX = "INFLUX_TAG_";
 
     public InfluxDbDeviceEventManagement() {
@@ -198,36 +201,42 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     }
 
     /**
-     *  Add any user defined tags from assignment metadata.
-     *  A tag should be prefixed with ASSIGNMENT_META_DATA_TAG_PREFIX i.e INFLUX_TAG_displayName.
-     *  The prefix will be removed and a new tag created using the remaining characters as the tag name with value
-     *  metadata.key assigned to it.
+     * Add any user defined tags from assignment metadata. A tag should be
+     * prefixed with ASSIGNMENT_META_DATA_TAG_PREFIX i.e INFLUX_TAG_displayName.
+     * The prefix will be removed and a new tag created using the remaining
+     * characters as the tag name with value metadata.key assigned to it.
      *
-     *  @param assignment
-     *  @param builder
+     * @param assignment
+     * @param builder
      */
-    protected void addUserDefinedTags(IDeviceAssignment assignment, Point.Builder builder){
-	    Map<String,String> assignmentMetaData = assignment.getMetadata();
+    protected void addUserDefinedTags(IDeviceAssignment assignment, Point.Builder builder) {
+	Map<String, String> assignmentMetaData = assignment.getMetadata();
 
-	    if(assignmentMetaData != null){
-	        for(Map.Entry<String,String> metaData : assignmentMetaData.entrySet()){
-	            String metaDataKey = metaData.getKey().trim();
-	            if(metaDataKey.length() == 0) { continue; }
+	if (assignmentMetaData != null) {
+	    for (Map.Entry<String, String> metaData : assignmentMetaData.entrySet()) {
+		String metaDataKey = metaData.getKey().trim();
+		if (metaDataKey.length() == 0) {
+		    continue;
+		}
 
-	            String metaDataValue = metaData.getValue();
-	            if(metaDataValue == null) { continue; }
+		String metaDataValue = metaData.getValue();
+		if (metaDataValue == null) {
+		    continue;
+		}
 
-	            metaDataValue = metaDataValue.trim();
-	            if(metaDataValue.length() == 0) { continue; }
+		metaDataValue = metaDataValue.trim();
+		if (metaDataValue.length() == 0) {
+		    continue;
+		}
 
-	            if(metaDataKey.startsWith(ASSIGNMENT_META_DATA_TAG_PREFIX) && 
-	                metaDataKey.length() > ASSIGNMENT_META_DATA_TAG_PREFIX.length()){
-	                    InfluxDbDeviceEvent.addUserDefinedTag(
-	                        metaDataKey.replaceFirst(ASSIGNMENT_META_DATA_TAG_PREFIX,""), metaDataValue, builder);
-	            }
-	        }
+		if (metaDataKey.startsWith(ASSIGNMENT_META_DATA_TAG_PREFIX)
+			&& metaDataKey.length() > ASSIGNMENT_META_DATA_TAG_PREFIX.length()) {
+		    InfluxDbDeviceEvent.addUserDefinedTag(metaDataKey.replaceFirst(ASSIGNMENT_META_DATA_TAG_PREFIX, ""),
+			    metaDataValue, builder);
+		}
 	    }
 	}
+    }
 
     /*
      * (non-Javadoc)
