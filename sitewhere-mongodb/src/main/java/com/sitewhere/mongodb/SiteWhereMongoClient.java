@@ -25,7 +25,6 @@ import com.mongodb.ServerAddress;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IInternetConnected;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -38,7 +37,7 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class SiteWhereMongoClient extends TenantLifecycleComponent
 	implements IDiscoverableTenantLifecycleComponent, IGlobalManagementMongoClient, IDeviceManagementMongoClient,
-	IAssetManagementMongoClient, IScheduleManagementMongoClient, IInternetConnected {
+	IAssetManagementMongoClient, IScheduleManagementMongoClient {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -47,7 +46,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     private static final String DEFAULT_HOSTNAME = "localhost";
 
     /** Default port for Mongo */
-    private static final int DEFAULT_PORT = 27017;
+    private static final String DEFAULT_PORT = "27017";
 
     /** Default database name */
     private static final String DEFAULT_DATABASE_NAME = "sitewhere";
@@ -62,7 +61,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     private String hostname = DEFAULT_HOSTNAME;
 
     /** Port used to access the Mongo datastore */
-    private int port = DEFAULT_PORT;
+    private String port = DEFAULT_PORT;
 
     /** Username used for authentication */
     private String username;
@@ -158,28 +157,63 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
+	    // Parse hostname(s) and port(s) into address list.
+	    List<ServerAddress> addresses = parseServerAddresses();
+	    if (addresses.size() == 1) {
+		LOGGER.info("MongoDB using non-replicated mode.");
+	    } else if (addresses.size() > 1) {
+		String addrinfo = "";
+		for (ServerAddress address : addresses) {
+		    addrinfo += "[" + address.getHost() + ":" + address.getPort() + "]";
+		}
+		LOGGER.info("MongoDB using replicated mode with addresses: " + addrinfo);
+	    }
+
 	    // Handle authenticated access.
 	    if ((getUsername() != null) && (getPassword() != null)) {
 		MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
 			getPassword().toCharArray());
-		this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), Arrays.asList(credential),
-			builder.build());
+		this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
 	    }
 
 	    // Handle unauthenticated access.
 	    else {
-		this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), builder.build());
+		this.client = new MongoClient(addresses, builder.build());
 	    }
 
 	    // Force interaction to test connectivity.
 	    getGlobalDatabase().getStats();
-	} catch (UnknownHostException e) {
-	    throw new SiteWhereException("Unable to contact host for MongoDB instance. "
-		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Could not connect to MongoDB instance. "
+	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
 		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 	}
+    }
+
+    /**
+     * Parse hostname(s) and port(s) into {@link ServerAddress} entries.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<ServerAddress> parseServerAddresses() throws SiteWhereException {
+	String[] hosts = getHostname().split(",");
+	String[] ports = getPort().split(",");
+
+	if (hosts.length != ports.length) {
+	    throw new SiteWhereException("Number of hosts does not match number of ports.");
+	}
+
+	List<ServerAddress> addresses = new ArrayList<ServerAddress>();
+	for (int i = 0; i < hosts.length; i++) {
+	    try {
+		addresses.add(new ServerAddress(hosts[i].trim(), Integer.parseInt(ports[i].trim())));
+	    } catch (NumberFormatException e) {
+		throw new SiteWhereException("Non-numeric port number specified for MQTT broker.");
+	    } catch (UnknownHostException e) {
+		throw new SiteWhereException("Invalid host specified for MQTT broker.");
+	    }
+	}
+	return addresses;
     }
 
     /*
@@ -512,21 +546,11 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	this.hostname = hostname;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IInternetConnected#getPort()
-     */
-    public int getPort() {
+    public String getPort() {
 	return port;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IInternetConnected#setPort(int)
-     */
-    public void setPort(int port) {
+    public void setPort(String port) {
 	this.port = port;
     }
 

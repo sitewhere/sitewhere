@@ -98,7 +98,7 @@
 				<xsd:documentation>Server hostname for MongoDB instance.</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="substitutableInt">
+		<xsd:attribute name="port" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Server port for MongoDB instance.</xsd:documentation>
 			</xsd:annotation>

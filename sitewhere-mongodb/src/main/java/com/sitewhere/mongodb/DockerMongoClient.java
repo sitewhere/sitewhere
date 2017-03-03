@@ -34,6 +34,6 @@ public class DockerMongoClient extends SiteWhereMongoClient {
 		    "Docker linking information not found for MongoDB. " + "Verify that link arguments were passed.");
 	}
 	setHostname(host);
-	setPort(Integer.parseInt(portStr));
+	setPort(portStr);
     }
 }

@@ -54,7 +54,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     private String hostname = MqttLifecycleComponent.DEFAULT_HOSTNAME;
 
     /** Port */
-    private int port = MqttLifecycleComponent.DEFAULT_PORT;
+    private String port = MqttLifecycleComponent.DEFAULT_PORT;
 
     /** TrustStore path */
     private String trustStorePath;
@@ -269,6 +269,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see com.sitewhere.spi.device.event.processor.
      * IMulticastingOutboundEventProcessor# getMulticaster()
      */
+    @Override
     public IDeviceEventMulticaster<String> getMulticaster() {
 	return multicaster;
     }
@@ -283,6 +284,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see com.sitewhere.spi.device.event.processor.
      * IMulticastingOutboundEventProcessor# getRouteBuilder()
      */
+    @Override
     public IRouteBuilder<String> getRouteBuilder() {
 	return routeBuilder;
     }
@@ -296,6 +298,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
      */
+    @Override
     public String getProtocol() {
 	return protocol;
     }
@@ -309,6 +312,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
      */
+    @Override
     public String getHostname() {
 	return hostname;
     }
@@ -320,13 +324,14 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.common.IInternetConnected#getPort()
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPort()
      */
-    public int getPort() {
+    @Override
+    public String getPort() {
 	return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(String port) {
 	this.port = port;
     }
 
@@ -335,6 +340,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
      */
+    @Override
     public String getUsername() {
 	return username;
     }
@@ -348,6 +354,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
      */
+    @Override
     public String getPassword() {
 	return password;
     }
@@ -363,6 +370,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
      * )
      */
+    @Override
     public String getTrustStorePath() {
 	return trustStorePath;
     }

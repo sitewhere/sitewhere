@@ -48,7 +48,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     public static final String DEFAULT_HOSTNAME = "localhost";
 
     /** Default port if not set from Spring */
-    public static final int DEFAULT_PORT = 1883;
+    public static final String DEFAULT_PORT = "1883";
 
     /** Default connection timeout in seconds */
     public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
@@ -59,7 +59,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     private String hostname = DEFAULT_HOSTNAME;
 
     /** Port */
-    private int port = DEFAULT_PORT;
+    private String port = DEFAULT_PORT;
 
     /** TrustStore path */
     private String trustStorePath;
@@ -195,6 +195,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
      */
+    @Override
     public String getProtocol() {
 	return protocol;
     }
@@ -206,18 +207,13 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getHostname()
      */
+    @Override
     public String getHostname() {
 	return hostname;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
-     */
     public void setHostname(String hostname) {
 	this.hostname = hostname;
     }
@@ -225,18 +221,14 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.common.IInternetConnected#getPort()
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPort()
      */
-    public int getPort() {
+    @Override
+    public String getPort() {
 	return port;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IInternetConnected#setPort(int)
-     */
-    public void setPort(int port) {
+    public void setPort(String port) {
 	this.port = port;
     }
 
@@ -245,6 +237,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
      */
+    @Override
     public String getUsername() {
 	return username;
     }
@@ -258,6 +251,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
      */
+    @Override
     public String getPassword() {
 	return password;
     }
@@ -273,6 +267,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
      * )
      */
+    @Override
     public String getTrustStorePath() {
 	return trustStorePath;
     }
@@ -287,6 +282,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
      * getTrustStorePassword()
      */
+    @Override
     public String getTrustStorePassword() {
 	return trustStorePassword;
     }

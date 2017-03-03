@@ -35,7 +35,7 @@
 		<sw:datastore>
 		
 			<!-- MongoDB datastore used for global data model -->
-			<sw:mongo-datastore hostname="${datastore.host}" port="27017"
+			<sw:mongo-datastore hostname="${datastore.host}" port="${datastore.port}"
 				databaseName="sitewhere"/>
 		
 			<!-- Default HBase Datastore -->
