@@ -37,6 +37,7 @@ dependencies {
     compile group: 'org.fusesource.hawtdispatch', name: 'hawtdispatch', version:'1.22'
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
     compile group: 'com.google.guava', name: 'guava', version:'18.0'
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
     compile group: 'joda-time', name: 'joda-time', version:'2.9.1'
     
     compile group: 'commons-lang', name: 'commons-lang'

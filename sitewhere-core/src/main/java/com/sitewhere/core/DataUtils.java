@@ -7,6 +7,11 @@
  */
 package com.sitewhere.core;
 
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
+import com.google.bitcoin.core.Base58;
+
 public class DataUtils {
 
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -42,5 +47,18 @@ public class DataUtils {
 	chars[2] = hexArray[v >>> 4];
 	chars[3] = hexArray[v & 0x0F];
 	return new String(chars);
+    }
+
+    /**
+     * Generates a short 22-character Base 64 encoded version of a UUID.
+     * 
+     * @return
+     */
+    public static String generateShortUUID() {
+	UUID uuid = UUID.randomUUID();
+	ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+	bb.putLong(uuid.getMostSignificantBits());
+	bb.putLong(uuid.getLeastSignificantBits());
+	return Base58.encode(bb.array());
     }
 }
