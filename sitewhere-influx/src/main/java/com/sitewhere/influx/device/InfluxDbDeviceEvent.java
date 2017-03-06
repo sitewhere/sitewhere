@@ -73,6 +73,7 @@ public class InfluxDbDeviceEvent {
     /** Event assignmentType field */
     public static final String ASSIGNMENT_TYPE = "assignmenttype";
 
+    /** The meta data field to check if user has specified a time precision */
     private static final String EVENT_TIME_PRECISION_META_DATA_KEY = "precision";
 
     /**
