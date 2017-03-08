@@ -190,6 +190,23 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     }
 
     /**
+     * Represent an array as a space-delimited string.
+     * 
+     * @param input
+     * @return
+     */
+    protected String arrayAsString(String[] input) {
+	String result = "";
+	for (int i = 0; i < input.length; i++) {
+	    if (i > 0) {
+		result += " ";
+	    }
+	    result += input[i];
+	}
+	return result;
+    }
+
+    /**
      * Parse hostname(s) and port(s) into {@link ServerAddress} entries.
      * 
      * @return
@@ -200,7 +217,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	String[] ports = getPort().split(",");
 
 	if (hosts.length != ports.length) {
-	    throw new SiteWhereException("Number of hosts does not match number of ports.");
+	    throw new SiteWhereException("Number of hosts does not match number of ports. Hosts(" + arrayAsString(hosts)
+		    + ") Ports(" + arrayAsString(ports) + ").");
 	}
 
 	List<ServerAddress> addresses = new ArrayList<ServerAddress>();
