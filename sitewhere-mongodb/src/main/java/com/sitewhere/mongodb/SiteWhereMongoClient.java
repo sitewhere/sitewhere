@@ -14,7 +14,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.util.StringUtils;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -68,6 +71,12 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     /** Password used for authentication */
     private String password;
+
+    /** Replica set name (blank or null for none) */
+    private String replicaSetName;
+
+    /** Indicates if replication should be auto-configured */
+    private boolean autoConfigureReplication = true;
 
     /** Database that holds sitewhere collections */
     private String databaseName = DEFAULT_DATABASE_NAME;
@@ -157,28 +166,44 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
+	    LOGGER.info("MongoDB Connection: hosts=" + getHostname() + " ports=" + getPort() + " replicaSet="
+		    + getReplicaSetName());
+
 	    // Parse hostname(s) and port(s) into address list.
 	    List<ServerAddress> addresses = parseServerAddresses();
-	    if (addresses.size() == 1) {
-		LOGGER.info("MongoDB using non-replicated mode.");
-	    } else if (addresses.size() > 1) {
-		String addrinfo = "";
-		for (ServerAddress address : addresses) {
-		    addrinfo += "[" + address.getHost() + ":" + address.getPort() + "]";
-		}
-		LOGGER.info("MongoDB using replicated mode with addresses: " + addrinfo);
+
+	    // Indicator for whether a replica set is being used.
+	    boolean isUsingReplicaSet = ((addresses.size() > 1) && (!StringUtils.isEmpty(getReplicaSetName())));
+
+	    if (isUsingReplicaSet) {
+		LOGGER.info("MongoDB using replicated mode.");
+	    } else {
+		LOGGER.info("MongoDB using standalone mode.");
 	    }
 
 	    // Handle authenticated access.
 	    if ((getUsername() != null) && (getPassword() != null)) {
 		MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
 			getPassword().toCharArray());
-		this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+		if (isUsingReplicaSet) {
+		    this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
+		} else {
+		    this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+		}
 	    }
 
 	    // Handle unauthenticated access.
 	    else {
-		this.client = new MongoClient(addresses, builder.build());
+		if (isUsingReplicaSet) {
+		    this.client = new MongoClient(addresses.get(0), builder.build());
+		} else {
+		    this.client = new MongoClient(addresses, builder.build());
+		}
+	    }
+
+	    // Handle automatic configuration of replication.
+	    if ((isUsingReplicaSet) && (isAutoConfigureReplication())) {
+		doAutoConfigureReplication(addresses);
 	    }
 
 	    // Force interaction to test connectivity.
@@ -187,6 +212,49 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
 		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 	}
+    }
+
+    /**
+     * Detects whether a replica set is configured and creates one if not.
+     * 
+     * @param addresses
+     */
+    protected void doAutoConfigureReplication(List<ServerAddress> addresses) throws SiteWhereException {
+	// Check for existing replica set configuration.
+	LOGGER.info("Checking for existing replica set...");
+	CommandResult result = getMongoClient().getDB("admin").command(new BasicDBObject("replSetGetStatus", 1));
+	if (result.ok()) {
+	    LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
+	    return;
+	}
+
+	// Create configuration for new replica set.
+	LOGGER.info("Configuring new replica set '" + getReplicaSetName() + "'.");
+	BasicDBObject config = new BasicDBObject("_id", getReplicaSetName());
+	List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
+
+	// Create list of members in replica set.
+	int index = 0;
+	for (final ServerAddress address : addresses) {
+	    BasicDBObject server = new BasicDBObject("_id", index);
+	    server.put("host", (address.getHost() + ":" + address.getPort()));
+
+	    // First server in list is preferred primary.
+	    if (index == 0) {
+		server.put("priority", 10);
+	    }
+
+	    servers.add(server);
+	    index++;
+	}
+	config.put("members", servers);
+
+	// Send command.
+	result = getMongoClient().getDB("admin").command(new BasicDBObject("replSetInitiate", config));
+	if (!result.ok()) {
+	    throw new SiteWhereException("Unable to auto-configure replica set. " + result.getErrorMessage());
+	}
+	LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
     }
 
     /**
@@ -554,12 +622,6 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	return hostname;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
-     */
     public void setHostname(String hostname) {
 	this.hostname = hostname;
     }
@@ -586,6 +648,22 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     public void setPassword(String password) {
 	this.password = password;
+    }
+
+    public String getReplicaSetName() {
+	return replicaSetName;
+    }
+
+    public void setReplicaSetName(String replicaSetName) {
+	this.replicaSetName = replicaSetName;
+    }
+
+    public boolean isAutoConfigureReplication() {
+	return autoConfigureReplication;
+    }
+
+    public void setAutoConfigureReplication(boolean autoConfigureReplication) {
+	this.autoConfigureReplication = autoConfigureReplication;
     }
 
     public String getDatabaseName() {

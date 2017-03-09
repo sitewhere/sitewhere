@@ -22,7 +22,6 @@ import com.sitewhere.groovy.user.GroovyUserModelInitializer;
 import com.sitewhere.hbase.DefaultHBaseClient;
 import com.sitewhere.hbase.tenant.HBaseTenantManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
-import com.sitewhere.mongodb.DockerMongoClient;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.tenant.MongoTenantManagement;
 import com.sitewhere.mongodb.user.MongoUserManagement;
@@ -102,16 +101,9 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
      * @param context
      */
     protected void parseMongoDatasource(Element element, ParserContext context) {
-	boolean docker = false;
-	Attr useDockerLinking = element.getAttributeNode("useDockerLinking");
-	if ((useDockerLinking != null) && ("true".equals(useDockerLinking.getValue()))) {
-	    docker = true;
-	}
-
 	// Register client bean.
-	BeanDefinitionBuilder client = docker ? getBuilderFor(DockerMongoClient.class)
-		: getBuilderFor(SiteWhereMongoClient.class);
-	parseMongoAttributes(element, context, client);
+	BeanDefinitionBuilder client = getBuilderFor(SiteWhereMongoClient.class);
+	ParserUtils.parseMongoAttributes(element, context, client);
 	context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 
 	// Register Mongo user management implementation.
@@ -124,47 +116,6 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 	tm.addPropertyReference("mongoClient", "mongo");
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT,
 		tm.getBeanDefinition());
-    }
-
-    /**
-     * Common parser logic for MongoDB attributes.
-     * 
-     * @param element
-     * @param context
-     * @param client
-     */
-    public static void parseMongoAttributes(Element element, ParserContext context, BeanDefinitionBuilder client) {
-	Attr hostname = element.getAttributeNode("hostname");
-	if (hostname != null) {
-	    client.addPropertyValue("hostname", hostname.getValue());
-	}
-	Attr port = element.getAttributeNode("port");
-	if (port != null) {
-	    client.addPropertyValue("port", port.getValue());
-	}
-	Attr databaseName = element.getAttributeNode("databaseName");
-	if (databaseName != null) {
-	    client.addPropertyValue("databaseName", databaseName.getValue());
-	}
-
-	// Determine if username and password are supplied.
-	Attr username = element.getAttributeNode("username");
-	Attr password = element.getAttributeNode("password");
-	if ((username != null) && ((password == null))) {
-	    throw new RuntimeException("If username is specified for MongoDB, password must be specified as well.");
-	}
-	if ((username == null) && ((password != null))) {
-	    throw new RuntimeException("If password is specified for MongoDB, username must be specified as well.");
-	}
-	if ((username != null) && (password != null)) {
-	    client.addPropertyValue("username", username.getValue());
-	    client.addPropertyValue("password", password.getValue());
-	}
-
-	Attr authDatabaseName = element.getAttributeNode("authDatabaseName");
-	if (authDatabaseName != null) {
-	    client.addPropertyValue("authDatabaseName", authDatabaseName.getValue());
-	}
     }
 
     /**
