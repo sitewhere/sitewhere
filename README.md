@@ -77,9 +77,9 @@ SiteWhere Complete Install for Ubuntu
 > Download a SiteWhere server release from the sitewhere.org website
 
     cd /opt
-    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.7.0.tgz
-    tar -zxvf sitewhere-server-1.7.0.tgz
-    mv sitewhere-server-1.7.0 /opt/sitewhere
+    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.9.0.tgz
+    tar -zxvf sitewhere-server-1.9.0.tgz
+    mv sitewhere-server-1.9.0 /opt/sitewhere
     export SITEWHERE_HOME=/opt/sitewhere
     cd /opt/sitewhere/bin
     ./startup.sh
@@ -98,4 +98,4 @@ SiteWhere Complete Install for Ubuntu
 
 * * * *
 
-Copyright (c) 2009-2016, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
+Copyright (c) 2009-2017, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
