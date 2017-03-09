@@ -69,9 +69,12 @@ public class InfluxDbDeviceEvent {
 
     /** Event metadata field */
     public static final String EVENT_METADATA_PREFIX = "meta:";
-    
+
     /** Event assignmentType field */
     public static final String ASSIGNMENT_TYPE = "assignmenttype";
+
+    /** The meta data field to check if user has specified a time precision */
+    private static final String EVENT_TIME_PRECISION_META_DATA_KEY = "precision";
 
     /**
      * Return a builder for the events collection.
@@ -480,13 +483,39 @@ public class InfluxDbDeviceEvent {
 
     /**
      * Save common event fields to builder.
+     * If a precision field is specified in the meta data, the eventDate must be sent
+     * as an appropriate time stamp rather than a human readable string.
+     * 
+     * Valid precisions :   s -  seconds
+     *                      ms - milliseconds
+     *                      mu - microseconds
+     *                      ns - nanoseconds
+     *                      
+     * Default precision is ms - milliseconds if a precision is not specified.
      * 
      * @param event
      * @param builder
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceEvent event, Point.Builder builder) throws SiteWhereException {
-	builder.time(event.getEventDate().getTime(), TimeUnit.MILLISECONDS);
+
+	String timePrecision = event.getMetadata(EVENT_TIME_PRECISION_META_DATA_KEY);
+	TimeUnit precision = TimeUnit.MILLISECONDS;
+
+	if (timePrecision != null) {
+		switch(timePrecision) {
+			case("s")  : {precision = TimeUnit.SECONDS; break;}
+			case("ms") : {precision = TimeUnit.MILLISECONDS; break;}
+			case("mu") : {precision = TimeUnit.MICROSECONDS; break;}
+			case("ns") : {precision = TimeUnit.NANOSECONDS; break;}
+			default: {event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");}
+			}
+	}
+	else {
+		event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
+	}
+
+	builder.time(event.getEventDate().getTime(), precision);
 	builder.addField(EVENT_ID, event.getId());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
