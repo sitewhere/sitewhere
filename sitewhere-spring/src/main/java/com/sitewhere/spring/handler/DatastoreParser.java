@@ -180,10 +180,12 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
      */
     protected void parseDefaultUserModelInitializer(Element element, ParserContext context) {
 	BeanDefinitionBuilder uinit = BeanDefinitionBuilder.rootBeanDefinition(DefaultUserModelInitializer.class);
-	Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-	if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-	    uinit.addPropertyValue("initializeIfNoConsole", "true");
+
+	Attr enabled = element.getAttributeNode("enabled");
+	if (enabled != null) {
+	    uinit.addPropertyValue("enabled", enabled.getValue());
 	}
+
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
 		uinit.getBeanDefinition());
     }
@@ -202,22 +204,29 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 	    init.addPropertyValue("scriptPath", scriptPath.getValue());
 	}
 
+	Attr enabled = element.getAttributeNode("enabled");
+	if (enabled != null) {
+	    init.addPropertyValue("enabled", enabled.getValue());
+	}
+
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
 		init.getBeanDefinition());
     }
 
     /**
-     * Parse configuration for default asset model initializer.
+     * Parse configuration for default tenant model initializer.
      * 
      * @param element
      * @param context
      */
     protected void parseDefaultTenantModelInitializer(Element element, ParserContext context) {
 	BeanDefinitionBuilder tinit = BeanDefinitionBuilder.rootBeanDefinition(DefaultTenantModelInitializer.class);
-	Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-	if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-	    tinit.addPropertyValue("initializeIfNoConsole", "true");
+
+	Attr enabled = element.getAttributeNode("enabled");
+	if (enabled != null) {
+	    tinit.addPropertyValue("enabled", enabled.getValue());
 	}
+
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER,
 		tinit.getBeanDefinition());
     }
@@ -234,6 +243,11 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {
 	    init.addPropertyValue("scriptPath", scriptPath.getValue());
+	}
+
+	Attr enabled = element.getAttributeNode("enabled");
+	if (enabled != null) {
+	    init.addPropertyValue("enabled", enabled.getValue());
 	}
 
 	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER,

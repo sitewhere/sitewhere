@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,7 +28,7 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  * 
  * @author Derek
  */
-public class DefaultTenantModelInitializer implements ITenantModelInitializer {
+public class DefaultTenantModelInitializer extends ModelInitializer implements ITenantModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -56,6 +57,11 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
      */
     @Override
     public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	// Use the system account for logging "created by" on created elements.
 	SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 

@@ -225,7 +225,13 @@
 
 	<!-- Common user model initializer information -->
 	<xsd:complexType name="abstractUserModelInitializerType">
-		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+		<xsd:attribute name="enabled" type="substitutableBoolean">
+			<xsd:annotation>
+				<xsd:documentation>Indicates whether the user model initializer
+					should be executed on startup.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Default user model initializer -->
@@ -285,7 +291,13 @@
 
 	<!-- Common tenant model initializer information -->
 	<xsd:complexType name="abstractTenantModelInitializerType">
-		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+		<xsd:attribute name="enabled" type="substitutableBoolean">
+			<xsd:annotation>
+				<xsd:documentation>Indicates whether the tenant model initializer
+					should be executed on startup.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Default tenant model initializer -->
@@ -476,6 +488,22 @@
 			</xsd:simpleType>
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:int" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableBoolean">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be a boolean or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:boolean" />
 			</xsd:simpleType>
 		</xsd:union>
 	</xsd:simpleType>

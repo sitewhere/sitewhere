@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
@@ -20,7 +21,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyAssetModelInitializer implements IAssetModelInitializer {
+public class GroovyAssetModelInitializer extends ModelInitializer implements IAssetModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -47,6 +48,11 @@ public class GroovyAssetModelInitializer implements IAssetModelInitializer {
     @Override
     public void initialize(IAssetModuleManager assetModuleManager, IAssetManagement assetManagement)
 	    throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement, assetModuleManager));

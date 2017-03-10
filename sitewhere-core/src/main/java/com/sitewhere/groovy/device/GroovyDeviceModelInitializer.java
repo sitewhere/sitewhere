@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -33,7 +34,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
+public class GroovyDeviceModelInitializer extends ModelInitializer implements IDeviceModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -62,6 +63,11 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
     @Override
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
 	    IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("deviceBuilder", new DeviceManagementRequestBuilder(deviceManagement));

@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -32,7 +33,7 @@ import com.sitewhere.spi.user.SiteWhereAuthority;
  * 
  * @author Derek
  */
-public class DefaultUserModelInitializer implements IUserModelInitializer {
+public class DefaultUserModelInitializer extends ModelInitializer implements IUserModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -68,6 +69,11 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
      * @throws SiteWhereException
      */
     public void initialize(IUserManagement userManagement) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	setUserManagement(userManagement);
 
 	// Use the system account for logging "created by" on created elements.

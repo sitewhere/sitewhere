@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -22,7 +23,7 @@ import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
  * 
  * @author Derek
  */
-public class DefaultScheduleModelInitializer implements IScheduleModelInitializer {
+public class DefaultScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -46,6 +47,11 @@ public class DefaultScheduleModelInitializer implements IScheduleModelInitialize
     @Override
     public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
 	this.scheduleManagement = scheduleManagement;
+
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
 
 	// Use the system account for logging "created by" on created elements.
 	SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -28,7 +29,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyUserModelInitializer implements IUserModelInitializer {
+public class GroovyUserModelInitializer extends ModelInitializer implements IUserModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -44,6 +45,11 @@ public class GroovyUserModelInitializer implements IUserModelInitializer {
      */
     @Override
     public void initialize(IUserManagement userManagement) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));

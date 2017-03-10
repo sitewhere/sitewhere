@@ -13,4 +13,11 @@ package com.sitewhere.spi.server;
  * @author Derek
  */
 public interface IModelInitializer {
+
+    /**
+     * Indicates if the initializer is enabled.
+     * 
+     * @return
+     */
+    public boolean isEnabled();
 }

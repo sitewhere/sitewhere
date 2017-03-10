@@ -44,11 +44,11 @@
 
 			<!-- Initializes user model from Groovy script -->
 			<sw:groovy-user-model-initializer
-				scriptPath="initializer/userModel.groovy" />
+				scriptPath="initializer/userModel.groovy" enabled="${user.init.enabled}" />
 
 			<!-- Initializes tenant model from Groovy script -->
 			<sw:groovy-tenant-model-initializer
-				scriptPath="initializer/tenantModel.groovy" />
+				scriptPath="initializer/tenantModel.groovy" enabled="${tenant.init.enabled}" />
 
 		</sw:datastore>
 

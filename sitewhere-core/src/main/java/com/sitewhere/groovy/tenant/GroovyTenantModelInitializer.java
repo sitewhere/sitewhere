@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
@@ -28,7 +29,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyTenantModelInitializer implements ITenantModelInitializer {
+public class GroovyTenantModelInitializer extends ModelInitializer implements ITenantModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -45,6 +46,11 @@ public class GroovyTenantModelInitializer implements ITenantModelInitializer {
      */
     @Override
     public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("tenantBuilder", new TenantManagementRequestBuilder(tenantManagement));

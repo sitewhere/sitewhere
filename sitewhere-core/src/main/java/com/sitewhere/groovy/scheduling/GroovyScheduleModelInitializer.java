@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
+import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -21,7 +22,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyScheduleModelInitializer implements IScheduleModelInitializer {
+public class GroovyScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -46,6 +47,11 @@ public class GroovyScheduleModelInitializer implements IScheduleModelInitializer
      */
     @Override
     public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
+	// Skip if not enabled.
+	if (!isEnabled()) {
+	    return;
+	}
+
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
