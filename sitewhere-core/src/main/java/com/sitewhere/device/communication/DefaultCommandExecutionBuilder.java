@@ -69,10 +69,35 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
     protected void generateParameters(IDeviceCommandExecution execution) throws SiteWhereException {
 	execution.getParameters().clear();
 	for (ICommandParameter parameter : execution.getCommand().getParameters()) {
+	    //String paramValue = execution.getInvocation().getParameterValues().get(parameter.getName());
+	    
 	    String paramValue = execution.getInvocation().getParameterValues().get(parameter.getName());
-	    if (parameter.isRequired() && (paramValue == null)) {
+		boolean parameterValueIsNull = (paramValue == null);
+		boolean parameterValueIsEmpty = true;
+
+		if (! parameterValueIsNull) {
+		    paramValue = paramValue.trim();
+		    parameterValueIsEmpty = paramValue.length() == 0;
+		}
+		
+		//Handle the required parameters first
+		if (parameter.isRequired()) {
+			if (parameterValueIsNull) {
+				
+		    throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
+		    }
+
+		    if (parameterValueIsEmpty){
+		    throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterValueMissing, ErrorLevel.ERROR);
+		    }
+		}
+		else if (parameterValueIsNull || parameterValueIsEmpty) {
+		continue;
+		}
+		
+	    /*if (parameter.isRequired() && (paramValue == null)) {
 		throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
-	    }
+	    }*/
 	    Object converted = null;
 	    switch (parameter.getType()) {
 	    case Bool: {
