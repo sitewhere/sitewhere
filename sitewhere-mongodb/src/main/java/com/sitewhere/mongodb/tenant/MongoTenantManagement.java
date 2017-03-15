@@ -14,12 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IGlobalManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -83,10 +85,10 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getTenantsCollection().createIndex(new BasicDBObject(MongoTenant.PROP_ID, 1),
-		new BasicDBObject("unique", true));
-	getMongoClient().getTenantsCollection().createIndex(new BasicDBObject(MongoTenant.PROP_AUTH_TOKEN, 1),
-		new BasicDBObject("unique", true));
+	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_ID, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_AUTH_TOKEN, 1),
+		new IndexOptions().unique(true));
     }
 
     /*
@@ -101,11 +103,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	// Use common logic so all backend implementations work the same.
 	Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
 
-	DBCollection tenants = getMongoClient().getTenantsCollection();
-	DBObject created = MongoTenant.toDBObject(tenant);
+	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
+	Document created = MongoTenant.toDocument(tenant);
 	MongoPersistence.insert(tenants, created, ErrorCode.DuplicateTenantId);
 
-	return MongoTenant.fromDBObject(created);
+	return MongoTenant.fromDocument(created);
     }
 
     /*
@@ -117,19 +119,19 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      */
     @Override
     public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-	DBObject dbExisting = assertTenant(id);
-	Tenant existing = MongoTenant.fromDBObject(dbExisting);
+	Document dbExisting = assertTenant(id);
+	Tenant existing = MongoTenant.fromDocument(dbExisting);
 
 	// Use common update logic so that backend implemetations act the same
 	// way.
 	SiteWherePersistence.tenantUpdateLogic(request, existing);
-	DBObject updated = MongoTenant.toDBObject(existing);
+	Document updated = MongoTenant.toDocument(existing);
 
-	BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, id);
-	DBCollection tenants = getMongoClient().getTenantsCollection();
+	Document query = new Document(MongoTenant.PROP_ID, id);
+	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	MongoPersistence.update(tenants, query, updated);
 
-	return MongoTenant.fromDBObject(updated);
+	return MongoTenant.fromDocument(updated);
     }
 
     /*
@@ -140,11 +142,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      */
     @Override
     public ITenant getTenantById(String id) throws SiteWhereException {
-	DBObject dbExisting = getTenantObjectById(id);
+	Document dbExisting = getTenantDocumentById(id);
 	if (dbExisting == null) {
 	    return null;
 	}
-	return MongoTenant.fromDBObject(dbExisting);
+	return MongoTenant.fromDocument(dbExisting);
     }
 
     /*
@@ -157,13 +159,13 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     @Override
     public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
 	try {
-	    DBCollection tenants = getMongoClient().getTenantsCollection();
-	    BasicDBObject query = new BasicDBObject(MongoTenant.PROP_AUTH_TOKEN, token);
-	    DBObject match = tenants.findOne(query);
+	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
+	    Document query = new Document(MongoTenant.PROP_AUTH_TOKEN, token);
+	    Document match = tenants.find(query).first();
 	    if (match == null) {
 		return null;
 	    }
-	    return MongoTenant.fromDBObject(match);
+	    return MongoTenant.fromDocument(match);
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
@@ -178,8 +180,8 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      */
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-	DBCollection tenants = getMongoClient().getTenantsCollection();
-	BasicDBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
+	Document dbCriteria = new Document();
 	if (criteria.getTextSearch() != null) {
 	    try {
 		Pattern regex = Pattern.compile(Pattern.quote(criteria.getTextSearch()));
@@ -196,7 +198,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	if (criteria.getUserId() != null) {
 	    dbCriteria.append(MongoTenant.PROP_AUTH_USERS, criteria.getUserId());
 	}
-	BasicDBObject sort = new BasicDBObject(MongoTenant.PROP_NAME, 1);
+	Document sort = new Document(MongoTenant.PROP_NAME, 1);
 	ISearchResults<ITenant> list = MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria);
 	SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
 	return list;
@@ -211,30 +213,30 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      */
     @Override
     public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-	DBObject existing = assertTenant(tenantId);
+	Document existing = assertTenant(tenantId);
 	if (force) {
-	    DBCollection tenants = getMongoClient().getTenantsCollection();
+	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	    MongoPersistence.delete(tenants, existing);
-	    return MongoTenant.fromDBObject(existing);
+	    return MongoTenant.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, tenantId);
-	    DBCollection tenants = getMongoClient().getTenantsCollection();
+	    Document query = new Document(MongoTenant.PROP_ID, tenantId);
+	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	    MongoPersistence.update(tenants, query, existing);
-	    return MongoTenant.fromDBObject(existing);
+	    return MongoTenant.fromDocument(existing);
 	}
     }
 
     /**
-     * Get the {@link DBObject} for a tenant given id. Throw an exception if not
+     * Get the {@link Document} for a tenant given id. Throw an exception if not
      * found.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertTenant(String id) throws SiteWhereException {
-	DBObject match = getTenantObjectById(id);
+    protected Document assertTenant(String id) throws SiteWhereException {
+	Document match = getTenantDocumentById(id);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -243,17 +245,17 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /**
-     * Get the DBObject for a Tenant given unique id.
+     * Get the {@link Document} for a Tenant given unique id.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getTenantObjectById(String id) throws SiteWhereException {
+    protected Document getTenantDocumentById(String id) throws SiteWhereException {
 	try {
-	    DBCollection tenants = getMongoClient().getTenantsCollection();
-	    BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, id);
-	    return tenants.findOne(query);
+	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
+	    Document query = new Document(MongoTenant.PROP_ID, id);
+	    return tenants.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}

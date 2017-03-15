@@ -7,7 +7,9 @@
  */
 package com.sitewhere.mongodb;
 
-import com.mongodb.DBCollection;
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -23,7 +25,19 @@ public interface IScheduleManagementMongoClient {
     /** Default collection name for SiteWhere scheduled jobs */
     public static final String DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME = "scheduledjobs";
 
-    public DBCollection getSchedulesCollection(ITenant tenant);
+    /**
+     * Get collection for schedules.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getSchedulesCollection(ITenant tenant);
 
-    public DBCollection getScheduledJobsCollection(ITenant tenant);
+    /**
+     * Get collection for scheduled jobs.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant);
 }

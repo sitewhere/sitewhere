@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -46,35 +46,35 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceStateChange source) {
-	return MongoDeviceStateChange.toDBObject(source);
+    public Document convert(IDeviceStateChange source) {
+	return MongoDeviceStateChange.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceStateChange convert(DBObject source) {
-	return MongoDeviceStateChange.fromDBObject(source);
+    public IDeviceStateChange convert(Document source) {
+	return MongoDeviceStateChange.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceStateChange source, BasicDBObject target) {
-	MongoDeviceEvent.toDBObject(source, target, false);
+    public static void toDocument(IDeviceStateChange source, Document target) {
+	MongoDeviceEvent.toDocument(source, target, false);
 
 	target.append(PROP_CATEGORY, source.getCategory().name());
 	target.append(PROP_TYPE, source.getType().name());
 	target.append(PROP_PREVIOUS_STATE, source.getPreviousState());
 	target.append(PROP_NEW_STATE, source.getNewState());
 
-	BasicDBObject params = new BasicDBObject();
+	Document params = new Document();
 	for (String key : source.getData().keySet()) {
 	    params.append(key, source.getData().get(key));
 	}
@@ -82,13 +82,13 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceStateChange target) {
-	MongoDeviceEvent.fromDBObject(source, target, false);
+    public static void fromDocument(Document source, DeviceStateChange target) {
+	MongoDeviceEvent.fromDocument(source, target, false);
 
 	String category = (String) source.get(PROP_CATEGORY);
 	String type = (String) source.get(PROP_TYPE);
@@ -105,7 +105,7 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
 	target.setNewState(newState);
 
 	Map<String, String> data = new HashMap<String, String>();
-	DBObject dbdata = (DBObject) source.get(PROP_DATA);
+	Document dbdata = (Document) source.get(PROP_DATA);
 	if (dbdata != null) {
 	    for (String key : dbdata.keySet()) {
 		data.put(key, (String) dbdata.get(key));
@@ -115,26 +115,26 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceStateChange source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceStateChange.toDBObject(source, result);
+    public static Document toDocument(IDeviceStateChange source) {
+	Document result = new Document();
+	MongoDeviceStateChange.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceStateChange fromDBObject(DBObject source) {
+    public static DeviceStateChange fromDocument(Document source) {
 	DeviceStateChange result = new DeviceStateChange();
-	MongoDeviceStateChange.fromDBObject(source, result);
+	MongoDeviceStateChange.fromDocument(source, result);
 	return result;
     }
 }

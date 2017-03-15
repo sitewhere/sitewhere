@@ -9,11 +9,12 @@ package com.sitewhere.mongodb.asset;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IAssetManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -110,10 +111,10 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     protected void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getAssetCategoriesCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoAssetCategory.PROP_ID, 1), new BasicDBObject("unique", true));
-	getMongoClient().getAssetsCollection(getTenant()).createIndex(
-		(new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, 1)).append(MongoAsset.PROP_ID, 1),
-		new BasicDBObject("unique", true));
+		.createIndex(Indexes.ascending(MongoAssetCategory.PROP_ID), new IndexOptions().unique(true));
+	getMongoClient().getAssetsCollection(getTenant()).createIndex(Indexes
+		.compoundIndex(Indexes.ascending(MongoAsset.PROP_CATEGORY_ID), Indexes.ascending(MongoAsset.PROP_ID)),
+		new IndexOptions().unique(true));
     }
 
     /*
@@ -127,15 +128,15 @@ public class MongoAssetManagement extends TenantLifecycleComponent
 	// Use common logic so all backend implementations work the same.
 	AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
 
-	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
-	DBObject created = MongoAssetCategory.toDBObject(category);
+	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	Document created = MongoAssetCategory.toDocument(category);
 	MongoPersistence.insert(categories, created, ErrorCode.AssetCategoryIdInUse);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getAssetCategoryCache().put(category.getId(), category);
 	}
-	return MongoAssetCategory.fromDBObject(created);
+	return MongoAssetCategory.fromDocument(created);
     }
 
     /*
@@ -152,9 +153,9 @@ public class MongoAssetManagement extends TenantLifecycleComponent
 		return cached;
 	    }
 	}
-	DBObject dbCategory = getAssetCategoryDBObject(id);
+	Document dbCategory = getAssetCategoryDocument(id);
 	if (dbCategory != null) {
-	    return MongoAssetCategory.fromDBObject(dbCategory);
+	    return MongoAssetCategory.fromDocument(dbCategory);
 	}
 	return null;
     }
@@ -169,23 +170,22 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     @Override
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
-	DBObject match = assertAssetCategory(categoryId);
-	AssetCategory category = MongoAssetCategory.fromDBObject(match);
+	Document match = assertAssetCategory(categoryId);
+	AssetCategory category = MongoAssetCategory.fromDocument(match);
 
-	// Use common update logic so that backend implemetations act the same
-	// way.
+	// Use common update logic.
 	SiteWherePersistence.assetCategoryUpdateLogic(request, category);
-	DBObject updated = MongoAssetCategory.toDBObject(category);
+	Document updated = MongoAssetCategory.toDocument(category);
 
-	BasicDBObject query = new BasicDBObject(MongoAssetCategory.PROP_ID, categoryId);
-	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	Document query = new Document(MongoAssetCategory.PROP_ID, categoryId);
+	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	MongoPersistence.update(categories, query, updated);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getAssetCategoryCache().put(category.getId(), category);
 	}
-	return MongoAssetCategory.fromDBObject(updated);
+	return MongoAssetCategory.fromDocument(updated);
     }
 
     /*
@@ -196,10 +196,9 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     @Override
     public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject();
-	BasicDBObject sort = new BasicDBObject(MongoAssetCategory.PROP_NAME, 1)
-		.append(MongoAssetCategory.PROP_ASSET_TYPE, 1);
+	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	Document query = new Document();
+	Document sort = new Document(MongoAssetCategory.PROP_NAME, 1).append(MongoAssetCategory.PROP_ASSET_TYPE, 1);
 	return MongoPersistence.search(IAssetCategory.class, categories, query, sort, criteria);
     }
 
@@ -212,14 +211,14 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
-	DBObject existing = assertAssetCategory(categoryId);
-	DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	Document existing = assertAssetCategory(categoryId);
+	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	MongoPersistence.delete(categories, existing);
 
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getAssetCategoryCache().remove(categoryId);
 	}
-	return MongoAssetCategory.fromDBObject(existing);
+	return MongoAssetCategory.fromDocument(existing);
     }
 
     /*
@@ -233,15 +232,15 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	DBObject db = assertAssetCategory(categoryId);
-	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
+	Document db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
-	DBObject created = MongoPersonAsset.toDBObject(person);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	Document created = MongoPersonAsset.toDocument(person);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
-	return MongoPersonAsset.fromDBObject(created);
+	return MongoPersonAsset.fromDocument(created);
     }
 
     /*
@@ -255,19 +254,18 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     @Override
     public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
-	DBObject dbAsset = assertAsset(categoryId, assetId);
+	Document dbAsset = assertAsset(categoryId, assetId);
 	PersonAsset person = (PersonAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
 	SiteWherePersistence.personAssetUpdateLogic(person, request);
-	DBObject updated = MongoPersonAsset.toDBObject(person);
+	Document updated = MongoPersonAsset.toDocument(person);
 
-	BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID,
-		assetId);
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
+	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	MongoPersistence.update(assets, query, updated);
 
-	return MongoPersonAsset.fromDBObject(updated);
+	return MongoPersonAsset.fromDocument(updated);
     }
 
     /*
@@ -281,15 +279,15 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	DBObject db = assertAssetCategory(categoryId);
-	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
+	Document db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
-	DBObject created = MongoHardwareAsset.toDBObject(hw);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	Document created = MongoHardwareAsset.toDocument(hw);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
-	return MongoHardwareAsset.fromDBObject(created);
+	return MongoHardwareAsset.fromDocument(created);
     }
 
     /*
@@ -303,19 +301,18 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     @Override
     public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
-	DBObject dbAsset = assertAsset(categoryId, assetId);
+	Document dbAsset = assertAsset(categoryId, assetId);
 	HardwareAsset hardware = (HardwareAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
 	SiteWherePersistence.hardwareAssetUpdateLogic(hardware, request);
-	DBObject updated = MongoHardwareAsset.toDBObject(hardware);
+	Document updated = MongoHardwareAsset.toDocument(hardware);
 
-	BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID,
-		assetId);
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
+	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	MongoPersistence.update(assets, query, updated);
 
-	return MongoHardwareAsset.fromDBObject(updated);
+	return MongoHardwareAsset.fromDocument(updated);
     }
 
     /*
@@ -329,15 +326,15 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	DBObject db = assertAssetCategory(categoryId);
-	IAssetCategory category = MongoAssetCategory.fromDBObject(db);
+	Document db = assertAssetCategory(categoryId);
+	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
-	DBObject created = MongoLocationAsset.toDBObject(loc);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	Document created = MongoLocationAsset.toDocument(loc);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
-	return MongoLocationAsset.fromDBObject(created);
+	return MongoLocationAsset.fromDocument(created);
     }
 
     /*
@@ -351,19 +348,18 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     @Override
     public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
-	DBObject dbAsset = assertAsset(categoryId, assetId);
+	Document dbAsset = assertAsset(categoryId, assetId);
 	LocationAsset location = (LocationAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
 	SiteWherePersistence.locationAssetUpdateLogic(location, request);
-	DBObject updated = MongoLocationAsset.toDBObject(location);
+	Document updated = MongoLocationAsset.toDocument(location);
 
-	BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID,
-		assetId);
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
+	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	MongoPersistence.update(assets, query, updated);
 
-	return MongoLocationAsset.fromDBObject(updated);
+	return MongoLocationAsset.fromDocument(updated);
     }
 
     /*
@@ -374,7 +370,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     @Override
     public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException {
-	DBObject dbAsset = getAssetDBObject(categoryId, assetId);
+	Document dbAsset = getAssetDocument(categoryId, assetId);
 	if (dbAsset == null) {
 	    return null;
 	}
@@ -390,8 +386,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     @Override
     public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
-	DBObject existing = assertAsset(categoryId, assetId);
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
+	Document existing = assertAsset(categoryId, assetId);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	MongoPersistence.delete(assets, existing);
 	return unmarshalAsset(existing);
     }
@@ -405,40 +401,39 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      */
     @Override
     public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId);
-	BasicDBObject sort = new BasicDBObject(MongoAsset.PROP_NAME, 1);
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId);
+	Document sort = new Document(MongoAsset.PROP_NAME, 1);
 	return MongoPersistence.search(IAsset.class, assets, query, sort, criteria);
     }
 
     /**
-     * Return the {@link DBObject} for the asset category with the given id.
+     * Return the {@link Document} for the asset category with the given id.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getAssetCategoryDBObject(String id) throws SiteWhereException {
+    protected Document getAssetCategoryDocument(String id) throws SiteWhereException {
 	try {
-	    DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoAssetCategory.PROP_ID, id);
-	    DBObject result = categories.findOne(query);
-	    return result;
+	    MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	    Document query = new Document(MongoAssetCategory.PROP_ID, id);
+	    return categories.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the asset category with the given id.
+     * Return the {@link Document} for the asset category with the given id.
      * Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertAssetCategory(String id) throws SiteWhereException {
-	DBObject match = getAssetCategoryDBObject(id);
+    protected Document assertAssetCategory(String id) throws SiteWhereException {
+	Document match = getAssetCategoryDocument(id);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetCategoryId, ErrorLevel.ERROR);
 	}
@@ -446,7 +441,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Retirn the {@link DBObject} for the given asset. Returns null if not
+     * Retirn the {@link Document} for the given asset. Returns null if not
      * found.
      * 
      * @param categoryId
@@ -454,19 +449,18 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getAssetDBObject(String categoryId, String assetId) throws SiteWhereException {
+    protected Document getAssetDocument(String categoryId, String assetId) throws SiteWhereException {
 	try {
-	    DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID,
-		    assetId);
-	    return assets.findOne(query);
+	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	    Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+	    return assets.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the asset with the given id. Throws an
+     * Return the {@link Document} for the asset with the given id. Throws an
      * exception if the token is not valid.
      * 
      * @param categoryId
@@ -474,8 +468,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertAsset(String categoryId, String assetId) throws SiteWhereException {
-	DBObject match = getAssetDBObject(categoryId, assetId);
+    protected Document assertAsset(String categoryId, String assetId) throws SiteWhereException {
+	Document match = getAssetDocument(categoryId, assetId);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetId, ErrorLevel.ERROR);
 	}
@@ -483,26 +477,26 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Unmarshal an asset from a {@link DBObject}.
+     * Unmarshal an asset from a {@link Document}.
      * 
      * @param dbAsset
      * @return
      * @throws SiteWhereException
      */
-    public static Asset unmarshalAsset(DBObject dbAsset) throws SiteWhereException {
+    public static Asset unmarshalAsset(Document dbAsset) throws SiteWhereException {
 	String strAssetType = (String) dbAsset.get(MongoAsset.PROP_ASSET_TYPE);
 	try {
 	    AssetType type = AssetType.valueOf(strAssetType);
 	    switch (type) {
 	    case Device:
 	    case Hardware: {
-		return MongoHardwareAsset.fromDBObject(dbAsset);
+		return MongoHardwareAsset.fromDocument(dbAsset);
 	    }
 	    case Location: {
-		return MongoLocationAsset.fromDBObject(dbAsset);
+		return MongoLocationAsset.fromDocument(dbAsset);
 	    }
 	    case Person: {
-		return MongoPersonAsset.fromDBObject(dbAsset);
+		return MongoPersonAsset.fromDocument(dbAsset);
 	    }
 	    }
 	} catch (IllegalArgumentException e) {
@@ -512,23 +506,23 @@ public class MongoAssetManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Marshal an asset to a {@link DBObject}.
+     * Marshal an asset to a {@link Document}.
      * 
      * @param asset
      * @return
      * @throws SiteWhereException
      */
-    public static DBObject marshalAsset(IAsset asset) throws SiteWhereException {
+    public static Document marshalAsset(IAsset asset) throws SiteWhereException {
 	switch (asset.getType()) {
 	case Device:
 	case Hardware: {
-	    return MongoHardwareAsset.toDBObject((IHardwareAsset) asset);
+	    return MongoHardwareAsset.toDocument((IHardwareAsset) asset);
 	}
 	case Location: {
-	    return MongoLocationAsset.toDBObject((ILocationAsset) asset);
+	    return MongoLocationAsset.toDocument((ILocationAsset) asset);
 	}
 	case Person: {
-	    return MongoPersonAsset.toDBObject((IPersonAsset) asset);
+	    return MongoPersonAsset.toDocument((IPersonAsset) asset);
 	}
 	default: {
 	    throw new SiteWhereException("Unhandled asset type: " + asset.getType());

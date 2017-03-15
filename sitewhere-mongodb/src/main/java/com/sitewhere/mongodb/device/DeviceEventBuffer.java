@@ -7,6 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -15,16 +17,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
-import com.mongodb.BulkWriteOperation;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.WriteModel;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Buffers {@link DBObject} for bulk inserts.
+ * Buffers {@link Document} for bulk inserts.
  * 
  * @author Derek
  */
@@ -39,19 +42,19 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
     /** Max number of milliseconds cache before sending */
     private static final int MAX_TIME_BEFORE_WRITE = 250;
 
-    /** Buffer of DBObjects to insert */
-    private BlockingQueue<DBObject> buffer = new ArrayBlockingQueue<DBObject>(MAX_QUEUE_SIZE);
+    /** Buffer of Documents to insert */
+    private BlockingQueue<Document> buffer = new ArrayBlockingQueue<Document>(MAX_QUEUE_SIZE);
 
     /** Used to create the buffer sending thread */
     private ExecutorService executor;
 
     /** Events collection */
-    private DBCollection events;
+    private MongoCollection<Document> events;
 
     /** Max inserts per chunk */
     private int maxChunkSize;
 
-    public DeviceEventBuffer(DBCollection events, int maxChunkSize) {
+    public DeviceEventBuffer(MongoCollection<Document> events, int maxChunkSize) {
 	this.events = events;
 	this.maxChunkSize = maxChunkSize;
     }
@@ -79,9 +82,9 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.mongodb.device.IDeviceEventBuffer#add(com.mongodb.DBObject)
+     * com.sitewhere.mongodb.device.IDeviceEventBuffer#add(org.bson.Document)
      */
-    public void add(DBObject record) {
+    public void add(Document record) {
 	try {
 	    buffer.put(record);
 	} catch (InterruptedException e) {
@@ -90,7 +93,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
     }
 
     /**
-     * Thread that sends {@link DBObject} inserts to MongoDB in batches.
+     * Thread that sends {@link Document} inserts to MongoDB in batches.
      * 
      * @author Derek
      */
@@ -101,14 +104,14 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	    long lastPut = System.currentTimeMillis();
 
 	    while (true) {
-		BulkWriteOperation op = events.initializeUnorderedBulkOperation();
+		List<WriteModel<Document>> writes = new ArrayList<WriteModel<Document>>();
 		int count = 0;
 
 		while (true) {
 		    try {
-			DBObject record = buffer.poll(MAX_TIME_BEFORE_WRITE, TimeUnit.MILLISECONDS);
+			Document record = buffer.poll(MAX_TIME_BEFORE_WRITE, TimeUnit.MILLISECONDS);
 			if (record != null) {
-			    op.insert(record);
+			    writes.add(new InsertOneModel<Document>(record));
 			    count++;
 			}
 		    } catch (InterruptedException e) {
@@ -119,7 +122,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 			if (count > 0) {
 			    try {
 				LOGGER.debug("Executing bulk insert of " + count + " event records.");
-				op.execute();
+				events.bulkWrite(writes);
 			    } catch (MongoCommandException e) {
 				LOGGER.error("Error during MongoDB insert.", e);
 			    } catch (MongoTimeoutException e) {

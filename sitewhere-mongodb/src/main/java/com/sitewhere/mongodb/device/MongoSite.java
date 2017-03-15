@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -49,57 +49,58 @@ public class MongoSite implements MongoConverter<ISite> {
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(ISite source) {
-	return MongoSite.toDBObject(source);
+    @Override
+    public Document convert(ISite source) {
+	return MongoSite.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public ISite convert(DBObject source) {
-	return MongoSite.fromDBObject(source);
+    @Override
+    public ISite convert(Document source) {
+	return MongoSite.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(ISite source, BasicDBObject target) {
+    public static void toDocument(ISite source, Document target) {
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_TOKEN, source.getToken());
 
-	BasicDBObject mapData = new BasicDBObject();
+	Document mapData = new Document();
 	mapData.append(PROP_MAP_TYPE, source.getMap().getType());
-	MongoMetadataProvider.toDBObject(PROP_MAP_METADATA, source.getMap(), mapData);
+	MongoMetadataProvider.toDocument(PROP_MAP_METADATA, source.getMap(), mapData);
 	target.append(PROP_MAP_DATA, mapData);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, Site target) {
+    public static void fromDocument(Document source, Site target) {
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 	String token = (String) source.get(PROP_TOKEN);
 
-	DBObject mdo = (DBObject) source.get(PROP_MAP_DATA);
+	Document mdo = (Document) source.get(PROP_MAP_DATA);
 	if (mdo != null) {
 	    SiteMapData mapData = new SiteMapData();
-	    MongoMetadataProvider.fromDBObject(PROP_MAP_METADATA, mdo, mapData);
+	    MongoMetadataProvider.fromDocument(PROP_MAP_METADATA, mdo, mapData);
 	    String type = (String) mdo.get(PROP_MAP_TYPE);
 	    mapData.setType(type);
 	    target.setMap(mapData);
@@ -110,31 +111,31 @@ public class MongoSite implements MongoConverter<ISite> {
 	target.setImageUrl(imageUrl);
 	target.setToken(token);
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(ISite source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoSite.toDBObject(source, result);
+    public static Document toDocument(ISite source) {
+	Document result = new Document();
+	MongoSite.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static Site fromDBObject(DBObject source) {
+    public static Site fromDocument(Document source) {
 	Site result = new Site();
-	MongoSite.fromDBObject(source, result);
+	MongoSite.fromDocument(source, result);
 	return result;
     }
 }

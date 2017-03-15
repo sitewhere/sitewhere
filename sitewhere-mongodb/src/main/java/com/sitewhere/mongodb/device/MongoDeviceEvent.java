@@ -9,10 +9,9 @@ package com.sitewhere.mongodb.device;
 
 import java.util.Date;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -51,13 +50,13 @@ public class MongoDeviceEvent {
     public static final String PROP_RECEIVED_DATE = "receivedDate";
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void toDBObject(IDeviceEvent source, BasicDBObject target, boolean isNested) {
+    public static void toDocument(IDeviceEvent source, Document target, boolean isNested) {
 	target.append("_id", new ObjectId());
 	target.append(PROP_EVENT_TYPE, source.getEventType().name());
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
@@ -68,17 +67,17 @@ public class MongoDeviceEvent {
 	target.append(PROP_EVENT_DATE, source.getEventDate());
 	target.append(PROP_RECEIVED_DATE, source.getReceivedDate());
 
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void fromDBObject(DBObject source, DeviceEvent target, boolean isNested) {
+    public static void fromDocument(Document source, DeviceEvent target, boolean isNested) {
 	ObjectId id = (ObjectId) source.get("_id");
 	String eventType = (String) source.get(PROP_EVENT_TYPE);
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
@@ -106,6 +105,6 @@ public class MongoDeviceEvent {
 	    target.setAssignmentType(DeviceAssignmentType.valueOf(assignmentType));
 	}
 
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 }

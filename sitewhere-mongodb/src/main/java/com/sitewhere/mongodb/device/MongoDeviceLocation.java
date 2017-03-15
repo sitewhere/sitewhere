@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -37,31 +37,30 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IDeviceLocation source) {
-	return MongoDeviceLocation.toDBObject(source, false);
+    public Document convert(IDeviceLocation source) {
+	return MongoDeviceLocation.toDocument(source, false);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public IDeviceLocation convert(DBObject source) {
-	return MongoDeviceLocation.fromDBObject(source, false);
+    public IDeviceLocation convert(Document source) {
+	return MongoDeviceLocation.fromDocument(source, false);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void toDBObject(IDeviceLocation source, BasicDBObject target, boolean isNested) {
-	MongoDeviceEvent.toDBObject(source, target, isNested);
+    public static void toDocument(IDeviceLocation source, Document target, boolean isNested) {
+	MongoDeviceEvent.toDocument(source, target, isNested);
 
-	BasicDBObject locFields = new BasicDBObject();
+	Document locFields = new Document();
 	locFields.append(PROP_LONGITUDE, source.getLongitude());
 	locFields.append(PROP_LATITUDE, source.getLatitude());
 	target.append(PROP_LATLONG, locFields);
@@ -71,16 +70,16 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void fromDBObject(DBObject source, DeviceLocation target, boolean isNested) {
-	MongoDeviceEvent.fromDBObject(source, target, isNested);
+    public static void fromDocument(Document source, DeviceLocation target, boolean isNested) {
+	MongoDeviceEvent.fromDocument(source, target, isNested);
 
-	DBObject location = (DBObject) source.get(PROP_LATLONG);
+	Document location = (Document) source.get(PROP_LATLONG);
 	Double latitude = (Double) location.get(PROP_LATITUDE);
 	Double longitude = (Double) location.get(PROP_LONGITUDE);
 	Double elevation = (Double) source.get(PROP_ELEVATION);
@@ -91,28 +90,28 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceLocation source, boolean isNested) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceLocation.toDBObject(source, result, isNested);
+    public static Document toDocument(IDeviceLocation source, boolean isNested) {
+	Document result = new Document();
+	MongoDeviceLocation.toDocument(source, result, isNested);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static DeviceLocation fromDBObject(DBObject source, boolean isNested) {
+    public static DeviceLocation fromDocument(Document source, boolean isNested) {
 	DeviceLocation result = new DeviceLocation();
-	MongoDeviceLocation.fromDBObject(source, result, isNested);
+	MongoDeviceLocation.fromDocument(source, result, isNested);
 	return result;
     }
 }

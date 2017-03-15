@@ -7,7 +7,7 @@ dependencies {
     compile project(':sitewhere-core')
     compile group: 'org.springframework', name: 'spring-beans'
     compile group: 'org.springframework.security', name: 'spring-security-core'
-    compile group: 'org.mongodb', name: 'mongo-java-driver', version:'2.13.0'
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version:'3.4.2'
 
     provided group: 'javax.servlet', name: 'javax.servlet-api'
 }

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
@@ -30,33 +30,35 @@ public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> 
     /** Property for binary data */
     public static final String PROP_DATA = "data";
 
-    /**
-     * @param source
-     * @return
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceStreamData source) {
-	return MongoDeviceStreamData.toDBObject(source, false);
+    public Document convert(IDeviceStreamData source) {
+	return MongoDeviceStreamData.toDocument(source, false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
+     */
+    @Override
+    public IDeviceStreamData convert(Document source) {
+	return MongoDeviceStreamData.fromDocument(source, false);
     }
 
     /**
-     * @param source
-     * @return
-     */
-    @Override
-    public IDeviceStreamData convert(DBObject source) {
-	return MongoDeviceStreamData.fromDBObject(source, false);
-    }
-
-    /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void toDBObject(IDeviceStreamData source, BasicDBObject target, boolean isNested) {
-	MongoDeviceEvent.toDBObject(source, target, isNested);
+    public static void toDocument(IDeviceStreamData source, Document target, boolean isNested) {
+	MongoDeviceEvent.toDocument(source, target, isNested);
 
 	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_SEQUENCE_NUMBER, source.getSequenceNumber());
@@ -64,14 +66,14 @@ public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> 
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      * @param isNested
      */
-    public static void fromDBObject(DBObject source, DeviceStreamData target, boolean isNested) {
-	MongoDeviceEvent.fromDBObject(source, target, isNested);
+    public static void fromDocument(Document source, DeviceStreamData target, boolean isNested) {
+	MongoDeviceEvent.fromDocument(source, target, isNested);
 
 	String streamId = (String) source.get(PROP_STREAM_ID);
 	Long sequenceNumber = (Long) source.get(PROP_SEQUENCE_NUMBER);
@@ -83,28 +85,28 @@ public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> 
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceStreamData source, boolean isNested) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceStreamData.toDBObject(source, result, isNested);
+    public static Document toDocument(IDeviceStreamData source, boolean isNested) {
+	Document result = new Document();
+	MongoDeviceStreamData.toDocument(source, result, isNested);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static DeviceStreamData fromDBObject(DBObject source, boolean isNested) {
+    public static DeviceStreamData fromDocument(Document source, boolean isNested) {
 	DeviceStreamData result = new DeviceStreamData();
-	MongoDeviceStreamData.fromDBObject(source, result, isNested);
+	MongoDeviceStreamData.fromDocument(source, result, isNested);
 	return result;
     }
 }

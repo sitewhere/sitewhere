@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.asset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.spi.SiteWhereException;
@@ -49,9 +49,9 @@ public class MongoAsset implements MongoConverter<IAsset> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IAsset source) {
+    public Document convert(IAsset source) {
 	try {
-	    return (BasicDBObject) MongoAssetManagement.marshalAsset(source);
+	    return (Document) MongoAssetManagement.marshalAsset(source);
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException("Error marshaling asset.", e);
 	}
@@ -60,10 +60,10 @@ public class MongoAsset implements MongoConverter<IAsset> {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IAsset convert(DBObject source) {
+    public IAsset convert(Document source) {
 	try {
 	    return MongoAssetManagement.unmarshalAsset(source);
 	} catch (SiteWhereException e) {
@@ -72,12 +72,12 @@ public class MongoAsset implements MongoConverter<IAsset> {
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IAsset source, BasicDBObject target) {
+    public static void toDocument(IAsset source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_ASSET_TYPE, source.getType().name());
@@ -85,9 +85,9 @@ public class MongoAsset implements MongoConverter<IAsset> {
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
 
 	// Save nested list of properties.
-	List<BasicDBObject> props = new ArrayList<BasicDBObject>();
+	List<Document> props = new ArrayList<Document>();
 	for (String name : source.getProperties().keySet()) {
-	    BasicDBObject prop = new BasicDBObject();
+	    Document prop = new Document();
 	    prop.put("name", name);
 	    prop.put("value", source.getProperties().get(name));
 	    props.add(prop);
@@ -96,13 +96,13 @@ public class MongoAsset implements MongoConverter<IAsset> {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, Asset target) {
+    public static void fromDocument(Document source, Asset target) {
 	String id = (String) source.get(PROP_ID);
 	String name = (String) source.get(PROP_NAME);
 	String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
@@ -115,9 +115,9 @@ public class MongoAsset implements MongoConverter<IAsset> {
 	target.setAssetCategoryId(categoryId);
 	target.setImageUrl(imageUrl);
 
-	List<DBObject> props = (List<DBObject>) source.get(PROP_PROPERTIES);
+	List<Document> props = (List<Document>) source.get(PROP_PROPERTIES);
 	if (props != null) {
-	    for (DBObject prop : props) {
+	    for (Document prop : props) {
 		String pname = (String) prop.get("name");
 		String pvalue = (String) prop.get("value");
 		target.getProperties().put(pname, pvalue);
@@ -126,26 +126,26 @@ public class MongoAsset implements MongoConverter<IAsset> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IAsset source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoAsset.toDBObject(source, result);
+    public static Document toDocument(IAsset source) {
+	Document result = new Document();
+	MongoAsset.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static Asset fromDBObject(DBObject source) {
+    public static Asset fromDocument(Document source) {
 	Asset result = new Asset();
-	MongoAsset.fromDBObject(source, result);
+	MongoAsset.fromDocument(source, result);
 	return result;
     }
 }

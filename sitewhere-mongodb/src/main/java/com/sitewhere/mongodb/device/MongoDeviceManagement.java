@@ -15,13 +15,15 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -151,33 +153,33 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getSitesCollection(getTenant()).createIndex(new BasicDBObject(MongoSite.PROP_TOKEN, 1),
-		new BasicDBObject("unique", true));
-	getMongoClient().getDeviceSpecificationsCollection(getTenant()).createIndex(
-		new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-	getMongoClient().getDevicesCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, 1), new BasicDBObject("unique", true));
+	getMongoClient().getSitesCollection(getTenant()).createIndex(new Document(MongoSite.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDeviceSpecificationsCollection(getTenant())
+		.createIndex(new Document(MongoDeviceSpecification.PROP_TOKEN, 1), new IndexOptions().unique(true));
+	getMongoClient().getDevicesCollection(getTenant()).createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1),
+		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		.createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, 1)
+		.createIndex(new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
 	getMongoClient().getDeviceGroupsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		.createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getDeviceGroupsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceGroup.PROP_ROLES, 1));
+		.createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
 	getMongoClient().getGroupElementsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
+		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
 			.append(MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
 				1));
 	getMongoClient().getGroupElementsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
+		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
 			.append(MongoDeviceGroupElement.PROP_ROLES, 1));
 	getMongoClient().getBatchOperationsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoBatchOperation.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		.createIndex(new Document(MongoBatchOperation.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getBatchOperationElementsCollection(getTenant())
-		.createIndex(new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
+		.createIndex(new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
     }
 
     /*
@@ -200,15 +202,15 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	// Use common logic so all backend implementations work the same.
 	DeviceSpecification spec = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
 
-	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
-	DBObject created = MongoDeviceSpecification.toDBObject(spec);
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
+	Document created = MongoDeviceSpecification.toDocument(spec);
 	MongoPersistence.insert(specs, created, ErrorCode.DuplicateDeviceSpecificationToken);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getDeviceSpecificationCache().put(uuid, spec);
 	}
-	return MongoDeviceSpecification.fromDBObject(created);
+	return MongoDeviceSpecification.fromDocument(created);
     }
 
     /*
@@ -226,9 +228,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		return cached;
 	    }
 	}
-	DBObject dbSpecification = getDeviceSpecificationDBObjectByToken(token);
+	Document dbSpecification = getDeviceSpecificationDocumentByToken(token);
 	if (dbSpecification != null) {
-	    IDeviceSpecification result = MongoDeviceSpecification.fromDBObject(dbSpecification);
+	    IDeviceSpecification result = MongoDeviceSpecification.fromDocument(dbSpecification);
 	    if ((getCacheProvider() != null) && (result != null)) {
 		getCacheProvider().getDeviceSpecificationCache().put(token, result);
 	    }
@@ -248,23 +250,22 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
 	    throws SiteWhereException {
-	DBObject match = assertDeviceSpecification(token);
-	DeviceSpecification spec = MongoDeviceSpecification.fromDBObject(match);
+	Document match = assertDeviceSpecification(token);
+	DeviceSpecification spec = MongoDeviceSpecification.fromDocument(match);
 
-	// Use common update logic so that backend implemetations act the same
-	// way.
+	// Use common update logic.
 	SiteWherePersistence.deviceSpecificationUpdateLogic(request, spec);
-	DBObject updated = MongoDeviceSpecification.toDBObject(spec);
+	Document updated = MongoDeviceSpecification.toDocument(spec);
 
-	BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
-	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
+	Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	MongoPersistence.update(specs, query, updated);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getDeviceSpecificationCache().put(token, spec);
 	}
-	return MongoDeviceSpecification.fromDBObject(updated);
+	return MongoDeviceSpecification.fromDocument(updated);
     }
 
     /*
@@ -276,12 +277,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
+	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceSpecification.class, specs, dbCriteria, sort, criteria);
     }
 
@@ -294,50 +295,49 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
-	DBObject existing = assertDeviceSpecification(token);
-	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
+	Document existing = assertDeviceSpecification(token);
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	if (force) {
 	    MongoPersistence.delete(specs, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getDeviceSpecificationCache().remove(token);
 	    }
-	    return MongoDeviceSpecification.fromDBObject(existing);
+	    return MongoDeviceSpecification.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
+	    Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
 	    MongoPersistence.update(specs, query, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getDeviceSpecificationCache().remove(token);
 	    }
-	    return MongoDeviceSpecification.fromDBObject(existing);
+	    return MongoDeviceSpecification.fromDocument(existing);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the device specification with the given
+     * Return the {@link Document} for the device specification with the given
      * token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceSpecificationDBObjectByToken(String token) throws SiteWhereException {
-	DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
-	DBObject result = specs.findOne(query);
-	return result;
+    protected Document getDeviceSpecificationDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
+	Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
+	return specs.find(query).first();
     }
 
     /**
-     * Return the {@link DBObject} for the device specification with the given
+     * Return the {@link Document} for the device specification with the given
      * token. Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertDeviceSpecification(String token) throws SiteWhereException {
-	DBObject match = getDeviceSpecificationDBObjectByToken(token);
+    protected Document assertDeviceSpecification(String token) throws SiteWhereException {
+	Document match = getDeviceSpecificationDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 	}
@@ -361,10 +361,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 	DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
-	DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
-	DBObject created = MongoDeviceCommand.toDBObject(command);
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
+	Document created = MongoDeviceCommand.toDocument(command);
 	MongoPersistence.insert(commands, created, ErrorCode.DeviceCommandExists);
-	return MongoDeviceCommand.fromDBObject(created);
+	return MongoDeviceCommand.fromDocument(created);
     }
 
     /*
@@ -376,9 +376,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-	DBObject result = getDeviceCommandDBObjectByToken(token);
+	Document result = getDeviceCommandDocumentByToken(token);
 	if (result != null) {
-	    return MongoDeviceCommand.fromDBObject(result);
+	    return MongoDeviceCommand.fromDocument(result);
 	}
 	return null;
     }
@@ -393,21 +393,20 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
-	DBObject match = assertDeviceCommand(token);
-	DeviceCommand command = MongoDeviceCommand.fromDBObject(match);
+	Document match = assertDeviceCommand(token);
+	DeviceCommand command = MongoDeviceCommand.fromDocument(match);
 
 	// Note: This allows duplicates if duplicate was marked deleted.
 	List<IDeviceCommand> existing = listDeviceCommands(token, false);
 
-	// Use common update logic so that backend implemetations act the same
-	// way.
+	// Use common update logic.
 	SiteWherePersistence.deviceCommandUpdateLogic(request, command, existing);
-	DBObject updated = MongoDeviceCommand.toDBObject(command);
+	Document updated = MongoDeviceCommand.toDocument(command);
 
-	BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
-	DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
+	Document query = new Document(MongoDeviceCommand.PROP_TOKEN, token);
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 	MongoPersistence.update(commands, query, updated);
-	return MongoDeviceCommand.fromDBObject(updated);
+	return MongoDeviceCommand.fromDocument(updated);
     }
 
     /*
@@ -419,13 +418,13 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted) throws SiteWhereException {
-	DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
+	Document dbCriteria = new Document();
 	dbCriteria.put(MongoDeviceCommand.PROP_SPEC_TOKEN, token);
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
-	BasicDBObject sort = new BasicDBObject(MongoDeviceCommand.PROP_NAME, 1);
+	Document sort = new Document(MongoDeviceCommand.PROP_NAME, 1);
 	return MongoPersistence.list(IDeviceCommand.class, commands, dbCriteria, sort);
     }
 
@@ -438,43 +437,42 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
-	DBObject existing = assertDeviceCommand(token);
-	DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
+	Document existing = assertDeviceCommand(token);
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 	if (force) {
 	    MongoPersistence.delete(commands, existing);
-	    return MongoDeviceCommand.fromDBObject(existing);
+	    return MongoDeviceCommand.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
+	    Document query = new Document(MongoDeviceCommand.PROP_TOKEN, token);
 	    MongoPersistence.update(commands, query, existing);
-	    return MongoDeviceCommand.fromDBObject(existing);
+	    return MongoDeviceCommand.fromDocument(existing);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the device command with the given token.
+     * Return the {@link Document} for the device command with the given token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceCommandDBObjectByToken(String token) throws SiteWhereException {
-	DBCollection specs = getMongoClient().getDeviceCommandsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
-	DBObject result = specs.findOne(query);
-	return result;
+    protected Document getDeviceCommandDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
+	Document query = new Document(MongoDeviceCommand.PROP_TOKEN, token);
+	return commands.find(query).first();
     }
 
     /**
-     * Return the {@link DBObject} for the device command with the given token.
+     * Return the {@link Document} for the device command with the given token.
      * Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertDeviceCommand(String token) throws SiteWhereException {
-	DBObject match = getDeviceCommandDBObjectByToken(token);
+    protected Document assertDeviceCommand(String token) throws SiteWhereException {
+	Document match = getDeviceCommandDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
@@ -493,8 +491,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Device newDevice = SiteWherePersistence.deviceCreateLogic(request);
 
 	// Convert and save device data.
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
-	DBObject created = MongoDevice.toDBObject(newDevice);
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
+	Document created = MongoDevice.toDocument(newDevice);
 	MongoPersistence.insert(devices, created, ErrorCode.DuplicateHardwareId);
 
 	// Update cache with new data.
@@ -513,21 +511,21 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-	DBObject existing = assertDevice(hardwareId);
-	Device updatedDevice = MongoDevice.fromDBObject(existing);
+	Document existing = assertDevice(hardwareId);
+	Device updatedDevice = MongoDevice.fromDocument(existing);
 
 	SiteWherePersistence.deviceUpdateLogic(request, updatedDevice);
-	DBObject updated = MongoDevice.toDBObject(updatedDevice);
+	Document updated = MongoDevice.toDocument(updatedDevice);
 
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
+	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	MongoPersistence.update(devices, query, updated);
 
 	// Update cache with new data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getDeviceCache().put(hardwareId, updatedDevice);
 	}
-	return MongoDevice.fromDBObject(updated);
+	return MongoDevice.fromDocument(updated);
     }
 
     /*
@@ -545,9 +543,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		return cached;
 	    }
 	}
-	DBObject dbDevice = getDeviceDBObjectByHardwareId(hardwareId);
+	Document dbDevice = getDeviceDocumentByHardwareId(hardwareId);
 	if (dbDevice != null) {
-	    IDevice result = MongoDevice.fromDBObject(dbDevice);
+	    IDevice result = MongoDevice.fromDocument(dbDevice);
 	    if ((getCacheProvider() != null) && (result != null)) {
 		getCacheProvider().getDeviceCache().put(hardwareId, result);
 	    }
@@ -580,8 +578,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
-	BasicDBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
+	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
@@ -600,7 +598,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	    dbCriteria.put(MongoDevice.PROP_SITE_TOKEN, criteria.getSiteToken());
 	}
 
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDevice.class, devices, dbCriteria, sort, criteria);
     }
 
@@ -638,44 +636,43 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-	DBObject existing = assertDevice(hardwareId);
-	Device device = MongoDevice.fromDBObject(existing);
+	Document existing = assertDevice(hardwareId);
+	Device device = MongoDevice.fromDocument(existing);
 	IDeviceAssignment assignment = getCurrentDeviceAssignment(device);
 	if (assignment != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
 	if (force) {
-	    DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
+	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	    MongoPersistence.delete(devices, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getDeviceCache().remove(hardwareId);
 	    }
-	    return MongoDevice.fromDBObject(existing);
+	    return MongoDevice.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
-	    DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
+	    Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
+	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	    MongoPersistence.update(devices, query, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getDeviceCache().remove(hardwareId);
 	    }
-	    return MongoDevice.fromDBObject(existing);
+	    return MongoDevice.fromDocument(existing);
 	}
     }
 
     /**
-     * Get the DBObject containing site information that matches the given
-     * token.
+     * Get the {@link Document} containing site information that matches the
+     * given token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceDBObjectByHardwareId(String hardwareId) throws SiteWhereException {
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
-	DBObject result = devices.findOne(query);
-	return result;
+    protected Document getDeviceDocumentByHardwareId(String hardwareId) throws SiteWhereException {
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
+	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
+	return devices.find(query).first();
     }
 
     /*
@@ -687,11 +684,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	DBObject deviceDb = assertDevice(request.getDeviceHardwareId());
+	Document deviceDb = assertDevice(request.getDeviceHardwareId());
 	if (deviceDb.get(MongoDevice.PROP_ASSIGNMENT_TOKEN) != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
-	Device device = MongoDevice.fromDBObject(deviceDb);
+	Device device = MongoDevice.fromDocument(deviceDb);
 
 	// Use common logic to load assignment from request.
 	DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device);
@@ -699,8 +696,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	    newAssignment.setToken(UUID.randomUUID().toString());
 	}
 
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document created = MongoDeviceAssignment.toDocument(newAssignment);
 	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
 	// Update cache with new assignment data.
@@ -709,14 +706,14 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	}
 
 	// Update device to point to created assignment.
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
+	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
 	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
 	MongoPersistence.update(devices, query, deviceDb);
 
 	// Update cache with new device data.
 	if (getCacheProvider() != null) {
-	    Device updated = MongoDevice.fromDBObject(deviceDb);
+	    Device updated = MongoDevice.fromDocument(deviceDb);
 	    getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 	}
 	return newAssignment;
@@ -737,9 +734,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		return cached;
 	    }
 	}
-	DBObject dbAssignment = getDeviceAssignmentDBObjectByToken(token);
+	Document dbAssignment = getDeviceAssignmentDocumentByToken(token);
 	if (dbAssignment != null) {
-	    IDeviceAssignment result = MongoDeviceAssignment.fromDBObject(dbAssignment);
+	    IDeviceAssignment result = MongoDeviceAssignment.fromDocument(dbAssignment);
 	    if ((getCacheProvider() != null) && (result != null)) {
 		getCacheProvider().getDeviceAssignmentCache().put(token, result);
 	    }
@@ -757,17 +754,17 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-	DBObject existing = assertDeviceAssignment(token);
+	Document existing = assertDeviceAssignment(token);
 	if (force) {
-	    DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	    MongoPersistence.delete(assignments, existing);
-	    return MongoDeviceAssignment.fromDBObject(existing);
+	    return MongoDeviceAssignment.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
-	    DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	    Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
+	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	    MongoPersistence.update(assignments, query, existing);
-	    return MongoDeviceAssignment.fromDBObject(existing);
+	    return MongoDeviceAssignment.fromDocument(existing);
 	}
     }
 
@@ -804,20 +801,20 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
 	    throws SiteWhereException {
-	DBObject match = assertDeviceAssignment(token);
-	MongoMetadataProvider.toDBObject(metadata, match);
-	DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
+	Document match = assertDeviceAssignment(token);
+	MongoMetadataProvider.toDocument(metadata, match);
+	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	SiteWherePersistence.setUpdatedEntityMetadata(assignment);
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDBObject(assignment));
+	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));
 
 	// Update cache with new assignment data.
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getDeviceAssignmentCache().put(assignment.getToken(), assignment);
 	}
 
-	return MongoDeviceAssignment.fromDBObject(match);
+	return MongoDeviceAssignment.fromDocument(match);
     }
 
     /*
@@ -830,12 +827,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
 	    throws SiteWhereException {
-	DBObject match = assertDeviceAssignment(token);
+	Document match = assertDeviceAssignment(token);
 	match.put(MongoDeviceAssignment.PROP_STATUS, status.name());
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoPersistence.update(assignments, query, match);
-	DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+	DeviceAssignment updated = MongoDeviceAssignment.fromDocument(match);
 
 	// Update cache with new assignment data.
 	if (getCacheProvider() != null) {
@@ -855,12 +852,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 	    throws SiteWhereException {
-	DBObject match = assertDeviceAssignment(token);
+	Document match = assertDeviceAssignment(token);
 	MongoDeviceAssignment.setState(state, match);
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoPersistence.update(assignments, query, match);
-	DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+	DeviceAssignment updated = MongoDeviceAssignment.fromDocument(match);
 
 	// Update cache with new assignment data.
 	if (getCacheProvider() != null) {
@@ -879,34 +876,34 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-	DBObject match = assertDeviceAssignment(token);
+	Document match = assertDeviceAssignment(token);
 	match.put(MongoDeviceAssignment.PROP_RELEASED_DATE, Calendar.getInstance().getTime());
 	match.put(MongoDeviceAssignment.PROP_STATUS, DeviceAssignmentStatus.Released.name());
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoPersistence.update(assignments, query, match);
 
 	// Update cache with new assignment data.
 	if (getCacheProvider() != null) {
-	    DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+	    DeviceAssignment updated = MongoDeviceAssignment.fromDocument(match);
 	    getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
 	}
 
 	// Remove device assignment reference.
-	DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	String hardwareId = (String) match.get(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID);
-	DBObject deviceMatch = getDeviceDBObjectByHardwareId(hardwareId);
-	deviceMatch.removeField(MongoDevice.PROP_ASSIGNMENT_TOKEN);
-	query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
+	Document deviceMatch = getDeviceDocumentByHardwareId(hardwareId);
+	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
+	query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	MongoPersistence.update(devices, query, deviceMatch);
 
 	// Update cache with new device data.
 	if (getCacheProvider() != null) {
-	    Device updated = MongoDevice.fromDBObject(deviceMatch);
+	    Device updated = MongoDevice.fromDocument(deviceMatch);
 	    getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 	}
 
-	DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
+	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	return assignment;
     }
 
@@ -920,9 +917,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID, hardwareId);
-	BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID, hardwareId);
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
     }
 
@@ -937,12 +934,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
 	}
-	BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
     }
 
@@ -959,8 +956,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	if ((dates.getStartDate() == null) && (dates.getEndDate() == null)) {
 	    throw new SiteWhereException("No date criteria specified.");
 	}
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject dateQuery = new BasicDBObject();
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document dateQuery = new Document();
 	if (dates.getEndDate() != null) {
 	    dateQuery.append("$lte", dates.getEndDate());
 	}
@@ -969,10 +966,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	}
 
 	// Search by site and with date range search criteria.
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+	Document query = new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
 	query.append(MongoDeviceAssignment.PROP_STATE + "." + MongoDeviceAssignmentState.PROP_LAST_INTERACTION_DATE,
 		dateQuery);
-	BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 
 	// Only pass paging critieria. Dates apply to last interaction not
 	// create date.
@@ -990,11 +987,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
 	query.append(MongoDeviceAssignment.PROP_STATE + "." + MongoDeviceAssignmentState.PROP_PRESENCE_MISSING_DATE,
 		new BasicDBObject("$exists", true));
-	BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
     }
 
@@ -1009,8 +1006,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId)
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId)
 		.append(MongoDeviceAssignment.PROP_ASSET_ID, assetId);
 	if (criteria.getSiteToken() != null) {
 	    query.append(MongoDeviceAssignment.PROP_SITE_TOKEN, criteria.getSiteToken());
@@ -1018,22 +1015,21 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
 	}
-	BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
     }
 
     /**
-     * Find the DBObject for a device assignment based on unique token.
+     * Find the {@link Document} for a device assignment based on unique token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceAssignmentDBObjectByToken(String token) throws SiteWhereException {
-	DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
-	DBObject result = assignments.findOne(query);
-	return result;
+    protected Document getDeviceAssignmentDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
+	return assignments.find(query).first();
     }
 
     /*
@@ -1051,10 +1047,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 	DeviceStream stream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
 
-	DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
-	DBObject created = MongoDeviceStream.toDBObject(stream);
+	MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenant());
+	Document created = MongoDeviceStream.toDocument(stream);
 	MongoPersistence.insert(streams, created, ErrorCode.DuplicateStreamId);
-	return MongoDeviceStream.fromDBObject(created);
+	return MongoDeviceStream.fromDocument(created);
     }
 
     /*
@@ -1066,11 +1062,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
-	DBObject dbStream = getDeviceStreamDBObject(assignmentToken, streamId);
+	Document dbStream = getDeviceStreamDocument(assignmentToken, streamId);
 	if (dbStream == null) {
 	    return null;
 	}
-	return MongoDeviceStream.fromDBObject(dbStream);
+	return MongoDeviceStream.fromDocument(dbStream);
     }
 
     /*
@@ -1083,9 +1079,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken);
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenant());
+	Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria);
     }
 
@@ -1101,10 +1097,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	// Use common logic so all backend implementations work the same.
 	Site site = SiteWherePersistence.siteCreateLogic(request);
 
-	DBCollection sites = getMongoClient().getSitesCollection(getTenant());
-	DBObject created = MongoSite.toDBObject(site);
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
+	Document created = MongoSite.toDocument(site);
 	MongoPersistence.insert(sites, created, ErrorCode.DeuplicateSiteToken);
-	return MongoSite.fromDBObject(created);
+	return MongoSite.fromDocument(created);
     }
 
     /*
@@ -1116,25 +1112,24 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public ISite updateSite(String token, ISiteCreateRequest request) throws SiteWhereException {
-	DBObject match = getSiteDBObjectByToken(token);
+	Document match = getSiteDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
-	Site site = MongoSite.fromDBObject(match);
+	Site site = MongoSite.fromDocument(match);
 
-	// Use common update logic so that backend implemetations act the same
-	// way.
+	// Use common update logic.
 	SiteWherePersistence.siteUpdateLogic(request, site);
 
-	DBObject updated = MongoSite.toDBObject(site);
+	Document updated = MongoSite.toDocument(site);
 
-	DBCollection sites = getMongoClient().getSitesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
+	Document query = new Document(MongoSite.PROP_TOKEN, token);
 	MongoPersistence.update(sites, query, updated);
 	if (getCacheProvider() != null) {
 	    getCacheProvider().getSiteCache().put(token, site);
 	}
-	return MongoSite.fromDBObject(updated);
+	return MongoSite.fromDocument(updated);
     }
 
     /*
@@ -1145,9 +1140,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public ISite getSiteByToken(String token) throws SiteWhereException {
-	DBObject dbSite = getSiteDBObjectByToken(token);
+	Document dbSite = getSiteDocumentByToken(token);
 	if (dbSite != null) {
-	    return MongoSite.fromDBObject(dbSite);
+	    return MongoSite.fromDocument(dbSite);
 	}
 	return null;
     }
@@ -1161,23 +1156,23 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
-	DBObject existing = assertSite(siteToken);
+	Document existing = assertSite(siteToken);
 	if (force) {
-	    DBCollection sites = getMongoClient().getSitesCollection(getTenant());
+	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	    MongoPersistence.delete(sites, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getSiteCache().remove(siteToken);
 	    }
-	    return MongoSite.fromDBObject(existing);
+	    return MongoSite.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, siteToken);
-	    DBCollection sites = getMongoClient().getSitesCollection(getTenant());
+	    Document query = new Document(MongoSite.PROP_TOKEN, siteToken);
+	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	    MongoPersistence.update(sites, query, existing);
 	    if (getCacheProvider() != null) {
 		getCacheProvider().getSiteCache().remove(siteToken);
 	    }
-	    return MongoSite.fromDBObject(existing);
+	    return MongoSite.fromDocument(existing);
 	}
     }
 
@@ -1189,18 +1184,18 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getSiteDBObjectByToken(String token) throws SiteWhereException {
+    protected Document getSiteDocumentByToken(String token) throws SiteWhereException {
 	if (getCacheProvider() != null) {
 	    ISite cached = getCacheProvider().getSiteCache().get(token);
 	    if (cached != null) {
-		return MongoSite.toDBObject(cached);
+		return MongoSite.toDocument(cached);
 	    }
 	}
-	DBCollection sites = getMongoClient().getSitesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
-	DBObject result = sites.findOne(query);
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
+	Document query = new Document(MongoSite.PROP_TOKEN, token);
+	Document result = sites.find(query).first();
 	if ((getCacheProvider() != null) && (result != null)) {
-	    ISite site = MongoSite.fromDBObject(result);
+	    ISite site = MongoSite.fromDocument(result);
 	    getCacheProvider().getSiteCache().put(token, site);
 	}
 	return result;
@@ -1215,9 +1210,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection sites = getMongoClient().getSitesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject();
-	BasicDBObject sort = new BasicDBObject(MongoSite.PROP_NAME, 1);
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
+	Document query = new Document();
+	Document sort = new Document(MongoSite.PROP_NAME, 1);
 	return MongoPersistence.search(ISite.class, sites, query, sort, criteria);
     }
 
@@ -1232,10 +1227,10 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
 	Zone zone = SiteWherePersistence.zoneCreateLogic(request, site.getToken(), UUID.randomUUID().toString());
 
-	DBCollection zones = getMongoClient().getZonesCollection(getTenant());
-	DBObject created = MongoZone.toDBObject(zone);
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
+	Document created = MongoZone.toDocument(zone);
 	MongoPersistence.insert(zones, created, ErrorCode.DuplicateZoneToken);
-	return MongoZone.fromDBObject(created);
+	return MongoZone.fromDocument(created);
     }
 
     /*
@@ -1247,17 +1242,17 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
-	DBCollection zones = getMongoClient().getZonesCollection(getTenant());
-	DBObject match = assertZone(token);
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
+	Document match = assertZone(token);
 
-	Zone zone = MongoZone.fromDBObject(match);
+	Zone zone = MongoZone.fromDocument(match);
 	SiteWherePersistence.zoneUpdateLogic(request, zone);
 
-	DBObject updated = MongoZone.toDBObject(zone);
+	Document updated = MongoZone.toDocument(zone);
 
-	BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
+	Document query = new Document(MongoSite.PROP_TOKEN, token);
 	MongoPersistence.update(zones, query, updated);
-	return MongoZone.fromDBObject(updated);
+	return MongoZone.fromDocument(updated);
     }
 
     /*
@@ -1267,9 +1262,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IZone getZone(String zoneToken) throws SiteWhereException {
-	DBObject dbZone = getZoneDBObjectByToken(zoneToken);
+	Document dbZone = getZoneDocumentByToken(zoneToken);
 	if (dbZone != null) {
-	    return MongoZone.fromDBObject(dbZone);
+	    return MongoZone.fromDocument(dbZone);
 	}
 	return null;
     }
@@ -1283,9 +1278,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public SearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection zones = getMongoClient().getZonesCollection(getTenant());
-	BasicDBObject query = new BasicDBObject(MongoZone.PROP_SITE_TOKEN, siteToken);
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
+	Document query = new Document(MongoZone.PROP_SITE_TOKEN, siteToken);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IZone.class, zones, query, sort, criteria);
     }
 
@@ -1298,17 +1293,17 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
-	DBObject existing = assertZone(zoneToken);
+	Document existing = assertZone(zoneToken);
 	if (force) {
-	    DBCollection zones = getMongoClient().getZonesCollection(getTenant());
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
 	    MongoPersistence.delete(zones, existing);
-	    return MongoZone.fromDBObject(existing);
+	    return MongoZone.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, zoneToken);
-	    DBCollection zones = getMongoClient().getZonesCollection(getTenant());
+	    Document query = new Document(MongoZone.PROP_TOKEN, zoneToken);
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
 	    MongoPersistence.update(zones, query, existing);
-	    return MongoZone.fromDBObject(existing);
+	    return MongoZone.fromDocument(existing);
 	}
     }
 
@@ -1323,12 +1318,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 	DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
 
-	DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
-	DBObject created = MongoDeviceGroup.toDBObject(group);
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	Document created = MongoDeviceGroup.toDocument(group);
 	created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
 
 	MongoPersistence.insert(groups, created, ErrorCode.DuplicateDeviceGroupToken);
-	return MongoDeviceGroup.fromDBObject(created);
+	return MongoDeviceGroup.fromDocument(created);
     }
 
     /*
@@ -1340,20 +1335,20 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
-	DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
-	DBObject match = assertDeviceGroup(token);
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	Document match = assertDeviceGroup(token);
 
-	DeviceGroup group = MongoDeviceGroup.fromDBObject(match);
+	DeviceGroup group = MongoDeviceGroup.fromDocument(match);
 	SiteWherePersistence.deviceGroupUpdateLogic(request, group);
 
-	DBObject updated = MongoDeviceGroup.toDBObject(group);
+	Document updated = MongoDeviceGroup.toDocument(group);
 
 	// Manually copy last index since it's not copied by default.
 	updated.put(MongoDeviceGroup.PROP_LAST_INDEX, match.get(MongoDeviceGroup.PROP_LAST_INDEX));
 
-	BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
 	MongoPersistence.update(groups, query, updated);
-	return MongoDeviceGroup.fromDBObject(updated);
+	return MongoDeviceGroup.fromDocument(updated);
     }
 
     /*
@@ -1364,9 +1359,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
-	DBObject found = getDeviceGroupDBObjectByToken(token);
+	Document found = getDeviceGroupDocumentByToken(token);
 	if (found != null) {
-	    return MongoDeviceGroup.fromDBObject(found);
+	    return MongoDeviceGroup.fromDocument(found);
 	}
 	return null;
     }
@@ -1380,12 +1375,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceGroup.class, groups, dbCriteria, sort, criteria);
     }
 
@@ -1399,12 +1394,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject(MongoDeviceGroup.PROP_ROLES, role);
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	Document dbCriteria = new Document(MongoDeviceGroup.PROP_ROLES, role);
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceGroup.class, groups, dbCriteria, sort, criteria);
     }
 
@@ -1417,23 +1412,23 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
-	DBObject existing = assertDeviceGroup(token);
+	Document existing = assertDeviceGroup(token);
 	if (force) {
-	    DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 	    MongoPersistence.delete(groups, existing);
 
 	    // Delete group elements as well.
-	    DBCollection elements = getMongoClient().getGroupElementsCollection(getTenant());
-	    BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, token);
+	    MongoCollection<Document> elements = getMongoClient().getGroupElementsCollection(getTenant());
+	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, token);
 	    MongoPersistence.delete(elements, match);
 
-	    return MongoDeviceGroup.fromDBObject(existing);
+	    return MongoDeviceGroup.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-	    DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	    Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 	    MongoPersistence.update(groups, query, existing);
-	    return MongoDeviceGroup.fromDBObject(existing);
+	    return MongoDeviceGroup.fromDocument(existing);
 	}
     }
 
@@ -1451,11 +1446,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	for (IDeviceGroupElementCreateRequest request : elements) {
 	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
 	    DeviceGroupElement element = SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
-	    DBObject created = MongoDeviceGroupElement.toDBObject(element);
+	    Document created = MongoDeviceGroupElement.toDocument(element);
 	    try {
 		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
 			ErrorCode.DuplicateId);
-		results.add(MongoDeviceGroupElement.fromDBObject(created));
+		results.add(MongoDeviceGroupElement.fromDocument(created));
 	    } catch (ResourceExistsException e) {
 		if (!ignoreDuplicates) {
 		    throw e;
@@ -1477,16 +1472,18 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 	List<IDeviceGroupElement> deleted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
-	    BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken)
+	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken)
 		    .append(MongoDeviceGroupElement.PROP_TYPE, request.getType().name())
 		    .append(MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
-	    DBCursor found = getMongoClient().getGroupElementsCollection(getTenant()).find(match);
-	    while (found.hasNext()) {
-		DBObject current = found.next();
-		WriteResult result = MongoPersistence.delete(getMongoClient().getGroupElementsCollection(getTenant()),
+	    FindIterable<Document> found = getMongoClient().getGroupElementsCollection(getTenant()).find(match);
+	    MongoCursor<Document> cursor = found.iterator();
+
+	    while (cursor.hasNext()) {
+		Document current = cursor.next();
+		DeleteResult result = MongoPersistence.delete(getMongoClient().getGroupElementsCollection(getTenant()),
 			current);
-		if (result.getN() > 0) {
-		    deleted.add(MongoDeviceGroupElement.fromDBObject(current));
+		if (result.getDeletedCount() > 0) {
+		    deleted.add(MongoDeviceGroupElement.fromDocument(current));
 		}
 	    }
 	}
@@ -1503,8 +1500,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken);
-	BasicDBObject sort = new BasicDBObject(MongoDeviceGroupElement.PROP_INDEX, 1);
+	Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken);
+	Document sort = new Document(MongoDeviceGroupElement.PROP_INDEX, 1);
 	return MongoPersistence.search(IDeviceGroupElement.class,
 		getMongoClient().getGroupElementsCollection(getTenant()), match, sort, criteria);
     }
@@ -1520,20 +1517,20 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 	BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
 
-	DBCollection batches = getMongoClient().getBatchOperationsCollection(getTenant());
-	DBObject created = MongoBatchOperation.toDBObject(batch);
+	MongoCollection<Document> batches = getMongoClient().getBatchOperationsCollection(getTenant());
+	Document created = MongoBatchOperation.toDocument(batch);
 	MongoPersistence.insert(batches, created, ErrorCode.DuplicateBatchOperationToken);
 
 	// Insert element for each hardware id.
 	long index = 0;
-	DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 	for (String hardwareId : request.getHardwareIds()) {
 	    BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
-	    DBObject dbElement = MongoBatchElement.toDBObject(element);
+	    Document dbElement = MongoBatchElement.toDocument(element);
 	    MongoPersistence.insert(elements, dbElement, ErrorCode.DuplicateBatchElement);
 	}
 
-	return MongoBatchOperation.fromDBObject(created);
+	return MongoBatchOperation.fromDocument(created);
     }
 
     /*
@@ -1546,17 +1543,17 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException {
-	DBCollection batchops = getMongoClient().getBatchOperationsCollection(getTenant());
-	DBObject match = assertBatchOperation(token);
+	MongoCollection<Document> batchops = getMongoClient().getBatchOperationsCollection(getTenant());
+	Document match = assertBatchOperation(token);
 
-	BatchOperation operation = MongoBatchOperation.fromDBObject(match);
+	BatchOperation operation = MongoBatchOperation.fromDocument(match);
 	SiteWherePersistence.batchOperationUpdateLogic(request, operation);
 
-	DBObject updated = MongoBatchOperation.toDBObject(operation);
+	Document updated = MongoBatchOperation.toDocument(operation);
 
-	BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
+	Document query = new Document(MongoBatchOperation.PROP_TOKEN, token);
 	MongoPersistence.update(batchops, query, updated);
-	return MongoBatchOperation.fromDBObject(updated);
+	return MongoBatchOperation.fromDocument(updated);
     }
 
     /*
@@ -1568,9 +1565,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-	DBObject found = getBatchOperationDBObjectByToken(token);
+	Document found = getBatchOperationDocumentByToken(token);
 	if (found != null) {
-	    return MongoBatchOperation.fromDBObject(found);
+	    return MongoBatchOperation.fromDocument(found);
 	}
 	return null;
     }
@@ -1585,12 +1582,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject();
+	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenant());
+	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
-	BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IBatchOperation.class, ops, dbCriteria, sort, criteria);
     }
 
@@ -1603,23 +1600,23 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-	DBObject existing = assertBatchOperation(token);
+	Document existing = assertBatchOperation(token);
 	if (force) {
-	    DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenant());
 	    MongoPersistence.delete(ops, existing);
 
 	    // Delete operation elements as well.
-	    DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
-	    BasicDBObject match = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, token);
+	    MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
+	    Document match = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, token);
 	    MongoPersistence.delete(elements, match);
 
-	    return MongoBatchOperation.fromDBObject(existing);
+	    return MongoBatchOperation.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-	    DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
+	    Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenant());
 	    MongoPersistence.update(ops, query, existing);
-	    return MongoBatchOperation.fromDBObject(existing);
+	    return MongoBatchOperation.fromDocument(existing);
 	}
     }
 
@@ -1633,12 +1630,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public SearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
-	DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
-	DBObject dbCriteria = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, batchToken);
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
+	Document dbCriteria = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, batchToken);
 	if (criteria.getProcessingStatus() != null) {
 	    dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus());
 	}
-	BasicDBObject sort = new BasicDBObject(MongoBatchElement.PROP_INDEX, 1);
+	Document sort = new Document(MongoBatchElement.PROP_INDEX, 1);
 	return MongoPersistence.search(IBatchElement.class, elements, dbCriteria, sort, criteria);
     }
 
@@ -1653,18 +1650,18 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
 	    throws SiteWhereException {
-	DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
-	DBObject dbElement = assertBatchElement(operationToken, index);
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
+	Document dbElement = assertBatchElement(operationToken, index);
 
-	BatchElement element = MongoBatchElement.fromDBObject(dbElement);
+	BatchElement element = MongoBatchElement.fromDocument(dbElement);
 	SiteWherePersistence.batchElementUpdateLogic(request, element);
 
-	DBObject updated = MongoBatchElement.toDBObject(element);
+	Document updated = MongoBatchElement.toDocument(element);
 
-	BasicDBObject query = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken)
+	Document query = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken)
 		.append(MongoBatchElement.PROP_INDEX, index);
 	MongoPersistence.update(elements, query, updated);
-	return MongoBatchElement.fromDBObject(updated);
+	return MongoBatchElement.fromDocument(updated);
     }
 
     /*
@@ -1683,15 +1680,15 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Return the {@link DBObject} for the site with the given token. Throws an
+     * Return the {@link Document} for the site with the given token. Throws an
      * exception if the token is not found.
      * 
      * @param hardwareId
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertSite(String token) throws SiteWhereException {
-	DBObject match = getSiteDBObjectByToken(token);
+    protected Document assertSite(String token) throws SiteWhereException {
+	Document match = getSiteDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.INFO);
 	}
@@ -1699,18 +1696,18 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Return the {@link DBObject} for the device with the given hardware id.
+     * Return the {@link Document} for the device with the given hardware id.
      * Throws an exception if the hardware id is not found.
      * 
      * @param hardwareId
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertDevice(String hardwareId) throws SiteWhereException {
+    protected Document assertDevice(String hardwareId) throws SiteWhereException {
 	if (getCacheProvider() != null) {
 
 	}
-	DBObject match = getDeviceDBObjectByHardwareId(hardwareId);
+	Document match = getDeviceDocumentByHardwareId(hardwareId);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.INFO);
 	}
@@ -1718,15 +1715,15 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Return the {@link DBObject} for the assignment with the given token.
+     * Return the {@link Document} for the assignment with the given token.
      * Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertDeviceAssignment(String token) throws SiteWhereException {
-	DBObject match = getDeviceAssignmentDBObjectByToken(token);
+    protected Document assertDeviceAssignment(String token) throws SiteWhereException {
+	Document match = getDeviceAssignmentDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
@@ -1748,8 +1745,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		return result;
 	    }
 	}
-	DBObject match = assertDeviceAssignment(token);
-	IDeviceAssignment result = MongoDeviceAssignment.fromDBObject(match);
+	Document match = assertDeviceAssignment(token);
+	IDeviceAssignment result = MongoDeviceAssignment.fromDocument(match);
 	if ((getCacheProvider() != null) && (result != null)) {
 	    getCacheProvider().getDeviceAssignmentCache().put(token, result);
 	}
@@ -1757,33 +1754,32 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Return the {@link DBObject} for the zone with the given token.
+     * Return the {@link Document} for the zone with the given token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getZoneDBObjectByToken(String token) throws SiteWhereException {
+    protected Document getZoneDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    DBCollection zones = getMongoClient().getZonesCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, token);
-	    DBObject result = zones.findOne(query);
-	    return result;
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
+	    Document query = new Document(MongoZone.PROP_TOKEN, token);
+	    return zones.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the zone with the given token. Throws an
+     * Return the {@link Document} for the zone with the given token. Throws an
      * exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertZone(String token) throws SiteWhereException {
-	DBObject match = getZoneDBObjectByToken(token);
+    protected Document assertZone(String token) throws SiteWhereException {
+	Document match = getZoneDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 	}
@@ -1791,7 +1787,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Get the {@link DBObject} for an {@link IDeviceStream} based on assignment
+     * Get the {@link Document} for an {@link IDeviceStream} based on assignment
      * token and stream id.
      * 
      * @param assignmentToken
@@ -1799,47 +1795,45 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceStreamDBObject(String assignmentToken, String streamId) throws SiteWhereException {
+    protected Document getDeviceStreamDocument(String assignmentToken, String streamId) throws SiteWhereException {
 	try {
-	    DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken)
+	    MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenant());
+	    Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken)
 		    .append(MongoDeviceStream.PROP_STREAM_ID, streamId);
-	    DBObject result = streams.findOne(query);
-	    return result;
+	    return streams.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Returns the {@link DBObject} for the device group with the given token.
+     * Returns the {@link Document} for the device group with the given token.
      * Returns null if not found.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getDeviceGroupDBObjectByToken(String token) throws SiteWhereException {
+    protected Document getDeviceGroupDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-	    DBObject result = groups.findOne(query);
-	    return result;
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
+	    Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
+	    return groups.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the device group with the given token.
+     * Return the {@link Document} for the device group with the given token.
      * Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertDeviceGroup(String token) throws SiteWhereException {
-	DBObject match = getDeviceGroupDBObjectByToken(token);
+    protected Document assertDeviceGroup(String token) throws SiteWhereException {
+	Document match = getDeviceGroupDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 	}
@@ -1847,34 +1841,33 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Returns the {@link DBObject} for the batch operation with the given
+     * Returns the {@link Document} for the batch operation with the given
      * token. Returns null if not found.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getBatchOperationDBObjectByToken(String token) throws SiteWhereException {
+    protected Document getBatchOperationDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
-	    DBObject result = ops.findOne(query);
-	    return result;
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenant());
+	    Document query = new Document(MongoBatchOperation.PROP_TOKEN, token);
+	    return ops.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Return the {@link DBObject} for the batch operation with the given token.
+     * Return the {@link Document} for the batch operation with the given token.
      * Throws an exception if the token is not valid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertBatchOperation(String token) throws SiteWhereException {
-	DBObject match = getBatchOperationDBObjectByToken(token);
+    protected Document assertBatchOperation(String token) throws SiteWhereException {
+	Document match = getBatchOperationDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 	}
@@ -1882,7 +1875,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     }
 
     /**
-     * Return the {@link DBObject} for the batch operation element based on the
+     * Return the {@link Document} for the batch operation element based on the
      * token for its parent operation and its index.
      * 
      * @param operationToken
@@ -1890,20 +1883,19 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getBatchElementDBObjectByIndex(String operationToken, long index) throws SiteWhereException {
+    protected Document getBatchElementDocumentByIndex(String operationToken, long index) throws SiteWhereException {
 	try {
-	    DBCollection ops = getMongoClient().getBatchOperationElementsCollection(getTenant());
-	    BasicDBObject query = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken)
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationElementsCollection(getTenant());
+	    Document query = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken)
 		    .append(MongoBatchElement.PROP_INDEX, index);
-	    DBObject result = ops.findOne(query);
-	    return result;
+	    return ops.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
-    protected DBObject assertBatchElement(String operationToken, long index) throws SiteWhereException {
-	DBObject match = getBatchElementDBObjectByIndex(operationToken, index);
+    protected Document assertBatchElement(String operationToken, long index) throws SiteWhereException {
+	Document match = getBatchElementDocumentByIndex(operationToken, index);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchElement, ErrorLevel.ERROR);
 	}

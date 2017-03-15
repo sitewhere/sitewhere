@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.common;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 
@@ -23,24 +23,24 @@ public class MongoMetadataProvider {
     public static final String PROP_METADATA = "metadata";
 
     /**
-     * Store data into a DBObject using default property name.
+     * Store data into a {@link Document} using default property name.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IMetadataProvider source, DBObject target) {
-	MongoMetadataProvider.toDBObject(PROP_METADATA, source, target);
+    public static void toDocument(IMetadataProvider source, Document target) {
+	MongoMetadataProvider.toDocument(PROP_METADATA, source, target);
     }
 
     /**
-     * Store data into a DBObject.
+     * Store data into a {@link Document}.
      * 
      * @param propertyName
      * @param source
      * @param target
      */
-    public static void toDBObject(String propertyName, IMetadataProvider source, DBObject target) {
-	BasicDBObject metadata = new BasicDBObject();
+    public static void toDocument(String propertyName, IMetadataProvider source, Document target) {
+	Document metadata = new Document();
 	for (String key : source.getMetadata().keySet()) {
 	    metadata.put(key, source.getMetadata(key));
 	}
@@ -53,8 +53,8 @@ public class MongoMetadataProvider {
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, IMetadataProvider target) {
-	MongoMetadataProvider.fromDBObject(PROP_METADATA, source, target);
+    public static void fromDocument(Document source, IMetadataProvider target) {
+	MongoMetadataProvider.fromDocument(PROP_METADATA, source, target);
     }
 
     /**
@@ -64,8 +64,8 @@ public class MongoMetadataProvider {
      * @param source
      * @param target
      */
-    public static void fromDBObject(String propertyName, DBObject source, IMetadataProvider target) {
-	DBObject metadata = (DBObject) source.get(propertyName);
+    public static void fromDocument(String propertyName, Document source, IMetadataProvider target) {
+	Document metadata = (Document) source.get(propertyName);
 	if (metadata != null) {
 	    for (String key : metadata.keySet()) {
 		try {

@@ -7,7 +7,9 @@
  */
 package com.sitewhere.mongodb;
 
-import com.mongodb.DBCollection;
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -56,29 +58,107 @@ public interface IDeviceManagementMongoClient {
     /** Default collection name for SiteWhere batch operation elements */
     public static final String DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME = "batchopelements";
 
-    public DBCollection getDeviceSpecificationsCollection(ITenant tenant);
+    /**
+     * Collection for device specifications.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant);
 
-    public DBCollection getDeviceCommandsCollection(ITenant tenant);
+    /**
+     * Collection for device commands.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant);
 
-    public DBCollection getDevicesCollection(ITenant tenant);
+    /**
+     * Collection for devices.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getDevicesCollection(ITenant tenant);
 
-    public DBCollection getDeviceAssignmentsCollection(ITenant tenant);
+    /**
+     * Collection for device assignments.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant);
 
-    public DBCollection getSitesCollection(ITenant tenant);
+    /**
+     * Collection for sites.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getSitesCollection(ITenant tenant);
 
-    public DBCollection getZonesCollection(ITenant tenant);
+    /**
+     * Collection for zones.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getZonesCollection(ITenant tenant);
 
-    public DBCollection getDeviceGroupsCollection(ITenant tenant);
+    /**
+     * Collection for device groups.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant);
 
-    public DBCollection getGroupElementsCollection(ITenant tenant);
+    /**
+     * Collection for device group elements.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant);
 
-    public DBCollection getEventsCollection(ITenant tenant);
+    /**
+     * Collection for events.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getEventsCollection(ITenant tenant);
 
-    public DBCollection getStreamsCollection(ITenant tenant);
+    /**
+     * Collection for streams.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getStreamsCollection(ITenant tenant);
 
-    public DBCollection getStreamDataCollection(ITenant tenant);
+    /**
+     * Collection for stream data.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getStreamDataCollection(ITenant tenant);
 
-    public DBCollection getBatchOperationsCollection(ITenant tenant);
+    /**
+     * Collection for batch operations.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant);
 
-    public DBCollection getBatchOperationElementsCollection(ITenant tenant);
+    /**
+     * Collection for batch operation elements.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant);
 }

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -35,28 +35,28 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceCommandResponse source) {
-	return MongoDeviceCommandResponse.toDBObject(source);
+    public Document convert(IDeviceCommandResponse source) {
+	return MongoDeviceCommandResponse.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceCommandResponse convert(DBObject source) {
-	return MongoDeviceCommandResponse.fromDBObject(source);
+    public IDeviceCommandResponse convert(Document source) {
+	return MongoDeviceCommandResponse.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceCommandResponse source, BasicDBObject target) {
-	MongoDeviceEvent.toDBObject(source, target, false);
+    public static void toDocument(IDeviceCommandResponse source, Document target) {
+	MongoDeviceEvent.toDocument(source, target, false);
 
 	target.append(PROP_ORIGINATING_EVENT_ID, source.getOriginatingEventId());
 	target.append(PROP_RESPONSE_EVENT_ID, source.getResponseEventId());
@@ -64,13 +64,13 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceCommandResponse target) {
-	MongoDeviceEvent.fromDBObject(source, target, false);
+    public static void fromDocument(Document source, DeviceCommandResponse target) {
+	MongoDeviceEvent.fromDocument(source, target, false);
 
 	String originator = (String) source.get(PROP_ORIGINATING_EVENT_ID);
 	String responder = (String) source.get(PROP_RESPONSE_EVENT_ID);
@@ -82,26 +82,26 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceCommandResponse source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceCommandResponse.toDBObject(source, result);
+    public static Document toDocument(IDeviceCommandResponse source) {
+	Document result = new Document();
+	MongoDeviceCommandResponse.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceCommandResponse fromDBObject(DBObject source) {
+    public static DeviceCommandResponse fromDocument(Document source) {
 	DeviceCommandResponse result = new DeviceCommandResponse();
-	MongoDeviceCommandResponse.fromDBObject(source, result);
+	MongoDeviceCommandResponse.fromDocument(source, result);
 	return result;
     }
 }

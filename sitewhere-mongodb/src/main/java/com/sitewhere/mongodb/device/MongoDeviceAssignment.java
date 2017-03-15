@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.device;
 
 import java.util.Date;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -63,27 +63,26 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IDeviceAssignment source) {
-	return MongoDeviceAssignment.toDBObject(source);
+    public Document convert(IDeviceAssignment source) {
+	return MongoDeviceAssignment.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public IDeviceAssignment convert(DBObject source) {
-	return MongoDeviceAssignment.fromDBObject(source);
+    public IDeviceAssignment convert(Document source) {
+	return MongoDeviceAssignment.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceAssignment source, BasicDBObject target) {
+    public static void toDocument(IDeviceAssignment source, Document target) {
 	if (source.getActiveDate() != null) {
 	    target.append(PROP_ACTIVE_DATE, source.getActiveDate());
 	}
@@ -106,8 +105,8 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	    setState(source.getState(), target);
 	}
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
@@ -116,19 +115,19 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * @param source
      * @param target
      */
-    public static void setState(IDeviceAssignmentState source, DBObject target) {
-	BasicDBObject state = new BasicDBObject();
-	MongoDeviceAssignmentState.toDBObject(source, state);
+    public static void setState(IDeviceAssignmentState source, Document target) {
+	Document state = new Document();
+	MongoDeviceAssignmentState.toDocument(source, state);
 	target.put(PROP_STATE, state);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceAssignment target) {
+    public static void fromDocument(Document source, DeviceAssignment target) {
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
 	String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 	String assetId = (String) source.get(PROP_ASSET_ID);
@@ -157,37 +156,37 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.setDeviceHardwareId(deviceHardwareId);
 	target.setSiteToken(siteToken);
 
-	DBObject sstate = (DBObject) source.get(PROP_STATE);
+	Document sstate = (Document) source.get(PROP_STATE);
 	if (sstate != null) {
-	    DeviceAssignmentState state = MongoDeviceAssignmentState.fromDBObject(sstate);
+	    DeviceAssignmentState state = MongoDeviceAssignmentState.fromDocument(sstate);
 	    target.setState(state);
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceAssignment source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceAssignment.toDBObject(source, result);
+    public static Document toDocument(IDeviceAssignment source) {
+	Document result = new Document();
+	MongoDeviceAssignment.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceAssignment fromDBObject(DBObject source) {
+    public static DeviceAssignment fromDocument(Document source) {
 	DeviceAssignment result = new DeviceAssignment();
-	MongoDeviceAssignment.fromDBObject(source, result);
+	MongoDeviceAssignment.fromDocument(source, result);
 	return result;
     }
 }

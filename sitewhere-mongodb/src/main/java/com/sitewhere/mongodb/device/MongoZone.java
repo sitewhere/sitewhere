@@ -10,9 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -54,27 +53,28 @@ public class MongoZone implements MongoConverter<IZone> {
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IZone source) {
-	return MongoZone.toDBObject(source);
+    @Override
+    public Document convert(IZone source) {
+	return MongoZone.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public IZone convert(DBObject source) {
-	return MongoZone.fromDBObject(source);
+    @Override
+    public IZone convert(Document source) {
+	return MongoZone.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IZone source, BasicDBObject target) {
+    public static void toDocument(IZone source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_NAME, source.getName());
@@ -82,10 +82,10 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.append(PROP_FILL_COLOR, source.getFillColor());
 	target.append(PROP_OPACITY, source.getOpacity());
 
-	BasicDBList coords = new BasicDBList();
+	ArrayList<Document> coords = new ArrayList<Document>();
 	if (source.getCoordinates() != null) {
 	    for (ILocation location : source.getCoordinates()) {
-		BasicDBObject coord = new BasicDBObject();
+		Document coord = new Document();
 		coord.put(MongoDeviceLocation.PROP_LATITUDE, location.getLatitude());
 		coord.put(MongoDeviceLocation.PROP_LONGITUDE, location.getLongitude());
 		if (location.getElevation() != null) {
@@ -96,17 +96,18 @@ public class MongoZone implements MongoConverter<IZone> {
 	}
 	target.append(PROP_COORDINATES, coords);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, Zone target) {
+    @SuppressWarnings("unchecked")
+    public static void fromDocument(Document source, Zone target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 	String name = (String) source.get(PROP_NAME);
@@ -122,9 +123,9 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.setOpacity(opacity);
 
 	List<Location> locs = new ArrayList<Location>();
-	BasicDBList coords = (BasicDBList) source.get(PROP_COORDINATES);
+	ArrayList<Document> coords = (ArrayList<Document>) source.get(PROP_COORDINATES);
 	for (int i = 0; i < coords.size(); i++) {
-	    DBObject coord = (DBObject) coords.get(i);
+	    Document coord = coords.get(i);
 	    Location loc = new Location();
 	    loc.setLatitude((Double) coord.get(MongoDeviceLocation.PROP_LATITUDE));
 	    loc.setLongitude((Double) coord.get(MongoDeviceLocation.PROP_LONGITUDE));
@@ -133,31 +134,31 @@ public class MongoZone implements MongoConverter<IZone> {
 	}
 	target.setCoordinates(locs);
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IZone source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoZone.toDBObject(source, result);
+    public static Document toDocument(IZone source) {
+	Document result = new Document();
+	MongoZone.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static Zone fromDBObject(DBObject source) {
+    public static Zone fromDocument(Document source) {
 	Zone result = new Zone();
-	MongoZone.fromDBObject(source, result);
+	MongoZone.fromDocument(source, result);
 	return result;
     }
 }

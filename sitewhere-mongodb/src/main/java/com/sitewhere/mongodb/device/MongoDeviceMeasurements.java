@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -37,33 +37,34 @@ public class MongoDeviceMeasurements implements MongoConverter<IDeviceMeasuremen
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IDeviceMeasurements source) {
-	return MongoDeviceMeasurements.toDBObject(source, false);
+    @Override
+    public Document convert(IDeviceMeasurements source) {
+	return MongoDeviceMeasurements.toDocument(source, false);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public DeviceMeasurements convert(DBObject source) {
-	return MongoDeviceMeasurements.fromDBObject(source, false);
+    @Override
+    public DeviceMeasurements convert(Document source) {
+	return MongoDeviceMeasurements.fromDocument(source, false);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceMeasurements source, BasicDBObject target, boolean isNested) {
-	MongoDeviceEvent.toDBObject(source, target, isNested);
+    public static void toDocument(IDeviceMeasurements source, Document target, boolean isNested) {
+	MongoDeviceEvent.toDocument(source, target, isNested);
 
 	// Save arbitrary measurements.
-	List<BasicDBObject> props = new ArrayList<BasicDBObject>();
+	List<Document> props = new ArrayList<Document>();
 	for (String key : source.getMeasurements().keySet()) {
-	    BasicDBObject prop = new BasicDBObject();
+	    Document prop = new Document();
 	    prop.put(PROP_NAME, key);
 	    prop.put(PROP_VALUE, source.getMeasurement(key));
 	    props.add(prop);
@@ -72,20 +73,20 @@ public class MongoDeviceMeasurements implements MongoConverter<IDeviceMeasuremen
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      * @param isNested
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, DeviceMeasurements target, boolean isNested) {
-	MongoDeviceEvent.fromDBObject(source, target, isNested);
+    public static void fromDocument(Document source, DeviceMeasurements target, boolean isNested) {
+	MongoDeviceEvent.fromDocument(source, target, isNested);
 
 	// Load arbitrary measurements.
-	List<DBObject> props = (List<DBObject>) source.get(PROP_MEASUREMENTS);
+	List<Document> props = (List<Document>) source.get(PROP_MEASUREMENTS);
 	if (props != null) {
-	    for (DBObject prop : props) {
+	    for (Document prop : props) {
 		String name = (String) prop.get(PROP_NAME);
 		Double value = (Double) prop.get(PROP_VALUE);
 		target.addOrReplaceMeasurement(name, value);
@@ -94,28 +95,28 @@ public class MongoDeviceMeasurements implements MongoConverter<IDeviceMeasuremen
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceMeasurements source, boolean isNested) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceMeasurements.toDBObject(source, result, isNested);
+    public static Document toDocument(IDeviceMeasurements source, boolean isNested) {
+	Document result = new Document();
+	MongoDeviceMeasurements.toDocument(source, result, isNested);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static DeviceMeasurements fromDBObject(DBObject source, boolean isNested) {
+    public static DeviceMeasurements fromDocument(Document source, boolean isNested) {
 	DeviceMeasurements result = new DeviceMeasurements();
-	MongoDeviceMeasurements.fromDBObject(source, result, isNested);
+	MongoDeviceMeasurements.fromDocument(source, result, isNested);
 	return result;
     }
 }

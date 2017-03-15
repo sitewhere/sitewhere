@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -39,18 +39,17 @@ public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IDeviceAlert source) {
-	return MongoDeviceAlert.toDBObject(source, false);
+    public Document convert(IDeviceAlert source) {
+	return MongoDeviceAlert.toDocument(source, false);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public IDeviceAlert convert(DBObject source) {
-	return MongoDeviceAlert.fromDBObject(source, false);
+    public IDeviceAlert convert(Document source) {
+	return MongoDeviceAlert.fromDocument(source, false);
     }
 
     /**
@@ -60,8 +59,8 @@ public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
      * @param target
      * @param isNested
      */
-    public static void toDBObject(IDeviceAlert source, BasicDBObject target, boolean isNested) {
-	MongoDeviceEvent.toDBObject(source, target, isNested);
+    public static void toDocument(IDeviceAlert source, Document target, boolean isNested) {
+	MongoDeviceEvent.toDocument(source, target, isNested);
 
 	target.append(PROP_SOURCE, source.getSource().name());
 	target.append(PROP_LEVEL, source.getLevel().name());
@@ -76,8 +75,8 @@ public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
      * @param target
      * @param isNested
      */
-    public static void fromDBObject(DBObject source, DeviceAlert target, boolean isNested) {
-	MongoDeviceEvent.fromDBObject(source, target, isNested);
+    public static void fromDocument(Document source, DeviceAlert target, boolean isNested) {
+	MongoDeviceEvent.fromDocument(source, target, isNested);
 
 	String sourceName = (String) source.get(PROP_SOURCE);
 	String levelName = (String) source.get(PROP_LEVEL);
@@ -95,28 +94,28 @@ public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceAlert source, boolean isNested) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceAlert.toDBObject(source, result, isNested);
+    public static Document toDocument(IDeviceAlert source, boolean isNested) {
+	Document result = new Document();
+	MongoDeviceAlert.toDocument(source, result, isNested);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @param isNested
      * @return
      */
-    public static DeviceAlert fromDBObject(DBObject source, boolean isNested) {
+    public static DeviceAlert fromDocument(Document source, boolean isNested) {
 	DeviceAlert result = new DeviceAlert();
-	MongoDeviceAlert.fromDBObject(source, result, isNested);
+	MongoDeviceAlert.fromDocument(source, result, isNested);
 	return result;
     }
 }

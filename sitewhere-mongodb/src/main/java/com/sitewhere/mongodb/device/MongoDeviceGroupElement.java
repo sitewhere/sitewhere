@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.device;
 
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.spi.device.group.GroupElementType;
@@ -44,27 +44,27 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceGroupElement source) {
-	return MongoDeviceGroupElement.toDBObject(source);
+    public Document convert(IDeviceGroupElement source) {
+	return MongoDeviceGroupElement.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceGroupElement convert(DBObject source) {
-	return MongoDeviceGroupElement.fromDBObject(source);
+    public IDeviceGroupElement convert(Document source) {
+	return MongoDeviceGroupElement.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceGroupElement source, BasicDBObject target) {
+    public static void toDocument(IDeviceGroupElement source, Document target) {
 	target.append(PROP_GROUP_TOKEN, source.getGroupToken());
 	target.append(PROP_INDEX, source.getIndex());
 	target.append(PROP_TYPE, source.getType().name());
@@ -73,13 +73,13 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, DeviceGroupElement target) {
+    public static void fromDocument(Document source, DeviceGroupElement target) {
 	String group = (String) source.get(PROP_GROUP_TOKEN);
 	Long index = (Long) source.get(PROP_INDEX);
 	String type = (String) source.get(PROP_TYPE);
@@ -97,26 +97,26 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceGroupElement source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceGroupElement.toDBObject(source, result);
+    public static Document toDocument(IDeviceGroupElement source) {
+	Document result = new Document();
+	MongoDeviceGroupElement.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceGroupElement fromDBObject(DBObject source) {
+    public static DeviceGroupElement fromDocument(Document source) {
 	DeviceGroupElement result = new DeviceGroupElement();
-	MongoDeviceGroupElement.fromDBObject(source, result);
+	MongoDeviceGroupElement.fromDocument(source, result);
 	return result;
     }
 }

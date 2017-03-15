@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.user;
 import java.util.Date;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.User;
@@ -47,12 +47,12 @@ public class MongoUser {
     public static final String PROP_AUTHORITIES = "authorities";
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IUser source, BasicDBObject target) {
+    public static void toDocument(IUser source, Document target) {
 	target.append(PROP_USERNAME, source.getUsername());
 	target.append(PROP_HASHED_PASSWORD, source.getHashedPassword());
 	target.append(PROP_FIRST_NAME, source.getFirstName());
@@ -62,18 +62,18 @@ public class MongoUser {
 	if (source.getStatus() != null) {
 	    target.append(PROP_STATUS, source.getStatus().name());
 	}
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, User target) {
+    public static void fromDocument(Document source, User target) {
 	String username = (String) source.get(PROP_USERNAME);
 	String hashedPassword = (String) source.get(PROP_HASHED_PASSWORD);
 	String firstName = (String) source.get(PROP_FIRST_NAME);
@@ -91,31 +91,31 @@ public class MongoUser {
 	if (status != null) {
 	    target.setStatus(AccountStatus.valueOf(status));
 	}
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IUser source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoUser.toDBObject(source, result);
+    public static Document toDocument(IUser source) {
+	Document result = new Document();
+	MongoUser.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static User fromDBObject(DBObject source) {
+    public static User fromDocument(Document source) {
 	User result = new User();
-	MongoUser.fromDBObject(source, result);
+	MongoUser.fromDocument(source, result);
 	return result;
     }
 }

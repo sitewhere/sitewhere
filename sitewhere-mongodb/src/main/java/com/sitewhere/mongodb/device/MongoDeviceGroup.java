@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.device;
 
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
@@ -47,43 +47,43 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceGroup source) {
-	return MongoDeviceGroup.toDBObject(source);
+    public Document convert(IDeviceGroup source) {
+	return MongoDeviceGroup.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceGroup convert(DBObject source) {
-	return MongoDeviceGroup.fromDBObject(source);
+    public IDeviceGroup convert(Document source) {
+	return MongoDeviceGroup.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceGroup source, BasicDBObject target) {
+    public static void toDocument(IDeviceGroup source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_ROLES, source.getRoles());
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, DeviceGroup target) {
+    public static void fromDocument(Document source, DeviceGroup target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
@@ -93,31 +93,31 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	target.setName(name);
 	target.setDescription(desc);
 	target.setRoles(roles);
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceGroup source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceGroup.toDBObject(source, result);
+    public static Document toDocument(IDeviceGroup source) {
+	Document result = new Document();
+	MongoDeviceGroup.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceGroup fromDBObject(DBObject source) {
+    public static DeviceGroup fromDocument(Document source) {
 	DeviceGroup result = new DeviceGroup();
-	MongoDeviceGroup.fromDBObject(source, result);
+	MongoDeviceGroup.fromDocument(source, result);
 	return result;
     }
 
@@ -130,11 +130,10 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      * @return
      */
     public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, String token) {
-	BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-	BasicDBObject update = new BasicDBObject(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
-	BasicDBObject increment = new BasicDBObject("$inc", update);
-	DBObject updated = mongo.getDeviceGroupsCollection(tenant).findAndModify(query, new BasicDBObject(),
-		new BasicDBObject(), false, increment, true, true);
+	Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
+	Document update = new Document(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
+	Document increment = new Document("$inc", update);
+	Document updated = mongo.getDeviceGroupsCollection(tenant).findOneAndUpdate(query, increment);
 	return (Long) updated.get(PROP_LAST_INDEX);
     }
 }

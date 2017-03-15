@@ -7,7 +7,9 @@
  */
 package com.sitewhere.mongodb;
 
-import com.mongodb.DBCollection;
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
 
 /**
  * Mongo client that provides user management collections.
@@ -36,19 +38,19 @@ public interface IGlobalManagementMongoClient {
      * 
      * @return
      */
-    public DBCollection getUsersCollection();
+    public MongoCollection<Document> getUsersCollection();
 
     /**
      * Get the collection for authorities.
      * 
      * @return
      */
-    public DBCollection getAuthoritiesCollection();
+    public MongoCollection<Document> getAuthoritiesCollection();
 
     /**
      * Get the collection for tenants.
      * 
      * @return
      */
-    public DBCollection getTenantsCollection();
+    public MongoCollection<Document> getTenantsCollection();
 }

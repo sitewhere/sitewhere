@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -37,42 +37,42 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceStream source) {
-	return MongoDeviceStream.toDBObject(source);
+    public Document convert(IDeviceStream source) {
+	return MongoDeviceStream.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceStream convert(DBObject source) {
-	return MongoDeviceStream.fromDBObject(source);
+    public IDeviceStream convert(Document source) {
+	return MongoDeviceStream.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceStream source, BasicDBObject target) {
+    public static void toDocument(IDeviceStream source, Document target) {
 	target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
 	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_CONTENT_TYPE, source.getContentType());
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceStream target) {
+    public static void fromDocument(Document source, DeviceStream target) {
 	String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
 	String streamId = (String) source.get(PROP_STREAM_ID);
 	String contentType = (String) source.get(PROP_CONTENT_TYPE);
@@ -81,31 +81,31 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 	target.setStreamId(streamId);
 	target.setContentType(contentType);
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceStream source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceStream.toDBObject(source, result);
+    public static Document toDocument(IDeviceStream source) {
+	Document result = new Document();
+	MongoDeviceStream.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceStream fromDBObject(DBObject source) {
+    public static DeviceStream fromDocument(Document source) {
 	DeviceStream result = new DeviceStream();
-	MongoDeviceStream.fromDBObject(source, result);
+	MongoDeviceStream.fromDocument(source, result);
 	return result;
     }
 }

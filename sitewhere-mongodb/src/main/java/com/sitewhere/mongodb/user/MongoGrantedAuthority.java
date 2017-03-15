@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.user;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthority;
 
@@ -32,12 +32,12 @@ public class MongoGrantedAuthority {
     public static final String PROP_GROUP = "group";
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IGrantedAuthority source, BasicDBObject target) {
+    public static void toDocument(IGrantedAuthority source, Document target) {
 	target.append(PROP_AUTHORITY, source.getAuthority());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_PARENT, source.getParent());
@@ -45,12 +45,12 @@ public class MongoGrantedAuthority {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, GrantedAuthority target) {
+    public static void fromDocument(Document source, GrantedAuthority target) {
 	String authority = (String) source.get(PROP_AUTHORITY);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String parent = (String) source.get(PROP_PARENT);
@@ -65,26 +65,26 @@ public class MongoGrantedAuthority {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IGrantedAuthority source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoGrantedAuthority.toDBObject(source, result);
+    public static Document toDocument(IGrantedAuthority source) {
+	Document result = new Document();
+	MongoGrantedAuthority.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static GrantedAuthority fromDBObject(DBObject source) {
+    public static GrantedAuthority fromDBObject(Document source) {
 	GrantedAuthority result = new GrantedAuthority();
-	MongoGrantedAuthority.fromDBObject(source, result);
+	MongoGrantedAuthority.fromDocument(source, result);
 	return result;
     }
 }

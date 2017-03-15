@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.tenant;
 
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -48,27 +48,27 @@ public class MongoTenant implements MongoConverter<ITenant> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(ITenant source) {
-	return MongoTenant.toDBObject(source);
+    public Document convert(ITenant source) {
+	return MongoTenant.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public ITenant convert(DBObject source) {
-	return MongoTenant.fromDBObject(source);
+    public ITenant convert(Document source) {
+	return MongoTenant.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(ITenant source, BasicDBObject target) {
+    public static void toDocument(ITenant source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
@@ -76,18 +76,18 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
 	target.append(PROP_TEMPLATE_ID, source.getTenantTemplateId());
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, Tenant target) {
+    public static void fromDocument(Document source, Tenant target) {
 	String id = (String) source.get(PROP_ID);
 	String name = (String) source.get(PROP_NAME);
 	String authToken = (String) source.get(PROP_AUTH_TOKEN);
@@ -102,31 +102,31 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	target.setAuthorizedUserIds(authUsers);
 	target.setTenantTemplateId(templateId);
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(ITenant source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoTenant.toDBObject(source, result);
+    public static Document toDocument(ITenant source) {
+	Document result = new Document();
+	MongoTenant.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static Tenant fromDBObject(DBObject source) {
+    public static Tenant fromDocument(Document source) {
 	Tenant result = new Tenant();
-	MongoTenant.fromDBObject(source, result);
+	MongoTenant.fromDocument(source, result);
 	return result;
     }
 }

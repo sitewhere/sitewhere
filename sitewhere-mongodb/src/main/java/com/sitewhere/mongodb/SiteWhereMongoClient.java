@@ -7,24 +7,23 @@
  */
 package com.sitewhere.mongodb;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.springframework.util.StringUtils;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -207,7 +206,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	    }
 
 	    // Force interaction to test connectivity.
-	    getGlobalDatabase().getStats();
+	    getGlobalDatabase().listCollectionNames();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
 		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
@@ -222,8 +221,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     protected void doAutoConfigureReplication(List<ServerAddress> addresses) throws SiteWhereException {
 	// Check for existing replica set configuration.
 	LOGGER.info("Checking for existing replica set...");
-	CommandResult result = getMongoClient().getDB("admin").command(new BasicDBObject("replSetGetStatus", 1));
-	if (result.ok()) {
+	Document result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
+	if (result.getBoolean("ok", true)) {
 	    LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
 	    return;
 	}
@@ -250,9 +249,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	config.put("members", servers);
 
 	// Send command.
-	result = getMongoClient().getDB("admin").command(new BasicDBObject("replSetInitiate", config));
-	if (!result.ok()) {
-	    throw new SiteWhereException("Unable to auto-configure replica set. " + result.getErrorMessage());
+	result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetInitiate", config));
+	if (!result.getBoolean("ok", false)) {
+	    throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
 	}
 	LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
     }
@@ -295,8 +294,6 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 		addresses.add(new ServerAddress(hosts[i].trim(), Integer.parseInt(ports[i].trim())));
 	    } catch (NumberFormatException e) {
 		throw new SiteWhereException("Non-numeric port number specified for MQTT broker.");
-	    } catch (UnknownHostException e) {
-		throw new SiteWhereException("Invalid host specified for MQTT broker.");
 	    }
 	}
 	return addresses;
@@ -394,21 +391,21 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	return client;
     }
 
-    public DB getTenantDatabase(ITenant tenant) {
-	return client.getDB("tenant-" + tenant.getId());
+    public MongoDatabase getTenantDatabase(ITenant tenant) {
+	return client.getDatabase("tenant-" + tenant.getId());
     }
 
-    public DB getGlobalDatabase() {
-	return client.getDB(getDatabaseName());
+    public MongoDatabase getGlobalDatabase() {
+	return client.getDatabase(getDatabaseName());
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceSpecificationsCollection (com.sitewhere.spi.user.ITenant)
+     * getDeviceSpecificationsCollection(com.sitewhere.spi.tenant.ITenant)
      */
-    public DBCollection getDeviceSpecificationsCollection(ITenant tenant) {
+    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getDeviceSpecificationsCollectionName());
     }
 
@@ -418,7 +415,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getDeviceCommandsCollection( com.sitewhere.spi.user.ITenant)
      */
-    public DBCollection getDeviceCommandsCollection(ITenant tenant) {
+    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getDeviceCommandsCollectionName());
     }
 
@@ -429,7 +426,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(
      * com. sitewhere .spi.user.ITenant)
      */
-    public DBCollection getDevicesCollection(ITenant tenant) {
+    public MongoCollection<Document> getDevicesCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getDevicesCollectionName());
     }
 
@@ -439,7 +436,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getDeviceAssignmentsCollection (com.sitewhere.spi.user.ITenant)
      */
-    public DBCollection getDeviceAssignmentsCollection(ITenant tenant) {
+    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getDeviceAssignmentsCollectionName());
     }
 
@@ -450,7 +447,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection(com
      * .sitewhere .spi.user.ITenant)
      */
-    public DBCollection getSitesCollection(ITenant tenant) {
+    public MongoCollection<Document> getSitesCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getSitesCollectionName());
     }
 
@@ -461,7 +458,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection(com
      * .sitewhere .spi.user.ITenant)
      */
-    public DBCollection getZonesCollection(ITenant tenant) {
+    public MongoCollection<Document> getZonesCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getZonesCollectionName());
     }
 
@@ -471,7 +468,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getDeviceGroupsCollection(com .sitewhere.spi.user.ITenant)
      */
-    public DBCollection getDeviceGroupsCollection(ITenant tenant) {
+    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getDeviceGroupsCollectionName());
     }
 
@@ -481,7 +478,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getGroupElementsCollection(com .sitewhere.spi.user.ITenant)
      */
-    public DBCollection getGroupElementsCollection(ITenant tenant) {
+    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getGroupElementsCollectionName());
     }
 
@@ -492,7 +489,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(
      * com. sitewhere .spi.user.ITenant)
      */
-    public DBCollection getEventsCollection(ITenant tenant) {
+    public MongoCollection<Document> getEventsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getEventsCollectionName());
     }
 
@@ -503,7 +500,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(
      * com. sitewhere .spi.user.ITenant)
      */
-    public DBCollection getStreamsCollection(ITenant tenant) {
+    public MongoCollection<Document> getStreamsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getStreamsCollectionName());
     }
 
@@ -513,7 +510,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getStreamDataCollection(com. sitewhere.spi.user.ITenant)
      */
-    public DBCollection getStreamDataCollection(ITenant tenant) {
+    public MongoCollection<Document> getStreamDataCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getStreamDataCollectionName());
     }
 
@@ -523,7 +520,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getBatchOperationsCollection (com.sitewhere.spi.user.ITenant)
      */
-    public DBCollection getBatchOperationsCollection(ITenant tenant) {
+    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getBatchOperationsCollectionName());
     }
 
@@ -533,7 +530,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
      * getBatchOperationElementsCollection (com.sitewhere.spi.user.ITenant)
      */
-    public DBCollection getBatchOperationElementsCollection(ITenant tenant) {
+    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
     }
 
@@ -544,7 +541,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IGlobalManagementMongoClient#getUsersCollection()
      */
     @Override
-    public DBCollection getUsersCollection() {
+    public MongoCollection<Document> getUsersCollection() {
 	return getGlobalDatabase().getCollection(getUsersCollectionName());
     }
 
@@ -555,7 +552,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * getAuthoritiesCollection()
      */
     @Override
-    public DBCollection getAuthoritiesCollection() {
+    public MongoCollection<Document> getAuthoritiesCollection() {
 	return getGlobalDatabase().getCollection(getAuthoritiesCollectionName());
     }
 
@@ -566,7 +563,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IGlobalManagementMongoClient#getTenantsCollection()
      */
     @Override
-    public DBCollection getTenantsCollection() {
+    public MongoCollection<Document> getTenantsCollection() {
 	return getGlobalDatabase().getCollection(getTenantsCollectionName());
     }
 
@@ -576,7 +573,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * @see com.sitewhere.mongodb.IAssetManagementMongoClient#
      * getAssetCategoriesCollection( com.sitewhere.spi.user.ITenant)
      */
-    public DBCollection getAssetCategoriesCollection(ITenant tenant) {
+    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getAssetCategoriesCollectionName());
     }
 
@@ -587,7 +584,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection(com
      * .sitewhere .spi.user.ITenant)
      */
-    public DBCollection getAssetsCollection(ITenant tenant) {
+    public MongoCollection<Document> getAssetsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
     }
 
@@ -598,7 +595,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * getSchedulesCollection(com .sitewhere.spi.user.ITenant)
      */
     @Override
-    public DBCollection getSchedulesCollection(ITenant tenant) {
+    public MongoCollection<Document> getSchedulesCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getSchedulesCollectionName());
     }
 
@@ -609,7 +606,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
      * getScheduledJobsCollection (com.sitewhere.spi.user.ITenant)
      */
     @Override
-    public DBCollection getScheduledJobsCollection(ITenant tenant) {
+    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant) {
 	return getTenantDatabase(tenant).getCollection(getScheduledJobsCollectionName());
     }
 

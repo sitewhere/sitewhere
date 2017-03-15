@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.scheduling;
 
 import java.util.Date;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -49,50 +49,50 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(ISchedule source) {
-	return MongoSchedule.toDBObject(source);
+    public Document convert(ISchedule source) {
+	return MongoSchedule.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public ISchedule convert(DBObject source) {
-	return MongoSchedule.fromDBObject(source);
+    public ISchedule convert(Document source) {
+	return MongoSchedule.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(ISchedule source, BasicDBObject target) {
+    public static void toDocument(ISchedule source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_START_DATE, source.getStartDate());
 	target.append(PROP_END_DATE, source.getEndDate());
 	target.append(PROP_TRIGGER_TYPE, source.getTriggerType().name());
 
-	BasicDBObject config = new BasicDBObject();
+	Document config = new Document();
 	for (String key : source.getTriggerConfiguration().keySet()) {
 	    config.put(key, source.getTriggerConfiguration().get(key));
 	}
 	target.put(PROP_TRIGGER_CONFIGURATION, config);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, Schedule target) {
+    public static void fromDocument(Document source, Schedule target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String type = (String) source.get(PROP_TRIGGER_TYPE);
@@ -105,38 +105,38 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 	target.setEndDate(endDate);
 	target.setTriggerType(TriggerType.valueOf(type));
 
-	DBObject config = (DBObject) source.get(PROP_TRIGGER_CONFIGURATION);
+	Document config = (Document) source.get(PROP_TRIGGER_CONFIGURATION);
 	if (config != null) {
 	    for (String key : config.keySet()) {
 		target.getTriggerConfiguration().put(key, (String) config.get(key));
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(ISchedule source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoSchedule.toDBObject(source, result);
+    public static Document toDocument(ISchedule source) {
+	Document result = new Document();
+	MongoSchedule.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static Schedule fromDBObject(DBObject source) {
+    public static Schedule fromDocument(Document source) {
 	Schedule result = new Schedule();
-	MongoSchedule.fromDBObject(source, result);
+	MongoSchedule.fromDocument(source, result);
 	return result;
     }
 }

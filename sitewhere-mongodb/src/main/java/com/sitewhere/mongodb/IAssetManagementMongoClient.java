@@ -7,7 +7,9 @@
  */
 package com.sitewhere.mongodb;
 
-import com.mongodb.DBCollection;
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -23,7 +25,19 @@ public interface IAssetManagementMongoClient {
     /** Default collection name for SiteWhere assets */
     public static final String DEFAULT_ASSETS_COLLECTION_NAME = "assets";
 
-    public DBCollection getAssetCategoriesCollection(ITenant tenant);
+    /**
+     * Get asset categories collection.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant);
 
-    public DBCollection getAssetsCollection(ITenant tenant);
+    /**
+     * Get assets collection.
+     * 
+     * @param tenant
+     * @return
+     */
+    public MongoCollection<Document> getAssetsCollection(ITenant tenant);
 }

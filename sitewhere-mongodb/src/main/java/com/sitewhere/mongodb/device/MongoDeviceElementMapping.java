@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -32,38 +32,38 @@ public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementM
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceElementMapping source) {
-	return MongoDeviceElementMapping.toDBObject(source);
+    public Document convert(IDeviceElementMapping source) {
+	return MongoDeviceElementMapping.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceElementMapping convert(DBObject source) {
-	return MongoDeviceElementMapping.fromDBObject(source);
+    public IDeviceElementMapping convert(Document source) {
+	return MongoDeviceElementMapping.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceElementMapping source, BasicDBObject target) {
+    public static void toDocument(IDeviceElementMapping source, Document target) {
 	target.append(PROP_DEVICE_ELEMENT_SCHEMA_PATH, source.getDeviceElementSchemaPath());
 	target.append(PROP_HARDWARE_ID, source.getHardwareId());
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceElementMapping target) {
+    public static void fromDocument(Document source, DeviceElementMapping target) {
 	String path = (String) source.get(PROP_DEVICE_ELEMENT_SCHEMA_PATH);
 	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
 
@@ -72,26 +72,26 @@ public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementM
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceElementMapping source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceElementMapping.toDBObject(source, result);
+    public static Document toDocument(IDeviceElementMapping source) {
+	Document result = new Document();
+	MongoDeviceElementMapping.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceElementMapping fromDBObject(DBObject source) {
+    public static DeviceElementMapping fromDocument(Document source) {
 	DeviceElementMapping result = new DeviceElementMapping();
-	MongoDeviceElementMapping.fromDBObject(source, result);
+	MongoDeviceElementMapping.fromDocument(source, result);
 	return result;
     }
 }

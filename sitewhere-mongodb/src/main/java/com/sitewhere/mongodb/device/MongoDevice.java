@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -52,27 +52,26 @@ public class MongoDevice implements MongoConverter<IDevice> {
      * 
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
-    public BasicDBObject convert(IDevice source) {
-	return MongoDevice.toDBObject(source);
+    public Document convert(IDevice source) {
+	return MongoDevice.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
-    public Device convert(DBObject source) {
-	return MongoDevice.fromDBObject(source);
+    public Device convert(Document source) {
+	return MongoDevice.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDevice source, BasicDBObject target) {
+    public static void toDocument(IDevice source, Document target) {
 	target.append(PROP_HARDWARE_ID, source.getHardwareId());
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_SPECIFICATION_TOKEN, source.getSpecificationToken());
@@ -81,24 +80,24 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
 
 	// Save nested list of mappings.
-	List<BasicDBObject> mappings = new ArrayList<BasicDBObject>();
+	List<Document> mappings = new ArrayList<Document>();
 	for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
-	    mappings.add(MongoDeviceElementMapping.toDBObject(mapping));
+	    mappings.add(MongoDeviceElementMapping.toDocument(mapping));
 	}
 	target.append(PROP_DEVICE_ELEMENT_MAPPINGS, mappings);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, Device target) {
+    public static void fromDocument(Document source, Device target) {
 	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 	String specificationToken = (String) source.get(PROP_SPECIFICATION_TOKEN);
@@ -113,15 +112,15 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	target.setComments(comments);
 	target.setAssignmentToken(assignmentToken);
 
-	List<DBObject> mappings = (List<DBObject>) source.get(PROP_DEVICE_ELEMENT_MAPPINGS);
+	List<Document> mappings = (List<Document>) source.get(PROP_DEVICE_ELEMENT_MAPPINGS);
 	if (mappings != null) {
-	    for (DBObject mapping : mappings) {
-		target.getDeviceElementMappings().add(MongoDeviceElementMapping.fromDBObject(mapping));
+	    for (Document mapping : mappings) {
+		target.getDeviceElementMappings().add(MongoDeviceElementMapping.fromDocument(mapping));
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
@@ -130,9 +129,9 @@ public class MongoDevice implements MongoConverter<IDevice> {
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDevice source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDevice.toDBObject(source, result);
+    public static Document toDocument(IDevice source) {
+	Document result = new Document();
+	MongoDevice.toDocument(source, result);
 	return result;
     }
 
@@ -142,9 +141,9 @@ public class MongoDevice implements MongoConverter<IDevice> {
      * @param source
      * @return
      */
-    public static Device fromDBObject(DBObject source) {
+    public static Device fromDocument(Document source) {
 	Device result = new Device();
-	MongoDevice.fromDBObject(source, result);
+	MongoDevice.fromDocument(source, result);
 	return result;
     }
 }

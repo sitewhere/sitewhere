@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.asset;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.spi.asset.IHardwareAsset;
@@ -32,41 +32,41 @@ public class MongoHardwareAsset implements MongoConverter<IHardwareAsset> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IHardwareAsset source) {
-	return MongoHardwareAsset.toDBObject(source);
+    public Document convert(IHardwareAsset source) {
+	return MongoHardwareAsset.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IHardwareAsset convert(DBObject source) {
-	return MongoHardwareAsset.fromDBObject(source);
+    public IHardwareAsset convert(Document source) {
+	return MongoHardwareAsset.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IHardwareAsset source, BasicDBObject target) {
-	MongoAsset.toDBObject(source, target);
+    public static void toDocument(IHardwareAsset source, Document target) {
+	MongoAsset.toDocument(source, target);
 
 	target.append(PROP_SKU, source.getSku());
 	target.append(PROP_DESCRIPTION, source.getDescription());
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, HardwareAsset target) {
-	MongoAsset.fromDBObject(source, target);
+    public static void fromDocument(Document source, HardwareAsset target) {
+	MongoAsset.fromDocument(source, target);
 
 	String sku = (String) source.get(PROP_SKU);
 	String description = (String) source.get(PROP_DESCRIPTION);
@@ -76,26 +76,26 @@ public class MongoHardwareAsset implements MongoConverter<IHardwareAsset> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IHardwareAsset source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoHardwareAsset.toDBObject(source, result);
+    public static Document toDocument(IHardwareAsset source) {
+	Document result = new Document();
+	MongoHardwareAsset.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static HardwareAsset fromDBObject(DBObject source) {
+    public static HardwareAsset fromDocument(Document source) {
 	HardwareAsset result = new HardwareAsset();
-	MongoHardwareAsset.fromDBObject(source, result);
+	MongoHardwareAsset.fromDocument(source, result);
 	return result;
     }
 }

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.asset;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
@@ -35,28 +35,28 @@ public class MongoLocationAsset implements MongoConverter<ILocationAsset> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(ILocationAsset source) {
-	return MongoLocationAsset.toDBObject(source);
+    public Document convert(ILocationAsset source) {
+	return MongoLocationAsset.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public ILocationAsset convert(DBObject source) {
-	return MongoLocationAsset.fromDBObject(source);
+    public ILocationAsset convert(Document source) {
+	return MongoLocationAsset.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(ILocationAsset source, BasicDBObject target) {
-	MongoAsset.toDBObject(source, target);
+    public static void toDocument(ILocationAsset source, Document target) {
+	MongoAsset.toDocument(source, target);
 
 	target.append(PROP_LATITUDE, source.getLatitude());
 	target.append(PROP_LONGITUDE, source.getLongitude());
@@ -64,13 +64,13 @@ public class MongoLocationAsset implements MongoConverter<ILocationAsset> {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, LocationAsset target) {
-	MongoAsset.fromDBObject(source, target);
+    public static void fromDocument(Document source, LocationAsset target) {
+	MongoAsset.fromDocument(source, target);
 
 	Double lat = (Double) source.get(PROP_LATITUDE);
 	Double lon = (Double) source.get(PROP_LONGITUDE);
@@ -82,26 +82,26 @@ public class MongoLocationAsset implements MongoConverter<ILocationAsset> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(ILocationAsset source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoLocationAsset.toDBObject(source, result);
+    public static Document toDocument(ILocationAsset source) {
+	Document result = new Document();
+	MongoLocationAsset.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static LocationAsset fromDBObject(DBObject source) {
+    public static LocationAsset fromDocument(Document source) {
 	LocationAsset result = new LocationAsset();
-	MongoLocationAsset.fromDBObject(source, result);
+	MongoLocationAsset.fromDocument(source, result);
 	return result;
     }
 }

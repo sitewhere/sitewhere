@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -61,27 +61,27 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceCommand source) {
-	return MongoDeviceCommand.toDBObject(source);
+    public Document convert(IDeviceCommand source) {
+	return MongoDeviceCommand.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceCommand convert(DBObject source) {
-	return MongoDeviceCommand.fromDBObject(source);
+    public IDeviceCommand convert(Document source) {
+	return MongoDeviceCommand.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceCommand source, BasicDBObject target) {
+    public static void toDocument(IDeviceCommand source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_SPEC_TOKEN, source.getSpecificationToken());
 	target.append(PROP_NAMESPACE, source.getNamespace());
@@ -89,9 +89,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 	target.append(PROP_DESCRIPTION, source.getDescription());
 
 	// Create parameters list.
-	List<DBObject> params = new ArrayList<DBObject>();
+	List<Document> params = new ArrayList<Document>();
 	for (ICommandParameter parameter : source.getParameters()) {
-	    BasicDBObject dbparam = new BasicDBObject();
+	    Document dbparam = new Document();
 	    dbparam.append(PROP_PARAM_NAME, parameter.getName());
 	    dbparam.append(PROP_PARAM_TYPE, parameter.getType().name());
 	    dbparam.append(PROP_PARAM_REQUIRED, parameter.isRequired());
@@ -99,18 +99,18 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 	}
 	target.append(PROP_PARAMETERS, params);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, DeviceCommand target) {
+    public static void fromDocument(Document source, DeviceCommand target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String specToken = (String) source.get(PROP_SPEC_TOKEN);
 	String namespace = (String) source.get(PROP_NAMESPACE);
@@ -123,9 +123,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 	target.setName(name);
 	target.setDescription(desc);
 
-	List<DBObject> params = (List<DBObject>) source.get(PROP_PARAMETERS);
+	List<Document> params = (List<Document>) source.get(PROP_PARAMETERS);
 	if (params != null) {
-	    for (DBObject param : params) {
+	    for (Document param : params) {
 		String pname = (String) param.get(PROP_PARAM_NAME);
 		String ptype = (String) param.get(PROP_PARAM_TYPE);
 		Boolean prequired = (Boolean) param.get(PROP_PARAM_REQUIRED);
@@ -141,8 +141,8 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
@@ -151,9 +151,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceCommand source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceCommand.toDBObject(source, result);
+    public static Document toDocument(IDeviceCommand source) {
+	Document result = new Document();
+	MongoDeviceCommand.toDocument(source, result);
 	return result;
     }
 
@@ -163,9 +163,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      * @param source
      * @return
      */
-    public static DeviceCommand fromDBObject(DBObject source) {
+    public static DeviceCommand fromDocument(Document source) {
 	DeviceCommand result = new DeviceCommand();
-	MongoDeviceCommand.fromDBObject(source, result);
+	MongoDeviceCommand.fromDocument(source, result);
 	return result;
     }
 }

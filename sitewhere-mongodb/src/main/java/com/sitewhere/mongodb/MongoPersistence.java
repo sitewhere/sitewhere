@@ -12,16 +12,16 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.mongodb.device.IDeviceEventBuffer;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
@@ -63,10 +63,10 @@ public class MongoPersistence {
      * @param object
      * @throws SiteWhereException
      */
-    public static void insert(DBCollection collection, DBObject object, ErrorCode ifDuplicate)
+    public static void insert(MongoCollection<Document> collection, Document object, ErrorCode ifDuplicate)
 	    throws SiteWhereException {
 	try {
-	    collection.insert(object);
+	    collection.insertOne(object);
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
 	} catch (MongoTimeoutException e) {
@@ -86,13 +86,13 @@ public class MongoPersistence {
      * @param buffer
      * @throws SiteWhereException
      */
-    public static void insertEvent(DBCollection collection, DBObject object, boolean bulk, IDeviceEventBuffer buffer)
-	    throws SiteWhereException {
+    public static void insertEvent(MongoCollection<Document> collection, Document object, boolean bulk,
+	    IDeviceEventBuffer buffer) throws SiteWhereException {
 	try {
 	    if (bulk) {
 		buffer.add(object);
 	    } else {
-		collection.insert(object);
+		collection.insertOne(object);
 	    }
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
@@ -109,9 +109,10 @@ public class MongoPersistence {
      * @param object
      * @throws SiteWhereException
      */
-    public static void update(DBCollection collection, DBObject query, DBObject object) throws SiteWhereException {
+    public static void update(MongoCollection<Document> collection, Document query, Document object)
+	    throws SiteWhereException {
 	try {
-	    collection.update(query, object);
+	    collection.updateOne(query, new Document("$set", object));
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB update.", e);
 	}
@@ -126,9 +127,9 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static WriteResult delete(DBCollection collection, DBObject object) throws SiteWhereException {
+    public static DeleteResult delete(MongoCollection<Document> collection, Document object) throws SiteWhereException {
 	try {
-	    return collection.remove(object);
+	    return collection.deleteOne(object);
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB delete.", e);
 	}
@@ -143,7 +144,7 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> T get(String id, Class<T> api, DBCollection collection) throws SiteWhereException {
+    public static <T> T get(String id, Class<T> api, MongoCollection<Document> collection) throws SiteWhereException {
 	return get(id, api, collection, LOOKUP);
     }
 
@@ -157,14 +158,14 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> T get(String id, Class<T> api, DBCollection collection, IMongoConverterLookup lookup)
+    public static <T> T get(String id, Class<T> api, MongoCollection<Document> collection, IMongoConverterLookup lookup)
 	    throws SiteWhereException {
 	try {
-	    DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
-	    DBObject found = collection.findOne(searchById);
+	    Document searchById = new Document("_id", new ObjectId(id));
+	    FindIterable<Document> found = collection.find(searchById);
 	    if (found != null) {
 		MongoConverter<T> converter = lookup.getConverterFor(api);
-		return converter.convert(found);
+		return converter.convert(found.first());
 	    }
 	    return null;
 	} catch (MongoTimeoutException e) {
@@ -183,8 +184,8 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
-	    ISearchCriteria criteria) throws SiteWhereException {
+    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
+	    Document sort, ISearchCriteria criteria) throws SiteWhereException {
 	return search(api, collection, query, sort, criteria, LOOKUP);
     }
 
@@ -201,23 +202,25 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
-	    ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
+    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
+	    Document sort, ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
-	    DBCursor cursor;
+	    FindIterable<Document> found;
 	    if (criteria.getPageSize() == 0) {
-		cursor = collection.find(query).sort(sort);
+		found = collection.find(query).sort(sort);
 	    } else {
 		int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
-		cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
+		found = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 	    }
+	    MongoCursor<Document> cursor = found.iterator();
+
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
 	    MongoConverter<T> converter = lookup.getConverterFor(api);
 	    try {
-		results.setNumResults(cursor.count());
+		results.setNumResults(collection.count(query));
 		while (cursor.hasNext()) {
-		    DBObject match = cursor.next();
+		    Document match = cursor.next();
 		    matches.add(converter.convert(match));
 		}
 	    } finally {
@@ -239,8 +242,8 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort)
-	    throws SiteWhereException {
+    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
+	    Document sort) throws SiteWhereException {
 	return search(api, collection, query, sort, LOOKUP);
     }
 
@@ -255,17 +258,19 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
-	    IMongoConverterLookup lookup) throws SiteWhereException {
+    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
+	    Document sort, IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
-	    DBCursor cursor = collection.find(query).sort(sort);
+	    FindIterable<Document> found = collection.find(query).sort(sort);
+	    MongoCursor<Document> cursor = found.iterator();
+
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
 	    MongoConverter<T> converter = lookup.getConverterFor(api);
 	    try {
-		results.setNumResults(cursor.count());
+		results.setNumResults(collection.count(query));
 		while (cursor.hasNext()) {
-		    DBObject match = cursor.next();
+		    Document match = cursor.next();
 		    matches.add(converter.convert(match));
 		}
 	    } finally {
@@ -287,7 +292,7 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort)
+    public static <T> List<T> list(Class<T> api, MongoCollection<Document> collection, Document query, Document sort)
 	    throws SiteWhereException {
 	return list(api, collection, query, sort, LOOKUP);
     }
@@ -303,15 +308,17 @@ public class MongoPersistence {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
+    public static <T> List<T> list(Class<T> api, MongoCollection<Document> collection, Document query, Document sort,
 	    IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
-	    DBCursor cursor = collection.find(query);
+	    FindIterable<Document> found = collection.find(query);
+	    MongoCursor<Document> cursor = found.iterator();
+
 	    List<T> matches = new ArrayList<T>();
 	    MongoConverter<T> converter = lookup.getConverterFor(api);
 	    try {
 		while (cursor.hasNext()) {
-		    DBObject match = cursor.next();
+		    Document match = cursor.next();
 		    matches.add(converter.convert(match));
 		}
 	    } finally {
@@ -329,11 +336,11 @@ public class MongoPersistence {
      * @param query
      * @param criteria
      */
-    public static void addDateSearchCriteria(BasicDBObject query, String dateField, IDateRangeSearchCriteria criteria) {
+    public static void addDateSearchCriteria(Document query, String dateField, IDateRangeSearchCriteria criteria) {
 	if ((criteria.getStartDate() == null) && (criteria.getEndDate() == null)) {
 	    return;
 	}
-	BasicDBObject dateClause = new BasicDBObject();
+	Document dateClause = new Document();
 	if (criteria.getStartDate() != null) {
 	    dateClause.append("$gte", criteria.getStartDate());
 	}
@@ -344,14 +351,14 @@ public class MongoPersistence {
     }
 
     /**
-     * Given a {@link DBObject} that contains event information, unmarhal it to
+     * Given a {@link Document} that contains event information, unmarhal it to
      * the correct type.
      * 
      * @param found
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceEvent unmarshalEvent(DBObject found) throws SiteWhereException {
+    public static IDeviceEvent unmarshalEvent(Document found) throws SiteWhereException {
 	String type = (String) found.get(MongoDeviceEvent.PROP_EVENT_TYPE);
 	if (type == null) {
 	    throw new SiteWhereException("Event matched but did not contain event type field.");
@@ -363,28 +370,28 @@ public class MongoPersistence {
 
 	switch (eventType) {
 	case Measurements: {
-	    return MongoDeviceMeasurements.fromDBObject(found, false);
+	    return MongoDeviceMeasurements.fromDocument(found, false);
 	}
 	case Measurement: {
-	    return MongoDeviceMeasurement.fromDBObject(found, false);
+	    return MongoDeviceMeasurement.fromDocument(found, false);
 	}
 	case Location: {
-	    return MongoDeviceLocation.fromDBObject(found, false);
+	    return MongoDeviceLocation.fromDocument(found, false);
 	}
 	case Alert: {
-	    return MongoDeviceAlert.fromDBObject(found, false);
+	    return MongoDeviceAlert.fromDocument(found, false);
 	}
 	case StreamData: {
-	    return MongoDeviceStreamData.fromDBObject(found, false);
+	    return MongoDeviceStreamData.fromDocument(found, false);
 	}
 	case CommandInvocation: {
-	    return MongoDeviceCommandInvocation.fromDBObject(found);
+	    return MongoDeviceCommandInvocation.fromDocument(found);
 	}
 	case CommandResponse: {
-	    return MongoDeviceCommandResponse.fromDBObject(found);
+	    return MongoDeviceCommandResponse.fromDocument(found);
 	}
 	case StateChange: {
-	    return MongoDeviceStateChange.fromDBObject(found);
+	    return MongoDeviceStateChange.fromDocument(found);
 	}
 	default: {
 	    throw new SiteWhereException("Event type not handled: " + type);

@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.asset;
 
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -37,28 +37,28 @@ public class MongoPersonAsset implements MongoConverter<IPersonAsset> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IPersonAsset source) {
-	return MongoPersonAsset.toDBObject(source);
+    public Document convert(IPersonAsset source) {
+	return MongoPersonAsset.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IPersonAsset convert(DBObject source) {
-	return MongoPersonAsset.fromDBObject(source);
+    public IPersonAsset convert(Document source) {
+	return MongoPersonAsset.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IPersonAsset source, BasicDBObject target) {
-	MongoAsset.toDBObject(source, target);
+    public static void toDocument(IPersonAsset source, Document target) {
+	MongoAsset.toDocument(source, target);
 
 	target.append(PROP_USER_NAME, source.getUserName());
 	target.append(PROP_EMAIL, source.getEmailAddress());
@@ -66,14 +66,14 @@ public class MongoPersonAsset implements MongoConverter<IPersonAsset> {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, PersonAsset target) {
-	MongoAsset.fromDBObject(source, target);
+    public static void fromDocument(Document source, PersonAsset target) {
+	MongoAsset.fromDocument(source, target);
 
 	String username = (String) source.get(PROP_USER_NAME);
 	String email = (String) source.get(PROP_EMAIL);
@@ -85,26 +85,26 @@ public class MongoPersonAsset implements MongoConverter<IPersonAsset> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IPersonAsset source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoPersonAsset.toDBObject(source, result);
+    public static Document toDocument(IPersonAsset source) {
+	Document result = new Document();
+	MongoPersonAsset.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static PersonAsset fromDBObject(DBObject source) {
+    public static PersonAsset fromDocument(Document source) {
 	PersonAsset result = new PersonAsset();
-	MongoPersonAsset.fromDBObject(source, result);
+	MongoPersonAsset.fromDocument(source, result);
 	return result;
     }
 }

@@ -9,11 +9,11 @@ package com.sitewhere.mongodb.device;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
+import org.bson.types.Binary;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -56,8 +56,8 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceSpecification source) {
-	return MongoDeviceSpecification.toDBObject(source);
+    public Document convert(IDeviceSpecification source) {
+	return MongoDeviceSpecification.toDocument(source);
     }
 
     /*
@@ -66,8 +66,8 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
      */
     @Override
-    public IDeviceSpecification convert(DBObject source) {
-	return MongoDeviceSpecification.fromDBObject(source);
+    public IDeviceSpecification convert(Document source) {
+	return MongoDeviceSpecification.fromDocument(source);
     }
 
     /**
@@ -76,21 +76,21 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceSpecification source, BasicDBObject target) {
+    public static void toDocument(IDeviceSpecification source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
 	target.append(PROP_ASSET_ID, source.getAssetId());
 	target.append(PROP_CONTAINER_POLICY, source.getContainerPolicy().name());
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
 
 	// Marshal device element schema as JSON.
 	if (source.getDeviceElementSchema() != null) {
 	    ObjectMapper mapper = new ObjectMapper();
 	    try {
 		byte[] schemaJson = mapper.writeValueAsBytes(source.getDeviceElementSchema());
-		target.append(PROP_DEVICE_ELEMENT_SCHEMA, schemaJson);
+		target.append(PROP_DEVICE_ELEMENT_SCHEMA, new Binary(schemaJson));
 	    } catch (JsonProcessingException e) {
 		LOGGER.error("Unable to marshal device element schema for MongoDB persistence.", e);
 	    }
@@ -103,13 +103,13 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceSpecification target) {
+    public static void fromDocument(Document source, DeviceSpecification target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 	String assetId = (String) source.get(PROP_ASSET_ID);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
-	byte[] schemaBytes = (byte[]) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
+	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
 	target.setToken(token);
 	target.setName(name);
@@ -124,38 +124,38 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 	if (schemaBytes != null) {
 	    ObjectMapper mapper = new ObjectMapper();
 	    try {
-		DeviceElementSchema schema = mapper.readValue(schemaBytes, DeviceElementSchema.class);
+		DeviceElementSchema schema = mapper.readValue(schemaBytes.getData(), DeviceElementSchema.class);
 		target.setDeviceElementSchema(schema);
 	    } catch (Throwable e) {
 		LOGGER.error("Unable to unmarshal device element schema from MongoDB persistence.", e);
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceSpecification source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceSpecification.toDBObject(source, result);
+    public static Document toDocument(IDeviceSpecification source) {
+	Document result = new Document();
+	MongoDeviceSpecification.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceSpecification fromDBObject(DBObject source) {
+    public static DeviceSpecification fromDocument(Document source) {
 	DeviceSpecification result = new DeviceSpecification();
-	MongoDeviceSpecification.fromDBObject(source, result);
+	MongoDeviceSpecification.fromDocument(source, result);
 	return result;
     }
 }

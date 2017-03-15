@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.asset;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.spi.asset.AssetType;
@@ -36,39 +36,39 @@ public class MongoAssetCategory implements MongoConverter<IAssetCategory> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IAssetCategory source) {
-	return MongoAssetCategory.toDBObject(source);
+    public Document convert(IAssetCategory source) {
+	return MongoAssetCategory.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IAssetCategory convert(DBObject source) {
-	return MongoAssetCategory.fromDBObject(source);
+    public IAssetCategory convert(Document source) {
+	return MongoAssetCategory.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IAssetCategory source, BasicDBObject target) {
+    public static void toDocument(IAssetCategory source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_ASSET_TYPE, source.getAssetType().name());
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, AssetCategory target) {
+    public static void fromDocument(Document source, AssetCategory target) {
 	String id = (String) source.get(PROP_ID);
 	String name = (String) source.get(PROP_NAME);
 	String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
@@ -79,26 +79,26 @@ public class MongoAssetCategory implements MongoConverter<IAssetCategory> {
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IAssetCategory source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoAssetCategory.toDBObject(source, result);
+    public static Document toDocument(IAssetCategory source) {
+	Document result = new Document();
+	MongoAssetCategory.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static AssetCategory fromDBObject(DBObject source) {
+    public static AssetCategory fromDocument(Document source) {
 	AssetCategory result = new AssetCategory();
-	MongoAssetCategory.fromDBObject(source, result);
+	MongoAssetCategory.fromDocument(source, result);
 	return result;
     }
 }

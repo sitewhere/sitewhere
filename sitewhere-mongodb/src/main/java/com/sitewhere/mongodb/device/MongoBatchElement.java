@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.device;
 
 import java.util.Date;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.rest.model.device.batch.BatchElement;
@@ -45,27 +45,27 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IBatchElement source) {
-	return MongoBatchElement.toDBObject(source);
+    public Document convert(IBatchElement source) {
+	return MongoBatchElement.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IBatchElement convert(DBObject source) {
-	return MongoBatchElement.fromDBObject(source);
+    public IBatchElement convert(Document source) {
+	return MongoBatchElement.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IBatchElement source, BasicDBObject target) {
+    public static void toDocument(IBatchElement source, Document target) {
 	target.append(PROP_BATCH_OPERATION_TOKEN, source.getBatchOperationToken());
 	target.append(PROP_HARDWARE_ID, source.getHardwareId());
 	target.append(PROP_INDEX, source.getIndex());
@@ -75,16 +75,16 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 	if (source.getProcessedDate() != null) {
 	    target.append(PROP_PROCESSED_DATE, source.getProcessedDate());
 	}
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, BatchElement target) {
+    public static void fromDocument(Document source, BatchElement target) {
 	String parent = (String) source.get(PROP_BATCH_OPERATION_TOKEN);
 	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
 	Long index = (Long) source.get(PROP_INDEX);
@@ -98,30 +98,30 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 	    target.setProcessingStatus(ElementProcessingStatus.valueOf(status));
 	}
 	target.setProcessedDate(procDate);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IBatchElement source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoBatchElement.toDBObject(source, result);
+    public static Document toDocument(IBatchElement source) {
+	Document result = new Document();
+	MongoBatchElement.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static BatchElement fromDBObject(DBObject source) {
+    public static BatchElement fromDocument(Document source) {
 	BatchElement result = new BatchElement();
-	MongoBatchElement.fromDBObject(source, result);
+	MongoBatchElement.fromDocument(source, result);
 	return result;
     }
 }

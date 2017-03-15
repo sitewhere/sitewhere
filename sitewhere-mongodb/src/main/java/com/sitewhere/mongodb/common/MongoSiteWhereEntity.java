@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.common;
 
 import java.util.Date;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.common.ISiteWhereEntity;
 
@@ -37,12 +37,12 @@ public class MongoSiteWhereEntity {
     public static final String PROP_DELETED = "deleted";
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(ISiteWhereEntity source, BasicDBObject target) {
+    public static void toDocument(ISiteWhereEntity source, Document target) {
 	if (source.getCreatedDate() != null) {
 	    target.append(PROP_CREATED_DATE, source.getCreatedDate());
 	}
@@ -59,12 +59,12 @@ public class MongoSiteWhereEntity {
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, MetadataProviderEntity target) {
+    public static void fromDocument(Document source, MetadataProviderEntity target) {
 	Date createdDate = (Date) source.get(PROP_CREATED_DATE);
 	String createdBy = (String) source.get(PROP_CREATED_BY);
 	Date updatedDate = (Date) source.get(PROP_UPDATED_DATE);
@@ -82,12 +82,12 @@ public class MongoSiteWhereEntity {
     }
 
     /**
-     * Set deleted flag on DBObject.
+     * Set deleted flag on {@link Document}.
      * 
      * @param source
      * @param deleted
      */
-    public static void setDeleted(DBObject source, boolean deleted) {
+    public static void setDeleted(Document source, boolean deleted) {
 	source.put(PROP_DELETED, deleted);
     }
 }

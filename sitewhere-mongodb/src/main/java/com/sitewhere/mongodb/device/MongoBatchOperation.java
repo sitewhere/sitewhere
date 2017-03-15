@@ -9,8 +9,8 @@ package com.sitewhere.mongodb.device;
 
 import java.util.Date;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -50,27 +50,27 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IBatchOperation source) {
-	return MongoBatchOperation.toDBObject(source);
+    public Document convert(IBatchOperation source) {
+	return MongoBatchOperation.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IBatchOperation convert(DBObject source) {
-	return MongoBatchOperation.fromDBObject(source);
+    public IBatchOperation convert(Document source) {
+	return MongoBatchOperation.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IBatchOperation source, BasicDBObject target) {
+    public static void toDocument(IBatchOperation source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	if (source.getOperationType() != null) {
 	    target.append(PROP_OPERATION_TYPE, source.getOperationType().name());
@@ -86,23 +86,23 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	}
 
 	// Set parameters as nested object.
-	BasicDBObject params = new BasicDBObject();
+	Document params = new Document();
 	for (String key : source.getParameters().keySet()) {
 	    params.put(key, source.getParameters().get(key));
 	}
 	target.put(PROP_PARAMETERS, params);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, BatchOperation target) {
+    public static void fromDocument(Document source, BatchOperation target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String operationType = (String) source.get(PROP_OPERATION_TYPE);
 	String procStatus = (String) source.get(PROP_PROC_STATUS);
@@ -120,38 +120,38 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	target.setProcessingEndedDate(procEnd);
 
 	// Load parameters from nested object.
-	DBObject params = (DBObject) source.get(PROP_PARAMETERS);
+	Document params = (Document) source.get(PROP_PARAMETERS);
 	if (params != null) {
 	    for (String key : params.keySet()) {
 		target.getParameters().put(key, (String) params.get(key));
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IBatchOperation source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoBatchOperation.toDBObject(source, result);
+    public static Document toDocument(IBatchOperation source) {
+	Document result = new Document();
+	MongoBatchOperation.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static BatchOperation fromDBObject(DBObject source) {
+    public static BatchOperation fromDocument(Document source) {
 	BatchOperation result = new BatchOperation();
-	MongoBatchOperation.fromDBObject(source, result);
+	MongoBatchOperation.fromDocument(source, result);
 	return result;
     }
 }

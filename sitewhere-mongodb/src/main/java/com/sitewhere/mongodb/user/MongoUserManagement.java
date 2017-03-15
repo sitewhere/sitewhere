@@ -15,12 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IGlobalManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -88,10 +91,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getUsersCollection().createIndex(new BasicDBObject("username", 1),
-		new BasicDBObject("unique", true));
-	getMongoClient().getAuthoritiesCollection().createIndex(new BasicDBObject("authority", 1),
-		new BasicDBObject("unique", true));
+	getMongoClient().getUsersCollection().createIndex(new Document("username", 1), new IndexOptions().unique(true));
+	getMongoClient().getAuthoritiesCollection().createIndex(new Document("authority", 1),
+		new IndexOptions().unique(true));
     }
 
     /*
@@ -104,8 +106,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
 	User user = SiteWherePersistence.userCreateLogic(request, encodePassword);
 
-	DBCollection users = getMongoClient().getUsersCollection();
-	DBObject created = MongoUser.toDBObject(user);
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	Document created = MongoUser.toDocument(user);
 	MongoPersistence.insert(users, created, ErrorCode.DuplicateUser);
 	return user;
     }
@@ -129,8 +131,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	}
 	User user = User.copy(imported);
 
-	DBCollection users = getMongoClient().getUsersCollection();
-	DBObject created = MongoUser.toDBObject(user);
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	Document created = MongoUser.toDocument(user);
 	MongoPersistence.insert(users, created, ErrorCode.DuplicateUser);
 	return user;
     }
@@ -147,9 +149,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_BAD_REQUEST);
 	}
-	DBObject userObj = assertUser(username);
+	Document userObj = assertUser(username);
 	String inPassword = SiteWherePersistence.encodePassword(password);
-	User match = MongoUser.fromDBObject(userObj);
+	User match = MongoUser.fromDocument(userObj);
 	if (!match.getHashedPassword().equals(inPassword)) {
 	    LOGGER.info("User: " + username + " Password: " + password + " " + inPassword + " != "
 		    + match.getHashedPassword());
@@ -159,9 +161,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 
 	// Update last login date.
 	match.setLastLogin(new Date());
-	DBObject updated = MongoUser.toDBObject(match);
-	DBCollection users = getMongoClient().getUsersCollection();
-	BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
+	Document updated = MongoUser.toDocument(match);
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	Document query = new Document(MongoUser.PROP_USERNAME, username);
 	MongoPersistence.update(users, query, updated);
 
 	return match;
@@ -175,18 +177,18 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      */
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
-	DBObject existing = assertUser(username);
+	Document existing = assertUser(username);
 
 	// Copy any non-null fields.
-	User updatedUser = MongoUser.fromDBObject(existing);
+	User updatedUser = MongoUser.fromDocument(existing);
 	SiteWherePersistence.userUpdateLogic(request, updatedUser, encodePassword);
 
-	DBObject updated = MongoUser.toDBObject(updatedUser);
+	Document updated = MongoUser.toDocument(updatedUser);
 
-	DBCollection users = getMongoClient().getUsersCollection();
-	BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	Document query = new Document(MongoUser.PROP_USERNAME, username);
 	MongoPersistence.update(users, query, updated);
-	return MongoUser.fromDBObject(updated);
+	return MongoUser.fromDocument(updated);
     }
 
     /*
@@ -196,9 +198,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * String)
      */
     public IUser getUserByUsername(String username) throws SiteWhereException {
-	DBObject dbUser = getUserObjectByUsername(username);
+	Document dbUser = getUserDocumentByUsername(username);
 	if (dbUser != null) {
-	    return MongoUser.fromDBObject(dbUser);
+	    return MongoUser.fromDocument(dbUser);
 	}
 	return null;
     }
@@ -256,17 +258,19 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      */
     public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    DBCollection users = getMongoClient().getUsersCollection();
-	    DBObject dbCriteria = new BasicDBObject();
+	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	    Document dbCriteria = new Document();
 	    if (!criteria.isIncludeDeleted()) {
 		MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	    }
-	    DBCursor cursor = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
+	    FindIterable<Document> found = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
+	    MongoCursor<Document> cursor = found.iterator();
+
 	    List<IUser> matches = new ArrayList<IUser>();
 	    try {
 		while (cursor.hasNext()) {
-		    DBObject match = cursor.next();
-		    matches.add(MongoUser.fromDBObject(match));
+		    Document match = cursor.next();
+		    matches.add(MongoUser.fromDocument(match));
 		}
 	    } finally {
 		cursor.close();
@@ -284,18 +288,18 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * boolean)
      */
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	DBObject existing = assertUser(username);
+	Document existing = assertUser(username);
 	if (force) {
-	    DBCollection users = getMongoClient().getUsersCollection();
+	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	    MongoPersistence.delete(users, existing);
 	    SiteWherePersistence.userDeleteLogic(username);
-	    return MongoUser.fromDBObject(existing);
+	    return MongoUser.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
-	    DBCollection users = getMongoClient().getUsersCollection();
+	    Document query = new Document(MongoUser.PROP_USERNAME, username);
+	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	    MongoPersistence.update(users, query, existing);
-	    return MongoUser.fromDBObject(existing);
+	    return MongoUser.fromDocument(existing);
 	}
     }
 
@@ -307,8 +311,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      */
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 	GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
-	DBCollection auths = getMongoClient().getAuthoritiesCollection();
-	DBObject created = MongoGrantedAuthority.toDBObject(auth);
+	MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
+	Document created = MongoGrantedAuthority.toDocument(auth);
 	MongoPersistence.insert(auths, created, ErrorCode.DuplicateAuthority);
 	return auth;
     }
@@ -321,7 +325,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * lang.String)
      */
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
-	DBObject dbAuth = getGrantedAuthorityObjectByName(name);
+	Document dbAuth = getGrantedAuthorityDocumentByName(name);
 	if (dbAuth != null) {
 	    return MongoGrantedAuthority.fromDBObject(dbAuth);
 	}
@@ -349,12 +353,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    DBCollection auths = getMongoClient().getAuthoritiesCollection();
-	    DBCursor cursor = auths.find().sort(new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, 1));
+	    MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
+	    FindIterable<Document> found = auths.find()
+		    .sort(new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, 1));
+	    MongoCursor<Document> cursor = found.iterator();
+
 	    List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
 	    try {
 		while (cursor.hasNext()) {
-		    DBObject match = cursor.next();
+		    Document match = cursor.next();
 		    matches.add(MongoGrantedAuthority.fromDBObject(match));
 		}
 	    } finally {
@@ -385,8 +392,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertUser(String username) throws SiteWhereException {
-	DBObject match = getUserObjectByUsername(username);
+    protected Document assertUser(String username) throws SiteWhereException {
+	Document match = getUserDocumentByUsername(username);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -395,32 +402,32 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /**
-     * Get the DBObject for a User given unique username.
+     * Get the {@link Document} for a User given unique username.
      * 
      * @param username
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getUserObjectByUsername(String username) throws SiteWhereException {
+    protected Document getUserDocumentByUsername(String username) throws SiteWhereException {
 	try {
-	    DBCollection users = getMongoClient().getUsersCollection();
-	    BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
-	    return users.findOne(query);
+	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	    Document query = new Document(MongoUser.PROP_USERNAME, username);
+	    return users.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
     }
 
     /**
-     * Get the {@link DBObject} for a GrantedAuthority given name. Throw an
+     * Get the {@link Document} for a GrantedAuthority given name. Throw an
      * exception if not found.
      * 
      * @param name
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject assertGrantedAuthority(String name) throws SiteWhereException {
-	DBObject match = getGrantedAuthorityObjectByName(name);
+    protected Document assertGrantedAuthority(String name) throws SiteWhereException {
+	Document match = getGrantedAuthorityDocumentByName(name);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -429,17 +436,17 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /**
-     * Get the DBObject for a GrantedAuthority given unique name.
+     * Get the {@link Document} for a GrantedAuthority given unique name.
      * 
      * @param name
      * @return
      * @throws SiteWhereException
      */
-    protected DBObject getGrantedAuthorityObjectByName(String name) throws SiteWhereException {
+    protected Document getGrantedAuthorityDocumentByName(String name) throws SiteWhereException {
 	try {
-	    DBCollection auths = getMongoClient().getAuthoritiesCollection();
-	    BasicDBObject query = new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, name);
-	    return auths.findOne(query);
+	    MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
+	    Document query = new Document(MongoGrantedAuthority.PROP_AUTHORITY, name);
+	    return auths.find(query).first();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}

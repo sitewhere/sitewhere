@@ -7,8 +7,8 @@
  */
 package com.sitewhere.mongodb.scheduling;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -45,49 +45,49 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IScheduledJob source) {
-	return MongoScheduledJob.toDBObject(source);
+    public Document convert(IScheduledJob source) {
+	return MongoScheduledJob.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IScheduledJob convert(DBObject source) {
-	return MongoScheduledJob.fromDBObject(source);
+    public IScheduledJob convert(Document source) {
+	return MongoScheduledJob.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IScheduledJob source, BasicDBObject target) {
+    public static void toDocument(IScheduledJob source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_SCHEDULE_TOKEN, source.getScheduleToken());
 	target.append(PROP_JOB_TYPE, source.getJobType().name());
 	target.append(PROP_JOB_STATE, source.getJobState().name());
 
-	BasicDBObject config = new BasicDBObject();
+	Document config = new Document();
 	for (String key : source.getJobConfiguration().keySet()) {
 	    config.put(key, source.getJobConfiguration().get(key));
 	}
 	target.put(PROP_JOB_CONFIGURATION, config);
 
-	MongoSiteWhereEntity.toDBObject(source, target);
-	MongoMetadataProvider.toDBObject(source, target);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, ScheduledJob target) {
+    public static void fromDocument(Document source, ScheduledJob target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String scheduleToken = (String) source.get(PROP_SCHEDULE_TOKEN);
 	String type = (String) source.get(PROP_JOB_TYPE);
@@ -98,38 +98,38 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
 	target.setJobType(ScheduledJobType.valueOf(type));
 	target.setJobState(ScheduledJobState.valueOf(state));
 
-	DBObject config = (DBObject) source.get(PROP_JOB_CONFIGURATION);
+	Document config = (Document) source.get(PROP_JOB_CONFIGURATION);
 	if (config != null) {
 	    for (String key : config.keySet()) {
 		target.getJobConfiguration().put(key, (String) config.get(key));
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDBObject(source, target);
-	MongoMetadataProvider.fromDBObject(source, target);
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IScheduledJob source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoScheduledJob.toDBObject(source, result);
+    public static Document toDocument(IScheduledJob source) {
+	Document result = new Document();
+	MongoScheduledJob.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static ScheduledJob fromDBObject(DBObject source) {
+    public static ScheduledJob fromDocument(Document source) {
 	ScheduledJob result = new ScheduledJob();
-	MongoScheduledJob.fromDBObject(source, result);
+	MongoScheduledJob.fromDocument(source, result);
 	return result;
     }
 }

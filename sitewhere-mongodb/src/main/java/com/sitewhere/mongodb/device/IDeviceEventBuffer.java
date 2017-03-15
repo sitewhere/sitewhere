@@ -7,7 +7,8 @@
  */
 package com.sitewhere.mongodb.device;
 
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -32,10 +33,10 @@ public interface IDeviceEventBuffer {
     public void stop() throws SiteWhereException;
 
     /**
-     * Add a {@link DBObject} to the queue.
+     * Add a {@link Document} to the queue.
      * 
      * @param put
      * @throws SiteWhereException
      */
-    public void add(DBObject put) throws SiteWhereException;
+    public void add(Document put) throws SiteWhereException;
 }

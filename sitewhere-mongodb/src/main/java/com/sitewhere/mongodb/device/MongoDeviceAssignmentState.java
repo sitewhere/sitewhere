@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
@@ -47,27 +47,27 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceAssignmentState source) {
-	return MongoDeviceAssignmentState.toDBObject(source);
+    public Document convert(IDeviceAssignmentState source) {
+	return MongoDeviceAssignmentState.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceAssignmentState convert(DBObject source) {
-	return MongoDeviceAssignmentState.fromDBObject(source);
+    public IDeviceAssignmentState convert(Document source) {
+	return MongoDeviceAssignmentState.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceAssignmentState source, BasicDBObject target) {
+    public static void toDocument(IDeviceAssignmentState source, Document target) {
 	if (source.getLastInteractionDate() != null) {
 	    target.append(PROP_LAST_INTERACTION_DATE, source.getLastInteractionDate());
 	}
@@ -77,75 +77,75 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	}
 
 	if (source.getLastLocation() != null) {
-	    target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDBObject(source.getLastLocation(), true));
+	    target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDocument(source.getLastLocation(), true));
 	}
 
 	if (!source.getLatestMeasurements().isEmpty()) {
-	    List<BasicDBObject> measurements = new ArrayList<BasicDBObject>();
+	    List<Document> measurements = new ArrayList<Document>();
 	    for (IDeviceMeasurement sm : source.getLatestMeasurements()) {
-		measurements.add(MongoDeviceMeasurement.toDBObject(sm, true));
+		measurements.add(MongoDeviceMeasurement.toDocument(sm, true));
 	    }
 	    target.append(PROP_LATEST_MEASUREMENTS, measurements);
 	}
 
 	if (!source.getLatestAlerts().isEmpty()) {
-	    List<BasicDBObject> alerts = new ArrayList<BasicDBObject>();
+	    List<Document> alerts = new ArrayList<Document>();
 	    for (IDeviceAlert sa : source.getLatestAlerts()) {
-		alerts.add(MongoDeviceAlert.toDBObject(sa, true));
+		alerts.add(MongoDeviceAlert.toDocument(sa, true));
 	    }
 	    target.append(PROP_LATEST_ALERTS, alerts);
 	}
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
     @SuppressWarnings("unchecked")
-    public static void fromDBObject(DBObject source, DeviceAssignmentState target) {
+    public static void fromDocument(Document source, DeviceAssignmentState target) {
 	target.setLastInteractionDate((Date) source.get(PROP_LAST_INTERACTION_DATE));
 	target.setPresenceMissingDate((Date) source.get(PROP_PRESENCE_MISSING_DATE));
-	DBObject lastLocation = (DBObject) source.get(PROP_LAST_LOCATION);
+	Document lastLocation = (Document) source.get(PROP_LAST_LOCATION);
 	if (lastLocation != null) {
-	    target.setLastLocation(MongoDeviceLocation.fromDBObject(lastLocation, true));
+	    target.setLastLocation(MongoDeviceLocation.fromDocument(lastLocation, true));
 	}
-	List<DBObject> latestMeasurements = (List<DBObject>) source.get(PROP_LATEST_MEASUREMENTS);
+	List<Document> latestMeasurements = (List<Document>) source.get(PROP_LATEST_MEASUREMENTS);
 	if (latestMeasurements != null) {
-	    for (DBObject sm : latestMeasurements) {
-		target.getLatestMeasurements().add(MongoDeviceMeasurement.fromDBObject(sm, true));
+	    for (Document sm : latestMeasurements) {
+		target.getLatestMeasurements().add(MongoDeviceMeasurement.fromDocument(sm, true));
 	    }
 	}
-	List<DBObject> latestAlerts = (List<DBObject>) source.get(PROP_LATEST_ALERTS);
+	List<Document> latestAlerts = (List<Document>) source.get(PROP_LATEST_ALERTS);
 	if (latestAlerts != null) {
-	    for (DBObject sa : latestAlerts) {
-		target.getLatestAlerts().add(MongoDeviceAlert.fromDBObject(sa, true));
+	    for (Document sa : latestAlerts) {
+		target.getLatestAlerts().add(MongoDeviceAlert.fromDocument(sa, true));
 	    }
 	}
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceAssignmentState source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceAssignmentState.toDBObject(source, result);
+    public static Document toDocument(IDeviceAssignmentState source) {
+	Document result = new Document();
+	MongoDeviceAssignmentState.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceAssignmentState fromDBObject(DBObject source) {
+    public static DeviceAssignmentState fromDocument(Document source) {
 	DeviceAssignmentState result = new DeviceAssignmentState();
-	MongoDeviceAssignmentState.fromDBObject(source, result);
+	MongoDeviceAssignmentState.fromDocument(source, result);
 	return result;
     }
 }

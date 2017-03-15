@@ -7,12 +7,11 @@
  */
 package com.sitewhere.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
 
 /**
- * Interface for classes that can convert Mongo objects to SiteWhere SPI
- * objects.
+ * Interface for classes that can convert Mongo {@link Document} to SiteWhere
+ * SPI objects.
  * 
  * @author Derek
  * 
@@ -21,12 +20,12 @@ import com.mongodb.DBObject;
 public interface MongoConverter<I> {
 
     /**
-     * Create a Mongo {@link BasicDBObject} based on SPI input.
+     * Create a Mongo {@link Document} based on SPI input.
      * 
      * @param source
      * @return
      */
-    public BasicDBObject convert(I source);
+    public Document convert(I source);
 
     /**
      * Create the REST object from a Mongo DBObject.
@@ -34,5 +33,5 @@ public interface MongoConverter<I> {
      * @param source
      * @return
      */
-    public I convert(DBObject source);
+    public I convert(Document source);
 }

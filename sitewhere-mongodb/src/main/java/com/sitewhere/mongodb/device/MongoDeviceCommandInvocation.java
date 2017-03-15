@@ -10,8 +10,8 @@ package com.sitewhere.mongodb.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.device.event.CommandInitiator;
@@ -53,28 +53,28 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
      * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public BasicDBObject convert(IDeviceCommandInvocation source) {
-	return MongoDeviceCommandInvocation.toDBObject(source);
+    public Document convert(IDeviceCommandInvocation source) {
+	return MongoDeviceCommandInvocation.toDocument(source);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceCommandInvocation convert(DBObject source) {
-	return MongoDeviceCommandInvocation.fromDBObject(source);
+    public IDeviceCommandInvocation convert(Document source) {
+	return MongoDeviceCommandInvocation.fromDocument(source);
     }
 
     /**
-     * Copy information from SPI into Mongo DBObject.
+     * Copy information from SPI into Mongo {@link Document}.
      * 
      * @param source
      * @param target
      */
-    public static void toDBObject(IDeviceCommandInvocation source, BasicDBObject target) {
-	MongoDeviceEvent.toDBObject(source, target, false);
+    public static void toDocument(IDeviceCommandInvocation source, Document target) {
+	MongoDeviceEvent.toDocument(source, target, false);
 
 	target.append(PROP_INITIATOR, source.getInitiator().name());
 	target.append(PROP_INITIATOR_ID, source.getInitiatorId());
@@ -83,7 +83,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	target.append(PROP_COMMAND_TOKEN, source.getCommandToken());
 	target.append(PROP_STATUS, source.getStatus().name());
 
-	BasicDBObject params = new BasicDBObject();
+	Document params = new Document();
 	for (String key : source.getParameterValues().keySet()) {
 	    params.append(key, source.getParameterValues().get(key));
 	}
@@ -91,13 +91,13 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
     }
 
     /**
-     * Copy information from Mongo DBObject to model object.
+     * Copy information from Mongo {@link Document} to model object.
      * 
      * @param source
      * @param target
      */
-    public static void fromDBObject(DBObject source, DeviceCommandInvocation target) {
-	MongoDeviceEvent.fromDBObject(source, target, false);
+    public static void fromDocument(Document source, DeviceCommandInvocation target) {
+	MongoDeviceEvent.fromDocument(source, target, false);
 
 	String initiatorName = (String) source.get(PROP_INITIATOR);
 	String initiatorId = (String) source.get(PROP_INITIATOR_ID);
@@ -120,7 +120,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	target.setCommandToken(commandToken);
 
 	Map<String, String> params = new HashMap<String, String>();
-	DBObject dbparams = (DBObject) source.get(PROP_PARAMETER_VALUES);
+	Document dbparams = (Document) source.get(PROP_PARAMETER_VALUES);
 	if (dbparams != null) {
 	    for (String key : dbparams.keySet()) {
 		params.put(key, (String) dbparams.get(key));
@@ -130,26 +130,26 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
     }
 
     /**
-     * Convert SPI object to Mongo DBObject.
+     * Convert SPI object to Mongo {@link Document}.
      * 
      * @param source
      * @return
      */
-    public static BasicDBObject toDBObject(IDeviceCommandInvocation source) {
-	BasicDBObject result = new BasicDBObject();
-	MongoDeviceCommandInvocation.toDBObject(source, result);
+    public static Document toDocument(IDeviceCommandInvocation source) {
+	Document result = new Document();
+	MongoDeviceCommandInvocation.toDocument(source, result);
 	return result;
     }
 
     /**
-     * Convert a DBObject into the SPI equivalent.
+     * Convert a {@link Document} into the SPI equivalent.
      * 
      * @param source
      * @return
      */
-    public static DeviceCommandInvocation fromDBObject(DBObject source) {
+    public static DeviceCommandInvocation fromDocument(Document source) {
 	DeviceCommandInvocation result = new DeviceCommandInvocation();
-	MongoDeviceCommandInvocation.fromDBObject(source, result);
+	MongoDeviceCommandInvocation.fromDocument(source, result);
 	return result;
     }
 }
