@@ -222,7 +222,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	// Check for existing replica set configuration.
 	LOGGER.info("Checking for existing replica set...");
 	Document result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
-	if (result.getBoolean("ok", true)) {
+	if (result.getDouble("ok") == 1) {
 	    LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
 	    return;
 	}
@@ -250,7 +250,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
 	// Send command.
 	result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetInitiate", config));
-	if (!result.getBoolean("ok", false)) {
+	if (result.getDouble("ok") != 1) {
 	    throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
 	}
 	LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
