@@ -8,10 +8,13 @@
 package com.sitewhere.solr;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +44,15 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 
     /** Number of documents to buffer before blocking calls */
     private static final int BUFFER_SIZE = 1000;
+
+    /** Interval at which batches are written */
+    private static final int BATCH_INTERVAL = 2 * 1000;
+
+    /** Maximum count of documents to send in a batch */
+    private static final int MAX_BATCH_SIZE = 200;
+
+    /** Interval by which documents should be committed */
+    private static final int COMMIT_INTERVAL = 60 * 1000;
 
     /** Injected Solr configuration */
     private SiteWhereSolrConfiguration solr;
@@ -150,18 +162,31 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	@Override
 	public void run() {
 	    LOGGER.info("Started Solr indexing thread.");
-	    while (true) {
-		try {
-		    SolrInputDocument document = queue.take();
+	    boolean interrupted = false;
+
+	    while (!interrupted) {
+		long start = System.currentTimeMillis();
+		List<SolrInputDocument> batch = new ArrayList<SolrInputDocument>();
+
+		while (((System.currentTimeMillis() - start) < BATCH_INTERVAL) && (batch.size() <= MAX_BATCH_SIZE)) {
 		    try {
-			LOGGER.debug("Indexing document in Solr...");
-			UpdateResponse response = getSolr().getSolrClient().add(document);
-			if (response.getStatus() == 0) {
-			    LOGGER.debug("Indexed document successfully. " + response.toString());
-			    getSolr().getSolrClient().commit();
-			} else {
-			    LOGGER.warn("Bad response code indexing document: " + response.getStatus());
+			SolrInputDocument document = queue.poll(BATCH_INTERVAL, TimeUnit.MILLISECONDS);
+			if (document != null) {
+			    batch.add(document);
 			}
+		    } catch (InterruptedException e) {
+			LOGGER.error("Solr indexing thread interrupted.", e);
+			interrupted = true;
+			break;
+		    }
+		}
+		if (!batch.isEmpty()) {
+		    try {
+			UpdateResponse response = getSolr().getSolrClient().add(batch, COMMIT_INTERVAL);
+			if (response.getStatus() != 0) {
+			    LOGGER.warn("Bad response code indexing documents: " + response.getStatus());
+			}
+			LOGGER.debug("Indexed " + batch.size() + " documents in Solr.");
 		    } catch (SolrServerException e) {
 			LOGGER.error("Exception indexing SiteWhere document.", e);
 		    } catch (IOException e) {
@@ -169,8 +194,6 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 		    } catch (Throwable e) {
 			LOGGER.error("Unhandled exception indexing SiteWhere document.", e);
 		    }
-		} catch (InterruptedException e) {
-		    LOGGER.error(e);
 		}
 	    }
 	}
