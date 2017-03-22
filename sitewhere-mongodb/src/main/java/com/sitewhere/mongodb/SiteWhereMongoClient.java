@@ -185,18 +185,18 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 		MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
 			getPassword().toCharArray());
 		if (isUsingReplicaSet) {
-		    this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
-		} else {
 		    this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+		} else {
+		    this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
 		}
 	    }
 
 	    // Handle unauthenticated access.
 	    else {
 		if (isUsingReplicaSet) {
-		    this.client = new MongoClient(addresses.get(0), builder.build());
-		} else {
 		    this.client = new MongoClient(addresses, builder.build());
+		} else {
+		    this.client = new MongoClient(addresses.get(0), builder.build());
 		}
 	    }
 

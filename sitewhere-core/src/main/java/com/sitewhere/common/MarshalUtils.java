@@ -22,10 +22,10 @@ public class MarshalUtils {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Singleton object mapper for JSON marshaling */
-    private static ObjectMapper MAPPER = new ObjectMapper();
+    public static ObjectMapper MAPPER = new ObjectMapper();
 
     /** Singleton mapper with pretty print turned on */
-    private static ObjectMapper PRETTY_MAPPER = new ObjectMapper();
+    public static ObjectMapper PRETTY_MAPPER = new ObjectMapper();
 
     // Enable pretty printing on the mapper.
     static {
