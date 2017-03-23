@@ -8,6 +8,7 @@
 package com.sitewhere.server;
 
 import java.util.List;
+import java.util.Map;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
@@ -239,6 +240,16 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException {
 	return server.getAuthorizedTenants(userId, requireStarted);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEnginesById()
+     */
+    @Override
+    public Map<String, ISiteWhereTenantEngine> getTenantEnginesById() {
+	return server.getTenantEnginesById();
     }
 
     /*

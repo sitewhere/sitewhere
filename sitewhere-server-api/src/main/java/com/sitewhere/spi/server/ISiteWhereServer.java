@@ -8,6 +8,7 @@
 package com.sitewhere.spi.server;
 
 import java.util.List;
+import java.util.Map;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
@@ -166,6 +167,13 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException;
+
+    /**
+     * Get tenant engines indexed by tenant id.
+     * 
+     * @return
+     */
+    public Map<String, ISiteWhereTenantEngine> getTenantEnginesById();
 
     /**
      * Get a tenant engine by tenant id. If a tenant exists but the engine has

@@ -376,12 +376,26 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEnginesById()
+     */
+    @Override
+    public Map<String, ISiteWhereTenantEngine> getTenantEnginesById() {
+	return tenantEnginesById;
+    }
+
+    public void setTenantEnginesById(Map<String, ISiteWhereTenantEngine> tenantEnginesById) {
+	this.tenantEnginesById = tenantEnginesById;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.
      * String)
      */
     @Override
     public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = tenantEnginesById.get(tenantId);
+	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenantId);
 	if (engine == null) {
 	    ITenant tenant = getTenantManagement().getTenantById(tenantId);
 	    if (tenant == null) {
@@ -410,7 +424,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 
 	// Update tenant information in tenant engine.
-	ISiteWhereTenantEngine engine = tenantEnginesById.get(tenant.getId());
+	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
 	if (engine != null) {
 	    engine.setTenant(tenant);
 	}
@@ -579,7 +593,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected ISiteWhereTenantEngine assureTenantEngine(ITenant tenant) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = tenantEnginesById.get(tenant.getId());
+	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
 	if (engine == null) {
 	    throw new SiteWhereException("No engine registered for tenant.");
 	}
@@ -599,7 +613,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	if (tenant == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
 	}
-	ISiteWhereTenantEngine engine = tenantEnginesById.get(tenant.getId());
+	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
 	if (engine == null) {
 	    throw new SiteWhereException("Tenant found for auth token, but no engine registered for tenant.");
 	}
@@ -1069,7 +1083,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			new TenantOperationsThreadFactory());
 
 		// Start tenant engines.
-		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
+		for (ISiteWhereTenantEngine engine : getTenantEnginesById().values()) {
 
 		    // Find state or create initial state as needed.
 		    ITenantPersistentState state = engine.getPersistentState();
@@ -1283,7 +1297,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		tenantOperations = Executors.newFixedThreadPool(TENANT_OPERATION_PARALLELISM,
 			new TenantOperationsThreadFactory());
 
-		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
+		for (ISiteWhereTenantEngine engine : getTenantEnginesById().values()) {
 		    tenantOperations.execute(new Runnable() {
 
 			@Override
@@ -1397,7 +1411,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void registerTenant(ITenant tenant, ISiteWhereTenantEngine engine) throws SiteWhereException {
 	tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
-	tenantEnginesById.put(tenant.getId(), engine);
+	getTenantEnginesById().put(tenant.getId(), engine);
     }
 
     /**
