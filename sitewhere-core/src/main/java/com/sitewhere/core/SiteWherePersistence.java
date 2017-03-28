@@ -855,17 +855,30 @@ public class SiteWherePersistence {
      * @throws SiteWhereException
      */
     protected static void checkData(ICommandParameter parameter, Map<String, String> values) throws SiteWhereException {
-	// Make sure required fields are passed.
+
+	String value = values.get(parameter.getName());
+	boolean parameterValueIsNull = (value == null);
+	boolean parameterValueIsEmpty = true;
+
+	if (! parameterValueIsNull) {
+	    value = value.trim();
+	    parameterValueIsEmpty = value.length() == 0;
+	}
+
+	//Handle the required parameters first
 	if (parameter.isRequired()) {
-	    if (values.get(parameter.getName()) == null) {
-		throw new SiteWhereException("Required parameter '" + parameter.getName() + "' is missing.");
+		if (parameterValueIsNull) {
+	    throw new SiteWhereException("Required parameter '" + parameter.getName() + "' is missing.");
+	    }
+
+	    if (parameterValueIsEmpty){
+	    throw new SiteWhereException("Required parameter '" + parameter.getName() + "' has no value assigned to it.");
 	    }
 	}
-	// If no value, do not try to validate.
-	String value = values.get(parameter.getName());
-	if (value == null) {
-	    return;
+	else if (parameterValueIsNull || parameterValueIsEmpty) {
+	return;
 	}
+
 	switch (parameter.getType()) {
 	case Fixed32:
 	case Fixed64:
@@ -880,7 +893,7 @@ public class SiteWherePersistence {
 	    try {
 		Long.parseLong(value);
 	    } catch (NumberFormatException e) {
-		throw new SiteWhereException("Parameter '" + parameter.getName() + "' must be numeric.");
+		throw new SiteWhereException("Parameter '" + parameter.getName() + "' must be integral.");
 	    }
 	}
 	case Float: {
