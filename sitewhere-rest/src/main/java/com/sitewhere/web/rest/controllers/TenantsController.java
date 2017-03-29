@@ -37,6 +37,8 @@ import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -48,7 +50,6 @@ import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantTemplate;
 import com.sitewhere.spi.tenant.ITenant;
@@ -185,18 +186,19 @@ public class TenantsController extends RestController {
 	    servletResponse.setContentType(MediaType.TEXT_HTML_VALUE);
 
 	    // Issue command and monitor progress.
-	    ICommandResponse response = engine.issueCommand(command, new ILifecycleProgressMonitor() {
+	    ICommandResponse response = engine.issueCommand(command,
+		    new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Issue tenant engine command")) {
 
-		@Override
-		public void reportProgress(IProgressMessage message) throws SiteWhereException {
-		    try {
-			servletResponse.getOutputStream().println(MarshalUtils.marshalJsonAsString(message));
-			servletResponse.getOutputStream().flush();
-		    } catch (IOException e) {
-			LOGGER.warn("Unable to write progress to stream.", e);
-		    }
-		}
-	    });
+			@Override
+			public void reportProgress(IProgressMessage message) throws SiteWhereException {
+			    try {
+				servletResponse.getOutputStream().println(MarshalUtils.marshalJsonAsString(message));
+				servletResponse.getOutputStream().flush();
+			    } catch (IOException e) {
+				LOGGER.warn("Unable to write progress to stream.", e);
+			    }
+			}
+		    });
 	    if (response.getResult() == CommandResult.Failed) {
 		LOGGER.error("Tenant engine command failed: " + response.getMessage());
 	    }

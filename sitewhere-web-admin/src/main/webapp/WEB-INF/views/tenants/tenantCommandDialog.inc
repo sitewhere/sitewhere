@@ -42,8 +42,7 @@
 		// Reset progress.
 		var startProgress = {
 			"taskName" : "",
-			"currentOperation" : 0,
-			"totalOperations" : 1,
+			"progressPercentage" : 0,
 			"message" : ""
 		}
 		cmdUpdate(startProgress);
@@ -51,8 +50,7 @@
 
 	/** Update UI with progress */
 	function cmdUpdate(progress) {
-		var globalPercent = Math.abs(progress.currentOperation * 100 / progress.totalOperations);
-		globalBar.value(globalPercent);
+		globalBar.value(progress.progressPercentage);
 
 		$("#cmd-task-name").html(progress.taskName);
 		$("#cmd-current-operation").html("<div style='margin: 20px; font-size: 18px;'>" + progress.message + "</div>");

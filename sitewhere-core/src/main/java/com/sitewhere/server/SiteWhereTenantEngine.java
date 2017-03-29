@@ -221,10 +221,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Organizes steps for starting server.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("START TENANT '" + getTenant().getName() + "'");
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Started tenant '" + getTenant().getName() + "'");
 
 	// Clear the component list.
-	start.addStep(new SimpleLifecycleStep("Preparing tenant") {
+	start.addStep(new SimpleLifecycleStep("Prepared tenant") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -242,7 +242,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	startTenantServices(start);
 
 	// Finish tenant startup.
-	start.addStep(new SimpleLifecycleStep("Verifying bootstrap data") {
+	start.addStep(new SimpleLifecycleStep("Verified bootstrap data") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -268,11 +268,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start Groovy configuration.
 	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
-		"Starting tenant Groovy script engine", "Groovy configuration startup failed.", true));
+		"Started tenant Groovy script engine", "Groovy configuration startup failed.", true));
 
 	// Start lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    start.addStep(new StartComponentLifecycleStep(this, component, "Starting " + component.getComponentName(),
+	    start.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
 		    component.getComponentName() + " startup failed.", true));
 	}
     }
@@ -286,26 +286,26 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start asset management cache provider.
 	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementCacheProvider(),
-		"Starting asset management cache provider", "Asset management cache provider startup failed.", true));
+		"Started asset management cache provider", "Asset management cache provider startup failed.", true));
 
 	// Start asset management.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Starting asset management",
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Started asset management",
 		"Asset management startup failed.", true));
 
 	// Start device management cache provider.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		"Starting device management cache provider", "Device management cache provider startup failed.", true));
+		"Started device management cache provider", "Device management cache provider startup failed.", true));
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Starting device management",
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Started device management",
 		"Device management startup failed.", true));
 
 	// Start device management.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(),
-		"Starting device event management", "Device event management startup failed.", true));
+		"Started device event management", "Device event management startup failed.", true));
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Starting schedule management",
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Started schedule management",
 		"Schedule management startup failed.", true));
     }
 
@@ -317,23 +317,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start asset module manager.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Starting asset module manager",
+	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Started asset module manager",
 		"Asset module manager startup failed.", true));
 
 	// Start search provider manager.
 	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(),
-		"Starting search provider manager", "Search provider manager startup failed.", true));
+		"Started search provider manager", "Search provider manager startup failed.", true));
 
 	// Start event processing subsystem.
-	start.addStep(new StartComponentLifecycleStep(this, getEventProcessing(), "Starting event processing subsystem",
+	start.addStep(new StartComponentLifecycleStep(this, getEventProcessing(), "Started event processing subsystem",
 		"Event processing subsystem startup failed.", true));
 
 	// Start device communication subsystem.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
-		"Starting device communication subsystem", "Device communication subsystem startup failed.", true));
+		"Started device communication subsystem", "Device communication subsystem startup failed.", true));
 
 	// Start schedule manager.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManager(), "Starting schedule manager",
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManager(), "Started schedule manager",
 		"Schedule manager startup failed.", true));
     }
 
@@ -394,13 +394,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	updatePersistentState(desired, getLifecycleStatus());
 
 	// Organizes steps for stopping tenant.
-	ICompositeLifecycleStep stop = new CompositeLifecycleStep("STOP TENANT '" + getTenant().getName() + "'");
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stopped tenant '" + getTenant().getName() + "'");
 
 	// Stop tenant services.
 	stopTenantServices(stop);
 
 	// Stop lifecycle components.
-	stop.addStep(new SimpleLifecycleStep("Stopping registered components") {
+	stop.addStep(new SimpleLifecycleStep("Stopped registered components") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -425,21 +425,22 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop scheduling new jobs.
-	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManager(), "Stop schedule manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManager(), "Stopped schedule manager"));
 
 	// Disable device communications.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getDeviceCommunication(), "Stop device communication subsystem"));
-	stop.addStep(new StopComponentLifecycleStep(this, getEventProcessing(), "Stop event processing subsystem"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication(),
+		"Stopped device communication subsystem"));
+	stop.addStep(new StopComponentLifecycleStep(this, getEventProcessing(), "Stopped event processing subsystem"));
 
 	// Stop search provider manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stop search provider manager"));
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stopped search provider manager"));
 
 	// Stop asset module manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stop asset module manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stopped asset module manager"));
 
 	// Stop the Groovy configuration.
-	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stop Groovy engine"));
+	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy engine"));
     }
 
     /**
@@ -451,27 +452,27 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void stopManagementServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop schedule management.
 	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManagement(),
-		"Stop schedule management implementation"));
+		"Stopped schedule management implementation"));
 
 	// Stop device event management.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement(),
-		"Stop device event management implementation"));
+		"Stopped device event management implementation"));
 
 	// Stop device management.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getDeviceManagement(), "Stop device management implementation"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement(),
+		"Stopped device management implementation"));
 
 	// Stop device management cache provider if configured.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		"Stop device management cache provider"));
+		"Stopped device management cache provider"));
 
 	// Stop asset management.
 	stop.addStep(
-		new StopComponentLifecycleStep(this, getAssetManagement(), "Stop asset management implementation"));
+		new StopComponentLifecycleStep(this, getAssetManagement(), "Stopped asset management implementation"));
 
 	// Stop asset management cache provider.
 	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagementCacheProvider(),
-		"Stop asset management cache provider"));
+		"Stopped asset management cache provider"));
     }
 
     /*

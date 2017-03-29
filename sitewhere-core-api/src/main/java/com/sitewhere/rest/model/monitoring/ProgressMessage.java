@@ -8,7 +8,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * {@link ILifecycleProgressMonitor}.
  * 
  * @author Derek
- *
  */
 public class ProgressMessage implements IProgressMessage {
 
@@ -18,11 +17,8 @@ public class ProgressMessage implements IProgressMessage {
     /** Task name */
     private String taskName;
 
-    /** Total operation count */
-    private int totalOperations;
-
-    /** Current operation index */
-    private int currentOperation;
+    /** Percentage complete (between 0 and 100) */
+    private double progressPercentage;
 
     /** Operation message */
     private String message;
@@ -30,10 +26,9 @@ public class ProgressMessage implements IProgressMessage {
     public ProgressMessage() {
     }
 
-    public ProgressMessage(String taskName, int totalOperations, int currentOperation, String message) {
+    public ProgressMessage(String taskName, double progressPercentage, String message) {
 	this.taskName = taskName;
-	this.totalOperations = totalOperations;
-	this.currentOperation = currentOperation;
+	this.progressPercentage = progressPercentage;
 	this.message = message;
     }
 
@@ -42,6 +37,7 @@ public class ProgressMessage implements IProgressMessage {
      * 
      * @see com.sitewhere.spi.monitoring.IProgressMessage#getTaskName()
      */
+    @Override
     public String getTaskName() {
 	return taskName;
     }
@@ -53,27 +49,16 @@ public class ProgressMessage implements IProgressMessage {
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.monitoring.IProgressMessage#getTotalOperations()
+     * @see
+     * com.sitewhere.spi.monitoring.IProgressMessage#getProgressPercentage()
      */
-    public int getTotalOperations() {
-	return totalOperations;
+    @Override
+    public double getProgressPercentage() {
+	return progressPercentage;
     }
 
-    public void setTotalOperations(int totalOperations) {
-	this.totalOperations = totalOperations;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.monitoring.IProgressMessage#getCurrentOperation()
-     */
-    public int getCurrentOperation() {
-	return currentOperation;
-    }
-
-    public void setCurrentOperation(int currentOperation) {
-	this.currentOperation = currentOperation;
+    public void setProgressPercentage(double progressPercentage) {
+	this.progressPercentage = progressPercentage;
     }
 
     /*
@@ -81,6 +66,7 @@ public class ProgressMessage implements IProgressMessage {
      * 
      * @see com.sitewhere.spi.monitoring.IProgressMessage#getMessage()
      */
+    @Override
     public String getMessage() {
 	return message;
     }

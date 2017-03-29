@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -38,7 +39,7 @@ public class AssetCacheEventHandler implements ICacheListener<IAssetCategory> {
     public void onEntryAdded(IAssetCategory category) {
 	try {
 	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(category,
-		    new LifecycleProgressMonitor());
+		    new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Handle new asset category added")));
 	} catch (SiteWhereException e) {
 	    LOGGER.error("Error creating asset module for new asset category.", e);
 	}
@@ -54,7 +55,8 @@ public class AssetCacheEventHandler implements ICacheListener<IAssetCategory> {
     public void onEntryUpdated(IAssetCategory category) {
 	try {
 	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(category,
-		    new LifecycleProgressMonitor());
+		    new LifecycleProgressMonitor(
+			    new LifecycleProgressContext(1, "Handle new asset category updated")));
 	} catch (SiteWhereException e) {
 	    LOGGER.error("Error reloading asset module for updated asset category.", e);
 	}
@@ -70,7 +72,8 @@ public class AssetCacheEventHandler implements ICacheListener<IAssetCategory> {
     public void onEntryRemoved(IAssetCategory category) {
 	try {
 	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryRemoved(category,
-		    new LifecycleProgressMonitor());
+		    new LifecycleProgressMonitor(
+			    new LifecycleProgressContext(1, "Handle new asset category removed")));
 	} catch (SiteWhereException e) {
 	    LOGGER.error("Error removing asset module for asset category.", e);
 	}

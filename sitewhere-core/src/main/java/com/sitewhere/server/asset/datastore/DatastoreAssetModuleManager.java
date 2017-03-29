@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -50,7 +51,8 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	initializeDatastoreModules(new LifecycleProgressMonitor());
+	initializeDatastoreModules(
+		new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initializing datastore asset modules")));
     }
 
     /*

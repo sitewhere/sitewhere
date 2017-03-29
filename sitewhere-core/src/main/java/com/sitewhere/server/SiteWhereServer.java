@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +46,7 @@ import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
@@ -967,7 +969,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
 	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
-	initializeNestedComponent(engine, new LifecycleProgressMonitor());
+	initializeNestedComponent(engine, new LifecycleProgressMonitor(
+		new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")));
 	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
 	    registerTenant(tenant, engine);
 	    return engine;
@@ -986,10 +989,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 
 	// Organizes steps for starting server.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("START SERVER");
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Started Server");
 
 	// Initialize tenant engines.
-	start.addStep(new SimpleLifecycleStep("Preparing server") {
+	start.addStep(new SimpleLifecycleStep("Prepared server") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -1011,7 +1014,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	startTenants(start);
 
 	// Finish operations for starting server.
-	start.addStep(new SimpleLifecycleStep("Finishing server startup") {
+	start.addStep(new SimpleLifecycleStep("Finished server startup") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -1046,19 +1049,63 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Organizes steps for starting base services.
+	ICompositeLifecycleStep base = new CompositeLifecycleStep("Started Base Services");
+
 	// Start the Groovy configuration.
-	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
-		"Starting Groovy scripting engine", "Groovy startup failed.", true));
+	base.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(), "Started Groovy scripting engine",
+		"Groovy startup failed.", true));
 
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    start.addStep(new StartComponentLifecycleStep(this, component, "Starting " + component.getComponentName(),
+	    base.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
 		    component.getComponentName() + " startup failed.", true));
 	}
 
 	// Start the tenant template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(),
-		"Starting tenant template manager", "Tenant template manager startup failed.", true));
+	base.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(),
+		"Started tenant template manager", "Tenant template manager startup failed.", true));
+
+	start.addStep(base);
+    }
+
+    /**
+     * Add management implementation startup to composite operation.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Organizes steps for starting management implementations.
+	ICompositeLifecycleStep mgmt = new CompositeLifecycleStep("Started Management Implementations");
+
+	// Start user management.
+	mgmt.addStep(new StartComponentLifecycleStep(this, getUserManagement(),
+		"Started user management implementation", "User management startup failed.", true));
+
+	// Start tenant management.
+	mgmt.addStep(new StartComponentLifecycleStep(this, getTenantManagement(),
+		"Started tenant management implementation", "Tenant management startup failed", true));
+
+	// Populate user data if requested.
+	mgmt.addStep(new SimpleLifecycleStep("Verified user model") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		verifyUserModel();
+	    }
+	});
+
+	// Populate tenant data if requested.
+	mgmt.addStep(new SimpleLifecycleStep("Verified tenant model") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		verifyTenantModel();
+	    }
+	});
+
+	start.addStep(mgmt);
     }
 
     /**
@@ -1069,7 +1116,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void startTenants(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Initialize tenant engines.
-	start.addStep(new SimpleLifecycleStep("Starting tenant engines") {
+	start.addStep(new SimpleLifecycleStep("Started tenant engines") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -1110,40 +1157,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			});
 		    }
 		}
-	    }
-	});
-    }
-
-    /**
-     * Add management implementation startup to composite operation.
-     * 
-     * @param start
-     * @throws SiteWhereException
-     */
-    protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start user management.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagement(),
-		"Starting user management implementation", "User management startup failed.", true));
-
-	// Start tenant management.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(),
-		"Starting tenant management implementation", "Tenant management startup failed", true));
-
-	// Populate user data if requested.
-	start.addStep(new SimpleLifecycleStep("Verifying user model") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		verifyUserModel();
-	    }
-	});
-
-	// Populate tenant data if requested.
-	start.addStep(new SimpleLifecycleStep("Verifying tenant model") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		verifyTenantModel();
+		tenantOperations.shutdown();
+		try {
+		    tenantOperations.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+		    LOGGER.info("Interrupted while waiting for tenants to start.");
+		}
 	    }
 	});
     }
@@ -1156,7 +1175,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void startTenantEngine(ISiteWhereTenantEngine engine) throws SiteWhereException {
 	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
-	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Starting tenant engine '" + engine.getTenant().getName() + "'"));
 	    startNestedComponent(engine, monitor,
 		    "Tenant engine '" + engine.getTenant().getName() + "' startup failed.", false);
 	    engine.logState();
@@ -1218,10 +1238,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Organizes steps for stopping server.
-	ICompositeLifecycleStep stop = new CompositeLifecycleStep("STOP SERVER");
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stopped Server");
 
 	// Shut down services.
-	stop.addStep(new SimpleLifecycleStep("Shutting down services") {
+	stop.addStep(new SimpleLifecycleStep("Stopped monitoring services") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -1254,14 +1274,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     protected void stopBaseServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    stop.addStep(new StopComponentLifecycleStep(this, component, "Stop " + component.getComponentName()));
+	    stop.addStep(new StopComponentLifecycleStep(this, component, "Stopped " + component.getComponentName()));
 	}
 
 	// Stop the tenant template manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantTemplateManager(), "Stop tenant template manager"));
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getTenantTemplateManager(), "Stopped tenant template manager"));
 
 	// Stop the Groovy configuration.
-	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stop Groovy script engine"));
+	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy script engine"));
     }
 
     /**
@@ -1272,10 +1293,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void stopManagementImplementations(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop tenant management implementation.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Stop tenant management"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Stopped tenant management"));
 
 	// Stop user management implementation.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement(), "Stop user management"));
+	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement(), "Stopped user management"));
     }
 
     /**
@@ -1285,7 +1306,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected void stopTenantEngines(ICompositeLifecycleStep stop) throws SiteWhereException {
-	stop.addStep(new SimpleLifecycleStep("Stopping tenant engines") {
+	stop.addStep(new SimpleLifecycleStep("Stopped tenant engines") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -1303,12 +1324,21 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			@Override
 			public void run() {
 			    try {
-				stopTenantEngine(engine, monitor);
+				LifecycleProgressMonitor threadMonitor = new LifecycleProgressMonitor(
+					new LifecycleProgressContext(1,
+						"Stopping tenant engine '" + engine.getTenant().getName() + "'"));
+				stopTenantEngine(engine, threadMonitor);
 			    } catch (SiteWhereException e) {
 				LOGGER.error("Tenant engine shutdown failed.", e);
 			    }
 			}
 		    });
+		}
+		tenantOperations.shutdown();
+		try {
+		    tenantOperations.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+		    LOGGER.info("Interrupted while waiting for tenants to shut down.");
 		}
 	    }
 	});

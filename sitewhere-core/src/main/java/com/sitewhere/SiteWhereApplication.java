@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfigurati
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
@@ -132,7 +133,7 @@ public class SiteWhereApplication implements ISiteWhereApplication {
      */
     @Override
     public ILifecycleProgressMonitor createStartupProgressMonitor() {
-	return new LifecycleProgressMonitor();
+	return new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Starting SiteWhere Server"));
     }
 
     public static void main(String[] args) {

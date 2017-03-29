@@ -34,6 +34,7 @@ import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -255,7 +256,8 @@ public class AssetsController extends RestController {
     public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 	try {
-	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor();
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Refreshing asset modules"));
 	    SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules(monitor);
 	} finally {
 	    Tracer.stop(LOGGER);

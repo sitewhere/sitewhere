@@ -8,6 +8,7 @@
 package com.sitewhere.server.tenant;
 
 import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -82,7 +83,8 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		getEngine().initialize(new LifecycleProgressMonitor());
+		getEngine().initialize(
+			new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Start tenant engine")));
 		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}

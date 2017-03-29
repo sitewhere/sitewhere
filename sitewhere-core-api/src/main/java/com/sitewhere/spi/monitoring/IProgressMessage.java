@@ -17,18 +17,11 @@ public interface IProgressMessage extends Serializable {
     public String getTaskName();
 
     /**
-     * Get count of all operations to be performed.
+     * Get progress value as a number between 0 and 100.
      * 
      * @return
      */
-    public int getTotalOperations();
-
-    /**
-     * Get index of current operation.
-     * 
-     * @return
-     */
-    public int getCurrentOperation();
+    public double getProgressPercentage();
 
     /**
      * Get message shown for current operation.

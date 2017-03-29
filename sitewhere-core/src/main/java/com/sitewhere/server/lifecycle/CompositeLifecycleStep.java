@@ -3,7 +3,9 @@ package com.sitewhere.server.lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.monitoring.ProgressMessage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -16,6 +18,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * @author Derek
  */
 public class CompositeLifecycleStep implements ICompositeLifecycleStep {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Step name */
     private String name;
@@ -57,16 +62,22 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	int i = 0;
+	monitor.pushContext(new LifecycleProgressContext(steps.size(), getName()));
+	StringBuffer buffer = new StringBuffer();
+	buffer.append("About to process composite lifecycle with " + steps.size() + "steps:\n");
 	for (ILifecycleStep step : steps) {
-	    i++;
-	    ProgressMessage message = new ProgressMessage();
-	    message.setTaskName(getName());
-	    message.setTotalOperations(steps.size());
-	    message.setCurrentOperation(i);
-	    message.setMessage(step.getName());
-	    monitor.reportProgress(message);
-	    step.execute(monitor);
+	    buffer.append("  " + step.getName() + "\n");
+	}
+	LOGGER.debug(buffer.toString());
+	try {
+	    for (ILifecycleStep step : steps) {
+		LOGGER.debug("Starting " + step.getName());
+		monitor.startProgress(step.getName());
+		step.execute(monitor);
+		monitor.finishProgress();
+	    }
+	} finally {
+	    monitor.popContext();
 	}
     }
 
