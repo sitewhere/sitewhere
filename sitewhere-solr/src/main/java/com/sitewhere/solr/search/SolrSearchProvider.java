@@ -138,7 +138,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     @Override
     public List<IDeviceEvent> executeQuery(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.info("About to execute Solr search with query string: " + queryString);
+	    LOGGER.debug("About to execute Solr search with query string: " + queryString);
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
 	    SolrQuery solrQuery = new SolrQuery();
 	    solrQuery.setQuery(queryString);
@@ -164,7 +164,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     @Override
     public JsonNode executeQueryWithRawResponse(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.info("About to execute Solr search with query string: " + queryString);
+	    LOGGER.debug("About to execute Solr search with query string: " + queryString);
 
 	    NoOpResponseParser rawJsonResponseParser = new NoOpResponseParser();
 	    rawJsonResponseParser.setWriterType("json");
