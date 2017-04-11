@@ -356,7 +356,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	messages.add("-------------------------");
 	messages.add("Schedules collection name: " + getSchedulesCollectionName());
 	messages.add("Scheduled jobs collection name: " + getScheduledJobsCollectionName());
-	String message = Boilerplate.boilerplate(messages, '*', 60);
+	String message = Boilerplate.boilerplate(messages, "*");
 	LOGGER.info("\n" + message + "\n");
     }
 

@@ -760,7 +760,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	messages.add("Java Runtime: " + java);
 	messages.add("");
 	messages.add("Copyright (c) 2009-2016 SiteWhere, LLC");
-	String message = Boilerplate.boilerplate(messages, '*', 60);
+	String message = Boilerplate.boilerplate(messages, "*");
 	LOGGER.info("\n" + message + "\n");
     }
 

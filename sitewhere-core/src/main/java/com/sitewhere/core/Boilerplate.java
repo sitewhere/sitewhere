@@ -7,7 +7,12 @@
  */
 package com.sitewhere.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 
 /**
  * Helper class for wrapping messages in a border.
@@ -16,66 +21,88 @@ import java.util.List;
  */
 public class Boilerplate {
 
-    /**
-     * Wrap a list of messages in boilerplate.
-     * 
-     * @param messages
-     * @param border
-     * @param size
-     * @return
-     */
-    public static String boilerplate(List<String> messages, char border, int size) {
-	String line = "";
-	String internal = "";
-	for (int i = 0; i < size; i++) {
-	    line += border;
-	    if ((i == 0) || (i == (size - 1))) {
-		internal += border;
-	    } else {
-		internal += " ";
-	    }
-	}
-	String result = "\n" + line + "\n";
-	for (String message : messages) {
-	    result += (boilerplate(message, internal) + "\n");
-	}
-	result += (line + "\n");
-	return result;
+    /** Default message width for banners */
+    public static final int DEFAULT_MESSAGE_WIDTH = 80;
+
+    public static String boilerplate(String message) {
+	return boilerplate(message, "*", DEFAULT_MESSAGE_WIDTH);
     }
 
-    /**
-     * Wrap a single message in boilerplate, wrapping if necessary.
-     * 
-     * @param message
-     * @param blank
-     * @return
-     */
-    protected static String boilerplate(String message, String blank) {
-	if (message.length() == 0) {
-	    return blank;
-	}
-	if (message.length() <= (blank.length() - 4)) {
-	    return blank.substring(0, 2) + message + blank.substring(2 + message.length());
-	} else {
-	    int noBorderLength = blank.length() - 4;
-	    String[] chunks = message.split(" ");
-	    String output = "";
-	    String current = "";
-	    for (String chunk : chunks) {
-		if (chunk.length() > noBorderLength) {
-		    chunk = chunk.substring(0, noBorderLength - 1);
-		}
-		if ((current.length() + chunk.length()) > noBorderLength) {
-		    output += blank.substring(0, 2) + current + blank.substring(2 + current.length()) + "\n";
-		    current = "  " + chunk + " ";
-		} else {
-		    current += chunk + " ";
+    public static String boilerplate(String message, String character, int maxlength) {
+	return boilerplate(new ArrayList<String>(Arrays.asList(new String[] { message })), character, maxlength);
+    }
+
+    public static String boilerplate(List<String> messages, String c) {
+	return boilerplate(messages, c, DEFAULT_MESSAGE_WIDTH);
+    }
+
+    public static String boilerplate(List<String> messages, String c, int maxlength) {
+	int size;
+	StringBuffer buf = new StringBuffer(messages.size() * maxlength);
+	boolean charIsSpace = " ".equals(c);
+	int trimLength = maxlength - (charIsSpace ? 2 : 4);
+
+	for (int i = 0; i < messages.size(); i++) {
+	    size = messages.get(i).toString().length();
+	    if (size > trimLength) {
+		String temp = messages.get(i).toString();
+		int k = i;
+		int x;
+		int len;
+		messages.remove(i);
+		while (temp.length() > 0) {
+		    len = (trimLength <= temp.length() ? trimLength : temp.length());
+		    String msg = temp.substring(0, len);
+		    x = msg.indexOf(SystemUtils.LINE_SEPARATOR);
+
+		    if (x > -1) {
+			msg = msg.substring(0, x);
+			len = x + 1;
+		    } else {
+			x = msg.lastIndexOf(' ');
+			if (x > -1 && len == trimLength) {
+			    msg = msg.substring(0, x);
+			    len = x + 1;
+			}
+		    }
+		    if (msg.startsWith(" ")) {
+			msg = msg.substring(1);
+		    }
+
+		    temp = temp.substring(len);
+		    messages.add(k, msg);
+		    k++;
 		}
 	    }
-	    if (current.length() > 0) {
-		output += blank.substring(0, 2) + current + blank.substring(2 + current.length());
-	    }
-	    return output;
 	}
+
+	buf.append(SystemUtils.LINE_SEPARATOR);
+	if (!charIsSpace) {
+	    buf.append(StringUtils.repeat(c, maxlength));
+	}
+
+	for (int i = 0; i < messages.size(); i++) {
+	    buf.append(SystemUtils.LINE_SEPARATOR);
+	    if (!charIsSpace) {
+		buf.append(c);
+	    }
+	    buf.append(" ");
+	    buf.append(messages.get(i));
+
+	    int padding;
+	    padding = trimLength - messages.get(i).toString().getBytes().length;
+	    if (padding > 0) {
+		buf.append(StringUtils.repeat(" ", padding));
+	    }
+	    buf.append(' ');
+	    if (!charIsSpace) {
+		buf.append(c);
+	    }
+	}
+	buf.append(SystemUtils.LINE_SEPARATOR);
+	if (!charIsSpace) {
+	    buf.append(StringUtils.repeat(c, maxlength));
+	}
+	return buf.toString();
     }
 }
