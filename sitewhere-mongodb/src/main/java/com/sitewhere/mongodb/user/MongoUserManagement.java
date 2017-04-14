@@ -142,9 +142,10 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
-     * java.lang.String)
+     * java.lang.String, boolean)
      */
-    public IUser authenticate(String username, String password) throws SiteWhereException {
+    @Override
+    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
 	if (password == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_BAD_REQUEST);
@@ -159,12 +160,14 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 		    HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
-	// Update last login date.
-	match.setLastLogin(new Date());
-	Document updated = MongoUser.toDocument(match);
-	MongoCollection<Document> users = getMongoClient().getUsersCollection();
-	Document query = new Document(MongoUser.PROP_USERNAME, username);
-	MongoPersistence.update(users, query, updated);
+	// Update last login date if requested.
+	if (updateLastLogin) {
+	    match.setLastLogin(new Date());
+	    Document updated = MongoUser.toDocument(match);
+	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	    Document query = new Document(MongoUser.PROP_USERNAME, username);
+	    MongoPersistence.update(users, query, updated);
+	}
 
 	return match;
     }
@@ -175,6 +178,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
      * com.sitewhere.spi.user.request.IUserCreateRequest, boolean)
      */
+    @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
 	Document existing = assertUser(username);
@@ -197,6 +201,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
      * String)
      */
+    @Override
     public IUser getUserByUsername(String username) throws SiteWhereException {
 	Document dbUser = getUserDocumentByUsername(username);
 	if (dbUser != null) {
@@ -212,6 +217,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
      * String)
      */
+    @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
 	List<String> userAuths = user.getAuthorities();
@@ -232,6 +238,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
      * String, java.util.List)
      */
+    @Override
     public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
@@ -244,6 +251,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
      * .String, java.util.List)
      */
+    @Override
     public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
@@ -256,6 +264,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * request .IUserSearchCriteria)
      */
+    @Override
     public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
@@ -287,6 +296,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
      * boolean)
      */
+    @Override
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
 	Document existing = assertUser(username);
 	if (force) {
@@ -309,6 +319,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
      * sitewhere.spi .user.request. IGrantedAuthorityCreateRequest)
      */
+    @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 	GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
 	MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
@@ -324,6 +335,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
      * lang.String)
      */
+    @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
 	Document dbAuth = getGrantedAuthorityDocumentByName(name);
 	if (dbAuth != null) {
@@ -339,6 +351,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
      * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
+    @Override
     public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
@@ -350,6 +363,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
      * sitewhere.spi .user. IGrantedAuthoritySearchCriteria)
      */
+    @Override
     public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
@@ -380,6 +394,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
      * String)
      */
+    @Override
     public void deleteGrantedAuthority(String authority) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }

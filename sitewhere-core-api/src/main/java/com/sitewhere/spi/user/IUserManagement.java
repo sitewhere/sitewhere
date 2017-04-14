@@ -46,10 +46,11 @@ public interface IUserManagement extends ILifecycleComponent {
      * 
      * @param username
      * @param password
+     * @param updateLastLogin
      * @return
      * @throws SiteWhereException
      */
-    public IUser authenticate(String username, String password) throws SiteWhereException;
+    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException;
 
     /**
      * Update details for a user.

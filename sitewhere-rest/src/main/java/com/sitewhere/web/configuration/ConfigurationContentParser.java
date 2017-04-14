@@ -21,6 +21,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,6 +30,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.sitewhere.core.DataUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spring.handler.IConfigurationElements;
 import com.sitewhere.web.configuration.content.AttributeContent;
@@ -40,6 +43,10 @@ import com.sitewhere.web.configuration.content.ElementContent;
  */
 public class ConfigurationContentParser {
 
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LogManager.getLogger();
+
     /**
      * Parse a byte[] containing SiteWhere XML configuration for JSON
      * representation.
@@ -50,12 +57,12 @@ public class ConfigurationContentParser {
      */
     public static ElementContent parse(byte[] config) throws SiteWhereException {
 	try {
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    factory.setNamespaceAware(true);
+	    DocumentBuilderFactory factory = DataUtils.getDocumentBuilderFactory();
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document document = builder.parse(new InputSource(new ByteArrayInputStream(config)));
 	    Element element = document.getDocumentElement();
-	    return parse(element);
+	    ElementContent content = parse(element);
+	    return content;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to parse configuration content.", e);
 	}

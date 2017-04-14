@@ -49,7 +49,6 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class MongoPersistence {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Default lookup */
@@ -66,7 +65,9 @@ public class MongoPersistence {
     public static void insert(MongoCollection<Document> collection, Document object, ErrorCode ifDuplicate)
 	    throws SiteWhereException {
 	try {
+	    long start = System.currentTimeMillis();
 	    collection.insertOne(object);
+	    LOGGER.debug("Insert took " + (System.currentTimeMillis() - start) + " ms.");
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
 	} catch (MongoTimeoutException e) {
@@ -112,7 +113,9 @@ public class MongoPersistence {
     public static void update(MongoCollection<Document> collection, Document query, Document object)
 	    throws SiteWhereException {
 	try {
+	    long start = System.currentTimeMillis();
 	    collection.updateOne(query, new Document("$set", object));
+	    LOGGER.debug("Update took " + (System.currentTimeMillis() - start) + " ms.");
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB update.", e);
 	}
@@ -129,7 +132,10 @@ public class MongoPersistence {
      */
     public static DeleteResult delete(MongoCollection<Document> collection, Document object) throws SiteWhereException {
 	try {
-	    return collection.deleteOne(object);
+	    long start = System.currentTimeMillis();
+	    DeleteResult result = collection.deleteOne(object);
+	    LOGGER.debug("Delete took " + (System.currentTimeMillis() - start) + " ms.");
+	    return result;
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB delete.", e);
 	}
@@ -162,7 +168,9 @@ public class MongoPersistence {
 	    throws SiteWhereException {
 	try {
 	    Document searchById = new Document("_id", new ObjectId(id));
+	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(searchById);
+	    LOGGER.debug("Get took " + (System.currentTimeMillis() - start) + " ms.");
 	    if (found != null) {
 		MongoConverter<T> converter = lookup.getConverterFor(api);
 		return converter.convert(found.first());
@@ -206,6 +214,7 @@ public class MongoPersistence {
 	    Document sort, ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
 	    FindIterable<Document> found;
+	    long start = System.currentTimeMillis();
 	    if (criteria.getPageSize() == 0) {
 		found = collection.find(query).sort(sort);
 	    } else {
@@ -213,6 +222,7 @@ public class MongoPersistence {
 		found = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 	    }
 	    MongoCursor<Document> cursor = found.iterator();
+	    LOGGER.debug("Search took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
@@ -261,8 +271,10 @@ public class MongoPersistence {
     public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
 	    Document sort, IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
+	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(query).sort(sort);
 	    MongoCursor<Document> cursor = found.iterator();
+	    LOGGER.debug("Search took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
@@ -311,8 +323,10 @@ public class MongoPersistence {
     public static <T> List<T> list(Class<T> api, MongoCollection<Document> collection, Document query, Document sort,
 	    IMongoConverterLookup lookup) throws SiteWhereException {
 	try {
+	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(query);
 	    MongoCursor<Document> cursor = found.iterator();
+	    LOGGER.debug("List took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();
 	    MongoConverter<T> converter = lookup.getConverterFor(api);

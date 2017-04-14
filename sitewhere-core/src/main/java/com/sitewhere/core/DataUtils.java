@@ -10,11 +10,45 @@ package com.sitewhere.core;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+
 import com.google.bitcoin.core.Base58;
+import com.sitewhere.spi.SiteWhereException;
 
 public class DataUtils {
 
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+    /** Singleton document builder factory instance */
+    private static DocumentBuilderFactory DOCUMENTBUILDER_FACTORY;
+
+    private static final Object LOCK = new Object();
+
+    /**
+     * Get singleton instance of document builder factory. This prevents the
+     * expense of creating it on-the-fly.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DocumentBuilderFactory getDocumentBuilderFactory() throws SiteWhereException {
+	DocumentBuilderFactory factory = DOCUMENTBUILDER_FACTORY;
+	if (factory == null) {
+	    synchronized (LOCK) {
+		if (factory == null) {
+		    try {
+			factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
+			DOCUMENTBUILDER_FACTORY = factory;
+		    } catch (FactoryConfigurationError e) {
+			throw new SiteWhereException("Unable to create document builder factory.", e);
+		    }
+		}
+	    }
+	}
+	return factory;
+    }
 
     /**
      * Convert a byte array to a hex string.

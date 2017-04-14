@@ -64,11 +64,11 @@ public class UserManagementDecorator extends LifecycleComponentDecorator impleme
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
-     * java.lang.String)
+     * java.lang.String, boolean)
      */
     @Override
-    public IUser authenticate(String username, String password) throws SiteWhereException {
-	return delegate.authenticate(username, password);
+    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
+	return delegate.authenticate(username, password, updateLastLogin);
     }
 
     /*

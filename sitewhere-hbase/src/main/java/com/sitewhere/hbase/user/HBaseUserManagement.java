@@ -131,7 +131,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
      * java.lang.String)
      */
     @Override
-    public IUser authenticate(String username, String password) throws SiteWhereException {
+    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
 	return HBaseUser.authenticate(context, username, password);
     }
 

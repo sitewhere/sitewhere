@@ -49,7 +49,7 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 		if (getUserManagement() == null) {
 		    throw new AuthenticationServiceException("User management not available. Check logs for details.");
 		}
-		IUser user = getUserManagement().authenticate(username, password);
+		IUser user = getUserManagement().authenticate(username, password, false);
 		List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
 		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 		return new SitewhereAuthentication(details, password);
