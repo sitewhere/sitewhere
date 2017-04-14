@@ -78,6 +78,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 	// Command routing.
 	addElement(createCommandRoutingElement());
+	addElement(createGroovyCommandRouterElement());
 	addElement(createSpecificationMappingRouterElement());
 	addElement(createSpecificationMappingRouterMappingElement());
 
@@ -851,6 +852,24 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	builder.attribute((new AttributeNode.Builder("Default destination", "defaultDestination", AttributeType.String)
 		.description("Identifier for default destination commands should be routed to if no mapping is found.")
 		.build()));
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for specification mapping command router.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyCommandRouterElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Router",
+		ICommandRoutingParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap fa-rotate-270",
+		ElementRole.CommandRouting_CommandRouter);
+
+	builder.description("Routes commands to command destinations based on routing logic "
+		+ "contained in a Groovy script. The script returns the id of the command "
+		+ "destination to be used for delivering the command.");
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
+		.description("Path to Groovy script which executes routing logic.").makeRequired().build()));
 	return builder.build();
     }
 

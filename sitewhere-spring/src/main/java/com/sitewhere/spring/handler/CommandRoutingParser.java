@@ -19,6 +19,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.SpecificationMappingCommandRouter;
+import com.sitewhere.groovy.device.communication.GroovyCommandRouter;
 import com.sitewhere.spring.handler.ICommandRoutingParser.Elements;
 
 /**
@@ -48,6 +49,9 @@ public class CommandRoutingParser {
 	    }
 	    case SpecificationMappingRouter: {
 		return parseSpecificationMappingRouter(child, context);
+	    }
+	    case GroovyCommandRouter: {
+		return parseGroovyCommandRouter(child, context);
 	    }
 	    }
 	}
@@ -99,6 +103,24 @@ public class CommandRoutingParser {
 	    map.put(token.getValue(), destination.getValue());
 	}
 	router.addPropertyValue("mappings", map);
+	return router.getBeanDefinition();
+    }
+
+    /**
+     * Parse the configuration for a {@link GroovyCommandRouter}.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected BeanDefinition parseGroovyCommandRouter(Element element, ParserContext context) {
+	BeanDefinitionBuilder router = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandRouter.class);
+
+	Attr scriptPath = element.getAttributeNode("scriptPath");
+	if (scriptPath != null) {
+	    router.addPropertyValue("scriptPath", scriptPath.getValue());
+	}
+
 	return router.getBeanDefinition();
     }
 }

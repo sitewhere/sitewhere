@@ -18,7 +18,10 @@ public interface ICommandRoutingParser {
 	CommandRouter("command-router"),
 
 	/** Specification command router */
-	SpecificationMappingRouter("specification-mapping-router");
+	SpecificationMappingRouter("specification-mapping-router"),
+
+	/** Groovy command router */
+	GroovyCommandRouter("groovy-command-router");
 
 	/** Event code */
 	private String localName;

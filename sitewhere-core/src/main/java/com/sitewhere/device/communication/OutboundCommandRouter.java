@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
@@ -22,7 +22,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class OutboundCommandRouter extends LifecycleComponent implements IOutboundCommandRouter {
+public abstract class OutboundCommandRouter extends TenantLifecycleComponent implements IOutboundCommandRouter {
 
     /** List of destinations serviced by the router */
     private Map<String, ICommandDestination<?, ?>> destinations = new HashMap<String, ICommandDestination<?, ?>>();
