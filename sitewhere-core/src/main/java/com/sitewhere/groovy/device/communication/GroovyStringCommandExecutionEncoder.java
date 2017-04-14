@@ -49,11 +49,13 @@ public class GroovyStringCommandExecutionEncoder extends TenantLifecycleComponen
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
+    @SuppressWarnings("deprecation")
     public String encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	try {
 	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXCUTION, command);
+	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, command);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);

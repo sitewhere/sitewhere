@@ -92,11 +92,13 @@ public class GroovyCommandRouter extends TenantLifecycleComponent implements IOu
      * @param assignment
      * @throws SiteWhereException
      */
+    @SuppressWarnings("deprecation")
     protected void route(IDeviceCommandExecution execution, ISystemCommand system, IDeviceNestingContext nesting,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	try {
 	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXCUTION, execution);
+	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, execution);
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
