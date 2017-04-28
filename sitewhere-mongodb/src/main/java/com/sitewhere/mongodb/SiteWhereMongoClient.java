@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
@@ -214,46 +215,74 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     }
 
     /**
+     * Create a connection to the primary in a replica set.
+     * 
+     * @param addresses
+     * @return
+     */
+    protected MongoClient getPrimaryConnection(List<ServerAddress> addresses) {
+	MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+	if ((getUsername() != null) && (getPassword() != null)) {
+	    MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
+		    getPassword().toCharArray());
+	    return new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
+	} else {
+	    return new MongoClient(addresses.get(0), builder.build());
+	}
+    }
+
+    /**
      * Detects whether a replica set is configured and creates one if not.
      * 
      * @param addresses
      */
     protected void doAutoConfigureReplication(List<ServerAddress> addresses) throws SiteWhereException {
+	// Only connect to primary for sending commands.
+	MongoClient primary = getPrimaryConnection(addresses);
+
 	// Check for existing replica set configuration.
 	LOGGER.info("Checking for existing replica set...");
-	Document result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
-	if (result.getDouble("ok") == 1) {
-	    LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
-	    return;
+	try {
+	    Document result = primary.getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
+	    if (result.getDouble("ok") == 1) {
+		LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
+		return;
+	    }
+	} catch (MongoCommandException e) {
+	    LOGGER.info("Replica set was not configured.");
 	}
 
 	// Create configuration for new replica set.
-	LOGGER.info("Configuring new replica set '" + getReplicaSetName() + "'.");
-	BasicDBObject config = new BasicDBObject("_id", getReplicaSetName());
-	List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
+	try {
+	    LOGGER.info("Configuring new replica set '" + getReplicaSetName() + "'.");
+	    BasicDBObject config = new BasicDBObject("_id", getReplicaSetName());
+	    List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
 
-	// Create list of members in replica set.
-	int index = 0;
-	for (final ServerAddress address : addresses) {
-	    BasicDBObject server = new BasicDBObject("_id", index);
-	    server.put("host", (address.getHost() + ":" + address.getPort()));
+	    // Create list of members in replica set.
+	    int index = 0;
+	    for (final ServerAddress address : addresses) {
+		BasicDBObject server = new BasicDBObject("_id", index);
+		server.put("host", (address.getHost() + ":" + address.getPort()));
 
-	    // First server in list is preferred primary.
-	    if (index == 0) {
-		server.put("priority", 10);
+		// First server in list is preferred primary.
+		if (index == 0) {
+		    server.put("priority", 10);
+		}
+
+		servers.add(server);
+		index++;
 	    }
+	    config.put("members", servers);
 
-	    servers.add(server);
-	    index++;
+	    // Send command.
+	    Document result = primary.getDatabase("admin").runCommand(new BasicDBObject("replSetInitiate", config));
+	    if (result.getDouble("ok") != 1) {
+		throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
+	    }
+	    LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
+	} finally {
+	    primary.close();
 	}
-	config.put("members", servers);
-
-	// Send command.
-	result = getMongoClient().getDatabase("admin").runCommand(new BasicDBObject("replSetInitiate", config));
-	if (result.getDouble("ok") != 1) {
-	    throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
-	}
-	LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
     }
 
     /**
