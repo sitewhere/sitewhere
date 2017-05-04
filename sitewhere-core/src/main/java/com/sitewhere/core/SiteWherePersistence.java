@@ -13,7 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
@@ -133,6 +136,9 @@ public class SiteWherePersistence {
     /** Password encoder */
     private static MessageDigestPasswordEncoder passwordEncoder = new ShaPasswordEncoder();
 
+    /** Regular expression used to validate hardware ids */
+    private static final Pattern HARDWARE_ID_REGEX = Pattern.compile("^[\\w-]+$");
+
     /**
      * Initialize entity fields.
      * 
@@ -157,6 +163,30 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Requires that a String field be a non null, non space-filled value.
+     * 
+     * @param field
+     * @throws SiteWhereException
+     */
+    protected static void require(String field) throws SiteWhereException {
+	if (StringUtils.isEmpty(field)) {
+	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	}
+    }
+
+    /**
+     * Require that a non-String field be non-null.
+     * 
+     * @param field
+     * @throws SiteWhereException
+     */
+    protected static void requireNotNull(Object field) throws SiteWhereException {
+	if (field == null) {
+	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	}
+    }
+
+    /**
      * Common logic for creating new device specification and populating it from
      * request.
      * 
@@ -170,38 +200,27 @@ public class SiteWherePersistence {
 	DeviceSpecification spec = new DeviceSpecification();
 
 	// Unique token is required.
-	if (token == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(token);
 	spec.setToken(token);
 
 	// Name is required.
-	if (request.getName() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getName());
 	spec.setName(request.getName());
 
 	// Asset module id is required.
-	if (request.getAssetModuleId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getAssetModuleId());
 	spec.setAssetModuleId(request.getAssetModuleId());
 
 	// Asset id is required.
-	if (request.getAssetId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getAssetId());
 	spec.setAssetId(request.getAssetId());
 
 	// Container policy is required.
-	if (request.getContainerPolicy() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull(request.getContainerPolicy());
 	spec.setContainerPolicy(request.getContainerPolicy());
 
-	// If composite container policy and no device element schema, create an
-	// empty
-	// schema.
+	// If composite container policy and no device element schema, create
+	// empty schema.
 	if (request.getContainerPolicy() == DeviceContainerPolicy.Composite) {
 	    IDeviceElementSchema schema = request.getDeviceElementSchema();
 	    if (schema == null) {
@@ -270,15 +289,11 @@ public class SiteWherePersistence {
 	DeviceCommand command = new DeviceCommand();
 
 	// Token is required.
-	if (token == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(token);
 	command.setToken(token);
 
 	// Name is required.
-	if (request.getName() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getName());
 	command.setName(request.getName());
 
 	command.setSpecificationToken(spec.getToken());
@@ -366,19 +381,19 @@ public class SiteWherePersistence {
      */
     public static Device deviceCreateLogic(IDeviceCreateRequest request) throws SiteWhereException {
 	Device device = new Device();
-	if (request.getHardwareId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+
+	// Require hardware id and verify that it is valid.
+	require(request.getHardwareId());
+	Matcher matcher = HARDWARE_ID_REGEX.matcher(request.getHardwareId());
+	if (!matcher.matches()) {
+	    throw new SiteWhereSystemException(ErrorCode.MalformedHardwareId, ErrorLevel.ERROR);
 	}
 	device.setHardwareId(request.getHardwareId());
 
-	if (request.getSiteToken() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getSiteToken());
 	device.setSiteToken(request.getSiteToken());
 
-	if (request.getSpecificationToken() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require(request.getSpecificationToken());
 	device.setSpecificationToken(request.getSpecificationToken());
 
 	device.setComments(request.getComments());
@@ -613,9 +628,7 @@ public class SiteWherePersistence {
 	}
 	newAssignment.setDeviceHardwareId(source.getDeviceHardwareId());
 
-	if (source.getAssignmentType() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull(source.getAssignmentType());
 	newAssignment.setAssignmentType(source.getAssignmentType());
 
 	if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
@@ -771,14 +784,14 @@ public class SiteWherePersistence {
 	stream.setAssignmentToken(assignment.getToken());
 
 	// Verify the stream id is specified and contains only valid characters.
-	assureData(request.getStreamId());
+	require(request.getStreamId());
 	if (!request.getStreamId().matches("^[a-zA-Z0-9_\\-]+$")) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidCharsInStreamId, ErrorLevel.ERROR);
 	}
 	stream.setStreamId(request.getStreamId());
 
 	// Content type is required.
-	assureData(request.getContentType());
+	require(request.getContentType());
 	stream.setContentType(request.getContentType());
 
 	MetadataProvider.copy(request.getMetadata(), stream);
@@ -800,10 +813,10 @@ public class SiteWherePersistence {
 	DeviceStreamData streamData = new DeviceStreamData();
 	deviceEventCreateLogic(request, assignment, streamData);
 
-	assureData(request.getStreamId());
+	require(request.getStreamId());
 	streamData.setStreamId(request.getStreamId());
 
-	assureData(request.getSequenceNumber());
+	requireNotNull(request.getSequenceNumber());
 	streamData.setSequenceNumber(request.getSequenceNumber());
 
 	streamData.setData(request.getData());
@@ -822,12 +835,9 @@ public class SiteWherePersistence {
      */
     public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
 	    IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	if (request.getInitiator() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
-	if (request.getTarget() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull(request.getInitiator());
+	requireNotNull(request.getTarget());
+
 	for (ICommandParameter parameter : command.getParameters()) {
 	    checkData(parameter, request.getParameterValues());
 	}
@@ -1197,7 +1207,10 @@ public class SiteWherePersistence {
 		: source.getPassword();
 
 	User user = new User();
+
+	require(source.getUsername());
 	user.setUsername(source.getUsername());
+
 	user.setHashedPassword(password);
 	user.setFirstName(source.getFirstName());
 	user.setLastName(source.getLastName());
@@ -1280,7 +1293,10 @@ public class SiteWherePersistence {
     public static GrantedAuthority grantedAuthorityCreateLogic(IGrantedAuthorityCreateRequest source)
 	    throws SiteWhereException {
 	GrantedAuthority auth = new GrantedAuthority();
+
+	require(source.getAuthority());
 	auth.setAuthority(source.getAuthority());
+
 	auth.setDescription(source.getDescription());
 	auth.setParent(source.getParent());
 	auth.setGroup(source.isGroup());
@@ -1298,23 +1314,23 @@ public class SiteWherePersistence {
 	Tenant tenant = new Tenant();
 
 	// Id is required.
-	assureData(request.getId());
+	require(request.getId());
 	tenant.setId(request.getId());
 
 	// Name is required.
-	assureData(request.getName());
+	require(request.getName());
 	tenant.setName(request.getName());
 
 	// Logo is required.
-	assureData(request.getLogoUrl());
+	require(request.getLogoUrl());
 	tenant.setLogoUrl(request.getLogoUrl());
 
 	// Auth token is required.
-	assureData(request.getAuthenticationToken());
+	require(request.getAuthenticationToken());
 	tenant.setAuthenticationToken(request.getAuthenticationToken());
 
 	// Tenant template is required.
-	assureData(request.getTenantTemplateId());
+	require(request.getTenantTemplateId());
 	tenant.setTenantTemplateId(request.getTenantTemplateId());
 
 	tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
@@ -1400,15 +1416,15 @@ public class SiteWherePersistence {
 	    throws SiteWhereException {
 	AssetCategory category = new AssetCategory();
 
-	assureData(request.getId());
+	require(request.getId());
 	category.setId(request.getId());
 
 	// Name is required.
-	assureData(request.getName());
+	require(request.getName());
 	category.setName(request.getName());
 
 	// Type is required.
-	assureData(request.getAssetType());
+	requireNotNull(request.getAssetType());
 	category.setAssetType(request.getAssetType());
 
 	return category;
@@ -1451,16 +1467,16 @@ public class SiteWherePersistence {
 	    throws SiteWhereException {
 	asset.setType(category.getAssetType());
 
-	assureData(category.getId());
+	require(category.getId());
 	asset.setAssetCategoryId(category.getId());
 
-	assureData(request.getId());
+	require(request.getId());
 	asset.setId(request.getId());
 
-	assureData(request.getName());
+	require(request.getName());
 	asset.setName(request.getName());
 
-	assureData(request.getImageUrl());
+	require(request.getImageUrl());
 	asset.setImageUrl(request.getImageUrl());
 
 	asset.getProperties().putAll(request.getProperties());
@@ -1752,18 +1768,6 @@ public class SiteWherePersistence {
 	    job.setJobState(request.getJobState());
 	}
 	SiteWherePersistence.setUpdatedEntityMetadata(job);
-    }
-
-    /**
-     * Throw an exception if data is missing.
-     * 
-     * @param data
-     * @throws SiteWhereException
-     */
-    protected static void assureData(Object data) throws SiteWhereException {
-	if (data == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
     }
 
     /**

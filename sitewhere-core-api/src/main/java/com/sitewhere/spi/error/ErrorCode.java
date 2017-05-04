@@ -71,6 +71,9 @@ public enum ErrorCode {
      * INVALID OR DUPLICATE ID *
      ***************************/
 
+    /** Malformed device hardware id */
+    MalformedHardwareId(480, "Hardware id must consist of alphanumeric values with dashes, underscores, and no spaces."),
+
     /** Generic duplicate id error */
     DuplicateId(499, "The given id is already in use."),
 
