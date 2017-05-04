@@ -169,7 +169,7 @@ public class SiteWherePersistence {
      * @throws SiteWhereException
      */
     protected static void require(String field) throws SiteWhereException {
-	if (StringUtils.isEmpty(field)) {
+	if (StringUtils.isBlank(field)) {
 	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 	}
     }
