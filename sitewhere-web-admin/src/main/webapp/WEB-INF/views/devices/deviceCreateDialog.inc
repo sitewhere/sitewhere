@@ -184,6 +184,8 @@
 
 		/** Verify hardware id was entered */
 		$("#dc-hardware-id").require();
+		$('#dc-hardware-id').match(/^[\w-]+$/,
+				"Hardware ids must be alphanumeric values " + " with dashes or underscores, but no spaces.");
 
 		/** Verify site token was chosen */
 		$("#dc-site-token").require();
