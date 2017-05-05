@@ -15,6 +15,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -332,4 +333,14 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
      */
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Update information for an existing event.
+     * 
+     * @param eventId
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException;
 }

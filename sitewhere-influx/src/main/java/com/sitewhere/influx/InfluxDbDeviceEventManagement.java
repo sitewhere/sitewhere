@@ -57,6 +57,7 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -643,6 +644,19 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return InfluxDbDeviceEvent.searchBySite(siteToken, DeviceEventType.StateChange, criteria, influx, getDatabase(),
 		IDeviceStateChange.class);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
+     */
+    @Override
+    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
     }
 
     /*

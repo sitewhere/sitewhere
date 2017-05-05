@@ -701,6 +701,21 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Common logic for updating a device event (Only metadata can be updated).
+     * 
+     * @param metadata
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void deviceEventUpdateLogic(IDeviceEventCreateRequest request, DeviceEvent target)
+	    throws SiteWhereException {
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+    }
+
+    /**
      * Common logic for creating {@link DeviceMeasurements} from
      * {@link IDeviceMeasurementsCreateRequest}.
      * 
@@ -870,23 +885,23 @@ public class SiteWherePersistence {
 	boolean parameterValueIsNull = (value == null);
 	boolean parameterValueIsEmpty = true;
 
-	if (! parameterValueIsNull) {
+	if (!parameterValueIsNull) {
 	    value = value.trim();
 	    parameterValueIsEmpty = value.length() == 0;
 	}
 
-	//Handle the required parameters first
+	// Handle the required parameters first
 	if (parameter.isRequired()) {
-		if (parameterValueIsNull) {
-	    throw new SiteWhereException("Required parameter '" + parameter.getName() + "' is missing.");
+	    if (parameterValueIsNull) {
+		throw new SiteWhereException("Required parameter '" + parameter.getName() + "' is missing.");
 	    }
 
-	    if (parameterValueIsEmpty){
-	    throw new SiteWhereException("Required parameter '" + parameter.getName() + "' has no value assigned to it.");
+	    if (parameterValueIsEmpty) {
+		throw new SiteWhereException(
+			"Required parameter '" + parameter.getName() + "' has no value assigned to it.");
 	    }
-	}
-	else if (parameterValueIsNull || parameterValueIsEmpty) {
-	return;
+	} else if (parameterValueIsNull || parameterValueIsEmpty) {
+	    return;
 	}
 
 	switch (parameter.getType()) {

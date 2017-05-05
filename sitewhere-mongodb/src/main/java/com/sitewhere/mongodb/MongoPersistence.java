@@ -35,7 +35,15 @@ import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -362,6 +370,45 @@ public class MongoPersistence {
 	    dateClause.append("$lte", criteria.getEndDate());
 	}
 	query.put(dateField, dateClause);
+    }
+
+    /**
+     * Marshal an {@link IDeviceEvent} into a {@link Document}.
+     * 
+     * @param event
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Document marshalEvent(IDeviceEvent event) throws SiteWhereException {
+	switch (event.getEventType()) {
+	case Measurements: {
+	    return MongoDeviceMeasurements.toDocument((IDeviceMeasurements) event, false);
+	}
+	case Measurement: {
+	    return MongoDeviceMeasurement.toDocument((IDeviceMeasurement) event, false);
+	}
+	case Location: {
+	    return MongoDeviceLocation.toDocument((IDeviceLocation) event, false);
+	}
+	case Alert: {
+	    return MongoDeviceAlert.toDocument((IDeviceAlert) event, false);
+	}
+	case StreamData: {
+	    return MongoDeviceStreamData.toDocument((IDeviceStreamData) event, false);
+	}
+	case CommandInvocation: {
+	    return MongoDeviceCommandInvocation.toDocument((IDeviceCommandInvocation) event);
+	}
+	case CommandResponse: {
+	    return MongoDeviceCommandResponse.toDocument((IDeviceCommandResponse) event);
+	}
+	case StateChange: {
+	    return MongoDeviceStateChange.toDocument((IDeviceStateChange) event);
+	}
+	default: {
+	    throw new SiteWhereException("Event type not handled: " + event.getEventType());
+	}
+	}
     }
 
     /**

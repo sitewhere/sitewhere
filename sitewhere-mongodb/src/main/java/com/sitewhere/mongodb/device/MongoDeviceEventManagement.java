@@ -20,6 +20,7 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.AssignmentStateManager;
 import com.sitewhere.mongodb.IDeviceManagementMongoClient;
@@ -27,6 +28,7 @@ import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
+import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
@@ -54,6 +56,7 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -707,6 +710,30 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
 		-1);
 	return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * java.lang.String,
+     * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
+     */
+    @Override
+    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
+	IDeviceEvent event = getDeviceEventById(eventId);
+	if (event == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR);
+	}
+	SiteWherePersistence.deviceEventUpdateLogic(request, (DeviceEvent) event);
+	Document updated = MongoPersistence.marshalEvent(event);
+	LOGGER.info("Updated document:\n" + MarshalUtils.marshalJsonAsPrettyString(updated));
+
+	Document query = new Document("_id", new ObjectId(event.getId()));
+	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
+	MongoPersistence.update(events, query, updated);
+	return MongoPersistence.unmarshalEvent(updated);
     }
 
     /*

@@ -57,7 +57,7 @@ public class MongoDeviceEvent {
      * @param isNested
      */
     public static void toDocument(IDeviceEvent source, Document target, boolean isNested) {
-	target.append("_id", new ObjectId());
+	target.append("_id", (source.getId() != null) ? new ObjectId(source.getId()) : new ObjectId());
 	target.append(PROP_EVENT_TYPE, source.getEventType().name());
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());

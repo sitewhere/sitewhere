@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -252,5 +253,10 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return delegate.listDeviceStateChangesForSite(siteToken, criteria);
+    }
+
+    @Override
+    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
+	return delegate.updateDeviceEvent(eventId, request);
     }
 }
