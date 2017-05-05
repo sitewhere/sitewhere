@@ -232,6 +232,8 @@ public enum ErrorCode {
     /** Operation assumes device is assigned but no assignment exists */
     RequiredCommandParameterMissing(650, "Invocation does not specify a parameter marked as required."),
 
+    /*** Required Parameter does not have a value assigned to it */
+    RequiredCommandParameterValueMissing(651, "Invocation does not assign a value to a required parameter."),
     /********
      * ZONE *
      ********/
