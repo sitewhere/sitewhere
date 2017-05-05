@@ -7,15 +7,16 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,11 +82,12 @@ public class UsersController extends RestController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Create new user")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Request, json = Users.CreateUserRequest.class, description = "createUserRequest.md"),
 	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
-    public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
+    public User createUser(@RequestBody UserCreateRequest input, HttpServletRequest request,
+	    HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
 	try {
 	    if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
@@ -112,12 +114,13 @@ public class UsersController extends RestController {
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Update existing user.")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
 	    @Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
     public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @RequestBody UserCreateRequest input) throws SiteWhereException {
+	    @RequestBody UserCreateRequest input, HttpServletRequest request, HttpServletResponse response)
+	    throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
 	try {
 	    IUser user = getUserManagement().updateUser(username, input, true);
@@ -137,11 +140,11 @@ public class UsersController extends RestController {
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get user by username")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
-    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
-	    throws SiteWhereException {
+    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 	try {
 	    IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
@@ -166,13 +169,13 @@ public class UsersController extends RestController {
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
     @ResponseBody
     @ApiOperation(value = "Delete user by username")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "deleteUserByUsernameResponse.md") })
     public User deleteUserByUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
 	try {
 	    IUser user = getUserManagement().deleteUser(username, force);
@@ -192,12 +195,12 @@ public class UsersController extends RestController {
     @RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get authorities for user")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
     public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 	try {
 	    List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
@@ -220,13 +223,13 @@ public class UsersController extends RestController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List users matching criteria")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Users.ListUsersResponse.class, description = "listUsersResponse.md") })
     public SearchResults<User> listUsers(
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
 	try {
 	    List<User> usersConv = new ArrayList<User>();
@@ -253,13 +256,13 @@ public class UsersController extends RestController {
     @RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List authorized tenants for user")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "getTenantsForUsernameResponse.md") })
     public List<ITenant> getTenantsForUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
 
 	// TODO: This should be in the system controller since it's not using
@@ -279,6 +282,24 @@ public class UsersController extends RestController {
 	    return results;
 	} finally {
 	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Verifies that authorized user is allowed to administed users.
+     * 
+     * @param request
+     * @param response
+     * @throws SiteWhereException
+     */
+    public static void checkAuthAdminUsers(HttpServletRequest request, HttpServletResponse response)
+	    throws SiteWhereException {
+	if (!request.isUserInRole(SiteWhereRoles.AUTH_ADMINISTER_USERS)) {
+	    try {
+		response.sendError(HttpServletResponse.SC_FORBIDDEN);
+	    } catch (IOException e) {
+		LOGGER.error(e);
+	    }
 	}
     }
 

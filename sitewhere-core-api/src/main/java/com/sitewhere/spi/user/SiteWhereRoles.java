@@ -83,16 +83,4 @@ public interface SiteWhereRoles {
 
     /** Role to administer all system tenants */
     public static final String ADMINISTER_TENANT_SELF = ROLE_PREFIX + AUTH_ADMINISTER_TENANT_SELF;
-
-    /**********************
-     * PREAUTH CONDITIONS *
-     **********************/
-
-    /** User has REST permissions and user administration rights */
-    public static final String PREAUTH_REST_AND_USER_ADMIN = "hasRole('" + SiteWhereRoles.REST + "') and hasRole('"
-	    + SiteWhereRoles.ADMINISTER_USERS + "')";
-
-    /** User has REST permissions and tenant administration rights */
-    public static final String PREAUTH_REST_AND_TENANT_ADMIN = "hasRole('" + SiteWhereRoles.REST + "') and hasRole('"
-	    + SiteWhereRoles.ADMINISTER_TENANTS + "')";
 }

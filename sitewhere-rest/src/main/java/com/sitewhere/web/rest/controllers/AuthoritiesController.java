@@ -10,12 +10,12 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,12 +76,12 @@ public class AuthoritiesController extends RestController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Create a new authority")
-    @PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
     @Documented(examples = {
 	    @Example(stage = Stage.Request, json = Authorities.CreateAuthorityRequest.class, description = "createUnassociatedRequest.md"),
 	    @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })
-    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
-	    throws SiteWhereException {
+    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
+	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
+	UsersController.checkAuthAdminUsers(request, response);
 	Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
 	try {
 	    IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
