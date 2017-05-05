@@ -8,6 +8,14 @@
 package com.sitewhere.core;
 
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,6 +32,11 @@ public class DataUtils {
     private static DocumentBuilderFactory DOCUMENTBUILDER_FACTORY;
 
     private static final Object LOCK = new Object();
+
+    /** Supports many potential date formats */
+    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(
+	    "[yyyyMMdd][yyyy-MM-dd][yyyy-DDD]['T'[HHmmss][HHmm][HH:mm:ss][HH:mm][.SSSSSSSSS][.SSSSSS][.SSS][.SS][.S]][OOOO][O][z][XXXXX][XXXX]['['VV']']",
+	    Locale.ENGLISH);
 
     /**
      * Get singleton instance of document builder factory. This prevents the
@@ -48,6 +61,26 @@ public class DataUtils {
 	    }
 	}
 	return factory;
+    }
+
+    /**
+     * Parses a date string using many potential formats. Copied from
+     * http://stackoverflow.com/questions/34637626/java-datetimeformatter-for-time-zone-with-an-optional-colon-separator
+     * 
+     * @param date
+     * @return
+     * @throws DateTimeParseException
+     */
+    public static ZonedDateTime parseDateInMutipleFormats(String date) throws DateTimeParseException {
+	TemporalAccessor temporalAccessor = FORMATTER.parseBest(date, ZonedDateTime::from, LocalDateTime::from,
+		LocalDate::from);
+	if (temporalAccessor instanceof ZonedDateTime) {
+	    return ((ZonedDateTime) temporalAccessor);
+	}
+	if (temporalAccessor instanceof LocalDateTime) {
+	    return ((LocalDateTime) temporalAccessor).atZone(ZoneId.systemDefault());
+	}
+	return ((LocalDate) temporalAccessor).atStartOfDay(ZoneId.systemDefault());
     }
 
     /**

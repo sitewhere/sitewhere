@@ -9,6 +9,8 @@ package com.sitewhere.web.rest.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
@@ -278,12 +280,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listEvents", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceEvents(token,
 		    criteria);
 	} finally {
@@ -310,17 +315,45 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listMeasurements", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
 		    .listDeviceMeasurements(token, criteria);
 	} finally {
 	    Tracer.stop(LOGGER);
 	}
+    }
+
+    /**
+     * Parse a date argument from a string and send a "bad request" code if date
+     * can not be parsed.
+     * 
+     * @param dateString
+     * @param response
+     * @return
+     */
+    protected static Date parseDateOrSendBadResponse(String dateString, HttpServletResponse response) {
+	try {
+	    if (StringUtils.isBlank(dateString)) {
+		return null;
+	    }
+	    ZonedDateTime zdt = DataUtils.parseDateInMutipleFormats(dateString);
+	    return Date.from(zdt.toInstant());
+	} catch (DateTimeParseException e) {
+	    try {
+		response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+	    } catch (IOException e1) {
+		LOGGER.error(e);
+	    }
+	}
+	return null;
     }
 
     /**
@@ -342,13 +375,16 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listMeasurementsAsChartSeries", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    ISearchResults<IDeviceMeasurements> measurements = SiteWhere.getServer()
 		    .getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(token, criteria);
 	    ChartBuilder builder = new ChartBuilder();
@@ -406,12 +442,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listLocations", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocations(token,
 		    criteria);
 	} finally {
@@ -434,12 +473,13 @@ public class AssignmentsController extends RestController {
 	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
     public void pushLatestLocationToState(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "pushLatestLocationToState", LOGGER);
 	try {
 	    IDeviceAssignment assignment = getDeviceAssignment(token, servletRequest);
 	    DeviceAssignmentState state = (DeviceAssignmentState) assignment.getState();
-	    ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest);
+	    ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest,
+		    response);
 	    if (locations.getNumResults() > 0) {
 		DeviceLocation location = (DeviceLocation) locations.getResults().get(0);
 		if (state == null) {
@@ -502,12 +542,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listAlerts", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlerts(token,
 		    criteria);
 	} finally {
@@ -584,12 +627,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listDeviceStreams", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    ISearchResults<IDeviceStream> matches = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
 		    .listDeviceStreams(token, criteria);
 	    List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
@@ -829,12 +875,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listCommandInvocations", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    ISearchResults<IDeviceCommandInvocation> matches = SiteWhere.getServer()
 		    .getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocations(token, criteria);
 	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
@@ -892,12 +941,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listStateChanges", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
 		    .listDeviceStateChanges(token, criteria);
 	} finally {
@@ -953,12 +1005,15 @@ public class AssignmentsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "listCommandResponses", LOGGER);
 	try {
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
+		    parsedEndDate);
 	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
 		    .listDeviceCommandResponses(token, criteria);
 	} finally {
