@@ -84,12 +84,6 @@ subprojects {
     
 	if (releaseBuild) {
      	apply plugin: 'com.bmuschko.nexus'
-
-		// Upload archives to Amazon S3
-		uploadArchives {
-//			dependsOn uploadServerZip
-//			dependsOn uploadServerTar
-		}
 		
 		// Set up default POM to be uploaded to Nexus.
 		modifyPom {
