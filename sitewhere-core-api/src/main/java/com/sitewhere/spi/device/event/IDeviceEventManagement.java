@@ -68,6 +68,15 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
     public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException;
 
     /**
+     * Get a device event by alternate (external) id.
+     * 
+     * @param alternateId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException;
+
+    /**
      * List all events for the given assignment that meet the search criteria.
      * 
      * @param assignmentToken

@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
-import com.mongodb.MongoCommandException;
+import com.mongodb.MongoBulkWriteException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.InsertOneModel;
@@ -123,10 +123,12 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 			    try {
 				LOGGER.debug("Executing bulk insert of " + count + " event records.");
 				events.bulkWrite(writes);
-			    } catch (MongoCommandException e) {
-				LOGGER.error("Error during MongoDB insert.", e);
+			    } catch (MongoBulkWriteException e) {
+				LOGGER.error("Error during MongoDB bulk write.", e);
 			    } catch (MongoTimeoutException e) {
 				LOGGER.error("Connection to MongoDB lost.", e);
+			    } catch (Throwable e) {
+				LOGGER.error("Unhandled exception in event buffer.", e);
 			    }
 			}
 

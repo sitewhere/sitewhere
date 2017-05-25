@@ -35,6 +35,9 @@ public abstract class DeviceEvent extends MetadataProvider
     /** Unqiue id for event */
     private String id;
 
+    /** Alternate (external) id for event */
+    private String alternateId;
+
     /** Event type indicator */
     private DeviceEventType eventType;
 
@@ -68,6 +71,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getId()
      */
+    @Override
     public String getId() {
 	return id;
     }
@@ -79,8 +83,23 @@ public abstract class DeviceEvent extends MetadataProvider
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAlternateId()
+     */
+    @Override
+    public String getAlternateId() {
+	return alternateId;
+    }
+
+    public void setAlternateId(String alternateId) {
+	this.alternateId = alternateId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.device.event.IDeviceEvent#getEventType()
      */
+    @Override
     public DeviceEventType getEventType() {
 	return eventType;
     }
@@ -94,6 +113,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getSiteToken()
      */
+    @Override
     public String getSiteToken() {
 	return siteToken;
     }
@@ -107,6 +127,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getDeviceAssignmentToken()
      */
+    @Override
     public String getDeviceAssignmentToken() {
 	return deviceAssignmentToken;
     }
@@ -120,6 +141,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getAssignmentType()
      */
+    @Override
     public DeviceAssignmentType getAssignmentType() {
 	return assignmentType;
     }
@@ -133,6 +155,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetModuleId()
      */
+    @Override
     public String getAssetModuleId() {
 	return assetModuleId;
     }
@@ -146,6 +169,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getAssetId()
      */
+    @Override
     public String getAssetId() {
 	return assetId;
     }
@@ -159,6 +183,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getEventDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getEventDate() {
 	return eventDate;
@@ -173,6 +198,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see com.sitewhere.spi.device.IDeviceEvent#getReceivedDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getReceivedDate() {
 	return receivedDate;
@@ -187,6 +213,7 @@ public abstract class DeviceEvent extends MetadataProvider
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(IDeviceEvent other) {
 	if ((getEventDate() != null) && (other.getEventDate() != null)) {
 	    return getEventDate().compareTo(other.getEventDate());
@@ -202,6 +229,7 @@ public abstract class DeviceEvent extends MetadataProvider
      */
     public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
 	target.setId(source.getId());
+	target.setAlternateId(source.getAlternateId());
 	target.setSiteToken(source.getSiteToken());
 	target.setDeviceAssignmentToken(source.getDeviceAssignmentToken());
 	target.setAssignmentType(source.getAssignmentType());

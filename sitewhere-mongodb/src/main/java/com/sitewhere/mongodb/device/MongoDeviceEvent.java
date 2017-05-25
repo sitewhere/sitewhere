@@ -25,6 +25,9 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class MongoDeviceEvent {
 
+    /** Alternate (external) id */
+    public static final String PROP_ALTERNATE_ID = "altId";
+
     /** Event type indicator */
     public static final String PROP_EVENT_TYPE = "eventType";
 
@@ -58,6 +61,12 @@ public class MongoDeviceEvent {
      */
     public static void toDocument(IDeviceEvent source, Document target, boolean isNested) {
 	target.append("_id", (source.getId() != null) ? new ObjectId(source.getId()) : new ObjectId());
+
+	// Only set if there is a value (sparse index).
+	if (source.getAlternateId() != null) {
+	    target.append(PROP_ALTERNATE_ID, source.getAlternateId());
+	}
+
 	target.append(PROP_EVENT_TYPE, source.getEventType().name());
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
@@ -79,6 +88,7 @@ public class MongoDeviceEvent {
      */
     public static void fromDocument(Document source, DeviceEvent target, boolean isNested) {
 	ObjectId id = (ObjectId) source.get("_id");
+	String alternateId = (String) source.get(PROP_ALTERNATE_ID);
 	String eventType = (String) source.get(PROP_EVENT_TYPE);
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 	String assignmentToken = (String) source.get(PROP_DEVICE_ASSIGNMENT_TOKEN);
@@ -94,6 +104,7 @@ public class MongoDeviceEvent {
 	if (eventType != null) {
 	    target.setEventType(DeviceEventType.valueOf(eventType));
 	}
+	target.setAlternateId(alternateId);
 	target.setSiteToken(siteToken);
 	target.setDeviceAssignmentToken(assignmentToken);
 	target.setAssetModuleId(assetModuleId);

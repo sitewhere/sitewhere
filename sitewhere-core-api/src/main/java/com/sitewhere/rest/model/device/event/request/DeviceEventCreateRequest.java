@@ -26,6 +26,9 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
     /** Serialization version identifier */
     private static final long serialVersionUID = -8906177904822194407L;
 
+    /** Alternate (external) id for event */
+    private String alternateId;
+
     /** Date event occurred */
     private Date eventDate;
 
@@ -38,9 +41,25 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
+     * getAlternateId()
+     */
+    @Override
+    public String getAlternateId() {
+	return alternateId;
+    }
+
+    public void setAlternateId(String alternateId) {
+	this.alternateId = alternateId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.spi.device.request.IDeviceEventCreateRequest#getEventDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getEventDate() {
 	return eventDate;
@@ -56,6 +75,7 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
      * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
      * isUpdateState()
      */
+    @Override
     public boolean isUpdateState() {
 	return updateState;
     }
@@ -66,6 +86,7 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
      * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
      * setUpdateState (boolean)
      */
+    @Override
     public void setUpdateState(boolean updateState) {
 	this.updateState = updateState;
     }
@@ -76,6 +97,7 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
      * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
      * getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }

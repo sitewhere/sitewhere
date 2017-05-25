@@ -20,6 +20,7 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.AssignmentStateManager;
@@ -153,6 +154,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
+	getMongoClient().getEventsCollection(getTenant()).createIndex(
+		new BasicDBObject(MongoDeviceEvent.PROP_ALTERNATE_ID, 1), new IndexOptions().unique(true).sparse(true));
 	getMongoClient().getEventsCollection(getTenant())
 		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1)
 			.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
@@ -195,6 +198,22 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
 	Document searchById = new Document("_id", new ObjectId(id));
 	Document found = getMongoClient().getEventsCollection(getTenant()).find(searchById).first();
+	if (found == null) {
+	    return null;
+	}
+	return MongoPersistence.unmarshalEvent(found);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceEventByAlternateId(java.lang.String)
+     */
+    @Override
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	Document search = new Document(MongoDeviceEvent.PROP_ALTERNATE_ID, alternateId);
+	Document found = getMongoClient().getEventsCollection(getTenant()).find(search).first();
 	if (found == null) {
 	    return null;
 	}

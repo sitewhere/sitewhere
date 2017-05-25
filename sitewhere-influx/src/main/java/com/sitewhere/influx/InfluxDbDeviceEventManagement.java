@@ -254,6 +254,17 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceEventByAlternateId(java.lang.String)
+     */
+    @Override
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)

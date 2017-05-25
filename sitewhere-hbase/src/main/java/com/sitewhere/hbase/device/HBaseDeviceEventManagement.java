@@ -188,6 +188,17 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceEventByAlternateId(java.lang.String)
+     */
+    @Override
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)

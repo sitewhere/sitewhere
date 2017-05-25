@@ -105,4 +105,26 @@ public class EventsController extends RestController {
 	    Tracer.stop(LOGGER);
 	}
     }
+
+    /**
+     * Get an event by its alternate (external) id.
+     * 
+     * @param altId
+     * @return
+     */
+    @RequestMapping(value = "/alternate/{alternateId}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get event by alternate (external) id")
+    @Secured({ SiteWhereRoles.REST })
+    public IDeviceEvent getEventByAlternateId(
+	    @ApiParam(value = "Alternate id", required = true) @PathVariable String alternateId,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getEventByAlternateId", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		    .getDeviceEventByAlternateId(alternateId);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
 }

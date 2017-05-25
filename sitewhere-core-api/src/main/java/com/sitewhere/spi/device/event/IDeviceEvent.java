@@ -28,6 +28,14 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
     public String getId();
 
     /**
+     * Get alternate id that can be used for correlating events with external
+     * systems and for deduplication.
+     * 
+     * @return
+     */
+    public String getAlternateId();
+
+    /**
      * Get event type indicator.
      * 
      * @return

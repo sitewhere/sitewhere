@@ -18,6 +18,14 @@ import java.util.Map;
 public interface IDeviceEventCreateRequest {
 
     /**
+     * Get alternate id that can be used for correlating events with external
+     * systems and for deduplication.
+     * 
+     * @return
+     */
+    public String getAlternateId();
+
+    /**
      * Get the date on which the event occurred.
      * 
      * @return

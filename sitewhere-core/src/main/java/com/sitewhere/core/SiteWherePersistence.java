@@ -686,6 +686,7 @@ public class SiteWherePersistence {
      */
     public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceAssignment assignment,
 	    DeviceEvent target) throws SiteWhereException {
+	target.setAlternateId(request.getAlternateId());
 	target.setSiteToken(assignment.getSiteToken());
 	target.setDeviceAssignmentToken(assignment.getToken());
 	target.setAssignmentType(assignment.getAssignmentType());
