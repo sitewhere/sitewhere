@@ -42,7 +42,7 @@
 					style="padding-top: 20px;">
 					<div class="control-group">
 						<label class="control-label" for="iv-command-name"
-							" data-i18n="public.Command"></label>
+							data-i18n="public.Command"></label>
 						<div class="controls">
 							<h1 id="iv-command-name" class="sw-iv-invocation-params-readonly"></h1>
 						</div>
@@ -87,7 +87,7 @@
 			</div>
 			<div>
 				<div id="iv-metadata">
-					<jsp:include page="../includes/metadata.jsp" flush="true">
+					<jsp:include page="../includes/metadata.inc" flush="true">
 						<!-- #set ($uid = "iv") -->
 						<!-- #set ($mdReadOnly = "true") -->
 						#parse ("includes/metadata.inc")
