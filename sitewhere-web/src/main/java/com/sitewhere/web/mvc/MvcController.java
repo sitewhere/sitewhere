@@ -28,7 +28,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
-import com.sitewhere.version.VersionHelper;
 
 /**
  * Base class for SiteWhere Spring MVC controllers.
@@ -78,13 +77,13 @@ public class MvcController {
     protected ModelAndView showError(String message) {
 	try {
 	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put(DATA_VERSION, SiteWhere.getVersion());
 	    data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
 	    data.put("message", message);
 	    return new ModelAndView("error", data);
 	} catch (SiteWhereException e) {
 	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put(DATA_VERSION, SiteWhere.getVersion());
 	    data.put("message", e.getMessage());
 	    return new ModelAndView("error", data);
 	}
@@ -127,7 +126,7 @@ public class MvcController {
 	IUser user = LoginManager.getCurrentlyLoggedInUser();
 
 	Map<String, Object> data = new HashMap<String, Object>();
-	data.put(DATA_VERSION, VersionHelper.getVersion());
+	data.put(DATA_VERSION, SiteWhere.getVersion());
 	data.put(DATA_CURRENT_USER, user);
 	data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
 

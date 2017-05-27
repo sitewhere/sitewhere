@@ -15,6 +15,7 @@ import com.sitewhere.spi.server.ISiteWhereApplication;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.system.IVersion;
 
 /**
  * Main class for accessing core SiteWhere functionality.
@@ -29,6 +30,9 @@ public class SiteWhere {
     /** Singleton server instance */
     private static ISiteWhereServer SERVER;
 
+    /** SiteWhere version information */
+    private static IVersion VERSION;
+
     /**
      * Called once to bootstrap the SiteWhere server.
      * 
@@ -38,9 +42,11 @@ public class SiteWhere {
      */
     public static void start(ISiteWhereApplication application, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	Class<? extends ISiteWhereServer> clazz = application.getServerClass();
+	Class<? extends IVersion> version = application.getVersionClass();
+	Class<? extends ISiteWhereServer> server = application.getServerClass();
 	try {
-	    SERVER = clazz.newInstance();
+	    VERSION = version.newInstance();
+	    SERVER = server.newInstance();
 
 	    // Initialize server.
 	    SERVER.lifecycleInitialize(monitor);
@@ -99,5 +105,17 @@ public class SiteWhere {
      */
     public static boolean isServerAvailable() {
 	return ((SERVER != null && (SERVER.getLifecycleStatus() == LifecycleStatus.Started)));
+    }
+
+    /**
+     * Get singleton version information instance.
+     * 
+     * @return
+     */
+    public static IVersion getVersion() {
+	if (VERSION == null) {
+	    throw new RuntimeException("SiteWhere server has not been initialized.");
+	}
+	return VERSION;
     }
 }

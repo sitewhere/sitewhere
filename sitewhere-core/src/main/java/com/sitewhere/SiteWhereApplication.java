@@ -41,6 +41,7 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereApplication;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.system.IVersion;
 
 /**
  * Root Spring Boot application that loads all other SiteWhere artifacts.
@@ -123,6 +124,16 @@ public class SiteWhereApplication implements ISiteWhereApplication {
     @Override
     public Class<? extends SiteWhereServer> getServerClass() throws SiteWhereException {
 	return SiteWhereServer.class;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereApplication#getVersionClass()
+     */
+    @Override
+    public Class<? extends IVersion> getVersionClass() throws SiteWhereException {
+	return Version.class;
     }
 
     /*

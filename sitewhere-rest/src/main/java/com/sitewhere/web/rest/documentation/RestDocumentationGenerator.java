@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -156,7 +156,7 @@ public class RestDocumentationGenerator {
 	    throw new SiteWhereException("Unable to find footer file: " + footer.getAbsolutePath());
 	}
 
-	IVersion version = VersionHelper.getVersion();
+	IVersion version = SiteWhere.getVersion();
 	completeDoc += readFile(footer).replace("${sitewhere.version}",
 		"SiteWhere " + version.getVersionIdentifier() + " " + version.getEditionIdentifier());
 

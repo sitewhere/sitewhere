@@ -24,6 +24,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
@@ -70,7 +71,7 @@ public class VersionChecker implements IVersionChecker {
     public void run() {
 	try {
 	    LOGGER.info("Checking for SiteWhere version updates...");
-	    IVersion current = VersionHelper.getVersion();
+	    IVersion current = SiteWhere.getVersion();
 	    ResponseEntity<String> response = getClient().postForEntity(VERSION_URL, current, String.class);
 	    String body = response.getBody();
 	    LOGGER.debug("Received:\n" + body);

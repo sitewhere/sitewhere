@@ -98,7 +98,6 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.version.VersionHelper;
 
 /**
  * Implementation of {@link ISiteWhereServer} for community edition.
@@ -195,7 +194,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	super(LifecycleComponentType.System);
 
 	// Set version information.
-	this.version = VersionHelper.getVersion();
+	this.version = SiteWhere.getVersion();
     }
 
     /**

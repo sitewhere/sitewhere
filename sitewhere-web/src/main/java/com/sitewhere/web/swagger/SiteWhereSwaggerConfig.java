@@ -18,7 +18,7 @@ import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
-import com.sitewhere.version.VersionHelper;
+import com.sitewhere.SiteWhere;
 
 /**
  * Configures information used to generate Swagger metadata.
@@ -64,10 +64,10 @@ public class SiteWhereSwaggerConfig {
     @Bean
     public SwaggerSpringMvcPlugin customImplementation() {
 	ApiInfo apiInfo = new ApiInfo(
-		API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
-			+ VersionHelper.getVersion().getEditionIdentifier() + ")",
+		API_TITLE + " (" + SiteWhere.getVersion().getVersionIdentifier() + " "
+			+ SiteWhere.getVersion().getEditionIdentifier() + ")",
 		API_DESCRIPTION, null, API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
 	return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).pathProvider(pathProvider).apiInfo(apiInfo)
-		.apiVersion(VersionHelper.getVersion().getVersionIdentifier());
+		.apiVersion(SiteWhere.getVersion().getVersionIdentifier());
     }
 }

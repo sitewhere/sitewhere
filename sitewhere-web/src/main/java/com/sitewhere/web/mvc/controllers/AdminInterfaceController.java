@@ -50,7 +50,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.TokenNamePair;
 import com.sitewhere.web.configuration.model.ElementRole;
@@ -80,7 +79,7 @@ public class AdminInterfaceController extends MvcController {
 	Tracer.start(TracerCategory.AdminUserInterface, "login", LOGGER);
 	try {
 	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put(DATA_VERSION, SiteWhere.getVersion());
 	    if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Started) {
 		return new ModelAndView("login", data);
 	    } else {
@@ -198,7 +197,7 @@ public class AdminInterfaceController extends MvcController {
 	Tracer.start(TracerCategory.AdminUserInterface, "loginFailed", LOGGER);
 	try {
 	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, VersionHelper.getVersion());
+	    data.put(DATA_VERSION, SiteWhere.getVersion());
 	    data.put("loginFailed", true);
 	    return new ModelAndView("login", data);
 	} finally {
