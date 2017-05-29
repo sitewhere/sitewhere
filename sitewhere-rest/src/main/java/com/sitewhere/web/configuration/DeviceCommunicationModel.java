@@ -65,6 +65,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	addElement(createGroovyStringEventDecoderElement());
 	addElement(createEchoStringEventDecoderElement());
 
+	// Device event deduplicators.
+	addElement(createAlternateIdDeduplicatorElement());
+	addElement(createGroovyEventDeduplicatorElement());
+
 	// Device services.
 	addElement(createDeviceServicesElement());
 	addElement(createDefaultRegistrationManagerElement());
@@ -672,6 +676,36 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		+ " of nested decoder choices for further processing.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
 		.description("Relative path to script used for extracting metadata.").makeRequired().build()));
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for alternate id deduplicator.
+     * 
+     * @return
+     */
+    protected ElementNode createAlternateIdDeduplicatorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Alternate Id Deduplicator",
+		IEventSourcesParser.Deduplicators.AlternateIdDeduplicator.getLocalName(), "cogs",
+		ElementRole.EventSource_EventDeduplicator);
+
+	builder.description("Deduplicator that uses the event alternate id to test for duplicates.");
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for Groovy event deduplicator.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyEventDeduplicatorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy Event Deduplicator",
+		IEventSourcesParser.Deduplicators.GroovyEventDeduplicator.getLocalName(), "cogs",
+		ElementRole.EventSource_EventDeduplicator);
+
+	builder.description("Deduplicator that uses a Groovy script to check for duplicate events.");
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
+		.description("Relative path to script used for testing for duplicates.").makeRequired().build()));
 	return builder.build();
     }
 

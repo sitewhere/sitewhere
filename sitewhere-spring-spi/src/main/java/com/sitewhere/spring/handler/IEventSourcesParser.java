@@ -279,4 +279,42 @@ public interface IEventSourcesParser {
 	    this.localName = localName;
 	}
     }
+
+    /**
+     * Expected deduplicator elements.
+     * 
+     * @author Derek
+     */
+    public static enum Deduplicators {
+
+	/** Uses alternate id to find duplicate events */
+	AlternateIdDeduplicator("alternate-id-deduplicator"),
+
+	/** Uses Groovy script to find duplicate events */
+	GroovyEventDeduplicator("groovy-event-deduplicator");
+
+	/** Event code */
+	private String localName;
+
+	private Deduplicators(String localName) {
+	    this.localName = localName;
+	}
+
+	public static Deduplicators getByLocalName(String localName) {
+	    for (Deduplicators value : Deduplicators.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

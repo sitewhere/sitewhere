@@ -35,6 +35,7 @@ import com.sitewhere.device.communication.StringInboundEventSource;
 import com.sitewhere.device.communication.coap.CoapServerEventReceiver;
 import com.sitewhere.device.communication.decoder.composite.BinaryCompositeDeviceEventDecoder;
 import com.sitewhere.device.communication.decoder.composite.DeviceSpecificationDecoderChoice;
+import com.sitewhere.device.communication.deduplicator.AlternateIdDeduplicator;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
 import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
@@ -47,6 +48,7 @@ import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.groovy.device.communication.decoder.composite.GroovyMessageMetadataExtractor;
+import com.sitewhere.groovy.device.communication.deduplicator.GroovyEventDeduplicator;
 import com.sitewhere.groovy.device.communication.rest.PollingRestInboundEventReceiver;
 import com.sitewhere.groovy.device.communication.socket.GroovySocketInteractionHandler;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
@@ -58,6 +60,7 @@ import com.sitewhere.spring.handler.IEventSourcesParser.BinaryDecoders;
 import com.sitewhere.spring.handler.IEventSourcesParser.BinarySocketInteractionHandlers;
 import com.sitewhere.spring.handler.IEventSourcesParser.CompositeDecoderChoiceElements;
 import com.sitewhere.spring.handler.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
+import com.sitewhere.spring.handler.IEventSourcesParser.Deduplicators;
 import com.sitewhere.spring.handler.IEventSourcesParser.Elements;
 import com.sitewhere.spring.handler.IEventSourcesParser.StringDecoders;
 
@@ -196,6 +199,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("No event decoder specified for MQTT event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -293,6 +299,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("No event decoder specified for RabbitMQ event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -366,6 +375,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	if (!hadDecoder) {
 	    throw new RuntimeException("No event decoder specified for EvenHub event source: " + element.toString());
 	}
+
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
 
 	return source.getBeanDefinition();
     }
@@ -454,6 +466,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("No event decoder specified for ActiveMQ event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -538,6 +553,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		    "No event decoder specified for ActiveMQ client event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -609,6 +627,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	if (!hadDecoder) {
 	    throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
 	}
+
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
 
 	return source.getBeanDefinition();
     }
@@ -814,6 +835,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -905,6 +929,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		    "No valid event decoder specified for web socket event source: " + element.toString());
 	}
 
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
+
 	return source.getBeanDefinition();
     }
 
@@ -981,6 +1008,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException(
 		    "No event decoder specified for CoAP server event source: " + element.toString());
 	}
+
+	// Parse deduplicator if configured.
+	parseDeduplicator(element, context, source);
 
 	return source.getBeanDefinition();
     }
@@ -1408,5 +1438,81 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("No 'sourceId' attribute specified for event source: " + element.toString());
 	}
 	builder.addPropertyValue("sourceId", sourceId.getValue());
+    }
+
+    protected boolean parseDeduplicator(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+	List<Element> children = DomUtils.getChildElements(parent);
+	AbstractBeanDefinition deduplicator = null;
+	for (Element child : children) {
+	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
+		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+			.resolve(child.getNamespaceURI());
+		if (nested != null) {
+		    BeanDefinition deduplicatorBean = nested.parse(child, context);
+		    String deduplicatorName = nameGenerator.generateBeanName(deduplicatorBean, context.getRegistry());
+		    context.getRegistry().registerBeanDefinition(deduplicatorName, deduplicatorBean);
+		    source.addPropertyReference("deviceEventDeduplicator", deduplicatorName);
+		    return true;
+		} else {
+		    continue;
+		}
+	    }
+	    Deduplicators type = Deduplicators.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		continue;
+	    }
+	    switch (type) {
+	    case AlternateIdDeduplicator: {
+		deduplicator = parseAlternateIdDeduplicator(parent, child, context);
+		break;
+	    }
+	    case GroovyEventDeduplicator: {
+		deduplicator = parseGroovyEventDeduplicator(parent, child, context);
+		break;
+	    }
+	    }
+	}
+	if (deduplicator != null) {
+	    String name = nameGenerator.generateBeanName(deduplicator, context.getRegistry());
+	    context.getRegistry().registerBeanDefinition(name, deduplicator);
+	    source.addPropertyReference("deviceEventDeduplicator", name);
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Parse bean definition for alternate id deduplicator.
+     * 
+     * @param parent
+     * @param decoder
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseAlternateIdDeduplicator(Element parent, Element decoder,
+	    ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(AlternateIdDeduplicator.class);
+	return builder.getBeanDefinition();
+    }
+
+    /**
+     * Parse bean definition for Groovy event deduplicator.
+     * 
+     * @param parent
+     * @param decoder
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseGroovyEventDeduplicator(Element parent, Element decoder,
+	    ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDeduplicator.class);
+
+	Attr scriptPath = decoder.getAttributeNode("scriptPath");
+	if (scriptPath == null) {
+	    throw new RuntimeException("Script path not set for Groovy event deduplicator.");
+	}
+	builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
+	return builder.getBeanDefinition();
     }
 }

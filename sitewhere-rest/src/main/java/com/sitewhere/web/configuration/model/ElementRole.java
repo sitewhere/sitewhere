@@ -129,11 +129,14 @@ public enum ElementRole {
     /** Event source. Event decoder. */
     EventSource_EventDecoder("Event Decoder", false, false, false, new ElementRole[0], new ElementRole[] { EventSource_BinaryEventDecoder, EventSource_StringEventDecoder }),
 
+    /** Event source. Event deduplicator. */
+    EventSource_EventDeduplicator("Event Deduplicator", true, false, false, new ElementRole[0], new ElementRole[0]),
+
     /** Socket event source. Socket interaction handler factory. */
     EventSources_SocketInteractionHandlerFactory("Socket Interaction Handler Factory", false, false, false),
 
     /** Event sources container. Event source. */
-    EventSources_SocketEventSource("Socket Event Source", true, true, true, new ElementRole[] { EventSources_SocketInteractionHandlerFactory, EventSource_EventDecoder }),
+    EventSources_SocketEventSource("Socket Event Source", true, true, true, new ElementRole[] { EventSource_EventDecoder, EventSources_SocketInteractionHandlerFactory }),
 
     /** WebSocket event source. Header. */
     EventSources_WebSocketHeader("WebSocket Headers", true, true, true),
@@ -142,7 +145,7 @@ public enum ElementRole {
     EventSources_WebSocketEventSource("WebSocket Event Source", true, true, true, new ElementRole[] { EventSource_EventDecoder, EventSources_WebSocketHeader }),
 
     /** Event sources container. Event source. */
-    EventSources_EventSource("Event Sources", true, true, true, new ElementRole[] { EventSource_EventDecoder }, new ElementRole[] { EventSources_SocketEventSource, EventSources_WebSocketEventSource }),
+    EventSources_EventSource("Event Sources", true, true, true, new ElementRole[] { EventSource_EventDecoder, EventSource_EventDeduplicator }, new ElementRole[] { EventSources_SocketEventSource, EventSources_WebSocketEventSource }),
 
     /** Device communication container. Event sources configuration. */
     DeviceCommunication_EventSources(null, false, false, false, new ElementRole[] { EventSources_EventSource }, new ElementRole[0], true),

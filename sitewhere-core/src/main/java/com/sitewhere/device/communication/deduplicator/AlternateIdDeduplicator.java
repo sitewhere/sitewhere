@@ -50,6 +50,7 @@ public class AlternateIdDeduplicator extends TenantLifecycleComponent implements
 		IDeviceEvent existing = SiteWhere.getServer().getDeviceEventManagement(getTenant())
 			.getDeviceEventByAlternateId(alternateId);
 		if (existing != null) {
+		    LOGGER.info("Found event with same alternate id. Will be treated as duplicate.");
 		    return true;
 		}
 		return false;

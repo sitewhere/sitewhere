@@ -181,9 +181,12 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	try {
 	    if (requests != null) {
 		for (IDecodedDeviceRequest<?> decoded : requests) {
-		    if ((getDeviceEventDeduplicator() == null)
-			    || (!getDeviceEventDeduplicator().isDuplicate(decoded))) {
+		    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
+			    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
+		    if (!isDuplicate) {
 			handleDecodedRequest(decoded);
+		    } else {
+			LOGGER.info("Event not processed due to duplicate detected.");
 		    }
 		}
 	    }

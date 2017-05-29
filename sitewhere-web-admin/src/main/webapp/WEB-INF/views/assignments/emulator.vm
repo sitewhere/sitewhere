@@ -198,6 +198,13 @@
 						</div>
 					</div>
 					<div class="control-group">
+						<label class="control-label" for="lc-alternate-id">Alternate
+							Id</label>
+						<div class="controls">
+							<input type="text" id="lc-alternate-id" class="input-large">
+						</div>
+					</div>
+					<div class="control-group">
 						<label class="control-label" for="lc-event-date"
 							data-i18n="public.EventDate"></label>
 						<div class="controls">
@@ -277,7 +284,14 @@
 				</div>
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
-						<label class="control-label" for="lc-event-date"
+						<label class="control-label" for="mc-alternate-id">Alternate
+							Id</label>
+						<div class="controls">
+							<input type="text" id="mc-alternate-id" class="input-large">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="mc-event-date"
 							data-i18n="public.EventDate"></label>
 						<div class="controls">
 							<select id="mc-date-type" class="input-xlarge"
@@ -331,6 +345,13 @@
 						<div class="controls">
 							<textarea id="ac-message" class="input-xlarge"
 								style="height: 120px;"></textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="ac-alternate-id">Alternate
+							Id</label>
+						<div class="controls">
+							<input type="text" id="ac-alternate-id" class="input-large">
 						</div>
 					</div>
 					<div class="control-group">
@@ -621,6 +642,7 @@
 			$("#lc-lat").val(lat);
 			$("#lc-lng").val(lng);
 			$("#lc-elevation").val("0");
+			$("#lc-alternate-id").val("");
 			lcDatePicker.value(new Date());
 			lcMetadataDS.data(new Array());
 
@@ -684,6 +706,10 @@
 		var lat = $("#lc-lat").val();
 		var lng = $("#lc-lng").val();
 		var elevation = $("#lc-elevation").val();
+		var alternateId = $("#lc-alternate-id").val();
+		if (alternateId.length == 0) {
+			alternateId = null;
+		}
 		var eventDate = calculateDateValue(lcDateType, lcDatePicker);
 		if (!eventDate) {
 			return;
@@ -692,13 +718,17 @@
 		var batch = {
 			"hardwareId" : hardwareId
 		};
-		batch.locations = [ {
+		var location = {
 			"latitude" : lat,
 			"longitude" : lng,
 			"elevation" : elevation,
 			"eventDate" : eventDateStr,
 			"metadata" : swMetadataAsLookup(lcMetadataDS.data())
-		} ];
+		}
+		if (alternateId) {
+			location['alternateId'] = alternateId;
+		}
+		batch.locations = [ location ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
 		$('#lc-dialog').modal('hide');
 		setTimeout(refreshLocations, 2000);
