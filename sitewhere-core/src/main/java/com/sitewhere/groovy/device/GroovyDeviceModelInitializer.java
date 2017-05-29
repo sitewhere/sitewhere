@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.groovy.device.communication.IGroovyVariables;
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
@@ -69,10 +70,13 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
 	}
 
 	Binding binding = new Binding();
-	binding.setVariable("logger", LOGGER);
-	binding.setVariable("deviceBuilder", new DeviceManagementRequestBuilder(deviceManagement));
-	binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
-	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement, assetModuleManager));
+	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
+		new DeviceManagementRequestBuilder(deviceManagement));
+	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
+		new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
+	binding.setVariable(IGroovyVariables.VAR_ASSET_MANAGEMENT_BUILDER,
+		new AssetManagementRequestBuilder(assetManagement, assetModuleManager));
 
 	try {
 	    // Use system account for logging "created by" on created elements.

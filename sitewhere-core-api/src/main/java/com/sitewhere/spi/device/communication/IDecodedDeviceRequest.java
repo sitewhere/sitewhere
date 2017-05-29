@@ -10,7 +10,7 @@ package com.sitewhere.spi.device.communication;
 import java.io.Serializable;
 
 /**
- * Contains information decoded by an {@link IDeviceEventDecoder} includng
+ * Contains information decoded by an {@link IDeviceEventDecoder} including
  * hardware id and originator of the event.
  * 
  * @author Derek

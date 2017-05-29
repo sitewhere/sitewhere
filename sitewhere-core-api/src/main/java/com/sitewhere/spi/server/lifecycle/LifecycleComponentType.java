@@ -116,6 +116,9 @@ public enum LifecycleComponentType {
     /** Device event decoder */
     DeviceEventDecoder,
 
+    /** Device event deduplicator */
+    DeviceEventDeduplicator,
+
     /** Event receiver */
     InboundEventReceiver,
 

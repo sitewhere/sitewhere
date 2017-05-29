@@ -17,8 +17,23 @@ public interface IGroovyVariables {
     /** Groovy variable used for device management implementaton */
     public static final String VAR_DEVICE_MANAGEMENT = "deviceManagement";
 
+    /** Groovy variable used for device management builder */
+    public static final String VAR_DEVICE_MANAGEMENT_BUILDER = "deviceBuilder";
+
+    /** Groovy variable used for event management builder */
+    public static final String VAR_EVENT_MANAGEMENT_BUILDER = "eventBuilder";
+
+    /** Groovy variable used for asset management builder */
+    public static final String VAR_ASSET_MANAGEMENT_BUILDER = "assetBuilder";
+
+    /** Groovy variable used for tenant management builder */
+    public static final String VAR_TENANT_MANAGEMENT_BUILDER = "tenantBuilder";
+
     /** Groovy variable used for decoded events */
     public static final String VAR_DECODED_EVENTS = "events";
+
+    /** Groovy variable used for interacting with decoded device request */
+    public static final String VAR_DECODED_DEVICE_REQUEST = "request";
 
     /** Groovy variable used for passing payload */
     public static final String VAR_PAYLOAD = "payload";

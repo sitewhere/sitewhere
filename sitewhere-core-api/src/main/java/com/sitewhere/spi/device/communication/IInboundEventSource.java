@@ -35,6 +35,13 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
     public void setDeviceEventDecoder(IDeviceEventDecoder<T> decoder);
 
     /**
+     * Set the device event deduplicator.
+     * 
+     * @param deduplicator
+     */
+    public void setDeviceEventDeduplicator(IDeviceEventDeduplicator deduplicator);
+
+    /**
      * Set the strategy for submitting inbound events into the bus.
      * 
      * @param strategy

@@ -2032,6 +2032,60 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for deduplicators to allow substitutionGroups -->
+	<xsd:element name="abstract-deduplicator" abstract="true"
+		type="abstractDeduplicatorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for deduplicator elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common deduplicator information -->
+	<xsd:complexType name="abstractDeduplicatorType" />
+
+	<!-- Deduplicate events using a Groovy script -->
+	<xsd:element name="groovy-event-deduplicator" type="swGroovyDeduplicatorType"
+		substitutionGroup="abstract-deduplicator">
+		<xsd:annotation>
+			<xsd:documentation>Event deduplicator that uses a Groovy script to
+				determine whether an event is a duplicate of an existing event.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyDeduplicatorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeduplicatorType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for deduplicating event.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Deduplicate events by checking for event alternate id in datastore -->
+	<xsd:element name="alternate-id-deduplicator" type="swAlternateIdDeduplicatorType"
+		substitutionGroup="abstract-deduplicator">
+		<xsd:annotation>
+			<xsd:documentation>Event deduplicator that checks the alternate id
+				(if present) in an event against the existing list of alternate ids
+				in the datastore.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swAlternateIdDeduplicatorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeduplicatorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
 	<xsd:element name="abstract-event-source" abstract="true"
 		type="abstractEventSourceType">
@@ -2043,7 +2097,15 @@
 	</xsd:element>
 
 	<!-- Common event source information -->
-	<xsd:complexType name="abstractEventSourceType" />
+	<xsd:complexType name="abstractEventSourceType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-decoder" minOccurs="1"
+				maxOccurs="1" />
+			<xsd:element ref="abstract-deduplicator" minOccurs="0"
+				maxOccurs="1" />
+		</xsd:sequence>
+		<xsd:attributeGroup ref="event-source-attributes" />
+	</xsd:complexType>
 
 	<!-- Attributes common to all event sources -->
 	<xsd:attributeGroup name="event-source-attributes">
@@ -2086,10 +2148,6 @@
 	<xsd:complexType name="mqttEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attributeGroup ref="mqtt-broker-attributes" />
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
@@ -2176,10 +2234,6 @@
 	<xsd:complexType name="rabbitMqEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="connectionUri" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2231,10 +2285,6 @@
 	<xsd:complexType name="azureEventhubEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attributeGroup ref="azure-eventhub-inbound-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
@@ -2308,10 +2358,6 @@
 	<xsd:complexType name="activemqEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="transportUri" type="xsd:string"
 					use="required">
 					<xsd:annotation>
@@ -2365,10 +2411,6 @@
 	<xsd:complexType name="activeMQClientEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="remoteUri" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2413,7 +2455,6 @@
 	<xsd:complexType name="hazelcastQueueEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attributeGroup ref="event-source-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -2432,10 +2473,6 @@
 	<xsd:complexType name="pollingRestEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="pollIntervalMs" type="xsd:int"
 					use="required">
 					<xsd:annotation>
@@ -2574,9 +2611,7 @@
 							</xsd:annotation>
 						</xsd:element>
 					</xsd:choice>
-					<xsd:element ref="abstract-decoder" />
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="port" type="xsd:int" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2635,7 +2670,6 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
 					<xsd:element name="header" type="webSocketHeaderType"
 						minOccurs="0">
 						<xsd:annotation>
@@ -2645,7 +2679,6 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="webSocketUrl" type="xsd:string"
 					use="required">
 					<xsd:annotation>
@@ -2672,10 +2705,6 @@
 	<xsd:complexType name="coapServerEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:sequence>
-					<xsd:element ref="abstract-decoder" />
-				</xsd:sequence>
-				<xsd:attributeGroup ref="event-source-attributes" />
 				<xsd:attribute name="hostname" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
