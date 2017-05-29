@@ -740,6 +740,8 @@
 		if (checkConnected()) {
 			mcMeasurementsDS.data(new Array());
 			mcMetadataDS.data(new Array());
+			
+			$("#mc-alternate-id").val("");
 
 			var dataSource = createOptionsDatasource();
 			mcDateType.setDataSource(dataSource);
@@ -823,14 +825,22 @@
 			return;
 		}
 		var eventDateStr = asISO8601(eventDate);
+		var alternateId = $("#mc-alternate-id").val();
+		if (alternateId.length == 0) {
+			alternateId = null;
+		}
 		var batch = {
 			"hardwareId" : hardwareId
 		};
-		batch.measurements = [ {
+		var mxs = {
 			"eventDate" : eventDateStr,
 			"measurements" : swMetadataAsLookup(mcMeasurementsDS.data()),
 			"metadata" : swMetadataAsLookup(mcMetadataDS.data())
-		} ];
+		};
+		if (alternateId) {
+			mxs['alternateId'] = alternateId;
+		}
+		batch.measurements = [ mxs ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
 		$('#mc-dialog').modal('hide');
 	}
@@ -841,6 +851,7 @@
 		if (checkConnected()) {
 			$("#ac-type").val("");
 			$("#ac-message").val("");
+			$("#ac-alternate-id").val("");
 			acDatePicker.value(new Date());
 			acMetadataDS.data(new Array());
 
@@ -870,15 +881,23 @@
 			return;
 		}
 		var eventDateStr = asISO8601(eventDate);
+		var alternateId = $("#ac-alternate-id").val();
+		if (alternateId.length == 0) {
+			alternateId = null;
+		}
 		var batch = {
 			"hardwareId" : hardwareId
 		};
-		batch.alerts = [ {
+		var alert = {
 			"type" : type,
 			"message" : message,
 			"eventDate" : eventDateStr,
 			"metadata" : swMetadataAsLookup(acMetadataDS.data())
-		} ];
+		};
+		if (alternateId) {
+			alert['alternateId'] = alternateId;
+		}
+		batch.alerts = [ alert ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
 		$('#ac-dialog').modal('hide');
 	}
