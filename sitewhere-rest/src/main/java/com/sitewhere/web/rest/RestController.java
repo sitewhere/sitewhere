@@ -302,4 +302,26 @@ public class RestController {
 	    e1.printStackTrace();
 	}
     }
+
+    /**
+     * Verifies that requestor has all of the given roles or throws a
+     * "forbidden" error.
+     * 
+     * @param request
+     * @param response
+     * @param roles
+     * @throws SiteWhereException
+     */
+    public static void checkAuthForAll(HttpServletRequest request, HttpServletResponse response, String... roles)
+	    throws SiteWhereException {
+	for (String role : roles) {
+	    if (!request.isUserInRole(role)) {
+		try {
+		    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+		} catch (IOException e) {
+		    LOGGER.error(e);
+		}
+	    }
+	}
+    }
 }

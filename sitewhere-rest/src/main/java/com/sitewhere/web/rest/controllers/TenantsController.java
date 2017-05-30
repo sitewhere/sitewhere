@@ -97,7 +97,7 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "createTenantResponse.md") })
     public ITenant createTenant(@RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthAdminTenants(servletRequest, servletResponse);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "createTenant", LOGGER);
 	try {
 	    return SiteWhere.getServer().getTenantManagement().createTenant(request);
@@ -123,7 +123,7 @@ public class TenantsController extends RestController {
     public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthAdminTenants(servletRequest, servletResponse);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "updateTenant", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -147,8 +147,8 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
     public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-	    HttpServletRequest request, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthAdminTenants(request, servletResponse);
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantById", LOGGER);
 	try {
 	    ITenant tenant = assureAuthorizedTenantId(tenantId);
@@ -171,9 +171,9 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
     public ICommandResponse issueTenantEngineCommand(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    @ApiParam(value = "Command", required = true) @PathVariable String command, HttpServletRequest request,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthAdminTenants(request, servletResponse);
+	    @ApiParam(value = "Command", required = true) @PathVariable String command,
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
 	try {
 	    // Verify authorization and engine exists.
@@ -226,9 +226,9 @@ public class TenantsController extends RestController {
     @ApiOperation(value = "Get tenant engine configuration")
     @Documented
     public String getTenantEngineConfiguration(
-	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId, HttpServletRequest request,
-	    HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -254,9 +254,9 @@ public class TenantsController extends RestController {
     @ApiOperation(value = "Get tenant engine configuration as JSON")
     @Documented
     public ElementContent getTenantEngineConfigurationAsJson(
-	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId, HttpServletRequest request,
-	    HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -282,13 +282,13 @@ public class TenantsController extends RestController {
     @ApiOperation(value = "Stage tenant engine configuration from JSON")
     @Documented
     public ElementContent stageTenantEngineConfiguration(
-	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId, HttpServletRequest request,
-	    HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "stageTenantEngineConfiguration", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
-	    ServletInputStream inData = request.getInputStream();
+	    ServletInputStream inData = servletRequest.getInputStream();
 	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
 	    int data;
 	    while ((data = inData.read()) != -1) {
@@ -321,8 +321,8 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
     public ITenant getTenantByAuthToken(
 	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken,
-	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantByAuthToken", LOGGER);
 	try {
 	    return assureAuthorizedTenant(
@@ -352,8 +352,8 @@ public class TenantsController extends RestController {
 		    ConcernType.Paging }) int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
-	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 	try {
 	    TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
@@ -381,8 +381,8 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
     public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "deleteTenantById", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -405,8 +405,8 @@ public class TenantsController extends RestController {
     @ApiOperation(value = "List tenants that contain a device")
     public List<ITenant> listTenantsForDevice(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-	    HttpServletRequest request, HttpServletResponse response) throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "listTenantsForDevice", LOGGER);
 	try {
 	    List<ITenant> tenants = SiteWhere.getServer()
@@ -433,32 +433,14 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List templates available for creating tenants")
-    public List<ITenantTemplate> listTenantTemplates(HttpServletRequest request, HttpServletResponse response)
-	    throws SiteWhereException {
-	checkAuthAdminTenants(request, response);
+    public List<ITenantTemplate> listTenantTemplates(HttpServletRequest servletRequest,
+	    HttpServletResponse servletResponse) throws SiteWhereException {
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
 	Tracer.start(TracerCategory.RestApiCall, "listTenantTemplates", LOGGER);
 	try {
 	    return SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
 	} finally {
 	    Tracer.stop(LOGGER);
-	}
-    }
-
-    /**
-     * Verifies that authorized user is allowed to administer tenants.
-     * 
-     * @param request
-     * @param response
-     * @throws SiteWhereException
-     */
-    public static void checkAuthAdminTenants(HttpServletRequest request, HttpServletResponse response)
-	    throws SiteWhereException {
-	if (!request.isUserInRole(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
-	    try {
-		response.sendError(HttpServletResponse.SC_FORBIDDEN);
-	    } catch (IOException e) {
-		LOGGER.error(e);
-	    }
 	}
     }
 }
