@@ -52,7 +52,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantTemplate;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.configuration.ConfigurationContentParser;
 import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.rest.RestController;
@@ -97,7 +97,7 @@ public class TenantsController extends RestController {
 	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "createTenantResponse.md") })
     public ITenant createTenant(@RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "createTenant", LOGGER);
 	try {
 	    return SiteWhere.getServer().getTenantManagement().createTenant(request);
@@ -123,7 +123,7 @@ public class TenantsController extends RestController {
     public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "updateTenant", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -148,7 +148,7 @@ public class TenantsController extends RestController {
     public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantById", LOGGER);
 	try {
 	    ITenant tenant = assureAuthorizedTenantId(tenantId);
@@ -173,7 +173,7 @@ public class TenantsController extends RestController {
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Command", required = true) @PathVariable String command,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
 	try {
 	    // Verify authorization and engine exists.
@@ -228,7 +228,7 @@ public class TenantsController extends RestController {
     public String getTenantEngineConfiguration(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -256,7 +256,7 @@ public class TenantsController extends RestController {
     public ElementContent getTenantEngineConfigurationAsJson(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -284,7 +284,7 @@ public class TenantsController extends RestController {
     public ElementContent stageTenantEngineConfiguration(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "stageTenantEngineConfiguration", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -322,7 +322,7 @@ public class TenantsController extends RestController {
     public ITenant getTenantByAuthToken(
 	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantByAuthToken", LOGGER);
 	try {
 	    return assureAuthorizedTenant(
@@ -353,7 +353,7 @@ public class TenantsController extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 	try {
 	    TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
@@ -382,7 +382,7 @@ public class TenantsController extends RestController {
     public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "deleteTenantById", LOGGER);
 	try {
 	    assureAuthorizedTenantId(tenantId);
@@ -406,7 +406,7 @@ public class TenantsController extends RestController {
     public List<ITenant> listTenantsForDevice(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "listTenantsForDevice", LOGGER);
 	try {
 	    List<ITenant> tenants = SiteWhere.getServer()
@@ -435,7 +435,7 @@ public class TenantsController extends RestController {
     @ApiOperation(value = "List templates available for creating tenants")
     public List<ITenantTemplate> listTenantTemplates(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_TENANTS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	Tracer.start(TracerCategory.RestApiCall, "listTenantTemplates", LOGGER);
 	try {
 	    return SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();

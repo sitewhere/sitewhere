@@ -33,6 +33,7 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.spi.user.SiteWhereRoles;
 
 /**
@@ -198,8 +199,10 @@ public class RestController {
 		}
 		LOGGER.error("Exception thrown during REST processing.", e);
 	    }
-	} catch (IOException e1) {
-	    e1.printStackTrace();
+	} catch (IOException ioe) {
+	    LOGGER.error("Error handling system exception.", ioe);
+	} catch (Throwable t) {
+	    LOGGER.error("Error handling system exception.", t);
 	}
     }
 
@@ -304,7 +307,7 @@ public class RestController {
     }
 
     /**
-     * Verifies that requestor has all of the given roles or throws a
+     * Verifies that requestor has all of the given authorities or throws a
      * "forbidden" error.
      * 
      * @param request
@@ -312,16 +315,33 @@ public class RestController {
      * @param roles
      * @throws SiteWhereException
      */
-    public static void checkAuthForAll(HttpServletRequest request, HttpServletResponse response, String... roles)
-	    throws SiteWhereException {
-	for (String role : roles) {
-	    if (!request.isUserInRole(role)) {
-		try {
-		    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-		} catch (IOException e) {
-		    LOGGER.error(e);
-		}
-	    }
+    public static void checkAuthForAll(HttpServletRequest request, HttpServletResponse response,
+	    SiteWhereAuthority... auths) throws SiteWhereException {
+	for (SiteWhereAuthority auth : auths) {
+	    checkAuthFor(request, response, auth, true);
 	}
+    }
+
+    /**
+     * Verifies that requestor has the given authority and can throws a
+     * "forbidden" error if not.
+     * 
+     * @param request
+     * @param response
+     * @param auth
+     * @param throwException
+     * @return
+     * @throws SiteWhereException
+     */
+    public static boolean checkAuthFor(HttpServletRequest request, HttpServletResponse response,
+	    SiteWhereAuthority auth, boolean throwException) throws SiteWhereException {
+	if (!request.isUserInRole(auth.getRoleName())) {
+	    if (throwException) {
+		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
+			HttpServletResponse.SC_FORBIDDEN);
+	    }
+	    return false;
+	}
+	return true;
     }
 }

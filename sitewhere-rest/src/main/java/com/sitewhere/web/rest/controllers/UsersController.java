@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
+import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -44,7 +45,7 @@ import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
@@ -86,7 +87,7 @@ public class UsersController extends RestController {
 	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
     public User createUser(@RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
 	try {
 	    if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
@@ -119,7 +120,7 @@ public class UsersController extends RestController {
     public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    @RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
 	Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
 	try {
 	    IUser user = getUserManagement().updateUser(username, input, true);
@@ -143,7 +144,7 @@ public class UsersController extends RestController {
 	    @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
     public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
 	Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 	try {
 	    IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
@@ -174,7 +175,7 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
 	try {
 	    IUser user = getUserManagement().deleteUser(username, force);
@@ -199,7 +200,7 @@ public class UsersController extends RestController {
     public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
 	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 	try {
 	    List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
@@ -228,7 +229,7 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
 	try {
 	    List<User> usersConv = new ArrayList<User>();
@@ -261,7 +262,7 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
 	Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
 
 	// TODO: This should be in the system controller since it's not using
@@ -281,6 +282,29 @@ public class UsersController extends RestController {
 	    return results;
 	} finally {
 	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Check for privileges to use REST services + either admin all users or
+     * admin self on the currently logged in user.
+     * 
+     * @param servletRequest
+     * @param servletResponse
+     * @param username
+     * @throws SiteWhereException
+     */
+    public static void checkForAdminOrEditSelf(HttpServletRequest servletRequest, HttpServletResponse servletResponse,
+	    String username) throws SiteWhereException {
+	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+	if (!checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminUsers, false)) {
+	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
+		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
+			HttpServletResponse.SC_FORBIDDEN);
+	    } else {
+		checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminSelf, true);
+	    }
 	}
     }
 

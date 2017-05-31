@@ -38,6 +38,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -81,7 +82,7 @@ public class AuthoritiesController extends RestController {
 	    @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })
     public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
 	try {
 	    IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
@@ -106,7 +107,7 @@ public class AuthoritiesController extends RestController {
     public GrantedAuthority getAuthorityByName(
 	    @ApiParam(value = "Authority name", required = true) @PathVariable String name,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "getAuthorityByName", LOGGER);
 	try {
 	    IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
@@ -134,7 +135,7 @@ public class AuthoritiesController extends RestController {
     public SearchResults<GrantedAuthority> listAuthorities(
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "listAuthorities", LOGGER);
 	try {
 	    List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
@@ -163,7 +164,7 @@ public class AuthoritiesController extends RestController {
 	    @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereRoles.REST, SiteWhereRoles.ADMINISTER_USERS);
+	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
 	try {
 	    GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();

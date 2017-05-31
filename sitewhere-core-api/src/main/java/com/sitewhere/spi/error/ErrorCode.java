@@ -18,6 +18,9 @@ public enum ErrorCode {
      * COMMON *
      **********/
 
+    /** Operation was not permitted */
+    OperationNotPermitted(5, "User does not have permission for this operation."),
+
     /** Bad username */
     InvalidMetadataFieldName(10, "Metadata field name contains invalid characters."),
 
