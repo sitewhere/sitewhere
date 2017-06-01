@@ -16,4 +16,12 @@ public interface IProgressReporter {
      * @throws SiteWhereException
      */
     public void reportProgress(IProgressMessage message) throws SiteWhereException;
+
+    /**
+     * Report that an error occurred in a monitored operation.
+     * 
+     * @param error
+     * @throws SiteWhereException
+     */
+    public void reportError(IProgressErrorMessage error) throws SiteWhereException;
 }

@@ -23,6 +23,9 @@ public class ProgressMessage implements IProgressMessage {
     /** Operation message */
     private String message;
 
+    /** Timestamp for message */
+    private Long timeStamp;
+
     public ProgressMessage() {
     }
 
@@ -73,5 +76,19 @@ public class ProgressMessage implements IProgressMessage {
 
     public void setMessage(String message) {
 	this.message = message;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.monitoring.IProgressMessage#getTimeStamp()
+     */
+    @Override
+    public Long getTimeStamp() {
+	return timeStamp;
+    }
+
+    public void setTimeStamp(Long timeStamp) {
+	this.timeStamp = timeStamp;
     }
 }

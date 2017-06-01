@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.monitoring.IProgressErrorMessage;
 import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -42,8 +43,21 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      */
     @Override
     public void reportProgress(IProgressMessage message) throws SiteWhereException {
-	LOGGER.info(
-		"[" + message.getTaskName() + "]: (" + message.getProgressPercentage() + "%) " + message.getMessage());
+	LOGGER.info("[PROGRESS][" + message.getTaskName() + "]: (" + message.getProgressPercentage() + "%) "
+		+ message.getMessage());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.monitoring.IProgressReporter#reportError(com.sitewhere.
+     * spi.monitoring.IProgressErrorMessage)
+     */
+    @Override
+    public void reportError(IProgressErrorMessage error) throws SiteWhereException {
+	LOGGER.info("[ERROR][" + error.getTaskName() + "]: (" + error.getProgressPercentage() + "%) "
+		+ error.getMessage() + "[" + error.getLevel().name() + "]");
     }
 
     /*

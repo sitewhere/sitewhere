@@ -29,4 +29,11 @@ public interface IProgressMessage extends Serializable {
      * @return
      */
     public String getMessage();
+
+    /**
+     * Get timestamp for message.
+     * 
+     * @return
+     */
+    public Long getTimeStamp();
 }
