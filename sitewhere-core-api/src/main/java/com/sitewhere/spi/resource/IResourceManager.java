@@ -119,4 +119,12 @@ public interface IResourceManager extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public IResource deleteTenantResource(String tenantId, String path) throws SiteWhereException;
+
+    /**
+     * Delete all resources associated with the given tenant.
+     * 
+     * @param tenantId
+     * @throws SiteWhereException
+     */
+    public void deleteTenantResources(String tenantId) throws SiteWhereException;
 }

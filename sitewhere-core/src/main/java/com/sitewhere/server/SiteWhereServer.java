@@ -407,27 +407,59 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	return engine;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * If we have an auth token entry for the tenant, remove it.
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.
-     * sitewhere .spi.user.ITenant)
+     * @param tenant
      */
-    @Override
-    public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
-	// Account for updated authentication token.
+    protected void removeTenantForAuthToken(ITenant tenant) {
 	for (ITenant current : tenantsByAuthToken.values()) {
 	    if (current.getId().equals(tenant.getId())) {
 		tenantsByAuthToken.remove(current);
 	    }
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#onTenantUpdated(com.sitewhere.
+     * spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
+	// Account for updated authentication token.
+	removeTenantForAuthToken(tenant);
 	tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 
 	// Update tenant information in tenant engine.
 	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
 	if (engine != null) {
 	    engine.setTenant(tenant);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#onTenantDeleted(com.sitewhere.
+     * spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
+	// Remove from auth token cache.
+	removeTenantForAuthToken(tenant);
+
+	// Shutdown tenant engine and remove it.
+	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
+	if (engine != null) {
+	    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
+		stopTenantEngine(engine, new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Shut down deleted tenant engine.")));
+	    }
+	    getTenantEnginesById().remove(tenant.getId());
 	}
     }
 

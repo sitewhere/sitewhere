@@ -421,11 +421,30 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     }
 
     public MongoDatabase getTenantDatabase(ITenant tenant) {
-	return client.getDatabase("tenant-" + tenant.getId());
+	return getTenantDatabase(tenant.getId());
+    }
+
+    public MongoDatabase getTenantDatabase(String tenantId) {
+	return client.getDatabase("tenant-" + tenantId);
     }
 
     public MongoDatabase getGlobalDatabase() {
 	return client.getDatabase(getDatabaseName());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.mongodb.IGlobalManagementMongoClient#deleteTenantData(java.
+     * lang.String)
+     */
+    @Override
+    public void deleteTenantData(String tenantId) throws SiteWhereException {
+	MongoDatabase tenantDatabase = getTenantDatabase(tenantId);
+	if (tenantDatabase != null) {
+	    tenantDatabase.drop();
+	}
     }
 
     /*

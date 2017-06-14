@@ -192,7 +192,15 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @param tenant
      * @throws SiteWhereException
      */
-    public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException;
+    public void onTenantUpdated(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Called when a tenant is deleted.
+     * 
+     * @param tenant
+     * @throws SiteWhereException
+     */
+    public void onTenantDeleted(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get the user management implementation.

@@ -34,7 +34,24 @@ public class TenantManagementTriggers extends TenantManagementDecorator {
     @Override
     public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
 	ITenant updated = super.updateTenant(id, request);
-	SiteWhere.getServer().onTenantInformationUpdated(updated);
+	SiteWhere.getServer().onTenantUpdated(updated);
 	return updated;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.tenant.TenantManagementDecorator#deleteTenant(java.
+     * lang.String, boolean)
+     */
+    @Override
+    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+	ITenant deleted = super.deleteTenant(tenantId, force);
+	if (force) {
+	    SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResources(tenantId);
+	}
+	SiteWhere.getServer().onTenantDeleted(deleted);
+	return deleted;
     }
 }

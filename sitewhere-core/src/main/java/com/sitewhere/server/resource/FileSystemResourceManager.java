@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -697,6 +698,29 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		getTenantResource(tenantId, path));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.resource.IResourceManager#deleteTenantResources(java.
+     * lang.String)
+     */
+    @Override
+    public void deleteTenantResources(String tenantId) throws SiteWhereException {
+	File tenant = assureTenantFolder(tenantId);
+	if (tenant.exists()) {
+	    try {
+		// Delete underlying resources folder.
+		FileUtils.deleteDirectory(tenant);
+
+		// Remove resource map for tenant.
+		getTenantResourceMaps().remove(tenantId);
+	    } catch (IOException e) {
+		throw new SiteWhereException("Error deleting tenant resources.", e);
+	    }
+	}
+    }
+
     /**
      * Watches for file system changes in another thread.
      * 
@@ -750,7 +774,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 					LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
 				    }
 				} catch (Throwable t) {
-				    LOGGER.warn("Unable to cache resource: " + file.getAbsolutePath());
+				    LOGGER.warn("Unable to cache resource: " + file.getAbsolutePath(), t);
 				}
 			    } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 				uncacheFile(file);

@@ -267,12 +267,24 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.
-     * sitewhere .spi.user.ITenant)
+     * com.sitewhere.spi.server.ISiteWhereServer#onTenantUpdated(com.sitewhere.
+     * spi.tenant.ITenant)
      */
     @Override
-    public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
-	server.onTenantInformationUpdated(tenant);
+    public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
+	server.onTenantUpdated(tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.ISiteWhereServer#onTenantDeleted(com.sitewhere.
+     * spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
+	server.onTenantDeleted(tenant);
     }
 
     /*

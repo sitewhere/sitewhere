@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client that provides user management collections.
@@ -53,4 +54,12 @@ public interface IGlobalManagementMongoClient {
      * @return
      */
     public MongoCollection<Document> getTenantsCollection();
+
+    /**
+     * Deletes all tenant data. (non recoverable)
+     * 
+     * @param tenantId
+     * @throws SiteWhereException
+     */
+    public void deleteTenantData(String tenantId) throws SiteWhereException;
 }
