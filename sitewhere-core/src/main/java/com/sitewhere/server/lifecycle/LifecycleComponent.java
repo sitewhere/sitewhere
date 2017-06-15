@@ -105,9 +105,14 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleInitialize(ILifecycleProgressMonitor monitor) {
-	setLifecycleStatus(LifecycleStatus.Initializing);
-	getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
 	try {
+	    // Verify that component can be initialized.
+	    if (!canInitialize()) {
+		return;
+	    }
+	    setLifecycleStatus(LifecycleStatus.Initializing);
+	    getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
+
 	    initialize(monitor);
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
@@ -120,6 +125,17 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
+     */
+    @Override
+    public boolean canInitialize() throws SiteWhereException {
+	return true;
     }
 
     /*
@@ -156,10 +172,16 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStart(ILifecycleProgressMonitor monitor) {
-	LifecycleStatus old = getLifecycleStatus();
-	setLifecycleStatus(LifecycleStatus.Starting);
-	getLogger().info(getComponentName() + " state transitioned to STARTING.");
 	try {
+	    // Verify that component can be started.
+	    if (!canStart()) {
+		return;
+	    }
+
+	    LifecycleStatus old = getLifecycleStatus();
+	    setLifecycleStatus(LifecycleStatus.Starting);
+	    getLogger().info(getComponentName() + " state transitioned to STARTING.");
+
 	    if (old != LifecycleStatus.Paused) {
 		start(monitor);
 	    }
@@ -174,6 +196,16 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canStart()
+     */
+    @Override
+    public boolean canStart() throws SiteWhereException {
+	return true;
     }
 
     /*
@@ -286,9 +318,15 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
-	setLifecycleStatus(LifecycleStatus.Stopping);
-	getLogger().info(getComponentName() + " state transitioned to STOPPING.");
 	try {
+	    // Verify that we are allowed to stop component.
+	    if (!canStop()) {
+		return;
+	    }
+
+	    setLifecycleStatus(LifecycleStatus.Stopping);
+	    getLogger().info(getComponentName() + " state transitioned to STOPPING.");
+
 	    if (constraints == null) {
 		stop(monitor);
 	    } else {
@@ -305,6 +343,16 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canStop()
+     */
+    @Override
+    public boolean canStop() throws SiteWhereException {
+	return true;
     }
 
     /*

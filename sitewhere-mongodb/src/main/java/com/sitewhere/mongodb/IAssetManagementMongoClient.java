@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -30,14 +31,16 @@ public interface IAssetManagementMongoClient {
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant);
+    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get assets collection.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAssetsCollection(ITenant tenant);
+    public MongoCollection<Document> getAssetsCollection(ITenant tenant) throws SiteWhereException;
 }

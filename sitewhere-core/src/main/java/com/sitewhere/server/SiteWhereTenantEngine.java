@@ -214,6 +214,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#canStart()
+     */
+    @Override
+    public boolean canStart() throws SiteWhereException {
+	if (getLifecycleStatus() == LifecycleStatus.Started) {
+	    throw new SiteWhereSystemException(ErrorCode.TenantAlreadyStarted, ErrorLevel.ERROR);
+	}
+	return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
      * .server.lifecycle.ILifecycleProgressMonitor)
@@ -352,6 +365,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	} catch (SiteWhereException e) {
 	    LOGGER.warn("Unable to update tenant persistent state.");
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#canStop()
+     */
+    @Override
+    public boolean canStop() throws SiteWhereException {
+	if (getLifecycleStatus() == LifecycleStatus.Stopped) {
+	    throw new SiteWhereSystemException(ErrorCode.TenantAlreadyStopped, ErrorLevel.ERROR);
+	}
+	return true;
     }
 
     /*
@@ -631,6 +657,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#canInitialize()
+     */
+    @Override
+    public boolean canInitialize() throws SiteWhereException {
+	if (getLifecycleStatus() == LifecycleStatus.Started) {
+	    throw new SiteWhereSystemException(ErrorCode.TenantAlreadyStarted, ErrorLevel.ERROR);
+	}
+	return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#initialize()
      */
     public void initialize(ILifecycleProgressMonitor monitor) {
@@ -704,6 +743,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    } catch (Throwable t) {
 		throw new SiteWhereException("Unable copy tenant template resources.", t);
 	    }
+	    int retries = 3;
+	    while (retries > 0) {
+		IResource configuration = getTenantConfigurationResolver().getActiveTenantConfiguration();
+		if (configuration != null) {
+		    return;
+		}
+		LOGGER.info("Waiting for tenant configuration to load from filesystem. Retry " + retries + ".");
+		retries--;
+
+		try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		    return;
+		}
+	    }
+	    throw new SiteWhereException(
+		    "Tenant configuration did not show up on filesystem. Verify template is valid.");
 	}
     }
 
@@ -811,10 +867,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Load the active configuration and copy the default if necessary.
 	LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
 	config = getTenantConfigurationResolver().getActiveTenantConfiguration();
-	if (config == null) {
-	    LOGGER.info("No active configuration found. Copying configuration from template.");
-	    config = getTenantConfigurationResolver().copyTenantTemplateResources();
-	}
 	if (config == null) {
 	    throw new SiteWhereException("Tenant configuration not found. Aborting initialization.");
 	}

@@ -1005,8 +1005,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
 	    registerTenant(tenant, engine);
 	    return engine;
+	} else {
+	    LOGGER.warn("Tenant engine initialization failed for '" + tenant.getId() + "'", engine.getLifecycleError());
+	    return null;
 	}
-	return null;
     }
 
     /*

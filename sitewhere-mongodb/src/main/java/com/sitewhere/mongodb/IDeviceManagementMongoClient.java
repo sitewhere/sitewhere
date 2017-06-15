@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -63,102 +64,115 @@ public interface IDeviceManagementMongoClient {
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant);
+    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for device commands.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant);
+    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for devices.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDevicesCollection(ITenant tenant);
+    public MongoCollection<Document> getDevicesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for device assignments.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant);
+    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for sites.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getSitesCollection(ITenant tenant);
+    public MongoCollection<Document> getSitesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for zones.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getZonesCollection(ITenant tenant);
+    public MongoCollection<Document> getZonesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for device groups.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant);
+    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for device group elements.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant);
+    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for events.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getEventsCollection(ITenant tenant);
+    public MongoCollection<Document> getEventsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for streams.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getStreamsCollection(ITenant tenant);
+    public MongoCollection<Document> getStreamsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for stream data.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getStreamDataCollection(ITenant tenant);
+    public MongoCollection<Document> getStreamDataCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for batch operations.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant);
+    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for batch operation elements.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant);
+    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) throws SiteWhereException;
 }

@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -30,14 +31,16 @@ public interface IScheduleManagementMongoClient {
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getSchedulesCollection(ITenant tenant);
+    public MongoCollection<Document> getSchedulesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get collection for scheduled jobs.
      * 
      * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant);
+    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant) throws SiteWhereException;
 }

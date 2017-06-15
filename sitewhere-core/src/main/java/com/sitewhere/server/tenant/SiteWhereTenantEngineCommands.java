@@ -83,7 +83,7 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		getEngine().initialize(
+		getEngine().lifecycleInitialize(
 			new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Start tenant engine")));
 		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());

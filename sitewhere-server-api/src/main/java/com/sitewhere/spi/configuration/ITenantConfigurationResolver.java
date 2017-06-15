@@ -80,7 +80,7 @@ public interface ITenantConfigurationResolver {
      * @return
      * @throws SiteWhereException
      */
-    public IResource copyTenantTemplateResources() throws SiteWhereException;
+    public void copyTenantTemplateResources() throws SiteWhereException;
 
     /**
      * Gets the staged configuration resource for a given tenant. Returns null

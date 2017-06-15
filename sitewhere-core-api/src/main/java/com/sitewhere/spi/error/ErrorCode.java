@@ -70,6 +70,16 @@ public enum ErrorCode {
     /** Invalid tenant group reference */
     InvalidTenantGroupId(150, "Tenant group does not exist."),
 
+    /***********
+     * TENANTS *
+     ***********/
+
+    /** Indicates 'start' command issued to tenant that was already started */
+    TenantAlreadyStarted(300, "Tenant was already started."),
+
+    /** Indicates 'stop' command issued to tenant that was already stopped */
+    TenantAlreadyStopped(301, "Tenant was already stopped."),
+
     /***************************
      * INVALID OR DUPLICATE ID *
      ***************************/

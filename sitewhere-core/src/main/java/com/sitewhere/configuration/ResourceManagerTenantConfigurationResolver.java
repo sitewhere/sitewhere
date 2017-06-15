@@ -209,7 +209,7 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
      * copyTenantTemplateResources()
      */
     @Override
-    public IResource copyTenantTemplateResources() throws SiteWhereException {
+    public void copyTenantTemplateResources() throws SiteWhereException {
 	String tenantId = getTenant().getId();
 
 	// Account for missing template id (backward compatibility).
@@ -226,9 +226,7 @@ public class ResourceManagerTenantConfigurationResolver implements ITenantConfig
 		LOGGER.warn("Error copying: " + error.getPath() + ". Reason: " + error.getReason().name());
 	    }
 	}
-	LOGGER.info("Created configuration for '" + tenantId + "' based on " + templateId + "' template.");
-
-	return getActiveTenantConfiguration();
+	LOGGER.info("Created configuration for '" + tenantId + "' based on '" + templateId + "' template.");
     }
 
     /**

@@ -16,6 +16,7 @@ import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -128,8 +129,10 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      * @param tenant
      * @param token
      * @return
+     * @throws SiteWhereException
      */
-    public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, String token) {
+    public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, String token)
+	    throws SiteWhereException {
 	Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
 	Document update = new Document(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 	Document increment = new Document("$inc", update);

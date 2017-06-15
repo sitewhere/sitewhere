@@ -72,6 +72,14 @@ public interface ILifecycleComponent {
     public void lifecycleInitialize(ILifecycleProgressMonitor monitor);
 
     /**
+     * Indicates to framework whether component can be initialized.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public boolean canInitialize() throws SiteWhereException;
+
+    /**
      * Initialize the component.
      * 
      * @param monitor
@@ -93,6 +101,14 @@ public interface ILifecycleComponent {
      * Starts the component while keeping up with lifecycle information.
      */
     public void lifecycleStart(ILifecycleProgressMonitor monitor);
+
+    /**
+     * Indicates to framework whether component can be started.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public boolean canStart() throws SiteWhereException;
 
     /**
      * Start the component.
@@ -148,6 +164,14 @@ public interface ILifecycleComponent {
      * @param constraints
      */
     public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints);
+
+    /**
+     * Indicates to framework whether component can be stopped.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public boolean canStop() throws SiteWhereException;
 
     /**
      * Stop the component.

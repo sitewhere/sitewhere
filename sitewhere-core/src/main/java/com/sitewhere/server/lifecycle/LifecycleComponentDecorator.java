@@ -130,6 +130,17 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
+     */
+    @Override
+    public boolean canInitialize() throws SiteWhereException {
+	return delegate.canInitialize();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -162,6 +173,16 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void lifecycleStart(ILifecycleProgressMonitor monitor) {
 	delegate.lifecycleStart(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canStart()
+     */
+    @Override
+    public boolean canStart() throws SiteWhereException {
+	return delegate.canStart();
     }
 
     /*
@@ -246,6 +267,16 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
 	delegate.lifecycleStop(monitor, constraints);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canStop()
+     */
+    @Override
+    public boolean canStop() throws SiteWhereException {
+	return delegate.canStop();
     }
 
     /*
