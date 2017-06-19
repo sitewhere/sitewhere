@@ -20,11 +20,14 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.server.asset.datastore.DatastoreAssetModuleManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -127,7 +130,11 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      */
     @Override
     public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
-	return assertAssetModule(assetModuleId);
+	IAssetModule<?> module = modulesById.get(assetModuleId);
+	if (module == null) {
+	    module = dsModuleManager.getModule(assetModuleId);
+	}
+	return module;
     }
 
     /*
@@ -153,8 +160,11 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      * String, java.lang.String)
      */
     public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException {
-	IAssetModule<?> match = assertAssetModule(assetModuleId);
-	return match.getAsset(id);
+	IAssetModule<?> match = getModule(assetModuleId);
+	if (match != null) {
+	    return match.getAsset(id);
+	}
+	throw new SiteWhereSystemException(ErrorCode.InvalidAssetCategoryId, ErrorLevel.ERROR);
     }
 
     /*
@@ -164,10 +174,13 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      * java.lang.String)
      */
     public List<? extends IAsset> search(String assetModuleId, String criteria) throws SiteWhereException {
-	IAssetModule<?> match = assertAssetModule(assetModuleId);
-	List<? extends IAsset> results = match.search(criteria);
-	Collections.sort(results);
-	return results;
+	IAssetModule<?> match = getModule(assetModuleId);
+	if (match != null) {
+	    List<? extends IAsset> results = match.search(criteria);
+	    Collections.sort(results);
+	    return results;
+	}
+	throw new SiteWhereSystemException(ErrorCode.InvalidAssetCategoryId, ErrorLevel.ERROR);
     }
 
     /*
@@ -210,25 +223,6 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     public void onAssetCategoryRemoved(IAssetCategory category, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
 	dsModuleManager.onAssetCategoryRemoved(category, monitor);
-    }
-
-    /**
-     * Get asset module by id or throw exception if not found.
-     * 
-     * @param id
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IAssetModule<?> assertAssetModule(String id) throws SiteWhereException {
-	IAssetModule<?> match = modulesById.get(id);
-	if (match == null) {
-	    // NOTE: External modules with same id can hide datastore modules!
-	    match = dsModuleManager.getModule(id);
-	    if (match == null) {
-		throw new SiteWhereException("Invalid asset module id: " + id);
-	    }
-	}
-	return match;
     }
 
     public List<IAssetModule<?>> getModules() {

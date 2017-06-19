@@ -163,7 +163,11 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 		    .getModule(categoryId);
 	    if (module != null) {
 		module.putAsset(asset.getId(), asset);
-		LOGGER.info("Pushing asset update for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
+		LOGGER.debug(
+			"Pushing asset update for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
+	    } else {
+		LOGGER.warn("Unable to push asset update for '" + asset.getName() + "' to missing asset module '"
+			+ categoryId + "'.");
 	    }
 	}
     }
@@ -183,7 +187,11 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 		    .getModule(categoryId);
 	    if (module != null) {
 		module.removeAsset(asset.getId());
-		LOGGER.info("Pushing asset delete for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
+		LOGGER.debug(
+			"Pushing asset delete for '" + asset.getName() + "' to asset module '" + categoryId + "'.");
+	    } else {
+		LOGGER.warn("Unable to push asset delete for '" + asset.getName() + "' to missing asset module '"
+			+ categoryId + "'.");
 	    }
 	}
     }

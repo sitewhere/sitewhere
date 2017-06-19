@@ -173,7 +173,7 @@
 							<li><a href="${request.contextPath}/admin/users/list.html">Manage
 									Users</a></li>
 							<!-- #end -->
-							<!-- #if ($authorities.administerTenants) -->
+							<!-- #if ($authorities.administerTenants or $authorities.administerTenantSelf) -->
 							<li><a href="${request.contextPath}/admin/tenants/list.html">Manage
 									Tenants</a></li>
 							<!-- #end -->

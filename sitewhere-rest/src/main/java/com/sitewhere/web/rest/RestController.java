@@ -32,9 +32,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.TenantNotAvailableException;
-import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.spi.user.SiteWhereRoles;
 
 /**
  * Base class for common REST controller functionality.
@@ -91,45 +89,6 @@ public class RestController {
 	} else {
 	    return match;
 	}
-    }
-
-    /**
-     * Verify that the current user is authorized to interact with the given
-     * tenant id.
-     * 
-     * @param tenantId
-     * @throws SiteWhereException
-     */
-    protected ITenant assureAuthorizedTenantId(String tenantId) throws SiteWhereException {
-	ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
-	if (tenant == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
-	}
-	return assureAuthorizedTenant(tenant);
-    }
-
-    /**
-     * Verify that the current user is authorized to interact with the given
-     * tenant.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenant assureAuthorizedTenant(ITenant tenant) throws SiteWhereException {
-	IUser user = LoginManager.getCurrentlyLoggedInUser();
-
-	// Tenant administrators do not have to be in the list of authorized
-	// users.
-	if (user.getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
-	    return tenant;
-	}
-
-	// Tenant self-editors have to be in the list of authorized users.
-	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
-	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
-	}
-	return tenant;
     }
 
     /**
