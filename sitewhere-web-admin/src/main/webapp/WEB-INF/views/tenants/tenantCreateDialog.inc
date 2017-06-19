@@ -263,6 +263,9 @@
 		$('#tc-tenant-name').val(data.name);
 		$('#tc-tenant-logo').val(data.logoUrl);
 		$('#tc-tenant-auth-token').val(data.authenticationToken);
+		
+		// Set chosen template value.
+		tcTemplatesDropdown.value(data.tenantTemplateId);
 
 		// Set auth user values.
 		tcAuthUsersChooser.value(data.authorizedUserIds);
