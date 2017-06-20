@@ -1,4 +1,4 @@
-![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-medium.png)
+![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-github.png)
 
 ---
 
