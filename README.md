@@ -1,9 +1,4 @@
-![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg)](https://travis-ci.org/sitewhere/sitewhere)
-
 ![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-medium.png)
-
-The Open Platform for the Internet of Things™
------------------------------------------------
 
 #### SiteWhere is an open source platform for capturing, storing, integrating, and analyzing data from IoT devices. ####
 SiteWhere is a server application and framework used to develop applications for the Internet of Things. 
