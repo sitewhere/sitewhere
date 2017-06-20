@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg?branch=sitewhere-1.4.0)](https://travis-ci.org/sitewhere/sitewhere)
+![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg)](https://travis-ci.org/sitewhere/sitewhere)
 
-![SiteWhere] (https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png)
+![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-medium.png)
 
 The Open Platform for the Internet of Things™
 -----------------------------------------------
