@@ -49,15 +49,20 @@ export default {
   methods: {
     onLogin: function () {
       this.error = ''
+      var token = btoa(this.username + ':' + this.password)
+
+      // Request user information.
       var HTTP = axios.create({
         baseURL: `http://localhost:9090/sitewhere/api/`,
         headers: {
-          Authorization: 'Basic ' + btoa(this.username + ':' + this.password)
+          Authorization: 'Basic ' + token
         }
       })
       HTTP.get(`users/` + this.username)
       .then(response => {
-        alert('Logged in!')
+        this.$store.commit('setAuthToken', token)
+        this.$store.commit('setUser', response.data)
+        this.$router.push('/tenants')
       })
       .catch(e => {
         this.error = 'Login failed. Verify that username and password are correct.'
