@@ -1,5 +1,7 @@
 ![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-medium.png)
 
+---
+
 #### SiteWhere is an open source platform for capturing, storing, integrating, and analyzing data from IoT devices. ####
 SiteWhere is a server application and framework used to develop applications for the Internet of Things. 
 The core server uses the [Spring Boot](http://projects.spring.io/spring-boot/) architecture and provides
