@@ -16,8 +16,9 @@ export default {
       'users/' + this.$store.getters.user.username + '/tenants?includeRuntimeInfo=false',
       function (response) {
         var tenants = response.data
-        component.$store.commit('setAuthTenants', tenants)
+        component.$store.commit('authTenants', tenants)
         if (tenants.length === 1) {
+          component.$store.commit('selectedTenant', tenants[0])
           component.$router.push('/admin/server')
         }
       }, function (e) {

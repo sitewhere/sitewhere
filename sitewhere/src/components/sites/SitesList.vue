@@ -1,62 +1,91 @@
 <template>
-  <v-card raised class="grey lighten-4 white--text mt-3">
-    <v-card-row class="white" style="background: url('https://s3.amazonaws.com/sitewhere-demo/sitewhere.png'); background-size: contain; background-repeat: no-repeat;" height="200px">
-    </v-card-row>
-    <v-card-row v-if="error">
-      <v-alert error v-bind:value="true" style="width: 100%">
-        {{error}}
-      </v-alert>
-    </v-card-row>
-    <v-card-row>
-      <v-card-title class="black--text text-xs-center text-sm-center text-md-center text-lg-center text-xl-center">
-        SiteWhere Administration
-      </v-card-title>
-    </v-card-row>
-    <v-card-row>
-      <v-card-text>
-        <v-text-field label="Username" v-model="username" required></v-text-field>
-        <v-text-field label="Password" v-model="password" type="password" required></v-text-field>
-        <small class="black--text">* Indicates field is required</small>
-      </v-card-text>
-    </v-card-row>
-    <v-card-row actions>
-      <v-btn primary light @click.native="onLogin">Login</v-btn>
-    </v-card-row>
-  </v-card>
+  <div>
+    <v-app v-if="sites">
+      <v-card hover class="site white mb-2 pa-2" v-for="(site, index) in sites" :key="site.token">
+        <v-card-row>
+          <div class="site-logo"
+            v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat'}">
+          </div>
+          <div class="site-name">{{site.name}}</div>
+          <div class="site-desc">{{site.description}}</div>
+        </v-card-row>
+        <v-card-row class="site-actions" actions>
+          <v-btn icon v-tooltip:top="{ html: 'Delete Site' }">
+            <v-icon class="grey--text">delete</v-icon>
+          </v-btn>
+        </v-card-row>
+      </v-card>
+    </v-app>
+    <v-btn floating class="add-site-button red darken-1" v-tooltip:top="{ html: 'Add Site' }">
+      <v-icon light>add</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
+import {restAuthGet} from '../../http/http-common'
 
 export default {
 
   data: () => ({
-    username: '',
-    password: '',
-    error: ''
+    sites: null,
+    error: null
   }),
 
-  methods: {
-    onLogin: function () {
-      this.error = ''
-      var HTTP = axios.create({
-        baseURL: `http://localhost:9090/sitewhere/api/`,
-        headers: {
-          Authorization: 'Basic ' + btoa(this.username + ':' + this.password)
-        }
+  created: function () {
+    var component = this
+    restAuthGet(this.$store,
+      'sites',
+      function (response) {
+        component.sites = response.data.results
+      }, function (e) {
+        component.error = e
       })
-      HTTP.get(`users/` + this.username)
-      .then(response => {
-        this.$store.commit('setUser', response.data)
-        this.$router.push('admin')
-      })
-      .catch(e => {
-        this.error = 'Login failed. Verify that username and password are correct.'
-      })
-    }
   }
 }
 </script>
 
 <style scoped>
+.site {
+  min-height: 120px;
+}
+
+.site-logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+.site-name {
+  position: absolute;
+  top: 6px;
+  left: 125px;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.site-desc {
+  position: absolute;
+  top: 37px;
+  left: 125px;
+  font-size: 14px;
+  width: 60%;
+  max-height: 4.5em;
+  overflow-y: hidden;
+}
+
+.site-actions {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.add-site-button {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
 </style>

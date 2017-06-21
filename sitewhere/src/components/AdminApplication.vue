@@ -1,26 +1,39 @@
 <template>
   <v-app>
-    <v-navigation-drawer persistent light :mini-variant.sync="mini" v-model="drawer">
+    <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
       <v-list class="pa-0">
         <v-list-item>
           <v-list-tile avatar tag="div">
-            <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png"
-              style="height: 50px; margin-left: 45px;" />
+            <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-white.png"
+              style="height: 40px;" />
           </v-list-tile>
         </v-list-item>
       </v-list>
-      <v-list class="pt-0">
+      <v-list dense class="pt-0">
         <v-divider></v-divider>
-        <v-list-item v-for="section in sections" :key="section">
-          <v-list-tile @click.native="onSectionClicked(section)">
+        <v-list-group v-for="section in sections" :value="section.active" :key="section.id">
+          <v-list-tile @click.native="onSectionClicked(section)" slot="item">
             <v-list-tile-action>
-              <v-icon>{{ section.icon }}</v-icon>
+              <v-icon light>{{ section.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ section.title }}</v-list-tile-title>
             </v-list-tile-content>
+            <v-list-tile-action v-if="section.subsections">
+              <v-icon light>keyboard_arrow_down</v-icon>
+            </v-list-tile-action>
           </v-list-tile>
-        </v-list-item>
+          <v-list-item v-for="subsection in section.subsections" :key="subsection">
+            <v-list-tile @click.native="onSectionClicked(subsection)">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ subsection.title }}</v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-icon light>{{ subsection.icon }}</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar fixed class="grey darken-3" light>
@@ -47,10 +60,6 @@
         <router-view></router-view>
       </v-container>
     </main>
-    <v-footer class="pa-3 grey darken-3">
-      <v-spacer></v-spacer>
-      <div>© {{ new Date().getFullYear() }} SiteWhere LLC</div>
-    </v-footer>
   </v-app>
 </template>
 
@@ -71,6 +80,53 @@ export default {
       icon: 'map',
       route: '/admin/sites',
       longTitle: 'Manage Sites'
+    },
+    {
+      id: 'deviceGroup',
+      title: 'Devices',
+      icon: 'developer_board',
+      route: '/admin/devices',
+      longTitle: 'Manage Devices',
+      subsections: [{
+        id: 'specifications',
+        title: 'Device Specifications',
+        icon: 'description',
+        route: '/admin/specifications',
+        longTitle: 'Manage Device Specifications'
+      }, {
+        id: 'devices',
+        title: 'Devices',
+        icon: 'developer_board',
+        route: '/admin/devices',
+        longTitle: 'Manage Devices'
+      }, {
+        id: 'devicegroups',
+        title: 'Device Groups',
+        icon: 'view_module',
+        route: '/admin/devicegroups',
+        longTitle: 'Manage Device Groups'
+      }]
+    },
+    {
+      id: 'assets',
+      title: 'Assets',
+      icon: 'local_offer',
+      route: '/admin/assets',
+      longTitle: 'Manage Assets'
+    },
+    {
+      id: 'batch',
+      title: 'Batch Operations',
+      icon: 'group_work',
+      route: '/admin/batch',
+      longTitle: 'Manage Batch Operations'
+    },
+    {
+      id: 'schedules',
+      title: 'Schedules',
+      icon: 'event',
+      route: '/admin/schedules',
+      longTitle: 'Manage Schedules'
     }],
     userActions: [{
       id: 'logout',
@@ -103,7 +159,7 @@ export default {
   methods: {
     // Called when a section is clicked.
     onSectionClicked: function (section) {
-      this.$store.commit('setCurrentSection', section)
+      this.$store.commit('currentSection', section)
       this.$router.push(section.route)
     },
     onUserAction: function (action) {
@@ -121,4 +177,11 @@ export default {
 </script>
 
 <style scoped>
+.list__tile__action {
+  min-width: 40px;
+}
+.list__tile__title {
+  font-size: 16px;
+  padding-top: 3px;
+}
 </style>

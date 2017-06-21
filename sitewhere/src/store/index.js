@@ -8,26 +8,32 @@ export default new Vuex.Store({
     user: null,
     authToken: null,
     authTenants: null,
+    selectedTenant: null,
     currentSection: null
   },
   mutations: {
     // Set currently logged in user.
-    setUser (state, user) {
+    user (state, user) {
       state.user = user
     },
 
     // Set authentication token for logged in user.
-    setAuthToken (state, token) {
+    authToken (state, token) {
       state.authToken = token
     },
 
     // Set list of authorized tenants.
-    setAuthTenants (state, tenants) {
+    authTenants (state, tenants) {
       state.authTenants = tenants
     },
 
+    // Set selected tenant.
+    selectedTenant (state, selectedTenant) {
+      state.selectedTenant = selectedTenant
+    },
+
     // Set current app section.
-    setCurrentSection (state, section) {
+    currentSection (state, section) {
       state.currentSection = section
     },
 
@@ -45,8 +51,16 @@ export default new Vuex.Store({
       return state.user
     },
 
+    authToken: state => {
+      return state.authToken
+    },
+
     authTenants: state => {
       return state.authTenants
+    },
+
+    selectedTenant: state => {
+      return state.selectedTenant
     },
 
     currentSection: state => {

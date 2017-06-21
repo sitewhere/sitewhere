@@ -7,6 +7,7 @@
           <v-card raised class="grey lighten-4 white--text mt-3">
             <v-card-row class="white" style="background: url('https://s3.amazonaws.com/sitewhere-demo/sitewhere.png'); background-size: contain; background-repeat: no-repeat;" height="200px">
             </v-card-row>
+            <v-progress-linear v-if="attempting" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
             <v-card-row v-if="error">
               <v-alert error v-bind:value="true" style="width: 100%">
                 {{error}}
@@ -43,7 +44,8 @@ export default {
   data: () => ({
     username: '',
     password: '',
-    error: ''
+    error: '',
+    attempting: false
   }),
 
   methods: {
@@ -58,13 +60,16 @@ export default {
           Authorization: 'Basic ' + token
         }
       })
+      this.attempting = true
       HTTP.get(`users/` + this.username)
       .then(response => {
-        this.$store.commit('setAuthToken', token)
-        this.$store.commit('setUser', response.data)
+        this.$data.attempting = false
+        this.$store.commit('authToken', token)
+        this.$store.commit('user', response.data)
         this.$router.push('/tenants')
       })
       .catch(e => {
+        this.$data.attempting = false
         this.error = 'Login failed. Verify that username and password are correct.'
       })
     }
@@ -73,4 +78,7 @@ export default {
 </script>
 
 <style scoped>
+.login-progress {
+  margin: 0px;
+}
 </style>

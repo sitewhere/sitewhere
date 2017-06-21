@@ -4,6 +4,7 @@ import Vuetify from 'vuetify'
 import Login from '@/components/Login'
 import TenantManager from '@/components/tenants/TenantManager'
 import AdminApplication from '@/components/AdminApplication'
+import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 
 Vue.use(Router)
@@ -23,9 +24,27 @@ export default new Router({
       children: [
         {
           path: 'server',
-          component: SitesList
+          component: Server
         }, {
           path: 'sites',
+          component: SitesList
+        }, {
+          path: 'devices',
+          component: SitesList
+        }, {
+          path: 'specifications',
+          component: SitesList
+        }, {
+          path: 'devicegroups',
+          component: SitesList
+        }, {
+          path: 'assets',
+          component: SitesList
+        }, {
+          path: 'batch',
+          component: SitesList
+        }, {
+          path: 'schedules',
           component: SitesList
         }
       ]
