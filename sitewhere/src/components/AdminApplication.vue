@@ -9,7 +9,7 @@
           </v-list-tile>
         </v-list-item>
       </v-list>
-      <v-list dense class="pt-0">
+      <v-list v-if="sections" dense class="pt-0">
         <v-divider></v-divider>
         <v-list-group v-for="section in sections" :value="section.active" :key="section.id">
           <v-list-tile @click.native="onSectionClicked(section)" slot="item">
@@ -56,6 +56,7 @@
       </v-menu>
     </v-toolbar>
     <main>
+      <v-progress-linear v-if="loading" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
       <v-container fluid>
         <router-view></router-view>
       </v-container>
@@ -142,17 +143,33 @@ export default {
       return this.$store.getters.currentSection
     },
     fullname: function () {
-      var first = this.$store.getters.user.firstName
-      var last = this.$store.getters.user.lastName
-      if (last.length > 1) {
-        return first + ' ' + last
-      } else {
-        return first
+      var user = this.$store.getters.user
+      if (user) {
+        var first = this.$store.getters.user.firstName
+        var last = this.$store.getters.user.lastName
+        if (last.length > 1) {
+          return first + ' ' + last
+        } else {
+          return first
+        }
       }
+      return 'Not Logged In'
+    },
+    loading: function () {
+      return this.$store.getters.loading
     }
   },
 
   created: function () {
+    // Verify that user is logged in.
+    var user = this.$store.getters.user
+    if (!user) {
+      console.log('No user found in store. Logging out!')
+      this.onLogOut()
+      return
+    }
+
+    // Select first section from list.
     this.onSectionClicked(this.$data.sections[0])
   },
 
@@ -183,5 +200,8 @@ export default {
 .list__tile__title {
   font-size: 16px;
   padding-top: 3px;
+}
+.login-progress {
+  margin: 0px;
 }
 </style>

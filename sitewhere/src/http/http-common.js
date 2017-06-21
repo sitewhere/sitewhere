@@ -9,6 +9,7 @@ export const BASE_URL = `http://localhost:9090/sitewhere/api/`
  * Perform a REST get call.
  */
 export function restAuthGet (store, path, success, failed) {
+  store.commit('startLoading')
   var auth = store.getters.authToken
   var tenant = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
   var http = axios.create({
@@ -20,9 +21,11 @@ export function restAuthGet (store, path, success, failed) {
   })
   http.get(path)
   .then(function (response) {
+    store.commit('stopLoading')
     success(response)
   })
   .catch(function (e) {
+    store.commit('stopLoading')
     failed(e)
   })
 }

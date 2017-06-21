@@ -1,6 +1,4 @@
 <template>
-  <v-app>
-  </v-app>
 </template>
 
 <script>
@@ -10,7 +8,6 @@ export default {
   }),
 
   created: function () {
-    console.log('Server panel created.')
   }
 }
 </script>

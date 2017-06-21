@@ -9,7 +9,8 @@ export default new Vuex.Store({
     authToken: null,
     authTenants: null,
     selectedTenant: null,
-    currentSection: null
+    currentSection: null,
+    loading: true
   },
   mutations: {
     // Set currently logged in user.
@@ -35,6 +36,16 @@ export default new Vuex.Store({
     // Set current app section.
     currentSection (state, section) {
       state.currentSection = section
+    },
+
+    // Start loading indicator.
+    startLoading (state) {
+      state.loading = true
+    },
+
+    // Stop loading indicator.
+    stopLoading (state) {
+      state.loading = false
     },
 
     // Log out of the application.
@@ -65,6 +76,10 @@ export default new Vuex.Store({
 
     currentSection: state => {
       return state.currentSection
+    },
+
+    loading: state => {
+      return state.loading
     }
   }
 })

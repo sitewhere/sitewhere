@@ -16,21 +16,29 @@
         </v-card-row>
       </v-card>
     </v-app>
-    <v-btn floating class="add-site-button red darken-1" v-tooltip:top="{ html: 'Add Site' }">
-      <v-icon light>add</v-icon>
-    </v-btn>
+    <create-site-dialog/>
   </div>
 </template>
 
 <script>
+import CreateSiteDialog from './CreateSiteDialog'
 import {restAuthGet} from '../../http/http-common'
 
 export default {
 
   data: () => ({
     sites: null,
-    error: null
+    error: null,
+    site: {
+      name: '',
+      description: '',
+      imageUrl: ''
+    }
   }),
+
+  components: {
+    CreateSiteDialog
+  },
 
   created: function () {
     var component = this
@@ -40,7 +48,8 @@ export default {
         component.sites = response.data.results
       }, function (e) {
         component.error = e
-      })
+      }
+    )
   }
 }
 </script>
@@ -81,11 +90,5 @@ export default {
   bottom: 0px;
   left: 0px;
   right: 0px;
-}
-
-.add-site-button {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
 }
 </style>
