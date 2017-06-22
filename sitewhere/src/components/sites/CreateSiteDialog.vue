@@ -33,9 +33,8 @@
           </v-card>
         </v-tabs-content>
         <v-tabs-content key="3" id="tab3">
-          <v-card flat>
-            <v-card-text>XXX</v-card-text>
-          </v-card>
+          <metadata-panel :metadata="metadata"
+            @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
         </v-tabs-content>
       </v-tabs>
     </base-dialog>
@@ -48,6 +47,7 @@
 
 <script>
 import BaseDialog from '../common/BaseDialog'
+import MetadataPanel from '../common/MetadataPanel'
 
 export default {
 
@@ -58,30 +58,53 @@ export default {
       name: '',
       description: '',
       imageUrl: ''
-    }
+    },
+    metadata: [
+      {
+        'name': 'derek',
+        'value': 'developer'
+      }, {
+        'name': 'bobby',
+        'value': 'engineer'
+      }
+    ]
   }),
 
   components: {
-    BaseDialog
+    BaseDialog,
+    MetadataPanel
   },
 
   methods: {
     // Called to open the dialog.
     onOpenDialog: function (e) {
       this.$data.dialogVisible = true
-      console.log('Set dialog to visible')
     },
 
     // Called after create button is clicked.
     onCreateClicked: function (e) {
-      console.log('Parent dialog visible ' + this.$data.dialogVisible)
       this.$data.dialogVisible = false
     },
 
     // Called after cancel button is clicked.
     onCancelClicked: function (e) {
-      console.log('Parent dialog visible ' + this.$data.dialogVisible)
       this.$data.dialogVisible = false
+    },
+
+    // Called when a metadata entry has been deleted.
+    onMetadataDeleted: function (name) {
+      var metadata = this.$data.metadata
+      for (var i = 0; i < metadata.length; i++) {
+        if (metadata[i].name === name) {
+          metadata.splice(i, 1)
+        }
+      }
+    },
+
+    // Called when a metadata entry has been added.
+    onMetadataAdded: function (entry) {
+      var metadata = this.$data.metadata
+      metadata.push(entry)
     }
   }
 }

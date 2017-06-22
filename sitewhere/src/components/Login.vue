@@ -20,9 +20,8 @@
             </v-card-row>
             <v-card-row>
               <v-card-text>
-                <v-text-field label="Username" v-model="username" required></v-text-field>
-                <v-text-field label="Password" v-model="password" type="password" required></v-text-field>
-                <small class="black--text">* Indicates field is required</small>
+                <v-text-field label="Username" v-model="username"></v-text-field>
+                <v-text-field label="Password" v-model="password" type="password"></v-text-field>
               </v-card-text>
             </v-card-row>
             <v-card-row actions>
