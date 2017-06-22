@@ -10,8 +10,8 @@
         </slot>
       </v-card-row>
       <v-card-row actions>
-        <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">Cancel</v-btn>
-        <v-btn class="blue--text darken-1" flat="flat" @click.native="onCreateClicked">Create</v-btn>
+        <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">{{cancelLabel}}</v-btn>
+        <v-btn class="blue--text darken-1" flat="flat" @click.native="onCreateClicked">{{createLabel}}</v-btn>
       </v-card-row>
     </v-card>
   </v-dialog>
@@ -23,7 +23,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['title', 'width', 'buttonTooltip', 'visible'],
+  props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel'],
 
   methods: {
     // Called when create button is clicked.

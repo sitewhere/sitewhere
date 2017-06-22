@@ -5,7 +5,7 @@
       <v-layout row wrap>
         <v-flex xs6 offset-xs3>
           <v-card raised class="grey lighten-4 white--text mt-3">
-            <v-card-row class="white" style="background: url('https://s3.amazonaws.com/sitewhere-demo/sitewhere.png'); background-size: contain; background-repeat: no-repeat;" height="200px">
+            <v-card-row class="white" style="background: url(/static/sitewhere.png); background-size: contain; background-repeat: no-repeat;" height="200px">
             </v-card-row>
             <v-progress-linear v-if="attempting" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
             <v-card-row v-if="error">
