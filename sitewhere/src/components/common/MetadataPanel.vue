@@ -2,7 +2,7 @@
   <v-card>
     <v-card-row>
       <v-data-table class="elevation-1" :headers="headers" :items="metadata"
-        :rows-per-page-items="pagesize">
+        :rows-per-page-items="pagesize" no-data-text="No metadata has been assigned">
         <template slot="items" scope="props">
           <td width="250px" :title="props.item.name">
             {{ (props.item.name.length > 25) ? props.item.name.substring(0, 25) + "..." : props.item.name }}
@@ -48,7 +48,7 @@
 export default {
 
   data: () => ({
-    pagesize: [5, 5, 5],
+    pagesize: [5],
     newItemName: '',
     newItemValue: '',
     headers: [
@@ -75,6 +75,9 @@ export default {
   props: ['metadata'],
 
   created: function () {
+    this.$data.newItemName = ''
+    this.$data.newItemValue = ''
+    this.$data.error = null
   },
 
   methods: {
