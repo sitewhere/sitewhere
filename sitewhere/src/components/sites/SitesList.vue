@@ -4,12 +4,14 @@
       <site-list-entry :site="site" v-for="(site, index) in sites" :key="site.token"
         @click="onOpenSite(site.token)" @siteDeleted="onSiteDeleted" class="mb-3">
       </site-list-entry>
+      <pager></pager>
     </v-app>
     <site-create-dialog @siteAdded="onSiteAdded"/>
   </div>
 </template>
 
 <script>
+import Pager from '../common/Pager'
 import SiteListEntry from './SiteListEntry'
 import SiteCreateDialog from './SiteCreateDialog'
 import {restAuthGet} from '../../http/http-common'
@@ -22,6 +24,7 @@ export default {
   }),
 
   components: {
+    Pager,
     SiteListEntry,
     SiteCreateDialog
   },
