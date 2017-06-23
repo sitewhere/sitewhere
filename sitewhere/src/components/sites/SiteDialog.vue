@@ -1,7 +1,7 @@
 <template>
   <div>
     <base-dialog :title="title" :width="width" :visible="dialogVisible"
-      :createLabel="createLabel" :cancelLabel="cancelLabel"
+      :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
       @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
       <v-tabs light v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -46,7 +46,6 @@
         </v-tabs-content>
       </v-tabs>
     </base-dialog>
-    <slot name="activator"></slot>
   </div>
 </template>
 
@@ -64,7 +63,8 @@ export default {
     siteDescription: '',
     siteImageUrl: '',
     mapConfig: {},
-    metadata: []
+    metadata: [],
+    error: null
   }),
 
   components: {
@@ -73,20 +73,7 @@ export default {
     MetadataPanel
   },
 
-  props: ['title', 'width', 'open', 'close', 'resetOnOpen', 'createLabel', 'cancelLabel'],
-
-  watch: {
-    open: function (val) {
-      if (val) {
-        this.onOpenDialog()
-      }
-    },
-    close: function (val) {
-      if (val) {
-        this.onCloseDialog()
-      }
-    }
-  },
+  props: ['title', 'width', 'createLabel', 'cancelLabel'],
 
   methods: {
     // Generate payload from UI.
@@ -116,17 +103,42 @@ export default {
       this.$data.active = 'details'
     },
 
-    // Called to open the dialog.
-    onOpenDialog: function () {
-      this.$data.dialogVisible = true
-      if (this.$data.resetOnOpen) {
-        this.reset()
+    // Load dialog from a given payload.
+    load: function (payload) {
+      this.reset()
+
+      if (payload) {
+        this.$data.siteName = payload.name
+        this.$data.siteDescription = payload.description
+        this.$data.siteImageUrl = payload.imageUrl
+        this.$data.mapConfig = payload.mapConfig
+
+        var meta = payload.metadata
+        var flat = []
+        if (meta) {
+          for (var key in meta) {
+            if (meta.hasOwnProperty(key)) {
+              flat.push({name: key, value: meta[key]})
+            }
+          }
+        }
+        this.$data.metadata = flat
       }
     },
 
     // Called to open the dialog.
-    onCloseDialog: function () {
+    openDialog: function () {
+      this.$data.dialogVisible = true
+    },
+
+    // Called to open the dialog.
+    closeDialog: function () {
       this.$data.dialogVisible = false
+    },
+
+    // Called to show an error message.
+    showError: function (error) {
+      this.$data.error = error
     },
 
     // Called after create button is clicked.

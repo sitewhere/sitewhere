@@ -4,6 +4,11 @@
       <v-card-row class="create-dialog">
         <span class="blue darken-2 white--text">{{title}}</span>
       </v-card-row>
+      <v-card-row slot="error" v-if="error">
+        <v-alert class="ma-0" error v-bind:value="true" style="width: 100%">
+          {{error}}
+        </v-alert>
+      </v-card-row>
       <v-card-row>
         <slot>
             <div>Your content goes here!</div>
@@ -23,7 +28,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel'],
+  props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel', 'error'],
 
   methods: {
     // Called when create button is clicked.

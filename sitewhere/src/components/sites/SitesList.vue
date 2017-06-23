@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app v-if="sites">
-      <v-card hover class="site white mb-2 pa-2" v-for="(site, index) in sites" :key="site.token">
+      <v-card hover class="site white mb-3 pa-2" v-for="(site, index) in sites" :key="site.token">
         <v-card-row>
           <div class="site-logo"
             v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat'}">
@@ -16,7 +16,7 @@
         </v-card-row>
       </v-card>
     </v-app>
-    <create-site-dialog/>
+    <create-site-dialog @siteAdded="onSiteAdded"/>
   </div>
 </template>
 
@@ -40,16 +40,28 @@ export default {
     CreateSiteDialog
   },
 
+  methods: {
+    // Refresh list of sites.
+    refresh: function () {
+      var component = this
+      restAuthGet(this.$store,
+        'sites',
+        function (response) {
+          component.sites = response.data.results
+        }, function (e) {
+          component.error = e
+        }
+      )
+    },
+
+    // Called when a new site is added.
+    onSiteAdded: function () {
+      this.refresh()
+    }
+  },
+
   created: function () {
-    var component = this
-    restAuthGet(this.$store,
-      'sites',
-      function (response) {
-        component.sites = response.data.results
-      }, function (e) {
-        component.error = e
-      }
-    )
+    this.refresh()
   }
 }
 </script>

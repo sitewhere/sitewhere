@@ -29,3 +29,28 @@ export function restAuthGet (store, path, success, failed) {
     failed(e)
   })
 }
+
+/**
+ * Perform a REST post call.
+ */
+export function restAuthPost (store, path, payload, success, failed) {
+  store.commit('startLoading')
+  var auth = store.getters.authToken
+  var tenant = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
+  var http = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+      Authorization: 'Basic ' + auth,
+      'X-SiteWhere-Tenant': tenant
+    }
+  })
+  http.post(path, payload)
+  .then(function (response) {
+    store.commit('stopLoading')
+    success(response)
+  })
+  .catch(function (e) {
+    store.commit('stopLoading')
+    failed(e)
+  })
+}
