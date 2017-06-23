@@ -10,18 +10,17 @@
           <div class="site-desc">{{site.description}}</div>
         </v-card-row>
         <v-card-row class="site-actions" actions>
-          <v-btn icon v-tooltip:top="{ html: 'Delete Site' }">
-            <v-icon class="grey--text">delete</v-icon>
-          </v-btn>
+          <site-delete-dialog :token="site.token" @siteDeleted="onSiteDeleted"/>
         </v-card-row>
       </v-card>
     </v-app>
-    <create-site-dialog @siteAdded="onSiteAdded"/>
+    <site-create-dialog @siteAdded="onSiteAdded"/>
   </div>
 </template>
 
 <script>
-import CreateSiteDialog from './CreateSiteDialog'
+import SiteCreateDialog from './SiteCreateDialog'
+import SiteDeleteDialog from './SiteDeleteDialog'
 import {restAuthGet} from '../../http/http-common'
 
 export default {
@@ -37,7 +36,8 @@ export default {
   }),
 
   components: {
-    CreateSiteDialog
+    SiteCreateDialog,
+    SiteDeleteDialog
   },
 
   methods: {
@@ -56,6 +56,11 @@ export default {
 
     // Called when a new site is added.
     onSiteAdded: function () {
+      this.refresh()
+    },
+
+    // Called when a site is deleted.
+    onSiteDeleted: function () {
       this.refresh()
     }
   },
