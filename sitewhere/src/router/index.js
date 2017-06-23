@@ -9,6 +9,7 @@ import TenantManager from '@/components/tenants/TenantManager'
 import AdminApplication from '@/components/AdminApplication'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
+import SiteDetail from '@/components/sites/SiteDetail'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -31,6 +32,7 @@ L.Icon.Default.mergeOptions({
 // END HACK.
 
 export default new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/',
@@ -49,23 +51,26 @@ export default new Router({
           path: 'sites',
           component: SitesList
         }, {
+          path: 'sites/:token',
+          component: SiteDetail
+        }, {
           path: 'devices',
-          component: SitesList
+          component: Server
         }, {
           path: 'specifications',
-          component: SitesList
+          component: Server
         }, {
           path: 'devicegroups',
-          component: SitesList
+          component: Server
         }, {
           path: 'assets',
-          component: SitesList
+          component: Server
         }, {
           path: 'batch',
-          component: SitesList
+          component: Server
         }, {
           path: 'schedules',
-          component: SitesList
+          component: Server
         }
       ]
     }
