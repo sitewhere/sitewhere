@@ -18,8 +18,9 @@ export default {
         var tenants = response.data
         component.$store.commit('authTenants', tenants)
         if (tenants.length === 1) {
+          var tenant = tenants[0]
           component.$store.commit('selectedTenant', tenants[0])
-          component.$router.push('/admin/server')
+          component.$router.push('/admin/' + tenant.id + '/server')
         }
       }, function (e) {
         component.error = e

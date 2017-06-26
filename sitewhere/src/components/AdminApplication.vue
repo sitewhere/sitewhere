@@ -65,28 +65,31 @@
 </template>
 
 <script>
+import {restAuthGet} from '../http/http-common'
+
 export default {
   data: () => ({
     drawer: true,
+    tenantId: null,
     sections: [{
       id: 'server',
       title: 'Server',
       icon: 'home',
-      route: '/admin/server',
+      route: 'server',
       longTitle: 'Server Administration'
     },
     {
       id: 'sites',
       title: 'Sites',
       icon: 'map',
-      route: '/admin/sites',
+      route: 'sites',
       longTitle: 'Manage Sites'
     },
     {
       id: 'deviceGroup',
       title: 'Devices',
       icon: 'developer_board',
-      route: '/admin/devices',
+      route: 'devices',
       longTitle: 'Manage Devices',
       subsections: [{
         id: 'specifications',
@@ -98,13 +101,13 @@ export default {
         id: 'devices',
         title: 'Devices',
         icon: 'developer_board',
-        route: '/admin/devices',
+        route: 'devices',
         longTitle: 'Manage Devices'
       }, {
         id: 'devicegroups',
         title: 'Device Groups',
         icon: 'view_module',
-        route: '/admin/devicegroups',
+        route: 'devicegroups',
         longTitle: 'Manage Device Groups'
       }]
     },
@@ -112,21 +115,21 @@ export default {
       id: 'assets',
       title: 'Assets',
       icon: 'local_offer',
-      route: '/admin/assets',
+      route: 'assets',
       longTitle: 'Manage Assets'
     },
     {
       id: 'batch',
       title: 'Batch Operations',
       icon: 'group_work',
-      route: '/admin/batch',
+      route: 'batch',
       longTitle: 'Manage Batch Operations'
     },
     {
       id: 'schedules',
       title: 'Schedules',
       icon: 'event',
-      route: '/admin/schedules',
+      route: 'schedules',
       longTitle: 'Manage Schedules'
     }],
     userActions: [{
@@ -169,15 +172,54 @@ export default {
       return
     }
 
-    // Select first section from list.
-    this.onSectionClicked(this.$data.sections[0])
+    // Verify that a tenant was specified.
+    var tenant = this.$store.getters.selectedTenant
+    var tenantId = this.$route.params.tenantId
+    this.$data.tenantId = tenant.id
+
+    // Fail if no tenant id passed.
+    if (!tenantId) {
+      console.log('No tenant id passed. Logging out!')
+      this.onLogOut()
+      return
+    }
+
+    // Load tenant if tenant id changed or not already loaded.
+    if ((!tenant) || (tenant.id !== tenantId)) {
+      this.onLoadTenant(tenantId)
+    } else {
+      // Select first section from list.
+      this.onSectionClicked(this.$data.sections[0])
+    }
   },
 
   methods: {
+    // Load tenant based on tenant id.
+    onLoadTenant: function (tenantId) {
+      var component = this
+
+      restAuthGet(this.$store,
+        'tenants/' + tenantId,
+        function (response) {
+          component.onTenantLoaded(response.data)
+        }, function (e) {
+          console.log('Unable to load tenant ' + tenantId + '. Logging out!')
+          component.onLogOut()
+        }
+      )
+    },
+    // Called after tenant is loaded.
+    onTenantLoaded: function (tenant) {
+      console.log('Successfully loaded ' + tenant.id + ' tenant.')
+      this.$store.commit('selectedTenant', tenant)
+
+      // Select first section from list.
+      this.onSectionClicked(this.$data.sections[0])
+    },
     // Called when a section is clicked.
     onSectionClicked: function (section) {
       this.$store.commit('currentSection', section)
-      this.$router.push(section.route)
+      this.$router.push('/admin/' + this.$data.tenantId + '/' + section.route)
     },
     onUserAction: function (action) {
       if (action.id === 'logout') {
