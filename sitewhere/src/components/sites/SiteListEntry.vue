@@ -30,7 +30,10 @@ export default {
   methods: {
     // Called when a site is clicked.
     onOpenSite: function (token) {
-      this.$router.push('/admin/sites/' + token)
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/admin/' + tenant.id + '/sites/' + token)
+      }
     },
 
     // Called when a site is deleted.

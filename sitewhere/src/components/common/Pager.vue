@@ -2,12 +2,11 @@
   <v-card class="elevation-1 grey lighten-4 black--text pa-0 mb-3">
     <v-container class="ma-0 pa-0">
       <v-layout row wrap>
-        <v-flex xs3>
+        <v-flex xs2>
           <v-subheader class="ma-0 pt-0 pr-0 right">Rows per page</v-subheader>
         </v-flex>
-        <v-flex xs2 style="margin-top: 8px; height: 10px;">
-          <v-select class="ma-0 pt-0 pr-4" :items="pageSizesWithDefaults" v-model="pageSize"
-            dark single-line></v-select>
+        <v-flex xs3 style="margin-top: 6px; height: 10px;">
+          <v-btn-toggle :options="pageSizesWithDefaults" v-model="pageSize"></v-btn-toggle>
         </v-flex>
         <v-flex xs4>
           <v-btn :disabled="!previousEnabled" icon dark class="ml-0 mr-0"
@@ -47,17 +46,14 @@ export default {
     },
     defaultPageSizes: [
       {
-        text: '1',
-        value: 1
+        text: '10',
+        value: 10
       }, {
         text: '25',
         value: 25
       }, {
         text: '50',
         value: 50
-      }, {
-        text: '100',
-        value: 100
       }
     ]
   }),
@@ -172,7 +168,7 @@ export default {
       var paging = {
         page: page,
         pageSize: pageSize,
-        query: '?page=' + page + '&pageSize=' + pageSize
+        query: 'page=' + page + '&pageSize=' + pageSize
       }
       this.$emit('pagingUpdated', paging)
     }

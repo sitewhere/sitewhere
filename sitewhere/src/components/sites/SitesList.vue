@@ -21,8 +21,7 @@ export default {
   data: () => ({
     results: null,
     paging: null,
-    sites: null,
-    error: null
+    sites: null
   }),
 
   components: {
@@ -41,15 +40,15 @@ export default {
     // Refresh list of sites.
     refresh: function () {
       var query = this.$data.paging.query
-
       var component = this
       restAuthGet(this.$store,
-        'sites' + query,
+        'sites?' + query,
         function (response) {
           component.results = response.data
           component.sites = response.data.results
+          component.$emit('error', null)
         }, function (e) {
-          component.error = e
+          component.$emit('error', e)
         }
       )
     },

@@ -56,10 +56,11 @@
       </v-menu>
     </v-toolbar>
     <main>
+      <error-banner :error="error"></error-banner>
       <v-progress-linear v-if="loading" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
       <div style="height: 7px;" v-else></div>
       <v-container fluid>
-        <router-view></router-view>
+        <router-view @error="onError"></router-view>
       </v-container>
     </main>
   </v-app>
@@ -67,10 +68,12 @@
 
 <script>
 import {restAuthGet} from '../http/http-common'
+import ErrorBanner from './common/ErrorBanner'
 
 export default {
   data: () => ({
     drawer: true,
+    error: null,
     tenantId: null,
     sections: [{
       id: 'server',
@@ -141,6 +144,10 @@ export default {
     mini: false,
     right: null
   }),
+
+  components: {
+    ErrorBanner
+  },
 
   computed: {
     section: function () {
@@ -225,10 +232,15 @@ export default {
         this.onLogOut()
       }
     },
+    // Called when user requests log out.
     onLogOut: function () {
       console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
+    },
+    // Called if subcomponent encounters an error.
+    onError: function (error) {
+      this.$data.error = error
     }
   }
 }
