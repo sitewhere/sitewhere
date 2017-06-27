@@ -81,10 +81,14 @@ public class DeviceAssignmentMarshalHelper {
 	}
 	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
 	    IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
-	    if (asset != null) {
-		result.setAssetName(asset.getName());
-		result.setAssetImageUrl(asset.getImageUrl());
+
+	    // Handle case where referenced asset is not found.
+	    if (asset == null) {
+		LOGGER.warn("Device assignment has reference to non-existent asset.");
+		asset = new InvalidAsset();
 	    }
+	    result.setAssetName(asset.getName());
+	    result.setAssetImageUrl(asset.getImageUrl());
 	    if (isIncludeAsset()) {
 		if (asset instanceof HardwareAsset) {
 		    result.setAssociatedHardware((HardwareAsset) asset);

@@ -77,26 +77,6 @@ public class DeviceSpecificationMarshalHelper {
 	return spec;
     }
 
-    /**
-     * Asset returned if referenced asset can not be found.
-     * 
-     * @author Derek
-     */
-    public static class InvalidAsset extends HardwareAsset {
-
-	private static final long serialVersionUID = 1383739852322979924L;
-
-	public InvalidAsset() {
-	    super();
-	    setId("invalid");
-	    setAssetCategoryId("invalid");
-	    setName("Invalid");
-	    setDescription("Referenced asset was not found.");
-	    setImageUrl("https://s3.amazonaws.com/sitewhere-demo/broken-link.png");
-	    setSku("invalid");
-	}
-    }
-
     public boolean isIncludeAsset() {
 	return includeAsset;
     }
