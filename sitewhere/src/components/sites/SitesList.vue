@@ -4,8 +4,8 @@
       <site-list-entry :site="site" v-for="(site, index) in sites" :key="site.token"
         @click="onOpenSite(site.token)" @siteDeleted="onSiteDeleted" class="mb-3">
       </site-list-entry>
-      <pager></pager>
     </v-app>
+    <pager :results="results" @pagingUpdated="updatePaging"></pager>
     <site-create-dialog @siteAdded="onSiteAdded"/>
   </div>
 </template>
@@ -19,6 +19,8 @@ import {restAuthGet} from '../../http/http-common'
 export default {
 
   data: () => ({
+    results: null,
+    paging: null,
     sites: null,
     error: null
   }),
@@ -30,12 +32,21 @@ export default {
   },
 
   methods: {
+    // Update paging values and run query.
+    updatePaging: function (paging) {
+      this.$data.paging = paging
+      this.refresh()
+    },
+
     // Refresh list of sites.
     refresh: function () {
+      var query = this.$data.paging.query
+
       var component = this
       restAuthGet(this.$store,
-        'sites',
+        'sites' + query,
         function (response) {
+          component.results = response.data
           component.sites = response.data.results
         }, function (e) {
           component.error = e
@@ -52,10 +63,6 @@ export default {
     onSiteDeleted: function () {
       this.refresh()
     }
-  },
-
-  created: function () {
-    this.refresh()
   }
 }
 </script>

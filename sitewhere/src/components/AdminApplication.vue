@@ -57,6 +57,7 @@
     </v-toolbar>
     <main>
       <v-progress-linear v-if="loading" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
+      <div style="height: 7px;" v-else></div>
       <v-container fluid>
         <router-view></router-view>
       </v-container>
@@ -172,19 +173,17 @@ export default {
       return
     }
 
-    // Verify that a tenant was specified.
-    var tenant = this.$store.getters.selectedTenant
+    // Verify that a tenant id was specified in the route.
     var tenantId = this.$route.params.tenantId
-    this.$data.tenantId = tenant.id
-
-    // Fail if no tenant id passed.
     if (!tenantId) {
       console.log('No tenant id passed. Logging out!')
       this.onLogOut()
       return
     }
+    this.$data.tenantId = tenantId
 
     // Load tenant if tenant id changed or not already loaded.
+    var tenant = this.$store.getters.selectedTenant
     if ((!tenant) || (tenant.id !== tenantId)) {
       this.onLoadTenant(tenantId)
     } else {
