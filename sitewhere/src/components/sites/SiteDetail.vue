@@ -43,21 +43,6 @@
       </v-tabs>
     </v-app>
   </div>
-  <div v-else-if="error">
-    <v-container>
-      <v-layout row wrap>
-        <v-flex xs6 offset-xs3>
-          <v-card raised class="grey lighten-4 white--text mt-3">
-            <v-card-row>
-              <v-alert error v-bind:value="true" style="width: 100%">
-                {{error}}
-              </v-alert>
-            </v-card-row>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </div>
 </template>
 
 <script>
@@ -70,8 +55,7 @@ export default {
   data: () => ({
     token: null,
     site: null,
-    active: null,
-    error: null
+    active: null
   }),
 
   components: {
@@ -95,9 +79,9 @@ export default {
         'sites/' + token,
         function (response) {
           component.onSiteLoaded(response.data)
+          component.$store.commit('error', null)
         }, function (e) {
-          console.log(e)
-          component.$data.error = e
+          component.$store.commit('error', e)
         }
       )
     },

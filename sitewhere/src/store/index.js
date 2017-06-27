@@ -10,7 +10,8 @@ export default new Vuex.Store({
     authTenants: null,
     selectedTenant: null,
     currentSection: null,
-    loading: true
+    loading: true,
+    error: null
   },
   mutations: {
     // Set currently logged in user.
@@ -48,6 +49,11 @@ export default new Vuex.Store({
       state.loading = false
     },
 
+    // Set error indicator.
+    error (state, error) {
+      state.error = error
+    },
+
     // Log out of the application.
     logOut (state) {
       state.user = null
@@ -80,6 +86,10 @@ export default new Vuex.Store({
 
     loading: state => {
       return state.loading
+    },
+
+    error: state => {
+      return state.error
     }
   }
 })

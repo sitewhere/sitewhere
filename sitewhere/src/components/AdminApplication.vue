@@ -57,10 +57,10 @@
     </v-toolbar>
     <main>
       <error-banner :error="error"></error-banner>
-      <v-progress-linear v-if="loading" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
+      <v-progress-linear v-if="loading" class="login-progress" :indeterminate="true"></v-progress-linear>
       <div style="height: 7px;" v-else></div>
       <v-container fluid>
-        <router-view @error="onError"></router-view>
+        <router-view></router-view>
       </v-container>
     </main>
   </v-app>
@@ -73,7 +73,6 @@ import ErrorBanner from './common/ErrorBanner'
 export default {
   data: () => ({
     drawer: true,
-    error: null,
     tenantId: null,
     sections: [{
       id: 'server',
@@ -166,8 +165,15 @@ export default {
       }
       return 'Not Logged In'
     },
+
+    // Get global loading indicator.
     loading: function () {
       return this.$store.getters.loading
+    },
+
+    // Get global error indicator.
+    error: function () {
+      return this.$store.getters.error
     }
   },
 
@@ -237,10 +243,6 @@ export default {
       console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
-    },
-    // Called if subcomponent encounters an error.
-    onError: function (error) {
-      this.$data.error = error
     }
   }
 }

@@ -53,9 +53,9 @@ export default {
         function (response) {
           component.results = response.data
           component.assignments = response.data.results
-          component.$emit('error', null)
+          component.$store.commit('error', null)
         }, function (e) {
-          component.$emit('error', e)
+          component.$store.commit('error', e)
         }
       )
     },
