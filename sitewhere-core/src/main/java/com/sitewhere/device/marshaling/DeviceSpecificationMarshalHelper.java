@@ -15,11 +15,8 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -61,20 +58,43 @@ public class DeviceSpecificationMarshalHelper {
 	spec.setToken(source.getToken());
 	spec.setName(source.getName());
 	HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+
+	// Handle case where referenced asset is not found.
 	if (asset == null) {
 	    LOGGER.warn("Device specification has reference to non-existent asset.");
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
+	    asset = new InvalidAsset();
 	}
-	spec.setAssetModuleId(source.getAssetModuleId());
+
 	spec.setAssetId(asset.getId());
 	spec.setAssetName(asset.getName());
 	spec.setAssetImageUrl(asset.getImageUrl());
 	if (isIncludeAsset()) {
 	    spec.setAsset(asset);
 	}
+	spec.setAssetModuleId(source.getAssetModuleId());
 	spec.setContainerPolicy(source.getContainerPolicy());
 	spec.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
 	return spec;
+    }
+
+    /**
+     * Asset returned if referenced asset can not be found.
+     * 
+     * @author Derek
+     */
+    public static class InvalidAsset extends HardwareAsset {
+
+	private static final long serialVersionUID = 1383739852322979924L;
+
+	public InvalidAsset() {
+	    super();
+	    setId("invalid");
+	    setAssetCategoryId("invalid");
+	    setName("Invalid");
+	    setDescription("Referenced asset was not found.");
+	    setImageUrl("https://s3.amazonaws.com/sitewhere-demo/broken-link.png");
+	    setSku("invalid");
+	}
     }
 
     public boolean isIncludeAsset() {
