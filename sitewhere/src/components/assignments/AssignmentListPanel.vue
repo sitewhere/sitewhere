@@ -15,6 +15,27 @@
         {{ formatDate(assignment.releasedDate) }}
       </div>
       <div class="assn-status-label">Status:</div>
+      <v-menu class="assn-status-button" offset-y v-if="assignment.status === 'Active'">
+        <v-btn small class="green darken-2 white--text pa-0 ma-0" slot="activator">Active</v-btn>
+        <v-list>
+          <v-list-item v-for="item in statusActiveItems" :key="item">
+            <v-list-tile>
+              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-menu class="assn-status-button" offset-y v-if="assignment.status === 'Missing'">
+        <v-btn small class="red darken-2 white--text pa-0 ma-0" slot="activator">Missing</v-btn>
+        <v-list>
+          <v-list-item v-for="item in statusMissingItems" :key="item">
+            <v-list-tile>
+              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <div class="assn-status-value" v-if="assignment.status === 'Released'">Released</div>
     </v-card-row>
   </v-card>
 </template>
@@ -26,6 +47,21 @@ import DeviceMiniPanel from './DeviceMiniPanel'
 export default {
 
   data: () => ({
+    statusActiveItems: [
+      {
+        text: 'Release Assignment',
+        value: 'release'
+      }, {
+        text: 'Report Missing',
+        value: 'missing'
+      }
+    ],
+    statusMissingItems: [
+      {
+        text: 'Release Assignment',
+        value: 'release'
+      }
+    ]
   }),
 
   components: {
@@ -156,6 +192,19 @@ export default {
   color: #333;
   font-weight: 700;
   white-space: nowrap;
+}
+.assn-status-button {
+  position: absolute;
+  top: 58px;
+  left: 725px;
+  font-size: 12px;
+  margin-top: -4px;
+}
+.assn-status-value {
+  position: absolute;
+  top: 58px;
+  left: 725px;
+  font-size: 12px;
 }
 .assn-separator1 {
   position:absolute;
