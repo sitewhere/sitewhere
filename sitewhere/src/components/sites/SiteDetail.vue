@@ -2,7 +2,7 @@
   <div v-if="site">
     <v-app>
       <site-list-entry :site="site" class="mb-3"></site-list-entry>
-      <v-tabs light v-model="active">
+      <v-tabs class="elevation-4" light v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
           <v-tabs-slider></v-tabs-slider>
           <v-tabs-item key="assignments" href="#assignments">

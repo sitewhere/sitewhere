@@ -1,5 +1,6 @@
 <template>
-  <v-card class="elevation-1 grey lighten-4 black--text pa-0 mb-3">
+  <v-card class="grey lighten-3 black--text pa-0">
+    <v-divider></v-divider>
     <v-container class="ma-0 pa-0">
       <v-layout row wrap>
         <v-flex xs2>
