@@ -44,6 +44,13 @@ export function listAlertsForSite (store, siteToken, query, success, failed) {
 }
 
 /**
+ * List zones for a site.
+ */
+export function listZonesForSite (store, siteToken, query, success, failed) {
+  restAuthGet(store, 'sites/' + siteToken + '/zones?' + query, success, failed)
+}
+
+/**
  * Release an active assignment.
  */
 export function releaseAssignment (store, token, success, failed) {

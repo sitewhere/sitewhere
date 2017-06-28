@@ -34,8 +34,7 @@
           <site-alert-events :siteToken="site.token"></site-alert-events>
         </v-tabs-content>
         <v-tabs-content key="zones" id="zones">
-          <v-card flat>
-          </v-card>
+          <site-zones :siteToken="site.token"></site-zones>
         </v-tabs-content>
       </v-tabs>
     </v-app>
@@ -48,6 +47,8 @@ import SiteAssignments from './SiteAssignments'
 import SiteLocationEvents from './SiteLocationEvents'
 import SiteMeasurementEvents from './SiteMeasurementEvents'
 import SiteAlertEvents from './SiteAlertEvents'
+import SiteZones from './SiteZones'
+
 import {getSite} from '../../http/sitewhere-api'
 
 export default {
@@ -63,7 +64,8 @@ export default {
     SiteAssignments,
     SiteLocationEvents,
     SiteMeasurementEvents,
-    SiteAlertEvents
+    SiteAlertEvents,
+    SiteZones
   },
 
   created: function () {
