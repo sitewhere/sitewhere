@@ -1,18 +1,16 @@
 <template>
   <div>
-    <v-container>
-      <v-layout row wrap v-if="assignments">
-        <v-flex xs12>
-          <assignment-list-panel :assignment="assignment"
-            v-for="(assignment, index) in assignments" :key="assignment.token"
-            @click="onOpenAssignment(assignment.token)"
-            @refresh="refresh"
-            class="mb-3">
-          </assignment-list-panel>
-        </v-flex>
-      </v-layout>
-      <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    </v-container>
+    <v-layout row wrap v-if="assignments">
+      <v-flex xs12>
+        <assignment-list-panel :assignment="assignment"
+          v-for="(assignment, index) in assignments" :key="assignment.token"
+          @click="onOpenAssignment(assignment.token)"
+          @refresh="refresh"
+          class="ma-3">
+        </assignment-list-panel>
+      </v-flex>
+    </v-layout>
+    <pager :results="results" @pagingUpdated="updatePaging"></pager>
   </div>
 </template>
 

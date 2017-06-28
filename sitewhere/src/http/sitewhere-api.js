@@ -15,11 +15,32 @@ export function getSite (store, siteToken, success, failed) {
 }
 
 /**
- * List all assignments for a site.
+ * List assignments for a site.
  */
 export function listAssignmentsForSite (store, siteToken, query, success, failed) {
   restAuthGet(store, 'sites/' + siteToken + '/assignments?' + query +
     '&includeDevice=true&includeAsset=true', success, failed)
+}
+
+/**
+ * List location events for a site.
+ */
+export function listLocationsForSite (store, siteToken, query, success, failed) {
+  restAuthGet(store, 'sites/' + siteToken + '/locations?' + query, success, failed)
+}
+
+/**
+ * List measurement events for a site.
+ */
+export function listMeasurementsForSite (store, siteToken, query, success, failed) {
+  restAuthGet(store, 'sites/' + siteToken + '/measurements?' + query, success, failed)
+}
+
+/**
+ * List alert events for a site.
+ */
+export function listAlertsForSite (store, siteToken, query, success, failed) {
+  restAuthGet(store, 'sites/' + siteToken + '/alerts?' + query, success, failed)
 }
 
 /**

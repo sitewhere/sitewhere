@@ -25,16 +25,13 @@
           <site-assignments :siteToken="site.token"></site-assignments>
         </v-tabs-content>
         <v-tabs-content key="locations" id="locations">
-          <v-card flat>
-          </v-card>
+          <site-location-events :siteToken="site.token"></site-location-events>
         </v-tabs-content>
         <v-tabs-content key="measurements" id="measurements">
-          <v-card flat>
-          </v-card>
+          <site-measurement-events :siteToken="site.token"></site-measurement-events>
         </v-tabs-content>
         <v-tabs-content key="alerts" id="alerts">
-          <v-card flat>
-          </v-card>
+          <site-alert-events :siteToken="site.token"></site-alert-events>
         </v-tabs-content>
         <v-tabs-content key="zones" id="zones">
           <v-card flat>
@@ -48,6 +45,9 @@
 <script>
 import SiteListEntry from './SiteListEntry'
 import SiteAssignments from './SiteAssignments'
+import SiteLocationEvents from './SiteLocationEvents'
+import SiteMeasurementEvents from './SiteMeasurementEvents'
+import SiteAlertEvents from './SiteAlertEvents'
 import {getSite} from '../../http/sitewhere-api'
 
 export default {
@@ -60,7 +60,10 @@ export default {
 
   components: {
     SiteListEntry,
-    SiteAssignments
+    SiteAssignments,
+    SiteLocationEvents,
+    SiteMeasurementEvents,
+    SiteAlertEvents
   },
 
   created: function () {
