@@ -1,6 +1,6 @@
 <template>
   <div>
-    <confirm-dialog buttonText="Update" title="Update Assignment Status" width="400" :error="error"
+    <confirm-dialog buttonText="Update" title="Update Assignment Status" width="400"
       @action="onUpdateStatus">
       <v-card-row>
         <v-card-text>

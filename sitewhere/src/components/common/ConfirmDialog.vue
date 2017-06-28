@@ -6,7 +6,7 @@
       </v-card-row>
       <v-card-row slot="error" v-if="error">
         <v-alert class="ma-0" error v-bind:value="true" style="width: 100%">
-          {{error}}
+          {{ error.message }}
         </v-alert>
       </v-card-row>
       <v-card-row>
@@ -26,10 +26,11 @@
 export default {
 
   data: () => ({
-    visible: false
+    visible: false,
+    error: null
   }),
 
-  props: ['title', 'width', 'buttonText', 'error'],
+  props: ['title', 'width', 'buttonText'],
 
   computed: {
     // Use fallback for button text.
