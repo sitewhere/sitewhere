@@ -15,26 +15,9 @@
         {{ formatDate(assignment.releasedDate) }}
       </div>
       <div class="assn-status-label">Status:</div>
-      <v-menu class="assn-status-button" offset-y v-if="assignment.status === 'Active'">
-        <v-btn small class="green darken-2 white--text pa-0 ma-0" slot="activator">Active</v-btn>
-        <v-list>
-          <v-list-item v-for="item in statusActiveItems" :key="item">
-            <v-list-tile>
-              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-menu class="assn-status-button" offset-y v-if="assignment.status === 'Missing'">
-        <v-btn small class="red darken-2 white--text pa-0 ma-0" slot="activator">Missing</v-btn>
-        <v-list>
-          <v-list-item v-for="item in statusMissingItems" :key="item">
-            <v-list-tile>
-              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <assignment-status-button :assignment="assignment" @statusUpdated="refresh"
+        v-if="assignment.status !== 'Released'" class="assn-status-button">
+      </assignment-status-button>
       <div class="assn-status-value" v-if="assignment.status === 'Released'">Released</div>
     </v-card-row>
   </v-card>
@@ -43,30 +26,19 @@
 <script>
 import AssetMiniPanel from './AssetMiniPanel'
 import DeviceMiniPanel from './DeviceMiniPanel'
+import AssignmentStatusButton from './AssignmentStatusButton'
 
 export default {
 
-  data: () => ({
-    statusActiveItems: [
-      {
-        text: 'Release Assignment',
-        value: 'release'
-      }, {
-        text: 'Report Missing',
-        value: 'missing'
-      }
-    ],
-    statusMissingItems: [
-      {
-        text: 'Release Assignment',
-        value: 'release'
-      }
-    ]
-  }),
+  data: function () {
+    return {
+    }
+  },
 
   components: {
     AssetMiniPanel,
-    DeviceMiniPanel
+    DeviceMiniPanel,
+    AssignmentStatusButton
   },
 
   props: ['assignment'],
@@ -127,6 +99,10 @@ export default {
         return 'N/A'
       }
       return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
+    },
+    // Fire event to have parent refresh content.
+    refresh: function () {
+      this.$emit('refresh')
     }
   }
 }
@@ -147,13 +123,13 @@ export default {
 .assn-device {
   position: absolute;
   top: 0px;
-  left: 310px;
+  left: 320px;
   width: 100%
 }
 .assn-assigned-label {
   position: absolute;
   top: 6px;
-  left: 645px;
+  left: 665px;
   font-size: 12px;
   color: #333;
   font-weight: 700;
@@ -162,7 +138,7 @@ export default {
 .assn-assigned-value {
   position: absolute;
   top: 6px;
-  left: 725px;
+  left: 745px;
   font-size: 12px;
   color: #333;
   white-space: nowrap;
@@ -170,7 +146,7 @@ export default {
 .assn-released-label {
   position: absolute;
   top: 32px;
-  left: 645px;
+  left: 665px;
   font-size: 12px;
   color: #333;
   font-weight: 700;
@@ -179,7 +155,7 @@ export default {
 .assn-released-value {
   position: absolute;
   top: 32px;
-  left: 725px;
+  left: 745px;
   font-size: 12px;
   color: #333;
   white-space: nowrap;
@@ -187,23 +163,16 @@ export default {
 .assn-status-label {
   position: absolute;
   top: 58px;
-  left: 645px;
+  left: 665px;
   font-size: 12px;
   color: #333;
   font-weight: 700;
   white-space: nowrap;
 }
-.assn-status-button {
-  position: absolute;
-  top: 58px;
-  left: 725px;
-  font-size: 12px;
-  margin-top: -4px;
-}
 .assn-status-value {
   position: absolute;
   top: 58px;
-  left: 725px;
+  left: 745px;
   font-size: 12px;
 }
 .assn-separator1 {
@@ -212,7 +181,7 @@ export default {
   border-left: 1px solid #ddd;
   top: 10px;
   bottom: 10px;
-  left: 300px;
+  left: 310px;
 }
 .assn-separator2 {
   position:absolute;
@@ -220,6 +189,13 @@ export default {
   border-left: 1px solid #ddd;
   top: 10px;
   bottom: 10px;
-  left: 625px;
+  left: 645px;
+}
+.assn-status-button {
+  position: absolute;
+  top: 58px;
+  left: 745px;
+  height: 20px;
+  margin-top: -4px;
 }
 </style>

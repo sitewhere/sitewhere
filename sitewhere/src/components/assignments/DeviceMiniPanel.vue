@@ -4,27 +4,32 @@
       <div class="assn-device-image"
         :style="backgroundImageStyle(assignment.device.assetImageUrl)"></div>
       <div class="assn-device-title">
-        {{ ellipsis(assignment.device.assetName, 25) }}
+        {{ ellipsis(assignment.device.assetName, charWidth) }}
       </div>
       <div class="assn-device-label1">Id:</div>
       <div class="assn-device-value1">
-        {{ ellipsis(assignment.device.hardwareId, 25) }}
+        {{ ellipsis(assignment.device.hardwareId, charWidth) }}
       </div>
       <div class="assn-device-label2">Info:</div>
       <div class="assn-device-value2">
-        {{ ellipsis(assignment.device.comments, 25)  }}
+        {{ ellipsis(assignment.device.comments, charWidth)  }}
       </div>
       <div class="assn-device-tag">Device</div>
     </div>
     <div v-else>
+      <div>
+        <span class="assn-device-missing">
+          <v-icon class="red--text">warning</v-icon> Referenced device does not exist!
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
   data: () => ({
+    charWidth: 27
   }),
 
   props: ['assignment'],
@@ -113,5 +118,12 @@ export default {
   font-size: 10px;
   padding: 2px 4px;
   border-radius: 3px;
+}
+.assn-device-missing {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  font-size: 14px;
+  font-weight: 500;
 }
 </style>

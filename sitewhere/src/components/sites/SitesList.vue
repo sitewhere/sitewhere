@@ -14,7 +14,7 @@
 import Pager from '../common/Pager'
 import SiteListEntry from './SiteListEntry'
 import SiteCreateDialog from './SiteCreateDialog'
-import {restAuthGet} from '../../http/http-common'
+import {listSites} from '../../http/sitewhere-api'
 
 export default {
 
@@ -41,8 +41,7 @@ export default {
     refresh: function () {
       var query = this.$data.paging.query
       var component = this
-      restAuthGet(this.$store,
-        'sites?' + query,
+      listSites(this.$store, query,
         function (response) {
           component.results = response.data
           component.sites = response.data.results

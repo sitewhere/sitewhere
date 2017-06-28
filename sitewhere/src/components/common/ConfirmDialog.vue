@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card >
-      <v-card-row class="delete-dialog">
+      <v-card-row class="confirm-dialog">
         <span class="blue darken-2 white--text">{{title}}</span>
       </v-card-row>
       <v-card-row slot="error" v-if="error">
@@ -16,7 +16,7 @@
       </v-card-row>
       <v-card-row actions>
         <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">Cancel</v-btn>
-        <v-btn class="blue--text darken-1" flat="flat" @click.native="onDeleteClicked">Delete</v-btn>
+        <v-btn class="blue--text darken-1" flat="flat" @click.native="onActionClicked">{{ text }}</v-btn>
       </v-card-row>
     </v-card>
   </v-dialog>
@@ -29,7 +29,14 @@ export default {
     visible: false
   }),
 
-  props: ['title', 'width', 'error'],
+  props: ['title', 'width', 'buttonText', 'error'],
+
+  computed: {
+    // Use fallback for button text.
+    text: function () {
+      return (this.buttonText) ? this.buttonText : 'Ok'
+    }
+  },
 
   methods: {
     // Called to open the dialog.
@@ -47,9 +54,9 @@ export default {
       this.$data.error = error
     },
 
-    // Called after create button is clicked.
-    onDeleteClicked: function (e) {
-      this.$emit('delete')
+    // Called after action button is clicked.
+    onActionClicked: function (e) {
+      this.$emit('action')
     },
 
     // Called after cancel button is clicked.
@@ -61,7 +68,7 @@ export default {
 </script>
 
 <style scoped>
-.delete-dialog span {
+.confirm-dialog span {
   padding: 8px 12px;
   font-size: 22px;
   width: 100%;

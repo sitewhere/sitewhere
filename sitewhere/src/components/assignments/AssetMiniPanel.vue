@@ -3,43 +3,43 @@
     <div v-if="assignment.associatedPerson" class="assn-asset-image"
       :style="backgroundImageStyle(assignment.associatedPerson.imageUrl)"></div>
     <div v-if="assignment.associatedPerson" class="assn-asset-title">
-      {{ ellipsis(assignment.associatedPerson.name, 25) }}
+      {{ ellipsis(assignment.associatedPerson.name, charWidth) }}
     </div>
     <div v-if="assignment.associatedPerson" class="assn-asset-label1">Email:</div>
     <div v-if="assignment.associatedPerson" class="assn-asset-value1">
-      {{ ellipsis(assignment.associatedPerson.emailAddress, 25) }}
+      {{ ellipsis(assignment.associatedPerson.emailAddress, charWidth) }}
     </div>
     <div v-if="assignment.associatedPerson" class="assn-asset-label2">Roles:</div>
     <div v-if="assignment.associatedPerson" class="assn-asset-value2">
-      {{ ellipsis(assignment.associatedPerson.roles.join(', '), 25)  }}
+      {{ ellipsis(assignment.associatedPerson.roles.join(', '), charWidth)  }}
     </div>
 
     <div v-if="assignment.associatedHardware" class="assn-asset-image"
       :style="backgroundImageStyle(assignment.associatedHardware.imageUrl)"></div>
     <div v-if="assignment.associatedHardware" class="assn-asset-title">
-      {{ ellipsis(assignment.associatedHardware.name, 25) }}
+      {{ ellipsis(assignment.associatedHardware.name, charWidth) }}
     </div>
     <div v-if="assignment.associatedHardware" class="assn-asset-label1">SKU:</div>
     <div v-if="assignment.associatedHardware" class="assn-asset-value1">
-      {{ ellipsis(assignment.associatedHardware.sku, 25) }}
+      {{ ellipsis(assignment.associatedHardware.sku, charWidth) }}
     </div>
     <div v-if="assignment.associatedHardware" class="assn-asset-label2">Info:</div>
     <div v-if="assignment.associatedHardware" class="assn-asset-value2">
-      {{ ellipsis(assignment.associatedHardware.description, 25) }}
+      {{ ellipsis(assignment.associatedHardware.description, charWidth) }}
     </div>
 
     <div v-if="assignment.associatedLocation" class="assn-asset-image"
       :style="backgroundImageStyle(assignment.associatedLocation.imageUrl)"></div>
     <div v-if="assignment.associatedLocation" class="assn-asset-title">
-      {{ ellipsis(assignment.associatedLocation.name, 25) }}
+      {{ ellipsis(assignment.associatedLocation.name, charWidth) }}
     </div>
     <div v-if="assignment.associatedLocation" class="assn-asset-label1">Lat:</div>
     <div v-if="assignment.associatedLocation" class="assn-asset-value1">
-      {{ ellipsis(assignment.associatedLocation.latitude, 25) }}
+      {{ ellipsis(assignment.associatedLocation.latitude, charWidth) }}
     </div>
     <div v-if="assignment.associatedLocation" class="assn-asset-label2">Lon:</div>
     <div v-if="assignment.associatedLocation" class="assn-asset-value2">
-      {{ ellipsis(assignment.associatedLocation.longitude, 25) }}
+      {{ ellipsis(assignment.associatedLocation.longitude, charWidth) }}
     </div>
 
     <div v-if="(assignment.assignmentType == 'Unassociated') && (assignment.device)" class="assn-asset-image"
@@ -56,6 +56,7 @@
 
 export default {
   data: () => ({
+    charWidth: 27
   }),
 
   props: ['assignment'],

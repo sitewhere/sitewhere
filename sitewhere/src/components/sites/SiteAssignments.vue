@@ -6,7 +6,7 @@
           <assignment-list-panel :assignment="assignment"
             v-for="(assignment, index) in assignments" :key="assignment.token"
             @click="onOpenAssignment(assignment.token)"
-            @assignmentDeleted="onAssignmentDeleted"
+            @refresh="refresh"
             class="mb-3">
           </assignment-list-panel>
         </v-flex>
@@ -19,7 +19,7 @@
 <script>
 import Pager from '../common/Pager'
 import AssignmentListPanel from '../assignments/AssignmentListPanel'
-import {restAuthGet} from '../../http/http-common'
+import {listAssignmentsForSite} from '../../http/sitewhere-api'
 
 export default {
 
@@ -42,14 +42,13 @@ export default {
       this.$data.paging = paging
       this.refresh()
     },
+
     // Refresh list of assignments.
     refresh: function () {
       var component = this
       var siteToken = this.siteToken
       var query = this.$data.paging.query
-      restAuthGet(this.$store,
-        'sites/' + siteToken + '/assignments?' + query +
-        '&includeDevice=true&includeAsset=true',
+      listAssignmentsForSite(this.$store, siteToken, query,
         function (response) {
           component.results = response.data
           component.assignments = response.data.results
@@ -69,11 +68,6 @@ export default {
     // Called to open detail page for assignment.
     onOpenAssignment: function (token) {
       console.log('Open assignment')
-    },
-
-    // Called when an assignment is deleted.
-    onAssignmentDeleted: function (token) {
-      console.log('Assignment deleted')
     }
   }
 }

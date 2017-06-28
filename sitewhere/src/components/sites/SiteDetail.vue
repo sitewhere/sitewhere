@@ -48,7 +48,7 @@
 <script>
 import SiteListEntry from './SiteListEntry'
 import SiteAssignments from './SiteAssignments'
-import {restAuthGet} from '../../http/http-common'
+import {getSite} from '../../http/sitewhere-api'
 
 export default {
 
@@ -75,8 +75,7 @@ export default {
       var component = this
 
       // Load site information.
-      restAuthGet(this.$store,
-        'sites/' + token,
+      getSite(this.$store, token,
         function (response) {
           component.onSiteLoaded(response.data)
           component.$store.commit('error', null)
