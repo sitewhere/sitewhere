@@ -2,7 +2,8 @@
   <v-card flat>
     <v-card-row>
       <map-with-zone-overlay-panel :site='site' :visible='visible'
-        :mode='mode' :height='height' @mapReady='onMapReady'>
+        :mode='mode' :height='height' :borderColor="zoneBorder"
+        :fillColor="zoneFill" :fillOpacity="zoneOpacity" @mapReady='onMapReady'>
       </map-with-zone-overlay-panel>
     </v-card-row>
     <v-card-row>
@@ -55,11 +56,13 @@ export default {
     // Called when zone border color is chosen.
     onBorderColorUpdated: function (val) {
       console.log('border ' + val)
+      this.$data.zoneBorder = val
     },
 
     // Called when zone fill color is chosen.
     onFillColorUpdated: function (val) {
       console.log('fill ' + val)
+      this.$data.zoneFill = val
     }
   }
 }

@@ -21,7 +21,7 @@ Vue.component('v-map', Vue2Leaflet.Map)
 Vue.component('v-tilelayer', Vue2Leaflet.TileLayer)
 Vue.component('v-marker', Vue2Leaflet.Marker)
 
-// BEGIN HACK to get around problems with Leaflet relative icon URLs.
+// BEGIN HACK to get around problems with Leaflet issues.
 import L from 'leaflet'
 
 delete L.Icon.Default.prototype._getIconUrl
@@ -31,6 +31,15 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 })
+
+customize(L.Draw.Polyline.prototype)
+customize(L.Edit.PolyVerticesEdit.prototype)
+
+function customize (prototype) {
+  var options = prototype.options
+  options.icon.options.iconSize = new L.Point(10, 10)
+  options.touchIcon = options.icon
+}
 // END HACK.
 
 export default new Router({

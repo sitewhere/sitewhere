@@ -164,7 +164,7 @@ export default {
               color: this.borderColor,
               opacity: 1,
               fillColor: this.fillColor,
-              fillOpacity: this.fillAlpha
+              fillOpacity: this.fillOpacity
             }
           },
           rectangle: {
@@ -172,7 +172,7 @@ export default {
               color: this.borderColor,
               opacity: 1,
               fillColor: this.fillColor,
-              fillOpacity: this.fillAlpha
+              fillOpacity: this.fillOpacity
             }
           }
         },
