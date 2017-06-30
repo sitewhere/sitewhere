@@ -19,7 +19,7 @@
           </v-flex>
           <v-flex xs2 pa-2>
             <color-picker text="Fill" :color="zoneFill"
-              @colorChanged="onFillColorUpdated"
+              @colorChanged="onFillColorUpdated" @opacityChanged="onFillOpacityUpdated"
               v-tooltip:top="{ html: 'Fill Color' }"></color-picker>
           </v-flex>
         </v-layout>
@@ -55,14 +55,17 @@ export default {
     },
     // Called when zone border color is chosen.
     onBorderColorUpdated: function (val) {
-      console.log('border ' + val)
       this.$data.zoneBorder = val
     },
 
     // Called when zone fill color is chosen.
     onFillColorUpdated: function (val) {
-      console.log('fill ' + val)
       this.$data.zoneFill = val
+    },
+
+    // Called when zone fill opacity is chosen.
+    onFillOpacityUpdated: function (val) {
+      this.$data.zoneOpacity = val
     }
   }
 }

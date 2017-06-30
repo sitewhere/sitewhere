@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y top :close-on-content-click="false" v-model="menu">
     <v-btn :style="{ 'background-color' : currentColor, 'color': '#fff' }" slot="activator">{{ text }}</v-btn>
-    <chrome :value="colors" @input="onColorChosen"></chrome>
+    <chrome :value="chromeColor" @input="onColorChosen"></chrome>
   </v-menu>
 </template>
 
@@ -12,9 +12,7 @@ export default {
 
   data: () => ({
     menu: null,
-    colors: {
-      hex: '#194d33'
-    }
+    updatedColor: null
   }),
 
   components: {
@@ -22,8 +20,13 @@ export default {
   },
 
   computed: {
+    chromeColor: function () {
+      return {
+        hex: this.currentColor
+      }
+    },
     currentColor: function () {
-      return (this.color) ? this.color : this.colors.hex
+      return this.updatedColor || this.color
     }
   },
 
@@ -32,8 +35,9 @@ export default {
   methods: {
     // Called when a color is chosen.
     onColorChosen: function (val) {
-      this.colors.hex = val.hex
+      this.updatedColor = val.hex
       this.$emit('colorChanged', val.hex)
+      this.$emit('opacityChanged', val.a)
     }
   }
 }

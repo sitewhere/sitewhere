@@ -13,7 +13,8 @@ import D from 'leaflet-draw' // eslint-disable-line no-unused-vars
 export default {
 
   data: () => ({
-    editControl: null
+    editControl: null,
+    newZoneLayer: null
   }),
 
   props: ['site', 'height', 'visible', 'borderColor',
@@ -22,6 +23,24 @@ export default {
   watch: {
     visible: function () {
       this.onMapReady()
+    },
+    borderColor: function (val) {
+      var newZoneLayer = this.getNewZoneLayer()
+      if (newZoneLayer) {
+        newZoneLayer.setStyle({ color: val })
+      }
+    },
+    fillColor: function (val) {
+      var newZoneLayer = this.getNewZoneLayer()
+      if (newZoneLayer) {
+        newZoneLayer.setStyle({ fillColor: val })
+      }
+    },
+    fillOpacity: function (val) {
+      var newZoneLayer = this.getNewZoneLayer()
+      if (newZoneLayer) {
+        newZoneLayer.setStyle({ fillOpacity: val })
+      }
     }
   },
 
@@ -48,16 +67,40 @@ export default {
       this.$emit('mapReady', this.getMap())
     },
 
+    // Get layer that contains new zone.
+    getNewZoneLayer: function () {
+      return this.$data.newZoneLayer
+    },
+
     // Clear layers from map.
     resetMap: function () {
+      var component = this
       var map = this.getMap()
+
+      // Remove layers.
       map.eachLayer(function (layer) {
         map.removeLayer(layer)
       })
+
+      // Remove edit control.
       var edit = this.$data.editControl
       if (edit) {
         map.removeControl(edit)
       }
+
+      // Remove and add event handlers.
+      map.off('draw:drawstart').on('draw:drawstart', function (e) {
+        var newZoneLayer = component.getNewZoneLayer()
+        if (newZoneLayer) {
+          map.removeLayer(newZoneLayer)
+          component.$data.newZoneLayer = null
+        }
+      })
+      map.off('draw:created').on('draw:created', function (e) {
+        var zcNewZoneLayer = e.layer
+        map.addLayer(zcNewZoneLayer)
+        component.$data.newZoneLayer = zcNewZoneLayer
+      })
     },
 
     // Configure tile layer based on site preferences.
