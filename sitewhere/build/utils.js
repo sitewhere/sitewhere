@@ -15,14 +15,25 @@ exports.cssLoaders = function (options) {
   var cssLoader = {
     loader: 'css-loader',
     options: {
+      alias: {
+        "/images": "leaflet-draw/dist/images"
+      },
       minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
   }
 
+  var resolveLoader = {
+    loader: 'resolve-url-loader',
+    options: {
+      debug: true,
+      fail: true
+    }
+  }
+
   // generate loader string to be used with extract text plugin
   function generateLoaders (loader, loaderOptions) {
-    var loaders = [cssLoader]
+    var loaders = [cssLoader, resolveLoader]
     if (loader) {
       loaders.push({
         loader: loader + '-loader',

@@ -1,6 +1,7 @@
 <template>
   <div :style="{ 'height': height, 'width': '100%' }">
     <v-map :zoom="13" :center="[47.413220, -1.219482]" ref="map">
+      <v-marker :lat-lng="[33.7490, -84.3880]"></v-marker>
     </v-map>
   </div>
 </template>
@@ -8,13 +9,16 @@
 <script>
 import {listZonesForSite} from '../../http/sitewhere-api'
 import L from 'leaflet'
+import D from 'leaflet-draw' // eslint-disable-line no-unused-vars
 
 export default {
 
   data: () => ({
+    editControl: null
   }),
 
-  props: ['site', 'height', 'visible', 'mapZoom', 'mapLatLon'],
+  props: ['site', 'height', 'visible', 'borderColor',
+    'fillColor', 'fillOpacity', 'mode'],
 
   watch: {
     visible: function () {
@@ -35,10 +39,13 @@ export default {
 
     // Called when map is ready.
     onMapReady: function () {
-      this.resetMap()
+      // this.resetMap()
       this.configureMapTiles()
       this.zoomAndCenterSite()
       this.loadZoneLayers()
+      if (this.mode === 'create') {
+        this.enableMapDrawing()
+      }
       this.$emit('mapReady', this.getMap())
     },
 
@@ -48,6 +55,10 @@ export default {
       map.eachLayer(function (layer) {
         map.removeLayer(layer)
       })
+      var edit = this.$data.editControl
+      if (edit) {
+        map.removeControl(edit)
+      }
     },
 
     // Configure tile layer based on site preferences.
@@ -122,6 +133,7 @@ export default {
       }
     },
 
+    // Create polygon that represents one zone.
     createPolygonForZone: function (zone) {
       var coords = zone.coordinates
       var latLngs = []
@@ -138,6 +150,39 @@ export default {
         'clickable': false
       })
       return polygon
+    },
+
+    /** Enables drawing features on map */
+    enableMapDrawing: function () {
+      var options = {
+        position: 'topright',
+        draw: {
+          polyline: false,
+          circle: false,
+          marker: false,
+          polygon: {
+            shapeOptions: {
+              color: this.borderColor,
+              opacity: 1,
+              fillColor: this.fillColor,
+              fillOpacity: this.fillAlpha
+            }
+          },
+          rectangle: {
+            shapeOptions: {
+              color: this.borderColor,
+              opacity: 1,
+              fillColor: this.fillColor,
+              fillOpacity: this.fillAlpha
+            }
+          }
+        },
+        edit: false
+      }
+
+      var drawControl = new L.Control.Draw(options)
+      this.getMap().addControl(drawControl)
+      this.$data.editControl = drawControl
     }
   }
 }

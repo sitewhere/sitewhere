@@ -2,7 +2,7 @@
   <v-card flat>
     <v-card-row>
       <map-with-zone-overlay-panel :site='site' :visible='visible'
-        :height='height' @mapReady='onMapReady'>
+        :mode='mode' :height='height' @mapReady='onMapReady'>
       </map-with-zone-overlay-panel>
     </v-card-row>
     <v-card-row>
@@ -46,7 +46,7 @@ export default {
     ColorPicker
   },
 
-  props: ['site', 'zone', 'height', 'visible'],
+  props: ['site', 'zone', 'height', 'visible', 'mode'],
 
   methods: {
     onMapReady: function (map) {

@@ -12,4 +12,5 @@ export default {
 
 <style lang="scss">
 @import "~leaflet/dist/leaflet.css";
+@import "~leaflet-draw/dist/leaflet.draw.css";
 </style>

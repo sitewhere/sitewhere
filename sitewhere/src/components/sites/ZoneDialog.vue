@@ -15,7 +15,7 @@
         </v-tabs-bar>
         <v-tabs-content key="settings" id="settings">
           <zone-map-panel height="400px" :site='site' :zone="zone"
-            :visible="dialogVisible">
+            :visible="dialogVisible" :mode='mode'>
           </zone-map-panel>
         </v-tabs-content>
         <v-tabs-content key="metadata" id="metadata">
@@ -48,7 +48,7 @@ export default {
     ZoneMapPanel
   },
 
-  props: ['site', 'title', 'width', 'createLabel', 'cancelLabel'],
+  props: ['site', 'title', 'width', 'createLabel', 'cancelLabel', 'mode'],
 
   methods: {
     // Generate payload from UI.

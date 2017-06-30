@@ -1,7 +1,7 @@
 <template>
   <span>
     <zone-dialog :site='site' style="display: none;" title="Create Zone" width="600"
-      createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
+      createLabel="Create" cancelLabel="Cancel" mode='create' @payload="onCommit">
     </zone-dialog>
     <v-btn floating class="add-button red darken-1 elevation-5"
       v-tooltip:bottom="{ html: 'Add Zone' }" @click.native.stop="onOpenDialog">
