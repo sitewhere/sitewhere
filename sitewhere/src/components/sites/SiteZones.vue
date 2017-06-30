@@ -23,10 +23,10 @@
             <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.updatedDate)">
               {{ formatDate(props.item.updatedDate) }}
             </td>
-            <td width="10%" style="white-space: nowrap" :title="Edit/Delete">
-              <v-btn icon @click.native="onDeleteZone(item)" class="ma-0" v-tooltip:top="{ html: 'Delete Zone' }">
-                <v-icon class="grey--text">delete</v-icon>
-              </v-btn>
+            <td width="1%" style="white-space: nowrap" title="Edit/Delete">
+              <zone-delete-dialog :token="props.item.token"
+                @zoneDeleted="onZoneDeleted">
+              </zone-delete-dialog>
               <v-btn icon @click.native="onEditZone(item)" class="ma-0" v-tooltip:top="{ html: 'Edit Zone' }">
                 <v-icon class="grey--text">edit</v-icon>
               </v-btn>
@@ -35,12 +35,15 @@
         </v-data-table>
       </v-flex>
     </v-layout>
+    <zone-create-dialog :site="site" @zoneAdded="onZoneAdded"/>
     <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
   </div>
 </template>
 
 <script>
 import Pager from '../common/Pager'
+import ZoneCreateDialog from './ZoneCreateDialog'
+import ZoneDeleteDialog from './ZoneDeleteDialog'
 import {listZonesForSite} from '../../http/sitewhere-api'
 
 export default {
@@ -91,10 +94,12 @@ export default {
     ]
   }),
 
-  props: ['siteToken'],
+  props: ['site'],
 
   components: {
-    Pager
+    Pager,
+    ZoneCreateDialog,
+    ZoneDeleteDialog
   },
 
   methods: {
@@ -107,9 +112,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var siteToken = this.siteToken
+      var site = this.site
       var query = this.$data.paging.query
-      listZonesForSite(this.$store, siteToken, query,
+      listZonesForSite(this.$store, site.token, query,
         function (response) {
           component.results = response.data
           component.zones = response.data.results
@@ -132,6 +137,16 @@ export default {
         return 'N/A'
       }
       return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
+    },
+
+    // Called when a zone is added.
+    onZoneAdded: function () {
+      this.refresh()
+    },
+
+    // Called when a zone is deleted.
+    onZoneDeleted: function () {
+      this.refresh()
     }
   }
 }

@@ -2,7 +2,7 @@
   <div v-if="site">
     <v-app>
       <site-list-entry :site="site" class="mb-3"></site-list-entry>
-      <v-tabs class="elevation-4" light v-model="active">
+      <v-tabs class="elevation-2" light v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
           <v-tabs-slider></v-tabs-slider>
           <v-tabs-item key="assignments" href="#assignments">
@@ -34,7 +34,7 @@
           <site-alert-events :siteToken="site.token"></site-alert-events>
         </v-tabs-content>
         <v-tabs-content key="zones" id="zones">
-          <site-zones :siteToken="site.token"></site-zones>
+          <site-zones :site="site"></site-zones>
         </v-tabs-content>
       </v-tabs>
     </v-app>

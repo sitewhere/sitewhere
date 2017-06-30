@@ -1,18 +1,18 @@
 <template>
-  <div>
-    <site-dialog title="Create Site" width="600" resetOnOpen="true"
+  <span>
+    <zone-dialog :site='site' style="display: none;" title="Create Zone" width="600"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
-    </site-dialog>
+    </zone-dialog>
     <v-btn floating class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Add Site' }" @click.native.stop="onOpenDialog">
+      v-tooltip:bottom="{ html: 'Add Zone' }" @click.native.stop="onOpenDialog">
       <v-icon light>add</v-icon>
     </v-btn>
-  </div>
+  </span>
 </template>
 
 <script>
-import SiteDialog from './SiteDialog'
-import {restAuthPost} from '../../http/http-common'
+import ZoneDialog from './ZoneDialog'
+import {createZone} from '../../http/sitewhere-api'
 
 export default {
 
@@ -20,8 +20,10 @@ export default {
   }),
 
   components: {
-    SiteDialog
+    ZoneDialog
   },
+
+  props: ['site'],
 
   methods: {
     // Send event to open dialog.
@@ -32,13 +34,13 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      restAuthPost(this.$store, '/sites', payload, this.onCommitted, this.onFailed)
+      createZone(this.$store, this.siteToken, payload, this.onCommitted, this.onFailed)
     },
 
     // Handle successful commit.
     onCommitted: function (result) {
       this.$children[0].closeDialog()
-      this.$emit('siteAdded')
+      this.$emit('zoneAdded')
     },
 
     // Handle failed commit.
@@ -51,8 +53,8 @@ export default {
 
 <style scoped>
 .add-button {
-  position: fixed;
-  bottom: 16px;
+  position: absolute;
+  top: -35px;
   right: 16px;
 }
 </style>

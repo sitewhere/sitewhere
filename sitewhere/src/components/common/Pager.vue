@@ -4,7 +4,7 @@
     <v-container class="ma-0 pa-0">
       <v-layout row wrap>
         <v-flex xs2>
-          <v-subheader class="ma-0 pt-0 pr-0 right">Rows per page</v-subheader>
+          <v-subheader class="ma-0 pt-0 pr-0">Rows per page</v-subheader>
         </v-flex>
         <v-flex xs3 style="margin-top: 6px; height: 10px;">
           <v-btn-toggle :options="pageSizesWithDefaults" v-model="pageSize"></v-btn-toggle>
@@ -17,6 +17,10 @@
           <v-btn :disabled="!previousEnabled" icon dark class="ml-0 mr-0"
             v-tooltip:top="{ html: 'Previous Page' }" @click.native="onPreviousPage">
             <v-icon light>keyboard_arrow_left</v-icon>
+          </v-btn>
+          <v-btn icon dark class="ml-0 mr-0"
+            v-tooltip:top="{ html: 'Refresh' }" @click.native="onRefresh">
+            <v-icon light>refresh</v-icon>
           </v-btn>
           <v-btn :disabled="!nextEnabled" icon dark class="ml-0 mr-0"
             v-tooltip:top="{ html: 'Next Page' }" @click.native="onNextPage">
@@ -143,6 +147,10 @@ export default {
         this.$data.page = (--page)
         this.onPagingUpdated()
       }
+    },
+    // Called to refresh data.
+    onRefresh: function () {
+      this.onPagingUpdated()
     },
     // Called to move to next page.
     onNextPage: function () {

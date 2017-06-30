@@ -87,7 +87,7 @@
       </v-card-row>
     </v-card>
     <v-card id="map-overlay" v-if="mapOverlayShown">
-      <div id="app" style="height: 100%">
+      <div style="height: 100%">
         <v-map :zoom="mapOverlayZoom" :center="mapOverlayLatLon"
           @l-move="onMapMove" @l-zoom="onMapZoom">
           <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>

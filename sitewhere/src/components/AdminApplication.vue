@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app v-if="user">
     <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
       <v-list class="pa-0">
         <v-list-item>
@@ -11,25 +11,25 @@
       </v-list>
       <v-list v-if="sections" dense class="pt-0">
         <v-divider></v-divider>
-        <v-list-group v-for="section in sections" :value="section.active" :key="section.id">
-          <v-list-tile @click.native="onSectionClicked(section)" slot="item">
+        <v-list-group v-for="navsect in sections" :value="navsect.active" :key="navsect.id">
+          <v-list-tile @click.native="onSectionClicked(navsect)" slot="item">
             <v-list-tile-action>
-              <v-icon light>{{ section.icon }}</v-icon>
+              <v-icon light>{{ navsect.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{ section.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ navsect.title }}</v-list-tile-title>
             </v-list-tile-content>
-            <v-list-tile-action v-if="section.subsections">
+            <v-list-tile-action v-if="navsect.subsections">
               <v-icon light>keyboard_arrow_down</v-icon>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-item v-for="subsection in section.subsections" :key="subsection">
-            <v-list-tile @click.native="onSectionClicked(subsection)">
+          <v-list-item v-for="navsub in navsect.subsections" :key="navsub">
+            <v-list-tile @click.native="onSectionClicked(navsub)">
               <v-list-tile-content>
-                <v-list-tile-title>{{ subsection.title }}</v-list-tile-title>
+                <v-list-tile-title>{{ navsub.title }}</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-icon light>{{ subsection.icon }}</v-icon>
+                <v-icon light>{{ navsub.icon }}</v-icon>
               </v-list-tile-action>
             </v-list-tile>
           </v-list-item>
@@ -38,12 +38,12 @@
     </v-navigation-drawer>
     <v-toolbar fixed class="grey darken-3" light>
       <v-toolbar-side-icon class="grey--text" @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-icon left light>{{section.icon}}</v-icon>
-      <v-toolbar-title>{{section.longTitle}}</v-toolbar-title>
+      <v-icon left light>{{ section.icon }}</v-icon>
+      <v-toolbar-title>{{ section.longTitle }}</v-toolbar-title>
       <v-menu bottom right offset-y origin="bottom right" transition="v-slide-y-transition">
         <v-btn class="grey darken-1 white--text" slot="activator">
           <v-icon light class="mr-2">portrait</v-icon>
-          {{fullname}}
+          {{ fullname }}
         </v-btn>
         <v-list>
           <v-list-item v-for="action in userActions" :key="action">
@@ -149,6 +149,11 @@ export default {
   },
 
   computed: {
+    // Get loggied in user.
+    user: function () {
+      return this.$store.getters.user
+    },
+    // Get currently selected section.
     section: function () {
       return this.$store.getters.currentSection
     },
@@ -200,6 +205,8 @@ export default {
     if ((!tenant) || (tenant.id !== tenantId)) {
       this.onLoadTenant(tenantId)
     } else {
+      console.log('tenant ' + tenantId + ' already loaded')
+
       // Select first section from list.
       this.onSectionClicked(this.$data.sections[0])
     }
@@ -208,6 +215,7 @@ export default {
   methods: {
     // Load tenant based on tenant id.
     onLoadTenant: function (tenantId) {
+      console.log('loading tenant ' + tenantId)
       var component = this
 
       restAuthGet(this.$store,
