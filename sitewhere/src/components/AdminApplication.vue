@@ -75,11 +75,11 @@ export default {
     drawer: true,
     tenantId: null,
     sections: [{
-      id: 'server',
-      title: 'Server',
-      icon: 'home',
+      id: 'configure',
+      title: 'Tenant Configuration',
+      icon: 'settings',
       route: 'server',
-      longTitle: 'Server Administration'
+      longTitle: 'Tenant Configuration'
     },
     {
       id: 'sites',

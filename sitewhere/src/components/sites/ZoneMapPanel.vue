@@ -36,8 +36,8 @@ export default {
   data: () => ({
     map: null,
     zoneName: null,
-    zoneBorder: '#dc0000',
-    zoneFill: '#333333',
+    zoneBorder: '#333333',
+    zoneFill: '#dc0000',
     zoneOpacity: 1
   }),
 

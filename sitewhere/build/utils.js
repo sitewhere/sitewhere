@@ -23,17 +23,9 @@ exports.cssLoaders = function (options) {
     }
   }
 
-  var resolveLoader = {
-    loader: 'resolve-url-loader',
-    options: {
-      debug: true,
-      fail: true
-    }
-  }
-
   // generate loader string to be used with extract text plugin
   function generateLoaders (loader, loaderOptions) {
-    var loaders = [cssLoader, resolveLoader]
+    var loaders = [cssLoader]
     if (loader) {
       loaders.push({
         loader: loader + '-loader',

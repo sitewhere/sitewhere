@@ -14,15 +14,23 @@
               </v-alert>
             </v-card-row>
             <v-card-row>
-              <v-card-title class="black--text text-xs-center text-sm-center text-md-center text-lg-center text-xl-center">
-                SiteWhere Administration
-              </v-card-title>
+              <v-layout row wrap pl-3 pr-0 mb-2 style="width: 100%">
+                <v-flex xs12 pt-3>
+                  <div style="width: 100%; text-align: center; color: #333; font-size: 28px;">
+                    SiteWhere Server Administration
+                  </div>
+                </v-flex>
+              </v-layout>
             </v-card-row>
             <v-card-row>
-              <v-card-text>
-                <v-text-field label="Username" v-model="username"></v-text-field>
-                <v-text-field label="Password" v-model="password" type="password"></v-text-field>
-              </v-card-text>
+              <v-layout row wrap pl-3 pr-0 mb-2 style="width: 100%">
+                <v-flex xs12 pt-4>
+                  <v-text-field hide-details label="Username" v-model="username"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field hide-details label="Password" v-model="password" type="password"></v-text-field>
+                </v-flex>
+              </v-layout>
             </v-card-row>
             <v-card-row actions>
               <v-btn primary light @click.native="onLogin">Login</v-btn>

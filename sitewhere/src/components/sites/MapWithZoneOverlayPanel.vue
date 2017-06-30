@@ -1,7 +1,6 @@
 <template>
   <div :style="{ 'height': height, 'width': '100%' }">
     <v-map :zoom="13" :center="[47.413220, -1.219482]" ref="map">
-      <v-marker :lat-lng="[33.7490, -84.3880]"></v-marker>
     </v-map>
   </div>
 </template>
@@ -39,7 +38,7 @@ export default {
 
     // Called when map is ready.
     onMapReady: function () {
-      // this.resetMap()
+      this.resetMap()
       this.configureMapTiles()
       this.zoomAndCenterSite()
       this.loadZoneLayers()
