@@ -15,7 +15,7 @@
         </v-tabs-bar>
         <v-tabs-content key="settings" id="settings">
           <zone-map-panel height="400px" :site='site' :zone="zone"
-            :visible="dialogVisible" :mode='mode'>
+            :visible="dialogVisible" :mode='mode' @zoneUpdated="onZoneUpdated">
           </zone-map-panel>
         </v-tabs-content>
         <v-tabs-content key="metadata" id="metadata">
@@ -37,7 +37,7 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
-    zone: null,
+    updatedZone: null,
     metadata: [],
     error: null
   }),
@@ -48,12 +48,20 @@ export default {
     ZoneMapPanel
   },
 
-  props: ['site', 'title', 'width', 'createLabel', 'cancelLabel', 'mode'],
+  props: ['site', 'zone', 'title', 'width', 'createLabel', 'cancelLabel', 'mode'],
 
   methods: {
     // Generate payload from UI.
     generatePayload: function () {
-      var payload = {}
+      var payload = Object.assign({}, this.$data.updatedZone)
+
+      var metadata = {}
+      var flat = this.$data.metadata
+      for (var i = 0; i < flat.length; i++) {
+        metadata[flat[i].name] = flat[i].value
+      }
+      payload.metadata = metadata
+
       return payload
     },
 
@@ -94,6 +102,11 @@ export default {
     // Called to show an error message.
     showError: function (error) {
       this.$data.error = error
+    },
+
+    // Called as zone is updated.
+    onZoneUpdated: function (zone) {
+      this.$data.updatedZone = zone
     },
 
     // Called after create button is clicked.

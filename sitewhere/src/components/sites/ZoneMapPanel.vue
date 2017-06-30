@@ -3,7 +3,8 @@
     <v-card-row>
       <map-with-zone-overlay-panel :site='site' :visible='visible'
         :mode='mode' :height='height' :borderColor="zoneBorder"
-        :fillColor="zoneFill" :fillOpacity="zoneOpacity" @mapReady='onMapReady'>
+        :fillColor="zoneFill" :fillOpacity="zoneOpacity"
+        @zoneAdded="onZoneAdded">
       </map-with-zone-overlay-panel>
     </v-card-row>
     <v-card-row>
@@ -35,8 +36,8 @@ import ColorPicker from '../common/ColorPicker'
 export default {
 
   data: () => ({
-    map: null,
     zoneName: null,
+    zoneCoordinates: null,
     zoneBorder: '#333333',
     zoneFill: '#dc0000',
     zoneOpacity: 1
@@ -49,23 +50,70 @@ export default {
 
   props: ['site', 'zone', 'height', 'visible', 'mode'],
 
-  methods: {
-    onMapReady: function (map) {
-      this.$data.map = map
+  watch: {
+    zone: function (zone) {
+      if (zone) {
+        this.$data.zoneName = zone.name
+        this.$data.zoneCoordinates = zone.coordinates
+        this.$data.zoneBorder = zone.borderColor
+        this.$data.zoneFill = zone.fillColor
+        this.$data.zoneOpacity = zone.opacity
+      }
     },
+
+    // Update zone name.
+    zoneName: function (name) {
+      this.emitZoneIfReady()
+    }
+  },
+
+  methods: {
+    // Called when a new zone is added.
+    onZoneAdded: function (val) {
+      this.$data.zoneCoordinates = val
+      this.emitZoneIfReady()
+    },
+
     // Called when zone border color is chosen.
     onBorderColorUpdated: function (val) {
       this.$data.zoneBorder = val
+      this.emitZoneIfReady()
     },
 
     // Called when zone fill color is chosen.
     onFillColorUpdated: function (val) {
       this.$data.zoneFill = val
+      this.emitZoneIfReady()
     },
 
     // Called when zone fill opacity is chosen.
     onFillOpacityUpdated: function (val) {
       this.$data.zoneOpacity = val
+      this.emitZoneIfReady()
+    },
+
+    // Emit updates to zone as it changes.
+    emitZoneIfReady: function () {
+      var latlons = this.$data.zoneCoordinates
+      if (latlons) {
+        var zone = {
+          'name': this.$data.zoneName,
+          'borderColor': this.$data.zoneBorder,
+          'fillColor': this.$data.zoneFill,
+          'opacity': this.$data.zoneOpacity
+        }
+        var coords = []
+        for (var index = 0; index < latlons.length; index++) {
+          coords.push({
+            'latitude': latlons[index].lat,
+            'longitude': latlons[index].lng,
+            'elevation': 0
+          })
+        }
+        zone.coordinates = coords
+
+        this.$emit('zoneUpdated', zone)
+      }
     }
   }
 }

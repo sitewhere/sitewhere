@@ -54,7 +54,7 @@ export function listZonesForSite (store, siteToken, query, success, failed) {
  * Create zone.
  */
 export function createZone (store, siteToken, payload, success, failed) {
-  restAuthPost(this.$store, '/sites/' + siteToken + '/zones', payload, success, failed)
+  restAuthPost(store, '/sites/' + siteToken + '/zones', payload, success, failed)
 }
 
 /**

@@ -29,18 +29,21 @@ export default {
       if (newZoneLayer) {
         newZoneLayer.setStyle({ color: val })
       }
+      this.updateEditControl()
     },
     fillColor: function (val) {
       var newZoneLayer = this.getNewZoneLayer()
       if (newZoneLayer) {
         newZoneLayer.setStyle({ fillColor: val })
       }
+      this.updateEditControl()
     },
     fillOpacity: function (val) {
       var newZoneLayer = this.getNewZoneLayer()
       if (newZoneLayer) {
         newZoneLayer.setStyle({ fillOpacity: val })
       }
+      this.updateEditControl()
     }
   },
 
@@ -72,6 +75,14 @@ export default {
       return this.$data.newZoneLayer
     },
 
+    // Get the edit control.
+    updateEditControl: function () {
+      var edit = this.$data.editControl
+      if (edit) {
+        edit.setDrawingOptions(this.getDrawOptions())
+      }
+    },
+
     // Clear layers from map.
     resetMap: function () {
       var component = this
@@ -100,6 +111,7 @@ export default {
         var zcNewZoneLayer = e.layer
         map.addLayer(zcNewZoneLayer)
         component.$data.newZoneLayer = zcNewZoneLayer
+        component.$emit('zoneAdded', zcNewZoneLayer._latlngs[0])
       })
     },
 
@@ -194,33 +206,38 @@ export default {
       return polygon
     },
 
+    // Get drawing options based on UI settings.
+    getDrawOptions: function () {
+      return {
+        polyline: false,
+        circle: false,
+        marker: false,
+        polygon: {
+          shapeOptions: {
+            color: this.borderColor,
+            opacity: 1,
+            fillColor: this.fillColor,
+            fillOpacity: this.fillOpacity
+          }
+        },
+        rectangle: {
+          shapeOptions: {
+            color: this.borderColor,
+            opacity: 1,
+            fillColor: this.fillColor,
+            fillOpacity: this.fillOpacity
+          }
+        }
+      }
+    },
+
     /** Enables drawing features on map */
     enableMapDrawing: function () {
       var options = {
         position: 'topright',
-        draw: {
-          polyline: false,
-          circle: false,
-          marker: false,
-          polygon: {
-            shapeOptions: {
-              color: this.borderColor,
-              opacity: 1,
-              fillColor: this.fillColor,
-              fillOpacity: this.fillOpacity
-            }
-          },
-          rectangle: {
-            shapeOptions: {
-              color: this.borderColor,
-              opacity: 1,
-              fillColor: this.fillColor,
-              fillOpacity: this.fillOpacity
-            }
-          }
-        },
         edit: false
       }
+      options.draw = this.getDrawOptions()
 
       var drawControl = new L.Control.Draw(options)
       this.getMap().addControl(drawControl)

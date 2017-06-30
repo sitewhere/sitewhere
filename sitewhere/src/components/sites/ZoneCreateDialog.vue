@@ -34,7 +34,7 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      createZone(this.$store, this.siteToken, payload, this.onCommitted, this.onFailed)
+      createZone(this.$store, this.site.token, payload, this.onCommitted, this.onFailed)
     },
 
     // Handle successful commit.
