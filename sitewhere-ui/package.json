@@ -13,7 +13,8 @@
   "dependencies": {
     "axios": "^0.16.2",
     "css-loader": "^0.28.4",
-    "leaflet-draw": "^0.4.9",
+    "leaflet": "^1.0.3",
+    "leaflet-draw": "^0.4.10",
     "resolve-url-loader": "^2.0.3",
     "vee-validate": "^2.0.0-rc.5",
     "vue": "^2.3.3",
