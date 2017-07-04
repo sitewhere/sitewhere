@@ -1,4 +1,4 @@
-import {restAuthGet, restAuthPost, restAuthDelete} from './http-common'
+import {restAuthGet, restAuthPost, restAuthPut, restAuthDelete} from './http-common'
 
 /**
  * List sites.
@@ -55,6 +55,20 @@ export function listZonesForSite (store, siteToken, query, success, failed) {
  */
 export function createZone (store, siteToken, payload, success, failed) {
   restAuthPost(store, '/sites/' + siteToken + '/zones', payload, success, failed)
+}
+
+/**
+ * Get zone.
+ */
+export function getZone (store, zoneToken, success, failed) {
+  restAuthGet(store, '/zones/' + zoneToken, success, failed)
+}
+
+/**
+ * Update zone.
+ */
+export function updateZone (store, zoneToken, payload, success, failed) {
+  restAuthPut(store, '/zones/' + zoneToken, payload, success, failed)
 }
 
 /**

@@ -6,7 +6,7 @@
       </v-card-row>
       <v-card-row slot="error" v-if="error">
         <v-alert class="ma-0" error v-bind:value="true" style="width: 100%">
-          {{error}}
+          {{error.message}}
         </v-alert>
       </v-card-row>
       <v-card-row>

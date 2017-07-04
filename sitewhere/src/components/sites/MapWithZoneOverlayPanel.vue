@@ -17,7 +17,7 @@ export default {
     newZoneLayer: null
   }),
 
-  props: ['site', 'height', 'visible', 'borderColor',
+  props: ['site', 'zone', 'height', 'visible', 'borderColor',
     'fillColor', 'fillOpacity', 'mode'],
 
   watch: {
@@ -66,6 +66,8 @@ export default {
       this.loadZoneLayers()
       if (this.mode === 'create') {
         this.enableMapDrawing()
+      } else if (this.mode === 'update') {
+        this.enableMapEditing()
       }
       this.$emit('mapReady', this.getMap())
     },
@@ -101,18 +103,28 @@ export default {
 
       // Remove and add event handlers.
       map.off('draw:drawstart').on('draw:drawstart', function (e) {
-        var newZoneLayer = component.getNewZoneLayer()
-        if (newZoneLayer) {
-          map.removeLayer(newZoneLayer)
-          component.$data.newZoneLayer = null
-        }
+        component.removeNewZoneLayer()
       })
       map.off('draw:created').on('draw:created', function (e) {
-        var zcNewZoneLayer = e.layer
-        map.addLayer(zcNewZoneLayer)
-        component.$data.newZoneLayer = zcNewZoneLayer
-        component.$emit('zoneAdded', zcNewZoneLayer._latlngs[0])
+        component.addNewZoneLayer(e)
       })
+    },
+
+    // Add new zone layer.
+    addNewZoneLayer: function (e) {
+      var zcNewZoneLayer = e.layer
+      this.getMap().addLayer(zcNewZoneLayer)
+      this.$data.newZoneLayer = zcNewZoneLayer
+      this.$emit('zoneAdded', zcNewZoneLayer._latlngs[0])
+    },
+
+    // Remove existing new zone layer.
+    removeNewZoneLayer: function () {
+      var newZoneLayer = this.getNewZoneLayer()
+      if (newZoneLayer) {
+        this.getMap().removeLayer(newZoneLayer)
+        this.$data.newZoneLayer = null
+      }
     },
 
     // Configure tile layer based on site preferences.
@@ -177,7 +189,7 @@ export default {
       // Add newest last.
       zones.reverse()
 
-      var tokenToSkip = this.$data.tokenToSkip
+      var tokenToSkip = (this.zone) ? this.zone.token : null
       for (var zoneIndex = 0; zoneIndex < zones.length; zoneIndex++) {
         var zone = zones[zoneIndex]
         if (zone.token !== tokenToSkip) {
@@ -242,6 +254,33 @@ export default {
       var drawControl = new L.Control.Draw(options)
       this.getMap().addControl(drawControl)
       this.$data.editControl = drawControl
+    },
+
+    // Enables editing features on map.
+    enableMapEditing: function () {
+      var editFeatures = new L.FeatureGroup()
+      var editZone = this.createPolygonForZone(this.zone)
+      editFeatures.addLayer(editZone)
+      this.getMap().addLayer(editFeatures)
+      editFeatures.bringToFront()
+
+      var options = {
+        position: 'topright',
+        draw: false,
+        edit: {
+          featureGroup: editFeatures,
+          remove: false
+        }
+      }
+
+      var drawControl = new L.Control.Draw(options)
+      this.getMap().addControl(drawControl)
+      this.$data.editControl = drawControl
+
+      var bounds = editZone.getBounds()
+      this.getMap().fitBounds(bounds, {
+        padding: [ 0, 0 ]
+      })
     }
   }
 }

@@ -27,9 +27,9 @@
               <zone-delete-dialog :token="props.item.token"
                 @zoneDeleted="onZoneDeleted">
               </zone-delete-dialog>
-              <v-btn icon @click.native="onEditZone(item)" class="ma-0" v-tooltip:top="{ html: 'Edit Zone' }">
-                <v-icon class="grey--text">edit</v-icon>
-              </v-btn>
+              <zone-update-dialog :site="site" :token="props.item.token"
+                @zoneUpdated="onZoneUpdated">
+              </zone-update-dialog>
             </td>
           </template>
         </v-data-table>
@@ -43,6 +43,7 @@
 <script>
 import Pager from '../common/Pager'
 import ZoneCreateDialog from './ZoneCreateDialog'
+import ZoneUpdateDialog from './ZoneUpdateDialog'
 import ZoneDeleteDialog from './ZoneDeleteDialog'
 import {listZonesForSite} from '../../http/sitewhere-api'
 
@@ -99,6 +100,7 @@ export default {
   components: {
     Pager,
     ZoneCreateDialog,
+    ZoneUpdateDialog,
     ZoneDeleteDialog
   },
 
@@ -146,6 +148,11 @@ export default {
 
     // Called when a zone is deleted.
     onZoneDeleted: function () {
+      this.refresh()
+    },
+
+    // Called when a zone is updated.
+    onZoneUpdated: function () {
       this.refresh()
     }
   }

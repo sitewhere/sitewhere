@@ -1,7 +1,7 @@
 <template>
   <v-card flat>
     <v-card-row>
-      <map-with-zone-overlay-panel :site='site' :visible='visible'
+      <map-with-zone-overlay-panel :site='site' :zone="zone" :visible='visible'
         :mode='mode' :height='height' :borderColor="zoneBorder"
         :fillColor="zoneFill" :fillOpacity="zoneOpacity"
         @zoneAdded="onZoneAdded">
@@ -54,10 +54,14 @@ export default {
     zone: function (zone) {
       if (zone) {
         this.$data.zoneName = zone.name
-        this.$data.zoneCoordinates = zone.coordinates
+        this.$data.zoneCoordinates =
+          this.buildLeafletCoordinates(zone.coordinates)
         this.$data.zoneBorder = zone.borderColor
         this.$data.zoneFill = zone.fillColor
         this.$data.zoneOpacity = zone.opacity
+      } else {
+        this.$data.zoneName = null
+        this.$data.zoneCoordinates = null
       }
     },
 
@@ -68,8 +72,19 @@ export default {
   },
 
   methods: {
+    // Convert zone coordinates to Leaflet format.
+    buildLeafletCoordinates: function (input) {
+      var converted = []
+      for (var i = 0; i < input.length; i++) {
+        var coord = input[i]
+        converted.push({ 'lat': coord.latitude, 'lng': coord.longitude })
+      }
+      return converted
+    },
+
     // Called when a new zone is added.
     onZoneAdded: function (val) {
+      console.log(val)
       this.$data.zoneCoordinates = val
       this.emitZoneIfReady()
     },
