@@ -55,27 +55,27 @@ export default {
     zones: null,
     headers: [
       {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Name',
         value: 'name'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Token',
         value: 'token'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Created Date',
         value: 'created'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Updated Date',
         value: 'updated'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: '',
         value: 'edit'
