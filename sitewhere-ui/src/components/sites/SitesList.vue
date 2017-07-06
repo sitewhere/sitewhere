@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-app v-if="sites">
+    <div v-if="sites">
       <site-list-entry :site="site" v-for="(site, index) in sites" :key="site.token"
         @click="onOpenSite(site.token)" @siteDeleted="onSiteDeleted" class="mb-3">
       </site-list-entry>
-    </v-app>
+    </div>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
     <site-create-dialog @siteAdded="onSiteAdded"/>
   </div>

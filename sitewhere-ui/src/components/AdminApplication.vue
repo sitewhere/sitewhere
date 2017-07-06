@@ -8,7 +8,6 @@
         </v-list-tile>
       </v-list>
       <v-list v-if="sections" dense class="pt-0">
-        <v-divider></v-divider>
         <v-list-group v-for="navsect in sections" :value="navsect.active" :key="navsect.id">
           <v-list-tile @click.native="onSectionClicked(navsect)" slot="item">
             <v-list-tile-action>
