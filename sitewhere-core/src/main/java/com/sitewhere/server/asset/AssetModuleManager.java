@@ -130,9 +130,9 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      */
     @Override
     public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
-	IAssetModule<?> module = modulesById.get(assetModuleId);
+	IAssetModule<?> module = dsModuleManager.getModule(assetModuleId);
 	if (module == null) {
-	    module = dsModuleManager.getModule(assetModuleId);
+	    module = modulesById.get(assetModuleId);
 	}
 	return module;
     }
