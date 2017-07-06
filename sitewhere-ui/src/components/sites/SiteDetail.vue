@@ -1,7 +1,8 @@
 <template>
   <div v-if="site">
     <v-app>
-      <site-detail-header :site="site" @siteDeleted="onSiteDeleted" class="mb-3">
+      <site-detail-header :site="site"
+        @siteDeleted="onSiteDeleted" @siteUpdated="onSiteUpdated" class="mb-3">
       </site-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -107,6 +108,11 @@ export default {
       if (tenant) {
         this.$router.push('/admin/' + tenant.id + '/sites')
       }
+    },
+
+    // Called after site is updated.
+    onSiteUpdated: function () {
+      this.refresh()
     }
   }
 }

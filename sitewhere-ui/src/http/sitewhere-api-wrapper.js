@@ -2,7 +2,7 @@ import {
   BASE_URL, createAxiosAuthorized,
   getUser, listUserTenants,
   getTenant,
-  createSite, getSite, listSites, deleteSite, listAssignmentsForSite,
+  createSite, getSite, updateSite, listSites, deleteSite, listAssignmentsForSite,
   listLocationsForSite, listMeasurementsForSite, listAlertsForSite,
   listZonesForSite, createZone, getZone, updateZone, deleteZone,
   releaseAssignment, missingAssignment
@@ -79,6 +79,15 @@ export function _createSite (store, site) {
 export function _getSite (store, siteToken) {
   let axios = createAxiosFromStore(store)
   let api = getSite(axios, siteToken)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing site.
+ */
+export function _updateSite (store, siteToken, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateSite(axios, siteToken, payload)
   return loaderWrapper(store, api)
 }
 

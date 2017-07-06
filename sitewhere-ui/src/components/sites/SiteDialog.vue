@@ -109,7 +109,7 @@ export default {
         this.$data.siteName = payload.name
         this.$data.siteDescription = payload.description
         this.$data.siteImageUrl = payload.imageUrl
-        this.$data.mapConfig = payload.mapConfig
+        this.$data.mapConfig = payload.map
 
         var meta = payload.metadata
         var flat = []
@@ -152,7 +152,6 @@ export default {
 
     // Called when map configuration is updated.
     onMapConfigUpdated: function (updated) {
-      console.log(updated)
       this.$data.mapConfig = updated
     },
 

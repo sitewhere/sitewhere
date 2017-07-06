@@ -1,5 +1,5 @@
 <template>
-  <v-card @click="onOpenSite(site.token)" class="site white pa-2">
+  <v-card class="site white pa-2">
     <v-card-text>
       <div class="site-logo"
         v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
@@ -18,17 +18,21 @@
         <div class="site-created">{{ formatDate(site.createdDate) }}</div>
         <div class="site-updated-label">Updated:</div>
         <div class="site-updated">{{ formatDate(site.udpatedDate) }}</div>
+        <site-update-dialog :token="site.token" class="site-update" @siteUpdated="onSiteUpdated"></site-update-dialog>
         <site-delete-dialog :token="site.token" class="site-delete" @siteDeleted="onSiteDeleted"></site-delete-dialog>
       </div>
       <div class="site-divider"></div>
     </v-card-text>
-    <v-snackbar :timeout="3000" success v-model="showTokenCopied">Token copied to clipboard</v-snackbar>
+    <v-snackbar :timeout="3000" success v-model="showTokenCopied">Token copied to clipboard
+      <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
 import Utils from '../common/utils'
 import SiteDeleteDialog from './SiteDeleteDialog'
+import SiteUpdateDialog from './SiteUpdateDialog'
 
 export default {
 
@@ -40,7 +44,8 @@ export default {
   props: ['site'],
 
   components: {
-    SiteDeleteDialog
+    SiteDeleteDialog,
+    SiteUpdateDialog
   },
 
   created: function () {
@@ -48,9 +53,14 @@ export default {
   },
 
   methods: {
-    // Called when a site is deleted.
+    // Called when site is deleted.
     onSiteDeleted: function () {
       this.$emit('siteDeleted')
+    },
+
+    // Called when site is updated.
+    onSiteUpdated: function () {
+      this.$emit('siteUpdated')
     },
 
     // Called after token is copied.
@@ -162,6 +172,12 @@ export default {
   left: 100px;
   font-size: 14px;
   white-space: nowrap;
+}
+
+.site-update {
+  position: absolute;
+  bottom: 0px;
+  right: 50px;
 }
 
 .site-delete {

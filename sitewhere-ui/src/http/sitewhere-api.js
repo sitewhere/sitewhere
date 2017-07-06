@@ -62,6 +62,13 @@ export function getSite (axios, siteToken) {
 }
 
 /**
+ * Update an existing site.
+ */
+export function updateSite (axios, siteToken, payload) {
+  return restAuthPut(axios, 'sites/' + siteToken, payload)
+}
+
+/**
  * Delete an existing site.
  */
 export function deleteSite (axios, siteToken, force) {

@@ -137,24 +137,31 @@ export default {
   watch: {
     // Load panel from json payload.
     json: function (map) {
-      if (map.type) {
-        this.$data.mapSelection = map.type
-      } else {
-        this.$data.mapSelection = 'openstreetmap'
+      if (map) {
+        if (map.type) {
+          this.$data.mapSelection = map.type
+        } else {
+          this.$data.mapSelection = 'openstreetmap'
+        }
+        if (map.metadata) {
+          this.$data.mapZoom = map.metadata.zoomLevel
+          this.$data.mapLatitude = map.metadata.centerLatitude
+          this.$data.mapLongitude = map.metadata.centerLongitude
+          this.$data.geoBaseUrl = map.metadata.geoserverBaseUrl
+          this.$data.geoLayer = map.metadata.geoserverLayerName
+        } else {
+          this.$data.mapZoom = null
+          this.$data.mapLatitude = null
+          this.$data.mapLongitude = null
+          this.$data.geoBaseUrl = null
+          this.$data.geoLayer = null
+        }
       }
-      if (map.metadata) {
-        this.$data.mapZoom = map.metadata.zoomLevel
-        this.$data.mapLatitude = map.metadata.centerLatitude
-        this.$data.mapLongitude = map.metadata.centerLongitude
-        this.$data.geoBaseUrl = map.metadata.geoserverBaseUrl
-        this.$data.geoLayer = map.metadata.geoserverLayerName
-      } else {
-        this.$data.mapZoom = null
-        this.$data.mapLatitude = null
-        this.$data.mapLongitude = null
-        this.$data.geoBaseUrl = null
-        this.$data.geoLayer = null
-      }
+    },
+
+    // Emit payload when map selection changes.
+    mapSelection: function (updated) {
+      this.emitPayload()
     }
   },
 
@@ -176,6 +183,7 @@ export default {
       }
 
       map.metadata = mapmeta
+      console.log(map)
       this.$emit('mapConfig', map)
     },
 
@@ -211,7 +219,7 @@ export default {
       this.$data.mapLongitude = e.target.getCenter().lng
     },
 
-    // Called when overlay map is moved.
+    // Called when overlay map is zoomed.
     onMapZoom: function (e) {
       this.$data.mapZoom = e.target.getZoom()
     },
