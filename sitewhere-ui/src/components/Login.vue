@@ -6,7 +6,7 @@
         style="width: 600px; margin-left: auto; margin-right: auto;">
         <v-card-media class="white" contain src="/static/sitewhere.png" height="200px">
         </v-card-media>
-        <v-progress-linear v-if="loading" class="login-progress" v-bind:indeterminate="true"></v-progress-linear>
+        <v-progress-linear v-if="loading" class="login-progress" :indeterminate="true"></v-progress-linear>
         <error-banner :error="error"></error-banner>
         <v-card-text>
           <v-layout row wrap pl-0 pr-0 mb-0 style="width: 100%">

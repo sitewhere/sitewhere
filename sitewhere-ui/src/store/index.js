@@ -10,7 +10,7 @@ export default new Vuex.Store({
     authTenants: null,
     selectedTenant: null,
     currentSection: null,
-    loading: true,
+    loading: false,
     error: null
   },
   mutations: {
