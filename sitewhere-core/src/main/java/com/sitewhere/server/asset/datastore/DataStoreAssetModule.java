@@ -8,14 +8,13 @@
 package com.sitewhere.server.asset.datastore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
-import com.hazelcast.query.Predicate;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -50,7 +49,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
     private IAssetCategory category;
 
     /** Asset store for category */
-    protected IMap<String, T> assets;
+    protected Map<String, T> assets = new HashMap<String, T>();
 
     /** Matcher used for searches */
     protected AssetMatcher matcher = new AssetMatcher();
@@ -58,8 +57,6 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
     public DataStoreAssetModule(IAssetCategory category) {
 	super(LifecycleComponentType.AssetModule);
 	this.category = category;
-	this.assets = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
-		.getMap(getHazelcastMapName());
     }
 
     /*
@@ -120,11 +117,8 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
      */
     @SuppressWarnings("unchecked")
     public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ILock lock = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
-		.getLock(getHazelcastMapName());
 	try {
 	    LOGGER.debug("Locking asset module to load assets from datastore.");
-	    lock.lock();
 	    ISearchResults<IAsset> matches = SiteWhere.getServer().getAssetManagement(getTenant())
 		    .listAssets(category.getId(), SearchCriteria.ALL);
 	    assets.clear();
@@ -134,9 +128,6 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
 	    return new CommandResponse(CommandResult.Successful, "Asset list loaded from datastore.");
 	} catch (Throwable t) {
 	    return new CommandResponse(CommandResult.Failed, "Asset load operation failed. " + t.getMessage());
-	} finally {
-	    lock.unlock();
-	    LOGGER.debug("Released lock after loading assets from datastore.");
 	}
     }
 
@@ -176,8 +167,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
     }
 
     /**
-     * Search cached assets based on criteria. TODO: Use Hazelcast
-     * {@link Predicate} to do search on grid.
+     * Search assets based on criteria.
      * 
      * @param criteria
      * @return
