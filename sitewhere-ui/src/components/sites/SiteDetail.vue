@@ -1,7 +1,8 @@
 <template>
   <div v-if="site">
     <v-app>
-      <site-list-entry :site="site" class="mb-3"></site-list-entry>
+      <site-detail-header :site="site" @siteDeleted="onSiteDeleted" class="mb-3">
+      </site-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
           <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
@@ -42,7 +43,7 @@
 </template>
 
 <script>
-import SiteListEntry from './SiteListEntry'
+import SiteDetailHeader from './SiteDetailHeader'
 import SiteAssignments from './SiteAssignments'
 import SiteLocationEvents from './SiteLocationEvents'
 import SiteMeasurementEvents from './SiteMeasurementEvents'
@@ -60,7 +61,7 @@ export default {
   }),
 
   components: {
-    SiteListEntry,
+    SiteDetailHeader,
     SiteAssignments,
     SiteLocationEvents,
     SiteMeasurementEvents,
@@ -98,6 +99,14 @@ export default {
         longTitle: 'Manage Site: ' + site.name
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called after site is deleted.
+    onSiteDeleted: function () {
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/admin/' + tenant.id + '/sites')
+      }
     }
   }
 }

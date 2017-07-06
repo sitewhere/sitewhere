@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import Utils from '../common/utils'
 import AssetMiniPanel from './AssetMiniPanel'
 import DeviceMiniPanel from './DeviceMiniPanel'
 import AssignmentStatusButton from './AssignmentStatusButton'
@@ -93,16 +94,13 @@ export default {
         'background-position': '50% 50%'
       }
     },
-    // Format date.
-    formatDate: function (date) {
-      if (!date) {
-        return 'N/A'
-      }
-      return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
-    },
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+    // Format date.
+    formatDate: function (date) {
+      return Utils.formatDate(date)
     }
   }
 }

@@ -13,6 +13,7 @@
         </slot>
       </v-card-text>
       <v-card-actions>
+        <v-spacer></v-spacer>
         <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">Cancel</v-btn>
         <v-btn class="blue--text darken-1" flat="flat" @click.native="onDeleteClicked">Delete</v-btn>
       </v-card-actions>

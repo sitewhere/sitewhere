@@ -25,11 +25,6 @@ export default {
       if (tenant) {
         this.$router.push('/admin/' + tenant.id + '/sites/' + token)
       }
-    },
-
-    // Called when a site is deleted.
-    onSiteDeleted: function () {
-      this.$emit('siteDeleted')
     }
   }
 }
@@ -43,10 +38,10 @@ export default {
 
 .site-logo {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
   width: 140px;
-  height: 160px;
 }
 
 .site-name {

@@ -37,11 +37,12 @@ export default {
 
     // Perform delete.
     onDeleteConfirmed: function () {
+      var component = this
       _deleteSite(this.$store, this.token, true)
         .then(function (response) {
-          this.onDeleted(response)
+          component.onDeleted(response)
         }).catch(function (e) {
-          this.onFailed(e)
+          component.onFailed(e)
         })
     },
 

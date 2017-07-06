@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Vuetify from 'vuetify'
 import Vue2Leaflet from 'vue2-leaflet'
 import VueMoment from 'vue-moment'
+import VueClipboards from 'vue-clipboards'
 // import VeeValidate from 'vee-validate'
 
 import Login from '@/components/Login'
@@ -15,6 +16,7 @@ import SiteDetail from '@/components/sites/SiteDetail'
 Vue.use(Router)
 Vue.use(Vuetify)
 Vue.use(VueMoment)
+Vue.use(VueClipboards)
 // Vue.use(VeeValidate)
 
 Vue.component('v-map', Vue2Leaflet.Map)

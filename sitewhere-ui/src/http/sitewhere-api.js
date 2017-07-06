@@ -69,7 +69,7 @@ export function deleteSite (axios, siteToken, force) {
   if (force) {
     query += '?force=true'
   }
-  return restAuthDelete(axios, 'sites' + query)
+  return restAuthDelete(axios, 'sites/' + siteToken + query)
 }
 
 /**

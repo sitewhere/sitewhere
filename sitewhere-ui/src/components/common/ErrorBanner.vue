@@ -2,11 +2,9 @@
   <v-layout row wrap v-if="error">
     <v-flex xs12>
       <v-card class="white--text">
-        <v-card-row>
-          <v-alert error v-bind:value="true" class="top-alert">
-            {{error.message}}
-          </v-alert>
-        </v-card-row>
+        <v-alert error v-bind:value="true" class="top-alert">
+          {{error.message}}
+        </v-alert>
       </v-card>
     </v-flex>
   </v-layout>
