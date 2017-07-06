@@ -978,39 +978,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	this.configurationResolver = new ResourceManagerGlobalConfigurationResolver(runtimeResourceManager);
     }
 
-    /**
-     * Create and initialize all tenant engines.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeTenantEngines() throws SiteWhereException {
-	TenantSearchCriteria criteria = new TenantSearchCriteria(1, 0);
-	ISearchResults<ITenant> tenants = getTenantManagement().listTenants(criteria);
-	for (ITenant tenant : tenants.getResults()) {
-	    initializeTenantEngine(tenant);
-	}
-    }
-
-    /**
-     * Initialize a tenant engine.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
-	initializeNestedComponent(engine, new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")));
-	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
-	    registerTenant(tenant, engine);
-	    return engine;
-	} else {
-	    LOGGER.warn("Tenant engine initialization failed for '" + tenant.getId() + "'", engine.getLifecycleError());
-	    return null;
-	}
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -1043,8 +1010,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Start management implementations.
 	startManagementImplementations(start);
 
-	// Start tenants.
-	startTenants(start);
+	// Initialize tenant engines.
+	initializeTenantEngines(start);
+
+	// Start tenant engines.
+	startTenantEngines(start);
 
 	// Finish operations for starting server.
 	start.addStep(new SimpleLifecycleStep("Finished server startup") {
@@ -1142,19 +1112,84 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     }
 
     /**
-     * Initialize and start tenants.
+     * Initialize tenant engines.
      * 
      * @param start
      * @throws SiteWhereException
      */
-    protected void startTenants(ICompositeLifecycleStep start) throws SiteWhereException {
+    protected void initializeTenantEngines(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Initialize tenant engines.
+	start.addStep(new SimpleLifecycleStep("Initialized tenant engines") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		// Create thread pool for initializing tenants in parallel.
+		if (tenantOperations != null) {
+		    tenantOperations.shutdownNow();
+		}
+		tenantOperations = Executors.newFixedThreadPool(TENANT_OPERATION_PARALLELISM,
+			new TenantOperationsThreadFactory());
+
+		TenantSearchCriteria criteria = new TenantSearchCriteria(1, 0);
+		ISearchResults<ITenant> tenants = getTenantManagement().listTenants(criteria);
+		LOGGER.info("About to initialize " + tenants.getNumResults() + " tenant engines.");
+		for (ITenant tenant : tenants.getResults()) {
+		    tenantOperations.execute(new Runnable() {
+
+			@Override
+			public void run() {
+			    try {
+				initializeTenantEngine(tenant);
+			    } catch (SiteWhereException e) {
+				LOGGER.error("Tenant engine initialization failed.", e);
+			    }
+			}
+		    });
+		}
+		
+		// Wait for tenant initialization operations to finish.
+		tenantOperations.shutdown();
+		try {
+		    tenantOperations.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+		    LOGGER.info("Interrupted while waiting for tenants to start.");
+		}
+	    }
+	});
+    }
+
+    /**
+     * Initialize a tenant engine.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
+	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
+	initializeNestedComponent(engine, new LifecycleProgressMonitor(
+		new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")));
+	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
+	    registerTenant(tenant, engine);
+	    return engine;
+	} else {
+	    LOGGER.warn("Tenant engine initialization failed for '" + tenant.getId() + "'", engine.getLifecycleError());
+	    return null;
+	}
+    }
+
+    /**
+     * Start tenant engines.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startTenantEngines(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Initialize tenant engines.
 	start.addStep(new SimpleLifecycleStep("Started tenant engines") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		initializeTenantEngines();
-
 		// Create thread pool for starting tenants in parallel.
 		if (tenantOperations != null) {
 		    tenantOperations.shutdownNow();
