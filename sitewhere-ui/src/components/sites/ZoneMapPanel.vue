@@ -1,13 +1,13 @@
 <template>
   <v-card flat>
-    <v-card-row>
+    <v-card-text>
       <map-with-zone-overlay-panel :site='site' :zone="zone" :visible='visible'
         :mode='mode' :height='height' :borderColor="zoneBorder"
         :fillColor="zoneFill" :fillOpacity="zoneOpacity"
         @zoneAdded="onZoneAdded">
       </map-with-zone-overlay-panel>
-    </v-card-row>
-    <v-card-row>
+    </v-card-text>
+    <v-card-text>
       <v-container fluid class="pt-0 pb-0 mr-2">
         <v-layout row wrap>
           <v-flex xs8>
@@ -25,7 +25,7 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </v-card-row>
+    </v-card-text>
   </v-card>
 </template>
 

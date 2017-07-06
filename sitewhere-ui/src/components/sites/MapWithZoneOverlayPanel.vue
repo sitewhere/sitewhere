@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {listZonesForSite} from '../../http/sitewhere-api'
+import {_listZonesForSite} from '../../http/sitewhere-api-wrapper'
 import L from 'leaflet'
 import D from 'leaflet-draw' // eslint-disable-line no-unused-vars
 
@@ -170,14 +170,11 @@ export default {
         pageSize: 0
       }
       if (site) {
-        listZonesForSite(this.$store, site.token, query,
-          function (response) {
+        _listZonesForSite(this.$store, site.token, query)
+          .then(function (response) {
             component.addZonesToFeatureGroup(response.data.results)
-            component.$store.commit('error', null)
-          }, function (e) {
-            component.$store.commit('error', e)
-          }
-        )
+          }).catch(function (e) {
+          })
       }
     },
 

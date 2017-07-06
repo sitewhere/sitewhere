@@ -17,7 +17,7 @@
 <script>
 import Pager from '../common/Pager'
 import AssignmentListPanel from '../assignments/AssignmentListPanel'
-import {listAssignmentsForSite} from '../../http/sitewhere-api'
+import {_listAssignmentsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -45,16 +45,13 @@ export default {
     refresh: function () {
       var component = this
       var siteToken = this.siteToken
-      var query = this.$data.paging.query
-      listAssignmentsForSite(this.$store, siteToken, query,
-        function (response) {
+      var paging = this.$data.paging.query
+      _listAssignmentsForSite(this.$store, siteToken, true, true, paging)
+        .then(function (response) {
           component.results = response.data
           component.assignments = response.data.results
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called when page number is updated.

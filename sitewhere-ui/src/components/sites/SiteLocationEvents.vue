@@ -27,7 +27,7 @@
 
 <script>
 import Pager from '../common/Pager'
-import {listLocationsForSite} from '../../http/sitewhere-api'
+import {_listLocationsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -37,22 +37,22 @@ export default {
     locations: null,
     headers: [
       {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Asset',
         value: 'asset'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Latitude/Longitude/Elevation',
         value: 'lle'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Event Date',
         value: 'event'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Received Date',
         value: 'received'
@@ -89,16 +89,13 @@ export default {
     refresh: function () {
       var component = this
       var siteToken = this.siteToken
-      var query = this.$data.paging.query
-      listLocationsForSite(this.$store, siteToken, query,
-        function (response) {
+      var paging = this.$data.paging.query
+      _listLocationsForSite(this.$store, siteToken, paging)
+        .then(function (response) {
           component.results = response.data
           component.locations = response.data.results
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called when page number is updated.

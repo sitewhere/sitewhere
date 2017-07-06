@@ -1,93 +1,218 @@
-import {restAuthGet, restAuthPost, restAuthPut, restAuthDelete} from './http-common'
+import axios from 'axios'
 
 /**
- * List sites.
+ * Base URL for SiteWhere server.
  */
-export function listSites (store, query, success, failed) {
-  restAuthGet(store, 'sites?' + query, success, failed)
+export const BASE_URL = `http://localhost:9090/sitewhere/api/`
+
+/**
+ * Create authorized axios client based on values.
+ */
+export function createAxiosAuthorized (baseUrl, authToken, tenantToken) {
+  let headers = {}
+  if (authToken) {
+    headers['Authorization'] = 'Basic ' + authToken
+  }
+  if (tenantToken) {
+    headers['X-SiteWhere-Tenant'] = tenantToken
+  }
+  return axios.create({
+    baseURL: baseUrl,
+    headers: headers
+  })
+}
+
+/**
+ * Get a user by username.
+ */
+export function getUser (axios, username) {
+  return restAuthGet(axios, 'users/' + username)
+}
+
+/**
+ * List authorized tenants for a user.
+ */
+export function listUserTenants (axios, username, includeRuntimeInfo) {
+  let query = ''
+  if (includeRuntimeInfo) {
+    query += '?includeRuntimeInfo=true'
+  }
+  return restAuthGet(axios, 'users/' + username + '/tenants' + query)
+}
+
+/**
+ * Get a tenant by tenant id.
+ */
+export function getTenant (axios, tenantId) {
+  return restAuthGet(axios, 'tenants/' + tenantId)
+}
+
+/**
+ * Create a new site.
+ */
+export function createSite (axios, site) {
+  return restAuthPost(axios, 'sites', site)
 }
 
 /**
  * Get a site by unique token.
  */
-export function getSite (store, siteToken, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken, success, failed)
+export function getSite (axios, siteToken) {
+  return restAuthGet(axios, 'sites/' + siteToken)
+}
+
+/**
+ * Delete an existing site.
+ */
+export function deleteSite (axios, siteToken, force) {
+  let query = ''
+  if (force) {
+    query += '?force=true'
+  }
+  return restAuthDelete(axios, 'sites' + query)
+}
+
+/**
+ * List sites.
+ */
+export function listSites (axios, includeAssignments, includeZones, paging) {
+  let query = ''
+  query += (includeAssignments)
+    ? '?includeAssignments=true' : '?includeAssignments=false'
+  query += (includeZones)
+    ? '&includeZones=true' : '&includeZones=false'
+  if (paging) {
+    query += '&' + paging
+  }
+  return restAuthGet(axios, 'sites' + query)
 }
 
 /**
  * List assignments for a site.
  */
-export function listAssignmentsForSite (store, siteToken, query, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken + '/assignments?' + query +
-    '&includeDevice=true&includeAsset=true', success, failed)
+export function listAssignmentsForSite (axios, siteToken,
+  includeDevice, includeAsset, paging) {
+  let query = ''
+  query += (includeDevice)
+    ? '?includeDevice=true' : '?includeDevice=false'
+  query += (includeAsset)
+    ? '&includeAsset=true' : '&includeAsset=false'
+  if (paging) {
+    query += '&' + paging
+  }
+  return restAuthGet(axios, 'sites/' + siteToken + '/assignments' + query)
 }
 
 /**
  * List location events for a site.
  */
-export function listLocationsForSite (store, siteToken, query, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken + '/locations?' + query, success, failed)
+export function listLocationsForSite (axios, siteToken, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'sites/' + siteToken + '/locations' + query)
 }
 
 /**
  * List measurement events for a site.
  */
-export function listMeasurementsForSite (store, siteToken, query, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken + '/measurements?' + query, success, failed)
+export function listMeasurementsForSite (axios, siteToken, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'sites/' + siteToken + '/measurements' + query)
 }
 
 /**
  * List alert events for a site.
  */
-export function listAlertsForSite (store, siteToken, query, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken + '/alerts?' + query, success, failed)
+export function listAlertsForSite (axios, siteToken, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'sites/' + siteToken + '/alerts' + query)
 }
 
 /**
  * List zones for a site.
  */
-export function listZonesForSite (store, siteToken, query, success, failed) {
-  restAuthGet(store, 'sites/' + siteToken + '/zones?' + query, success, failed)
+export function listZonesForSite (axios, siteToken, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'sites/' + siteToken + '/zones' + query)
 }
 
 /**
  * Create zone.
  */
-export function createZone (store, siteToken, payload, success, failed) {
-  restAuthPost(store, '/sites/' + siteToken + '/zones', payload, success, failed)
+export function createZone (axios, siteToken, payload) {
+  return restAuthPost(axios, '/sites/' + siteToken + '/zones', payload)
 }
 
 /**
- * Get zone.
+ * Get zone by unique token.
  */
-export function getZone (store, zoneToken, success, failed) {
-  restAuthGet(store, '/zones/' + zoneToken, success, failed)
+export function getZone (axios, zoneToken) {
+  return restAuthGet(axios, '/zones/' + zoneToken)
 }
 
 /**
- * Update zone.
+ * Update an existing zone.
  */
-export function updateZone (store, zoneToken, payload, success, failed) {
-  restAuthPut(store, '/zones/' + zoneToken, payload, success, failed)
+export function updateZone (axios, zoneToken, payload) {
+  return restAuthPut(axios, '/zones/' + zoneToken, payload)
 }
 
 /**
  * Delete zone.
  */
-export function deleteZone (store, zoneToken, success, failed) {
-  restAuthDelete(store, 'zones/' + zoneToken + '?force=true', success, failed)
+export function deleteZone (axios, zoneToken) {
+  return restAuthDelete(axios, 'zones/' + zoneToken + '?force=true')
 }
 
 /**
  * Release an active assignment.
  */
-export function releaseAssignment (store, token, success, failed) {
-  restAuthPost(store, '/assignments/' + token + '/end', null, success, failed)
+export function releaseAssignment (axios, token) {
+  return restAuthPost(axios, '/assignments/' + token + '/end', null)
 }
 
 /**
  * Mark an assignment as missing.
  */
-export function missingAssignment (store, token, success, failed) {
-  restAuthPost(store, '/assignments/' + token + '/missing', null, success, failed)
+export function missingAssignment (axios, token) {
+  return restAuthPost(axios, '/assignments/' + token + '/missing', null)
+}
+
+/**
+ * Perform a REST get call.
+ */
+function restAuthGet (axios, path) {
+  return axios.get(path)
+}
+
+/**
+ * Perform a REST post call.
+ */
+function restAuthPost (axios, path, payload) {
+  return axios.post(path, payload)
+}
+
+/**
+ * Perform a REST put call.
+ */
+function restAuthPut (axios, path, payload) {
+  return axios.put(path, payload)
+}
+
+/**
+ * Perform a REST delete call.
+ */
+function restAuthDelete (axios, path) {
+  return axios.delete(path)
 }

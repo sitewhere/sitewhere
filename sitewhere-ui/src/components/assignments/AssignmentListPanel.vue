@@ -1,6 +1,6 @@
 <template>
   <v-card hover class="white">
-    <v-card-row :style="styleForStatus" class="assn-root">
+    <v-card-text :style="styleForStatus" class="assn-root">
       <asset-mini-panel class="assn-asset" :assignment="assignment"></asset-mini-panel>
       <div class="assn-separator1"></div>
       <device-mini-panel class="assn-device" :assignment="assignment"></device-mini-panel>
@@ -19,7 +19,7 @@
         v-if="assignment.status !== 'Released'" class="assn-status-button">
       </assignment-status-button>
       <div class="assn-status-value" v-if="assignment.status === 'Released'">Released</div>
-    </v-card-row>
+    </v-card-text>
   </v-card>
 </template>
 

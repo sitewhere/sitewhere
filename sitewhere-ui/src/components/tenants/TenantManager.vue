@@ -2,7 +2,7 @@
 </template>
 
 <script>
-import {restAuthGet} from '../../http/http-common'
+import {_listTenantsForCurrentUser} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -12,19 +12,17 @@ export default {
 
   created: function () {
     var component = this
-    restAuthGet(this.$store,
-      'users/' + this.$store.getters.user.username + '/tenants?includeRuntimeInfo=false',
-      function (response) {
-        var tenants = response.data
-        component.$store.commit('authTenants', tenants)
-        if (tenants.length === 1) {
-          var tenant = tenants[0]
-          component.$store.commit('selectedTenant', tenants[0])
-          component.$router.push('/admin/' + tenant.id + '/server')
-        }
-      }, function (e) {
-        component.error = e
-      })
+    _listTenantsForCurrentUser(component.$store).then(function (response) {
+      var tenants = response.data
+      component.$store.commit('authTenants', tenants)
+      if (tenants.length === 1) {
+        var tenant = tenants[0]
+        component.$store.commit('selectedTenant', tenants[0])
+        component.$router.push('/admin/' + tenant.id + '/server')
+      }
+    }).catch(function (e) {
+      component.error = e
+    })
   },
 
   methods: {

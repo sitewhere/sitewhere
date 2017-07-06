@@ -12,7 +12,7 @@
 
 <script>
 import ZoneDialog from './ZoneDialog'
-import {getZone, updateZone} from '../../http/sitewhere-api'
+import {_getZone, _updateZone} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -29,7 +29,13 @@ export default {
   methods: {
     // Load zone information
     onLoadZone: function () {
-      getZone(this.$store, this.token, this.onZoneLoaded, this.onFailed)
+      var component = this
+      _getZone(this.$store, this.token)
+        .then(function (response) {
+          component.onZoneLoaded(response)
+        }).catch(function (e) {
+          component.onFailed(e)
+        })
     },
 
     // Called after successful zone load.
@@ -46,8 +52,13 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      console.log(payload)
-      updateZone(this.$store, this.zone.token, payload, this.onCommitted, this.onFailed)
+      var component = this
+      _updateZone(this.$store, this.zone.token, payload)
+        .then(function (response) {
+          component.onCommitted(response)
+        }).catch(function (e) {
+          component.onFailed(e)
+        })
     },
 
     // Handle successful commit.

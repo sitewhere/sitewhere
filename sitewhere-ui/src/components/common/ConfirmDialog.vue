@@ -1,23 +1,21 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card >
-      <v-card-row class="confirm-dialog">
-        <span class="blue darken-2 white--text">{{title}}</span>
-      </v-card-row>
-      <v-card-row slot="error" v-if="error">
-        <v-alert class="ma-0" error v-bind:value="true" style="width: 100%">
-          {{ error.message }}
-        </v-alert>
-      </v-card-row>
-      <v-card-row>
+      <div class="confirm-dialog blue darken-2 white--text">
+        {{title}}
+      </div>
+      <v-alert class="ma-0" error v-bind:value="true" style="width: 100%" v-if="error">
+        {{ error.message }}
+      </v-alert>
+      <v-card-text>
         <slot>
             <div>Your content goes here!</div>
         </slot>
-      </v-card-row>
-      <v-card-row actions>
+      </v-card-text>
+      <v-card-actions>
         <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">Cancel</v-btn>
         <v-btn class="blue--text darken-1" flat="flat" @click.native="onActionClicked">{{ text }}</v-btn>
-      </v-card-row>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -69,9 +67,9 @@ export default {
 </script>
 
 <style scoped>
-.confirm-dialog span {
-  padding: 8px 12px;
-  font-size: 22px;
+.confirm-dialog {
+  padding: 10px;
+  font-size: 26px;
   width: 100%;
 }
 </style>

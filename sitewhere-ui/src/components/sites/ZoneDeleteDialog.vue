@@ -2,11 +2,11 @@
   <span class="ma-0">
     <delete-dialog title="Delete Zone" width="400" :error="error"
       @delete="onDeleteConfirmed">
-      <v-card-row>
+      <v-card-text>
         <v-card-text>
           Are you sure you want to delete this zone?
         </v-card-text>
-      </v-card-row>
+      </v-card-text>
     </delete-dialog>
     <v-btn class="ma-0" icon v-tooltip:top="{ html: 'Delete Zone' }"
       @click.native.stop="showDeleteDialog">
@@ -17,7 +17,7 @@
 
 <script>
 import DeleteDialog from '../common/DeleteDialog'
-import {deleteZone} from '../../http/sitewhere-api'
+import {_deleteZone} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -39,7 +39,13 @@ export default {
 
     // Perform delete.
     onDeleteConfirmed: function () {
-      deleteZone(this.$store, this.token, this.onDeleted, this.onFailed)
+      var component = this
+      _deleteZone(this.$store, this.token)
+        .then(function (response) {
+          component.onDeleted(response)
+        }).catch(function (e) {
+          component.onFailed(e)
+        })
     },
 
     // Handle successful delete.

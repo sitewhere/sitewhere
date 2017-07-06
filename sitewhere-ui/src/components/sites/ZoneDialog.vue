@@ -3,7 +3,7 @@
     <base-dialog :title="title" :width="width" :visible="dialogVisible"
       :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
       @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
-      <v-tabs light v-model="active">
+      <v-tabs dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
           <v-tabs-slider></v-tabs-slider>
           <v-tabs-item key="settings" href="#settings">

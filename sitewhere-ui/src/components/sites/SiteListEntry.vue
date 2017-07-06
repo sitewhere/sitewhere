@@ -1,15 +1,15 @@
 <template>
   <v-card hover @click="onOpenSite(site.token)" class="site white pa-2">
-    <v-card-row>
+    <v-card-text>
       <div class="site-logo"
         v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat'}">
       </div>
       <div class="site-name">{{site.name}}</div>
       <div class="site-desc">{{site.description}}</div>
-    </v-card-row>
-    <v-card-row class="site-actions" actions>
+    </v-card-text>
+    <v-card-actions>
       <site-delete-dialog :token="site.token" @siteDeleted="onSiteDeleted"/>
-    </v-card-row>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -73,12 +73,5 @@ export default {
   width: 60%;
   max-height: 4.5em;
   overflow-y: hidden;
-}
-
-.site-actions {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
 }
 </style>

@@ -3,16 +3,16 @@
     <site-dialog title="Create Site" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </site-dialog>
-    <v-btn floating class="add-button red darken-1 elevation-5"
+    <v-btn fab dark class="add-button red darken-1 elevation-5"
       v-tooltip:top="{ html: 'Add Site' }" @click.native.stop="onOpenDialog">
-      <v-icon light>add</v-icon>
+      <v-icon>add</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
 import SiteDialog from './SiteDialog'
-import {restAuthPost} from '../../http/http-common'
+import {_createSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -32,7 +32,12 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      restAuthPost(this.$store, '/sites', payload, this.onCommitted, this.onFailed)
+      _createSite(this.$store, payload)
+        .then(function (response) {
+          this.onCommitted(response)
+        }).catch(function (e) {
+          this.onFailed(e)
+        })
     },
 
     // Handle successful commit.

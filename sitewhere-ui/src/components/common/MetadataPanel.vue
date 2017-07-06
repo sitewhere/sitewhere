@@ -1,7 +1,7 @@
 <template>
   <v-card>
-    <v-card-row>
-      <v-data-table class="elevation-1" :headers="headers" :items="metadata"
+    <v-card-text>
+      <v-data-table class="elevation-0" :headers="headers" :items="metadata"
         :rows-per-page-items="pagesize" no-data-text="No metadata has been assigned">
         <template slot="items" scope="props">
           <td width="250px" :title="props.item.name">
@@ -18,20 +18,18 @@
           </td>
         </template>
       </v-data-table>
-    </v-card-row>
-    <v-card-row v-if="error">
-      <v-alert error :value="true" class="ma-0" style="width: 100%">
-        {{error}}
-      </v-alert>
-    </v-card-row>
-    <v-card-row class="blue darken-2">
+    </v-card-text>
+    <v-alert error :value="true" class="ma-0" style="width: 100%" v-if="error">
+      {{error}}
+    </v-alert>
+    <v-card-text class="blue darken-2">
       <v-container fluid class="mr-4 pt-1 pb-0">
         <v-layout row>
           <v-flex xs4>
-            <v-text-field light label="Name" v-model="newItemName"></v-text-field>
+            <v-text-field dark label="Name" v-model="newItemName"></v-text-field>
           </v-flex>
           <v-flex xs7>
-            <v-text-field light label="Value" v-model="newItemValue"></v-text-field>
+            <v-text-field dark label="Value" v-model="newItemValue"></v-text-field>
           </v-flex>
           <v-flex xs1 class="pt-3">
             <v-btn icon @click.native="onAddItem" v-tooltip:top="{ html: 'Add Item' }">
@@ -40,7 +38,7 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </v-card-row>
+    </v-card-text>
   </v-card>
 </template>
 

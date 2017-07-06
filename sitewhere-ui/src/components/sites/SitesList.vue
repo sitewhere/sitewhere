@@ -14,7 +14,7 @@
 import Pager from '../common/Pager'
 import SiteListEntry from './SiteListEntry'
 import SiteCreateDialog from './SiteCreateDialog'
-import {listSites} from '../../http/sitewhere-api'
+import {_listSites} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -39,17 +39,14 @@ export default {
 
     // Refresh list of sites.
     refresh: function () {
-      var query = this.$data.paging.query
+      var paging = this.$data.paging.query
       var component = this
-      listSites(this.$store, query,
-        function (response) {
+      _listSites(this.$store, false, false, paging)
+        .then(function (response) {
           component.results = response.data
           component.sites = response.data.results
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called when a new site is added.

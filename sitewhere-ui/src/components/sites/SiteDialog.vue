@@ -3,8 +3,8 @@
     <base-dialog :title="title" :width="width" :visible="dialogVisible"
       :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
       @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
-      <v-tabs light v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
+      <v-tabs dark v-model="active">
+        <v-tabs-bar slot="activators">
           <v-tabs-slider></v-tabs-slider>
           <v-tabs-item key="details" href="#details">
             Site Details
@@ -18,23 +18,21 @@
         </v-tabs-bar>
         <v-tabs-content key="details" id="details">
           <v-card flat>
-            <v-card-row>
-              <v-card-text>
-                <v-container fluid>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" label="Site name" v-model="siteName" prepend-icon="info"></v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" multi-line label="Description" v-model="siteDescription" prepend-icon="subject"></v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" label="Image URL" v-model="siteImageUrl" prepend-icon="image"></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
+            <v-card-text>
+              <v-container fluid>
+                <v-layout row wrap>
+                  <v-flex xs12>
+                    <v-text-field class="mt-1" label="Site name" v-model="siteName" prepend-icon="info"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field class="mt-1" multi-line label="Description" v-model="siteDescription" prepend-icon="subject"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field class="mt-1" label="Image URL" v-model="siteImageUrl" prepend-icon="image"></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
               </v-card-text>
-            </v-card-row>
           </v-card>
         </v-tabs-content>
         <v-tabs-content key="map" id="map">

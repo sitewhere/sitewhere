@@ -2,11 +2,9 @@
   <div>
     <delete-dialog title="Delete Site" width="400" :error="error"
       @delete="onDeleteConfirmed">
-      <v-card-row>
-        <v-card-text>
-          Are you sure you want to delete this site?
-        </v-card-text>
-      </v-card-row>
+      <v-card-text>
+        Are you sure you want to delete this site?
+      </v-card-text>
     </delete-dialog>
     <v-btn icon v-tooltip:top="{ html: 'Delete Site' }"
       @click.native.stop="showDeleteDialog">
@@ -17,7 +15,7 @@
 
 <script>
 import DeleteDialog from '../common/DeleteDialog'
-import {restAuthDelete} from '../../http/http-common'
+import {_deleteSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -39,8 +37,12 @@ export default {
 
     // Perform delete.
     onDeleteConfirmed: function () {
-      restAuthDelete(this.$store, '/sites/' + this.token + '?force=true',
-        this.onDeleted, this.onFailed)
+      _deleteSite(this.$store, this.token, true)
+        .then(function (response) {
+          this.onDeleted(response)
+        }).catch(function (e) {
+          this.onFailed(e)
+        })
     },
 
     // Handle successful delete.

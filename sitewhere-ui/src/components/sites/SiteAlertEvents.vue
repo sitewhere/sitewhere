@@ -30,7 +30,7 @@
 
 <script>
 import Pager from '../common/Pager'
-import {listAlertsForSite} from '../../http/sitewhere-api'
+import {_listAlertsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -40,27 +40,27 @@ export default {
     alerts: null,
     headers: [
       {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Asset',
         value: 'asset'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Type',
         value: 'type'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Message',
         value: 'message'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Event Date',
         value: 'event'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Received Date',
         value: 'received'
@@ -98,15 +98,12 @@ export default {
       var component = this
       var siteToken = this.siteToken
       var query = this.$data.paging.query
-      listAlertsForSite(this.$store, siteToken, query,
-        function (response) {
+      _listAlertsForSite(this.$store, siteToken, query)
+        .then(function (response) {
           component.results = response.data
           component.alerts = response.data.results
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called when page number is updated.

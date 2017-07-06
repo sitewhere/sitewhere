@@ -2,89 +2,83 @@
   <div>
     <v-card flat>
       <!-- Map selector -->
-      <v-card-row>
-        <v-card-text class="pt-4 pb-4">
-          <v-container fluid class="pt-0 pb-0">
-            <v-layout row wrap class="pb-2">
-              <v-flex xs3>
-                <v-subheader class="pt-3">Map Type</v-subheader>
-              </v-flex>
-              <v-flex xs9>
-                <v-select :items="mapTypes" v-model="mapSelection"
-                  label="Select Map Type" dark single-line auto
-                  prepend-icon="map" hide-details></v-select>
-              </v-flex>
-            </v-layout>
-            <v-divider class="mt-2"></v-divider>
-          </v-container>
-        </v-card-text>
-      </v-card-row>
+      <v-card-text class="pt-4 pb-4">
+        <v-container fluid class="pt-0 pb-0">
+          <v-layout row wrap class="pb-2">
+            <v-flex xs3>
+              <v-subheader class="pt-3">Map Type</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-select :items="mapTypes" v-model="mapSelection"
+                label="Select Map Type" light single-line auto
+                prepend-icon="map" hide-details></v-select>
+            </v-flex>
+          </v-layout>
+          <v-divider class="mt-2"></v-divider>
+        </v-container>
+      </v-card-text>
       <!-- OpenStreetMap Configuration -->
-      <v-card-row v-if="mapSelection === 'openstreetmap'">
-        <v-card-text class="pt-0 pb-0">
-          <v-container fluid class="pt-0 pb-0">
-            <v-layout row wrap>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Center Latitude" @change="emitPayload"
-                  v-model="mapLatitude" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Center Longitude" @change="emitPayload"
-                  v-model="mapLongitude" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Zoom Level" @change="emitPayload"
-                  v-model="mapZoom" prepend-icon="zoom_out_map"></v-text-field>
-              </v-flex>
-              <v-flex xs2>
-              </v-flex>
-              <v-flex xs10>
-                <v-btn light @click.native="onShowMapPanel" class="grey darken-1 mt-0 mb-3">
-                  <v-icon left light>place</v-icon>
-                  Choose Center and Zoom Level on Map
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-      </v-card-row>
+      <v-card-text class="pt-0 pb-0" v-if="mapSelection === 'openstreetmap'">
+        <v-container fluid class="pt-0 pb-0">
+          <v-layout row wrap>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Center Latitude" @change="emitPayload"
+                v-model="mapLatitude" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Center Longitude" @change="emitPayload"
+                v-model="mapLongitude" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Zoom Level" @change="emitPayload"
+                v-model="mapZoom" prepend-icon="zoom_out_map"></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+            </v-flex>
+            <v-flex xs10>
+              <v-btn dark @click.native="onShowMapPanel" class="grey darken-1 mt-0 mb-3">
+                <v-icon left dark>place</v-icon>
+                Choose Center and Zoom Level on Map
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card-text>
       <!-- GeoServer Configuration -->
-      <v-card-row v-if="mapSelection === 'geoserver'">
-        <v-card-text class="pt-0 pb-0">
-          <v-container fluid class="pt-0 pb-0">
-            <v-layout row wrap>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="GeoServer Base URL" @change="emitPayload"
-                  v-model="geoBaseUrl" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="GeoServer Layer" @change="emitPayload"
-                  v-model="geoLayer" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Center Latitude" @change="emitPayload"
-                  v-model="mapLatitude" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Center Longitude" @change="emitPayload"
-                  v-model="mapLongitude" prepend-icon="place"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field class="mt-1" label="Zoom Level" @change="emitPayload"
-                  v-model="mapZoom" prepend-icon="zoom_out_map"></v-text-field>
-              </v-flex>
-              <v-flex xs2>
-              </v-flex>
-              <v-flex xs10>
-                <v-btn light @click.native="onShowMapPanel" class="grey darken-1 mt-0 mb-3">
-                  <v-icon left light>place</v-icon>
-                  Choose Center and Zoom Level on Map
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-      </v-card-row>
+      <v-card-text class="pt-0 pb-0" v-if="mapSelection === 'geoserver'">
+        <v-container fluid class="pt-0 pb-0">
+          <v-layout row wrap>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="GeoServer Base URL" @change="emitPayload"
+                v-model="geoBaseUrl" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="GeoServer Layer" @change="emitPayload"
+                v-model="geoLayer" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Center Latitude" @change="emitPayload"
+                v-model="mapLatitude" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Center Longitude" @change="emitPayload"
+                v-model="mapLongitude" prepend-icon="place"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field class="mt-1" label="Zoom Level" @change="emitPayload"
+                v-model="mapZoom" prepend-icon="zoom_out_map"></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+            </v-flex>
+            <v-flex xs10>
+              <v-btn dark @click.native="onShowMapPanel" class="grey darken-1 mt-0 mb-3">
+                <v-icon left dark>place</v-icon>
+                Choose Center and Zoom Level on Map
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card-text>
     </v-card>
     <v-card id="map-overlay" v-if="mapOverlayShown">
       <div style="height: 100%">
@@ -93,13 +87,13 @@
           <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
         </v-map>
       </div>
-      <v-btn small floating class="map-overlay-cancel grey"
+      <v-btn small fab dark class="map-overlay-cancel grey"
         v-tooltip:top="{ html: 'Cancel' }" @click.native.stop="onCancelMapPanel">
-        <v-icon light>undo</v-icon>
+        <v-icon>undo</v-icon>
       </v-btn>
-      <v-btn small floating class="map-overlay-ok blue"
+      <v-btn small fab dark class="map-overlay-ok blue"
         v-tooltip:top="{ html: 'Update' }" @click.native.stop="onSubmitMapPanel">
-        <v-icon light>done</v-icon>
+        <v-icon>done</v-icon>
       </v-btn>
     </v-card>
   </div>

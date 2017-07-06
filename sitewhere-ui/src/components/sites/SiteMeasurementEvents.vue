@@ -27,7 +27,7 @@
 
 <script>
 import Pager from '../common/Pager'
-import {listMeasurementsForSite} from '../../http/sitewhere-api'
+import {_listMeasurementsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -37,22 +37,22 @@ export default {
     mxs: null,
     headers: [
       {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Asset',
         value: 'asset'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Measurements',
         value: 'mxs'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Event Date',
         value: 'event'
       }, {
-        left: true,
+        align: 'left',
         sortable: false,
         text: 'Received Date',
         value: 'received'
@@ -90,15 +90,12 @@ export default {
       var component = this
       var siteToken = this.siteToken
       var query = this.$data.paging.query
-      listMeasurementsForSite(this.$store, siteToken, query,
-        function (response) {
+      _listMeasurementsForSite(this.$store, siteToken, query)
+        .then(function (response) {
           component.results = response.data
           component.mxs = response.data.results
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called when page number is updated.

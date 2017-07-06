@@ -2,9 +2,9 @@
   <div v-if="site">
     <v-app>
       <site-list-entry :site="site" class="mb-3"></site-list-entry>
-      <v-tabs class="elevation-2" light v-model="active">
+      <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
-          <v-tabs-slider></v-tabs-slider>
+          <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
           <v-tabs-item key="assignments" href="#assignments">
             Device Assignments
           </v-tabs-item>
@@ -49,7 +49,7 @@ import SiteMeasurementEvents from './SiteMeasurementEvents'
 import SiteAlertEvents from './SiteAlertEvents'
 import SiteZones from './SiteZones'
 
-import {getSite} from '../../http/sitewhere-api'
+import {_getSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -80,14 +80,11 @@ export default {
       var component = this
 
       // Load site information.
-      getSite(this.$store, token,
-        function (response) {
+      _getSite(this.$store, token)
+        .then(function (response) {
           component.onSiteLoaded(response.data)
-          component.$store.commit('error', null)
-        }, function (e) {
-          component.$store.commit('error', e)
-        }
-      )
+        }).catch(function (e) {
+        })
     },
 
     // Called after site data is loaded.

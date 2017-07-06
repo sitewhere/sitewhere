@@ -2,62 +2,57 @@
   <v-app v-if="user">
     <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
       <v-list class="pa-0">
-        <v-list-item>
-          <v-list-tile avatar tag="div">
-            <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-white.png"
-              style="height: 40px;" />
-          </v-list-tile>
-        </v-list-item>
+        <v-list-tile avatar tag="div">
+          <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-white.png"
+            style="height: 40px;" />
+        </v-list-tile>
       </v-list>
       <v-list v-if="sections" dense class="pt-0">
         <v-divider></v-divider>
         <v-list-group v-for="navsect in sections" :value="navsect.active" :key="navsect.id">
           <v-list-tile @click.native="onSectionClicked(navsect)" slot="item">
             <v-list-tile-action>
-              <v-icon light>{{ navsect.icon }}</v-icon>
+              <v-icon dark>{{ navsect.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ navsect.title }}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action v-if="navsect.subsections">
-              <v-icon light>keyboard_arrow_down</v-icon>
+              <v-icon dark>keyboard_arrow_down</v-icon>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-item v-for="navsub in navsect.subsections" :key="navsub">
-            <v-list-tile @click.native="onSectionClicked(navsub)">
-              <v-list-tile-content>
-                <v-list-tile-title>{{ navsub.title }}</v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-icon light>{{ navsub.icon }}</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
-          </v-list-item>
+          <v-list-tile @click.native="onSectionClicked(navsub)" v-for="navsub in navsect.subsections" :key="navsub">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ navsub.title }}</v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-icon dark>{{ navsub.icon }}</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
         </v-list-group>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar fixed class="grey darken-3" light>
+    <v-toolbar fixed class="grey darken-3" dark>
       <v-toolbar-side-icon class="grey--text" @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-icon left light>{{ section.icon }}</v-icon>
+      <v-icon left dark>{{ section.icon }}</v-icon>
       <v-toolbar-title>{{ section.longTitle }}</v-toolbar-title>
-      <v-menu bottom right offset-y origin="bottom right" transition="v-slide-y-transition">
+      <v-spacer></v-spacer>
+      <v-menu bottom right offset-y>
         <v-btn class="grey darken-1 white--text" slot="activator">
-          <v-icon light class="mr-2">portrait</v-icon>
+          <v-icon dark class="mr-2">portrait</v-icon>
           {{ fullname }}
         </v-btn>
         <v-list>
-          <v-list-item v-for="action in userActions" :key="action">
-            <v-list-tile @click.native="onUserAction(action)">
-              <v-icon left dark class="mr-2">{{action.icon}}</v-icon>
-              <v-list-tile-title v-text="action.title"></v-list-tile-title>
-            </v-list-tile>
-          </v-list-item>
+          <v-list-tile @click.native="onUserAction(action)" v-for="action in userActions" :key="action">
+            <v-icon left light class="mr-2">{{action.icon}}</v-icon>
+            <v-list-tile-title v-text="action.title"></v-list-tile-title>
+          </v-list-tile>
         </v-list>
       </v-menu>
     </v-toolbar>
     <main>
       <error-banner :error="error"></error-banner>
-      <v-progress-linear v-if="loading" class="login-progress" :indeterminate="true"></v-progress-linear>
+      <v-progress-linear v-if="loading" class="login-progress pa-0 ma-0" :indeterminate="true"></v-progress-linear>
       <div style="height: 7px;" v-else></div>
       <v-container fluid>
         <router-view></router-view>
@@ -67,7 +62,7 @@
 </template>
 
 <script>
-import {restAuthGet} from '../http/http-common'
+import {_getTenant} from '../http/sitewhere-api-wrapper'
 import ErrorBanner from './common/ErrorBanner'
 
 export default {
@@ -218,15 +213,14 @@ export default {
       console.log('loading tenant ' + tenantId)
       var component = this
 
-      restAuthGet(this.$store,
-        'tenants/' + tenantId,
-        function (response) {
+      // Make api call to load tenant.
+      _getTenant(this.$store, tenantId)
+        .then(function (response) {
           component.onTenantLoaded(response.data)
-        }, function (e) {
+        }).catch(function (e) {
           console.log('Unable to load tenant ' + tenantId + '. Logging out!')
           component.onLogOut()
-        }
-      )
+        })
     },
     // Called after tenant is loaded.
     onTenantLoaded: function (tenant) {
