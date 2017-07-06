@@ -71,11 +71,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (assets.size() == 0) {
-	    refresh(monitor);
-	} else {
-	    LOGGER.info("Skipping datastore refresh due to existing distributed map data.");
-	}
+	refresh(monitor);
     }
 
     /*
