@@ -1,10 +1,14 @@
 <template>
   <div>
-    <div v-if="sites">
-      <site-list-entry :site="site" v-for="(site, index) in sites" :key="site.token"
-        @click="onOpenSite(site.token)" @siteDeleted="onSiteDeleted" class="mb-3">
-      </site-list-entry>
-    </div>
+    <v-container fluid grid-list-md  v-if="sites">
+      <v-layout row wrap>
+         <v-flex xs6 v-for="(site, index) in sites" :key="site.token">
+          <site-list-entry :site="site" @click="onOpenSite(site.token)"
+            @siteDeleted="onSiteDeleted" class="mb-3">
+          </site-list-entry>
+        </v-flex>
+      </v-layout>
+    </v-container>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
     <site-create-dialog @siteAdded="onSiteAdded"/>
   </div>

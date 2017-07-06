@@ -32,11 +32,12 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
+      var component = this
       _createSite(this.$store, payload)
         .then(function (response) {
-          this.onCommitted(response)
+          component.onCommitted(response)
         }).catch(function (e) {
-          this.onFailed(e)
+          component.onFailed(e)
         })
     },
 

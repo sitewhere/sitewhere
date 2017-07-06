@@ -2,28 +2,19 @@
   <v-card hover @click="onOpenSite(site.token)" class="site white pa-2">
     <v-card-text>
       <div class="site-logo"
-        v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat'}">
+        v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
       </div>
       <div class="site-name">{{site.name}}</div>
       <div class="site-desc">{{site.description}}</div>
     </v-card-text>
-    <v-card-actions>
-      <site-delete-dialog :token="site.token" @siteDeleted="onSiteDeleted"/>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import SiteDeleteDialog from './SiteDeleteDialog'
-
 export default {
 
   data: () => ({
   }),
-
-  components: {
-    SiteDeleteDialog
-  },
 
   props: ['site'],
 
@@ -46,32 +37,36 @@ export default {
 
 <style scoped>
 .site {
-  min-height: 120px;
+  min-height: 180px;
+  overflow-y: hidden;
 }
 
 .site-logo {
   position: absolute;
   top: 10px;
   left: 10px;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 160px;
 }
 
 .site-name {
   position: absolute;
-  top: 6px;
-  left: 125px;
-  font-size: 20px;
+  top: 5px;
+  left: 158px;
+  right: 10px;
+  font-size: 24px;
   font-weight: 400;
+  white-space: nowrap;
+  overflow-x: hidden;
 }
 
 .site-desc {
   position: absolute;
-  top: 37px;
-  left: 125px;
+  top: 42px;
+  left: 160px;
+  right: 10px;
+  bottom: 10px;
   font-size: 14px;
-  width: 60%;
-  max-height: 4.5em;
   overflow-y: hidden;
 }
 </style>
