@@ -49,7 +49,7 @@ export default {
   top: 5px;
   left: 158px;
   right: 10px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 400;
   white-space: nowrap;
   overflow-x: hidden;

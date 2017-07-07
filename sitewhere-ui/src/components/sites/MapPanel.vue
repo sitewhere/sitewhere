@@ -183,7 +183,6 @@ export default {
       }
 
       map.metadata = mapmeta
-      console.log(map)
       this.$emit('mapConfig', map)
     },
 

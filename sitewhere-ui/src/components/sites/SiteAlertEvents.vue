@@ -2,7 +2,10 @@
   <div>
     <v-layout row wrap v-if="alerts">
       <v-flex xs12>
-        <v-data-table class="elevation-2 pa-0" :headers="headers" :items="alerts"
+        <no-results-panel v-if="alerts.length === 0"
+          text="No Alert Events Found for Site">
+        </no-results-panel>
+        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0" :headers="headers" :items="alerts"
           :hide-actions="true" no-data-text="No Alerts Found for Site">
           <template slot="items" scope="props">
             <td width="30%" :title="props.item.assetName">
@@ -30,6 +33,7 @@
 
 <script>
 import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import {_listAlertsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -83,7 +87,8 @@ export default {
   props: ['siteToken'],
 
   components: {
-    Pager
+    Pager,
+    NoResultsPanel
   },
 
   methods: {

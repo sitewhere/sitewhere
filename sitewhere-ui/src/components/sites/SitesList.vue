@@ -4,7 +4,7 @@
       <v-layout row wrap>
          <v-flex xs6 v-for="(site, index) in sites" :key="site.token">
           <site-list-entry :site="site" @click="onOpenSite(site.token)"
-            @siteDeleted="onSiteDeleted" class="mb-3">
+            class="mb-3">
           </site-list-entry>
         </v-flex>
       </v-layout>
@@ -55,11 +55,6 @@ export default {
 
     // Called when a new site is added.
     onSiteAdded: function () {
-      this.refresh()
-    },
-
-    // Called when a site is deleted.
-    onSiteDeleted: function () {
       this.refresh()
     }
   }

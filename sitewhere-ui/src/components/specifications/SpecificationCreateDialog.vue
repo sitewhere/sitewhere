@@ -1,18 +1,19 @@
 <template>
-  <span>
-    <zone-dialog :site='site' style="display: none;" title="Create Zone" width="600"
-      createLabel="Create" cancelLabel="Cancel" mode='create' @payload="onCommit">
-    </zone-dialog>
+  <div>
+    <specification-dialog title="Create Device Specification"
+      width="600" resetOnOpen="true" createLabel="Create" cancelLabel="Cancel"
+      @payload="onCommit">
+    </specification-dialog>
     <v-btn fab dark class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Add Zone' }" @click.native.stop="onOpenDialog">
+      v-tooltip:top="{ html: 'Add Specification' }" @click.native.stop="onOpenDialog">
       <v-icon>add</v-icon>
     </v-btn>
-  </span>
+  </div>
 </template>
 
 <script>
-import ZoneDialog from './ZoneDialog'
-import {_createZone} from '../../http/sitewhere-api-wrapper'
+import SpecificationDialog from './SpecificationDialog'
+import {_createDeviceSpecification} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -20,10 +21,8 @@ export default {
   }),
 
   components: {
-    ZoneDialog
+    SpecificationDialog
   },
-
-  props: ['site'],
 
   methods: {
     // Send event to open dialog.
@@ -35,7 +34,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _createZone(this.$store, this.site.token, payload)
+      _createDeviceSpecification(this.$store, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
@@ -46,7 +45,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.$children[0].closeDialog()
-      this.$emit('zoneAdded')
+      this.$emit('specificationAdded')
     },
 
     // Handle failed commit.
@@ -60,7 +59,7 @@ export default {
 <style scoped>
 .add-button {
   position: fixed;
-  right: 16px;
   bottom: 16px;
+  right: 16px;
 }
 </style>

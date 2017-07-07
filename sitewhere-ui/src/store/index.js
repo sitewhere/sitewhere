@@ -60,6 +60,7 @@ export default new Vuex.Store({
       state.authToken = null
       state.authTenants = null
       state.currentSection = null
+      state.error = null
     }
   },
 

@@ -14,7 +14,7 @@
             <div>Your content goes here!</div>
         </slot>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions v-if="!hideButtons">
         <v-spacer></v-spacer>
         <v-btn class="grey--text darken-1" flat="flat" @click.native="onCancelClicked">{{cancelLabel}}</v-btn>
         <v-btn class="blue--text darken-1" flat="flat" @click.native="onCreateClicked">{{createLabel}}</v-btn>
@@ -29,7 +29,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel', 'error'],
+  props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel', 'error', 'hideButtons'],
 
   methods: {
     // Called when create button is clicked.

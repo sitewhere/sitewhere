@@ -39,6 +39,7 @@
           <site-zones :site="site"></site-zones>
         </v-tabs-content>
       </v-tabs>
+      <zone-create-dialog v-if="active === 'zones'" :site="site" @zoneAdded="onZoneAdded"/>
     </v-app>
   </div>
 </template>
@@ -50,6 +51,7 @@ import SiteLocationEvents from './SiteLocationEvents'
 import SiteMeasurementEvents from './SiteMeasurementEvents'
 import SiteAlertEvents from './SiteAlertEvents'
 import SiteZones from './SiteZones'
+import ZoneCreateDialog from './ZoneCreateDialog'
 
 import {_getSite} from '../../http/sitewhere-api-wrapper'
 
@@ -67,7 +69,8 @@ export default {
     SiteLocationEvents,
     SiteMeasurementEvents,
     SiteAlertEvents,
-    SiteZones
+    SiteZones,
+    ZoneCreateDialog
   },
 
   created: function () {
@@ -113,10 +116,20 @@ export default {
     // Called after site is updated.
     onSiteUpdated: function () {
       this.refresh()
+    },
+
+    // Called when a zone is added.
+    onZoneAdded: function () {
+      this.refresh()
     }
   }
 }
 </script>
 
 <style scoped>
+.add-button {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+}
 </style>

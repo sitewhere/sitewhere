@@ -2,7 +2,10 @@
   <div>
     <v-layout row wrap v-if="mxs">
       <v-flex xs12>
-        <v-data-table class="elevation-2 pa-0" :headers="headers" :items="mxs"
+        <no-results-panel v-if="mxs.length === 0"
+          text="No Measurement Events Found for Site">
+        </no-results-panel>
+        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0" :headers="headers" :items="mxs"
           :hide-actions="true" no-data-text="No Measurements Found for Site">
           <template slot="items" scope="props">
             <td width="30%" :title="props.item.assetName">
@@ -27,6 +30,7 @@
 
 <script>
 import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import {_listMeasurementsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -75,7 +79,8 @@ export default {
   props: ['siteToken'],
 
   components: {
-    Pager
+    Pager,
+    NoResultsPanel
   },
 
   methods: {

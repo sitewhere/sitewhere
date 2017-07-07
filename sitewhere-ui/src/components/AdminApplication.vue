@@ -92,7 +92,7 @@ export default {
         id: 'specifications',
         title: 'Device Specifications',
         icon: 'description',
-        route: '/admin/specifications',
+        route: 'specifications',
         longTitle: 'Manage Device Specifications'
       }, {
         id: 'devices',

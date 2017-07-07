@@ -12,6 +12,7 @@ import AdminApplication from '@/components/AdminApplication'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
+import SpecificationsList from '@/components/specifications/SpecificationsList'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -45,7 +46,7 @@ function customize (prototype) {
 // END HACK.
 
 export default new Router({
-  // mode: 'history',
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -71,7 +72,7 @@ export default new Router({
           component: Server
         }, {
           path: 'specifications',
-          component: Server
+          component: SpecificationsList
         }, {
           path: 'devicegroups',
           component: Server

@@ -2,7 +2,10 @@
   <div>
     <v-layout row wrap v-if="zones">
       <v-flex xs12>
-        <v-data-table class="elevation-2 pa-0" :headers="headers" :items="zones"
+        <no-results-panel v-if="zones.length === 0"
+          text="No Zones Found for Site">
+        </no-results-panel>
+        <v-data-table v-if="zones.length > 0" class="elevation-2 pa-0" :headers="headers" :items="zones"
           :hide-actions="true" no-data-text="No Zones Found for Site">
           <template slot="items" scope="props">
             <td width="30%" :title="props.item.name">
@@ -35,14 +38,13 @@
         </v-data-table>
       </v-flex>
     </v-layout>
-    <zone-create-dialog :site="site" @zoneAdded="onZoneAdded"/>
     <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
   </div>
 </template>
 
 <script>
 import Pager from '../common/Pager'
-import ZoneCreateDialog from './ZoneCreateDialog'
+import NoResultsPanel from '../common/NoResultsPanel'
 import ZoneUpdateDialog from './ZoneUpdateDialog'
 import ZoneDeleteDialog from './ZoneDeleteDialog'
 import {_listZonesForSite} from '../../http/sitewhere-api-wrapper'
@@ -99,7 +101,7 @@ export default {
 
   components: {
     Pager,
-    ZoneCreateDialog,
+    NoResultsPanel,
     ZoneUpdateDialog,
     ZoneDeleteDialog
   },
@@ -136,11 +138,6 @@ export default {
         return 'N/A'
       }
       return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
-    },
-
-    // Called when a zone is added.
-    onZoneAdded: function () {
-      this.refresh()
     },
 
     // Called when a zone is deleted.

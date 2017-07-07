@@ -5,7 +5,8 @@ import {
   createSite, getSite, updateSite, listSites, deleteSite, listAssignmentsForSite,
   listLocationsForSite, listMeasurementsForSite, listAlertsForSite,
   listZonesForSite, createZone, getZone, updateZone, deleteZone,
-  releaseAssignment, missingAssignment
+  releaseAssignment, missingAssignment,
+  listDeviceSpecifications
 } from './sitewhere-api'
 
 /**
@@ -206,5 +207,14 @@ export function _releaseAssignment (store, token) {
 export function _missingAssignment (store, token) {
   let axios = createAxiosFromStore(store)
   let api = missingAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List device specifications.
+ */
+export function _listDeviceSpecifications (store, includeDeleted, includeAsset, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listDeviceSpecifications(axios, includeDeleted, includeAsset, paging)
   return loaderWrapper(store, api)
 }

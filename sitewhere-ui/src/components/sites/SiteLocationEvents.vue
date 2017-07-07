@@ -2,7 +2,10 @@
   <div>
     <v-layout row wrap v-if="locations">
       <v-flex xs12>
-        <v-data-table class="elevation-2 pa-0" :headers="headers" :items="locations"
+        <no-results-panel v-if="locations.length === 0"
+          text="No Location Events Found for Site">
+        </no-results-panel>
+        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0" :headers="headers" :items="locations"
           :hide-actions="true" no-data-text="No Locations Found for Site">
           <template slot="items" scope="props">
             <td width="40%" :title="props.item.assetName">
@@ -27,6 +30,7 @@
 
 <script>
 import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import {_listLocationsForSite} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -75,7 +79,8 @@ export default {
   props: ['siteToken'],
 
   components: {
-    Pager
+    Pager,
+    NoResultsPanel
   },
 
   methods: {

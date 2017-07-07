@@ -23,6 +23,7 @@ export default {
   watch: {
     visible: function () {
       this.onMapReady()
+      this.invalidateMap()
     },
     borderColor: function (val) {
       var newZoneLayer = this.getNewZoneLayer()

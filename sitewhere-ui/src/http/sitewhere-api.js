@@ -197,6 +197,21 @@ export function missingAssignment (axios, token) {
 }
 
 /**
+ * List device specifications.
+ */
+export function listDeviceSpecifications (axios, includeDeleted, includeAsset, paging) {
+  let query = ''
+  query += (includeDeleted)
+    ? '?includeDeleted=true' : '?includeDeleted=false'
+  query += (includeAsset)
+    ? '&includeAsset=true' : '&includeAsset=false'
+  if (paging) {
+    query += '&' + paging
+  }
+  return restAuthGet(axios, 'specifications' + query)
+}
+
+/**
  * Perform a REST get call.
  */
 function restAuthGet (axios, path) {

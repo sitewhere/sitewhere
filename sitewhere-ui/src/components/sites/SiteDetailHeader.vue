@@ -177,12 +177,12 @@ export default {
 .site-update {
   position: absolute;
   bottom: 0px;
-  right: 50px;
+  right: 7px;
 }
 
 .site-delete {
   position: absolute;
   bottom: 0px;
-  right: 10px;
+  right: 42px;
 }
 </style>
