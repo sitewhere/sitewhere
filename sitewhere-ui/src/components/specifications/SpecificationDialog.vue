@@ -26,8 +26,9 @@
                       label="Container policy" prepend-icon="developer_board"></v-select>
                   </v-flex>
                   <v-flex xs12>
-                    <v-select required :items="assetProviders" v-model="specAssetProvider"
-                      label="Asset provider" prepend-icon="local_offer"></v-select>
+                    <v-select required :items="assetModules" v-model="specAssetModule"
+                      item-text="name" item-value="id" label="Asset module"
+                      prepend-icon="local_offer"></v-select>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -35,26 +36,38 @@
           </v-card>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn flat>Cancel</v-btn>
-            <v-btn primary @click.native="step = 2">Continue</v-btn>
+            <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+            <v-btn :disabled="!firstPageComplete" flat primary
+              @click.native="step = 2">Choose Asset
+              <v-icon light primary>keyboard_arrow_right</v-icon>
+            </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
           <v-card class="grey lighten-1 z-depth-1 mb-5" height="200px"></v-card>
           <v-card-actions>
-            <v-btn primary @click.native="step = 1">Back</v-btn>
+            <v-btn flat primary @click.native="step = 1">
+              <v-icon light primary>keyboard_arrow_left</v-icon>
+              Back
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat>Cancel</v-btn>
-            <v-btn primary @click.native="step = 3">Continue</v-btn>
+            <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+            <v-btn flat primary @click.native="step = 3">Add Metadata
+              <v-icon light primary>keyboard_arrow_right</v-icon>
+            </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="3">
-          <metadata-panel :metadata="metadata"
+          <metadata-panel class="mb-3" :metadata="metadata"
             @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
             <v-card-actions>
+              <v-btn flat primary @click.native="step = 2">
+                <v-icon light primary>keyboard_arrow_left</v-icon>
+                Back
+              </v-btn>
               <v-spacer></v-spacer>
-              <v-btn primary @click.native="step = 3">Create Specification</v-btn>
-              <v-btn flat>Cancel</v-btn>
+              <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+              <v-btn flat primary>Create</v-btn>
             </v-card-actions>
         </v-stepper-content>
       </v-stepper>
@@ -65,15 +78,18 @@
 <script>
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
+import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
-    active: null,
+    step: null,
     dialogVisible: false,
     specName: null,
     specContainerPolicy: null,
+    specAssetModule: null,
     metadata: [],
+    assetModules: [],
     containerPolicies: [
       {
         'text': 'Standalone Device',
@@ -93,6 +109,15 @@ export default {
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
 
+  computed: {
+    // Indicates if first page fields are fill in.
+    firstPageComplete: function () {
+      return (!this.isBlank(this.$data.specName) &&
+        this.$data.specContainerPolicy &&
+        this.$data.specAssetModule)
+    }
+  },
+
   methods: {
     // Generate payload from UI.
     generatePayload: function () {
@@ -110,11 +135,19 @@ export default {
     },
 
     // Reset dialog contents.
-    reset: function (e) {
+    reset: function () {
       this.$data.specName = null
       this.$data.specContainerPolicy = null
       this.$data.metadata = []
-      this.$data.active = 'details'
+      this.$data.step = 1
+
+      var component = this
+      _getAssetModules(this.$store, 'Device')
+        .then(function (response) {
+          component.assetModules = response.data
+          this.onAssetModulesLoaded()
+        }).catch(function (e) {
+        })
     },
 
     // Load dialog from a given payload.
@@ -178,6 +211,11 @@ export default {
     onMetadataAdded: function (entry) {
       var metadata = this.$data.metadata
       metadata.push(entry)
+    },
+
+    // Tests whether a string is blank.
+    isBlank: function (str) {
+      return (!str || /^\s*$/.test(str))
     }
   }
 }

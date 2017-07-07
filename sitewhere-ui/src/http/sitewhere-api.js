@@ -212,6 +212,17 @@ export function listDeviceSpecifications (axios, includeDeleted, includeAsset, p
 }
 
 /**
+ * Get asset modules.
+ */
+export function getAssetModules (axios, type) {
+  let query = ''
+  if (type) {
+    query += '?assetType=' + type
+  }
+  return restAuthGet(axios, 'assets/modules' + query)
+}
+
+/**
  * Perform a REST get call.
  */
 function restAuthGet (axios, path) {
