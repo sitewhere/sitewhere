@@ -36,7 +36,7 @@
           </v-card>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn :disabled="!firstPageComplete" flat primary
               @click.native="step = 2">Choose Asset
               <v-icon light primary>keyboard_arrow_right</v-icon>
@@ -52,9 +52,9 @@
               Back
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn flat primary :disabled="!secondPageComplete"
-              @click.native="onCreateClicked">Create</v-btn>
+              @click.native="onCreateClicked">{{ createLabel }}</v-btn>
             <v-btn flat primary :disabled="!secondPageComplete"
               @click.native="step = 3">Add Metadata
               <v-icon light primary>keyboard_arrow_right</v-icon>
@@ -70,9 +70,9 @@
                 Back
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
+              <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
               <v-btn flat primary :disabled="!secondPageComplete"
-                @click.native="onCreateClicked">Create</v-btn>
+                @click.native="onCreateClicked">{{ createLabel }}</v-btn>
             </v-card-actions>
         </v-stepper-content>
       </v-stepper>
@@ -175,6 +175,7 @@ export default {
         this.$data.specName = payload.name
         this.$data.specContainerPolicy = payload.containerPolicy
         this.$data.specAssetModule = payload.assetModuleId
+        this.$data.specAssetId = payload.assetId
 
         var meta = payload.metadata
         var flat = []

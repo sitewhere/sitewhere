@@ -1,8 +1,7 @@
 <template>
   <v-card class="site white pa-2">
     <v-card-text>
-      <div class="site-logo"
-        v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
+      <div class="site-logo" :style="logoStyle">
       </div>
       <div class="site-token">
         Token: {{site.token}}
@@ -17,7 +16,7 @@
         <div class="site-created-label">Created:</div>
         <div class="site-created">{{ formatDate(site.createdDate) }}</div>
         <div class="site-updated-label">Updated:</div>
-        <div class="site-updated">{{ formatDate(site.udpatedDate) }}</div>
+        <div class="site-updated">{{ formatDate(site.updatedDate) }}</div>
         <site-update-dialog :token="site.token" class="site-update" @siteUpdated="onSiteUpdated"></site-update-dialog>
         <site-delete-dialog :token="site.token" class="site-delete" @siteDeleted="onSiteDeleted"></site-delete-dialog>
       </div>
@@ -46,6 +45,18 @@ export default {
   components: {
     SiteDeleteDialog,
     SiteUpdateDialog
+  },
+
+  computed: {
+    // Compute style of logo.
+    logoStyle: function () {
+      return {
+        'background-image': 'url(' + this.site.imageUrl + ')',
+        'background-size': 'cover',
+        'background-repeat': 'no-repeat',
+        'background-position': '50% 50%'
+      }
+    }
   },
 
   created: function () {

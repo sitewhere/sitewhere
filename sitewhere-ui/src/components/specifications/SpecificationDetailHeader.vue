@@ -1,8 +1,7 @@
 <template>
   <v-card class="spec white pa-2">
     <v-card-text>
-      <div class="spec-logo"
-        v-bind:style="{ 'background': 'url(' + specification.assetImageUrl + ')', 'background-size': 'contain', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
+      <div class="spec-logo" :style="logoStyle">
       </div>
       <div class="spec-token">
         Token: {{specification.token}}
@@ -17,7 +16,7 @@
         <div class="spec-created-label">Created:</div>
         <div class="spec-created">{{ formatDate(specification.createdDate) }}</div>
         <div class="spec-updated-label">Updated:</div>
-        <div class="spec-updated">{{ formatDate(specification.udpatedDate) }}</div>
+        <div class="spec-updated">{{ formatDate(specification.updatedDate) }}</div>
         <specification-update-dialog :token="specification.token" class="spec-update"
           @specificationUpdated="onUpdated"></specification-update-dialog>
         <specification-delete-dialog :token="specification.token" class="spec-delete"
@@ -52,6 +51,18 @@ export default {
 
   created: function () {
     this.$data.copyData = this.specification.token
+  },
+
+  computed: {
+    // Compute style of logo.
+    logoStyle: function () {
+      return {
+        'background-image': 'url(' + this.specification.assetImageUrl + ')',
+        'background-size': 'contain',
+        'background-repeat': 'no-repeat',
+        'background-position': '50% 50%'
+      }
+    }
   },
 
   methods: {
