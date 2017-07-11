@@ -1,12 +1,27 @@
 import {
   BASE_URL, createAxiosAuthorized,
+
+  // Users.
   getUser, listUserTenants,
+
+  // Tenants.
   getTenant,
+
+  // Sites.
   createSite, getSite, updateSite, listSites, deleteSite, listAssignmentsForSite,
   listLocationsForSite, listMeasurementsForSite, listAlertsForSite,
+
+  // Zones.
   listZonesForSite, createZone, getZone, updateZone, deleteZone,
+
+  // Assignments.
   releaseAssignment, missingAssignment,
-  listDeviceSpecifications,
+
+  // Specifications.
+  createDeviceSpecification, getDeviceSpecification, updateDeviceSpecification,
+  listDeviceSpecifications, deleteDeviceSpecification,
+
+  // Assets.
   getAssetModules, searchAssets, getAssetById
 } from './sitewhere-api'
 
@@ -212,11 +227,47 @@ export function _missingAssignment (store, token) {
 }
 
 /**
+ * Create a new device specification.
+ */
+export function _createDeviceSpecification (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDeviceSpecification(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device specification by token.
+ */
+export function _getDeviceSpecification (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceSpecification(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing device specification.
+ */
+export function _updateDeviceSpecification (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateDeviceSpecification(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List device specifications.
  */
 export function _listDeviceSpecifications (store, includeDeleted, includeAsset, paging) {
   let axios = createAxiosFromStore(store)
   let api = listDeviceSpecifications(axios, includeDeleted, includeAsset, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an existing device specification.
+ */
+export function _deleteDeviceSpecification (store, token, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceSpecification(axios, token, force)
   return loaderWrapper(store, api)
 }
 

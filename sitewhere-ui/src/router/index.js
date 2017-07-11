@@ -13,6 +13,7 @@ import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
 import SpecificationsList from '@/components/specifications/SpecificationsList'
+import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -73,6 +74,9 @@ export default new Router({
         }, {
           path: 'specifications',
           component: SpecificationsList
+        }, {
+          path: 'specifications/:token',
+          component: SpecificationDetail
         }, {
           path: 'devicegroups',
           component: Server

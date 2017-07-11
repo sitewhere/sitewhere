@@ -44,7 +44,8 @@
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <asset-chooser :assetModuleId="specAssetModule"></asset-chooser>
+          <asset-chooser :assetModuleId="specAssetModule" :assetId="specAssetId"
+            @assetUpdated="onAssetUpdated"></asset-chooser>
           <v-card-actions>
             <v-btn flat primary @click.native="step = 1">
               <v-icon light primary>keyboard_arrow_left</v-icon>
@@ -52,7 +53,10 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
-            <v-btn flat primary @click.native="step = 3">Add Metadata
+            <v-btn flat primary :disabled="!secondPageComplete"
+              @click.native="onCreateClicked">Create</v-btn>
+            <v-btn flat primary :disabled="!secondPageComplete"
+              @click.native="step = 3">Add Metadata
               <v-icon light primary>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
@@ -67,7 +71,8 @@
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn flat @click.native="onCancelClicked">Cancel</v-btn>
-              <v-btn flat primary>Create</v-btn>
+              <v-btn flat primary :disabled="!secondPageComplete"
+                @click.native="onCreateClicked">Create</v-btn>
             </v-card-actions>
         </v-stepper-content>
       </v-stepper>
@@ -89,6 +94,7 @@ export default {
     specName: null,
     specContainerPolicy: null,
     specAssetModule: null,
+    specAssetId: null,
     metadata: [],
     assetModules: [],
     containerPolicies: [
@@ -121,7 +127,7 @@ export default {
 
     // Indicates if second page fields are filled in.
     secondPageComplete: function () {
-      return
+      return this.firstPageComplete && (this.$data.specAssetId != null)
     }
   },
 
@@ -131,6 +137,8 @@ export default {
       var payload = {}
       payload.name = this.$data.specName
       payload.containerPolicy = this.$data.specContainerPolicy
+      payload.assetModuleId = this.$data.specAssetModule
+      payload.assetId = this.$data.specAssetId
 
       var metadata = {}
       var flat = this.$data.metadata
@@ -145,6 +153,8 @@ export default {
     reset: function () {
       this.$data.specName = null
       this.$data.specContainerPolicy = null
+      this.$data.specAssetModule = null
+      this.$data.specAssetId = null
       this.$data.metadata = []
       this.$data.step = 1
 
@@ -164,6 +174,7 @@ export default {
       if (payload) {
         this.$data.specName = payload.name
         this.$data.specContainerPolicy = payload.containerPolicy
+        this.$data.specAssetModule = payload.assetModuleId
 
         var meta = payload.metadata
         var flat = []
@@ -202,6 +213,15 @@ export default {
     // Called after cancel button is clicked.
     onCancelClicked: function (e) {
       this.$data.dialogVisible = false
+    },
+
+    // Called when an asset is chosen or removed.
+    onAssetUpdated: function (asset) {
+      if (asset) {
+        this.$data.specAssetId = asset.id
+      } else {
+        this.$data.specAssetId = null
+      }
     },
 
     // Called when a metadata entry has been deleted.

@@ -1,27 +1,29 @@
 <template>
-  <v-card class="site white pa-2">
+  <v-card class="spec white pa-2">
     <v-card-text>
-      <div class="site-logo"
-        v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
+      <div class="spec-logo"
+        v-bind:style="{ 'background': 'url(' + specification.assetImageUrl + ')', 'background-size': 'contain', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
       </div>
-      <div class="site-token">
-        Token: {{site.token}}
+      <div class="spec-token">
+        Token: {{specification.token}}
         <v-btn small light icon v-clipboard="copyData"
           @success="onTokenCopied" @error="onTokenCopyFailed">
           <v-icon>content_copy</v-icon>
         </v-btn>
       </div>
-      <div class="site-name">{{site.name}}</div>
-      <div class="site-desc">{{site.description}}</div>
-      <div class="site-right">
-        <div class="site-created-label">Created:</div>
-        <div class="site-created">{{ formatDate(site.createdDate) }}</div>
-        <div class="site-updated-label">Updated:</div>
-        <div class="site-updated">{{ formatDate(site.udpatedDate) }}</div>
-        <site-update-dialog :token="site.token" class="site-update" @siteUpdated="onSiteUpdated"></site-update-dialog>
-        <site-delete-dialog :token="site.token" class="site-delete" @siteDeleted="onSiteDeleted"></site-delete-dialog>
+      <div class="spec-name">{{specification.name}}</div>
+      <div class="spec-desc">{{specification.asset.description}}</div>
+      <div class="spec-right">
+        <div class="spec-created-label">Created:</div>
+        <div class="spec-created">{{ formatDate(specification.createdDate) }}</div>
+        <div class="spec-updated-label">Updated:</div>
+        <div class="spec-updated">{{ formatDate(specification.udpatedDate) }}</div>
+        <specification-update-dialog :token="specification.token" class="spec-update"
+          @specificationUpdated="onUpdated"></specification-update-dialog>
+        <specification-delete-dialog :token="specification.token" class="spec-delete"
+          @specificationDeleted="onDeleted"></specification-delete-dialog>
       </div>
-      <div class="site-divider"></div>
+      <div class="spec-divider"></div>
     </v-card-text>
     <v-snackbar :timeout="3000" success v-model="showTokenCopied">Token copied to clipboard
       <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
@@ -31,8 +33,8 @@
 
 <script>
 import Utils from '../common/utils'
-import SiteDeleteDialog from './SiteDeleteDialog'
-import SiteUpdateDialog from './SiteUpdateDialog'
+import SpecificationDeleteDialog from './SpecificationDeleteDialog'
+import SpecificationUpdateDialog from './SpecificationUpdateDialog'
 
 export default {
 
@@ -41,32 +43,31 @@ export default {
     showTokenCopied: false
   }),
 
-  props: ['site'],
+  props: ['specification'],
 
   components: {
-    SiteDeleteDialog,
-    SiteUpdateDialog
+    SpecificationDeleteDialog,
+    SpecificationUpdateDialog
   },
 
   created: function () {
-    this.$data.copyData = this.site.token
+    this.$data.copyData = this.specification.token
   },
 
   methods: {
-    // Called when site is deleted.
-    onSiteDeleted: function () {
-      this.$emit('siteDeleted')
+    // Called when deleted.
+    onDeleted: function () {
+      this.$emit('specificationDeleted')
     },
 
-    // Called when site is updated.
-    onSiteUpdated: function () {
-      this.$emit('siteUpdated')
+    // Called when updated.
+    onUpdated: function () {
+      this.$emit('specificationUpdated')
     },
 
     // Called after token is copied.
     onTokenCopied: function (e) {
       this.$data.showTokenCopied = true
-      console.log('Token copied.')
     },
 
     // Called if unable to copy token.
@@ -83,13 +84,13 @@ export default {
 </script>
 
 <style scoped>
-.site {
+.spec {
   min-height: 180px;
   min-width: 800px;
   overflow-y: hidden;
 }
 
-.site-logo {
+.spec-logo {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -97,7 +98,7 @@ export default {
   width: 140px;
 }
 
-.site-name {
+.spec-name {
   position: absolute;
   top: 5px;
   left: 158px;
@@ -108,7 +109,7 @@ export default {
   overflow-x: hidden;
 }
 
-.site-token {
+.spec-token {
   position: absolute;
   top: 40px;
   left: 158px;
@@ -118,7 +119,7 @@ export default {
   overflow-x: hidden;
 }
 
-.site-desc {
+.spec-desc {
   position: absolute;
   top: 80px;
   left: 160px;
@@ -128,7 +129,7 @@ export default {
   overflow-y: hidden;
 }
 
-.site-divider {
+.spec-divider {
   position: absolute;
   top: 10px;
   right: 280px;
@@ -136,7 +137,7 @@ export default {
   border-left: 1px solid #eee;
 }
 
-.site-right {
+.spec-right {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -144,14 +145,14 @@ export default {
   width: 260px;
 }
 
-.site-created-label {
+.spec-created-label {
   position: absolute;
   top: 10px;
   left: 10px;
   font-size: 14px;
 }
 
-.site-created {
+.spec-created {
   position: absolute;
   top: 10px;
   left: 100px;
@@ -159,14 +160,14 @@ export default {
   white-space: nowrap;
 }
 
-.site-updated-label {
+.spec-updated-label {
   position: absolute;
   top: 35px;
   left: 10px;
   font-size: 14px;
 }
 
-.site-updated {
+.spec-updated {
   position: absolute;
   top: 35px;
   left: 100px;
@@ -174,13 +175,13 @@ export default {
   white-space: nowrap;
 }
 
-.site-update {
+.spec-update {
   position: absolute;
   bottom: 0px;
   left: 7px;
 }
 
-.site-delete {
+.spec-delete {
   position: absolute;
   bottom: 0px;
   left: 42px;

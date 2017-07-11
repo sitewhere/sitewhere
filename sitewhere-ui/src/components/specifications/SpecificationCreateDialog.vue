@@ -33,6 +33,7 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
+      console.log(payload)
       var component = this
       _createDeviceSpecification(this.$store, payload)
         .then(function (response) {

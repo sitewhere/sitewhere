@@ -3,8 +3,7 @@
     <v-container fluid grid-list-md  v-if="sites">
       <v-layout row wrap>
          <v-flex xs6 v-for="(site, index) in sites" :key="site.token">
-          <site-list-entry :site="site" @click="onOpenSite(site.token)"
-            class="mb-3">
+          <site-list-entry :site="site" class="mb-3">
           </site-list-entry>
         </v-flex>
       </v-layout>

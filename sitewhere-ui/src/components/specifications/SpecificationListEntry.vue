@@ -1,10 +1,10 @@
 <template>
-  <v-card hover class="spec white pa-2">
+  <v-card hover @click="onOpenSpecification(specification.token)" class="spec white pa-2">
     <v-card-text>
       <div class="spec-logo"
         v-bind:style="{ 'background': 'url(' + specification.assetImageUrl + ')', 'background-size': 'contain', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
       </div>
-      <div class="spec-name">{{specification.assetName}}</div>
+      <div class="spec-name">{{specification.name}}</div>
       <div class="spec-desc">{{specification.asset.description}}</div>
     </v-card-text>
   </v-card>
@@ -19,6 +19,13 @@ export default {
   props: ['specification'],
 
   methods: {
+    // Called when a specification is clicked.
+    onOpenSpecification: function (token) {
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/admin/' + tenant.id + '/specifications/' + token)
+      }
+    }
   }
 }
 </script>

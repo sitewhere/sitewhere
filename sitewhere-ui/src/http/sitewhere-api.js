@@ -197,6 +197,27 @@ export function missingAssignment (axios, token) {
 }
 
 /**
+ * Create a device specification.
+ */
+export function createDeviceSpecification (axios, payload) {
+  return restAuthPost(axios, '/specifications', payload)
+}
+
+/**
+ * Get device specification by unique token.
+ */
+export function getDeviceSpecification (axios, token) {
+  return restAuthGet(axios, '/specifications/' + token)
+}
+
+/**
+ * Update an existing device specification.
+ */
+export function updateDeviceSpecification (axios, token, payload) {
+  return restAuthPut(axios, '/specifications/' + token, payload)
+}
+
+/**
  * List device specifications.
  */
 export function listDeviceSpecifications (axios, includeDeleted, includeAsset, paging) {
@@ -209,6 +230,16 @@ export function listDeviceSpecifications (axios, includeDeleted, includeAsset, p
     query += '&' + paging
   }
   return restAuthGet(axios, 'specifications' + query)
+}
+
+/**
+ * Delete device specification.
+ */
+export function deleteDeviceSpecification (axios, token, force) {
+  let query = ''
+  query += (force)
+    ? '?force=true' : '?force=false'
+  return restAuthDelete(axios, 'specifications/' + token + query)
 }
 
 /**

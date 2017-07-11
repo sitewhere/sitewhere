@@ -51,7 +51,7 @@ export default {
     search: null
   }),
 
-  props: ['assetModuleId'],
+  props: ['assetModuleId', 'assetId'],
 
   // Add debounce function for issuing asset criteria queries.
   created: function () {
@@ -67,13 +67,19 @@ export default {
 
   watch: {
     // Update asset matches when asset module changes.
-    assetModuleId: function (moduleId) {
+    assetModuleId: function (value) {
       var component = this
-      _searchAssets(this.$store, moduleId, '')
+      component.asset = null
+      _searchAssets(this.$store, value, '')
         .then(function (response) {
           component.assets = response.data.results
         }).catch(function (e) {
         })
+    },
+
+    // Asset id passed from external.
+    assetId: function (value) {
+      this.onAssetChosen(value)
     },
 
     // Asset search value updated.
@@ -94,6 +100,7 @@ export default {
       _getAssetById(this.$store, this.assetModuleId, assetId)
         .then(function (response) {
           component.asset = response.data
+          component.$emit('assetUpdated', response.data)
         }).catch(function (e) {
         })
     },
@@ -101,7 +108,7 @@ export default {
     // Allow another asset to be chosen.
     onAssetRemoved: function () {
       this.$data.asset = null
-      console.log('Asset removed')
+      this.$emit('assetUpdated', null)
     }
   }
 }

@@ -3,8 +3,7 @@
     <v-container fluid grid-list-md  v-if="specs">
       <v-layout row wrap>
          <v-flex xs6 v-for="(spec, index) in specs" :key="spec.token">
-          <specification-list-entry :specification="spec" @click="onOpenSpecification(spec.token)"
-            @specificationDeleted="onSpecificationDeleted" class="mb-3">
+          <specification-list-entry :specification="spec" class="mb-3">
           </specification-list-entry>
         </v-flex>
       </v-layout>
@@ -35,14 +34,6 @@ export default {
   },
 
   methods: {
-    // Called when a specification is clicked.
-    onOpenSpecification: function (token) {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/admin/' + tenant.id + '/specifications/' + token)
-      }
-    },
-
     // Update paging values and run query.
     updatePaging: function (paging) {
       this.$data.paging = paging
