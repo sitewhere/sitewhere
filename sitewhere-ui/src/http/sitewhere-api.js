@@ -223,6 +223,24 @@ export function getAssetModules (axios, type) {
 }
 
 /**
+ * Search module assets using the given criteria.
+ */
+export function searchAssets (axios, moduleId, criteria) {
+  let query = ''
+  if (criteria) {
+    query += '?criteria=' + criteria
+  }
+  return restAuthGet(axios, 'assets/modules/' + moduleId + '/assets' + query)
+}
+
+/**
+ * Given an asset module get an asset by id.
+ */
+export function getAssetById (axios, moduleId, assetId) {
+  return restAuthGet(axios, 'assets/modules/' + moduleId + '/assets/' + assetId)
+}
+
+/**
  * Perform a REST get call.
  */
 function restAuthGet (axios, path) {

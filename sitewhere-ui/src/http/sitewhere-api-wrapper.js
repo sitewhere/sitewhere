@@ -7,7 +7,7 @@ import {
   listZonesForSite, createZone, getZone, updateZone, deleteZone,
   releaseAssignment, missingAssignment,
   listDeviceSpecifications,
-  getAssetModules
+  getAssetModules, searchAssets, getAssetById
 } from './sitewhere-api'
 
 /**
@@ -226,5 +226,23 @@ export function _listDeviceSpecifications (store, includeDeleted, includeAsset, 
 export function _getAssetModules (store, type) {
   let axios = createAxiosFromStore(store)
   let api = getAssetModules(axios, type)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Search asset module for assets matching criteria.
+ */
+export function _searchAssets (store, moduleId, criteria) {
+  let axios = createAxiosFromStore(store)
+  let api = searchAssets(axios, moduleId, criteria)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get asset by unique id.
+ */
+export function _getAssetById (store, moduleId, assetId) {
+  let axios = createAxiosFromStore(store)
+  let api = getAssetById(axios, moduleId, assetId)
   return loaderWrapper(store, api)
 }

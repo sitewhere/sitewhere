@@ -44,7 +44,7 @@
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <v-card class="grey lighten-1 z-depth-1 mb-5" height="200px"></v-card>
+          <asset-chooser :assetModuleId="specAssetModule"></asset-chooser>
           <v-card-actions>
             <v-btn flat primary @click.native="step = 1">
               <v-icon light primary>keyboard_arrow_left</v-icon>
@@ -78,6 +78,7 @@
 <script>
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
+import AssetChooser from '../common/AssetChooser'
 import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -104,17 +105,23 @@ export default {
 
   components: {
     BaseDialog,
-    MetadataPanel
+    MetadataPanel,
+    AssetChooser
   },
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
 
   computed: {
-    // Indicates if first page fields are fill in.
+    // Indicates if first page fields are filled in.
     firstPageComplete: function () {
       return (!this.isBlank(this.$data.specName) &&
         this.$data.specContainerPolicy &&
         this.$data.specAssetModule)
+    },
+
+    // Indicates if second page fields are filled in.
+    secondPageComplete: function () {
+      return
     }
   },
 
