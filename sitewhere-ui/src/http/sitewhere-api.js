@@ -211,6 +211,13 @@ export function getDeviceSpecification (axios, token) {
 }
 
 /**
+ * Get device specification protocol buffer definition.
+ */
+export function getDeviceSpecificationProtobuf (axios, token) {
+  return restAuthGet(axios, '/specifications/' + token + '/proto')
+}
+
+/**
  * Update an existing device specification.
  */
 export function updateDeviceSpecification (axios, token, payload) {

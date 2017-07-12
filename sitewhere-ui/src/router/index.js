@@ -4,6 +4,7 @@ import Vuetify from 'vuetify'
 import Vue2Leaflet from 'vue2-leaflet'
 import VueMoment from 'vue-moment'
 import VueClipboards from 'vue-clipboards'
+import VueHighlightJS from 'vue-highlightjs'
 // import VeeValidate from 'vee-validate'
 
 import Login from '@/components/Login'
@@ -19,6 +20,7 @@ Vue.use(Router)
 Vue.use(Vuetify)
 Vue.use(VueMoment)
 Vue.use(VueClipboards)
+Vue.use(VueHighlightJS)
 // Vue.use(VeeValidate)
 
 Vue.component('v-map', Vue2Leaflet.Map)
@@ -70,7 +72,7 @@ export default new Router({
           component: SiteDetail
         }, {
           path: 'devices',
-          component: Server
+          component: SpecificationsList
         }, {
           path: 'specifications',
           component: SpecificationsList

@@ -11,10 +11,17 @@
           <v-tabs-item key="commands" href="#commands">
             Commands
           </v-tabs-item>
+          <v-tabs-item key="code" href="#code">
+            Code Generation
+          </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="commands" id="commands">
           <specification-commands ref="commands" :specification="specification">
           </specification-commands>
+        </v-tabs-content>
+        <v-tabs-content key="code" id="code">
+          <specification-codegen :specification="specification">
+          </specification-codegen>
         </v-tabs-content>
       </v-tabs>
       <command-create-dialog v-if="active === 'commands'"
@@ -26,6 +33,7 @@
 <script>
 import SpecificationDetailHeader from './SpecificationDetailHeader'
 import SpecificationCommands from './SpecificationCommands'
+import SpecificationCodegen from './SpecificationCodegen'
 import CommandCreateDialog from './CommandCreateDialog'
 
 import {_getDeviceSpecification} from '../../http/sitewhere-api-wrapper'
@@ -35,12 +43,14 @@ export default {
   data: () => ({
     token: null,
     specification: null,
+    protobuf: null,
     active: null
   }),
 
   components: {
     SpecificationDetailHeader,
     SpecificationCommands,
+    SpecificationCodegen,
     CommandCreateDialog
   },
 

@@ -18,10 +18,10 @@ import {
   releaseAssignment, missingAssignment,
 
   // Specifications.
-  createDeviceSpecification, getDeviceSpecification, updateDeviceSpecification,
-  listDeviceSpecifications, deleteDeviceSpecification, createDeviceCommand,
-  getDeviceCommand, updateDeviceCommand, listDeviceCommandsByNamespace,
-  deleteDeviceCommand,
+  createDeviceSpecification, getDeviceSpecification, getDeviceSpecificationProtobuf,
+  updateDeviceSpecification, listDeviceSpecifications, deleteDeviceSpecification,
+  createDeviceCommand, getDeviceCommand, updateDeviceCommand,
+  listDeviceCommandsByNamespace, deleteDeviceCommand,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
@@ -243,6 +243,15 @@ export function _createDeviceSpecification (store, payload) {
 export function _getDeviceSpecification (store, token) {
   let axios = createAxiosFromStore(store)
   let api = getDeviceSpecification(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device specification protocol buffer definition.
+ */
+export function _getDeviceSpecificationProtobuf (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceSpecificationProtobuf(axios, token)
   return loaderWrapper(store, api)
 }
 
