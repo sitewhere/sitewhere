@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <specification-dialog title="Edit Device Specification" width="600" resetOnOpen="true"
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
     </specification-dialog>
@@ -7,7 +7,7 @@
       @click.native.stop="onOpenDialog">
       <v-icon class="grey--text">edit</v-icon>
     </v-btn>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -37,7 +37,7 @@ export default {
         })
     },
 
-    // Called after site data is loaded.
+    // Called after data is loaded.
     onLoaded: function (response) {
       this.$children[0].load(response.data)
       this.$children[0].openDialog()

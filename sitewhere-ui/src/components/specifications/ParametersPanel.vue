@@ -17,7 +17,7 @@
           </td>
           <td width="20px">
             <v-btn icon @click.native="onDeleteParameter(props.item.name)"
-              v-tooltip:top="{ html: 'Delete Parameter' }">
+              v-tooltip:left="{ html: 'Delete Parameter' }">
               <v-icon class="grey--text">delete</v-icon>
             </v-btn>
           </td>
@@ -43,7 +43,7 @@
             </v-checkbox>
           </v-flex>
           <v-flex xs1 class="pt-2">
-            <v-btn icon @click.native="onAddParameter" v-tooltip:top="{ html: 'Add Parameter' }">
+            <v-btn icon @click.native="onAddParameter" v-tooltip:left="{ html: 'Add Parameter' }">
               <v-icon large class="white--text">add_circle</v-icon>
             </v-btn>
           </v-flex>

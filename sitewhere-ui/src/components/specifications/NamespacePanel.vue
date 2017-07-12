@@ -7,7 +7,8 @@
       <v-list two-line>
         <div v-for="(command, index) in namespace.commands" :key="command.token">
           <v-divider v-if="index > 0"></v-divider>
-          <command-panel :command="command" @commandDeleted="onCommandDeleted">
+          <command-panel :command="command" @commandDeleted="onCommandDeleted"
+            @commandUpdated="onCommandUpdated">
           </command-panel>
         </div>
       </v-list>
@@ -33,6 +34,11 @@ export default {
     // Called after command has been deleted.
     onCommandDeleted: function () {
       this.$emit('commandDeleted')
+    },
+
+    // Called after command has been updated.
+    onCommandUpdated: function () {
+      this.$emit('commandUpdated')
     }
   }
 }

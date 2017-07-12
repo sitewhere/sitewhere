@@ -1,14 +1,13 @@
 <template>
-  <v-list-tile avatar>
+  <v-list-tile avatar @click.native="onUpdateCommand">
     <v-list-tile-content>
       <command-html :command="command"></command-html>
     </v-list-tile-content>
     <v-list-tile-action>
       <div style="width: 80px;">
-        <v-btn class="mr-1" icon v-tooltip:top="{ html: 'Edit Command' }"
-          @click.native.stop="onEditCommand">
-          <v-icon class="grey--text">edit</v-icon>
-        </v-btn>
+        <command-update-dialog ref="update" :token="command.token"
+          @commandUpdated="onCommandUpdated">
+        </command-update-dialog>
         <command-delete-dialog :token="command.token"
           @commandDeleted="onCommandDeleted">
         </command-delete-dialog>
@@ -20,6 +19,7 @@
 <script>
 import CommandHtml from './CommandHtml'
 import CommandDeleteDialog from './CommandDeleteDialog'
+import CommandUpdateDialog from './CommandUpdateDialog'
 
 export default {
 
@@ -28,15 +28,26 @@ export default {
 
   components: {
     CommandHtml,
-    CommandDeleteDialog
+    CommandDeleteDialog,
+    CommandUpdateDialog
   },
 
   props: ['command'],
 
   methods: {
+    // Opens update dialog on tile click.
+    onUpdateCommand: function () {
+      this.$refs['update'].onOpenDialog()
+    },
+
     // Called after command has been deleted.
     onCommandDeleted: function () {
       this.$emit('commandDeleted')
+    },
+
+    // Called after command has been updated.
+    onCommandUpdated: function () {
+      this.$emit('commandUpdated')
     }
   }
 }

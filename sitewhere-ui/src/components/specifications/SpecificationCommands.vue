@@ -6,7 +6,8 @@
           text="No Commands Found for Device Specification">
         </no-results-panel>
         <div v-if="namespaces.length > 0">
-          <namespace-panel :namespace="namespace" @commandDeleted="onCommandDeleted"
+          <namespace-panel :namespace="namespace"
+            @commandDeleted="onCommandDeleted" @commandUpdated="onCommandUpdated"
             v-for="namespace in namespaces" :key="namespace.value">
           </namespace-panel>
         </div>
@@ -50,6 +51,11 @@ export default {
 
     // Called after a command has been deleted.
     onCommandDeleted: function () {
+      this.refresh()
+    },
+
+    // Called after a command has been updated.
+    onCommandUpdated: function () {
       this.refresh()
     }
   }

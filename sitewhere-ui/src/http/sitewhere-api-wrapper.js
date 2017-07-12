@@ -20,7 +20,8 @@ import {
   // Specifications.
   createDeviceSpecification, getDeviceSpecification, updateDeviceSpecification,
   listDeviceSpecifications, deleteDeviceSpecification, createDeviceCommand,
-  listDeviceCommandsByNamespace, deleteDeviceCommand,
+  getDeviceCommand, updateDeviceCommand, listDeviceCommandsByNamespace,
+  deleteDeviceCommand,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
@@ -278,6 +279,24 @@ export function _deleteDeviceSpecification (store, token, force) {
 export function _createDeviceCommand (store, token, payload) {
   let axios = createAxiosFromStore(store)
   let api = createDeviceCommand(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device command by token.
+ */
+export function _getDeviceCommand (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceCommand(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an exiting device command.
+ */
+export function _updateDeviceCommand (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateDeviceCommand(axios, token, payload)
   return loaderWrapper(store, api)
 }
 

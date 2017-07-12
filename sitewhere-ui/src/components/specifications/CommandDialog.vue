@@ -107,7 +107,7 @@ export default {
     ParametersPanel
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel', 'specification'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel'],
 
   computed: {
     // Indicates if first page fields are filled in.
@@ -158,6 +158,7 @@ export default {
         this.$data.cmdName = payload.name
         this.$data.cmdNamespace = payload.namespace
         this.$data.cmdDescription = payload.description
+        this.$data.cmdParameters = payload.parameters
 
         var meta = payload.metadata
         var flat = []

@@ -14,7 +14,15 @@
         <span class="command-param-type">
           {{ parameter.type }}
         </span>
-      </strong v-if="paremeter.required">
+      </strong>
+      <span v-else>
+        <span class="command-param-name">
+          {{ parameter.name }}
+        </span>:
+        <span class="command-param-type">
+          {{ parameter.type }}
+        </span>
+      </span>
     </span>
     )
   </div>

@@ -250,6 +250,20 @@ export function createDeviceCommand (axios, token, payload) {
 }
 
 /**
+ * Get a device command by token.
+ */
+export function getDeviceCommand (axios, token) {
+  return restAuthGet(axios, '/commands/' + token)
+}
+
+/**
+ * Update an existing device command.
+ */
+export function updateDeviceCommand (axios, token, payload) {
+  return restAuthPut(axios, '/commands/' + token, payload)
+}
+
+/**
  * List device specification commands by namespace.
  */
 export function listDeviceCommandsByNamespace (axios, token, includeDeleted) {

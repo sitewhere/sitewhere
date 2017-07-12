@@ -12,7 +12,7 @@
           </td>
           <td width="20px">
             <v-btn icon @click.native="onDeleteItem(props.item.name)"
-              v-tooltip:top="{ html: 'Delete Item' }">
+              v-tooltip:left="{ html: 'Delete Item' }">
               <v-icon class="grey--text">delete</v-icon>
             </v-btn>
           </td>
@@ -32,7 +32,7 @@
             <v-text-field dark label="Value" v-model="newItemValue"></v-text-field>
           </v-flex>
           <v-flex xs1 class="pt-3">
-            <v-btn icon @click.native="onAddItem" v-tooltip:top="{ html: 'Add Item' }">
+            <v-btn icon @click.native="onAddItem" v-tooltip:left="{ html: 'Add Item' }">
               <v-icon large class="white--text">add_circle</v-icon>
             </v-btn>
           </v-flex>
