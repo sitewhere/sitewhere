@@ -13,6 +13,8 @@
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="commands" id="commands">
+          <specification-commands :specification="specification">
+          </specification-commands>
         </v-tabs-content>
       </v-tabs>
     </v-app>
@@ -21,6 +23,7 @@
 
 <script>
 import SpecificationDetailHeader from './SpecificationDetailHeader'
+import SpecificationCommands from './SpecificationCommands'
 
 import {_getDeviceSpecification} from '../../http/sitewhere-api-wrapper'
 
@@ -33,7 +36,8 @@ export default {
   }),
 
   components: {
-    SpecificationDetailHeader
+    SpecificationDetailHeader,
+    SpecificationCommands
   },
 
   created: function () {

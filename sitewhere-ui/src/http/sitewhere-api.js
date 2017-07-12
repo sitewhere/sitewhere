@@ -243,6 +243,16 @@ export function deleteDeviceSpecification (axios, token, force) {
 }
 
 /**
+ * List device specification commands by namespace.
+ */
+export function listSpecificationCommandsByNamespace (axios, token, includeDeleted) {
+  let query = ''
+  query += (includeDeleted)
+    ? '?includeDeleted=true' : '?includeDeleted=false'
+  return restAuthGet(axios, 'specifications/' + token + '/namespaces' + query)
+}
+
+/**
  * Get asset modules.
  */
 export function getAssetModules (axios, type) {

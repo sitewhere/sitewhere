@@ -1,0 +1,41 @@
+<template>
+  <v-card class="ma-3">
+    <v-card-text class="pa-0">
+      <v-toolbar class="grey lighten-3 black--text elevation-0" dark>
+        <v-toolbar-title class="namespace-title subheading"><strong>Namespace:</strong> {{ namespace.value }}</v-toolbar-title>
+      </v-toolbar>
+      <v-list two-line>
+        <div v-for="(command, index) in namespace.commands" :key="command.token">
+          <v-divider v-if="index > 0"></v-divider>
+          <command-panel :command="command">
+          </command-panel>
+        </div>
+      </v-list>
+    </v-card-text>
+  </v-card>
+</template>
+
+<script>
+import CommandPanel from './CommandPanel'
+
+export default {
+
+  data: () => ({
+  }),
+
+  components: {
+    CommandPanel
+  },
+
+  props: ['namespace'],
+
+  methods: {
+  }
+}
+</script>
+
+<style scoped>
+.namespace-title {
+  font-family: 'courier'
+}
+</style>

@@ -19,7 +19,7 @@ import {
 
   // Specifications.
   createDeviceSpecification, getDeviceSpecification, updateDeviceSpecification,
-  listDeviceSpecifications, deleteDeviceSpecification,
+  listDeviceSpecifications, deleteDeviceSpecification, listSpecificationCommandsByNamespace,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
@@ -268,6 +268,15 @@ export function _listDeviceSpecifications (store, includeDeleted, includeAsset, 
 export function _deleteDeviceSpecification (store, token, force) {
   let axios = createAxiosFromStore(store)
   let api = deleteDeviceSpecification(axios, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List device specification commands organized by namespace.
+ */
+export function _listSpecificationCommandsByNamespace (store, token, includeDeleted) {
+  let axios = createAxiosFromStore(store)
+  let api = listSpecificationCommandsByNamespace(axios, token, includeDeleted)
   return loaderWrapper(store, api)
 }
 
