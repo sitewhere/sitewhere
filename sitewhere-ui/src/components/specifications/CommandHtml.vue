@@ -48,6 +48,13 @@ export default {
   width: 100%;
 }
 
+.command-token {
+  font-weight: 700;
+  background-color: #eee;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
 .command-desc {
 	color: #060;
 	font-style: italic;

@@ -5,9 +5,11 @@
       </div>
       <div class="spec-token">
         Token: {{specification.token}}
-        <v-btn small light icon v-clipboard="copyData"
+        <v-btn style="position: relative;"
+          v-tooltip:right="{ html: 'Copy to Clipboard' }" class="mt-0"
+          light icon v-clipboard="copyData"
           @success="onTokenCopied" @error="onTokenCopyFailed">
-          <v-icon>content_copy</v-icon>
+          <v-icon fa class="fa-lg">clipboard</v-icon>
         </v-btn>
       </div>
       <div class="spec-name">{{specification.name}}</div>
@@ -132,7 +134,7 @@ export default {
 
 .spec-desc {
   position: absolute;
-  top: 80px;
+  top: 83px;
   left: 160px;
   right: 300px;
   bottom: 10px;

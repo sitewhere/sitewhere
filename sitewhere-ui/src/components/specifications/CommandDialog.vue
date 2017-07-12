@@ -17,6 +17,21 @@
             <v-card-text>
               <v-container fluid>
                 <v-layout row wrap>
+                  <v-flex xs12 v-if="cmdToken">
+                    <div class="mb-4">
+                      <v-icon class="mr-2">label</v-icon>
+                      <span class="subheading">
+                        Token: {{ cmdToken }}
+                        <v-btn style="position: relative;"
+                          v-clipboard="copyData" :key="cmdToken"
+                          v-tooltip:left="{ html: 'Copy to Clipboard' }"
+                          class="mt-0" light icon @success="onTokenCopied"
+                          @error="onTokenCopyFailed">
+                          <v-icon fa class="fa-lg">clipboard</v-icon>
+                        </v-btn>
+                      </span>
+                    </div>
+                  </v-flex>
                   <v-flex xs12>
                     <v-text-field required class="mt-1" label="Command name"
                       v-model="cmdName" prepend-icon="info"></v-text-field>
@@ -79,6 +94,9 @@
             </v-card-actions>
         </v-stepper-content>
       </v-stepper>
+      <v-snackbar :timeout="2000" success v-model="showTokenCopied">Token copied to clipboard
+        <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
+      </v-snackbar>
     </base-dialog>
   </div>
 </template>
@@ -91,8 +109,11 @@ import ParametersPanel from './ParametersPanel'
 export default {
 
   data: () => ({
+    copyData: null,
+    showTokenCopied: false,
     step: null,
     dialogVisible: false,
+    cmdToken: null,
     cmdName: null,
     cmdNamespace: null,
     cmdDescription: null,
@@ -143,6 +164,7 @@ export default {
 
     // Reset dialog contents.
     reset: function () {
+      this.$data.cmdToken = null
       this.$data.cmdName = null
       this.$data.cmdNamespace = null
       this.$data.cmdDescription = null
@@ -155,6 +177,7 @@ export default {
       this.reset()
 
       if (payload) {
+        this.$data.cmdToken = payload.token
         this.$data.cmdName = payload.name
         this.$data.cmdNamespace = payload.namespace
         this.$data.cmdDescription = payload.description
@@ -229,6 +252,17 @@ export default {
           metadata.splice(i, 1)
         }
       }
+    },
+
+    // Called after token is copied.
+    onTokenCopied: function (e) {
+      console.log('Token copied.')
+      this.$data.showTokenCopied = true
+    },
+
+    // Called if unable to copy token.
+    onTokenCopyFailed: function (e) {
+      console.log('Token copy failed.')
     },
 
     // Tests whether a string is blank.

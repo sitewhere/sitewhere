@@ -5,9 +5,11 @@
       </div>
       <div class="site-token">
         Token: {{site.token}}
-        <v-btn small light icon v-clipboard="copyData"
+        <v-btn style="position: relative;"
+          v-tooltip:right="{ html: 'Copy to Clipboard' }" class="mt-0"
+          light icon v-clipboard="copyData"
           @success="onTokenCopied" @error="onTokenCopyFailed">
-          <v-icon>content_copy</v-icon>
+          <v-icon fa class="fa-lg">clipboard</v-icon>
         </v-btn>
       </div>
       <div class="site-name">{{site.name}}</div>
