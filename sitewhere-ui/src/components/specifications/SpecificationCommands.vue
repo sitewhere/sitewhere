@@ -6,7 +6,8 @@
           text="No Commands Found for Device Specification">
         </no-results-panel>
         <div v-if="namespaces.length > 0">
-          <namespace-panel :namespace="namespace" v-for="namespace in namespaces" :key="namespace.value">
+          <namespace-panel :namespace="namespace" @commandDeleted="onCommandDeleted"
+            v-for="namespace in namespaces" :key="namespace.value">
           </namespace-panel>
         </div>
       </v-flex>
@@ -17,7 +18,7 @@
 <script>
 import NoResultsPanel from '../common/NoResultsPanel'
 import NamespacePanel from './NamespacePanel'
-import {_listSpecificationCommandsByNamespace} from '../../http/sitewhere-api-wrapper'
+import {_listDeviceCommandsByNamespace} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -40,11 +41,16 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      _listSpecificationCommandsByNamespace(this.$store, this.specification.token, false)
+      _listDeviceCommandsByNamespace(this.$store, this.specification.token, false)
         .then(function (response) {
           component.namespaces = response.data.results
         }).catch(function (e) {
         })
+    },
+
+    // Called after a command has been deleted.
+    onCommandDeleted: function () {
+      this.refresh()
     }
   }
 }

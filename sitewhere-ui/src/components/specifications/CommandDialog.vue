@@ -6,9 +6,9 @@
       hideButtons="true">
       <v-stepper v-model="step">
         <v-stepper-header>
-          <v-stepper-step step="1" :complete="step > 1">Specification</v-stepper-step>
+          <v-stepper-step step="1" :complete="step > 1">Command</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="2" :complete="step > 2">Asset</v-stepper-step>
+          <v-stepper-step step="2" :complete="step > 2">Parameters<small>Optional</small></v-stepper-step>
           <v-divider></v-divider>
           <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
         </v-stepper-header>
@@ -18,17 +18,16 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field required class="mt-1" label="Specification name"
-                      v-model="specName" prepend-icon="info"></v-text-field>
+                    <v-text-field required class="mt-1" label="Command name"
+                      v-model="cmdName" prepend-icon="info"></v-text-field>
                   </v-flex>
                   <v-flex xs12>
-                    <v-select required :items="containerPolicies" v-model="specContainerPolicy"
-                      label="Container policy" prepend-icon="developer_board"></v-select>
+                    <v-text-field required class="mt-1" label="Namespace"
+                      v-model="cmdNamespace" prepend-icon="info"></v-text-field>
                   </v-flex>
                   <v-flex xs12>
-                    <v-select required :items="assetModules" v-model="specAssetModule"
-                      item-text="name" item-value="id" label="Asset module"
-                      prepend-icon="local_offer"></v-select>
+                    <v-text-field class="mt-1" multi-line label="Description"
+                    v-model="cmdDescription" prepend-icon="subject"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -37,15 +36,19 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
+            <v-btn flat primary :disabled="!firstPageComplete"
+              @click.native="onCreateClicked">{{ createLabel }}</v-btn>
             <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="step = 2">Choose Asset
+              @click.native="step = 2">Add Parameters
               <v-icon light primary>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <asset-chooser :assetModuleId="specAssetModule" :assetId="specAssetId"
-            @assetUpdated="onAssetUpdated"></asset-chooser>
+          <parameters-panel :parameters="cmdParameters"
+            @parameterAdded="onParameterAdded"
+            @parameterDeleted="onParameterDeleted">
+          </parameters-panel>
           <v-card-actions>
             <v-btn flat primary @click.native="step = 1">
               <v-icon light primary>keyboard_arrow_left</v-icon>
@@ -83,51 +86,40 @@
 <script>
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import AssetChooser from '../common/AssetChooser'
-import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
+import ParametersPanel from './ParametersPanel'
 
 export default {
 
   data: () => ({
     step: null,
     dialogVisible: false,
-    specName: null,
-    specContainerPolicy: null,
-    specAssetModule: null,
-    specAssetId: null,
+    cmdName: null,
+    cmdNamespace: null,
+    cmdDescription: null,
+    cmdParameters: [],
     metadata: [],
-    assetModules: [],
-    containerPolicies: [
-      {
-        'text': 'Standalone Device',
-        'value': 'Standalone'
-      }, {
-        'text': 'Composite Device',
-        'value': 'Composite'
-      }
-    ],
     error: null
   }),
 
   components: {
     BaseDialog,
     MetadataPanel,
-    AssetChooser
+    ParametersPanel
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel', 'specification'],
 
   computed: {
     // Indicates if first page fields are filled in.
     firstPageComplete: function () {
-      return (!this.isBlank(this.$data.specName) &&
-        this.$data.specContainerPolicy &&
-        this.$data.specAssetModule)
+      return (!this.isBlank(this.$data.cmdName) &&
+        !this.isBlank(this.$data.cmdNamespace) &&
+        !this.isBlank(this.$data.cmdDescription))
     },
 
     // Indicates if second page fields are filled in.
     secondPageComplete: function () {
-      return this.firstPageComplete && (this.$data.specAssetId != null)
+      return this.firstPageComplete
     }
   },
 
@@ -135,10 +127,10 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.name = this.$data.specName
-      payload.containerPolicy = this.$data.specContainerPolicy
-      payload.assetModuleId = this.$data.specAssetModule
-      payload.assetId = this.$data.specAssetId
+      payload.name = this.$data.cmdName
+      payload.namespace = this.$data.cmdNamespace
+      payload.description = this.$data.cmdDescription
+      payload.parameters = this.$data.cmdParameters
 
       var metadata = {}
       var flat = this.$data.metadata
@@ -151,20 +143,11 @@ export default {
 
     // Reset dialog contents.
     reset: function () {
-      this.$data.specName = null
-      this.$data.specContainerPolicy = null
-      this.$data.specAssetModule = null
-      this.$data.specAssetId = null
+      this.$data.cmdName = null
+      this.$data.cmdNamespace = null
+      this.$data.cmdDescription = null
       this.$data.metadata = []
       this.$data.step = 1
-
-      var component = this
-      _getAssetModules(this.$store, 'Device')
-        .then(function (response) {
-          component.assetModules = response.data
-          this.onAssetModulesLoaded()
-        }).catch(function (e) {
-        })
     },
 
     // Load dialog from a given payload.
@@ -172,10 +155,9 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.specName = payload.name
-        this.$data.specContainerPolicy = payload.containerPolicy
-        this.$data.specAssetModule = payload.assetModuleId
-        this.$data.specAssetId = payload.assetId
+        this.$data.cmdName = payload.name
+        this.$data.cmdNamespace = payload.namespace
+        this.$data.cmdDescription = payload.description
 
         var meta = payload.metadata
         var flat = []
@@ -216,13 +198,26 @@ export default {
       this.$data.dialogVisible = false
     },
 
-    // Called when an asset is chosen or removed.
-    onAssetUpdated: function (asset) {
-      if (asset) {
-        this.$data.specAssetId = asset.id
-      } else {
-        this.$data.specAssetId = null
+    // Called when a parameter is added.
+    onParameterAdded: function (param) {
+      var params = this.$data.cmdParameters
+      params.push(param)
+    },
+
+    // Called when a parameter is deleted.
+    onParameterDeleted: function (name) {
+      var params = this.$data.cmdParameters
+      for (var i = 0; i < params.length; i++) {
+        if (params[i].name === name) {
+          params.splice(i, 1)
+        }
       }
+    },
+
+    // Called when a metadata entry has been added.
+    onMetadataAdded: function (entry) {
+      var metadata = this.$data.metadata
+      metadata.push(entry)
     },
 
     // Called when a metadata entry has been deleted.
@@ -233,12 +228,6 @@ export default {
           metadata.splice(i, 1)
         }
       }
-    },
-
-    // Called when a metadata entry has been added.
-    onMetadataAdded: function (entry) {
-      var metadata = this.$data.metadata
-      metadata.push(entry)
     },
 
     // Tests whether a string is blank.

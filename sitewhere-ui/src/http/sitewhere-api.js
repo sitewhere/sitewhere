@@ -243,13 +243,30 @@ export function deleteDeviceSpecification (axios, token, force) {
 }
 
 /**
+ * Create a device command.
+ */
+export function createDeviceCommand (axios, token, payload) {
+  return restAuthPost(axios, '/specifications/' + token + '/commands', payload)
+}
+
+/**
  * List device specification commands by namespace.
  */
-export function listSpecificationCommandsByNamespace (axios, token, includeDeleted) {
+export function listDeviceCommandsByNamespace (axios, token, includeDeleted) {
   let query = ''
   query += (includeDeleted)
     ? '?includeDeleted=true' : '?includeDeleted=false'
   return restAuthGet(axios, 'specifications/' + token + '/namespaces' + query)
+}
+
+/**
+ * Delete device command.
+ */
+export function deleteDeviceCommand (axios, token, force) {
+  let query = ''
+  query += (force)
+    ? '?force=true' : '?force=false'
+  return restAuthDelete(axios, 'commands/' + token + query)
 }
 
 /**

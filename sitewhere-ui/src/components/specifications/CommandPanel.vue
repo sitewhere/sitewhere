@@ -9,10 +9,9 @@
           @click.native.stop="onEditCommand">
           <v-icon class="grey--text">edit</v-icon>
         </v-btn>
-        <v-btn icon v-tooltip:top="{ html: 'Delete Command' }"
-          @click.native.stop="onDeleteCommand">
-          <v-icon class="grey--text">delete</v-icon>
-        </v-btn>
+        <command-delete-dialog :token="command.token"
+          @commandDeleted="onCommandDeleted">
+        </command-delete-dialog>
       </div>
     </v-list-tile-action>
   </v-list-tile>
@@ -20,6 +19,7 @@
 
 <script>
 import CommandHtml from './CommandHtml'
+import CommandDeleteDialog from './CommandDeleteDialog'
 
 export default {
 
@@ -27,15 +27,16 @@ export default {
   }),
 
   components: {
-    CommandHtml
+    CommandHtml,
+    CommandDeleteDialog
   },
 
   props: ['command'],
 
   methods: {
-    // Emit event indicating command should be deleted.
-    onDeleteCommand: function () {
-
+    // Called after command has been deleted.
+    onCommandDeleted: function () {
+      this.$emit('commandDeleted')
     }
   }
 }

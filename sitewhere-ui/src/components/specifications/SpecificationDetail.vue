@@ -13,10 +13,12 @@
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="commands" id="commands">
-          <specification-commands :specification="specification">
+          <specification-commands ref="commands" :specification="specification">
           </specification-commands>
         </v-tabs-content>
       </v-tabs>
+      <command-create-dialog v-if="active === 'commands'"
+        :specification="specification" @commandAdded="onCommandAdded"/>
     </v-app>
   </div>
 </template>
@@ -24,6 +26,7 @@
 <script>
 import SpecificationDetailHeader from './SpecificationDetailHeader'
 import SpecificationCommands from './SpecificationCommands'
+import CommandCreateDialog from './CommandCreateDialog'
 
 import {_getDeviceSpecification} from '../../http/sitewhere-api-wrapper'
 
@@ -37,7 +40,8 @@ export default {
 
   components: {
     SpecificationDetailHeader,
-    SpecificationCommands
+    SpecificationCommands,
+    CommandCreateDialog
   },
 
   created: function () {
@@ -83,6 +87,12 @@ export default {
     // Called after update.
     onUpdated: function () {
       this.refresh()
+    },
+
+    // Called after a command is added.
+    onCommandAdded: function () {
+      console.log('command added')
+      this.$refs['commands'].refresh()
     }
   }
 }

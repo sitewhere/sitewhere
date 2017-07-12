@@ -1,12 +1,12 @@
 <template>
   <span>
-    <delete-dialog title="Delete Site" width="400" :error="error"
+    <delete-dialog title="Delete Command" width="400" :error="error"
       @delete="onDeleteConfirmed">
       <v-card-text>
-        Are you sure you want to delete this site?
+        Are you sure you want to delete this device command?
       </v-card-text>
     </delete-dialog>
-    <v-btn icon v-tooltip:top="{ html: 'Delete Site' }"
+    <v-btn icon v-tooltip:top="{ html: 'Delete Command' }"
       @click.native.stop="showDeleteDialog">
       <v-icon class="grey--text">delete</v-icon>
     </v-btn>
@@ -15,7 +15,7 @@
 
 <script>
 import DeleteDialog from '../common/DeleteDialog'
-import {_deleteSite} from '../../http/sitewhere-api-wrapper'
+import {_deleteDeviceCommand} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -38,7 +38,7 @@ export default {
     // Perform delete.
     onDeleteConfirmed: function () {
       var component = this
-      _deleteSite(this.$store, this.token, true)
+      _deleteDeviceCommand(this.$store, this.token, true)
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {
@@ -49,7 +49,7 @@ export default {
     // Handle successful delete.
     onDeleted: function (result) {
       this.$children[0].closeDialog()
-      this.$emit('siteDeleted')
+      this.$emit('commandDeleted')
     },
 
     // Handle failed delete.

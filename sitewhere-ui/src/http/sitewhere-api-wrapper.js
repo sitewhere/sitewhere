@@ -19,7 +19,8 @@ import {
 
   // Specifications.
   createDeviceSpecification, getDeviceSpecification, updateDeviceSpecification,
-  listDeviceSpecifications, deleteDeviceSpecification, listSpecificationCommandsByNamespace,
+  listDeviceSpecifications, deleteDeviceSpecification, createDeviceCommand,
+  listDeviceCommandsByNamespace, deleteDeviceCommand,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
@@ -272,11 +273,29 @@ export function _deleteDeviceSpecification (store, token, force) {
 }
 
 /**
+ * Create a device command.
+ */
+export function _createDeviceCommand (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDeviceCommand(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List device specification commands organized by namespace.
  */
-export function _listSpecificationCommandsByNamespace (store, token, includeDeleted) {
+export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
   let axios = createAxiosFromStore(store)
-  let api = listSpecificationCommandsByNamespace(axios, token, includeDeleted)
+  let api = listDeviceCommandsByNamespace(axios, token, includeDeleted)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a device command.
+ */
+export function _deleteDeviceCommand (store, token, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceCommand(axios, token, force)
   return loaderWrapper(store, api)
 }
 

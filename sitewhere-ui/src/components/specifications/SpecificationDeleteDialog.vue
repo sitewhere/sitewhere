@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <delete-dialog title="Delete Device Specification" width="400" :error="error"
       @delete="onDeleteConfirmed">
       <v-card-text>
@@ -10,7 +10,7 @@
       @click.native.stop="showDeleteDialog">
       <v-icon class="grey--text">delete</v-icon>
     </v-btn>
-  </div>
+  </span>
 </template>
 
 <script>
