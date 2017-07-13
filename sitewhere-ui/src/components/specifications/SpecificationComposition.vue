@@ -1,16 +1,22 @@
 <template>
   <div>
-    <device-unit-panel :unit="specification.deviceElementSchema">
+    <device-unit-panel :deviceUnit="schema" @contentUpdated="onContentUpdated">
     </device-unit-panel>
+    <v-snackbar :timeout="2000" success v-model="showSaved">Changes Saved
+      <v-btn dark flat @click.native="showSaved = false">Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import DeviceUnitPanel from './DeviceUnitPanel'
+import {_updateDeviceSpecification} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
+    showSaved: false,
+    schema: null
   }),
 
   props: ['specification'],
@@ -19,7 +25,27 @@ export default {
     DeviceUnitPanel
   },
 
+  created: function () {
+    this.$data.schema = this.specification.deviceElementSchema
+  },
+
   methods: {
+    // Refresh UI when content updates.
+    onContentUpdated: function () {
+      var component = this
+      _updateDeviceSpecification(this.$store, this.specification.token,
+        this.specification)
+        .then(function (response) {
+          component.onContentSaved()
+        }).catch(function (e) {
+        })
+    },
+
+    // Called after content has been saved.
+    onContentSaved: function () {
+      this.$data.showSaved = true
+      this.$data.schema = this.specification.deviceElementSchema
+    }
   }
 }
 </script>

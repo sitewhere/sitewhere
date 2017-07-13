@@ -1,14 +1,14 @@
 <template>
   <span>
-    <delete-dialog ref="dialog" title="Delete Device Slot" width="400"
+    <delete-dialog ref="dialog" title="Delete Device Unit" width="400"
       @delete="onDeleteConfirmed">
       <v-card-text>
-        Are you sure you want to delete this device slot?
+        Are you sure you want to delete this device unit?
       </v-card-text>
     </delete-dialog>
-    <v-btn class="ma-0" icon v-tooltip:left="{ html: 'Delete Device Slot' }"
+    <v-btn class="ma-0" icon v-tooltip:left="{ html: 'Delete Device Unit' }"
       @click.native.stop="showDeleteDialog">
-      <v-icon class="grey--text">delete</v-icon>
+      <v-icon class="white--text">delete</v-icon>
     </v-btn>
   </span>
 </template>
@@ -21,7 +21,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['deviceSlot'],
+  props: ['deviceUnit'],
 
   components: {
     DeleteDialog
@@ -44,9 +44,9 @@ export default {
     },
 
     // Handle successful delete.
-    onDeleted: function (result) {
+    onDeleted: function () {
       this.getDialogComponent().closeDialog()
-      this.$emit('deviceSlotDeleted', this.deviceSlot)
+      this.$emit('deviceUnitDeleted', this.deviceUnit)
     }
   }
 }

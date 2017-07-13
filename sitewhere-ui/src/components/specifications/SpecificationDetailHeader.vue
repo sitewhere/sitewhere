@@ -26,7 +26,7 @@
       </div>
       <div class="spec-divider"></div>
     </v-card-text>
-    <v-snackbar :timeout="3000" success v-model="showTokenCopied">Token copied to clipboard
+    <v-snackbar :timeout="2000" success v-model="showTokenCopied">Token copied to clipboard
       <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
     </v-snackbar>
   </v-card>

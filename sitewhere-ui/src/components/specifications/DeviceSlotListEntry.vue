@@ -1,12 +1,13 @@
 <template>
-  <v-list-tile @click.native="onUpdateSlot">
+  <v-list-tile>
+    <v-icon class="grey--text mr-2">storage</v-icon>
     <v-list-tile-content>
-      Slot {{ deviceSlot.name }} : {{ deviceSlot.path }}
+      {{ deviceSlot.name }} ({{ fullPath }})
     </v-list-tile-content>
     <v-list-tile-action>
-      <span style="width: 80px;">
-        <device-slot-delete-dialog ref="update" :deviceSlot="deviceSlot"
-          @slotDeleted="onSlotDeleted">
+      <span>
+        <device-slot-delete-dialog :deviceSlot="deviceSlot"
+          @deviceSlotDeleted="onDeviceSlotDeleted">
         </device-slot-delete-dialog>
       </span>
     </v-list-tile-action>
@@ -21,16 +22,27 @@ export default {
   data: () => ({
   }),
 
-  props: ['deviceSlot'],
+  props: ['deviceSlot', 'parentPath'],
 
   components: {
     DeviceSlotDeleteDialog
   },
 
+  computed: {
+    // Full path for slot.
+    fullPath: function () {
+      if (this.parentPath) {
+        return this.parentPath + '/' + this.deviceSlot.path
+      }
+      return '/' + this.deviceSlot.path
+    }
+  },
+
   methods: {
     // Called when slot is deleted.
-    onSlotDeleted: function () {
-      this.$emit('slotDeleted', this.slot)
+    onDeviceSlotDeleted: function (slot) {
+      console.log('slot delete in list entry')
+      this.$emit('deviceSlotDeleted', slot)
     }
   }
 }
