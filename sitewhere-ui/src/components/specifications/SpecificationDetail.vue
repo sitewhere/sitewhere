@@ -14,6 +14,10 @@
           <v-tabs-item key="code" href="#code">
             Code Generation
           </v-tabs-item>
+          <v-tabs-item v-if="specification.containerPolicy === 'Composite'"
+            key="composition" href="#composition">
+            Composition
+          </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="commands" id="commands">
           <specification-commands ref="commands" :specification="specification">
@@ -22,6 +26,11 @@
         <v-tabs-content key="code" id="code">
           <specification-codegen :specification="specification">
           </specification-codegen>
+        </v-tabs-content>
+        <v-tabs-content v-if="specification.containerPolicy === 'Composite'"
+          key="composition" id="composition">
+          <specification-composition :specification="specification">
+          </specification-composition>
         </v-tabs-content>
       </v-tabs>
       <command-create-dialog v-if="active === 'commands'"
@@ -34,6 +43,7 @@
 import SpecificationDetailHeader from './SpecificationDetailHeader'
 import SpecificationCommands from './SpecificationCommands'
 import SpecificationCodegen from './SpecificationCodegen'
+import SpecificationComposition from './SpecificationComposition'
 import CommandCreateDialog from './CommandCreateDialog'
 
 import {_getDeviceSpecification} from '../../http/sitewhere-api-wrapper'
@@ -51,6 +61,7 @@ export default {
     SpecificationDetailHeader,
     SpecificationCommands,
     SpecificationCodegen,
+    SpecificationComposition,
     CommandCreateDialog
   },
 

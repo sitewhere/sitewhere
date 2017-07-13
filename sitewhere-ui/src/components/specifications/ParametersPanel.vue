@@ -12,7 +12,7 @@
           </td>
           <td width="200px">
             <span v-if="props.item.required">
-              <v-icon fa class="grey--text fa-2x">check-circle</v-icon>
+              <v-icon fa class="green--text fa-lg">check-circle</v-icon>
             </span>
           </td>
           <td width="20px">

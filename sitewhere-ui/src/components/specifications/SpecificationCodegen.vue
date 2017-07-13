@@ -50,7 +50,6 @@ export default {
     // Called to download protobuf definition.
     onProtobufDownload: function () {
       var tenant = this.$store.getters.selectedTenant
-      console.log(tenant)
       if (tenant) {
         let url = BASE_URL + 'specifications/' + this.specification.token +
           '/spec.proto?tenantAuthToken=' + tenant.authenticationToken
