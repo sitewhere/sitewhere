@@ -82,7 +82,7 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 		throw new SiteWhereException(
 			"No socket interaction handler factory configured for socket event source.");
 	    }
-	    getHandlerFactory().start(monitor);
+	    startNestedComponent(getHandlerFactory(), monitor, true);
 
 	    LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 	    this.server = new ServerSocket(getPort());
