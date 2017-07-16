@@ -25,6 +25,7 @@
 
 <script>
 import Utils from '../common/utils'
+import Style from '../common/style'
 import AssetMiniPanel from './AssetMiniPanel'
 import DeviceMiniPanel from './DeviceMiniPanel'
 import AssignmentStatusButton from './AssignmentStatusButton'
@@ -46,41 +47,7 @@ export default {
 
   computed: {
     styleForStatus: function () {
-      return {
-        'background-color': this.backgroundColor,
-        'border': '1px solid ' + this.borderColor,
-        'border-top': '5px solid ' + this.headerColor
-      }
-    },
-    // Get background color for panel.
-    backgroundColor: function () {
-      if (this.assignment.status === 'Active') {
-        return '#f5fff5'
-      } else if (this.assignment.status === 'Missing') {
-        return '#fff5f5'
-      } else {
-        return '#f0f0f0'
-      }
-    },
-    // Get border color for panel.
-    borderColor: function () {
-      if (this.assignment.status === 'Active') {
-        return '#99cc99'
-      } else if (this.assignment.status === 'Missing') {
-        return '#cc9999'
-      } else {
-        return '#dcdcdc'
-      }
-    },
-    // Get header color for panel.
-    headerColor: function () {
-      if (this.assignment.status === 'Active') {
-        return '#007700'
-      } else if (this.assignment.status === 'Missing') {
-        return '#dc0000'
-      } else {
-        return '#333333'
-      }
+      return Style.styleForAssignmentStatus(this.assignment)
     }
   },
 

@@ -3,10 +3,10 @@
     <v-layout row wrap v-if="locations">
       <v-flex xs12>
         <no-results-panel v-if="locations.length === 0"
-          text="No Location Events Found for Site">
+          text="No Location Events Found for Assignment">
         </no-results-panel>
         <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0" :headers="headers" :items="locations"
-          :hide-actions="true" no-data-text="No Locations Found for Site">
+          :hide-actions="true" no-data-text="No Locations Found for Assignment">
           <template slot="items" scope="props">
             <td width="40%" :title="props.item.assetName">
               {{ props.item.assetName }}
@@ -32,7 +32,7 @@
 import Utils from '../common/utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listLocationsForSite} from '../../http/sitewhere-api-wrapper'
+import {_listLocationsForAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -103,7 +103,7 @@ export default {
       var component = this
       var siteToken = this.siteToken
       var paging = this.$data.paging.query
-      _listLocationsForSite(this.$store, siteToken, paging)
+      _listLocationsForAssignment(this.$store, siteToken, paging)
         .then(function (response) {
           component.results = response.data
           component.locations = response.data.results

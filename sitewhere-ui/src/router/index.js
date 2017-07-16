@@ -13,6 +13,7 @@ import AdminApplication from '@/components/AdminApplication'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
+import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 
@@ -70,6 +71,9 @@ export default new Router({
         }, {
           path: 'sites/:token',
           component: SiteDetail
+        }, {
+          path: 'assignments/:token',
+          component: AssignmentDetail
         }, {
           path: 'devices',
           component: SpecificationsList

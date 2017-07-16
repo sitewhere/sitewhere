@@ -7,7 +7,7 @@
         </no-results-panel>
         <assignment-list-panel :assignment="assignment"
           v-for="(assignment, index) in assignments" :key="assignment.token"
-          @click="onOpenAssignment(assignment.token)"
+          @click.native="onOpenAssignment(assignment.token)"
           @refresh="refresh"
           class="ma-3">
         </assignment-list-panel>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import Utils from '../common/utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import AssignmentListPanel from '../assignments/AssignmentListPanel'
@@ -67,7 +68,7 @@ export default {
 
     // Called to open detail page for assignment.
     onOpenAssignment: function (token) {
-      console.log('Open assignment')
+      Utils.routeTo(this, '/assignments/' + token)
     }
   }
 }

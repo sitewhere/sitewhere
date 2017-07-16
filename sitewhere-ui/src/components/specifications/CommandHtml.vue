@@ -44,7 +44,7 @@ export default {
 <style scoped>
 .command-content {
   font-family: 'courier';
-  font-size: 15px;
+  font-size: 14px;
   width: 100%;
 }
 

@@ -183,6 +183,68 @@ export function deleteZone (axios, zoneToken) {
 }
 
 /**
+ * Get an assignment by unique token.
+ */
+export function getDeviceAssignment (axios, token) {
+  return restAuthGet(axios, 'assignments/' + token)
+}
+
+/**
+ * List measurement events for an assignment.
+ */
+export function listMeasurementsForAssignment (axios, token, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'assignments/' + token + '/measurements' + query)
+}
+
+/**
+ * List location events for an assignment.
+ */
+export function listLocationsForAssignment (axios, token, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'assignments/' + token + '/locations' + query)
+}
+
+/**
+ * List alert events for an assignment.
+ */
+export function listAlertsForAssignment (axios, token, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'assignments/' + token + '/alerts' + query)
+}
+
+/**
+ * List command invocation events for an assignment.
+ */
+export function listCommandInvocationsForAssignment (axios, token, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'assignments/' + token + '/invocations' + query)
+}
+
+/**
+ * List command invocation events for an assignment.
+ */
+export function listCommandResponsesForAssignment (axios, token, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'assignments/' + token + '/responses' + query)
+}
+
+/**
  * Release an active assignment.
  */
 export function releaseAssignment (axios, token) {

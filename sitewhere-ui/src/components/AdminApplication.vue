@@ -34,7 +34,7 @@
     <v-toolbar fixed class="grey darken-3" dark>
       <v-toolbar-side-icon class="grey--text" @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-icon left dark>{{ section.icon }}</v-icon>
-      <v-toolbar-title>{{ section.longTitle }}</v-toolbar-title>
+      <v-toolbar-title class="subheading">{{ section.longTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu bottom right offset-y>
         <v-btn class="grey darken-1 white--text" slot="activator">

@@ -15,7 +15,9 @@ import {
   listZonesForSite, createZone, getZone, updateZone, deleteZone,
 
   // Assignments.
-  releaseAssignment, missingAssignment,
+  getDeviceAssignment, releaseAssignment, missingAssignment,
+  listMeasurementsForAssignment, listLocationsForAssignment, listAlertsForAssignment,
+  listCommandInvocationsForAssignment, listCommandResponsesForAssignment,
 
   // Specifications.
   createDeviceSpecification, getDeviceSpecification, getDeviceSpecificationProtobuf,
@@ -207,6 +209,60 @@ export function _updateZone (store, zoneToken, updated) {
 export function _deleteZone (store, zoneToken) {
   let axios = createAxiosFromStore(store)
   let api = deleteZone(axios, zoneToken)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device assignment by unique token.
+ */
+export function _getDeviceAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List measurement events for a device assignment.
+ */
+export function _listMeasurementsForAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listMeasurementsForAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List location events for a device assignment.
+ */
+export function _listLocationsForAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listLocationsForAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List alert events for a device assignment.
+ */
+export function _listAlertsForAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listAlertsForAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List command invocation events for a device assignment.
+ */
+export function _listCommandInvocationsForAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listCommandInvocationsForAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List command response events for a device assignment.
+ */
+export function _listCommandResponsesForAssignment (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listCommandResponsesForAssignment(axios, token)
   return loaderWrapper(store, api)
 }
 
