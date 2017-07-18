@@ -1,21 +1,21 @@
 <template>
   <div>
-    <v-layout row wrap v-if="locations">
+    <v-layout row wrap v-if="alerts">
       <v-flex xs12>
-        <no-results-panel v-if="locations.length === 0"
-          text="No Location Events Found for Assignment">
+        <no-results-panel v-if="alerts.length === 0"
+          text="No Command Invocation Events Found for Assignment">
         </no-results-panel>
-        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0" :headers="headers" :items="locations"
-          :hide-actions="true" no-data-text="No Locations Found for Assignment">
+        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0" :headers="headers" :items="alerts"
+          :hide-actions="true" no-data-text="No Command Invocations Found for Assignment">
           <template slot="items" scope="props">
-            <td width="40%" title="Lat/Lon/Elevation">
-              {{ utils.fourDecimalPlaces(props.item.latitude) }}
+            <td width="20%" :title="props.item.command.name">
+              {{ props.item.command.name }}
             </td>
-            <td width="40%" title="Lat/Lon/Elevation">
-              {{ utils.fourDecimalPlaces(props.item.longitude) }}
+            <td width="30%" :title="invocationSource(props.item)">
+              {{ invocationSource(props.item) }}
             </td>
-            <td width="40%" title="Lat/Lon/Elevation">
-              {{ utils.fourDecimalPlaces(props.item.elevation) }}
+            <td width="30%" :title="invocationTarget(props.item)">
+              {{ invocationTarget(props.item) }}
             </td>
             <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
               {{ utils.formatDate(props.item.eventDate) }}
@@ -35,30 +35,30 @@
 import Utils from '../common/utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listLocationsForAssignment} from '../../http/sitewhere-api-wrapper'
+import {_listCommandInvocationsForAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    locations: null,
+    alerts: null,
     headers: [
       {
         align: 'left',
         sortable: false,
-        text: 'Latitude',
-        value: 'lat'
+        text: 'Command',
+        value: 'command'
       }, {
         align: 'left',
         sortable: false,
-        text: 'Longitude',
-        value: 'lon'
+        text: 'Source',
+        value: 'source'
       }, {
         align: 'left',
         sortable: false,
-        text: 'Elevation',
-        value: 'ele'
+        text: 'Target',
+        value: 'target'
       }, {
         align: 'left',
         sortable: false,
@@ -109,11 +109,11 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var paging = this.$data.paging.query
-      _listLocationsForAssignment(this.$store, this.token, paging)
+      var query = this.$data.paging.query
+      _listCommandInvocationsForAssignment(this.$store, this.token, query)
         .then(function (response) {
           component.results = response.data
-          component.locations = response.data.results
+          component.alerts = response.data.results
         }).catch(function (e) {
         })
     },
@@ -122,6 +122,16 @@ export default {
     onPageUpdated: function (pageNumber) {
       this.$data.pager.page = pageNumber
       this.refresh()
+    },
+
+    // Gets source information for an invocation.
+    invocationSource: function (invocation) {
+      return invocation.initiator + ' (' + invocation.initiatorId + ')'
+    },
+
+    // Gets source information for an invocation.
+    invocationTarget: function (invocation) {
+      return invocation.target
     }
   }
 }

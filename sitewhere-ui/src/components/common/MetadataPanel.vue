@@ -10,7 +10,7 @@
           <td width="370px" :title="props.item.value">
             {{ (props.item.value.length > 50) ? props.item.value.substring(0, 50) + "..." : props.item.value }}
           </td>
-          <td width="20px">
+          <td v-if="!readOnly" width="20px">
             <v-btn icon @click.native="onDeleteItem(props.item.name)"
               v-tooltip:left="{ html: 'Delete Item' }">
               <v-icon class="grey--text">delete</v-icon>
@@ -22,7 +22,7 @@
     <v-alert error :value="true" class="ma-0" style="width: 100%" v-if="error">
       {{error}}
     </v-alert>
-    <v-card-text class="blue darken-2 pa-0">
+    <v-card-text v-if="!readOnly" class="blue darken-2 pa-0">
       <v-container fluid class="mr-4 pt-1 pb-0">
         <v-layout row>
           <v-flex xs4>
@@ -49,33 +49,54 @@ export default {
     pagesize: [5],
     newItemName: '',
     newItemValue: '',
-    headers: [
-      {
-        align: 'left',
-        sortable: false,
-        text: 'Name',
-        value: 'name'
-      }, {
-        align: 'left',
-        sortable: false,
-        text: 'Value',
-        value: 'value'
-      }, {
-        align: 'left',
-        sortable: false,
-        text: 'Delete',
-        value: 'value'
-      }
-    ],
     error: null
   }),
 
-  props: ['metadata'],
+  props: ['metadata', 'readOnly'],
 
   created: function () {
     this.$data.newItemName = ''
     this.$data.newItemValue = ''
     this.$data.error = null
+  },
+
+  computed: {
+    headers: function () {
+      if (!this.readOnly) {
+        return [
+          {
+            align: 'left',
+            sortable: false,
+            text: 'Name',
+            value: 'name'
+          }, {
+            align: 'left',
+            sortable: false,
+            text: 'Value',
+            value: 'value'
+          }, {
+            align: 'left',
+            sortable: false,
+            text: 'Delete',
+            value: 'value'
+          }
+        ]
+      } else {
+        return [
+          {
+            align: 'left',
+            sortable: false,
+            text: 'Name',
+            value: 'name'
+          }, {
+            align: 'left',
+            sortable: false,
+            text: 'Value',
+            value: 'value'
+          }
+        ]
+      }
+    }
   },
 
   methods: {

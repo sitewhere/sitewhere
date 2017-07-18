@@ -68,7 +68,8 @@ export default {
         'background-image': 'url(' + this.assignment.assetImageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
-        'background-position': '50% 50%'
+        'background-position': '50% 50%',
+        'border': '1px solid #eee'
       }
     },
 
@@ -82,7 +83,8 @@ export default {
           tenant.authenticationToken + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
-        'background-position': '50% 50%'
+        'background-position': '50% 50%',
+        'border': '1px solid #eee'
       }
     }
   },

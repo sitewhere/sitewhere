@@ -11,13 +11,13 @@
             Device Assignments
           </v-tabs-item>
           <v-tabs-item key="locations" href="#locations">
-            Location Events
+            Locations
           </v-tabs-item>
           <v-tabs-item key="measurements" href="#measurements">
-            Measurement Events
+            Measurements
           </v-tabs-item>
           <v-tabs-item key="alerts" href="#alerts">
-            Alert Events
+            Alerts
           </v-tabs-item>
           <v-tabs-item key="zones" href="#zones">
             Zones

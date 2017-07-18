@@ -224,45 +224,45 @@ export function _getDeviceAssignment (store, token) {
 /**
  * List measurement events for a device assignment.
  */
-export function _listMeasurementsForAssignment (store, token) {
+export function _listMeasurementsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
-  let api = listMeasurementsForAssignment(axios, token)
+  let api = listMeasurementsForAssignment(axios, token, query)
   return loaderWrapper(store, api)
 }
 
 /**
  * List location events for a device assignment.
  */
-export function _listLocationsForAssignment (store, token) {
+export function _listLocationsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
-  let api = listLocationsForAssignment(axios, token)
+  let api = listLocationsForAssignment(axios, token, query)
   return loaderWrapper(store, api)
 }
 
 /**
  * List alert events for a device assignment.
  */
-export function _listAlertsForAssignment (store, token) {
+export function _listAlertsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
-  let api = listAlertsForAssignment(axios, token)
+  let api = listAlertsForAssignment(axios, token, query)
   return loaderWrapper(store, api)
 }
 
 /**
  * List command invocation events for a device assignment.
  */
-export function _listCommandInvocationsForAssignment (store, token) {
+export function _listCommandInvocationsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
-  let api = listCommandInvocationsForAssignment(axios, token)
+  let api = listCommandInvocationsForAssignment(axios, token, query)
   return loaderWrapper(store, api)
 }
 
 /**
  * List command response events for a device assignment.
  */
-export function _listCommandResponsesForAssignment (store, token) {
+export function _listCommandResponsesForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
-  let api = listCommandResponsesForAssignment(axios, token)
+  let api = listCommandResponsesForAssignment(axios, token, query)
   return loaderWrapper(store, api)
 }
 

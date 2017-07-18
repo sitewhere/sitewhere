@@ -7,11 +7,29 @@
         <v-tabs-bar slot="activators" class="blue darken-2">
           <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
           <v-tabs-item key="assignments" href="#assignments">
-            XXX
+            Locations
+          </v-tabs-item>
+          <v-tabs-item key="measurements" href="#measurements">
+            Measurements
+          </v-tabs-item>
+          <v-tabs-item key="alerts" href="#alerts">
+            Alerts
+          </v-tabs-item>
+          <v-tabs-item key="invocations" href="#invocations">
+            Command Invocations
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="assignments" id="assignments">
-          XXX
+          <assignment-location-events :token="assignment.token"></assignment-location-events>
+        </v-tabs-content>
+        <v-tabs-content key="measurements" id="measurements">
+          <assignment-measurement-events :token="assignment.token"></assignment-measurement-events>
+        </v-tabs-content>
+        <v-tabs-content key="alerts" id="alerts">
+          <assignment-alert-events :token="assignment.token"></assignment-alert-events>
+        </v-tabs-content>
+        <v-tabs-content key="invocations" id="invocations">
+          <assignment-invocation-events :token="assignment.token"></assignment-invocation-events>
         </v-tabs-content>
       </v-tabs>
     </v-app>
@@ -20,6 +38,10 @@
 
 <script>
 import AssignmentDetailHeader from './AssignmentDetailHeader'
+import AssignmentLocationEvents from './AssignmentLocationEvents'
+import AssignmentMeasurementEvents from './AssignmentMeasurementEvents'
+import AssignmentAlertEvents from './AssignmentAlertEvents'
+import AssignmentInvocationEvents from './AssignmentInvocationEvents'
 
 import {_getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
 
@@ -32,7 +54,11 @@ export default {
   }),
 
   components: {
-    AssignmentDetailHeader
+    AssignmentDetailHeader,
+    AssignmentLocationEvents,
+    AssignmentMeasurementEvents,
+    AssignmentAlertEvents,
+    AssignmentInvocationEvents
   },
 
   created: function () {
