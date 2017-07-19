@@ -102,17 +102,20 @@ export default {
     // Called after token is copied.
     onTokenCopied: function (e) {
       this.$data.showTokenCopied = true
-      console.log('Token copied.')
     },
 
     // Called if unable to copy token.
     onTokenCopyFailed: function (e) {
-      console.log('Token copy failed.')
     },
 
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
+    },
+
+    // Open the assignment emulator.
+    onOpenEmulator: function () {
+      this.$emit('emulatorOpened')
     }
   }
 }

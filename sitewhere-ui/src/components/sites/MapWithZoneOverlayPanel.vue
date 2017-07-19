@@ -21,6 +21,10 @@ export default {
     'fillColor', 'fillOpacity', 'mode'],
 
   watch: {
+    site: function () {
+      this.onMapReady()
+      this.invalidateMap()
+    },
     visible: function () {
       this.onMapReady()
       this.invalidateMap()

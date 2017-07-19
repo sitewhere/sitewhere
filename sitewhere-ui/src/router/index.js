@@ -14,6 +14,7 @@ import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
 import AssignmentDetail from '@/components/assignments/AssignmentDetail'
+import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 
@@ -74,6 +75,9 @@ export default new Router({
         }, {
           path: 'assignments/:token',
           component: AssignmentDetail
+        }, {
+          path: 'assignments/:token/emulator',
+          component: AssignmentEmulator
         }, {
           path: 'devices',
           component: SpecificationsList

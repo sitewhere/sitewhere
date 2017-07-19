@@ -1,7 +1,8 @@
 <template>
   <div v-if="assignment">
     <v-app>
-      <assignment-detail-header :assignment="assignment" class="mb-3">
+      <assignment-detail-header @emulatorOpened="onEmulatorOpened"
+        :assignment="assignment" class="mb-3">
       </assignment-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -80,7 +81,7 @@ export default {
   },
 
   methods: {
-    // Called to refresh site data.
+    // Called to refresh data.
     refresh: function () {
       var token = this.$data.token
       var component = this
@@ -93,7 +94,7 @@ export default {
         })
     },
 
-    // Called after site data is loaded.
+    // Called after data is loaded.
     onAssignmentLoaded: function (assignment) {
       this.$data.assignment = assignment
       var section = {
@@ -104,6 +105,15 @@ export default {
         longTitle: 'Manage Assignment: ' + assignment.token
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called when emulator is opened.
+    onEmulatorOpened: function () {
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/admin/' + tenant.id + '/assignments/' +
+          this.$data.token + '/emulator')
+      }
     },
 
     // Called if command invocation is added.
