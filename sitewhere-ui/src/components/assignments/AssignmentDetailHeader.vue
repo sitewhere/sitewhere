@@ -4,6 +4,11 @@
     <v-card-text>
       <span class="assn-logo" :style="logoStyle"></span>
       <span class="assn-qrcode" :style="qrCodeStyle"></span>
+      <v-btn small @click.native="onOpenEmulator"
+        class="green white--text assn-emulator" >
+        <v-icon left dark>gps_fixed</v-icon>
+        Emulator
+      </v-btn>
       <span class="assn-token-label assn-label">Token:</span>
       <span class="assn-token assn-field">
         {{assignment.token}}
@@ -115,7 +120,7 @@ export default {
 
 <style scoped>
 .assn {
-  min-height: 212px;
+  min-height: 210px;
   min-width: 920px;
   overflow-y: hidden;
 }
@@ -134,7 +139,7 @@ export default {
   top: 10px;
   left: 7px;
   bottom: 7px;
-  width: 200px;
+  width: 180px;
 }
 
 .assn-qrcode {
@@ -142,7 +147,13 @@ export default {
   top: 10px;
   right: 7px;
   bottom: 7px;
-  width: 200px;
+  width: 180px;
+}
+
+.assn-emulator {
+  position: absolute;
+  left: 15px;
+  bottom: 10px;
 }
 
 .assn-asset {

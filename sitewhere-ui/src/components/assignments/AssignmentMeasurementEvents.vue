@@ -5,8 +5,8 @@
         <no-results-panel v-if="mxs.length === 0"
           text="No Measurement Events Found for Assignment">
         </no-results-panel>
-        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0" :headers="headers" :items="mxs"
-          :hide-actions="true" no-data-text="No Measurement Events Found for Assignment">
+        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="mxs" :hide-actions="true">
           <template slot="items" scope="props">
             <td width="50%" :title="props.item.measurementsSummary">
               {{ props.item.measurementsSummary }}

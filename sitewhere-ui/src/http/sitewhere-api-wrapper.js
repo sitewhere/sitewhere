@@ -17,13 +17,17 @@ import {
   // Assignments.
   getDeviceAssignment, releaseAssignment, missingAssignment,
   listMeasurementsForAssignment, listLocationsForAssignment, listAlertsForAssignment,
-  listCommandInvocationsForAssignment, listCommandResponsesForAssignment,
+  createCommandInvocation, scheduleCommandInvocation, listCommandInvocationsForAssignment,
+  listCommandResponsesForAssignment,
 
   // Specifications.
   createDeviceSpecification, getDeviceSpecification, getDeviceSpecificationProtobuf,
   updateDeviceSpecification, listDeviceSpecifications, deleteDeviceSpecification,
-  createDeviceCommand, getDeviceCommand, updateDeviceCommand,
+  createDeviceCommand, getDeviceCommand, listDeviceCommands, updateDeviceCommand,
   listDeviceCommandsByNamespace, deleteDeviceCommand,
+
+  // Schedules.
+  listSchedules,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
@@ -249,6 +253,24 @@ export function _listAlertsForAssignment (store, token, query) {
 }
 
 /**
+ * Create command invocation for a device assignment.
+ */
+export function _createCommandInvocation (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createCommandInvocation(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Schedule command invocation for a device assignment.
+ */
+export function _scheduleCommandInvocation (store, token, schedule, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = scheduleCommandInvocation(axios, token, schedule, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List command invocation events for a device assignment.
  */
 export function _listCommandInvocationsForAssignment (store, token, query) {
@@ -366,6 +388,15 @@ export function _updateDeviceCommand (store, token, payload) {
 }
 
 /**
+ * List commands for a device specification.
+ */
+export function _listDeviceCommands (store, token, includeDeleted) {
+  let axios = createAxiosFromStore(store)
+  let api = listDeviceCommands(axios, token, includeDeleted)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List device specification commands organized by namespace.
  */
 export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
@@ -380,6 +411,15 @@ export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
 export function _deleteDeviceCommand (store, token, force) {
   let axios = createAxiosFromStore(store)
   let api = deleteDeviceCommand(axios, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List schedules.
+ */
+export function _listSchedules (store, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listSchedules(axios, paging)
   return loaderWrapper(store, api)
 }
 

@@ -3,16 +3,16 @@
     <v-layout row wrap v-if="alerts">
       <v-flex xs12>
         <no-results-panel v-if="alerts.length === 0"
-          text="No Alert Events Found for Assignment">
+          text="No Command Response Events Found for Assignment">
         </no-results-panel>
         <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="alerts" :hide-actions="true">
           <template slot="items" scope="props">
-            <td width="20%" :title="props.item.type">
-              {{ props.item.type }}
+            <td width="20%" :title="props.item.originatingEventId">
+              {{ props.item.originatingEventId }}
             </td>
-            <td width="30%" :title="props.item.message">
-              {{ props.item.message }}
+            <td width="30%" :title="props.item.response">
+              {{ props.item.response }}
             </td>
             <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
               {{ utils.formatDate(props.item.eventDate) }}
@@ -32,7 +32,7 @@
 import Utils from '../common/utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listAlertsForAssignment} from '../../http/sitewhere-api-wrapper'
+import {_listCommandResponsesForAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -44,13 +44,13 @@ export default {
       {
         align: 'left',
         sortable: false,
-        text: 'Type',
-        value: 'type'
+        text: 'Originating Event Id',
+        value: 'oeid'
       }, {
         align: 'left',
         sortable: false,
-        text: 'Message',
-        value: 'message'
+        text: 'Response',
+        value: 'response'
       }, {
         align: 'left',
         sortable: false,
@@ -102,7 +102,7 @@ export default {
     refresh: function () {
       var component = this
       var query = this.$data.paging.query
-      _listAlertsForAssignment(this.$store, this.token, query)
+      _listCommandResponsesForAssignment(this.$store, this.token, query)
         .then(function (response) {
           component.results = response.data
           component.alerts = response.data.results

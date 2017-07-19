@@ -223,6 +223,21 @@ export function listAlertsForAssignment (axios, token, paging) {
 }
 
 /**
+ * Create command invocation for an assignment.
+ */
+export function createCommandInvocation (axios, token, payload) {
+  return restAuthPost(axios, 'assignments/' + token + '/invocations', payload)
+}
+
+/**
+ * Schedule command invocation for an assignment.
+ */
+export function scheduleCommandInvocation (axios, token, schedule, payload) {
+  return restAuthPost(axios, 'assignments/' + token +
+    '/invocations/schedules/' + schedule, payload)
+}
+
+/**
  * List command invocation events for an assignment.
  */
 export function listCommandInvocationsForAssignment (axios, token, paging) {
@@ -333,6 +348,16 @@ export function updateDeviceCommand (axios, token, payload) {
 }
 
 /**
+ * List all device commands for a specification.
+ */
+export function listDeviceCommands (axios, token, includeDeleted) {
+  let query = ''
+  query += (includeDeleted)
+    ? '?includeDeleted=true' : '?includeDeleted=false'
+  return restAuthGet(axios, '/specifications/' + token + '/commands' + query)
+}
+
+/**
  * List device specification commands by namespace.
  */
 export function listDeviceCommandsByNamespace (axios, token, includeDeleted) {
@@ -350,6 +375,17 @@ export function deleteDeviceCommand (axios, token, force) {
   query += (force)
     ? '?force=true' : '?force=false'
   return restAuthDelete(axios, 'commands/' + token + query)
+}
+
+/**
+ * List schedules.
+ */
+export function listSchedules (axios, paging) {
+  let query = ''
+  if (paging) {
+    query += '?' + paging
+  }
+  return restAuthGet(axios, 'schedules' + query)
 }
 
 /**

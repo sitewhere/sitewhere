@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import utils from '../common/utils'
 import BaseDialog from '../common/BaseDialog'
 import MapPanel from './MapPanel'
 import MetadataPanel from '../common/MetadataPanel'
@@ -81,13 +82,7 @@ export default {
       payload.description = this.$data.siteDescription
       payload.imageUrl = this.$data.siteImageUrl
       payload.map = this.$data.mapConfig
-
-      var metadata = {}
-      var flat = this.$data.metadata
-      for (var i = 0; i < flat.length; i++) {
-        metadata[flat[i].name] = flat[i].value
-      }
-      payload.metadata = metadata
+      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -110,17 +105,7 @@ export default {
         this.$data.siteDescription = payload.description
         this.$data.siteImageUrl = payload.imageUrl
         this.$data.mapConfig = payload.map
-
-        var meta = payload.metadata
-        var flat = []
-        if (meta) {
-          for (var key in meta) {
-            if (meta.hasOwnProperty(key)) {
-              flat.push({name: key, value: meta[key]})
-            }
-          }
-        }
-        this.$data.metadata = flat
+        this.$data.metadata = utils.metadataToArray(payload.metadata)
       }
     },
 

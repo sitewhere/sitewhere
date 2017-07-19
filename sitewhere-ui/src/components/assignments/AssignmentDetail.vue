@@ -18,6 +18,9 @@
           <v-tabs-item key="invocations" href="#invocations">
             Command Invocations
           </v-tabs-item>
+          <v-tabs-item key="responses" href="#responses">
+            Command Responses
+          </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="assignments" id="assignments">
           <assignment-location-events :token="assignment.token"></assignment-location-events>
@@ -29,9 +32,15 @@
           <assignment-alert-events :token="assignment.token"></assignment-alert-events>
         </v-tabs-content>
         <v-tabs-content key="invocations" id="invocations">
-          <assignment-invocation-events :token="assignment.token"></assignment-invocation-events>
+          <assignment-invocation-events ref="invocations" :token="assignment.token"></assignment-invocation-events>
+        </v-tabs-content>
+        <v-tabs-content key="responses" id="responses">
+          <assignment-response-events :token="assignment.token"></assignment-response-events>
         </v-tabs-content>
       </v-tabs>
+      <invocation-create-dialog v-if="active === 'invocations'"
+        :token="assignment.token" @invocationAdded="onInvocationAdded"
+        :specificationToken="assignment.device.specificationToken"/>
     </v-app>
   </div>
 </template>
@@ -42,6 +51,8 @@ import AssignmentLocationEvents from './AssignmentLocationEvents'
 import AssignmentMeasurementEvents from './AssignmentMeasurementEvents'
 import AssignmentAlertEvents from './AssignmentAlertEvents'
 import AssignmentInvocationEvents from './AssignmentInvocationEvents'
+import AssignmentResponseEvents from './AssignmentResponseEvents'
+import InvocationCreateDialog from './InvocationCreateDialog'
 
 import {_getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
 
@@ -58,7 +69,9 @@ export default {
     AssignmentLocationEvents,
     AssignmentMeasurementEvents,
     AssignmentAlertEvents,
-    AssignmentInvocationEvents
+    AssignmentInvocationEvents,
+    AssignmentResponseEvents,
+    InvocationCreateDialog
   },
 
   created: function () {
@@ -91,6 +104,11 @@ export default {
         longTitle: 'Manage Assignment: ' + assignment.token
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called if command invocation is added.
+    onInvocationAdded: function () {
+      this.$refs['invocations'].refresh()
     }
   }
 }

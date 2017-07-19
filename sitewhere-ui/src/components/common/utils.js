@@ -17,6 +17,28 @@ export default {
     return Number(Math.round(val + 'e4') + 'e-4').toFixed(4)
   },
 
+  // Converts metadata object into array.
+  metadataToArray: function (meta) {
+    var flat = []
+    if (meta) {
+      for (var key in meta) {
+        if (meta.hasOwnProperty(key)) {
+          flat.push({name: key, value: meta[key]})
+        }
+      }
+    }
+    return flat
+  },
+
+  // Converts array to metadata object.
+  arrayToMetadata: function (arrayMeta) {
+    var metadata = {}
+    for (var i = 0; i < arrayMeta.length; i++) {
+      metadata[arrayMeta[i].name] = arrayMeta[i].value
+    }
+    return metadata
+  },
+
   /**
    * Routes to a applicaton-relative URL.
    */
