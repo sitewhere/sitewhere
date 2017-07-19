@@ -1,9 +1,10 @@
 <template>
   <div v-if="assignment">
     <v-app>
+      <assignment-list-panel :assignment="assignment" headerMode="false"
+        class="mb-3">
+      </assignment-list-panel>
       <v-card>
-        <assignment-list-panel :assignment="assignment" class="mb-3">
-        </assignment-list-panel>
         <v-tabs dark v-model="active">
           <v-tabs-bar slot="activators">
             <v-tabs-slider></v-tabs-slider>
@@ -15,14 +16,39 @@
             </v-tabs-item>
             <v-spacer></v-spacer>
             <v-btn v-if="mqttConnected" small class="green white--text ma-0">
-              <v-icon class="white--text mr-2">cloud_upload</v-icon>
+              <v-icon class="white--text mr-2" fa>plug</v-icon>
               MQTT Connected
             </v-btn>
           </v-tabs-bar>
           <v-tabs-content key="emulator" id="emulator">
-            <map-with-zone-overlay-panel ref="map" :site="site" height="600px"
-              visible="true" mode="readOnly">
-            </map-with-zone-overlay-panel>
+            <assignment-emulator-map ref="map" :assignment="assignment"
+              height="600px">
+            </assignment-emulator-map>
+            <v-speed-dial v-model="fab" direction="top" :hover="true"
+              class="action-chooser-fab"
+              transition="slide-y-reverse-transition">
+              <v-btn slot="activator" class="blue darken-3 elevation-5" dark
+                fab hover>
+                <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
+                <v-icon>close</v-icon>
+              </v-btn>
+              <v-btn fab dark small class="green darken-3 elevation-5"
+                 v-tooltip:left="{ html: 'Pan to Last Location' }">
+                <v-icon fa style="margin-top: -3px;">crosshairs</v-icon>
+              </v-btn>
+              <v-btn fab dark small class="green darken-3 elevation-5"
+                 v-tooltip:left="{ html: 'Add Location' }">
+                <v-icon>room</v-icon>
+              </v-btn>
+              <v-btn fab dark small class="blue darken-3 elevation-5"
+                v-tooltip:left="{ html: 'Add Measurements' }">
+                <v-icon fa style="margin-top: -3px;">thermometer</v-icon>
+              </v-btn>
+              <v-btn fab dark small class="red darken-3 elevation-5"
+                v-tooltip:left="{ html: 'Add Alert' }">
+                <v-icon>warning</v-icon>
+              </v-btn>
+            </v-speed-dial>
           </v-tabs-content>
           <v-tabs-content key="mqtt" id="mqtt">
             <v-card flat>
@@ -62,15 +88,14 @@
 <script>
 import MQTT from 'mqtt'
 import AssignmentListPanel from './AssignmentListPanel'
-import MapWithZoneOverlayPanel from '../sites/MapWithZoneOverlayPanel'
-import {_getSite, _getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
+import AssignmentEmulatorMap from './AssignmentEmulatorMap'
+import {_getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     token: null,
     assignment: null,
-    site: null,
     mqttClient: null,
     mqttHostname: 'localhost',
     mqttWsPort: 61623,
@@ -79,12 +104,13 @@ export default {
     swUsername: 'admin',
     swPassword: 'password',
     active: null,
-    mapVisible: true
+    mapVisible: true,
+    fab: null
   }),
 
   components: {
     AssignmentListPanel,
-    MapWithZoneOverlayPanel
+    AssignmentEmulatorMap
   },
 
   created: function () {
@@ -119,8 +145,6 @@ export default {
 
     // Called after data is loaded.
     onAssignmentLoaded: function (assignment) {
-      var component = this
-
       this.$data.assignment = assignment
       var section = {
         id: 'emulator',
@@ -131,20 +155,8 @@ export default {
       }
       this.$store.commit('currentSection', section)
 
-      // Load site information for map.
-      _getSite(this.$store, assignment.siteToken)
-        .then(function (response) {
-          component.onSiteLoaded(response.data)
-        }).catch(function (e) {
-        })
-
       // Connect to MQTT broker with current settings.
       this.establishMqttConnection()
-    },
-
-    // Called after data is loaded.
-    onSiteLoaded: function (site) {
-      this.$data.site = site
     },
 
     // Establish connection with MQTT broker.
@@ -176,4 +188,10 @@ export default {
 </script>
 
 <style scoped>
+.action-chooser-fab {
+  position: absolute;
+  bottom: 48px;
+  right: 48px;
+  z-index: 1000;
+}
 </style>

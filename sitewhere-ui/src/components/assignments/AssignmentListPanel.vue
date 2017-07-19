@@ -1,5 +1,5 @@
 <template>
-  <v-card hover class="white">
+  <v-card :hover="!headerMode" class="white">
     <v-card-text :style="styleForStatus" class="assn-root">
       <asset-mini-panel class="assn-asset" :assignment="assignment"></asset-mini-panel>
       <div class="assn-separator1"></div>
@@ -43,7 +43,7 @@ export default {
     AssignmentStatusButton
   },
 
-  props: ['assignment'],
+  props: ['assignment', 'headerMode'],
 
   computed: {
     styleForStatus: function () {
