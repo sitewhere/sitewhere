@@ -1,18 +1,18 @@
 <template>
   <v-card>
     <v-card-text>
-      <v-data-table class="elevation-0" :headers="headers" :items="metadata"
-        :rows-per-page-items="pagesize" no-data-text="No metadata has been assigned">
+      <v-data-table class="elevation-0" :headers="headers" :items="mxs"
+        :rows-per-page-items="pagesize" no-data-text="No measurements have been added">
         <template slot="items" scope="props">
           <td width="250px" :title="props.item.name">
             {{ (props.item.name.length > 25) ? props.item.name.substring(0, 25) + "..." : props.item.name }}
           </td>
           <td width="370px" :title="props.item.value">
-            {{ (props.item.value.length > 50) ? props.item.value.substring(0, 50) + "..." : props.item.value }}
+            {{ props.item.value }}
           </td>
           <td v-if="!readOnly" width="20px">
-            <v-btn icon @click.native="onDeleteItem(props.item.name)"
-              v-tooltip:left="{ html: 'Delete Item' }">
+            <v-btn icon @click.native="onDeleteMx(props.item.name)"
+              v-tooltip:left="{ html: 'Delete Measurement' }">
               <v-icon class="grey--text">delete</v-icon>
             </v-btn>
           </td>
@@ -26,13 +26,16 @@
       <v-container fluid class="mr-4 pt-1 pb-0">
         <v-layout row>
           <v-flex xs4>
-            <v-text-field dark label="Name" v-model="newItemName"></v-text-field>
+            <v-text-field dark label="Name" v-model="newMxName"></v-text-field>
           </v-flex>
           <v-flex xs7>
-            <v-text-field dark label="Value" v-model="newItemValue"></v-text-field>
+            <v-text-field type="number" dark label="Value"
+              v-model="newMxValue">
+            </v-text-field>
           </v-flex>
           <v-flex xs1 class="pt-3">
-            <v-btn icon @click.native="onAddItem" v-tooltip:left="{ html: 'Add Item' }">
+            <v-btn icon @click.native="onAddMx"
+              v-tooltip:left="{ html: 'Add Measurement' }">
               <v-icon large class="white--text">add_circle</v-icon>
             </v-btn>
           </v-flex>
@@ -49,16 +52,16 @@ export default {
 
   data: () => ({
     pagesize: [5],
-    newItemName: '',
-    newItemValue: '',
+    newMxName: '',
+    newMxValue: 0.0,
     error: null
   }),
 
-  props: ['metadata', 'readOnly'],
+  props: ['mxs', 'readOnly'],
 
   created: function () {
-    this.$data.newItemName = ''
-    this.$data.newItemValue = ''
+    this.$data.newMxName = ''
+    this.$data.newMxValue = 0.0
     this.$data.error = null
   },
 
@@ -113,32 +116,32 @@ export default {
     },
 
     // Let owner know an item was deleted.
-    onDeleteItem: function (name) {
+    onDeleteMx: function (name) {
       this.$emit('itemDeleted', name)
     },
 
     // Let owner know an item was added.
-    onAddItem: function () {
-      var item = {}
-      item['name'] = this.$data.newItemName
-      item['value'] = this.$data.newItemValue
+    onAddMx: function () {
+      var mx = {}
+      mx['name'] = this.$data.newMxName
+      mx['value'] = this.$data.newMxValue
       var error = null
 
       // Check for empty.
-      if (item.name.length === 0) {
+      if (mx.name.length === 0) {
         error = 'Name must not be empty.'
       }
 
       // Check for bad characters.
-      var regex = /^[\w-]+$/
-      if (!error && !regex.test(item.name)) {
+      var regex = /^[\w-\\.]+$/
+      if (!error && !regex.test(mx.name)) {
         error = 'Name contains invalid characters.'
       }
 
       if (!error) {
-        this.$emit('itemAdded', item)
-        this.$data.newItemName = ''
-        this.$data.newItemValue = ''
+        this.$emit('mxAdded', mx)
+        this.$data.newMxName = ''
+        this.$data.newMxValue = ''
         this.$data.error = null
       } else {
         this.$data.error = error

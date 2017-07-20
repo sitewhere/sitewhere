@@ -29,7 +29,7 @@
 
 <script>
 import ConfirmDialog from '../common/ConfirmDialog'
-import {releaseAssignment, missingAssignment} from '../../http/sitewhere-api'
+import {_releaseAssignment, _missingAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -77,14 +77,22 @@ export default {
 
     // Called to mark an assignment as released.
     onReleaseAssignment: function () {
-      releaseAssignment(this.$store, this.assignment.token,
-        this.onStatusUpdated, this.onFailed)
+      var component = this
+      _releaseAssignment(this.$store, this.assignment.token)
+        .then(function (response) {
+          component.onStatusUpdated(response.data)
+        }).catch(function (e) {
+        })
     },
 
     // Called to mark an assignment as missing.
     onMissingAssignment: function (assignment) {
-      missingAssignment(this.$store, this.assignment.token,
-        this.onStatusUpdated, this.onFailed)
+      var component = this
+      _missingAssignment(this.$store, this.assignment.token)
+        .then(function (response) {
+          component.onStatusUpdated(response.data)
+        }).catch(function (e) {
+        })
     },
 
     // Handle successful update.

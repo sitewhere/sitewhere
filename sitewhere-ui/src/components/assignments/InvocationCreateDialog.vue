@@ -14,7 +14,7 @@
 
 <script>
 import InvocationDialog from './InvocationDialog'
-import {_createCommandInvocation, _scheduleCommandInvocation} from '../../http/sitewhere-api-wrapper'
+import {_createCommandInvocationForAssignment, _scheduleCommandInvocation} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -57,7 +57,7 @@ export default {
             component.onFailed(e)
           })
       } else {
-        _createCommandInvocation(this.$store, this.token, payload)
+        _createCommandInvocationForAssignment(this.$store, this.token, payload)
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {

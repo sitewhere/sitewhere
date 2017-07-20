@@ -22,7 +22,7 @@
           </v-tabs-bar>
           <v-tabs-content key="emulator" id="emulator">
             <assignment-emulator-map ref="map" :assignment="assignment"
-              height="600px">
+              height="600px" @location="onLocationClicked">
             </assignment-emulator-map>
             <v-speed-dial v-model="fab" direction="top" :hover="true"
               class="action-chooser-fab"
@@ -30,18 +30,20 @@
               <v-btn slot="activator" class="blue darken-3 elevation-5" dark
                 fab hover>
                 <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
-                <v-icon>close</v-icon>
               </v-btn>
               <v-btn fab dark small class="green darken-3 elevation-5"
-                 v-tooltip:left="{ html: 'Pan to Last Location' }">
+                 v-tooltip:left="{ html: 'Pan to Last Location' }"
+                  @click.native="onPanToLastLocation">
                 <v-icon fa style="margin-top: -3px;">crosshairs</v-icon>
               </v-btn>
               <v-btn fab dark small class="green darken-3 elevation-5"
-                 v-tooltip:left="{ html: 'Add Location' }">
+                 v-tooltip:left="{ html: 'Add Location' }"
+                 @click.native="onEnterAddLocationMode">
                 <v-icon>room</v-icon>
               </v-btn>
               <v-btn fab dark small class="blue darken-3 elevation-5"
-                v-tooltip:left="{ html: 'Add Measurements' }">
+                v-tooltip:left="{ html: 'Add Measurements' }"
+                 @click.native="onAddMeasurementsClicked">
                 <v-icon fa style="margin-top: -3px;">thermometer</v-icon>
               </v-btn>
               <v-btn fab dark small class="red darken-3 elevation-5"
@@ -81,6 +83,12 @@
           </v-tabs-content>
         </v-tabs>
       </v-card>
+      <location-create-dialog ref="locationCreate" :token="token"
+        @locationAdded="onLocationAdded">
+      </location-create-dialog>
+      <measurements-create-dialog ref="mxCreate" :token="token"
+        @locationAdded="onMeasurementsAdded">
+      </measurements-create-dialog>
     </v-app>
   </div>
 </template>
@@ -89,6 +97,8 @@
 import MQTT from 'mqtt'
 import AssignmentListPanel from './AssignmentListPanel'
 import AssignmentEmulatorMap from './AssignmentEmulatorMap'
+import LocationCreateDialog from './LocationCreateDialog'
+import MeasurementsCreateDialog from './MeasurementsCreateDialog'
 import {_getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -110,7 +120,9 @@ export default {
 
   components: {
     AssignmentListPanel,
-    AssignmentEmulatorMap
+    AssignmentEmulatorMap,
+    LocationCreateDialog,
+    MeasurementsCreateDialog
   },
 
   created: function () {
@@ -130,6 +142,21 @@ export default {
   },
 
   methods: {
+    // Get map reference.
+    getMap: function () {
+      return this.$refs.map
+    },
+
+    // Get location create dialog reference.
+    getLocationCreateDialog: function () {
+      return this.$refs.locationCreate
+    },
+
+    // Get location create dialog reference.
+    getMeasurementsCreateDialog: function () {
+      return this.$refs.mxCreate
+    },
+
     // Called to refresh data.
     refresh: function () {
       var token = this.$data.token
@@ -157,6 +184,46 @@ export default {
 
       // Connect to MQTT broker with current settings.
       this.establishMqttConnection()
+    },
+
+    // Called when a map location is clicked.
+    onLocationClicked: function (e) {
+      let payload = {
+        latitude: e.latlng.lat,
+        longitude: e.latlng.lng,
+        elevation: 0.0
+      }
+      this.getLocationCreateDialog().onOpenDialog()
+      this.getLocationCreateDialog().load(payload)
+    },
+
+    // Called after a location has been added.
+    onLocationAdded: function () {
+      var component = this
+
+      // Wait for data to become available.
+      setTimeout(function () {
+        component.getMap().refreshLocations()
+      }, 1000)
+    },
+
+    // Called after measurements have been added.
+    onMeasurementsAdded: function () {
+    },
+
+    // Asks map to pan to last recorded location.
+    onPanToLastLocation: function () {
+      this.getMap().panToLastLocation()
+    },
+
+    // Puts map in mode for adding location.
+    onEnterAddLocationMode: function () {
+      this.getMap().enterAddLocationMode()
+    },
+
+    // Called when button for adding mx is clicked.
+    onAddMeasurementsClicked: function () {
+      this.getMeasurementsCreateDialog().onOpenDialog()
     },
 
     // Establish connection with MQTT broker.

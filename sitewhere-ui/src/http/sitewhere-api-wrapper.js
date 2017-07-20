@@ -7,31 +7,62 @@ import {
   // Tenants.
   getTenant,
 
-  // Sites.
-  createSite, getSite, updateSite, listSites, deleteSite, listAssignmentsForSite,
-  listLocationsForSite, listMeasurementsForSite, listAlertsForSite,
-
-  // Zones.
-  listZonesForSite, createZone, getZone, updateZone, deleteZone,
-
-  // Assignments.
-  getDeviceAssignment, releaseAssignment, missingAssignment,
-  listMeasurementsForAssignment, listLocationsForAssignment, listAlertsForAssignment,
-  createCommandInvocation, scheduleCommandInvocation, listCommandInvocationsForAssignment,
-  listCommandResponsesForAssignment,
-
-  // Specifications.
-  createDeviceSpecification, getDeviceSpecification, getDeviceSpecificationProtobuf,
-  updateDeviceSpecification, listDeviceSpecifications, deleteDeviceSpecification,
-  createDeviceCommand, getDeviceCommand, listDeviceCommands, updateDeviceCommand,
-  listDeviceCommandsByNamespace, deleteDeviceCommand,
-
   // Schedules.
   listSchedules,
 
   // Assets.
   getAssetModules, searchAssets, getAssetById
 } from './sitewhere-api'
+
+// Sites.
+import {
+  createSite,
+  getSite,
+  updateSite,
+  listSites,
+  deleteSite,
+  listAssignmentsForSite,
+  listLocationsForSite,
+  listMeasurementsForSite,
+  listAlertsForSite,
+  listZonesForSite,
+  createZone,
+  getZone,
+  updateZone,
+  deleteZone
+} from './sitewhere-sites-api.js'
+
+// Specifications.
+import {
+  createDeviceSpecification,
+  getDeviceSpecification,
+  getDeviceSpecificationProtobuf,
+  updateDeviceSpecification,
+  listDeviceSpecifications,
+  deleteDeviceSpecification,
+  createDeviceCommand,
+  getDeviceCommand,
+  listDeviceCommands,
+  updateDeviceCommand,
+  listDeviceCommandsByNamespace,
+  deleteDeviceCommand
+} from './sitewhere-specifications-api.js'
+
+// Assignments.
+import {
+  getDeviceAssignment,
+  releaseAssignment,
+  missingAssignment,
+  createMeasurementsForAssignment,
+  listMeasurementsForAssignment,
+  createLocationForAssignment,
+  listLocationsForAssignment,
+  listAlertsForAssignment,
+  createCommandInvocationForAssignment,
+  scheduleCommandInvocation,
+  listCommandInvocationsForAssignment,
+  listCommandResponsesForAssignment
+} from './sitewhere-assignments-api.js'
 
 /**
  * Create authorized axios client based on store values.
@@ -226,11 +257,29 @@ export function _getDeviceAssignment (store, token) {
 }
 
 /**
+ * Create measurements event for a device assignment.
+ */
+export function _createMeasurementsForAssignment (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createMeasurementsForAssignment(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List measurement events for a device assignment.
  */
 export function _listMeasurementsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
   let api = listMeasurementsForAssignment(axios, token, query)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create location event for a device assignment.
+ */
+export function _createLocationForAssignment (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createLocationForAssignment(axios, token, payload)
   return loaderWrapper(store, api)
 }
 
@@ -255,9 +304,9 @@ export function _listAlertsForAssignment (store, token, query) {
 /**
  * Create command invocation for a device assignment.
  */
-export function _createCommandInvocation (store, token, payload) {
+export function _createCommandInvocationForAssignment (store, token, payload) {
   let axios = createAxiosFromStore(store)
-  let api = createCommandInvocation(axios, token, payload)
+  let api = createCommandInvocationForAssignment(axios, token, payload)
   return loaderWrapper(store, api)
 }
 
