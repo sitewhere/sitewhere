@@ -1,6 +1,6 @@
 <template>
   <div>
-    <location-dialog ref="dialog" title="Create Location Event" width="600" resetOnOpen="true"
+    <location-dialog ref="dialog" title="Create Location Event" width="600"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </location-dialog>
   </div>

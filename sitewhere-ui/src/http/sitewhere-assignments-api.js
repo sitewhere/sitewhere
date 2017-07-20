@@ -47,6 +47,13 @@ export function listLocationsForAssignment (axios, token, paging) {
 }
 
 /**
+ * Create alert event for an assignment.
+ */
+export function createAlertForAssignment (axios, token, payload) {
+  return restAuthPost(axios, 'assignments/' + token + '/alerts', payload)
+}
+
+/**
  * List alert events for an assignment.
  */
 export function listAlertsForAssignment (axios, token, paging) {

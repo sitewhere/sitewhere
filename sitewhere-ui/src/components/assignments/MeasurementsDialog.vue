@@ -6,7 +6,7 @@
       <v-tabs-bar slot="activators">
         <v-tabs-slider></v-tabs-slider>
         <v-tabs-item key="details" href="#details">
-          Location Details
+          Measurement Details
         </v-tabs-item>
         <slot name="tabitem"></slot>
         <v-tabs-item key="metadata" href="#metadata">
@@ -53,7 +53,6 @@ export default {
     dialogVisible: false,
     mxsAlternateId: null,
     mxs: [],
-    locEventDate: new Date(),
     metadata: [],
     error: null
   }),

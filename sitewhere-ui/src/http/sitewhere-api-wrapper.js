@@ -57,6 +57,7 @@ import {
   listMeasurementsForAssignment,
   createLocationForAssignment,
   listLocationsForAssignment,
+  createAlertForAssignment,
   listAlertsForAssignment,
   createCommandInvocationForAssignment,
   scheduleCommandInvocation,
@@ -289,6 +290,15 @@ export function _createLocationForAssignment (store, token, payload) {
 export function _listLocationsForAssignment (store, token, query) {
   let axios = createAxiosFromStore(store)
   let api = listLocationsForAssignment(axios, token, query)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create alert event for a device assignment.
+ */
+export function _createAlertForAssignment (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createAlertForAssignment(axios, token, payload)
   return loaderWrapper(store, api)
 }
 

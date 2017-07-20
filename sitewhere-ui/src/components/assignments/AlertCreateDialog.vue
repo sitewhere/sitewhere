@@ -1,15 +1,14 @@
 <template>
   <div>
-    <measurements-dialog ref="dialog" title="Create Measurement Event"
-      width="600" createLabel="Create" cancelLabel="Cancel"
-      @payload="onCommit">
-    </measurements-dialog>
+    <alert-dialog ref="dialog" title="Create Alert Event" width="600"
+      createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
+    </alert-dialog>
   </div>
 </template>
 
 <script>
-import MeasurementsDialog from './MeasurementsDialog'
-import {_createMeasurementsForAssignment} from '../../http/sitewhere-api-wrapper'
+import AlertDialog from './AlertDialog'
+import {_createAlertForAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -19,7 +18,7 @@ export default {
   props: ['token'],
 
   components: {
-    MeasurementsDialog
+    AlertDialog
   },
 
   methods: {
@@ -42,7 +41,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _createMeasurementsForAssignment(this.$store, this.token, payload)
+      _createAlertForAssignment(this.$store, this.token, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
@@ -53,7 +52,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('measurementsAdded')
+      this.$emit('alertAdded')
     },
 
     // Handle failed commit.

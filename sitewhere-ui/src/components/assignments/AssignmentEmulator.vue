@@ -47,7 +47,8 @@
                 <v-icon fa style="margin-top: -3px;">thermometer</v-icon>
               </v-btn>
               <v-btn fab dark small class="red darken-3 elevation-5"
-                v-tooltip:left="{ html: 'Add Alert' }">
+                v-tooltip:left="{ html: 'Add Alert' }"
+                @click.native="onAddAlertClicked">
                 <v-icon>warning</v-icon>
               </v-btn>
             </v-speed-dial>
@@ -89,6 +90,9 @@
       <measurements-create-dialog ref="mxCreate" :token="token"
         @locationAdded="onMeasurementsAdded">
       </measurements-create-dialog>
+      <alert-create-dialog ref="alertCreate" :token="token"
+        @locationAdded="onAlertAdded">
+      </alert-create-dialog>
     </v-app>
   </div>
 </template>
@@ -99,6 +103,7 @@ import AssignmentListPanel from './AssignmentListPanel'
 import AssignmentEmulatorMap from './AssignmentEmulatorMap'
 import LocationCreateDialog from './LocationCreateDialog'
 import MeasurementsCreateDialog from './MeasurementsCreateDialog'
+import AlertCreateDialog from './AlertCreateDialog'
 import {_getDeviceAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -122,7 +127,8 @@ export default {
     AssignmentListPanel,
     AssignmentEmulatorMap,
     LocationCreateDialog,
-    MeasurementsCreateDialog
+    MeasurementsCreateDialog,
+    AlertCreateDialog
   },
 
   created: function () {
@@ -155,6 +161,11 @@ export default {
     // Get location create dialog reference.
     getMeasurementsCreateDialog: function () {
       return this.$refs.mxCreate
+    },
+
+    // Get alert create dialog reference.
+    getAlertCreateDialog: function () {
+      return this.$refs.alertCreate
     },
 
     // Called to refresh data.
@@ -211,6 +222,10 @@ export default {
     onMeasurementsAdded: function () {
     },
 
+    // Called after alert has been added.
+    onAlertAdded: function () {
+    },
+
     // Asks map to pan to last recorded location.
     onPanToLastLocation: function () {
       this.getMap().panToLastLocation()
@@ -224,6 +239,11 @@ export default {
     // Called when button for adding mx is clicked.
     onAddMeasurementsClicked: function () {
       this.getMeasurementsCreateDialog().onOpenDialog()
+    },
+
+    // Called when button for adding alert is clicked.
+    onAddAlertClicked: function () {
+      this.getAlertCreateDialog().onOpenDialog()
     },
 
     // Establish connection with MQTT broker.

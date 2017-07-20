@@ -6,7 +6,7 @@
       <v-tabs-bar slot="activators">
         <v-tabs-slider></v-tabs-slider>
         <v-tabs-item key="details" href="#details">
-          Location Details
+          Alert Details
         </v-tabs-item>
         <slot name="tabitem"></slot>
         <v-tabs-item key="metadata" href="#metadata">
@@ -21,19 +21,20 @@
               <v-layout row wrap>
                 <v-flex xs12>
                   <v-text-field class="mt-1" label="Alternate Id"
-                    v-model="locAlternateId" prepend-icon="info"></v-text-field>
+                    v-model="alertAlternateId" prepend-icon="info"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field required class="mt-1" label="Latitude" type="number"
-                    v-model="locLatitude" prepend-icon="language"></v-text-field>
+                  <v-text-field required class="mt-1" label="Alert Type"
+                    v-model="alertType" prepend-icon="info"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field required class="mt-1" label="Longitude" type="number"
-                    v-model="locLongitude" prepend-icon="language"></v-text-field>
+                  <v-select required :items="alertLevels" v-model="alertLevel"
+                    label="Select Alert Level" light single-line auto
+                    prepend-icon="warning" hide-details></v-select>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field class="mt-1" label="Elevation" type="number"
-                    v-model="locElevation" prepend-icon="flight_takeoff"></v-text-field>
+                  <v-text-field required class="mt-1" multi-line label="Message"
+                    v-model="alertMessage" prepend-icon="subject"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -56,13 +57,31 @@ import MetadataPanel from '../common/MetadataPanel'
 export default {
 
   data: () => ({
+    alertLevels: [
+      {
+        'text': 'Information',
+        'value': 'Info'
+      },
+      {
+        'text': 'Warning',
+        'value': 'Warning'
+      },
+      {
+        'text': 'Error',
+        'value': 'Error'
+      },
+      {
+        'text': 'Critical',
+        'value': 'Critical'
+      }
+    ],
     active: null,
     menu: null,
     dialogVisible: false,
-    locAlternateId: null,
-    locLatitude: null,
-    locLongitude: null,
-    locElevation: null,
+    alertAlternateId: null,
+    alertType: null,
+    alertLevel: null,
+    alertMessage: null,
     metadata: [],
     error: null
   }),
@@ -78,20 +97,21 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.alternateId = this.$data.locAlternateId
-      payload.latitude = this.$data.locLatitude
-      payload.longitude = this.$data.locLongitude
-      payload.elevation = this.$data.locElevation
+      payload.alternateId = this.$data.alertAlternateId
+      payload.type = this.$data.alertType
+      payload.level = this.$data.alertLevel
+      payload.message = this.$data.alertMessage
+      payload.source = 'Device'
       payload.metadata = utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.locAlternateId = null
-      this.$data.locLatitude = null
-      this.$data.locLongitude = null
-      this.$data.locElevation = null
+      this.$data.alertAlternateId = null
+      this.$data.alertType = null
+      this.$data.alertLevel = null
+      this.$data.alertMessage = null
       this.$data.metadata = []
       this.$data.active = 'details'
     },
@@ -101,10 +121,10 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.locAlternateId = payload.alternateId
-        this.$data.locLatitude = payload.latitude
-        this.$data.locLongitude = payload.longitude
-        this.$data.locElevation = payload.elevation
+        this.$data.alertAlternateId = payload.alternateId
+        this.$data.alertType = payload.type
+        this.$data.alertLevel = payload.level
+        this.$data.alertMessage = payload.message
         this.$data.metadata = utils.metadataToArray(payload.metadata)
       }
     },
