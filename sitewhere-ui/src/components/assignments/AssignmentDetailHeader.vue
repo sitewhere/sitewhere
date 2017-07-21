@@ -30,6 +30,9 @@
       <span class="assn-active assn-field">{{ formatDate(assignment.activeDate) }}</span>
       <span class="assn-released-label assn-label">Released:</span>
       <span class="assn-released assn-field">{{ formatDate(assignment.releasedDate) }}</span>
+      <assignment-delete-dialog :token="assignment.token" class="assn-delete"
+        @assignmentDeleted="onAssignmentDeleted">
+      </assignment-delete-dialog>
     </v-card-text>
     <v-snackbar :timeout="2000" success v-model="showTokenCopied">Token copied to clipboard
       <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
@@ -41,6 +44,7 @@
 import Utils from '../common/utils'
 import Style from '../common/style'
 import {BASE_URL} from '../../http/sitewhere-api'
+import AssignmentDeleteDialog from './AssignmentDeleteDialog'
 
 export default {
 
@@ -52,6 +56,7 @@ export default {
   props: ['assignment'],
 
   components: {
+    AssignmentDeleteDialog
   },
 
   computed: {
@@ -99,6 +104,11 @@ export default {
   },
 
   methods: {
+    // Called when site is deleted.
+    onAssignmentDeleted: function () {
+      this.$emit('assignmentDeleted')
+    },
+
     // Called after token is copied.
     onTokenCopied: function (e) {
       this.$data.showTokenCopied = true
@@ -246,5 +256,11 @@ export default {
   top: 181px;
   left: 340px;
   white-space: nowrap;
+}
+
+.assn-delete {
+  position: absolute;
+  bottom: 0px;
+  right: 200px;
 }
 </style>

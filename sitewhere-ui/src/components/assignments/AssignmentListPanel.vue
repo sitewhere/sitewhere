@@ -15,7 +15,7 @@
         {{ formatDate(assignment.releasedDate) }}
       </div>
       <div class="assn-status-label">Status:</div>
-      <assignment-status-button :assignment="assignment" @statusUpdated="refresh"
+      <assignment-status-button @click.native.stop="ignore" :assignment="assignment" @statusUpdated="refresh"
         v-if="assignment.status !== 'Released'" class="assn-status-button">
       </assignment-status-button>
       <div class="assn-status-value" v-if="assignment.status === 'Released'">Released</div>
@@ -52,6 +52,9 @@ export default {
   },
 
   methods: {
+    ignore: function () {
+    },
+
     // Create background image style.
     backgroundImageStyle: function (image) {
       return {

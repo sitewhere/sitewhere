@@ -1,7 +1,7 @@
 /**
  * API calls associated with SiteWhere device assignments.
  */
-import {restAuthGet, restAuthPost} from './sitewhere-api'
+import {restAuthGet, restAuthPost, restAuthDelete} from './sitewhere-api'
 
 /**
  * Get an assignment by unique token.
@@ -113,4 +113,15 @@ export function releaseAssignment (axios, token) {
  */
 export function missingAssignment (axios, token) {
   return restAuthPost(axios, '/assignments/' + token + '/missing', null)
+}
+
+/**
+ * Delete a device assignment.
+ */
+export function deleteDeviceAssignment (axios, token, force) {
+  let query = ''
+  if (force) {
+    query += '?force=true'
+  }
+  return restAuthDelete(axios, 'assignments/' + token + query)
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <confirm-dialog buttonText="Update" title="Update Assignment Status" width="400"
+    <confirm-dialog ref="dialog" buttonText="Update" title="Update Assignment Status" width="400"
       @action="onUpdateStatus">
       <v-card-text>
         Are you sure you want to update the assignment status?
@@ -10,7 +10,8 @@
       <v-btn small style="height: 20px;" class="green darken-2 white--text pa-0 ma-0" slot="activator"
         v-tooltip:top="{ html: 'Update Status' }">Active</v-btn>
       <v-list>
-        <v-list-tile @click.native="showDialog(item.action)" v-for="item in statusActiveItems" :key="item">
+        <v-list-tile @click.native.stop="showDialog(item.action)"
+          v-for="item in statusActiveItems" :key="item">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -19,7 +20,8 @@
       <v-btn small style="height: 20px;" class="red darken-2 white--text pa-0 ma-0" slot="activator"
         v-tooltip:top="{ html: 'Update Status' }">Missing</v-btn>
       <v-list>
-        <v-list-tile @click.native="showDialog(item.action)" v-for="item in statusMissingItems" :key="item">
+        <v-list-tile @click.native.stop="showDialog(item.action)"
+          v-for="item in statusMissingItems" :key="item">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -61,10 +63,15 @@ export default {
   },
 
   methods: {
+    // Get handle to nested dialog component.
+    getDialogComponent: function () {
+      return this.$refs['dialog']
+    },
+
     // Show dialog.
     showDialog: function (action) {
       this.$data.action = action
-      this.$children[0].openDialog()
+      this.getDialogComponent().openDialog()
     },
 
     // Execute action for menu item.
@@ -97,13 +104,13 @@ export default {
 
     // Handle successful update.
     onStatusUpdated: function (result) {
-      this.$children[0].closeDialog()
+      this.getDialogComponent().closeDialog()
       this.$emit('statusUpdated')
     },
 
     // Handle failed update.
     onFailed: function (error) {
-      this.$children[0].showError(error)
+      this.getDialogComponent().showError(error)
     }
   }
 }

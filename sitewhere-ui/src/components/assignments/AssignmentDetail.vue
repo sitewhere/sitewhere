@@ -2,6 +2,7 @@
   <div v-if="assignment">
     <v-app>
       <assignment-detail-header @emulatorOpened="onEmulatorOpened"
+        @assignmentDeleted="onAssignmentDeleted"
         :assignment="assignment" class="mb-3">
       </assignment-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
@@ -105,6 +106,15 @@ export default {
         longTitle: 'Manage Assignment: ' + assignment.token
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called after assignment has been deleted.
+    onAssignmentDeleted: function () {
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/admin/' + tenant.id + '/sites/' +
+          this.$data.assignment.siteToken)
+      }
     },
 
     // Called when emulator is opened.

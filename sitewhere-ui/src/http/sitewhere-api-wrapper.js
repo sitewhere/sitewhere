@@ -53,6 +53,7 @@ import {
   getDeviceAssignment,
   releaseAssignment,
   missingAssignment,
+  deleteDeviceAssignment,
   createMeasurementsForAssignment,
   listMeasurementsForAssignment,
   createLocationForAssignment,
@@ -254,6 +255,15 @@ export function _deleteZone (store, zoneToken) {
 export function _getDeviceAssignment (store, token) {
   let axios = createAxiosFromStore(store)
   let api = getDeviceAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a device assignment.
+ */
+export function _deleteDeviceAssignment (store, token, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceAssignment(axios, token, force)
   return loaderWrapper(store, api)
 }
 
