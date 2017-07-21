@@ -17,6 +17,7 @@ import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
+import DevicesList from '@/components/devices/DevicesList'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -79,14 +80,14 @@ export default new Router({
           path: 'assignments/:token/emulator',
           component: AssignmentEmulator
         }, {
-          path: 'devices',
-          component: SpecificationsList
-        }, {
           path: 'specifications',
           component: SpecificationsList
         }, {
           path: 'specifications/:token',
           component: SpecificationDetail
+        }, {
+          path: 'devices',
+          component: DevicesList
         }, {
           path: 'devicegroups',
           component: Server

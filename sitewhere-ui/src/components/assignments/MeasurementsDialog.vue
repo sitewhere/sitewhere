@@ -15,6 +15,9 @@
       </v-tabs-bar>
       <slot name="tabcontent"></slot>
       <v-tabs-content key="details" id="details">
+        <measurements-panel :mxs="mxs"
+          @mxDeleted="onMxDeleted" @mxAdded="onMxAdded">
+        </measurements-panel>
         <v-card flat>
           <v-card-text>
             <v-container fluid>
@@ -27,9 +30,6 @@
             </v-container>
             </v-card-text>
         </v-card>
-        <measurements-panel :mxs="mxs"
-          @mxDeleted="onMxDeleted" @mxAdded="onMxAdded">
-        </measurements-panel>
       </v-tabs-content>
       <v-tabs-content key="metadata" id="metadata">
         <metadata-panel :metadata="metadata"

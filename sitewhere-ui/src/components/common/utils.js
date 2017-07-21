@@ -12,6 +12,11 @@ export default {
     return moment(date).format('YYYY-MM-DD H:mm:ss')
   },
 
+  // Short string with ellipsis if necessary.
+  ellipsis: function (val, max) {
+    return (val.length > max) ? (val.substring(0, max) + '...') : val
+  },
+
   // Rounds to four decimal places
   fourDecimalPlaces: function (val) {
     return Number(Math.round(val + 'e4') + 'e-4').toFixed(4)

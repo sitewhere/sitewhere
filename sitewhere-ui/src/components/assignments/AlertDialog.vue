@@ -20,10 +20,6 @@
             <v-container fluid>
               <v-layout row wrap>
                 <v-flex xs12>
-                  <v-text-field class="mt-1" label="Alternate Id"
-                    v-model="alertAlternateId" prepend-icon="info"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
                   <v-text-field required class="mt-1" label="Alert Type"
                     v-model="alertType" prepend-icon="info"></v-text-field>
                 </v-flex>
@@ -35,6 +31,10 @@
                 <v-flex xs12>
                   <v-text-field required class="mt-1" multi-line label="Message"
                     v-model="alertMessage" prepend-icon="subject"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field class="mt-1" label="Alternate Id"
+                    v-model="alertAlternateId" prepend-icon="info"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>

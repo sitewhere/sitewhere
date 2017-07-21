@@ -20,10 +20,6 @@
             <v-container fluid>
               <v-layout row wrap>
                 <v-flex xs12>
-                  <v-text-field class="mt-1" label="Alternate Id"
-                    v-model="locAlternateId" prepend-icon="info"></v-text-field>
-                </v-flex>
-                <v-flex xs12>
                   <v-text-field required class="mt-1" label="Latitude" type="number"
                     v-model="locLatitude" prepend-icon="language"></v-text-field>
                 </v-flex>
@@ -34,6 +30,10 @@
                 <v-flex xs12>
                   <v-text-field class="mt-1" label="Elevation" type="number"
                     v-model="locElevation" prepend-icon="flight_takeoff"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field class="mt-1" label="Alternate Id"
+                    v-model="locAlternateId" prepend-icon="info"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>

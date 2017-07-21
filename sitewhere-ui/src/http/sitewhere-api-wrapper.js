@@ -48,6 +48,12 @@ import {
   deleteDeviceCommand
 } from './sitewhere-specifications-api.js'
 
+// Devices.
+import {
+  listDevices,
+  listFilteredDevices
+} from './sitewhere-devices-api.js'
+
 // Assignments.
 import {
   getDeviceAssignment,
@@ -480,6 +486,28 @@ export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
 export function _deleteDeviceCommand (store, token, force) {
   let axios = createAxiosFromStore(store)
   let api = deleteDeviceCommand(axios, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List devices.
+ */
+export function _listDevices (store, includeSpecification, includeAssignment,
+  paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listDevices(axios, includeSpecification, includeAssignment,
+    paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List devices.
+ */
+export function _listFilteredDevices (store, specification, site, includeDeleted,
+  excludeAssigned, includeSpecification, includeAssignment, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listFilteredDevices(axios, specification, site, includeDeleted,
+    excludeAssigned, includeSpecification, includeAssignment, paging)
   return loaderWrapper(store, api)
 }
 

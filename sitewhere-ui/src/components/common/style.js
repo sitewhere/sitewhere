@@ -11,34 +11,43 @@ export default {
 
   // Get background color for panel.
   assignmentBackgroundColor: function (assignment) {
-    if (assignment.status === 'Active') {
-      return '#f5fff5'
-    } else if (assignment.status === 'Missing') {
-      return '#fff5f5'
-    } else {
-      return '#f0f0f0'
+    if (assignment) {
+      if (assignment.status === 'Active') {
+        return '#f5fff5'
+      } else if (assignment.status === 'Missing') {
+        return '#fff5f5'
+      } else {
+        return '#f0f0f0'
+      }
     }
+    return '#f0f0f0'
   },
 
   // Get border color for panel.
   assignmentBorderColor: function (assignment) {
-    if (assignment.status === 'Active') {
-      return '#99cc99'
-    } else if (assignment.status === 'Missing') {
-      return '#cc9999'
-    } else {
-      return '#dcdcdc'
+    if (assignment) {
+      if (assignment.status === 'Active') {
+        return '#99cc99'
+      } else if (assignment.status === 'Missing') {
+        return '#cc9999'
+      } else {
+        return '#dcdcdc'
+      }
     }
+    return '#dcdcdc'
   },
 
   // Get header color for panel.
   assignmentHeaderColor: function (assignment) {
-    if (assignment.status === 'Active') {
-      return '#007700'
-    } else if (assignment.status === 'Missing') {
-      return '#dc0000'
-    } else {
-      return '#333333'
+    if (assignment) {
+      if (assignment.status === 'Active') {
+        return '#007700'
+      } else if (assignment.status === 'Missing') {
+        return '#dc0000'
+      } else {
+        return '#333333'
+      }
     }
+    return '#333333'
   }
 }

@@ -3,7 +3,7 @@
     <v-card-text :style="styleForStatus" class="assn-root">
       <asset-mini-panel class="assn-asset" :assignment="assignment"></asset-mini-panel>
       <div class="assn-separator1"></div>
-      <device-mini-panel class="assn-device" :assignment="assignment"></device-mini-panel>
+      <device-mini-panel class="assn-device" :device="assignment.device"></device-mini-panel>
       <div class="assn-separator2"></div>
 
       <div class="assn-assigned-label">Assigned:</div>
@@ -27,7 +27,7 @@
 import Utils from '../common/utils'
 import Style from '../common/style'
 import AssetMiniPanel from './AssetMiniPanel'
-import DeviceMiniPanel from './DeviceMiniPanel'
+import DeviceMiniPanel from '../devices/DeviceMiniPanel'
 import AssignmentStatusButton from './AssignmentStatusButton'
 
 export default {
