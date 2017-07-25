@@ -1,5 +1,7 @@
 <template>
   <div>
+    <device-list-filter-bar>
+    </device-list-filter-bar>
     <v-container fluid grid-list-md  v-if="devices">
       <v-layout row wrap>
          <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
@@ -17,6 +19,8 @@
 <script>
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
+import DeviceListFilterBar from './DeviceListFilterBar'
+import DateTimePicker from '../common/DateTimePicker'
 import {_listDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -36,12 +40,15 @@ export default {
         text: '100',
         value: 100
       }
-    ]
+    ],
+    dateField: new Date()
   }),
 
   components: {
     Pager,
-    DeviceListPanel
+    DeviceListPanel,
+    DeviceListFilterBar,
+    DateTimePicker
   },
 
   methods: {
@@ -66,6 +73,10 @@ export default {
     // Called when a new device is added.
     onDeviceAdded: function () {
       this.refresh()
+    },
+
+    onDateUpdated: function (value) {
+      console.log('date emitted ' + value)
     }
   }
 }
