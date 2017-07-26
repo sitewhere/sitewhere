@@ -122,9 +122,6 @@ export default {
       this.$data.lastLocation = lastLocation
       if (lastLocation) {
         map.setView(lastLocation)
-        map.fitBounds(group.getBounds(), { animate: false })
-        setTimeout(function () {
-        }, 300)
       }
     },
 
