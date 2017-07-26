@@ -1,5 +1,5 @@
 <template>
-  <v-card class="assn white pa-2" :style="assignmentStyle">
+  <v-card class="assn white pa-2">
     <div class="assn-styling" :style="assignmentStyle"></div>
     <v-card-text>
       <span class="assn-logo" :style="logoStyle"></span>

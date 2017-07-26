@@ -5,7 +5,8 @@
     <v-container fluid grid-list-md  v-if="devices">
       <v-layout row wrap>
          <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
-          <device-list-panel :device="device" class="mb-1">
+          <device-list-panel :device="device" class="mb-1"
+            @click.native="onOpenDevice(device)">
           </device-list-panel>
         </v-flex>
       </v-layout>
@@ -17,6 +18,7 @@
 </template>
 
 <script>
+import Utils from '../common/utils'
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
@@ -85,6 +87,11 @@ export default {
 
     onDateUpdated: function (value) {
       console.log('date emitted ' + value)
+    },
+
+    // Called to open detail page for device.
+    onOpenDevice: function (device) {
+      Utils.routeTo(this, '/devices/' + device.hardwareId)
     }
   }
 }

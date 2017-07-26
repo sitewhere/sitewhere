@@ -18,6 +18,7 @@ import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 import DevicesList from '@/components/devices/DevicesList'
+import DeviceDetail from '@/components/devices/DeviceDetail'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -88,6 +89,9 @@ export default new Router({
         }, {
           path: 'devices',
           component: DevicesList
+        }, {
+          path: 'devices/:hardwareId',
+          component: DeviceDetail
         }, {
           path: 'devicegroups',
           component: Server

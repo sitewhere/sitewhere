@@ -51,7 +51,8 @@ import {
 // Devices.
 import {
   listDevices,
-  listFilteredDevices
+  listFilteredDevices,
+  getDevice
 } from './sitewhere-devices-api.js'
 
 // Assignments.
@@ -513,6 +514,17 @@ export function _listFilteredDevices (store, site, specification, includeDeleted
   let axios = createAxiosFromStore(store)
   let api = listFilteredDevices(axios, site, specification, includeDeleted,
     excludeAssigned, includeSpecification, includeAssignment, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device by hardware id.
+ */
+export function _getDevice (store, hardwareId, includeSpecification,
+  includeAssignment, includeSite, includeAsset, includeNested) {
+  let axios = createAxiosFromStore(store)
+  let api = getDevice(axios, hardwareId, includeSpecification,
+    includeAssignment, includeSite, includeAsset, includeNested)
   return loaderWrapper(store, api)
 }
 
