@@ -9,27 +9,31 @@
         <v-icon left dark>gps_fixed</v-icon>
         Emulator
       </v-btn>
-      <span class="assn-token-label assn-label">Token:</span>
-      <span class="assn-token assn-field">
-        {{assignment.token}}
-        <v-btn style="position: relative;"
-          v-tooltip:left="{ html: 'Copy to Clipboard' }" class="mt-0"
-          light icon v-clipboard="copyData"
-          @success="onTokenCopied" @error="onTokenCopyFailed">
-          <v-icon fa class="fa-lg">clipboard</v-icon>
-        </v-btn>
-      </span>
-      <span class="assn-asset">{{assignment.assetName}}</span>
-      <span class="assn-device-label assn-label">Device:</span>
-      <span class="assn-device assn-field">{{assignment.device.assetName}}</span>
-      <span class="assn-created-label assn-label">Created:</span>
-      <span class="assn-created assn-field">{{ formatDate(assignment.createdDate) }}</span>
-      <span class="assn-updated-label assn-label">Updated:</span>
-      <span class="assn-updated assn-field">{{ formatDate(assignment.updatedDate) }}</span>
-      <span class="assn-active-label assn-label">Active:</span>
-      <span class="assn-active assn-field">{{ formatDate(assignment.activeDate) }}</span>
-      <span class="assn-released-label assn-label">Released:</span>
-      <span class="assn-released assn-field">{{ formatDate(assignment.releasedDate) }}</span>
+      <div class="assn-headers">
+        <header-field label="Token">
+          <clipboard-copy-field :field="assignment.token"
+            message="Assignment token copied to clipboard">
+          </clipboard-copy-field>
+        </header-field>
+        <header-field label="Asset">
+          <span>{{ assignment.assetName }}</span>
+        </header-field>
+        <header-field label="Device">
+          <span>{{ assignment.device.assetName }}</span>
+        </header-field>
+        <header-field label="Created">
+          <span>{{ formatDate(assignment.createdDate) }}</span>
+        </header-field>
+        <header-field label="Updated">
+          <span>{{ formatDate(assignment.updatedDate) }}</span>
+        </header-field>
+        <header-field label="Active">
+          <span>{{ formatDate(assignment.activeDate) }}</span>
+        </header-field>
+        <header-field label="Released">
+          <span>{{ formatDate(assignment.releasedDate) }}</span>
+        </header-field>
+      </div>
       <assignment-delete-dialog :token="assignment.token" class="assn-delete"
         @assignmentDeleted="onAssignmentDeleted">
       </assignment-delete-dialog>
@@ -44,6 +48,8 @@
 import Utils from '../common/utils'
 import Style from '../common/style'
 import {BASE_URL} from '../../http/sitewhere-api'
+import HeaderField from '../common/HeaderField'
+import ClipboardCopyField from '../common/ClipboardCopyField'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
 
 export default {
@@ -56,6 +62,8 @@ export default {
   props: ['assignment'],
 
   components: {
+    HeaderField,
+    ClipboardCopyField,
     AssignmentDeleteDialog
   },
 
@@ -109,15 +117,6 @@ export default {
       this.$emit('assignmentDeleted')
     },
 
-    // Called after token is copied.
-    onTokenCopied: function (e) {
-      this.$data.showTokenCopied = true
-    },
-
-    // Called if unable to copy token.
-    onTokenCopyFailed: function (e) {
-    },
-
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -133,18 +132,9 @@ export default {
 
 <style scoped>
 .assn {
-  min-height: 210px;
+  min-height: 220px;
   min-width: 920px;
   overflow-y: hidden;
-}
-
-.assn-label {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.assn-field {
-  font-size: 14px;
 }
 
 .assn-logo {
@@ -163,99 +153,16 @@ export default {
   width: 180px;
 }
 
+.assn-headers {
+  position: absolute;
+  top: 20px;
+  left: 220px;
+}
+
 .assn-emulator {
   position: absolute;
   left: 15px;
   bottom: 10px;
-}
-
-.assn-asset {
-  position: absolute;
-  top: 8px;
-  left: 230px;
-  font-size: 24px;
-  white-space: nowrap;
-}
-
-.assn-token-label {
-  position: absolute;
-  top: 46px;
-  left: 230px;
-  white-space: nowrap;
-}
-
-.assn-token {
-  position: absolute;
-  top: 36px;
-  left: 340px;
-  white-space: nowrap;
-  overflow-x: hidden;
-}
-
-.assn-device-label {
-  position: absolute;
-  top: 73px;
-  left: 230px;
-  white-space: nowrap;
-}
-
-.assn-device {
-  position: absolute;
-  top: 73px;
-  left: 340px;
-  white-space: nowrap;
-}
-
-.assn-created-label {
-  position: absolute;
-  top: 100px;
-  left: 230px;
-}
-
-.assn-created {
-  position: absolute;
-  top: 100px;
-  left: 340px;
-  white-space: nowrap;
-}
-
-.assn-updated-label {
-  position: absolute;
-  top: 127px;
-  left: 230px;
-}
-
-.assn-updated {
-  position: absolute;
-  top: 127px;
-  left: 340px;
-  white-space: nowrap;
-}
-
-.assn-active-label {
-  position: absolute;
-  top: 154px;
-  left: 230px;
-}
-
-.assn-active {
-  position: absolute;
-  top: 154px;
-  left: 340px;
-  white-space: nowrap;
-}
-
-.assn-released-label {
-  position: absolute;
-  top: 181px;
-  left: 230px;
-}
-
-.assn-released {
-  position: absolute;
-  top: 181px;
-  left: 340px;
-  white-space: nowrap;
 }
 
 .assn-delete {

@@ -55,7 +55,7 @@ export default {
   computed: {
     // Compute card style based on assignment status.
     assignmentStyle: function () {
-      let style = Style.styleForAssignmentStatus(this.assignment)
+      let style = Style.styleForAssignmentStatus(this.device.assignment)
       style['position'] = 'absolute'
       style['left'] = 0
       style['right'] = 0
