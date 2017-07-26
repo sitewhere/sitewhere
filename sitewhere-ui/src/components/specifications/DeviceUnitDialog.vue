@@ -28,7 +28,7 @@
                   </v-flex>
                 </v-layout>
               </v-container>
-              </v-card-text>
+            </v-card-text>
           </v-card>
         </v-tabs-content>
       </v-tabs>

@@ -1,7 +1,7 @@
 <template>
   <div class="date-time-picker">
-    <v-text-field label="Choose date / time" v-model="formattedValue" readonly
-      hide-details>
+    <v-text-field :label="label" v-model="formattedValue" readonly
+      hide-details prepend-icon="insert_invitation">
     </v-text-field>
     <v-menu class="calendar-icon" lazy
       v-model="calendarMenu" offset-y full-width max-width="290px">
@@ -32,7 +32,7 @@ export default {
     timeMenu: null
   }),
 
-  props: ['value'],
+  props: ['value', 'label'],
 
   computed: {
     formattedValue: function () {
@@ -58,14 +58,17 @@ export default {
       }
     },
     formattedValue: function (value) {
-      let updated = new Date(moment(value, 'YYYY-MM-DD hh:mma'))
-      this.$emit('input', updated)
+      if (value) {
+        let updated = new Date(moment(value, 'YYYY-MM-DD hh:mma'))
+        this.$emit('input', updated)
+      } else {
+        this.$emit('input', null)
+      }
     }
   },
 
   methods: {
     updateFromValue: function () {
-      console.log('update from ' + this.value)
       if (this.value) {
         this.selectedTime = moment(this.value).format('h:mma')
         this.selectedDate = moment(this.value).startOf('day')

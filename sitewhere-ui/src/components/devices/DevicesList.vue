@@ -20,7 +20,6 @@
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
-import DateTimePicker from '../common/DateTimePicker'
 import {_listDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -47,8 +46,7 @@ export default {
   components: {
     Pager,
     DeviceListPanel,
-    DeviceListFilterBar,
-    DateTimePicker
+    DeviceListFilterBar
   },
 
   methods: {

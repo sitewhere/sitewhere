@@ -72,6 +72,11 @@ import {
   listCommandResponsesForAssignment
 } from './sitewhere-assignments-api.js'
 
+// Device Groups.
+import {
+  listDeviceGroups
+} from './sitewhere-device-groups-api.js'
+
 /**
  * Create authorized axios client based on store values.
  */
@@ -508,6 +513,15 @@ export function _listFilteredDevices (store, specification, site, includeDeleted
   let axios = createAxiosFromStore(store)
   let api = listFilteredDevices(axios, specification, site, includeDeleted,
     excludeAssigned, includeSpecification, includeAssignment, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List device groups.
+ */
+export function _listDeviceGroups (store, role, includeDeleted, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listDeviceGroups(axios, role, includeDeleted, paging)
   return loaderWrapper(store, api)
 }
 
