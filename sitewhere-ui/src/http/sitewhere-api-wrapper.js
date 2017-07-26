@@ -508,10 +508,10 @@ export function _listDevices (store, includeSpecification, includeAssignment,
 /**
  * List devices.
  */
-export function _listFilteredDevices (store, specification, site, includeDeleted,
+export function _listFilteredDevices (store, site, specification, includeDeleted,
   excludeAssigned, includeSpecification, includeAssignment, paging) {
   let axios = createAxiosFromStore(store)
-  let api = listFilteredDevices(axios, specification, site, includeDeleted,
+  let api = listFilteredDevices(axios, site, specification, includeDeleted,
     excludeAssigned, includeSpecification, includeAssignment, paging)
   return loaderWrapper(store, api)
 }

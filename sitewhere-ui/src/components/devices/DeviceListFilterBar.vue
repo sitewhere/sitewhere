@@ -6,21 +6,24 @@
     <div class="pl-2 pr-2 pt-0 pb-0" style="width: 80%">
       <div>
         <span v-if="emptyFilter" class="subheading white--text pl-3">No filter applied</span>
-        <v-chip close v-if="siteFilter" @input="onSiteFilterClosed">
+        <v-chip close v-if="siteFilter" @input="onSiteFilterClosed"
+          v-tooltip:top="{ html: 'Only include devices from this site' }">
           <v-avatar>
             <img :src="siteFilter.imageUrl" alt="siteFilter.name">
           </v-avatar>
           {{ siteFilter.name }}
         </v-chip>
         <v-chip close v-if="specificationFilter"
-          @input="onSpecificationFilterClosed">
+          @input="onSpecificationFilterClosed"
+          v-tooltip:top="{ html: 'Only include devices from this device specification' }">
           <v-avatar>
             <img :src="specificationFilter.assetImageUrl" alt="specificationFilter.name">
           </v-avatar>
           {{ specificationFilter.name }}
         </v-chip>
         <v-chip close v-if="deviceGroupFilter"
-          @input="onDeviceGroupFilterClosed">
+          @input="onDeviceGroupFilterClosed"
+          v-tooltip:top="{ html: 'Only include devices from this device group' }">
           <v-avatar>
             <v-icon light>view_module</v-icon>
           </v-avatar>
@@ -70,19 +73,30 @@ export default {
         this.$data.siteFilter = filter.siteFilter
         this.$data.specificationFilter = filter.specificationFilter
         this.$data.deviceGroupFilter = filter.deviceGroupFilter
+
+        let criteria = {}
+        criteria.site = (filter.siteFilter) ? filter.siteFilter.token : null
+        criteria.specification = (filter.specificationFilter)
+          ? filter.specificationFilter.token : null
+        criteria.group = (filter.deviceGroupFilter)
+          ? filter.deviceGroupFilter.token : null
+        this.$emit('filter', criteria)
       }
     },
     // Remove site filter on close.
     onSiteFilterClosed: function () {
       this.$data.siteFilter = null
+      this.onFilterUpdated(this.filter)
     },
     // Remove specification filter on close.
     onSpecificationFilterClosed: function () {
       this.$data.specificationFilter = null
+      this.onFilterUpdated(this.filter)
     },
     // Remove device group filter on close.
     onDeviceGroupFilterClosed: function () {
       this.$data.deviceGroupFilter = null
+      this.onFilterUpdated(this.filter)
     }
   }
 }

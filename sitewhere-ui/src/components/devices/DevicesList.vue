@@ -1,6 +1,6 @@
 <template>
   <div>
-    <device-list-filter-bar>
+    <device-list-filter-bar @filter="onFilterUpdated">
     </device-list-filter-bar>
     <v-container fluid grid-list-md  v-if="devices">
       <v-layout row wrap>
@@ -20,7 +20,7 @@
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
-import {_listDevices} from '../../http/sitewhere-api-wrapper'
+import {_listFilteredDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -28,6 +28,7 @@ export default {
     results: null,
     paging: null,
     devices: null,
+    filter: null,
     pageSizes: [
       {
         text: '20',
@@ -58,14 +59,23 @@ export default {
 
     // Refresh list of sites.
     refresh: function () {
-      var paging = this.$data.paging.query
-      var component = this
-      _listDevices(this.$store, true, true, paging)
+      let paging = this.$data.paging.query
+      let filter = this.$data.filter
+      let component = this
+      let criteria = filter || {}
+      _listFilteredDevices(this.$store, criteria.site, criteria.specification,
+        false, false, true, true, paging)
         .then(function (response) {
           component.results = response.data
           component.devices = response.data.results
         }).catch(function (e) {
         })
+    },
+
+    // Called when filter criteria are updated.
+    onFilterUpdated: function (filter) {
+      this.$data.filter = filter
+      this.refresh()
     },
 
     // Called when a new device is added.
