@@ -11,6 +11,7 @@
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="assignments" id="assignments">
+          <device-assignment-history :device="device"></device-assignment-history>
         </v-tabs-content>
       </v-tabs>
     </v-app>
@@ -19,6 +20,7 @@
 
 <script>
 import DeviceDetailHeader from './DeviceDetailHeader'
+import DeviceAssignmentHistory from './DeviceAssignmentHistory'
 
 import {_getDevice} from '../../http/sitewhere-api-wrapper'
 
@@ -31,7 +33,8 @@ export default {
   }),
 
   components: {
-    DeviceDetailHeader
+    DeviceDetailHeader,
+    DeviceAssignmentHistory
   },
 
   created: function () {

@@ -13,25 +13,6 @@ export function listDevices (axios, includeSpecification, includeAssignment,
 }
 
 /**
- * Get device by hardware id.
- */
-export function getDevice (axios, hardwareId, includeSpecification,
-  includeAssignment, includeSite, includeAsset, includeNested) {
-  let query = ''
-  query += (includeSpecification)
-    ? '?includeSpecification=true' : '?includeSpecification=false'
-  query += (includeAssignment)
-    ? '&includeAssignment=true' : '&includeAssignment=false'
-  query += (includeSite)
-    ? '&includeSite=true' : '&includeSite=false'
-  query += (includeAsset)
-    ? '&includeAsset=true' : '&includeAsset=false'
-  query += (includeNested)
-    ? '&includeNested=true' : '&includeNested=false'
-  return restAuthGet(axios, '/devices/' + hardwareId + query)
-}
-
-/**
  * List devices (with extra filter criteria).
  */
 export function listFilteredDevices (axios, site, specification,
@@ -52,4 +33,41 @@ export function listFilteredDevices (axios, site, specification,
     query += '&' + paging
   }
   return restAuthGet(axios, 'devices' + query)
+}
+
+/**
+ * Get device by hardware id.
+ */
+export function getDevice (axios, hardwareId, includeSpecification,
+  includeAssignment, includeSite, includeAsset, includeNested) {
+  let query = ''
+  query += (includeSpecification)
+    ? '?includeSpecification=true' : '?includeSpecification=false'
+  query += (includeAssignment)
+    ? '&includeAssignment=true' : '&includeAssignment=false'
+  query += (includeSite)
+    ? '&includeSite=true' : '&includeSite=false'
+  query += (includeAsset)
+    ? '&includeAsset=true' : '&includeAsset=false'
+  query += (includeNested)
+    ? '&includeNested=true' : '&includeNested=false'
+  return restAuthGet(axios, '/devices/' + hardwareId + query)
+}
+
+/**
+ * List assignment history for a device.
+ */
+export function listDeviceAssignmentHistory (axios, hardwareId, includeAsset,
+  includeDevice, includeSite, paging) {
+  let query = ''
+  query += (includeAsset)
+    ? '?includeAsset=true' : '?includeAsset=false'
+  query += (includeDevice)
+    ? '&includeDevice=true' : '&includeDevice=false'
+  query += (includeSite)
+    ? '&includeSite=true' : '&includeSite=false'
+  if (paging) {
+    query += '&' + paging
+  }
+  return restAuthGet(axios, 'devices/' + hardwareId + '/assignments' + query)
 }
