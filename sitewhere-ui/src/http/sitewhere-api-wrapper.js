@@ -54,6 +54,8 @@ import {
   listDevices,
   listFilteredDevices,
   getDevice,
+  updateDevice,
+  deleteDevice,
   listDeviceAssignmentHistory
 } from './sitewhere-devices-api.js'
 
@@ -507,6 +509,15 @@ export function _createDevice (store, payload) {
 }
 
 /**
+ * Update an existing device.
+ */
+export function _updateDevice (store, hardwareId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateDevice(axios, hardwareId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List devices.
  */
 export function _listDevices (store, includeSpecification, includeAssignment,
@@ -547,6 +558,15 @@ export function _getDevice (store, hardwareId, includeSpecification,
   let axios = createAxiosFromStore(store)
   let api = getDevice(axios, hardwareId, includeSpecification,
     includeAssignment, includeSite, includeAsset, includeNested)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an existing device.
+ */
+export function _deleteDevice (store, hardwareId, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDevice(axios, hardwareId, force)
   return loaderWrapper(store, api)
 }
 

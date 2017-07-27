@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import SpecificationDetailHeader from './SpecificationDetailHeader'
 import SpecificationCommands from './SpecificationCommands'
 import SpecificationCodegen from './SpecificationCodegen'
@@ -99,10 +100,7 @@ export default {
 
     // Called after delete.
     onDeleted: function () {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/admin/' + tenant.id + '/specifications')
-      }
+      Utils.routeTo(this, '/specifications')
     },
 
     // Called after update.

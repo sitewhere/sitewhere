@@ -15,12 +15,39 @@
         </v-tabs-content>
       </v-tabs>
     </v-app>
+    <v-speed-dial v-model="fab" direction="top" :hover="true"
+      class="action-chooser-fab"
+      transition="slide-y-reverse-transition">
+      <v-btn slot="activator" class="red darken-1 elevation-5" dark
+        fab hover>
+        <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
+      </v-btn>
+      <v-btn fab dark small class="blue darken-3 elevation-5"
+         v-tooltip:left="{ html: 'Update Device' }"
+          @click.native="onUpdateDevice">
+        <v-icon fa style="margin-top: -3px;">edit</v-icon>
+      </v-btn>
+      <v-btn fab dark small class="red darken-3 elevation-5"
+         v-tooltip:left="{ html: 'Delete Device' }"
+          @click.native="onDeleteDevice">
+        <v-icon fa style="margin-top: -3px;">remove</v-icon>
+      </v-btn>
+    </v-speed-dial>
+    <device-update-dialog ref="update" :hardwareId="hardwareId"
+      @deviceUpdated="refresh">
+    </device-update-dialog>
+    <device-delete-dialog ref="delete" :hardwareId="hardwareId"
+      @deviceDeleted="onDeviceDeleted">
+    </device-delete-dialog>
   </div>
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import DeviceDetailHeader from './DeviceDetailHeader'
 import DeviceAssignmentHistory from './DeviceAssignmentHistory'
+import DeviceUpdateDialog from './DeviceUpdateDialog'
+import DeviceDeleteDialog from './DeviceDeleteDialog'
 
 import {_getDevice} from '../../http/sitewhere-api-wrapper'
 
@@ -29,12 +56,15 @@ export default {
   data: () => ({
     hardwareId: null,
     device: null,
-    active: null
+    active: null,
+    fab: null
   }),
 
   components: {
     DeviceDetailHeader,
-    DeviceAssignmentHistory
+    DeviceAssignmentHistory,
+    DeviceUpdateDialog,
+    DeviceDeleteDialog
   },
 
   created: function () {
@@ -67,10 +97,31 @@ export default {
         longTitle: 'Manage Device: ' + device.hardwareId
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called when device update is requested.
+    onUpdateDevice: function () {
+      this.$refs['update'].onOpenDialog()
+    },
+
+    // Called when device delete is requested.
+    onDeleteDevice: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+
+    // Called after device is deleted.
+    onDeviceDeleted: function () {
+      Utils.routeTo(this, '/devices')
     }
   }
 }
 </script>
 
 <style scoped>
+.action-chooser-fab {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+}
 </style>

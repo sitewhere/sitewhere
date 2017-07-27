@@ -1,13 +1,20 @@
 /**
  * API calls associated with SiteWhere device assignments.
  */
-import {restAuthGet, restAuthPost} from './sitewhere-api'
+import {restAuthGet, restAuthPost, restAuthDelete, restAuthPut} from './sitewhere-api'
 
 /**
  * Create a device.
  */
 export function createDevice (axios, payload) {
   return restAuthPost(axios, '/devices', payload)
+}
+
+/**
+ * Update an existing device.
+ */
+export function updateDevice (axios, hardwareId, payload) {
+  return restAuthPut(axios, '/devices/' + hardwareId, payload)
 }
 
 /**
@@ -59,6 +66,16 @@ export function getDevice (axios, hardwareId, includeSpecification,
   query += (includeNested)
     ? '&includeNested=true' : '&includeNested=false'
   return restAuthGet(axios, '/devices/' + hardwareId + query)
+}
+
+/**
+ * Delete device.
+ */
+export function deleteDevice (axios, hardwareId, force) {
+  let query = ''
+  query += (force)
+    ? '?force=true' : '?force=false'
+  return restAuthDelete(axios, 'devices/' + hardwareId + query)
 }
 
 /**
