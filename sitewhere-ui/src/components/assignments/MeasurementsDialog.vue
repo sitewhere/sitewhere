@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import utils from '../common/utils'
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 import MeasurementsPanel from './MeasurementsPanel'
@@ -70,8 +70,8 @@ export default {
     generatePayload: function () {
       var payload = {}
       payload.alternateId = this.$data.mxsAlternateId
-      payload.measurements = utils.arrayToMetadata(this.$data.mxs)
-      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
+      payload.measurements = Utils.arrayToMetadata(this.$data.mxs)
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -89,8 +89,8 @@ export default {
 
       if (payload) {
         this.$data.mxsAlternateId = payload.alternateId
-        this.$data.mxs = utils.metadataToArray(payload.measurements)
-        this.$data.metadata = utils.metadataToArray(payload.metadata)
+        this.$data.mxs = Utils.metadataToArray(payload.measurements)
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Style from '../common/style'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'

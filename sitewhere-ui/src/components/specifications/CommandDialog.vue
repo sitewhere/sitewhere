@@ -102,6 +102,7 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 import ParametersPanel from './ParametersPanel'
@@ -152,13 +153,7 @@ export default {
       payload.namespace = this.$data.cmdNamespace
       payload.description = this.$data.cmdDescription
       payload.parameters = this.$data.cmdParameters
-
-      var metadata = {}
-      var flat = this.$data.metadata
-      for (var i = 0; i < flat.length; i++) {
-        metadata[flat[i].name] = flat[i].value
-      }
-      payload.metadata = metadata
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -182,17 +177,7 @@ export default {
         this.$data.cmdNamespace = payload.namespace
         this.$data.cmdDescription = payload.description
         this.$data.cmdParameters = payload.parameters
-
-        var meta = payload.metadata
-        var flat = []
-        if (meta) {
-          for (var key in meta) {
-            if (meta.hasOwnProperty(key)) {
-              flat.push({name: key, value: meta[key]})
-            }
-          }
-        }
-        this.$data.metadata = flat
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

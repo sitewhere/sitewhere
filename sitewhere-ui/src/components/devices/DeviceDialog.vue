@@ -6,11 +6,13 @@
       hideButtons="true">
       <v-stepper v-model="step">
         <v-stepper-header>
-          <v-stepper-step step="1" :complete="step > 1">Specification</v-stepper-step>
+          <v-stepper-step step="1" :complete="step > 1">Device</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="2" :complete="step > 2">Asset</v-stepper-step>
+          <v-stepper-step step="2" :complete="step > 2">Site</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
+          <v-stepper-step step="3" :complete="step > 3">Specification</v-stepper-step>
+          <v-divider></v-divider>
+          <v-stepper-step step="4">Metadata<small>Optional</small></v-stepper-step>
         </v-stepper-header>
         <v-stepper-content step="1">
           <v-card flat>
@@ -18,17 +20,13 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field required class="mt-1" label="Specification name"
-                      v-model="specName" prepend-icon="info"></v-text-field>
+                    <v-text-field required class="mt-1" label="Hardware id"
+                      v-model="devHardwareId" prepend-icon="info"></v-text-field>
                   </v-flex>
                   <v-flex xs12>
-                    <v-select required :items="containerPolicies" v-model="specContainerPolicy"
-                      label="Container policy" prepend-icon="developer_board"></v-select>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-select required :items="assetModules" v-model="specAssetModule"
-                      item-text="name" item-value="id" label="Asset module"
-                      prepend-icon="local_offer"></v-select>
+                    <v-text-field class="mt-1" multi-line label="Comments"
+                      v-model="devComments" prepend-icon="subject">
+                    </v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -38,14 +36,18 @@
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="step = 2">Choose Asset
+              @click.native="step = 2">Assign Site
               <v-icon light primary>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <asset-chooser :assetModuleId="specAssetModule" :assetId="specAssetId"
-            @assetUpdated="onAssetUpdated"></asset-chooser>
+          <site-chooser
+            chosenText="Device will be associated with the site below."
+            notChosenText="Choose which site the device will be associated with:"
+            :selectedToken="devSiteToken"
+            @siteUpdated="onSiteUpdated">
+          </site-chooser>
           <v-card-actions>
             <v-btn flat primary @click.native="step = 1">
               <v-icon light primary>keyboard_arrow_left</v-icon>
@@ -54,24 +56,44 @@
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn flat primary :disabled="!secondPageComplete"
-              @click.native="onCreateClicked">{{ createLabel }}</v-btn>
-            <v-btn flat primary :disabled="!secondPageComplete"
-              @click.native="step = 3">Add Metadata
+              @click.native="step = 3">Assign Specification
               <v-icon light primary>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="3">
+          <specification-chooser
+            chosenText="Device will implement the specification below."
+            notChosenText="Choose a specification that will be implemented by the device:"
+            :selectedToken="devSpecificationToken"
+            @specificationUpdated="onSpecificationUpdated">
+          </specification-chooser>
+          <v-card-actions>
+            <v-btn flat primary @click.native="step = 2">
+              <v-icon light primary>keyboard_arrow_left</v-icon>
+              Back
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
+            <v-btn flat primary :disabled="!thirdPageComplete"
+              @click.native="onCreateClicked">{{ createLabel }}</v-btn>
+            <v-btn flat primary :disabled="!thirdPageComplete"
+              @click.native="step = 4">Add Metadata
+              <v-icon light primary>keyboard_arrow_right</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-stepper-content>
+        <v-stepper-content step="4">
           <metadata-panel class="mb-3" :metadata="metadata"
             @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
             <v-card-actions>
-              <v-btn flat primary @click.native="step = 2">
+              <v-btn flat primary @click.native="step = 3">
                 <v-icon light primary>keyboard_arrow_left</v-icon>
                 Back
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-              <v-btn flat primary :disabled="!secondPageComplete"
+              <v-btn flat primary :disabled="!thirdPageComplete"
                 @click.native="onCreateClicked">{{ createLabel }}</v-btn>
             </v-card-actions>
         </v-stepper-content>
@@ -84,7 +106,8 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import AssetChooser from '../common/AssetChooser'
+import SiteChooser from '../sites/SiteChooser'
+import SpecificationChooser from '../specifications/SpecificationChooser'
 import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -92,10 +115,10 @@ export default {
   data: () => ({
     step: null,
     dialogVisible: false,
-    specName: null,
-    specContainerPolicy: null,
-    specAssetModule: null,
-    specAssetId: null,
+    devHardwareId: null,
+    devComments: null,
+    devSiteToken: null,
+    devSpecificationToken: null,
     metadata: [],
     assetModules: [],
     containerPolicies: [
@@ -113,7 +136,8 @@ export default {
   components: {
     BaseDialog,
     MetadataPanel,
-    AssetChooser
+    SiteChooser,
+    SpecificationChooser
   },
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
@@ -121,14 +145,18 @@ export default {
   computed: {
     // Indicates if first page fields are filled in.
     firstPageComplete: function () {
-      return (!this.isBlank(this.$data.specName) &&
-        this.$data.specContainerPolicy &&
-        this.$data.specAssetModule)
+      return !Utils.isBlank(this.$data.devHardwareId)
     },
 
-    // Indicates if second page fields are filled in.
+    // Indicates if second page is complete.
     secondPageComplete: function () {
-      return this.firstPageComplete && (this.$data.specAssetId != null)
+      return this.firstPageComplete && (this.$data.devSiteToken != null)
+    },
+
+    // Indicates if third page is complete.
+    thirdPageComplete: function () {
+      return this.firstPageComplete && this.secondPageComplete &&
+        (this.$data.devSpecificationToken != null)
     }
   },
 
@@ -136,22 +164,23 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.name = this.$data.specName
-      payload.containerPolicy = this.$data.specContainerPolicy
-      payload.assetModuleId = this.$data.specAssetModule
-      payload.assetId = this.$data.specAssetId
+      payload.hardwareId = this.$data.devHardwareId
+      payload.comments = this.$data.devComments
+      payload.siteToken = this.$data.devSiteToken
+      payload.specificationToken = this.$data.devSpecificationToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
     // Reset dialog contents.
     reset: function () {
-      this.$data.specName = null
-      this.$data.specContainerPolicy = null
-      this.$data.specAssetModule = null
-      this.$data.specAssetId = null
+      this.$data.devHardwareId = null
+      this.$data.devComments = null
+      this.$data.devSiteToken = null
+      this.$data.devSpecificationToken = null
       this.$data.metadata = []
       this.$data.step = 1
+      this.$data.error = null
 
       var component = this
       _getAssetModules(this.$store, 'Device')
@@ -167,10 +196,10 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.specName = payload.name
-        this.$data.specContainerPolicy = payload.containerPolicy
-        this.$data.specAssetModule = payload.assetModuleId
-        this.$data.specAssetId = payload.assetId
+        this.$data.devHardwareId = payload.hardwareId
+        this.$data.devComments = payload.comments
+        this.$data.devSiteToken = payload.siteToken
+        this.$data.devSpecificationToken = payload.specificationToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
@@ -201,12 +230,21 @@ export default {
       this.$data.dialogVisible = false
     },
 
-    // Called when an asset is chosen or removed.
-    onAssetUpdated: function (asset) {
-      if (asset) {
-        this.$data.specAssetId = asset.id
+    // Called when site choice is updated.
+    onSiteUpdated: function (site) {
+      if (site) {
+        this.$data.devSiteToken = site.token
       } else {
-        this.$data.specAssetId = null
+        this.$data.devSiteToken = null
+      }
+    },
+
+    // Called when specification choice is updated.
+    onSpecificationUpdated: function (specification) {
+      if (specification) {
+        this.$data.devSpecificationToken = specification.token
+      } else {
+        this.$data.devSpecificationToken = null
       }
     },
 
@@ -224,11 +262,6 @@ export default {
     onMetadataAdded: function (entry) {
       var metadata = this.$data.metadata
       metadata.push(entry)
-    },
-
-    // Tests whether a string is blank.
-    isBlank: function (str) {
-      return (!str || /^\s*$/.test(str))
     }
   }
 }

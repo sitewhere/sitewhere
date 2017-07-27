@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import lodash from 'lodash'
-import utils from '../common/utils'
+import Lodash from 'lodash'
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 import {_listDeviceCommands, _listSchedules} from '../../http/sitewhere-api-wrapper'
@@ -107,7 +107,7 @@ export default {
   computed: {
     // Get currently selected command.
     command: function () {
-      return lodash.find(this.commands, {'token': this.commandSelection})
+      return Lodash.find(this.commands, {'token': this.commandSelection})
     },
 
     // Message shown next to schedule switch.
@@ -141,7 +141,7 @@ export default {
       payload.target = 'Assignment'
       payload.commandToken = this.$data.commandSelection
       payload.parameterValues = this.$data.parameters
-      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -174,7 +174,7 @@ export default {
 
       if (payload) {
         this.$data.commandSelection = payload.xxx
-        this.$data.metadata = utils.metadataToArray(payload.metadata)
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

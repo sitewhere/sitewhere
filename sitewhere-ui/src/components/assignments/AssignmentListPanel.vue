@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Style from '../common/style'
 import AssetMiniPanel from './AssetMiniPanel'
 import DeviceMiniPanel from '../devices/DeviceMiniPanel'

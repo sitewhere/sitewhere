@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Style from '../common/style'
 
 export default {

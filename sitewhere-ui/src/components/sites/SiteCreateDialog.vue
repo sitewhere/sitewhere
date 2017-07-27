@@ -1,6 +1,6 @@
 <template>
   <div>
-    <site-dialog title="Create Site" width="600" resetOnOpen="true"
+    <site-dialog ref="dialog" title="Create Site" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </site-dialog>
     <v-btn fab dark class="add-button red darken-1 elevation-5"
@@ -24,10 +24,15 @@ export default {
   },
 
   methods: {
+    // Get handle to nested dialog component.
+    getDialogComponent: function () {
+      return this.$refs['dialog']
+    },
+
     // Send event to open dialog.
     onOpenDialog: function () {
-      this.$children[0].reset()
-      this.$children[0].openDialog()
+      this.getDialogComponent().reset()
+      this.getDialogComponent().openDialog()
     },
 
     // Handle payload commit.
@@ -43,13 +48,13 @@ export default {
 
     // Handle successful commit.
     onCommitted: function (result) {
-      this.$children[0].closeDialog()
+      this.getDialogComponent().closeDialog()
       this.$emit('siteAdded')
     },
 
     // Handle failed commit.
     onFailed: function (error) {
-      this.$children[0].showError(error)
+      this.getDialogComponent().showError(error)
     }
   }
 }

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import utils from '../common/utils'
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 
@@ -102,7 +102,7 @@ export default {
       payload.level = this.$data.alertLevel
       payload.message = this.$data.alertMessage
       payload.source = 'Device'
-      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -125,7 +125,7 @@ export default {
         this.$data.alertType = payload.type
         this.$data.alertLevel = payload.level
         this.$data.alertMessage = payload.message
-        this.$data.metadata = utils.metadataToArray(payload.metadata)
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

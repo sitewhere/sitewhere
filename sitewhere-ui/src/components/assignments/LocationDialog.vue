@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import utils from '../common/utils'
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 
@@ -82,7 +82,7 @@ export default {
       payload.latitude = this.$data.locLatitude
       payload.longitude = this.$data.locLongitude
       payload.elevation = this.$data.locElevation
-      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -105,7 +105,7 @@ export default {
         this.$data.locLatitude = payload.latitude
         this.$data.locLongitude = payload.longitude
         this.$data.locElevation = payload.elevation
-        this.$data.metadata = utils.metadataToArray(payload.metadata)
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

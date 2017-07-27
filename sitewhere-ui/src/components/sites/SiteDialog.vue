@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import utils from '../common/utils'
+import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MapPanel from './MapPanel'
 import MetadataPanel from '../common/MetadataPanel'
@@ -82,7 +82,7 @@ export default {
       payload.description = this.$data.siteDescription
       payload.imageUrl = this.$data.siteImageUrl
       payload.map = this.$data.mapConfig
-      payload.metadata = utils.arrayToMetadata(this.$data.metadata)
+      payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
@@ -105,7 +105,7 @@ export default {
         this.$data.siteDescription = payload.description
         this.$data.siteImageUrl = payload.imageUrl
         this.$data.mapConfig = payload.map
-        this.$data.metadata = utils.metadataToArray(payload.metadata)
+        this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
 

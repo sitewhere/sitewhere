@@ -1,10 +1,9 @@
 <template>
   <div>
-    <specification-dialog ref="dialog" title="Create Device Specification"
-      width="600" resetOnOpen="true" createLabel="Create" cancelLabel="Cancel"
-      @payload="onCommit">
-    </specification-dialog>
-    <floating-action-button label="Add Specification" icon="add"
+    <device-dialog ref="dialog" title="Create Device" width="700" createLabel="Create"
+      cancelLabel="Cancel" @payload="onCommit">
+    </device-dialog>
+    <floating-action-button label="Add Device" icon="add"
       @action="onOpenDialog">
     </floating-action-button>
   </div>
@@ -12,8 +11,8 @@
 
 <script>
 import FloatingActionButton from '../common/FloatingActionButton'
-import SpecificationDialog from './SpecificationDialog'
-import {_createDeviceSpecification} from '../../http/sitewhere-api-wrapper'
+import DeviceDialog from './DeviceDialog'
+import {_createDevice} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -22,7 +21,7 @@ export default {
 
   components: {
     FloatingActionButton,
-    SpecificationDialog
+    DeviceDialog
   },
 
   methods: {
@@ -39,9 +38,8 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      console.log(payload)
       var component = this
-      _createDeviceSpecification(this.$store, payload)
+      _createDevice(this.$store, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
@@ -52,7 +50,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('specificationAdded')
+      this.$emit('deviceAdded')
     },
 
     // Handle failed commit.

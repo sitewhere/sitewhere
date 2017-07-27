@@ -50,6 +50,7 @@ import {
 
 // Devices.
 import {
+  createDevice,
   listDevices,
   listFilteredDevices,
   getDevice,
@@ -493,6 +494,15 @@ export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
 export function _deleteDeviceCommand (store, token, force) {
   let axios = createAxiosFromStore(store)
   let api = deleteDeviceCommand(axios, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a device.
+ */
+export function _createDevice (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDevice(axios, payload)
   return loaderWrapper(store, api)
 }
 

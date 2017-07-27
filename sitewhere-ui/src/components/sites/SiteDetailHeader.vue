@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import SiteDeleteDialog from './SiteDeleteDialog'
 import SiteUpdateDialog from './SiteUpdateDialog'
 

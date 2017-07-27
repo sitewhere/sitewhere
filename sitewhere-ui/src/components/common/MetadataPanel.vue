@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import utils from '../common/utils'
+import Utils from '../common/Utils'
 
 export default {
 
@@ -104,12 +104,12 @@ export default {
   methods: {
     // Converts associative format to flat.
     buildFlatMetadata: function (input) {
-      return utils.metadataToArray(input)
+      return Utils.metadataToArray(input)
     },
 
     // Converts flat format into associative.
     buildAssociativeMetadata: function (input) {
-      return utils.arrayToMetadata(input)
+      return Utils.arrayToMetadata(input)
     },
 
     // Let owner know an item was deleted.

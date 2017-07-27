@@ -12,6 +12,11 @@ export default {
     return moment(date).format('YYYY-MM-DD H:mm:ss')
   },
 
+  // Tests whether a string is blank.
+  isBlank: function (str) {
+    return (!str || /^\s*$/.test(str))
+  },
+
   // Short string with ellipsis if necessary.
   ellipsis: function (val, max) {
     return (val.length > max) ? (val.substring(0, max) + '...') : val

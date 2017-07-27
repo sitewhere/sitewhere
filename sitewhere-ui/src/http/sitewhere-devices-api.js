@@ -1,7 +1,14 @@
 /**
  * API calls associated with SiteWhere device assignments.
  */
-import {restAuthGet} from './sitewhere-api'
+import {restAuthGet, restAuthPost} from './sitewhere-api'
+
+/**
+ * Create a device.
+ */
+export function createDevice (axios, payload) {
+  return restAuthPost(axios, '/devices', payload)
+}
 
 /**
  * List devices.

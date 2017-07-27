@@ -14,14 +14,16 @@
     <pager :results="results" :pageSizes="pageSizes"
       @pagingUpdated="updatePaging">
     </pager>
+    <device-create-dialog @deviceAdded="onDeviceAdded"/>
   </div>
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
+import DeviceCreateDialog from './DeviceCreateDialog'
 import {_listFilteredDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -49,7 +51,8 @@ export default {
   components: {
     Pager,
     DeviceListPanel,
-    DeviceListFilterBar
+    DeviceListFilterBar,
+    DeviceCreateDialog
   },
 
   methods: {

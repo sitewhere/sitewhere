@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Style from '../common/style'
 import {BASE_URL} from '../../http/sitewhere-api'
 import HeaderField from '../common/HeaderField'

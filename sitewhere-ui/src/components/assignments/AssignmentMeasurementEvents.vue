@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import Utils from '../common/utils'
+import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import {_listMeasurementsForAssignment} from '../../http/sitewhere-api-wrapper'
