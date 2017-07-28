@@ -101,10 +101,10 @@ export default {
         route: 'devices',
         longTitle: 'Manage Devices'
       }, {
-        id: 'devicegroups',
+        id: 'groups',
         title: 'Device Groups',
         icon: 'view_module',
-        route: 'devicegroups',
+        route: 'groups',
         longTitle: 'Manage Device Groups'
       }]
     },

@@ -19,6 +19,7 @@ import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 import DevicesList from '@/components/devices/DevicesList'
 import DeviceDetail from '@/components/devices/DeviceDetail'
+import DeviceGroupsList from '@/components/groups/DeviceGroupsList'
 import AssetCategoriesList from '@/components/assets/AssetCategoriesList'
 import AssetCategoryDetail from '@/components/assets/AssetCategoryDetail'
 
@@ -95,8 +96,8 @@ export default new Router({
           path: 'devices/:hardwareId',
           component: DeviceDetail
         }, {
-          path: 'devicegroups',
-          component: Server
+          path: 'groups',
+          component: DeviceGroupsList
         }, {
           path: 'assets/categories',
           component: AssetCategoriesList
