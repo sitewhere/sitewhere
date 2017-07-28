@@ -2,7 +2,7 @@
   <v-card>
     <v-card-text>
       <v-data-table class="elevation-0" :headers="headers" :items="metadata"
-        :rows-per-page-items="pagesize" no-data-text="No metadata has been assigned">
+        :rows-per-page-items="pagesize" :no-data-text="noDataText">
         <template slot="items" scope="props">
           <td width="250px" :title="props.item.name">
             {{ (props.item.name.length > 25) ? props.item.name.substring(0, 25) + "..." : props.item.name }}
@@ -22,18 +22,18 @@
     <v-alert error :value="true" class="ma-0" style="width: 100%" v-if="error">
       {{error}}
     </v-alert>
-    <v-card-text v-if="!readOnly" class="blue darken-2 pa-0">
+    <v-card-text v-if="!readOnly" class="grey lighten-3 pa-0">
       <v-container fluid class="mr-4 pt-1 pb-0">
         <v-layout row>
           <v-flex xs4>
-            <v-text-field dark label="Name" v-model="newItemName"></v-text-field>
+            <v-text-field light label="Name" v-model="newItemName"></v-text-field>
           </v-flex>
           <v-flex xs7>
-            <v-text-field dark label="Value" v-model="newItemValue"></v-text-field>
+            <v-text-field light label="Value" v-model="newItemValue"></v-text-field>
           </v-flex>
           <v-flex xs1 class="pt-3">
             <v-btn icon @click.native="onAddItem" v-tooltip:left="{ html: 'Add Item' }">
-              <v-icon large class="white--text">add_circle</v-icon>
+              <v-icon large class="blue--text text--darken-2">add_circle</v-icon>
             </v-btn>
           </v-flex>
         </v-layout>
@@ -51,15 +51,20 @@ export default {
     pagesize: [5],
     newItemName: '',
     newItemValue: '',
+    noDataText: 'No metadata has been assigned',
     error: null
   }),
 
-  props: ['metadata', 'readOnly'],
+  props: ['metadata', 'readOnly', 'noDataMessage'],
 
   created: function () {
     this.$data.newItemName = ''
     this.$data.newItemValue = ''
     this.$data.error = null
+
+    if (this.noDataMessage) {
+      this.$data.noDataText = this.noDataMessage
+    }
   },
 
   computed: {

@@ -121,15 +121,6 @@ export default {
     devSpecificationToken: null,
     metadata: [],
     assetModules: [],
-    containerPolicies: [
-      {
-        'text': 'Standalone Device',
-        'value': 'Standalone'
-      }, {
-        'text': 'Composite Device',
-        'value': 'Composite'
-      }
-    ],
     error: null
   }),
 

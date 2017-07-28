@@ -8,10 +8,7 @@ import {
   getTenant,
 
   // Schedules.
-  listSchedules,
-
-  // Assets.
-  getAssetModules, searchAssets, getAssetById
+  listSchedules
 } from './sitewhere-api'
 
 // Sites.
@@ -81,6 +78,23 @@ import {
 import {
   listDeviceGroups
 } from './sitewhere-device-groups-api.js'
+
+// Assets.
+import {
+  getAssetModules,
+  createAssetCategory,
+  updateAssetCategory,
+  getAssetCategory,
+  deleteAssetCategory,
+  listAssetCategories,
+  listCategoryAssets,
+  searchAssets,
+  createHardwareAsset,
+  createPersonAsset,
+  createLocationAsset,
+  getAssetById,
+  deleteAsset
+} from './sitewhere-assets-api.js'
 
 /**
  * Create authorized axios client based on store values.
@@ -598,6 +612,60 @@ export function _getAssetModules (store, type) {
 }
 
 /**
+ * Create an asset category.
+ */
+export function _createAssetCategory (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createAssetCategory(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an asset category.
+ */
+export function _updateAssetCategory (store, categoryId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateAssetCategory(axios, categoryId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get asset category by unique id.
+ */
+export function _getAssetCategory (store, id) {
+  let axios = createAxiosFromStore(store)
+  let api = getAssetCategory(axios, id)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an asset category.
+ */
+export function _deleteAssetCategory (store, categoryId) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteAssetCategory(axios, categoryId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List asset categories.
+ */
+export function _listAssetCategories (store, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listAssetCategories(axios, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List assets for a given category.
+ */
+export function _listCategoryAssets (store, categoryId, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listCategoryAssets(axios, categoryId, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Search asset module for assets matching criteria.
  */
 export function _searchAssets (store, moduleId, criteria) {
@@ -607,10 +675,46 @@ export function _searchAssets (store, moduleId, criteria) {
 }
 
 /**
+ * Create a hardware asset.
+ */
+export function _createHardwareAsset (store, categoryId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createHardwareAsset(axios, categoryId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a person asset.
+ */
+export function _createPersonAsset (store, categoryId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createPersonAsset(axios, categoryId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a location asset.
+ */
+export function _createLocationAsset (store, categoryId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createLocationAsset(axios, categoryId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Get asset by unique id.
  */
 export function _getAssetById (store, moduleId, assetId) {
   let axios = createAxiosFromStore(store)
   let api = getAssetById(axios, moduleId, assetId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an existing site.
+ */
+export function _deleteAsset (store, categoryId, assetId) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteAsset(axios, categoryId, assetId)
   return loaderWrapper(store, api)
 }

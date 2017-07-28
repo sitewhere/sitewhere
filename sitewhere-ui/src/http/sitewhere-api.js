@@ -59,35 +59,6 @@ export function listSchedules (axios, paging) {
 }
 
 /**
- * Get asset modules.
- */
-export function getAssetModules (axios, type) {
-  let query = ''
-  if (type) {
-    query += '?assetType=' + type
-  }
-  return restAuthGet(axios, 'assets/modules' + query)
-}
-
-/**
- * Search module assets using the given criteria.
- */
-export function searchAssets (axios, moduleId, criteria) {
-  let query = ''
-  if (criteria) {
-    query += '?criteria=' + criteria
-  }
-  return restAuthGet(axios, 'assets/modules/' + moduleId + '/assets' + query)
-}
-
-/**
- * Given an asset module get an asset by id.
- */
-export function getAssetById (axios, moduleId, assetId) {
-  return restAuthGet(axios, 'assets/modules/' + moduleId + '/assets/' + assetId)
-}
-
-/**
  * Perform a REST get call.
  */
 export function restAuthGet (axios, path) {

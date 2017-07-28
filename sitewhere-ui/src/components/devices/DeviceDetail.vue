@@ -15,7 +15,7 @@
         </v-tabs-content>
       </v-tabs>
     </v-app>
-    <v-speed-dial v-model="fab" direction="top" :hover="true"
+    <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
       class="action-chooser-fab"
       transition="slide-y-reverse-transition">
       <v-btn slot="activator" class="red darken-1 elevation-5" dark
@@ -118,10 +118,4 @@ export default {
 </script>
 
 <style scoped>
-.action-chooser-fab {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  z-index: 1000;
-}
 </style>

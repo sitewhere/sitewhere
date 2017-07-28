@@ -19,6 +19,8 @@ import SpecificationsList from '@/components/specifications/SpecificationsList'
 import SpecificationDetail from '@/components/specifications/SpecificationDetail'
 import DevicesList from '@/components/devices/DevicesList'
 import DeviceDetail from '@/components/devices/DeviceDetail'
+import AssetCategoriesList from '@/components/assets/AssetCategoriesList'
+import AssetCategoryDetail from '@/components/assets/AssetCategoryDetail'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -96,8 +98,11 @@ export default new Router({
           path: 'devicegroups',
           component: Server
         }, {
-          path: 'assets',
-          component: Server
+          path: 'assets/categories',
+          component: AssetCategoriesList
+        }, {
+          path: 'assets/categories/:categoryId',
+          component: AssetCategoryDetail
         }, {
           path: 'batch',
           component: Server

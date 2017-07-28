@@ -112,8 +112,8 @@ export default {
       id: 'assets',
       title: 'Assets',
       icon: 'local_offer',
-      route: 'assets',
-      longTitle: 'Manage Assets'
+      route: 'assets/categories',
+      longTitle: 'Manage Asset Categories'
     },
     {
       id: 'batch',
