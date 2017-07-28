@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetManagementCacheProvider;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
@@ -102,13 +101,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
-
-    /**
-     * Get the asset management cache provider implementation.
-     * 
-     * @return
-     */
-    public IAssetManagementCacheProvider getAssetManagementCacheProvider();
 
     /**
      * Get the device communication subsystem implementation.

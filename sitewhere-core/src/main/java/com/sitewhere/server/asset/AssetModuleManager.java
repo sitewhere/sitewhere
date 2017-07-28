@@ -215,6 +215,20 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
+     * sitewhere.spi.asset.IAssetCategory,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void onAssetCategoryUpdated(IAssetCategory category, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	dsModuleManager.onAssetCategoryUpdated(category, monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)

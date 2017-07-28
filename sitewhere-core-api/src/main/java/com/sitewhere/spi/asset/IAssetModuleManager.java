@@ -63,6 +63,16 @@ public interface IAssetModuleManager extends ITenantLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
+     * Called when an asset category is updated.
+     * 
+     * @param category
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void onAssetCategoryUpdated(IAssetCategory category, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
+
+    /**
      * Called when an asset category is removed.
      * 
      * @param category

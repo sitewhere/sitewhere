@@ -143,6 +143,25 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
+     * sitewhere.spi.asset.IAssetCategory,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void onAssetCategoryUpdated(IAssetCategory category, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	IAssetModule<?> module = getModule(category.getId());
+	if (module != null) {
+	    module.refresh(monitor);
+	} else {
+	    LOGGER.warn("Update received for non-existent asset module. Category: " + category.getId());
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
