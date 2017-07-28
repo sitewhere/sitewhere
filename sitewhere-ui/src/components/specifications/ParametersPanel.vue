@@ -27,24 +27,24 @@
     <v-alert error :value="true" class="ma-0" style="width: 100%" v-if="error">
       {{error}}
     </v-alert>
-    <v-card-text class="blue darken-2 pa-0">
+    <v-card-text class="grey lighten-2 pa-0">
       <v-container fluid class="mr-4 pt-1 pb-0">
         <v-layout row>
           <v-flex xs4>
-            <v-text-field dark label="Name" v-model="newParamName"></v-text-field>
+            <v-text-field light label="Name" v-model="newParamName"></v-text-field>
           </v-flex>
           <v-flex xs4>
-            <v-select dark :items="types" v-model="newParamType"
+            <v-select light :items="types" v-model="newParamType"
               item-text="text" item-value="datatype" label="Parameter Type">
             </v-select>
           </v-flex>
           <v-flex xs3>
-            <v-checkbox dark label="Required" v-model="newParamRequired" light>
+            <v-checkbox light label="Required" v-model="newParamRequired" light>
             </v-checkbox>
           </v-flex>
           <v-flex xs1 class="pt-2">
             <v-btn icon @click.native="onAddParameter" v-tooltip:left="{ html: 'Add Parameter' }">
-              <v-icon large class="white--text">add_circle</v-icon>
+              <v-icon large class="blue--text text--darken-2">add_circle</v-icon>
             </v-btn>
           </v-flex>
         </v-layout>
