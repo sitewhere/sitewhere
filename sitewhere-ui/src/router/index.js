@@ -20,6 +20,7 @@ import SpecificationDetail from '@/components/specifications/SpecificationDetail
 import DevicesList from '@/components/devices/DevicesList'
 import DeviceDetail from '@/components/devices/DeviceDetail'
 import DeviceGroupsList from '@/components/groups/DeviceGroupsList'
+import DeviceGroupDetail from '@/components/groups/DeviceGroupDetail'
 import AssetCategoriesList from '@/components/assets/AssetCategoriesList'
 import AssetCategoryDetail from '@/components/assets/AssetCategoryDetail'
 
@@ -98,6 +99,9 @@ export default new Router({
         }, {
           path: 'groups',
           component: DeviceGroupsList
+        }, {
+          path: 'groups/:token',
+          component: DeviceGroupDetail
         }, {
           path: 'assets/categories',
           component: AssetCategoriesList

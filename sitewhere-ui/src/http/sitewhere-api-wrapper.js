@@ -76,7 +76,13 @@ import {
 
 // Device Groups.
 import {
-  listDeviceGroups
+  createDeviceGroup,
+  updateDeviceGroup,
+  getDeviceGroup,
+  listDeviceGroups,
+  listDeviceGroupElements,
+  deleteDeviceGroupElement,
+  deleteDeviceGroup
 } from './sitewhere-device-groups-api.js'
 
 // Assets.
@@ -585,11 +591,65 @@ export function _deleteDevice (store, hardwareId, force) {
 }
 
 /**
+ * Create a device group.
+ */
+export function _createDeviceGroup (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDeviceGroup(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing device group.
+ */
+export function _updateDeviceGroup (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateDeviceGroup(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device group by token.
+ */
+export function _getDeviceGroup (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceGroup(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List device groups.
  */
 export function _listDeviceGroups (store, role, includeDeleted, paging) {
   let axios = createAxiosFromStore(store)
   let api = listDeviceGroups(axios, role, includeDeleted, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List device group elements.
+ */
+export function _listDeviceGroupElements (store, token, includeDetails, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listDeviceGroupElements(axios, token, includeDetails, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a device group element.
+ */
+export function _deleteDeviceGroupElement (store, token, type, elementId) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceGroupElement(axios, token, type, elementId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a device group.
+ */
+export function _deleteDeviceGroup (store, token, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceGroup(axios, token, force)
   return loaderWrapper(store, api)
 }
 

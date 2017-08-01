@@ -1,17 +1,9 @@
 <template>
   <div>
-    <v-container fluid grid-list-md  v-if="elements">
-      <v-layout row wrap>
-         <v-flex xs6 v-for="(element, index) in elements" :key="element.index">
-          <device-group-element-list-panel :element="element" class="mb-1">
-          </device-group-element-list-panel>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <pager :results="results" :pageSizes="pageSizes"
-      @pagingUpdated="updatePaging">
-    </pager>
-
+    <device-group-detail-header :group="group" class="mb-3">
+    </device-group-detail-header>
+    <device-group-element-list-panel :token="token">
+    </device-group-element-list-panel>
     <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
       class="action-chooser-fab"
       transition="slide-y-reverse-transition">
@@ -41,15 +33,16 @@
 <script>
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
+import DeviceGroupDetailHeader from './DeviceGroupDetailHeader'
 import DeviceGroupElementListPanel from './DeviceGroupElementListPanel'
-import {_getDeviceGroup, _listDeviceGroupElements} from '../../http/sitewhere-api-wrapper'
+import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    groupToken: null,
+    token: null,
     group: null,
     elements: null,
     pageSizes: [
@@ -69,35 +62,24 @@ export default {
 
   components: {
     Pager,
+    DeviceGroupDetailHeader,
     DeviceGroupElementListPanel
   },
 
   // Store group token which is passed in URL.
   created: function () {
-    this.$data.groupToken = this.$route.params.groupToken
+    this.$data.token = this.$route.params.token
+    this.refresh()
   },
 
   methods: {
-    // Update paging values and run query.
-    updatePaging: function (paging) {
-      this.$data.paging = paging
-      this.refresh()
-    },
-
     // Refresh data.
     refresh: function () {
-      let paging = this.$data.paging.query
       let component = this
       // Load information.
-      _getDeviceGroup(this.$store, this.$data.categoryId)
+      _getDeviceGroup(this.$store, this.$data.token)
         .then(function (response) {
           component.onDeviceGroupLoaded(response.data)
-        }).catch(function (e) {
-        })
-      _listDeviceGroupElements(this.$store, this.$data.categoryId, paging)
-        .then(function (response) {
-          component.results = response.data
-          component.assets = response.data.results
         }).catch(function (e) {
         })
     },
