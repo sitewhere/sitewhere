@@ -35,6 +35,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
@@ -334,6 +335,38 @@ public class DeviceGroupsController extends RestController {
 		break;
 	    }
 	    }
+	}
+    }
+
+    /**
+     * Delete a single device group element.
+     * 
+     * @param groupToken
+     * @param type
+     * @param elementId
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{groupToken}/elements/{type}/{elementId}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Delete elements from device group")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElement(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+	    @ApiParam(value = "Element type", required = true) @PathVariable String type,
+	    @ApiParam(value = "Element id", required = true) @PathVariable String elementId,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteDeviceGroupElement", LOGGER);
+	try {
+	    DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+	    request.setType("device".equalsIgnoreCase(type) ? GroupElementType.Device : GroupElementType.Group);
+	    request.setElementId(elementId);
+	    ArrayList<DeviceGroupElementCreateRequest> elements = new ArrayList<DeviceGroupElementCreateRequest>();
+	    elements.add(request);
+	    return deleteDeviceGroupElements(groupToken, elements, servletRequest);
+	} finally {
+	    Tracer.stop(LOGGER);
 	}
     }
 
