@@ -5,10 +5,7 @@ import {
   getUser, listUserTenants,
 
   // Tenants.
-  getTenant,
-
-  // Schedules.
-  listSchedules
+  getTenant
 } from './sitewhere-api'
 
 // Sites.
@@ -112,6 +109,15 @@ import {
   createBatchCommandByCriteria,
   scheduleBatchCommandByCriteria
 } from './sitewhere-batch-api.js'
+
+// Schedules.
+import {
+  createSchedule,
+  getSchedule,
+  updateSchedule,
+  deleteSchedule,
+  listSchedules
+} from './sitewhere-schedules-api.js'
 
 /**
  * Create authorized axios client based on store values.
@@ -674,15 +680,6 @@ export function _deleteDeviceGroup (store, token, force) {
 }
 
 /**
- * List schedules.
- */
-export function _listSchedules (store, paging) {
-  let axios = createAxiosFromStore(store)
-  let api = listSchedules(axios, paging)
-  return loaderWrapper(store, api)
-}
-
-/**
  * Get asset modules.
  */
 export function _getAssetModules (store, type) {
@@ -851,5 +848,50 @@ export function _createBatchCommandByCriteria (store, payload) {
 export function _scheduleBatchCommandByCriteria (store, schedule, payload) {
   let axios = createAxiosFromStore(store)
   let api = scheduleBatchCommandByCriteria(axios, schedule, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a schedule.
+ */
+export function _createSchedule (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createSchedule(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a schedule by unique token.
+ */
+export function _getSchedule (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getSchedule(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing schedule.
+ */
+export function _updateSchedule (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateSchedule(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a schedule.
+ */
+export function _deleteSchedule (store, token, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteSchedule(axios, token, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List schedules.
+ */
+export function _listSchedules (store, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listSchedules(axios, paging)
   return loaderWrapper(store, api)
 }

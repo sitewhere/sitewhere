@@ -48,17 +48,6 @@ export function getTenant (axios, tenantId) {
 }
 
 /**
- * List schedules.
- */
-export function listSchedules (axios, paging) {
-  let query = ''
-  if (paging) {
-    query += '?' + paging
-  }
-  return restAuthGet(axios, 'schedules' + query)
-}
-
-/**
  * Perform a REST get call.
  */
 export function restAuthGet (axios, path) {
