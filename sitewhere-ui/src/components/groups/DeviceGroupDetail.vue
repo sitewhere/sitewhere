@@ -30,6 +30,9 @@
     <device-group-update-dialog ref="update" :token="token"
       @groupUpdated="refresh">
     </device-group-update-dialog>
+    <device-group-delete-dialog ref="delete" :token="token"
+      @groupDeleted="onDeviceGroupDeleted">
+    </device-group-delete-dialog>
     <device-group-element-create-dialog ref="create" :token="token"
       @elementAdded="onElementAdded">
     </device-group-element-create-dialog>
@@ -42,6 +45,7 @@ import Pager from '../common/Pager'
 import DeviceGroupDetailHeader from './DeviceGroupDetailHeader'
 import DeviceGroupElementListPanel from './DeviceGroupElementListPanel'
 import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
+import DeviceGroupDeleteDialog from './DeviceGroupDeleteDialog'
 import DeviceGroupElementCreateDialog from './DeviceGroupElementCreateDialog'
 import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 
@@ -73,6 +77,7 @@ export default {
     DeviceGroupDetailHeader,
     DeviceGroupElementListPanel,
     DeviceGroupUpdateDialog,
+    DeviceGroupDeleteDialog,
     DeviceGroupElementCreateDialog
   },
 
@@ -119,7 +124,7 @@ export default {
 
     // Handle successful delete.
     onDeviceGroupDeleted: function () {
-      Utils.routeTo(this, '/assets/categories')
+      Utils.routeTo(this, '/groups')
     },
 
     // Called when 'add element' button is clicked.
