@@ -6,7 +6,7 @@
         Are you sure you want to delete this group element?
       </v-card-text>
     </delete-dialog>
-    <v-btn class="ma-0" icon v-tooltip:top="{ html: 'Delete Element' }"
+    <v-btn class="ma-0" icon v-tooltip:top="{ html: 'Delete' }"
       @click.native.stop="showDeleteDialog">
       <v-icon class="grey--text">delete</v-icon>
     </v-btn>

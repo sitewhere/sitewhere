@@ -81,6 +81,7 @@ import {
   getDeviceGroup,
   listDeviceGroups,
   listDeviceGroupElements,
+  addDeviceGroupElement,
   deleteDeviceGroupElement,
   deleteDeviceGroup
 } from './sitewhere-device-groups-api.js'
@@ -632,6 +633,15 @@ export function _listDeviceGroups (store, role, includeDeleted, paging) {
 export function _listDeviceGroupElements (store, token, includeDetails, paging) {
   let axios = createAxiosFromStore(store)
   let api = listDeviceGroupElements(axios, token, includeDetails, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Add a device group element.
+ */
+export function _addDeviceGroupElement (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = addDeviceGroupElement(axios, token, payload)
   return loaderWrapper(store, api)
 }
 

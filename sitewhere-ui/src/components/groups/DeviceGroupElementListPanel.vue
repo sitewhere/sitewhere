@@ -8,7 +8,8 @@
         <v-data-table v-if="elements.length > 0" class="elevation-2 pa-0" :headers="headers" :items="elements"
           :hide-actions="true" no-data-text="No Elements Found for Group">
           <template slot="items" scope="props">
-            <td width="40%" :title="props.item.elementId">
+            <td width="40%" :title="props.item.elementId"
+              :class="elementClassFor(props.item)">
               <v-icon class="grey--text text--darken-2 type-icon">
                 {{ iconFor(props.item) }}
               </v-icon>
@@ -20,8 +21,8 @@
             <td width="40%" v-if="props.item.device && !props.item.device.assignment">
               {{ props.item.device.specification.assetName }}
             </td>
-            <td width="40%" v-if="props.item.device.deviceGroup">
-              {{ props.item.device.deviceGroup.name }}
+            <td width="40%" v-if="props.item.deviceGroup">
+              {{ props.item.deviceGroup.name }}
             </td>
             <td width="10%" :title="props.item.roles">
               {{ props.item.roles.join(', ') }}
@@ -110,6 +111,10 @@ export default {
       return (element.type === 'Device') ? 'developer_board' : 'view_module'
     },
 
+    elementClassFor: function (element) {
+      return (element.type === 'Device') ? '' : 'group-element'
+    },
+
     // Update paging values and run query.
     updatePaging: function (paging) {
       this.$data.paging = paging
@@ -140,5 +145,8 @@ export default {
 <style scoped>
 .type-icon {
   font-size: 16px;
+}
+.group-element {
+  font-weight: 700;
 }
 </style>

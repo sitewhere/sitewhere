@@ -2,7 +2,7 @@
   <div>
     <device-group-detail-header :group="group" class="mb-3">
     </device-group-detail-header>
-    <device-group-element-list-panel :token="token">
+    <device-group-element-list-panel ref="list" :token="token">
     </device-group-element-list-panel>
     <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
       class="action-chooser-fab"
@@ -30,6 +30,9 @@
     <device-group-update-dialog ref="update" :token="token"
       @groupUpdated="refresh">
     </device-group-update-dialog>
+    <device-group-element-create-dialog ref="create" :token="token"
+      @elementAdded="onElementAdded">
+    </device-group-element-create-dialog>
   </div>
 </template>
 
@@ -39,6 +42,7 @@ import Pager from '../common/Pager'
 import DeviceGroupDetailHeader from './DeviceGroupDetailHeader'
 import DeviceGroupElementListPanel from './DeviceGroupElementListPanel'
 import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
+import DeviceGroupElementCreateDialog from './DeviceGroupElementCreateDialog'
 import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -68,7 +72,8 @@ export default {
     Pager,
     DeviceGroupDetailHeader,
     DeviceGroupElementListPanel,
-    DeviceGroupUpdateDialog
+    DeviceGroupUpdateDialog,
+    DeviceGroupElementCreateDialog
   },
 
   // Store group token which is passed in URL.
@@ -124,7 +129,7 @@ export default {
 
     // Called when an element is added.
     onElementAdded: function () {
-      this.refresh()
+      this.$refs['list'].refresh()
     }
   }
 }

@@ -54,6 +54,13 @@ export function listDeviceGroupElements (axios, token, includeDetails, paging) {
 }
 
 /**
+ * Add a device group element.
+ */
+export function addDeviceGroupElement (axios, token, payload) {
+  return restAuthPut(axios, 'devicegroups/' + token + '/elements', payload)
+}
+
+/**
  * Delete a device group element.
  */
 export function deleteDeviceGroupElement (axios, token, type, elementId) {
