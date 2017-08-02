@@ -27,6 +27,9 @@
         <v-icon fa style="margin-top: -3px;">plus</v-icon>
       </v-btn>
     </v-speed-dial>
+    <device-group-update-dialog ref="update" :token="token"
+      @groupUpdated="refresh">
+    </device-group-update-dialog>
   </div>
 </template>
 
@@ -35,6 +38,7 @@ import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import DeviceGroupDetailHeader from './DeviceGroupDetailHeader'
 import DeviceGroupElementListPanel from './DeviceGroupElementListPanel'
+import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
 import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -63,7 +67,8 @@ export default {
   components: {
     Pager,
     DeviceGroupDetailHeader,
-    DeviceGroupElementListPanel
+    DeviceGroupElementListPanel,
+    DeviceGroupUpdateDialog
   },
 
   // Store group token which is passed in URL.

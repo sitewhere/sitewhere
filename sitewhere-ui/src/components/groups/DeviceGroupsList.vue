@@ -12,6 +12,8 @@
     <pager :results="results" :pageSizes="pageSizes"
       @pagingUpdated="updatePaging">
     </pager>
+    <device-group-create-dialog @groupAdded="refresh">
+    </device-group-create-dialog>
   </div>
 </template>
 
@@ -19,6 +21,7 @@
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import DeviceGroupListPanel from './DeviceGroupListPanel'
+import DeviceGroupCreateDialog from './DeviceGroupCreateDialog'
 import {_listDeviceGroups} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -44,7 +47,8 @@ export default {
 
   components: {
     Pager,
-    DeviceGroupListPanel
+    DeviceGroupListPanel,
+    DeviceGroupCreateDialog
   },
 
   methods: {
