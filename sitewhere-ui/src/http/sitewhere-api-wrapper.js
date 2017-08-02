@@ -103,6 +103,16 @@ import {
   deleteAsset
 } from './sitewhere-assets-api.js'
 
+// Batch operations.
+import {
+  getBatchOperation,
+  listBatchOperations,
+  listBatchOperationElements,
+  createBatchCommandInvocation,
+  createBatchCommandByCriteria,
+  scheduleBatchCommandByCriteria
+} from './sitewhere-batch-api.js'
+
 /**
  * Create authorized axios client based on store values.
  */
@@ -786,5 +796,60 @@ export function _getAssetById (store, moduleId, assetId) {
 export function _deleteAsset (store, categoryId, assetId) {
   let axios = createAxiosFromStore(store)
   let api = deleteAsset(axios, categoryId, assetId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get batch operation by token.
+ */
+export function _getBatchOperation (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = getBatchOperation(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List batch operations.
+ */
+export function _listBatchOperations (store, token, includeDeleted,
+  paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listBatchOperations(axios, token, includeDeleted, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List batch operation elements.
+ */
+export function _listBatchOperationElements (store, token, paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listBatchOperationElements(axios, token, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a batch command invocation.
+ */
+export function _createBatchCommandInvocation (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createBatchCommandInvocation(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a batch command invocation based on criteria.
+ */
+export function _createBatchCommandByCriteria (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createBatchCommandByCriteria(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Schedule a batch command invocation based on criteria.
+ */
+export function _scheduleBatchCommandByCriteria (store, schedule, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = scheduleBatchCommandByCriteria(axios, schedule, payload)
   return loaderWrapper(store, api)
 }
