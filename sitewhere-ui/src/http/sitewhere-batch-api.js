@@ -30,7 +30,7 @@ export function listBatchOperations (axios, token, includeDeleted,
 export function listBatchOperationElements (axios, token, paging) {
   let query = ''
   if (paging) {
-    query += '&' + paging
+    query += '?' + paging
   }
   return restAuthGet(axios, 'batch/' + token + '/elements' + query)
 }

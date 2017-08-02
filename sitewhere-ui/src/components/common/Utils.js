@@ -57,5 +57,12 @@ export default {
     if (tenant) {
       component.$router.push('/admin/' + tenant.id + url)
     }
+  },
+
+  /**
+   * Routes to device page for hardware id.
+   */
+  routeToDevice: function (component, hardwareId) {
+    this.routeTo(component, '/devices/' + hardwareId)
   }
 }

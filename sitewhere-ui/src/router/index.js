@@ -23,6 +23,8 @@ import DeviceGroupsList from '@/components/groups/DeviceGroupsList'
 import DeviceGroupDetail from '@/components/groups/DeviceGroupDetail'
 import AssetCategoriesList from '@/components/assets/AssetCategoriesList'
 import AssetCategoryDetail from '@/components/assets/AssetCategoryDetail'
+import BatchOperationsList from '@/components/batch/BatchOperationsList'
+import BatchOperationDetail from '@/components/batch/BatchOperationDetail'
 
 Vue.use(Router)
 Vue.use(Vuetify)
@@ -110,7 +112,10 @@ export default new Router({
           component: AssetCategoryDetail
         }, {
           path: 'batch',
-          component: Server
+          component: BatchOperationsList
+        }, {
+          path: 'batch/:token',
+          component: BatchOperationDetail
         }, {
           path: 'schedules',
           component: Server

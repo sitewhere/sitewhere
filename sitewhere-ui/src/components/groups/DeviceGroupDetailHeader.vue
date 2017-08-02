@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
+
 export default {
 
   data: function () {
@@ -41,6 +43,11 @@ export default {
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+
+    // Format date.
+    formatDate: function (date) {
+      return Utils.formatDate(date)
     }
   }
 }
