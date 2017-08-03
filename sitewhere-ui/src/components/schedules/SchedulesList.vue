@@ -28,11 +28,9 @@
                 @click.native.stop="onEditSchedule(props.item.token)">
                 <v-icon fa>edit</v-icon>
               </v-btn>
-              <v-btn dark icon small class="grey pa-0 ma-0"
-                v-tooltip:top="{ html: 'Delete' }"
-                @click.native.stop="onDeleteSchedule(props.item.token)">
-                <v-icon fa>remove</v-icon>
-              </v-btn>
+              <schedule-delete-dialog :token="props.item.token"
+                @scheduleDeleted="refresh">
+              </schedule-delete-dialog>
             </td>
           </template>
         </v-data-table>
@@ -51,6 +49,7 @@ import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import ScheduleCreateDialog from './ScheduleCreateDialog'
+import ScheduleDeleteDialog from './ScheduleDeleteDialog'
 import {_listSchedules} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -104,7 +103,8 @@ export default {
   components: {
     Pager,
     NoResultsPanel,
-    ScheduleCreateDialog
+    ScheduleCreateDialog,
+    ScheduleDeleteDialog
   },
 
   computed: {
