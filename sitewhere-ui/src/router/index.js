@@ -10,7 +10,7 @@ import VueFlatPickr from 'vue-flatpickr-component'
 
 import Login from '@/components/Login'
 import TenantManager from '@/components/tenants/TenantManager'
-import AdminApplication from '@/components/AdminApplication'
+import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
@@ -72,7 +72,7 @@ export default new Router({
       component: TenantManager
     }, {
       path: '/admin/:tenantId',
-      component: AdminApplication,
+      component: TenantAdministration,
       children: [
         {
           path: 'server',

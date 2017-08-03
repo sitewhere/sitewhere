@@ -7,29 +7,8 @@
             style="height: 40px;" />
         </v-list-tile>
       </v-list>
-      <v-list v-if="sections" dense class="pt-0">
-        <v-list-group v-for="navsect in sections" :value="navsect.active" :key="navsect.id">
-          <v-list-tile @click.native="onSectionClicked(navsect)" slot="item">
-            <v-list-tile-action>
-              <v-icon dark>{{ navsect.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ navsect.title }}</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action v-if="navsect.subsections">
-              <v-icon dark>keyboard_arrow_down</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile @click.native="onSectionClicked(navsub)" v-for="navsub in navsect.subsections" :key="navsub">
-            <v-list-tile-content>
-              <v-list-tile-title>{{ navsub.title }}</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-icon dark>{{ navsub.icon }}</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-        </v-list-group>
-      </v-list>
+      <navigation :sections="sections" @sectionSelected="onSectionClicked">
+      </navigation>
     </v-navigation-drawer>
     <v-toolbar fixed class="grey darken-3" dark>
       <v-toolbar-side-icon class="grey--text" @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
@@ -61,8 +40,9 @@
 </template>
 
 <script>
-import {_getTenant} from '../http/sitewhere-api-wrapper'
-import ErrorBanner from './common/ErrorBanner'
+import {_getTenant} from '../../http/sitewhere-api-wrapper'
+import Navigation from '../common/Navigation'
+import ErrorBanner from '../common/ErrorBanner'
 
 export default {
   data: () => ({
@@ -209,7 +189,6 @@ export default {
   methods: {
     // Load tenant based on tenant id.
     onLoadTenant: function (tenantId) {
-      console.log('loading tenant ' + tenantId)
       var component = this
 
       // Make api call to load tenant.
@@ -223,7 +202,6 @@ export default {
     },
     // Called after tenant is loaded.
     onTenantLoaded: function (tenant) {
-      console.log('Successfully loaded ' + tenant.id + ' tenant.')
       this.$store.commit('selectedTenant', tenant)
 
       // Select first section from list.
@@ -241,7 +219,6 @@ export default {
     },
     // Called when user requests log out.
     onLogOut: function () {
-      console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
     }
