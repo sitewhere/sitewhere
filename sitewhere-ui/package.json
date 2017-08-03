@@ -22,6 +22,7 @@
     "vue": "^2.3.3",
     "vue-clipboards": "^1.0.4",
     "vue-color": "^2.2.0",
+    "vue-flatpickr-component": "^2.4.1",
     "vue-highlightjs": "^1.3.3",
     "vue-moment": "^2.0.2",
     "vue-router": "^2.3.1",

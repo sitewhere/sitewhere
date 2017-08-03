@@ -12,6 +12,26 @@ export default {
     return moment(date).format('YYYY-MM-DD H:mm:ss')
   },
 
+  /**
+   * Format date in YYYY-MM-DD H:mm:ss format.
+   */
+  formatIso8601: function (date) {
+    if (!date) {
+      return null
+    }
+    return moment(date).toISOString()
+  },
+
+  /**
+   * Parse date in YYYY-MM-DD H:mm:ss format.
+   */
+  parseIso8601: function (value) {
+    if (!value) {
+      return null
+    }
+    return new Date(moment(value))
+  },
+
   // Tests whether a string is blank.
   isBlank: function (str) {
     return (!str || /^\s*$/.test(str))

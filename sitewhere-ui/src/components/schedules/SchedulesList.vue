@@ -9,31 +9,40 @@
           :headers="headers" :items="schedules"
           :hide-actions="true" no-data-text="No Schedules Found">
           <template slot="items" scope="props">
-            <td width="25%" :title="props.item.name">
+            <td width="17%" :title="props.item.name">
               {{ props.item.name }}
             </td>
             <td width="15%" :title="props.item.triggerType">
               {{ props.item.triggerType }}
             </td>
-            <td width="30%" :title="props.item.token">
+            <td width="35%" :title="props.item.token">
               {{ props.item.token }}
             </td>
-            <td width="25%"
+            <td width="18%"
               :title="utils.formatDate(props.item.createdDate)">
               {{ utils.formatDate(props.item.createdDate) }}
             </td>
-            <td width="10%">
-              <v-btn dark icon small class="green darken-2"
-                v-tooltip:top="{ html: 'Edit Schedule' }"
-                @click.native.stop="editSchedule(props.item.token)">
+            <td width="15%">
+              <v-btn dark icon small class="grey pa-0 ma-0"
+                v-tooltip:top="{ html: 'Edit' }"
+                @click.native.stop="onEditSchedule(props.item.token)">
                 <v-icon fa>edit</v-icon>
+              </v-btn>
+              <v-btn dark icon small class="grey pa-0 ma-0"
+                v-tooltip:top="{ html: 'Delete' }"
+                @click.native.stop="onDeleteSchedule(props.item.token)">
+                <v-icon fa>remove</v-icon>
               </v-btn>
             </td>
           </template>
         </v-data-table>
       </v-flex>
     </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <pager :pageSizes="pageSizes" :results="results"
+      @pagingUpdated="updatePaging">
+    </pager>
+    <schedule-create-dialog @scheduleAdded="refresh">
+    </schedule-create-dialog>
   </div>
 </template>
 
@@ -41,6 +50,7 @@
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
+import ScheduleCreateDialog from './ScheduleCreateDialog'
 import {_listSchedules} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -73,7 +83,7 @@ export default {
       }, {
         align: 'left',
         sortable: false,
-        text: '',
+        text: 'Actions',
         value: 'actions'
       }
     ],
@@ -93,7 +103,8 @@ export default {
 
   components: {
     Pager,
-    NoResultsPanel
+    NoResultsPanel,
+    ScheduleCreateDialog
   },
 
   computed: {

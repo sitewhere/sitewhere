@@ -5,6 +5,7 @@ import Vue2Leaflet from 'vue2-leaflet'
 import VueMoment from 'vue-moment'
 import VueClipboards from 'vue-clipboards'
 import VueHighlightJS from 'vue-highlightjs'
+import VueFlatPickr from 'vue-flatpickr-component'
 // import VeeValidate from 'vee-validate'
 
 import Login from '@/components/Login'
@@ -25,12 +26,14 @@ import AssetCategoriesList from '@/components/assets/AssetCategoriesList'
 import AssetCategoryDetail from '@/components/assets/AssetCategoryDetail'
 import BatchOperationsList from '@/components/batch/BatchOperationsList'
 import BatchOperationDetail from '@/components/batch/BatchOperationDetail'
+import SchedulesList from '@/components/schedules/SchedulesList'
 
 Vue.use(Router)
 Vue.use(Vuetify)
 Vue.use(VueMoment)
 Vue.use(VueClipboards)
 Vue.use(VueHighlightJS)
+Vue.use(VueFlatPickr)
 // Vue.use(VeeValidate)
 
 Vue.component('v-map', Vue2Leaflet.Map)
@@ -118,7 +121,7 @@ export default new Router({
           component: BatchOperationDetail
         }, {
           path: 'schedules',
-          component: Server
+          component: SchedulesList
         }
       ]
     }

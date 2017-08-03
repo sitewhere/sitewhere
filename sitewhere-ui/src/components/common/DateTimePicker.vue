@@ -1,110 +1,63 @@
 <template>
-  <div class="date-time-picker">
-    <v-text-field :label="label" v-model="formattedValue" readonly
-      hide-details prepend-icon="insert_invitation">
-    </v-text-field>
-    <v-menu class="calendar-icon" lazy
-      v-model="calendarMenu" offset-y full-width max-width="290px">
-      <v-icon slot="activator" fa>calendar</v-icon>
-      <v-date-picker v-model="selectedDate" no-title scrollable actions>
-      </v-date-picker>
-    </v-menu>
-    <v-menu class="time-icon" lazy :close-on-content-click="false"
-      v-model="timeMenu" offset-y full-width max-width="290px">
-      <v-icon slot="activator" fa>clock-o</v-icon>
-      <v-time-picker v-model="selectedTime"></v-time-picker>
-    </v-menu>
-    <v-btn icon small flat class="delete-icon" @click.native="onClear">
+  <div class="date-time-picker mt-3 mb-4">
+    <v-icon fa class="mr-3 ml-1">calendar</v-icon>
+    <span class="date-input">
+      <flat-pickr v-model="date" :placeholder="label"
+        :config="dateTimeConfig" :required="true"
+        name="date">
+      </flat-pickr>
+    </span>
+    <v-btn icon small flat class="delete-icon ma-0" @click.native="onClear">
       <v-icon fa>remove</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
-import moment from 'moment'
+import FlatPickr from 'vue-flatpickr-component'
 
 export default {
 
   data: () => ({
-    selectedDate: null,
-    selectedTime: null,
-    calendarMenu: null,
-    timeMenu: null
+    date: null,
+    formattedValue: null,
+    menu: null,
+    dateTimeConfig: {
+      wrap: false,
+      enableTime: true,
+      altFormat: 'Y-m-d H:iK',
+      altInput: true,
+      dateFormat: 'Y-m-d H:i:S'
+    }
   }),
+
+  components: {
+    FlatPickr
+  },
 
   props: ['value', 'label'],
 
-  computed: {
-    formattedValue: function () {
-      if (this.selectedDate) {
-        return this.selectedDate + ' ' + (this.selectedTime || '')
-      }
-      return null
-    }
-  },
-
-  created: function () {
-    this.updateFromValue(this.value)
-  },
-
   watch: {
-    // Handle value being set externally.
     value: function (value) {
-      this.updateFromValue(value)
+      this.$data.date = value
     },
-    selectedTime: function (value) {
-      if (value && !this.selectedDate) {
-        this.selectedDate = moment().startOf('day').format('YYYY-MM-DD')
-      }
-    },
-    formattedValue: function (value) {
-      if (value) {
-        let updated = new Date(moment(value, 'YYYY-MM-DD hh:mma'))
-        this.$emit('input', updated)
-      } else {
-        this.$emit('input', null)
-      }
+    date: function (value) {
+      this.$emit('input', value)
     }
   },
 
   methods: {
-    updateFromValue: function () {
-      if (this.value) {
-        this.selectedTime = moment(this.value).format('h:mma')
-        this.selectedDate = moment(this.value).startOf('day')
-      } else {
-        this.selectedTime = null
-        this.selectedDate = null
-      }
-    },
-
-    // Clear the current data.
     onClear: function () {
-      this.selectedDate = null
-      this.selectedTime = null
+      this.$data.date = null
     }
   }
 }
 </script>
 
 <style scoped>
-.date-time-picker {
-  position: relative;
-}
-.calendar-icon {
-  position: absolute;
-  right: 52px;
-  bottom: 22px;
-}
-.time-icon {
-  position: absolute;
-  right: 32px;
-  bottom: 22px;
-}
-.delete-icon {
-  position: absolute;
-  margin: 0px;
-  right: 0px;
-  bottom: 17px;
+.date-input {
+  color: #333;
+  font-size: 16px;
+  border-bottom: 1px solid #999;
 }
 </style>
