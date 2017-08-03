@@ -156,7 +156,7 @@ export default {
         if (triggerConfig) {
           if (payload.triggerType === 'CronTrigger') {
             this.$data.scheduleCron = triggerConfig.cronExpression
-          } else if (payload.triggerType === 'CronTrigger') {
+          } else if (payload.triggerType === 'SimpleTrigger') {
             this.$data.scheduleInterval = triggerConfig.repeatInterval
             this.$data.scheduleRepetitons = triggerConfig.repeatCount
           }
