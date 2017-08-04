@@ -23,24 +23,6 @@ export function createAxiosAuthorized (baseUrl, authToken, tenantToken) {
 }
 
 /**
- * Get a user by username.
- */
-export function getUser (axios, username) {
-  return restAuthGet(axios, 'users/' + username)
-}
-
-/**
- * List authorized tenants for a user.
- */
-export function listUserTenants (axios, username, includeRuntimeInfo) {
-  let query = ''
-  if (includeRuntimeInfo) {
-    query += '?includeRuntimeInfo=true'
-  }
-  return restAuthGet(axios, 'users/' + username + '/tenants' + query)
-}
-
-/**
  * Perform a REST get call.
  */
 export function restAuthGet (axios, path) {

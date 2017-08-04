@@ -1,9 +1,15 @@
 import {
-  BASE_URL, createAxiosAuthorized,
-
-  // Users.
-  getUser, listUserTenants
+  BASE_URL, createAxiosAuthorized
 } from './sitewhere-api'
+
+// Users.
+import {
+  createUser,
+  updateUser,
+  getUser,
+  listUsers,
+  listUserTenants
+} from './sitewhere-users-api.js'
 
 // Tenants.
 import {
@@ -153,11 +159,38 @@ function loaderWrapper (store, apiCall) {
 }
 
 /**
+ * Create a user.
+ */
+export function _createUser (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createUser(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Get user by username.
  */
 export function _getUser (store, username) {
   let axios = createAxiosFromStore(store)
   var api = getUser(axios, username)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update a user.
+ */
+export function _updateUser (store, username, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateUser(axios, username, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List users.
+ */
+export function _listUsers (store, includeDeleted, count) {
+  let axios = createAxiosFromStore(store)
+  let api = listUsers(axios, includeDeleted, count)
   return loaderWrapper(store, api)
 }
 
