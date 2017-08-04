@@ -1,7 +1,8 @@
 <template>
   <v-list v-if="sections" dense class="pt-0">
     <v-list-group v-for="navsect in sections" :value="navsect.active" :key="navsect.id">
-      <v-list-tile @click.native="onSectionClicked(navsect)" slot="item">
+      <v-list-tile v-if="isAuthForSection(navsect)"
+        @click.native="onSectionClicked(navsect)" slot="item">
         <v-list-tile-action>
           <v-icon dark>{{ navsect.icon }}</v-icon>
         </v-list-tile-action>
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+import Utils from './Utils'
+
 export default {
 
   data: () => ({
@@ -35,6 +38,14 @@ export default {
   props: ['sections'],
 
   methods: {
+    // Determines whether user is authorized for section.
+    isAuthForSection: function (section) {
+      if (section.requireAll) {
+        return Utils.isAuthForAll(this, section.requireAll)
+      }
+      return true
+    },
+
     onSectionClicked: function (section) {
       this.$emit('sectionSelected', section)
     }

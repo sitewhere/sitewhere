@@ -54,14 +54,16 @@ export default {
       title: 'Tenants',
       icon: 'layers',
       route: 'system/tenants',
-      longTitle: 'Manage Tenants'
+      longTitle: 'Manage Tenants',
+      requireAll: ['ADMINISTER_TENANTS']
     },
     {
       id: 'users',
       title: 'Users',
       icon: 'people',
       route: 'system/users',
-      longTitle: 'Manage Users'
+      longTitle: 'Manage Users',
+      requireAll: ['ADMINISTER_USERS']
     }],
     userActions: [{
       id: 'logout',

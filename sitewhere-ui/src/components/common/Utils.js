@@ -69,6 +69,16 @@ export default {
     return metadata
   },
 
+  // Indicates if logged-in user is authorized for all auths in list.
+  isAuthForAll: function (component, list) {
+    let user = component.$store.getters.user
+    if (!user) {
+      console.log('No user for permissions check.')
+      return false
+    }
+    return list.every(auth => user.authorities.indexOf(auth) > -1)
+  },
+
   /**
    * Routes to a applicaton-relative URL.
    */
