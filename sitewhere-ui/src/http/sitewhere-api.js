@@ -41,13 +41,6 @@ export function listUserTenants (axios, username, includeRuntimeInfo) {
 }
 
 /**
- * Get a tenant by tenant id.
- */
-export function getTenant (axios, tenantId) {
-  return restAuthGet(axios, 'tenants/' + tenantId)
-}
-
-/**
  * Perform a REST get call.
  */
 export function restAuthGet (axios, path) {

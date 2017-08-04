@@ -1,0 +1,64 @@
+<template>
+  <div>
+    <v-container fluid grid-list-md  v-if="tenants">
+      <v-layout row wrap>
+         <v-flex xs6 v-for="(tenant, index) in tenants" :key="tenant.id">
+          <tenant-list-entry :tenant="tenant" class="mb-3"
+            @click.native="onOpenTenant(tenant)">
+          </tenant-list-entry>
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <pager :results="results" @pagingUpdated="updatePaging"></pager>
+  </div>
+</template>
+
+<script>
+import Pager from '../common/Pager'
+import TenantListEntry from './TenantListEntry'
+import {_listTenants} from '../../http/sitewhere-api-wrapper'
+
+export default {
+
+  data: () => ({
+    results: null,
+    paging: null,
+    tenants: null
+  }),
+
+  components: {
+    Pager,
+    TenantListEntry
+  },
+
+  methods: {
+    // Update paging values and run query.
+    updatePaging: function (paging) {
+      this.$data.paging = paging
+      this.refresh()
+    },
+
+    // Refresh list of sites.
+    refresh: function () {
+      var user = this.$store.getters.user
+      var paging = this.$data.paging.query
+      var component = this
+      _listTenants(this.$store, null, user.username, true, paging)
+        .then(function (response) {
+          component.results = response.data
+          component.tenants = response.data.results
+        }).catch(function (e) {
+        })
+    },
+
+    // Called to open tenant management for tenant.
+    onOpenTenant: function (tenant) {
+      this.$store.commit('selectedTenant', tenant)
+      this.$router.push('/admin/' + tenant.id + '/server')
+    }
+  }
+}
+</script>
+
+<style scoped>
+</style>

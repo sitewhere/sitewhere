@@ -2,11 +2,16 @@ import {
   BASE_URL, createAxiosAuthorized,
 
   // Users.
-  getUser, listUserTenants,
-
-  // Tenants.
-  getTenant
+  getUser, listUserTenants
 } from './sitewhere-api'
+
+// Tenants.
+import {
+  createTenant,
+  getTenant,
+  updateTenant,
+  listTenants
+} from './sitewhere-tenants-api.js'
 
 // Sites.
 import {
@@ -167,11 +172,40 @@ export function _listTenantsForCurrentUser (store) {
 }
 
 /**
+ * Create a tenant.
+ */
+export function _createTenant (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createTenant(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Get a tenant by tenant id.
  */
 export function _getTenant (store, tenantId) {
   let axios = createAxiosFromStore(store)
   let api = getTenant(axios, tenantId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing tenant.
+ */
+export function _updateTenant (store, tenantId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateTenant(axios, tenantId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List tenants.
+ */
+export function _listTenants (store, textSearch, authUserId, includeRuntime,
+  paging) {
+  let axios = createAxiosFromStore(store)
+  let api = listTenants(axios, textSearch, authUserId, includeRuntime,
+    paging)
   return loaderWrapper(store, api)
 }
 

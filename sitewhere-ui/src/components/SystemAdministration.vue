@@ -1,12 +1,17 @@
 <template>
   <v-app v-if="user">
+    <error-banner :error="error"></error-banner>
+    <v-progress-linear v-if="loading" class="call-progress pa-0 ma-0"
+      :indeterminate="true">
+    </v-progress-linear>
     <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
-      <v-list class="pa-0">
-        <v-list-tile avatar tag="div">
+      <v-list>
+        <v-list-tile tag="div">
           <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-white.png"
             style="height: 40px;" />
         </v-list-tile>
       </v-list>
+      <v-divider></v-divider>
       <navigation :sections="sections" @sectionSelected="onSectionClicked">
       </navigation>
     </v-navigation-drawer>
@@ -29,9 +34,6 @@
       </v-menu>
     </v-toolbar>
     <main>
-      <error-banner :error="error"></error-banner>
-      <v-progress-linear v-if="loading" class="login-progress pa-0 ma-0" :indeterminate="true"></v-progress-linear>
-      <div style="height: 7px;" v-else></div>
       <v-container fluid>
         <router-view></router-view>
       </v-container>
@@ -40,74 +42,26 @@
 </template>
 
 <script>
-import {_getTenant} from '../../http/sitewhere-api-wrapper'
-import Navigation from '../common/Navigation'
-import ErrorBanner from '../common/ErrorBanner'
+import Navigation from './common/Navigation'
+import ErrorBanner from './common/ErrorBanner'
 
 export default {
   data: () => ({
     drawer: true,
     tenantId: null,
     sections: [{
-      id: 'configure',
-      title: 'Tenant Configuration',
-      icon: 'settings',
-      route: 'server',
-      longTitle: 'Tenant Configuration'
+      id: 'tenants',
+      title: 'Tenants',
+      icon: 'layers',
+      route: 'system/tenants',
+      longTitle: 'Manage Tenants'
     },
     {
-      id: 'sites',
-      title: 'Sites',
-      icon: 'map',
-      route: 'sites',
-      longTitle: 'Manage Sites'
-    },
-    {
-      id: 'deviceGroup',
-      title: 'Devices',
-      icon: 'developer_board',
-      route: 'devices',
-      longTitle: 'Manage Devices',
-      subsections: [{
-        id: 'specifications',
-        title: 'Device Specifications',
-        icon: 'description',
-        route: 'specifications',
-        longTitle: 'Manage Device Specifications'
-      }, {
-        id: 'devices',
-        title: 'Devices',
-        icon: 'developer_board',
-        route: 'devices',
-        longTitle: 'Manage Devices'
-      }, {
-        id: 'groups',
-        title: 'Device Groups',
-        icon: 'view_module',
-        route: 'groups',
-        longTitle: 'Manage Device Groups'
-      }]
-    },
-    {
-      id: 'assets',
-      title: 'Assets',
-      icon: 'local_offer',
-      route: 'assets/categories',
-      longTitle: 'Manage Asset Categories'
-    },
-    {
-      id: 'batch',
-      title: 'Batch Operations',
-      icon: 'group_work',
-      route: 'batch',
-      longTitle: 'Manage Batch Operations'
-    },
-    {
-      id: 'schedules',
-      title: 'Schedules',
-      icon: 'event',
-      route: 'schedules',
-      longTitle: 'Manage Schedules'
+      id: 'users',
+      title: 'Users',
+      icon: 'people',
+      route: 'system/users',
+      longTitle: 'Manage Users'
     }],
     userActions: [{
       id: 'logout',
@@ -119,6 +73,7 @@ export default {
   }),
 
   components: {
+    Navigation,
     ErrorBanner
   },
 
@@ -164,53 +119,14 @@ export default {
       this.onLogOut()
       return
     }
-
-    // Verify that a tenant id was specified in the route.
-    var tenantId = this.$route.params.tenantId
-    if (!tenantId) {
-      console.log('No tenant id passed. Logging out!')
-      this.onLogOut()
-      return
-    }
-    this.$data.tenantId = tenantId
-
-    // Load tenant if tenant id changed or not already loaded.
-    var tenant = this.$store.getters.selectedTenant
-    if ((!tenant) || (tenant.id !== tenantId)) {
-      this.onLoadTenant(tenantId)
-    } else {
-      console.log('tenant ' + tenantId + ' already loaded')
-
-      // Select first section from list.
-      this.onSectionClicked(this.$data.sections[0])
-    }
+    this.onSectionClicked(this.$data.sections[0])
   },
 
   methods: {
-    // Load tenant based on tenant id.
-    onLoadTenant: function (tenantId) {
-      var component = this
-
-      // Make api call to load tenant.
-      _getTenant(this.$store, tenantId)
-        .then(function (response) {
-          component.onTenantLoaded(response.data)
-        }).catch(function (e) {
-          console.log('Unable to load tenant ' + tenantId + '. Logging out!')
-          component.onLogOut()
-        })
-    },
-    // Called after tenant is loaded.
-    onTenantLoaded: function (tenant) {
-      this.$store.commit('selectedTenant', tenant)
-
-      // Select first section from list.
-      this.onSectionClicked(this.$data.sections[0])
-    },
     // Called when a section is clicked.
     onSectionClicked: function (section) {
       this.$store.commit('currentSection', section)
-      this.$router.push('/admin/' + this.$data.tenantId + '/' + section.route)
+      this.$router.push('/' + section.route)
     },
     onUserAction: function (action) {
       if (action.id === 'logout') {
@@ -219,6 +135,7 @@ export default {
     },
     // Called when user requests log out.
     onLogOut: function () {
+      console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
     }
@@ -227,14 +144,9 @@ export default {
 </script>
 
 <style scoped>
-.list__tile__action {
-  min-width: 40px;
-}
-.list__tile__title {
-  font-size: 16px;
-  padding-top: 3px;
-}
-.login-progress {
-  margin: 0px;
+.call-progress {
+  position: fixed;
+  height: 100px;
+  z-index: 1000;
 }
 </style>

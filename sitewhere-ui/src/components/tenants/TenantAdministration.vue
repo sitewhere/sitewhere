@@ -1,5 +1,9 @@
 <template>
   <v-app v-if="user">
+    <error-banner :error="error"></error-banner>
+    <v-progress-linear v-if="loading" class="call-progress pa-0 ma-0"
+      :indeterminate="true">
+    </v-progress-linear>
     <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
       <v-list>
         <v-list-tile tag="div">
@@ -30,9 +34,6 @@
       </v-menu>
     </v-toolbar>
     <main>
-      <error-banner :error="error"></error-banner>
-      <v-progress-linear v-if="loading" class="login-progress pa-0 ma-0" :indeterminate="true"></v-progress-linear>
-      <div style="height: 7px;" v-else></div>
       <v-container fluid>
         <router-view></router-view>
       </v-container>
@@ -232,7 +233,9 @@ export default {
 </script>
 
 <style scoped>
-.login-progress {
-  margin: 0px;
+.call-progress {
+  position: fixed;
+  height: 100px;
+  z-index: 1000;
 }
 </style>

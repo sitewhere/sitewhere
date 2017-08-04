@@ -1,13 +1,8 @@
 <template>
-  <v-layout row wrap v-if="error">
-    <v-flex xs12>
-      <v-card class="white--text">
-        <v-alert error v-bind:value="true" class="top-alert">
-          {{error.message}}
-        </v-alert>
-      </v-card>
-    </v-flex>
-  </v-layout>
+  <v-snackbar v-if="error" :timeout="4000" error v-model="errorDisplayed">
+    {{ error.message }}
+    <v-btn dark flat @click.native="errorDisplayed = false">Close</v-btn>
+  </v-snackbar>
 </template>
 
 <script>
@@ -15,9 +10,18 @@
 export default {
 
   data: () => ({
+    errorDisplayed: false
   }),
 
   props: ['error'],
+
+  watch: {
+    error: function (value) {
+      if (value) {
+        this.$data.errorDisplayed = true
+      }
+    }
+  },
 
   methods: {
   }
@@ -25,8 +29,4 @@ export default {
 </script>
 
 <style scoped>
-.top-alert {
-  margin: 0px;
-  width: 100%
-}
 </style>

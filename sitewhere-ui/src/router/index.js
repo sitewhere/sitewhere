@@ -9,7 +9,9 @@ import VueFlatPickr from 'vue-flatpickr-component'
 // import VeeValidate from 'vee-validate'
 
 import Login from '@/components/Login'
-import TenantManager from '@/components/tenants/TenantManager'
+import SystemAdministration from '@/components/SystemAdministration'
+import TenantsList from '@/components/tenants/TenantsList'
+import UsersList from '@/components/users/UsersList'
 import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
@@ -68,8 +70,17 @@ export default new Router({
       path: '/',
       component: Login
     }, {
-      path: '/tenants',
-      component: TenantManager
+      path: '/system',
+      component: SystemAdministration,
+      children: [
+        {
+          path: 'tenants',
+          component: TenantsList
+        }, {
+          path: 'users',
+          component: UsersList
+        }
+      ]
     }, {
       path: '/admin/:tenantId',
       component: TenantAdministration,

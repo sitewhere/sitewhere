@@ -74,7 +74,7 @@ export default {
       _getUser(this.$store, this.username)
         .then(function (response) {
           component.$store.commit('user', response.data)
-          component.$router.push('/tenants')
+          component.$router.push('/system')
         }).catch(function (e) {
         })
     }
