@@ -8,6 +8,9 @@
         <v-tabs-item key="details" href="#details">
           User Details
         </v-tabs-item>
+        <v-tabs-item key="permissions" href="#permissions">
+          User Details
+        </v-tabs-item>
         <v-tabs-item key="metadata" href="#metadata">
           Metadata
         </v-tabs-item>
@@ -55,6 +58,13 @@
           </v-card-text>
         </v-card>
       </v-tabs-content>
+      <v-tabs-content class="user-permissions" key="permissions" id="permissions">
+        <el-tree ref="tree" show-checkbox default-expand-all node-key="id"
+          :data="allPermissions" :props="treeProps"
+          :default-checked-keys="userAuthorities"
+          @check-change="onPermissionsUpdated">
+        </el-tree>
+      </v-tabs-content>
       <v-tabs-content key="metadata" id="metadata">
         <metadata-panel :metadata="metadata"
           @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
@@ -67,6 +77,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
+import {_getAuthoritiesHierarchy} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -80,7 +91,13 @@ export default {
     userFirstName: null,
     userLastName: null,
     userAccountStatus: null,
+    userAuthorities: [],
     metadata: [],
+    treeProps: {
+      children: 'items',
+      label: 'text'
+    },
+    allPermissions: [],
     accountStatusList: [
       {
         'text': 'Active',
@@ -112,6 +129,7 @@ export default {
       payload.firstName = this.$data.userFirstName
       payload.lastName = this.$data.userLastName
       payload.status = this.$data.userAccountStatus
+      payload.authorities = this.$data.userAuthorities
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
@@ -124,8 +142,17 @@ export default {
       this.$data.userFirstName = null
       this.$data.userLastName = null
       this.$data.userAccountStatus = null
+      this.$data.userAuthorities = []
       this.$data.metadata = []
       this.$data.active = 'details'
+
+      // Reload permissions hierarchy.
+      var component = this
+      _getAuthoritiesHierarchy(this.$store)
+        .then(function (response) {
+          component.allPermissions = response.data
+        }).catch(function (e) {
+        })
     },
 
     // Load dialog from a given payload.
@@ -137,6 +164,7 @@ export default {
         this.$data.userFirstName = payload.firstName
         this.$data.userLastName = payload.lastName
         this.$data.userAccountStatus = payload.status
+        this.$data.userAuthorities = payload.authorities
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
@@ -167,6 +195,11 @@ export default {
       this.$data.dialogVisible = false
     },
 
+    // Called when permissions list is updated.
+    onPermissionsUpdated: function () {
+      this.$data.userAuthorities = this.$refs['tree'].getCheckedKeys()
+    },
+
     // Called when a metadata entry has been deleted.
     onMetadataDeleted: function (name) {
       var metadata = this.$data.metadata
@@ -187,4 +220,8 @@ export default {
 </script>
 
 <style scoped>
+.user-permissions {
+  max-height: 400px;
+  overflow-y: auto;
+}
 </style>

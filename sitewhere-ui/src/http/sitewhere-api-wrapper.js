@@ -7,8 +7,10 @@ import {
   createUser,
   updateUser,
   getUser,
+  deleteUser,
   listUsers,
-  listUserTenants
+  listUserTenants,
+  getAuthoritiesHierarchy
 } from './sitewhere-users-api.js'
 
 // Tenants.
@@ -186,6 +188,15 @@ export function _updateUser (store, username, payload) {
 }
 
 /**
+ * Delete a user.
+ */
+export function _deleteUser (store, username, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteUser(axios, username, force)
+  return loaderWrapper(store, api)
+}
+
+/**
  * List users.
  */
 export function _listUsers (store, includeDeleted, count) {
@@ -201,6 +212,15 @@ export function _listTenantsForCurrentUser (store) {
   let axios = createAxiosFromStore(store)
   let username = store.getters.user.username
   var api = listUserTenants(axios, username, false)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get hierarchical list of granted authorities.
+ */
+export function _getAuthoritiesHierarchy (store) {
+  let axios = createAxiosFromStore(store)
+  let api = getAuthoritiesHierarchy(axios)
   return loaderWrapper(store, api)
 }
 

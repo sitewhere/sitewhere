@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "css-loader": "^0.28.4",
+    "element-ui": "^1.4.1",
     "leaflet": "^1.0.3",
     "leaflet-draw": "^0.4.10",
     "lodash": "^4.17.4",

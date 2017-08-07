@@ -6,6 +6,7 @@ import VueMoment from 'vue-moment'
 import VueClipboards from 'vue-clipboards'
 import VueHighlightJS from 'vue-highlightjs'
 import VueFlatPickr from 'vue-flatpickr-component'
+import Tree from 'element-ui'
 // import VeeValidate from 'vee-validate'
 
 import Login from '@/components/Login'
@@ -36,6 +37,7 @@ Vue.use(VueMoment)
 Vue.use(VueClipboards)
 Vue.use(VueHighlightJS)
 Vue.use(VueFlatPickr)
+Vue.use(Tree)
 // Vue.use(VeeValidate)
 
 Vue.component('v-map', Vue2Leaflet.Map)

@@ -15,4 +15,6 @@ export default {
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-draw/dist/leaflet.draw.css";
 @import '~flatpickr/dist/flatpickr.css';
+@import '~element-ui/lib/theme-default/checkbox.css';
+@import '~element-ui/lib/theme-default/tree.css';
 </style>

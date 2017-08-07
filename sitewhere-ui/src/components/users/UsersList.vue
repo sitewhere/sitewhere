@@ -9,31 +9,33 @@
           :headers="headers" :items="users"
           :hide-actions="true" no-data-text="No Users Found">
           <template slot="items" scope="props">
-            <td width="10%" :title="props.item.username">
+            <td width="5%" :title="props.item.username">
               {{ props.item.username }}
             </td>
-            <td width="12%" :title="props.item.firstName">
+            <td width="5%" :title="props.item.firstName">
               {{ props.item.firstName }}
             </td>
-            <td width="15%" :title="props.item.lastName">
+            <td width="10%" :title="props.item.lastName">
               {{ props.item.lastName }}
             </td>
-            <td width="15%" :title="props.item.status">
+            <td width="5%" :title="props.item.status">
               {{ props.item.status }}
             </td>
-            <td width="10%"
-              :title="utils.formatDate(props.item.lastLogin)">
-              {{ utils.formatDate(props.item.lastLogin) }}
-            </td>
-            <td width="20%"
+            <td width="15%"
               :title="utils.formatDate(props.item.createdDate)">
               {{ utils.formatDate(props.item.createdDate) }}
             </td>
-            <td width="20%"
+            <td width="15%"
               :title="utils.formatDate(props.item.updatedDate)">
               {{ utils.formatDate(props.item.updatedDate) }}
             </td>
-            <td width="5%">
+            <td width="12%" class="action-buttons">
+              <user-update-dialog :username="props.item.username"
+                @userUpdated="refresh">
+              </user-update-dialog>
+              <user-delete-dialog :username="props.item.username"
+                @userDeleted="refresh">
+              </user-delete-dialog>
             </td>
           </template>
         </v-data-table>
@@ -52,6 +54,8 @@ import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import UserCreateDialog from './UserCreateDialog'
+import UserUpdateDialog from './UserUpdateDialog'
+import UserDeleteDialog from './UserDeleteDialog'
 import {_listUsers} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -81,11 +85,6 @@ export default {
         sortable: false,
         text: 'Status',
         value: 'status'
-      }, {
-        align: 'left',
-        sortable: false,
-        text: 'Last Login',
-        value: 'last'
       }, {
         align: 'left',
         sortable: false,
@@ -120,7 +119,9 @@ export default {
   components: {
     Pager,
     NoResultsPanel,
-    UserCreateDialog
+    UserCreateDialog,
+    UserUpdateDialog,
+    UserDeleteDialog
   },
 
   computed: {
@@ -159,4 +160,7 @@ export default {
 </script>
 
 <style scoped>
+.action-buttons {
+  white-space: nowrap;
+}
 </style>

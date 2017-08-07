@@ -58,3 +58,10 @@ export function listUserTenants (axios, username, includeRuntimeInfo) {
   }
   return restAuthGet(axios, 'users/' + username + '/tenants' + query)
 }
+
+/**
+ * Get authorities hierarchy.
+ */
+export function getAuthoritiesHierarchy (axios) {
+  return restAuthGet(axios, 'authorities/hierarchy')
+}
