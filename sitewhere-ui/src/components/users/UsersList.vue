@@ -42,6 +42,8 @@
     <pager :pageSizes="pageSizes" :results="results"
       @pagingUpdated="updatePaging">
     </pager>
+    <user-create-dialog @userAdded="refresh">
+    </user-create-dialog>
   </div>
 </template>
 
@@ -49,6 +51,7 @@
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
+import UserCreateDialog from './UserCreateDialog'
 import {_listUsers} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -116,7 +119,8 @@ export default {
 
   components: {
     Pager,
-    NoResultsPanel
+    NoResultsPanel,
+    UserCreateDialog
   },
 
   computed: {
