@@ -417,12 +417,6 @@ public class SiteWherePersistence {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR);
 	}
 	if (request.getSiteToken() != null) {
-	    // Can not change the site for an assigned device.
-	    if (target.getAssignmentToken() != null) {
-		if (!target.getSiteToken().equals(request.getSiteToken())) {
-		    throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned, ErrorLevel.ERROR);
-		}
-	    }
 	    target.setSiteToken(request.getSiteToken());
 	}
 	if (request.getSpecificationToken() != null) {
