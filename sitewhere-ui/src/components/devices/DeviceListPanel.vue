@@ -20,7 +20,7 @@
 
 <script>
 import Utils from '../common/Utils'
-import Style from '../common/style'
+import Style from '../common/Style'
 
 export default {
 

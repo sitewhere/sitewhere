@@ -33,7 +33,7 @@
 
 <script>
 import Utils from '../common/Utils'
-import Style from '../common/style'
+import Style from '../common/Style'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import {BASE_URL} from '../../http/sitewhere-api'
