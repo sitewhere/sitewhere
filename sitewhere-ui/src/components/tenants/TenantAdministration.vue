@@ -218,7 +218,7 @@ export default {
     // Called when a section is clicked.
     onSectionClicked: function (section) {
       this.$store.commit('currentSection', section)
-      this.$router.push('/admin/' + this.$data.tenantId + '/' + section.route)
+      this.$router.push('/tenants/' + this.$data.tenantId + '/' + section.route)
     },
     onUserAction: function (action) {
       if (action.id === 'logout') {

@@ -18,7 +18,7 @@ export default {
       if (tenants.length === 1) {
         var tenant = tenants[0]
         component.$store.commit('selectedTenant', tenants[0])
-        component.$router.push('/admin/' + tenant.id + '/server')
+        component.$router.push('/tenants/' + tenant.id + '/server')
       }
     }).catch(function (e) {
       component.error = e

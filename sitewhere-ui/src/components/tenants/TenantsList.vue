@@ -58,7 +58,7 @@ export default {
     // Called to open tenant management for tenant.
     onOpenTenant: function (tenant) {
       this.$store.commit('selectedTenant', tenant)
-      this.$router.push('/admin/' + tenant.id + '/server')
+      this.$router.push('/tenants/' + tenant.id + '/server')
     }
   }
 }

@@ -84,7 +84,7 @@ export default new Router({
         }
       ]
     }, {
-      path: '/admin/:tenantId',
+      path: '/tenants/:tenantId',
       component: TenantAdministration,
       children: [
         {

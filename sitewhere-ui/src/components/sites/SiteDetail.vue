@@ -109,7 +109,7 @@ export default {
     onSiteDeleted: function () {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/admin/' + tenant.id + '/sites')
+        this.$router.push('/tenants/' + tenant.id + '/sites')
       }
     },
 

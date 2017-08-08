@@ -23,7 +23,7 @@ export default {
     onOpenSite: function (token) {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/admin/' + tenant.id + '/sites/' + token)
+        this.$router.push('/tenants/' + tenant.id + '/sites/' + token)
       }
     }
   }
