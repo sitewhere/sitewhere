@@ -1,14 +1,10 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card>
-      <div class="create-dialog blue darken-2 white--text">
+      <div class="create-dialog blue darken-2 white--text headline">
         {{title}}
       </div>
-      <v-card-text slot="error" v-if="error">
-        <v-alert class="ma-0" error v-bind:value="true" style="width: 100%">
-          {{error.message}}
-        </v-alert>
-      </v-card-text>
+      <error-banner :error="error"></error-banner>
       <v-card-text>
         <slot>
             <div>Your content goes here!</div>
@@ -24,10 +20,16 @@
 </template>
 
 <script>
+import ErrorBanner from '../common/ErrorBanner'
+
 export default {
 
   data: () => ({
   }),
+
+  components: {
+    ErrorBanner
+  },
 
   props: ['title', 'width', 'visible', 'createLabel', 'cancelLabel', 'error', 'hideButtons', 'invalid'],
 
@@ -48,7 +50,6 @@ export default {
 <style scoped>
 .create-dialog {
   padding: 10px;
-  font-size: 26px;
   width: 100%;
 }
 </style>

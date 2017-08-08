@@ -54,14 +54,12 @@ export default {
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {
-            component.onFailed(e)
           })
       } else {
         _createCommandInvocationForAssignment(this.$store, this.token, payload)
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {
-            component.onFailed(e)
           })
       }
     },
@@ -70,11 +68,6 @@ export default {
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
       this.$emit('invocationAdded')
-    },
-
-    // Handle failed commit.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }

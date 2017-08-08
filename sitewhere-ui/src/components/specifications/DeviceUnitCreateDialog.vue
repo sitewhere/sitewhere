@@ -42,7 +42,9 @@ export default {
     onCommit: function (payload) {
       let match = lodash.find(this.deviceUnit.deviceUnits, {'path': payload.path})
       if (match) {
-        this.onFailed(new Error('A unit with that path already exists.'))
+        this.getDialogComponent().showError({
+          'message': 'A unit with that path already exists.'
+        })
       } else {
         this.onCommitted(payload)
       }

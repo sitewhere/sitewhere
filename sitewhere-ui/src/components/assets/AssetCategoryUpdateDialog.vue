@@ -34,7 +34,6 @@ export default {
         .then(function (response) {
           component.onLoaded(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -51,7 +50,6 @@ export default {
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -59,11 +57,6 @@ export default {
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
       this.$emit('categoryUpdated')
-    },
-
-    // Handle failed commit.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }

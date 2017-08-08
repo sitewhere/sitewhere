@@ -69,21 +69,18 @@ export default {
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {
-            component.onFailed(e)
           })
       } else if (this.isPerson()) {
         _createPersonAsset(this.$store, this.category.id, payload)
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {
-            component.onFailed(e)
           })
       } else if (this.isLocation()) {
         _createLocationAsset(this.$store, this.category.id, payload)
           .then(function (response) {
             component.onCommitted(response)
           }).catch(function (e) {
-            component.onFailed(e)
           })
       }
     },
@@ -92,11 +89,6 @@ export default {
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
       this.$emit('assetAdded')
-    },
-
-    // Handle failed commit.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }

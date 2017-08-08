@@ -48,7 +48,6 @@ export default {
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -57,11 +56,6 @@ export default {
       console.log('user deleted')
       this.getDialogComponent().closeDialog()
       this.$emit('userDeleted')
-    },
-
-    // Handle failed delete.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }

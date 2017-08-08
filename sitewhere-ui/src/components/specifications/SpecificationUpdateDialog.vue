@@ -33,7 +33,6 @@ export default {
         .then(function (response) {
           component.onLoaded(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -50,7 +49,6 @@ export default {
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -58,11 +56,6 @@ export default {
     onCommitted: function (result) {
       this.$children[0].closeDialog()
       this.$emit('specificationUpdated')
-    },
-
-    // Handle failed commit.
-    onFailed: function (error) {
-      this.$children[0].showError(error)
     }
   }
 }

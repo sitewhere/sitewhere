@@ -42,7 +42,6 @@ export default {
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -50,11 +49,6 @@ export default {
     onDeleted: function (result) {
       this.$children[0].closeDialog()
       this.$emit('siteDeleted')
-    },
-
-    // Handle failed delete.
-    onFailed: function (error) {
-      this.$children[0].showError(error)
     }
   }
 }

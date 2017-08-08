@@ -42,7 +42,9 @@ export default {
     onCommit: function (payload) {
       let match = lodash.find(this.deviceUnit.deviceSlots, {'path': payload.path})
       if (match) {
-        this.onFailed(new Error('A slot with that path already exists.'))
+        this.getDialogComponent().showError({
+          'message': 'A slot with that path already exists.'
+        })
       } else {
         this.onCommitted(payload)
       }
@@ -52,11 +54,6 @@ export default {
     onCommitted: function (payload) {
       this.getDialogComponent().closeDialog()
       this.$emit('deviceSlotAdded', payload)
-    },
-
-    // Handle failed commit.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }

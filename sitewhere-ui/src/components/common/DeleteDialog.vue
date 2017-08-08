@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card >
-      <div class="delete-dialog blue darken-2 white--text">
+      <div class="delete-dialog blue darken-2 white--text headline">
         {{title}}
       </div>
       <v-alert class="ma-0" error v-bind:value="true" style="width: 100%" slot="error" v-if="error">
@@ -62,7 +62,6 @@ export default {
 <style scoped>
 .delete-dialog {
   padding: 10px;
-  font-size: 26px;
   width: 100%;
 }
 </style>

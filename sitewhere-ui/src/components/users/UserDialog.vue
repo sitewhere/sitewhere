@@ -9,7 +9,7 @@
           User Details
         </v-tabs-item>
         <v-tabs-item key="permissions" href="#permissions">
-          User Details
+          Permissions
         </v-tabs-item>
         <v-tabs-item key="metadata" href="#metadata">
           Metadata
@@ -186,6 +186,15 @@ export default {
 
     // Called after create button is clicked.
     onCreateClicked: function (e) {
+      let password = this.$data.userPassword
+      let confirm = this.$data.userPasswordConfirm
+      if (password !== confirm) {
+        this.showError({
+          'message': 'Passwords do not match!'
+        })
+        return
+      }
+
       var payload = this.generatePayload()
       this.$emit('payload', payload)
     },

@@ -47,7 +47,6 @@ export default {
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {
-          component.onFailed(e)
         })
     },
 
@@ -55,11 +54,6 @@ export default {
     onDeleted: function (result) {
       this.getDialogComponent().closeDialog()
       this.$emit('commandDeleted')
-    },
-
-    // Handle failed delete.
-    onFailed: function (error) {
-      this.getDialogComponent().showError(error)
     }
   }
 }
