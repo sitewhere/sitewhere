@@ -10,12 +10,15 @@
       </v-layout>
     </v-container>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
+    <tenant-create-dialog @tenantAdded="refresh">
+    </tenant-create-dialog>
   </div>
 </template>
 
 <script>
 import Pager from '../common/Pager'
 import TenantListEntry from './TenantListEntry'
+import TenantCreateDialog from './TenantCreateDialog'
 import {_listTenants} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -28,7 +31,8 @@ export default {
 
   components: {
     Pager,
-    TenantListEntry
+    TenantListEntry,
+    TenantCreateDialog
   },
 
   methods: {

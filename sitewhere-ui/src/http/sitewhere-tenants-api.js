@@ -43,3 +43,10 @@ export function listTenants (axios, textSearch, authUserId, includeRuntimeInfo,
   }
   return restAuthGet(axios, 'tenants' + query)
 }
+
+/**
+ * Get list of available tenant templates.
+ */
+export function getTenantTemplates (axios) {
+  return restAuthGet(axios, 'tenants/templates')
+}

@@ -111,6 +111,10 @@ export default {
       longTitle: 'Manage Schedules'
     }],
     userActions: [{
+      id: 'sysadmin',
+      title: 'System Administration',
+      icon: 'settings'
+    }, {
       id: 'logout',
       title: 'Log Out',
       icon: 'power_settings_new'
@@ -219,6 +223,8 @@ export default {
     onUserAction: function (action) {
       if (action.id === 'logout') {
         this.onLogOut()
+      } else if (action.id === 'sysadmin') {
+        this.$router.push('/system')
       }
     },
     // Called when user requests log out.

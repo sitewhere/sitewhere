@@ -18,7 +18,8 @@ import {
   createTenant,
   getTenant,
   updateTenant,
-  listTenants
+  listTenants,
+  getTenantTemplates
 } from './sitewhere-tenants-api.js'
 
 // Sites.
@@ -259,6 +260,15 @@ export function _listTenants (store, textSearch, authUserId, includeRuntime,
   let axios = createAxiosFromStore(store)
   let api = listTenants(axios, textSearch, authUserId, includeRuntime,
     paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get list of tenant templates.
+ */
+export function _getTenantTemplates (store) {
+  let axios = createAxiosFromStore(store)
+  let api = getTenantTemplates(axios)
   return loaderWrapper(store, api)
 }
 
