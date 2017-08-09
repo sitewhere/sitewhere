@@ -50,3 +50,25 @@ export function listTenants (axios, textSearch, authUserId, includeRuntimeInfo,
 export function getTenantTemplates (axios) {
   return restAuthGet(axios, 'tenants/templates')
 }
+
+/**
+ * Get current configuration for tenant.
+ */
+export function getTenantConfiguration (axios, tenantId) {
+  return restAuthGet(axios, 'tenants/' + tenantId +
+    '/engine/configuration/json')
+}
+
+/**
+ * Get configuration model for tenant.
+ */
+export function getTenantConfigurationModel (axios) {
+  return restAuthGet(axios, 'tenants/configuration/model')
+}
+
+/**
+ * Get configuration roles for tenant.
+ */
+export function getTenantConfigurationRoles (axios) {
+  return restAuthGet(axios, 'tenants/configuration/roles')
+}

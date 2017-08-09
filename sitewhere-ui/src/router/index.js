@@ -12,6 +12,7 @@ import Tree from 'element-ui'
 import Login from '@/components/Login'
 import SystemAdministration from '@/components/SystemAdministration'
 import TenantsList from '@/components/tenants/TenantsList'
+import TenantDetail from '@/components/tenants/TenantDetail'
 import UsersList from '@/components/users/UsersList'
 import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
@@ -78,6 +79,9 @@ export default new Router({
         {
           path: 'tenants',
           component: TenantsList
+        }, {
+          path: 'tenants/:tenantId',
+          component: TenantDetail
         }, {
           path: 'users',
           component: UsersList

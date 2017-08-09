@@ -2,9 +2,11 @@
   <div>
     <v-container fluid grid-list-md  v-if="tenants">
       <v-layout row wrap>
-         <v-flex xs6 v-for="(tenant, index) in tenants" :key="tenant.id">
+         <v-flex xs12 v-for="(tenant, index) in tenants" :key="tenant.id">
           <tenant-list-entry :tenant="tenant" class="mb-3"
-            @click.native="onOpenTenant(tenant)">
+            @click.native="onOpenTenant(tenant)"
+            @openTenant="onOpenTenant(tenant)"
+            @configureTenant="onConfigureTenant(tenant)">
           </tenant-list-entry>
         </v-flex>
       </v-layout>
@@ -58,7 +60,12 @@ export default {
     // Called to open tenant management for tenant.
     onOpenTenant: function (tenant) {
       this.$store.commit('selectedTenant', tenant)
-      this.$router.push('/tenants/' + tenant.id + '/server')
+      this.$router.push('/tenants/' + tenant.id + '/sites')
+    },
+
+    // Called to open tenant detail.
+    onConfigureTenant: function (tenant) {
+      this.$router.push('/system/tenants/' + tenant.id)
     }
   }
 }

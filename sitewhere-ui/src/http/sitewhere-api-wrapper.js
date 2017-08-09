@@ -19,7 +19,10 @@ import {
   getTenant,
   updateTenant,
   listTenants,
-  getTenantTemplates
+  getTenantTemplates,
+  getTenantConfiguration,
+  getTenantConfigurationModel,
+  getTenantConfigurationRoles
 } from './sitewhere-tenants-api.js'
 
 // Sites.
@@ -269,6 +272,33 @@ export function _listTenants (store, textSearch, authUserId, includeRuntime,
 export function _getTenantTemplates (store) {
   let axios = createAxiosFromStore(store)
   let api = getTenantTemplates(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant configuration.
+ */
+export function _getTenantConfiguration (store, tenantId) {
+  let axios = createAxiosFromStore(store)
+  let api = getTenantConfiguration(axios, tenantId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant configuration model.
+ */
+export function _getTenantConfigurationModel (store) {
+  let axios = createAxiosFromStore(store)
+  let api = getTenantConfigurationModel(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant configuration roles.
+ */
+export function _getTenantConfigurationRoles (store) {
+  let axios = createAxiosFromStore(store)
+  let api = getTenantConfigurationRoles(axios)
   return loaderWrapper(store, api)
 }
 

@@ -10,7 +10,9 @@ package com.sitewhere.web.rest.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +57,9 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.configuration.ConfigurationContentParser;
+import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.content.ElementContent;
+import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
@@ -442,6 +446,55 @@ public class TenantsController extends RestController {
 		}
 	    }
 	    return matches;
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get tenant configuration model as a JSON object.
+     * 
+     * @param servletRequest
+     * @param servletResponse
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/configuration/model", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get hierarchical model for tenant configuration")
+    public TenantConfigurationModel getTenantConfigurationModel(HttpServletRequest servletRequest,
+	    HttpServletResponse servletResponse) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getTenantConfigurationModel", LOGGER);
+	try {
+	    checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+	    return new TenantConfigurationModel();
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get tenant configuration roles.
+     * 
+     * @param servletRequest
+     * @param servletResponse
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/configuration/roles", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get role information for tenant configuration")
+    public Map<String, ElementRole> getTenantConfigurationRoles(HttpServletRequest servletRequest,
+	    HttpServletResponse servletResponse) throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getTenantConfigurationModel", LOGGER);
+	try {
+	    checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+	    ElementRole[] roles = ElementRole.values();
+	    Map<String, ElementRole> rolesById = new HashMap<String, ElementRole>();
+	    for (ElementRole role : roles) {
+		rolesById.put(role.name(), role);
+	    }
+	    return rolesById;
 	} finally {
 	    Tracer.stop(LOGGER);
 	}

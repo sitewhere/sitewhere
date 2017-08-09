@@ -50,13 +50,6 @@ export default {
     drawer: true,
     tenantId: null,
     sections: [{
-      id: 'configure',
-      title: 'Tenant Configuration',
-      icon: 'settings',
-      route: 'server',
-      longTitle: 'Tenant Configuration'
-    },
-    {
       id: 'sites',
       title: 'Sites',
       icon: 'map',

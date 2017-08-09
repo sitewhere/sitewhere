@@ -4,10 +4,20 @@
       <div class="tenant-logo" :style="tenantLogoStyle(this.tenant)">
       </div>
       <div class="tenant-divider"></div>
-      <div class="tenant-name title ellipsis">{{tenant.name}}</div>
-      <div class="tenant-id subheading ellipsis">{{tenant.id}}</div>
-      <div v-if="tenant.engineState" class="tenant-state ellipsis">
-        {{tenant.engineState.lifecycleStatus}}
+      <div class="tenant-name headline ellipsis">
+        {{tenant.name}} ({{tenant.id}})
+      </div>
+      <div class="tenant-actions">
+        <v-btn @click.native.stop="onConfigureTenant"
+          class="blue white--text tenant-configure ma-0" >
+          <v-icon left dark fa>cogs</v-icon>
+          Configure Tenant
+        </v-btn>
+        <v-btn @click.native.stop="onOpenTenant"
+          class="green white--text tenant-open" >
+          <v-icon left dark fa>database</v-icon>
+          Manage Tenant Data
+        </v-btn>
       </div>
     </v-card-text>
   </v-card>
@@ -30,6 +40,16 @@ export default {
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%'
       }
+    },
+
+    // Open tenant.
+    onOpenTenant: function () {
+      this.$emit('openTenant', this.tenant)
+    },
+
+    // Configure tenant.
+    onConfigureTenant: function () {
+      this.$emit('configureTenant', this.tenant)
     }
   }
 }
@@ -37,7 +57,7 @@ export default {
 
 <style scoped>
 .tenant {
-  min-height: 100px;
+  min-height: 120px;
   overflow-y: hidden;
 }
 
@@ -46,12 +66,12 @@ export default {
   top: 10px;
   left: 10px;
   bottom: 10px;
-  width: 200px;
+  width: 220px;
 }
 .tenant-divider {
   position: absolute;
   top: 10px;
-  left: 200px;
+  left: 220px;
   bottom: 10px;
   width: 20px;
   border-right: 1px solid #eee;
@@ -59,22 +79,13 @@ export default {
 .tenant-name {
   position: absolute;
   top: 10px;
-  left: 235px;
+  left: 250px;
   right: 10px;
 }
-.tenant-id {
+.tenant-actions {
   position: absolute;
-  top: 40px;
-  left: 235px;
-  right: 10px;
-  bottom: 10px;
-}
-.tenant-state {
-  position: absolute;
-  top: 70px;
-  left: 235px;
-  right: 10px;
-  bottom: 10px;
+  right: 7px;
+  bottom: 7px;
 }
 .ellipsis {
   white-space: nowrap;
