@@ -3,7 +3,7 @@
     <v-container fluid grid-list-md  v-if="specs">
       <v-layout row wrap>
          <v-flex xs6 v-for="(spec, index) in specs" :key="spec.token">
-          <specification-list-entry :specification="spec" class="mb-3">
+          <specification-list-entry :specification="spec">
           </specification-list-entry>
         </v-flex>
       </v-layout>

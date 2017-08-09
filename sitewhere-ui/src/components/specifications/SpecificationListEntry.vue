@@ -23,7 +23,7 @@ export default {
     onOpenSpecification: function (token) {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/admin/' + tenant.id + '/specifications/' + token)
+        this.$router.push('/tenants/' + tenant.id + '/specifications/' + token)
       }
     }
   }

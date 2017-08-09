@@ -3,7 +3,7 @@
     <v-container fluid grid-list-md  v-if="tenants">
       <v-layout row wrap>
          <v-flex xs12 v-for="(tenant, index) in tenants" :key="tenant.id">
-          <tenant-list-entry :tenant="tenant" class="mb-3"
+          <tenant-list-entry :tenant="tenant" class="mb-2"
             @click.native="onOpenTenant(tenant)"
             @openTenant="onOpenTenant(tenant)"
             @configureTenant="onConfigureTenant(tenant)">

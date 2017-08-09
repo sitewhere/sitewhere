@@ -1,5 +1,5 @@
 <template>
-  <v-card dark class="blue darken-2 elevation-1 mb-3">
+  <v-card dark class="blue darken-2 elevation-1 pb-3">
     <v-card-title class="ma-0">
       <span class="title white--text">Device Filter Criteria</span>
     </v-card-title>

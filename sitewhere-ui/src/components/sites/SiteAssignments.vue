@@ -9,7 +9,7 @@
           v-for="(assignment, index) in assignments" :key="assignment.token"
           @click.native="onOpenAssignment(assignment.token)"
           @refresh="refresh"
-          class="ma-3">
+          class="ma-2">
         </assignment-list-panel>
       </v-flex>
     </v-layout>

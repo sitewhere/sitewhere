@@ -1,5 +1,5 @@
 <template>
-  <v-card hover class="tenant white pa-2">
+  <v-card hover class="tenant white">
     <v-card-text>
       <div class="tenant-logo" :style="tenantLogoStyle(this.tenant)">
       </div>
