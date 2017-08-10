@@ -11,21 +11,121 @@
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-content key="configuration" id="configuration">
-          <div v-html="wizardContent"></div>
+          <v-card v-if="currentContext" class="elevation-0">
+            <v-card-text>
+              <div>
+                <v-breadcrumbs divider="/">
+                  <v-breadcrumbs-item v-for="context in wizardContexts"
+                    :key="context.model.localName"
+                    @click.native="onPopToContext(context.model.localName)">
+                    {{ context.model.name }}
+                  </v-breadcrumbs-item>
+                </v-breadcrumbs>
+              </div>
+              <!-- Banner -->
+              <v-card class="mb-3">
+                <v-toolbar flat dark class="primary">
+                  <v-icon dark fa class="fa-lg">{{currentContext.model.icon}}</v-icon>
+                  <v-toolbar-title class="white--text">{{currentContext.model.name}}</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn icon class="ml-0" v-if="wizardContexts.length > 1"
+                    @click.native="onPopContext">
+                    <v-icon fa>arrow-up</v-icon>
+                  </v-btn>
+                  <v-btn icon class="ml-0" v-if="currentContext.model.attributes"
+                    @click.native="onConfigureCurrent">
+                    <v-icon fa>gear</v-icon>
+                  </v-btn>
+                  <v-btn icon class="ml-0" v-if="currentContext.model.role.optional"
+                    @click.native="onDeleteCurrent">
+                    <v-icon fa>times</v-icon>
+                  </v-btn>
+                </v-toolbar>
+                <v-divider></v-divider>
+                <v-card-text v-html="currentContext.model.description"></v-card-text>
+              </v-card>
+              <!-- Attributes -->
+              <v-card class="mb-3" 
+                v-if="currentContext.groups && currentContext.groups.length">
+                <v-card-text>
+                  <v-card class="elevation-0 grey lighten-4 pa-1"
+                    v-for="group in currentContext.groups"
+                    :key="group.id">
+                    <v-card-text class="subheading blue darken-2 white--text">
+                      <strong>{{ group.description }}</strong>
+                    </v-card-text>
+                    <v-card-text class="subheading pa-0 pl-2">
+                      <v-list dense>
+                        <v-list-tile avatar
+                          v-for="attribute in group.attributes"
+                          :key="attribute.name">
+                          <v-list-tile-avatar>
+                            <v-icon fa>{{ attribute.icon }}</v-icon>
+                          </v-list-tile-avatar>
+                          <v-list-tile-content>
+                            <v-list-tile-title>
+                              {{ attribute.name }}
+                            </v-list-tile-title>
+                            <v-list-tile-sub-title>
+                              {{ attribute.value }}
+                            </v-list-tile-sub-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </v-list>
+                    </v-card-text>
+                  </v-card>
+                </v-card-text>
+              </v-card>
+              <!-- Elements -->
+              <v-card v-if="currentContext.content">
+                <v-card-text class="pa-0"
+                  v-for="contextElement in currentContext.content.elements"
+                  :key="contextElement.name">
+                  <v-toolbar v-if="!contextElement.hasContent" flat dark class="grey lighten-5">
+                    <v-icon light fa class="fa-lg">plus</v-icon>
+                    <v-toolbar-title class="black--text">{{contextElement.name}}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-menu offset-y left>
+                      <v-btn dark class="grey" slot="activator">Add Component</v-btn>
+                      <v-list dense>
+                        <v-list-tile v-for="option in contextElement.options"
+                          :key="option.role"
+                          @click.native="onAddComponent(option)">
+                          <v-list-tile-title class="subheading">
+                            <v-icon fa class="mr-1">{{ option.icon }}</v-icon>
+                            {{ option.name }}
+                          </v-list-tile-title>
+                        </v-list-tile>
+                      </v-list>
+                    </v-menu>
+                  </v-toolbar>
+                  <v-toolbar v-else flat light class="grey lighten-4">
+                    <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
+                    <v-toolbar-title class="black--text">{{contextElement.name}}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn class="blue darken-2 white--text mr-4"
+                      @click.native="onPushContext(contextElement)">
+                      <v-icon fa class="white--text mr-1">edit</v-icon>
+                      Edit
+                    </v-btn>
+                  </v-toolbar>
+                </v-card-text>
+              </v-card>
+            </v-card-text>
+          </v-card>
         </v-tabs-content>
       </v-tabs>
+      <configuration-element-create-dialog ref="create"
+        :model="tenantCreateModel">
+      </configuration-element-create-dialog>
     </v-app>
   </div>
 </template>
 
 <script>
 import TenantDetailHeader from './TenantDetailHeader'
-import {
-  wizard,
-  resetWizard,
-  onAddChild, // eslint-disable-line no-unused-vars
-  onChildOpenClicked // eslint-disable-line no-unused-vars
-} from './TenantConfigEditor'
+import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
+import {wizard} from './TenantConfigEditor'
 import {
   _getTenant,
   _getTenantConfiguration,
@@ -41,12 +141,16 @@ export default {
     tenantConfig: null,
     tenantConfigModel: null,
     tenantConfigRoles: null,
-    wizardContent: null,
+    currentContext: null,
+    wizardContexts: [],
+    tenantCreateModel: null,
+    tenantCreateConfig: null,
     active: null
   }),
 
   components: {
-    TenantDetailHeader
+    TenantDetailHeader,
+    ConfigurationElementCreateDialog
   },
 
   created: function () {
@@ -63,11 +167,11 @@ export default {
 
   watch: {
     configDataAvailable: function (available) {
-      console.log('Configuration loaded.')
       wizard.config = this.$data.tenantConfig
       wizard.configModel = this.$data.tenantConfigModel
+      wizard.editorContexts = this.$data.wizardContexts
       wizard.roles = this.$data.tenantConfigRoles
-      this.$data.wizardContent = resetWizard()
+      this.onWizardContextsUpdated(wizard.reset())
     }
   },
 
@@ -109,211 +213,71 @@ export default {
         longTitle: 'Manage Tenant: ' + tenant.id
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Update wizard context stack.
+    onWizardContextsUpdated: function (contexts) {
+      this.$data.wizardContexts = contexts
+      this.$data.currentContext = contexts[contexts.length - 1]
+    },
+
+    // Add a component.
+    onAddComponent: function (option) {
+      let relative = wizard.getRelativeContext(option.localName)
+      if (relative.model) {
+        if (!relative.model.attributes) {
+          this.onComponentAdded({
+            'name': option.localName,
+            'attributes': null
+          })
+        } else {
+          this.$data.tenantCreateModel = relative.model
+          this.$refs['create'].onOpenDialog()
+        }
+      }
+    },
+
+    // Called after a component is added.
+    onComponentAdded: function (component) {
+      let contexts = wizard.onAddChild(
+        component.name, component.attributes)
+      this.onWizardContextsUpdated(contexts)
+    },
+
+    // Push a context on to the stack.
+    onPushContext: function (role) {
+      let contexts = wizard.pushRelativeContext(role.localName)
+      this.onWizardContextsUpdated(contexts)
+    },
+
+    // Called to pop a context from the stack.
+    onPopContext: function () {
+      let contexts = wizard.popOne()
+      this.onWizardContextsUpdated(contexts)
+    },
+
+    // Called to pop to a given context.
+    onPopToContext: function (name) {
+      let contexts = wizard.popToContext(name)
+      this.onWizardContextsUpdated(contexts)
+    },
+
+    // Called to configure the current context.
+    onConfigureCurrent: function () {
+      console.log('configure context')
+    },
+
+    // Called to delete the current context.
+    onDeleteCurrent: function () {
+      console.log('delete context')
     }
   }
 }
 </script>
 
 <style>
-div.wz-header {
-	border: 1px solid #666;
-	background-color: #eee;
-	padding: 13px;
-	margin-bottom: 10px;
-	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
-	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
-	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
-}
-
-div.wz-header h1 {
-	font-size: 26px;
-	line-height: 1em;
-	vertical-align: top;
-	margin: 1px;
-	display: inline;
-}
-
-div.wz-header h2 {
-	font-size: 16px;
-	margin: 0;
-	margin-top: 15px;
-	line-height: 1.1em;
-	font-weight: normal;
-	clear: both;
-	line-height: 1.1em;
-}
-
-.wz-header-icon {
-	float: left;
-	padding-right: 10px;
-	font-size: 26px;
-}
-
-.wz-drag-icon {
-	padding: 10px 10px 10px 5px;
-	font-size: 20px;
-	color: #ccc;
-	cursor: move;
-	float: left;
-	border-right: 1px solid #ccc;
-}
-
-.wz-role {
-	border: 1px solid #999;
-	padding: 15px 10px 10px;
-	position: relative;
-	margin: 10px 0px 25px;
-	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
-}
-
-.wz-role-label {
-	position: absolute;
-	top: -10px;
-	left: 5px;
-	font-size: 12px;
-	background-color: #999;
-	color: #fff;
-	padding: 1px 5px;
-}
-
-.wz-role-required {
-	border-width: 2px;
-}
-
-.wz-role-label-required {
-	background-color: #666;
-}
-
-.wz-role-missing {
-	border: 1px solid #cc3;
-	background-color: #ffe;
-}
-
-.wz-role-missing-optional {
-	border: 1px solid #eee;
-	box-shadow: none;
-}
-
-.wz-role-label-missing {
-
-}
-
-.wz-child {
-	border: 1px solid #ccc;
-	background-color: #eee;
-	padding: 5px;
-	margin-bottom: 5px;
-	list-style-type: none;
-	list-style-position: inside;
-}
-
-.wz-child-required {
-	border-width: 2px;
-}
-
-.wz-child-missing {
-	border-style: dashed;
-	border-color: #999;
-}
-
-.wz-child .wz-child-icon {
-	float: left;
-	padding: 8px 10px;
-	font-size: 22px;
-}
-
-.wz-child .wz-child-name {
-	display: inline;
-	font-size: 20px;
-	padding: 0;
-	margin: 0;
-}
-
-.wz-child .wz-child-nav {
-	float: right;
-	padding: 9px;
-}
-
-.wz-sortable-placeholder {
-	min-height: 40px;
-	border: 2px dashed #aaa;
-	background-color: #ccc;
-	padding: 5px;
-	margin-bottom: 5px;
-	list-style-type: none;
-	list-style-position: inside;
-	border: 2px dashed #aaa;
-}
-
-.wz-sortable-item {
-
-}
-
-.dd-icon {
-	width: 20px;
-}
-
-div.wz-divider {
-	clear: both;
-	padding-top: 10px;
-	margin-top: 10px;
-	border-top: 1px solid #ddd;
-}
-
-ol.wz-breadcrumb {
-	margin-top: 8px;
-	margin-bottom: -2px;
-	margin-right: 6px;
-	margin-left: 6px;
-	padding: 2px 8px;
-	border: 1px solid #eee;
-	border-radius: 0px;
-	font-size: 12px;
-	background-color: #f9f9f9;
-}
-
-.sw-attribute-group {
-	border: 1px solid #ccc;
-	padding: 25px 10px 10px;
-	margin-bottom: 20px;
-	position: relative;
-	margin-top: 5px;
-}
-
-.sw-attribute-group h1 {
-	margin: 0;
-	padding: 2px 5px;
-	font-size: 12px;
-	line-height: 1em;
-	position: absolute;
-	background-color: #666;
-	color: #fff;
-	top: -9px;
-}
-
-label.sw-control-label {
-	font-weight: bold;
-	font-size: 17px;
-	width: 250px;
-}
-
-label.sw-control-label i {
-	color: #ccc;
-	padding-left: 5px;
-	margin-top: 2px;
-	vertical-align: top;
-	font-size: 10px;
-}
-
-div.sw-controls {
-	margin-left: 290px;
-	font-size: 17px;
-	line-height: 1.7em;
-}
-
-div.wz-button-bar {
-	padding: 10px 0px;
-	margin-top: 10px;
-	border-top: 1px solid #ddd;
+.breadcrumbs {
+  justify-content: left;
+  padding: 0;
 }
 </style>

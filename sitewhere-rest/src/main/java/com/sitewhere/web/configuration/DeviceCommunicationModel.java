@@ -863,7 +863,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createCommandRoutingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Routing",
-		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap fa-rotate-270",
+		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap",
 		ElementRole.DeviceCommunication_CommandRouting);
 
 	builder.description("Determines how commands are routed to command destinations.");
@@ -877,7 +877,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createSpecificationMappingRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Mapping Router",
-		ICommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap fa-rotate-270",
+		ICommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap",
 		ElementRole.CommandRouting_SpecificationMappingRouter);
 
 	builder.description("Routes commands based on a direct mapping from device specification token "
@@ -896,7 +896,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyCommandRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Router",
-		ICommandRoutingParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap fa-rotate-270",
+		ICommandRoutingParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap",
 		ElementRole.CommandRouting_CommandRouter);
 
 	builder.description("Routes commands to command destinations based on routing logic "
