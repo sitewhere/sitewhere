@@ -104,7 +104,6 @@ export var wizard = {
     context.content = content
 
     this.editorContexts.push(context)
-    console.log(context)
     return this.editorContexts
   },
 

@@ -1,5 +1,5 @@
 <template>
-  <base-dialog :title="title" width="600" :visible="dialogVisible"
+  <base-dialog :title="title" width="800" :visible="dialogVisible"
     createLabel="Create" cancelLabel="Cancel" :error="error"
     @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
     <v-tabs dark v-model="active">
@@ -13,28 +13,40 @@
       <v-tabs-content key="configuration" id="configuration">
         <v-card flat>
           <v-card-text>
-            <v-container fluid>
-              <v-layout row wrap>
-                <v-flex xs12 v-for="attribute in attributes"
+            <v-card v-for="group in groups" :key="group.id" class="mb-3">
+              <v-card-text class="subheading blue darken-2 white--text">
+                <strong>{{ group.description }}</strong>
+              </v-card-text>
+              <v-container fluid>
+                <v-layout row wrap v-for="attribute in group.attributes"
                   :key="attribute.name">
-                  <v-icon fa>{{ attribute.icon }}</v-icon>
-                  <v-text-field v-if="attribute.type === 'String'"
-                    :required="attribute.required"
-                    class="mt-1" :label="attribute.name"
-                    v-model="values[attribute.localName]" hide-details>
-                  </v-text-field>
-                  <v-text-field v-if="attribute.type === 'Integer'"
-                    :required="attribute.required" type="number"
-                    class="mt-1" :label="attribute.name"
-                    v-model="values[attribute.localName]" hide-details>
-                  </v-text-field>
-                  <v-checkbox v-if="attribute.type === 'Boolean'"
-                    :label="attribute.name"
-                    v-model="values[attribute.localName]">
-                  </v-checkbox>
-                </v-flex>
-              </v-layout>
-            </v-container>
+                  <v-flex xs4 class="text-xs-right subheading mt-1">
+                    <v-icon fa class="mr-1 mb-1">{{ attribute.icon }}</v-icon>
+                    {{ attribute.name }}:
+                  </v-flex>
+                  <v-flex xs1>
+                  </v-flex>
+                  <v-flex xs7>
+                    <v-text-field
+                      v-if="attribute.type === 'String'"
+                      :required="attribute.required"
+                      v-model="values[attribute.localName]"
+                      hide-details single-line>
+                    </v-text-field>
+                    <v-text-field v-if="attribute.type === 'Integer'"
+                      :required="attribute.required" type="number"
+                      class="mt-1"
+                      v-model="values[attribute.localName]"
+                      hide-details single-line>
+                    </v-text-field>
+                    <v-checkbox v-if="attribute.type === 'Boolean'"
+                      :label="attribute.name"
+                      v-model="values[attribute.localName]">
+                    </v-checkbox>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card>
           </v-card-text>
         </v-card>
       </v-tabs-content>
@@ -51,7 +63,7 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
-    attributes: null,
+    groups: null,
     values: {},
     error: null
   }),
@@ -64,9 +76,33 @@ export default {
 
   watch: {
     model: function (model) {
+      let groups = []
       if (model) {
-        this.$data.attributes = model.attributes
+        let attributes = []
+        let currentGroup = null
+        if (model.attributes) {
+          for (let i = 0; i < model.attributes.length; i++) {
+            var modelAttr = model.attributes[i]
+            if (!currentGroup || currentGroup.id !== modelAttr.group) {
+              currentGroup = {}
+              currentGroup.id = modelAttr.group
+              currentGroup.description = model.attributeGroups[modelAttr.group]
+              attributes = []
+              currentGroup.attributes = attributes
+              groups.push(currentGroup)
+            }
+            attributes.push({
+              'localName': modelAttr.localName,
+              'name': modelAttr.name,
+              'type': modelAttr.type,
+              'icon': modelAttr.icon,
+              'description': modelAttr.description,
+              'required': modelAttr.required
+            })
+          }
+        }
       }
+      this.$data.groups = groups
     },
     config: function (config) {
       if (config) {
@@ -124,4 +160,7 @@ export default {
 </script>
 
 <style scoped>
+.input-group {
+  padding: 0;
+}
 </style>
