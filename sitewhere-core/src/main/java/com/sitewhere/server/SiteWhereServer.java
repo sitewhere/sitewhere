@@ -456,7 +456,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	ISiteWhereTenantEngine engine = getTenantEnginesById().get(tenant.getId());
 	if (engine != null) {
 	    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
-		stopTenantEngine(engine, new LifecycleProgressMonitor(
+		stopAndTerminateTenantEngine(engine, new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Shut down deleted tenant engine.")));
 	    }
 	    getTenantEnginesById().remove(tenant.getId());
@@ -1395,7 +1395,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 				LifecycleProgressMonitor threadMonitor = new LifecycleProgressMonitor(
 					new LifecycleProgressContext(1,
 						"Stopping tenant engine '" + engine.getTenant().getName() + "'"));
-				stopTenantEngine(engine, threadMonitor);
+				stopAndTerminateTenantEngine(engine, threadMonitor);
 			    } catch (SiteWhereException e) {
 				LOGGER.error("Tenant engine shutdown failed.", e);
 			    }
@@ -1413,17 +1413,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     }
 
     /**
-     * Stop a tenant engine.
+     * Stop and terminate a tenant engine.
      * 
      * @param engine
      * @param monitor
      * @throws SiteWhereException
      */
-    protected void stopTenantEngine(ISiteWhereTenantEngine engine, ILifecycleProgressMonitor monitor)
+    protected void stopAndTerminateTenantEngine(ISiteWhereTenantEngine engine, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
+	// TODO: Revisit tenant shutdown logic.
 	if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
 	    engine.lifecycleStop(monitor);
 	}
+	engine.lifecycleTerminate(monitor);
     }
 
     /*

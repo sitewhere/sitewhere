@@ -75,8 +75,8 @@ public class RestController {
 	    LOGGER.error("No tenant engine for tenant: " + match.getName());
 	    throw new TenantNotAvailableException();
 	}
-	if (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started) {
-	    LOGGER.error("Engine not started for tenant: " + match.getName());
+	if (engine.getEngineState().getLifecycleStatus() == LifecycleStatus.InitializationError) {
+	    LOGGER.error("Engine not initialized for tenant: " + match.getName());
 	    throw new TenantNotAvailableException();
 	}
 

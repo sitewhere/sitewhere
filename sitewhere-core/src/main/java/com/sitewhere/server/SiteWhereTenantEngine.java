@@ -231,6 +231,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    // Initialize search provider management.
 	    setSearchProviderManager(initializeSearchProviderManagement());
 
+	    // Start core functions that must run regardless of whether the
+	    // tenant is considered 'started'.
+	    startCoreFunctions(monitor);
+
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
@@ -240,6 +244,27 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    LOGGER.error("Unhandled exception in tenant engine initialization.", e);
 	}
+    }
+
+    /**
+     * Start core functionality that must run regardless of whether the tenant
+     * is truly 'started'.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    private void startCoreFunctions(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Organizes steps for starting server.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Started tenant '" + getTenant().getName() + "'");
+
+	// Start base tenant services.
+	startBaseServices(start);
+
+	// Start tenant management API implementations.
+	startManagementImplementations(start);
+
+	// Execute all operations.
+	start.execute(monitor);
     }
 
     /*
@@ -595,6 +620,52 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
+     * Start base tenant services.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Start Groovy configuration.
+	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
+		"Started tenant Groovy script engine", "Groovy configuration startup failed.", true));
+
+	// Start lifecycle components.
+	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
+	    start.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
+		    component.getComponentName() + " startup failed.", true));
+	}
+    }
+
+    /**
+     * Start tenant management API implementations.
+     * 
+     * @param start
+     * @throws SiteWhereException
+     */
+    protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
+	// Start asset management.
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Started asset management",
+		"Asset management startup failed.", true));
+
+	// Start device management cache provider.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
+		"Started device management cache provider", "Device management cache provider startup failed.", true));
+
+	// Start device management.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Started device management",
+		"Device management startup failed.", true));
+
+	// Start device management.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(),
+		"Started device event management", "Device event management startup failed.", true));
+
+	// Start device management.
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Started schedule management",
+		"Schedule management startup failed.", true));
+    }
+
+    /**
      * Verify and initialize search provider manager.
      * 
      * @return
@@ -659,12 +730,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    }
 	});
 
-	// Start base tenant services.
-	startBaseServices(start);
-
-	// Start tenant management API implementations.
-	startManagementImplementations(start);
-
 	// Start tenant services.
 	startTenantServices(start);
 
@@ -684,52 +749,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Execute operation and report progress.
 	updatePersistentState(LifecycleStatus.Started, getLifecycleStatus());
 	start.execute(monitor);
-    }
-
-    /**
-     * Start base tenant services.
-     * 
-     * @param start
-     * @throws SiteWhereException
-     */
-    protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start Groovy configuration.
-	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
-		"Started tenant Groovy script engine", "Groovy configuration startup failed.", true));
-
-	// Start lifecycle components.
-	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    start.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
-		    component.getComponentName() + " startup failed.", true));
-	}
-    }
-
-    /**
-     * Start tenant management API implementations.
-     * 
-     * @param start
-     * @throws SiteWhereException
-     */
-    protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start asset management.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Started asset management",
-		"Asset management startup failed.", true));
-
-	// Start device management cache provider.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		"Started device management cache provider", "Device management cache provider startup failed.", true));
-
-	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Started device management",
-		"Device management startup failed.", true));
-
-	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(),
-		"Started device event management", "Device event management startup failed.", true));
-
-	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Started schedule management",
-		"Schedule management startup failed.", true));
     }
 
     /**
@@ -835,20 +854,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Stop tenant services.
 	stopTenantServices(stop);
 
-	// Stop lifecycle components.
-	stop.addStep(new SimpleLifecycleStep("Stopped registered components") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-		    component.lifecycleStop(monitor);
-		}
-	    }
-	});
-
-	// Stop core management implementations.
-	stopManagementServices(stop);
-
 	// Execute operation with progress monitoring.
 	stop.execute(monitor);
     }
@@ -877,6 +882,47 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Stop the Groovy configuration.
 	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy engine"));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#terminate(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopCoreFunctions(monitor);
+    }
+
+    /**
+     * Stop core functionality. This should only happen if the tenant is
+     * completely terminated and not in the standard lifecycle loop.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    protected void stopCoreFunctions(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Organizes steps for stopping tenant.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stopped tenant '" + getTenant().getName() + "'");
+
+	// Stop lifecycle components.
+	stop.addStep(new SimpleLifecycleStep("Stopped registered components") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
+		    component.lifecycleStop(monitor);
+		}
+	    }
+	});
+
+	// Stop core management implementations.
+	stopManagementServices(stop);
+
+	// Execute operation with progress monitoring.
+	stop.execute(monitor);
     }
 
     /**
