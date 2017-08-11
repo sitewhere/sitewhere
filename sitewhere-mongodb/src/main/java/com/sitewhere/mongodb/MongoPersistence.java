@@ -15,9 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.DuplicateKeyException;
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -76,12 +77,14 @@ public class MongoPersistence {
 	    long start = System.currentTimeMillis();
 	    collection.insertOne(object);
 	    LOGGER.debug("Insert took " + (System.currentTimeMillis() - start) + " ms.");
-	} catch (MongoCommandException e) {
+	} catch (MongoWriteException e) {
+	    ErrorCategory category = e.getError().getCategory();
+	    if (ErrorCategory.DUPLICATE_KEY == category) {
+		throw new ResourceExistsException(ifDuplicate);
+	    }
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
-	} catch (DuplicateKeyException e) {
-	    throw new ResourceExistsException(ifDuplicate);
 	}
     }
 
