@@ -1,7 +1,7 @@
 /**
  * API calls associated with SiteWhere tenants.
  */
-import {restAuthGet, restAuthPost, restAuthPut} from './sitewhere-api'
+import {restAuthGet, restAuthPost, restAuthPut, restAuthPostWithProgress} from './sitewhere-api'
 
 /**
  * Create a tenant.
@@ -74,4 +74,20 @@ export function getTenantConfigurationModel (axios) {
  */
 export function getTenantConfigurationRoles (axios) {
   return restAuthGet(axios, 'tenants/configuration/roles')
+}
+
+/**
+ * Start a tenant (with progress monitoring).
+ */
+export function startTenant (axios, tenantId, callback) {
+  return restAuthPostWithProgress(axios,
+    'tenants/' + tenantId + '/engine/start', null, callback)
+}
+
+/**
+ * Stop a tenant (with progress monitoring).
+ */
+export function stopTenant (axios, tenantId, callback) {
+  return restAuthPostWithProgress(axios,
+    'tenants/' + tenantId + '/engine/stop', null, callback)
 }

@@ -1,7 +1,10 @@
 <template>
   <div v-if="tenant">
     <v-app>
-      <tenant-detail-header :tenant="tenant" class="mb-3">
+      <tenant-detail-header :tenant="tenant"
+        :tenantCommandRunning="tenantCommandRunning"
+        :tenantCommandPercent="tenantCommandPercent" class="mb-3"
+        @start="onStartTenant" @stop="onStopTenant">
       </tenant-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -126,7 +129,9 @@ import {
   _getTenant,
   _getTenantConfiguration,
   _getTenantConfigurationModel,
-  _getTenantConfigurationRoles
+  _getTenantConfigurationRoles,
+  _startTenant,
+  _stopTenant
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -141,6 +146,8 @@ export default {
     wizardContexts: [],
     tenantDialogModel: null,
     tenantDialogConfig: null,
+    tenantCommandPercent: 0,
+    tenantCommandRunning: false,
     active: null
   }),
 
@@ -237,7 +244,6 @@ export default {
       this.$data.wizardContexts = contexts
       this.$data.currentContext = null
       this.$data.currentContext = contexts[contexts.length - 1]
-      console.log(this.$data.currentContext.content)
     },
 
     // Add a component.
@@ -308,6 +314,64 @@ export default {
     // Called to stage updates.
     onStageUpdates: function () {
       console.log('stage updates')
+    },
+
+    // Gets JSON object for last complete progress record.
+    lastRecord: function (response) {
+      var entries = response.split(/\r?\n/)
+      if (entries.length === 0) {
+        return null
+      } else if (entries.length === 1) {
+        if (entries[0].endsWith('}')) {
+          return JSON.parse(entries[0])
+        }
+        return null
+      } else {
+        if (entries[entries.length - 1].endsWith('}')) {
+          return JSON.parse(entries[entries.length - 1])
+        }
+        return JSON.parse(entries[entries.length - 2])
+      }
+    },
+
+    // Start a tenant while monitoring progress.
+    onStartTenant: function () {
+      var component = this
+      this.$data.tenantCommandRunning = true
+      this.$data.tenantCommandPercent = 0
+      _startTenant(this.$store, this.$data.tenantId,
+        e => {
+          let record = this.lastRecord(e.currentTarget.response)
+          if (record.progressPercentage) {
+            this.$data.tenantCommandPercent = record.progressPercentage
+          }
+        })
+        .then(function (response) {
+          component.$data.tenantCommandRunning = false
+          component.refresh()
+        }).catch(function (e) {
+          component.$data.tenantCommandRunning = false
+        })
+    },
+
+    // Stop a tenant while monitoring progress.
+    onStopTenant: function () {
+      var component = this
+      this.$data.tenantCommandRunning = true
+      this.$data.tenantCommandPercent = 0
+      _stopTenant(this.$store, this.$data.tenantId,
+        e => {
+          let record = this.lastRecord(e.currentTarget.response)
+          if (record.progressPercentage) {
+            this.$data.tenantCommandPercent = record.progressPercentage
+          }
+        })
+        .then(function (response) {
+          component.$data.tenantCommandRunning = false
+          component.refresh()
+        }).catch(function (e) {
+          component.$data.tenantCommandRunning = false
+        })
     }
   }
 }

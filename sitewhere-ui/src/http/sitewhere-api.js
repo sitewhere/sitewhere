@@ -37,6 +37,16 @@ export function restAuthPost (axios, path, payload) {
 }
 
 /**
+ * Perform a REST post call with progress monitoring.
+ */
+export function restAuthPostWithProgress (axios, path, payload, callback) {
+  let config = {
+    onDownloadProgress: callback
+  }
+  return axios.post(path, payload, config)
+}
+
+/**
  * Perform a REST put call.
  */
 export function restAuthPut (axios, path, payload) {

@@ -22,7 +22,9 @@ import {
   getTenantTemplates,
   getTenantConfiguration,
   getTenantConfigurationModel,
-  getTenantConfigurationRoles
+  getTenantConfigurationRoles,
+  startTenant,
+  stopTenant
 } from './sitewhere-tenants-api.js'
 
 // Sites.
@@ -299,6 +301,24 @@ export function _getTenantConfigurationModel (store) {
 export function _getTenantConfigurationRoles (store) {
   let axios = createAxiosFromStore(store)
   let api = getTenantConfigurationRoles(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Start a tenant and monitor progress.
+ */
+export function _startTenant (store, tenantId, callback) {
+  let axios = createAxiosFromStore(store)
+  let api = startTenant(axios, tenantId, callback)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Stop a tenant and monitor progress.
+ */
+export function _stopTenant (store, tenantId, callback) {
+  let axios = createAxiosFromStore(store)
+  let api = stopTenant(axios, tenantId, callback)
   return loaderWrapper(store, api)
 }
 
