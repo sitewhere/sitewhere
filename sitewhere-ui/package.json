@@ -14,7 +14,6 @@
     "axios": "^0.16.2",
     "css-loader": "^0.28.4",
     "element-ui": "^1.4.1",
-    "jquery": "^3.2.1",
     "leaflet": "^1.2.0",
     "leaflet-draw": "^0.4.10",
     "lodash": "^4.17.4",
@@ -29,6 +28,7 @@
     "vue-moment": "^2.0.2",
     "vue-router": "^2.3.1",
     "vue2-leaflet": "0.0.50",
+    "vuedraggable": "^2.14.1",
     "vuex": "^2.3.1"
   },
   "devDependencies": {

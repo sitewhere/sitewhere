@@ -163,6 +163,22 @@ export var wizard = {
     config.children.push(childConfig)
     fixChildOrder(model, config)
     context.content = buildContent(context)
+    return this.pushRelativeContext(name)
+  },
+
+  /** Delete the given element */
+  onDeleteChild: function (id) {
+    let context = wizard.getLastContext()
+    let config = context['config']
+    let childConfig = wizard.findConfigNodeById(config, id)
+
+    for (var i = 0; i < config.children.length; i++) {
+      if (config.children[i].id === childConfig.id) {
+        config.children.splice(i, 1)
+        break
+      }
+    }
+    context.content = buildContent(context)
     return this.editorContexts
   },
 
@@ -367,6 +383,7 @@ function buildPlaceholder (childRole) {
 function buildChild (childModel, childConfig, childRoleName, childRole,
   childrenWithRole) {
   let child = {}
+  child.id = childConfig.id
   child.name = childModel.name
   child.localName = childModel.localName
   child.icon = childModel.icon

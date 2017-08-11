@@ -240,9 +240,9 @@ export function _createTenant (store, payload) {
 /**
  * Get a tenant by tenant id.
  */
-export function _getTenant (store, tenantId) {
+export function _getTenant (store, tenantId, includeRuntimeInfo) {
   let axios = createAxiosFromStore(store)
-  let api = getTenant(axios, tenantId)
+  let api = getTenant(axios, tenantId, includeRuntimeInfo)
   return loaderWrapper(store, api)
 }
 

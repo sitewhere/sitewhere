@@ -71,33 +71,21 @@
                 <v-card-text class="pa-0"
                   v-for="contextElement in currentContext.content.elements"
                   :key="contextElement.name">
-                  <v-toolbar v-if="!contextElement.hasContent" flat dark class="grey lighten-5">
-                    <v-icon light fa class="fa-lg">plus</v-icon>
-                    <v-toolbar-title class="black--text">
-                      {{ contextElement.name }}
-                    </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-menu offset-y left>
-                      <v-btn dark class="grey" slot="activator">Add Component</v-btn>
-                      <v-list dense>
-                        <v-list-tile v-for="option in contextElement.options"
-                          :key="option.role"
-                          @click.native="onAddComponent(option)">
-                          <v-list-tile-title class="subheading">
-                            <v-icon fa class="mr-1">{{ option.icon }}</v-icon>
-                            {{ option.name }}
-                          </v-list-tile-title>
-                        </v-list-tile>
-                      </v-list>
-                    </v-menu>
-                  </v-toolbar>
+                  <element-placeholder v-if="!contextElement.hasContent"
+                    :contextElement="contextElement"
+                    @addComponent="onAddComponent">
+                  </element-placeholder>
                   <v-toolbar v-else flat light class="grey lighten-4">
                     <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
                     <v-toolbar-title class="black--text">
                       {{ elementTitle(contextElement) }}
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-btn class="blue darken-2 white--text mr-4"
+                    <element-delete-dialog v-if="contextElement.optional"
+                      :element="contextElement"
+                      @elementDeleted="onDeleteElement(contextElement)">
+                    </element-delete-dialog>
+                    <v-btn class="blue darken-2 white--text mr-3"
                       @click.native="onPushContext(contextElement)">
                       <v-icon fa class="white--text mr-1">edit</v-icon>
                       Edit
@@ -117,14 +105,20 @@
         :model="tenantDialogModel" :config="tenantDialogConfig"
         @elementUpdated="onConfigurationElementUpdated">
       </configuration-element-update-dialog>
+      <floating-action-button label="Stage Updates" icon="cloud_upload"
+        @action="onStageUpdates">
+      </floating-action-button>
     </v-app>
   </div>
 </template>
 
 <script>
 import Utils from '../common/Utils'
+import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
+import ElementPlaceholder from './ElementPlaceholder'
 import AttributeField from './AttributeField'
+import ElementDeleteDialog from './ElementDeleteDialog'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
 import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
 import {wizard} from './TenantConfigEditor'
@@ -151,8 +145,11 @@ export default {
   }),
 
   components: {
+    FloatingActionButton,
     TenantDetailHeader,
+    ElementPlaceholder,
     AttributeField,
+    ElementDeleteDialog,
     ConfigurationElementCreateDialog,
     ConfigurationElementUpdateDialog
   },
@@ -200,7 +197,7 @@ export default {
     refresh: function () {
       // Load information.
       var component = this
-      _getTenant(this.$store, this.$data.tenantId)
+      _getTenant(this.$store, this.$data.tenantId, true)
         .then(function (response) {
           component.onLoaded(response.data)
         }).catch(function (e) {
@@ -240,6 +237,7 @@ export default {
       this.$data.wizardContexts = contexts
       this.$data.currentContext = null
       this.$data.currentContext = contexts[contexts.length - 1]
+      console.log(this.$data.currentContext.content)
     },
 
     // Add a component.
@@ -297,8 +295,19 @@ export default {
     },
 
     // Called to delete the current context.
+    onDeleteElement: function (element) {
+      let contexts = wizard.onDeleteChild(element.id)
+      this.onWizardContextsUpdated(contexts)
+    },
+
+    // Called to delete the current context.
     onDeleteCurrent: function () {
       console.log('delete context')
+    },
+
+    // Called to stage updates.
+    onStageUpdates: function () {
+      console.log('stage updates')
     }
   }
 }
