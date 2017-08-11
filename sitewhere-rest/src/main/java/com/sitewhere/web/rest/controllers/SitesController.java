@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -136,7 +137,8 @@ public class SitesController extends RestController {
 	try {
 	    ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
 	    if (site == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR,
+			HttpServletResponse.SC_NOT_FOUND);
 	    }
 	    return Site.copy(site);
 	} finally {
