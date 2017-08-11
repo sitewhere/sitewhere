@@ -234,10 +234,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	} catch (Throwable e) {
 	    setLifecycleError(new SiteWhereException("Unhandled exception in tenant engine initialization.", e));
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    LOGGER.error("Unhandled exception in tenant engine initialization.", e);
 	}
     }
@@ -942,7 +942,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	if (resource == null) {
 	    return null;
 	}
-	return MarshalUtils.unmarshalJson(resource.getContent(), TenantPersistentState.class);
+	try {
+	    return MarshalUtils.unmarshalJson(resource.getContent(), TenantPersistentState.class);
+	} catch (Throwable t) {
+	    LOGGER.warn("Unable to unmarshal persistent state. Assuming Stopped->Started transition.");
+	    TenantPersistentState state = new TenantPersistentState();
+	    state.setDesiredState(LifecycleStatus.Started);
+	    state.setLastKnownState(LifecycleStatus.Stopped);
+	    return state;
+	}
     }
 
     /*

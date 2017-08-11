@@ -17,6 +17,9 @@ public enum LifecycleStatus {
     /** Component is initializing */
     Initializing,
 
+    /** Component unable to initialize */
+    InitializationError,
+
     /** Component is stopped */
     Stopped,
 
@@ -41,6 +44,6 @@ public enum LifecycleStatus {
     /** Component is terminated */
     Terminated,
 
-    /** Component startup failed with an error */
-    Error;
+    /** Component errored in lifecycle transition  */
+    LifecycleError;
 }

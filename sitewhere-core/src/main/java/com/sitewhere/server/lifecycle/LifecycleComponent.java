@@ -117,11 +117,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
 	} catch (SiteWhereException e) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    setLifecycleError(e);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 	} catch (Throwable t) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
@@ -188,11 +188,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleStatus(LifecycleStatus.Started);
 	    getLogger().info(getComponentName() + " state transitioned to STARTED.");
 	} catch (SiteWhereException e) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(e);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 	} catch (Throwable t) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
@@ -244,7 +244,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    String errorMessage, boolean require) throws SiteWhereException {
 	component.lifecycleStart(monitor);
 	if (require) {
-	    if (component.getLifecycleStatus() == LifecycleStatus.Error) {
+	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		throw new ServerStartupException(component, errorMessage);
 	    }
 	}
@@ -267,11 +267,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleStatus(LifecycleStatus.Paused);
 	    getLogger().info(getComponentName() + " state transitioned to PAUSED.");
 	} catch (SiteWhereException e) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(e);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 	} catch (Throwable t) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
@@ -335,11 +335,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleStatus(LifecycleStatus.Stopped);
 	    getLogger().info(getComponentName() + " state transitioned to STOPPED.");
 	} catch (SiteWhereException e) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(e);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 	} catch (Throwable t) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}
@@ -394,11 +394,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    setLifecycleStatus(LifecycleStatus.Terminated);
 	    getLogger().info(getComponentName() + " state transitioned to TERMINATED.");
 	} catch (SiteWhereException e) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(e);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 	} catch (Throwable t) {
-	    setLifecycleStatus(LifecycleStatus.Error);
+	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    setLifecycleError(new SiteWhereException(t));
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 	}

@@ -1146,7 +1146,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			}
 		    });
 		}
-		
+
 		// Wait for tenant initialization operations to finish.
 		tenantOperations.shutdown();
 		try {
@@ -1169,7 +1169,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
 	initializeNestedComponent(engine, new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")));
-	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
+	if (engine.getLifecycleStatus() != LifecycleStatus.InitializationError) {
 	    registerTenant(tenant, engine);
 	    return engine;
 	} else {
@@ -1242,7 +1242,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected void startTenantEngine(ISiteWhereTenantEngine engine) throws SiteWhereException {
-	if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
+	if (engine.getLifecycleStatus() != LifecycleStatus.LifecycleError) {
 	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Starting tenant engine '" + engine.getTenant().getName() + "'"));
 	    startNestedComponent(engine, monitor,

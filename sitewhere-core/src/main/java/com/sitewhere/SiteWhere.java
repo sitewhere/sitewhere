@@ -50,13 +50,13 @@ public class SiteWhere {
 
 	    // Initialize server.
 	    SERVER.lifecycleInitialize(monitor);
-	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	    if (SERVER.getLifecycleStatus() == LifecycleStatus.InitializationError) {
 		LOGGER.error("Exception while initializing server.", SERVER.getLifecycleError());
 	    }
 
 	    // Start server.
 	    SERVER.lifecycleStart(monitor);
-	    if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	    if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		throw SERVER.getLifecycleError();
 	    }
 	} catch (InstantiationException e) {
@@ -75,13 +75,13 @@ public class SiteWhere {
     public static void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop server.
 	SERVER.lifecycleStop(monitor);
-	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 	    LOGGER.error("Exception while shutting down server.", SERVER.getLifecycleError());
 	}
 
 	// Terminate server.
 	SERVER.lifecycleTerminate(monitor);
-	if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+	if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 	    LOGGER.error("Exception while terminating server.", SERVER.getLifecycleError());
 	}
     }

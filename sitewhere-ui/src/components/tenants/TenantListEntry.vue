@@ -54,7 +54,7 @@ export default {
     },
     tenantError: function () {
       return this.tenant.engineState &&
-        this.tenant.engineState.lifecycleStatus === 'Error'
+        this.tenant.engineState.lifecycleStatus === 'LifecycleError'
     },
     tenantHeaderColor: function () {
       if (this.tenantStarted) {

@@ -85,11 +85,11 @@ public class SiteWhereTenantEngineCommands {
 	    try {
 		getEngine().lifecycleInitialize(
 			new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Start tenant engine")));
-		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.InitializationError) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
 		getEngine().lifecycleStart(getProgressMonitor());
-		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
 	    } catch (Exception e) {
@@ -115,7 +115,7 @@ public class SiteWhereTenantEngineCommands {
 	public ICommandResponse call() throws Exception {
 	    try {
 		getEngine().lifecycleStop(getProgressMonitor(), new PersistentShutdownConstraint());
-		if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
 		}
 	    } catch (Exception e) {
