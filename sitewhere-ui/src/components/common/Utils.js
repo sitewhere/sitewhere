@@ -63,8 +63,10 @@ export default {
   // Converts array to metadata object.
   arrayToMetadata: function (arrayMeta) {
     var metadata = {}
-    for (var i = 0; i < arrayMeta.length; i++) {
-      metadata[arrayMeta[i].name] = arrayMeta[i].value
+    if (arrayMeta) {
+      for (var i = 0; i < arrayMeta.length; i++) {
+        metadata[arrayMeta[i].name] = arrayMeta[i].value
+      }
     }
     return metadata
   },

@@ -30,52 +30,42 @@
                   <v-spacer></v-spacer>
                   <v-btn icon class="ml-0" v-if="wizardContexts.length > 1"
                     @click.native="onPopContext">
-                    <v-icon fa>arrow-up</v-icon>
+                    <v-icon fa class="fa-lg">arrow-up</v-icon>
                   </v-btn>
                   <v-btn icon class="ml-0" v-if="currentContext.model.attributes"
                     @click.native="onConfigureCurrent">
-                    <v-icon fa>gear</v-icon>
+                    <v-icon fa class="fa-lg">gear</v-icon>
                   </v-btn>
                   <v-btn icon class="ml-0" v-if="currentContext.model.role.optional"
                     @click.native="onDeleteCurrent">
-                    <v-icon fa>times</v-icon>
+                    <v-icon fa class="fa-lg">times</v-icon>
                   </v-btn>
                 </v-toolbar>
-                <v-divider></v-divider>
                 <v-card-text v-html="currentContext.model.description"></v-card-text>
               </v-card>
               <!-- Attributes -->
-              <v-card class="mb-3" 
+              <div
                 v-if="currentContext.groups && currentContext.groups.length">
-                <v-card-text>
-                  <v-card class="elevation-0 grey lighten-4 pa-1"
-                    v-for="group in currentContext.groups"
-                    :key="group.id">
-                    <v-card-text class="subheading blue darken-2 white--text">
-                      <strong>{{ group.description }}</strong>
-                    </v-card-text>
-                    <v-card-text class="subheading pa-0 pl-2">
-                      <v-list dense>
-                        <v-list-tile avatar
-                          v-for="attribute in group.attributes"
-                          :key="attribute.name">
-                          <v-list-tile-avatar>
-                            <v-icon fa>{{ attribute.icon }}</v-icon>
-                          </v-list-tile-avatar>
-                          <v-list-tile-content>
-                            <v-list-tile-title>
-                              {{ attribute.name }}
-                            </v-list-tile-title>
-                            <v-list-tile-sub-title>
-                              {{ attribute.value }}
-                            </v-list-tile-sub-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                      </v-list>
-                    </v-card-text>
-                  </v-card>
-                </v-card-text>
-              </v-card>
+                <v-card class="grey lighten-4 mb-3"
+                  v-for="group in currentContext.groups"
+                  :key="group.id">
+                  <v-card-text
+                    class="subheading blue darken-2 white--text pa-2">
+                    <strong>
+                      {{ group.id ? group.description : 'Component Settings' }}
+                    </strong>
+                  </v-card-text>
+                  <v-card-text class="subheading pa-0 pl-2">
+                    <v-container fluid>
+                      <attribute-field
+                        v-for="attribute in group.attributes"
+                        :key="attribute.name" :attribute="attribute"
+                        :attrValues="attributeValues" :readOnly="true">
+                      </attribute-field>
+                    </v-container>
+                  </v-card-text>
+                </v-card>
+              </div>
               <!-- Elements -->
               <v-card v-if="currentContext.content">
                 <v-card-text class="pa-0"
@@ -83,7 +73,9 @@
                   :key="contextElement.name">
                   <v-toolbar v-if="!contextElement.hasContent" flat dark class="grey lighten-5">
                     <v-icon light fa class="fa-lg">plus</v-icon>
-                    <v-toolbar-title class="black--text">{{contextElement.name}}</v-toolbar-title>
+                    <v-toolbar-title class="black--text">
+                      {{ contextElement.name }}
+                    </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-menu offset-y left>
                       <v-btn dark class="grey" slot="activator">Add Component</v-btn>
@@ -101,7 +93,9 @@
                   </v-toolbar>
                   <v-toolbar v-else flat light class="grey lighten-4">
                     <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
-                    <v-toolbar-title class="black--text">{{contextElement.name}}</v-toolbar-title>
+                    <v-toolbar-title class="black--text">
+                      {{ elementTitle(contextElement) }}
+                    </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn class="blue darken-2 white--text mr-4"
                       @click.native="onPushContext(contextElement)">
@@ -116,15 +110,23 @@
         </v-tabs-content>
       </v-tabs>
       <configuration-element-create-dialog ref="create"
-        :model="tenantCreateModel">
+        :model="tenantDialogModel"
+        @elementAdded="onComponentAdded">
       </configuration-element-create-dialog>
+      <configuration-element-update-dialog ref="update"
+        :model="tenantDialogModel" :config="tenantDialogConfig"
+        @elementUpdated="onConfigurationElementUpdated">
+      </configuration-element-update-dialog>
     </v-app>
   </div>
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import TenantDetailHeader from './TenantDetailHeader'
+import AttributeField from './AttributeField'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
+import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
 import {wizard} from './TenantConfigEditor'
 import {
   _getTenant,
@@ -143,14 +145,16 @@ export default {
     tenantConfigRoles: null,
     currentContext: null,
     wizardContexts: [],
-    tenantCreateModel: null,
-    tenantCreateConfig: null,
+    tenantDialogModel: null,
+    tenantDialogConfig: null,
     active: null
   }),
 
   components: {
     TenantDetailHeader,
-    ConfigurationElementCreateDialog
+    AttributeField,
+    ConfigurationElementCreateDialog,
+    ConfigurationElementUpdateDialog
   },
 
   created: function () {
@@ -162,6 +166,15 @@ export default {
     configDataAvailable: function () {
       return this.$data.tenantConfig && this.$data.tenantConfigModel &&
         this.$data.tenantConfigRoles
+    },
+
+    // Compute attribute values for current context.
+    attributeValues: function () {
+      if (this.$data.currentContext) {
+        var attributes = this.$data.currentContext['config'].attributes
+        return Utils.arrayToMetadata(attributes)
+      }
+      return {}
     }
   },
 
@@ -176,6 +189,13 @@ export default {
   },
 
   methods: {
+    elementTitle: function (element) {
+      let title = element.name
+      if (element.resolvedIndexAttribute) {
+        title += ' (' + element.resolvedIndexAttribute + ')'
+      }
+      return title
+    },
     // Called to refresh data.
     refresh: function () {
       // Load information.
@@ -218,6 +238,7 @@ export default {
     // Update wizard context stack.
     onWizardContextsUpdated: function (contexts) {
       this.$data.wizardContexts = contexts
+      this.$data.currentContext = null
       this.$data.currentContext = contexts[contexts.length - 1]
     },
 
@@ -231,7 +252,7 @@ export default {
             'attributes': null
           })
         } else {
-          this.$data.tenantCreateModel = relative.model
+          this.$data.tenantDialogModel = relative.model
           this.$refs['create'].onOpenDialog()
         }
       }
@@ -264,7 +285,15 @@ export default {
 
     // Called to configure the current context.
     onConfigureCurrent: function () {
-      console.log('configure context')
+      this.$data.tenantDialogModel = this.$data.currentContext.model
+      this.$data.tenantDialogConfig = this.$data.currentContext.config
+      this.$refs['update'].onOpenDialog()
+    },
+
+    // Called after configuraton element has been updated.
+    onConfigurationElementUpdated: function (updated) {
+      let contexts = wizard.onUpdateCurrent(updated.attributes)
+      this.onWizardContextsUpdated(contexts)
     },
 
     // Called to delete the current context.

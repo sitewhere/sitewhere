@@ -130,6 +130,16 @@ export var wizard = {
     return this.editorContexts
   },
 
+  /** Update current context attributes */
+  onUpdateCurrent: function (attributes) {
+    var context = wizard.getLastContext()
+    let config = context['config']
+    config.attributes = attributes
+    context.groups = buildAttributeGroups(context)
+    context.content = buildContent(context)
+    return this.editorContexts
+  },
+
   /** Add child to current context */
   onAddChild: function (name, attributes) {
     var context = wizard.getLastContext()
@@ -260,8 +270,10 @@ function buildAttributeGroups (context) {
       if (!currentGroup || currentGroup.id !== modelAttr.group) {
         currentGroup = {}
         currentGroup.id = modelAttr.group
-        currentGroup.description =
-          modelNode.attributeGroups[modelAttr.group]
+        if (modelAttr.group) {
+          currentGroup.description =
+            modelNode.attributeGroups[modelAttr.group]
+        }
         attributes = []
         currentGroup.attributes = attributes
         groups.push(currentGroup)
@@ -365,7 +377,8 @@ function buildChild (childModel, childConfig, childRoleName, childRole,
   child.deprecated = childModel.deprecated
   if (childModel.indexAttribute) {
     child.indexAttribute = childModel.indexAttribute
-    child.resolvedIndexAttribute = resolveIndexAttribute(childModel)
+    child.resolvedIndexAttribute =
+      resolveIndexAttribute(childModel, childConfig)
     if (childrenWithRole.length === 0) {
       if (childRole.optional) {
         child.missingOptional = true

@@ -1,6 +1,6 @@
 <template>
   <base-dialog :title="title" width="800" :visible="dialogVisible"
-    createLabel="Create" cancelLabel="Cancel" :error="error"
+    :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
     @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
     <v-tabs dark v-model="active">
       <v-tabs-bar slot="activators">
@@ -13,40 +13,10 @@
       <v-tabs-content key="configuration" id="configuration">
         <v-card flat>
           <v-card-text>
-            <v-card v-for="group in groups" :key="group.id" class="mb-3">
-              <v-card-text class="subheading blue darken-2 white--text">
-                <strong>{{ group.description }}</strong>
-              </v-card-text>
-              <v-container fluid>
-                <v-layout row wrap v-for="attribute in group.attributes"
-                  :key="attribute.name">
-                  <v-flex xs4 class="text-xs-right subheading mt-1">
-                    <v-icon fa class="mr-1 mb-1">{{ attribute.icon }}</v-icon>
-                    {{ attribute.name }}:
-                  </v-flex>
-                  <v-flex xs1>
-                  </v-flex>
-                  <v-flex xs7>
-                    <v-text-field
-                      v-if="attribute.type === 'String'"
-                      :required="attribute.required"
-                      v-model="values[attribute.localName]"
-                      hide-details single-line>
-                    </v-text-field>
-                    <v-text-field v-if="attribute.type === 'Integer'"
-                      :required="attribute.required" type="number"
-                      class="mt-1"
-                      v-model="values[attribute.localName]"
-                      hide-details single-line>
-                    </v-text-field>
-                    <v-checkbox v-if="attribute.type === 'Boolean'"
-                      :label="attribute.name"
-                      v-model="values[attribute.localName]">
-                    </v-checkbox>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card>
+            <element-attribute-group-panel
+              v-for="group in groups" :key="group.id" class="mb-3"
+              :group="group" :attrValues="attrValues">
+            </element-attribute-group-panel>
           </v-card-text>
         </v-card>
       </v-tabs-content>
@@ -57,6 +27,7 @@
 <script>
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
+import ElementAttributeGroupPanel from './ElementAttributeGroupPanel'
 
 export default {
 
@@ -64,19 +35,22 @@ export default {
     active: null,
     dialogVisible: false,
     groups: null,
-    values: {},
+    attrValues: {},
+    attrByName: {},
     error: null
   }),
 
   components: {
-    BaseDialog
+    BaseDialog,
+    ElementAttributeGroupPanel
   },
 
-  props: ['model', 'config', 'title'],
+  props: ['model', 'config', 'title', 'createLabel', 'cancelLabel'],
 
   watch: {
     model: function (model) {
       let groups = []
+      let attrByName = {}
       if (model) {
         let attributes = []
         let currentGroup = null
@@ -86,28 +60,32 @@ export default {
             if (!currentGroup || currentGroup.id !== modelAttr.group) {
               currentGroup = {}
               currentGroup.id = modelAttr.group
-              currentGroup.description = model.attributeGroups[modelAttr.group]
+              if (modelAttr.group) {
+                currentGroup.description = model.attributeGroups[modelAttr.group]
+              }
               attributes = []
               currentGroup.attributes = attributes
               groups.push(currentGroup)
             }
-            attributes.push({
+            let attr = {
               'localName': modelAttr.localName,
               'name': modelAttr.name,
               'type': modelAttr.type,
               'icon': modelAttr.icon,
               'description': modelAttr.description,
               'required': modelAttr.required
-            })
+            }
+            attributes.push(attr)
+            attrByName[modelAttr.localName] = attr
           }
         }
       }
       this.$data.groups = groups
+      this.$data.attrByName = attrByName
     },
     config: function (config) {
-      if (config) {
-        this.$data.values = Utils.arrayToMetadata(config.attributes)
-      }
+      this.$data.attrValues = config.attributes
+        ? Utils.arrayToMetadata(config.attributes) : {}
     }
   },
 
@@ -116,7 +94,7 @@ export default {
     generatePayload: function () {
       let payload = {}
       payload.name = this.model.localName
-      payload.attributes = Utils.metadataToArray(this.$data.values)
+      payload.attributes = Utils.metadataToArray(this.$data.attrValues)
       return payload
     },
 
@@ -160,7 +138,4 @@ export default {
 </script>
 
 <style scoped>
-.input-group {
-  padding: 0;
-}
 </style>

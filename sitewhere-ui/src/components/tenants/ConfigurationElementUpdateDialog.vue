@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <configuration-element-dialog ref="dialog" width="600"
-      createLabel="Create" cancelLabel="Cancel"
-      :title="title" @payload="onCommit" :model="model">
+  <span>
+    <configuration-element-dialog ref="dialog" :title="title"
+      width="600" resetOnOpen="true" createLabel="Update" cancelLabel="Cancel"
+      @payload="onCommit" :model="model" :config="config">
     </configuration-element-dialog>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -19,14 +19,14 @@ export default {
     ConfigurationElementDialog
   },
 
-  props: ['model'],
+  props: ['model', 'config'],
 
   computed: {
     title: function () {
       if (this.model) {
-        return 'Create ' + this.model.name
+        return 'Update ' + this.model.name
       }
-      return 'Create Component'
+      return 'Update Component'
     }
   },
 
@@ -38,14 +38,13 @@ export default {
 
     // Send event to open dialog.
     onOpenDialog: function () {
-      this.getDialogComponent().reset()
       this.getDialogComponent().openDialog()
     },
 
     // Handle payload commit.
     onCommit: function (payload) {
       this.getDialogComponent().closeDialog()
-      this.$emit('elementAdded', payload)
+      this.$emit('elementUpdated', payload)
     }
   }
 }
