@@ -105,8 +105,11 @@ public enum ErrorCode {
     /** Invalid device specification token */
     DuplicateDeviceSpecificationToken(504, "Device specification token already in use."),
 
-    /** Invalid site token */
+    /** Invalid device command token */
     InvalidDeviceCommandToken(505, "Device command not found."),
+
+    /** Invalid device status code */
+    InvalidDeviceStatusCode(507, "Device status not found."),
 
     /** Duplicate site token */
     DeuplicateSiteToken(509, "Site token already in use."),
@@ -197,6 +200,15 @@ public enum ErrorCode {
      * Attempting to create a new command that duplicates an existing command
      */
     DeviceCommandExists(550, "Device command with same namespace and name already exists for specification."),
+
+    /*****************
+     * DEVICE STATUS *
+     *****************/
+
+    /**
+     * Attempting to create a new status that duplicates an existing status
+     */
+    DeviceStatusExists(560, "Device status with same code already exists for specification."),
 
     /**********
      * DEVICE *

@@ -38,6 +38,7 @@ import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
@@ -47,6 +48,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 import com.sitewhere.spi.error.ErrorCode;
@@ -422,6 +424,125 @@ public class SpecificationsController extends RestController {
 		current.getCommands().add(command);
 	    }
 	    return new SearchResults<IDeviceCommandNamespace>(namespaces);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Create a device status for a device specification.
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/{token}/statuses", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "Create device status for specification.")
+    @Secured({ SiteWhereRoles.REST })
+    public IDeviceStatus createDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "createDeviceStatus", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDeviceStatus(token,
+		    request);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Get device status by unique status code.
+     * 
+     * @param token
+     * @param code
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Get device status by unique code")
+    @Secured({ SiteWhereRoles.REST })
+    public IDeviceStatus getDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "getDeviceStatus", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStatusByCode(token,
+		    code);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Update information for an existing device status entry.
+     * 
+     * @param token
+     * @param code
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(value = "Update existing device status entry")
+    @Secured({ SiteWhereRoles.REST })
+    public IDeviceStatus updateDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Code", required = true) @PathVariable String code,
+	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "updateDeviceStatus", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceStatus(token, code,
+		    request);
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    @RequestMapping(value = "/{token}/statuses", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "List device statuses for specification")
+    @Secured({ SiteWhereRoles.REST })
+    public List<IDeviceStatus> listDeviceStatuses(
+	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "listDeviceStatuses", LOGGER);
+	try {
+	    List<IDeviceStatus> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		    .listDeviceStatuses(token);
+	    Collections.sort(results, new Comparator<IDeviceStatus>() {
+		public int compare(IDeviceStatus o1, IDeviceStatus o2) {
+		    return o1.getName().compareTo(o2.getName());
+		}
+	    });
+	    return results;
+	} finally {
+	    Tracer.stop(LOGGER);
+	}
+    }
+
+    /**
+     * Delete information for an existing device status entry.
+     * 
+     * @param token
+     * @param code
+     * @param servletRequest
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ApiOperation(value = "Update existing device status entry")
+    @Secured({ SiteWhereRoles.REST })
+    public IDeviceStatus deleteDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
+	    throws SiteWhereException {
+	Tracer.start(TracerCategory.RestApiCall, "deleteDeviceStatus", LOGGER);
+	try {
+	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceStatus(token, code);
 	} finally {
 	    Tracer.stop(LOGGER);
 	}

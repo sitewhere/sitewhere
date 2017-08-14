@@ -32,6 +32,7 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
@@ -74,12 +75,12 @@ import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
-import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -109,6 +110,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
@@ -372,6 +374,82 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Common logic for creating new device status and populating it from
+     * request.
+     * 
+     * @param spec
+     * @param request
+     * @param existing
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStatus deviceStatusCreateLogic(IDeviceSpecification spec, IDeviceStatusCreateRequest request,
+	    List<IDeviceStatus> existing) throws SiteWhereException {
+	DeviceStatus status = new DeviceStatus();
+
+	// Code is required.
+	require(request.getCode());
+	status.setCode(request.getCode());
+
+	// Name is required.
+	require(request.getName());
+	status.setName(request.getName());
+
+	status.setSpecificationToken(spec.getToken());
+	status.setBackgroundColor(request.getBackgroundColor());
+	status.setForegroundColor(request.getForegroundColor());
+	status.setIcon(request.getIcon());
+
+	checkDuplicateStatus(status, existing);
+	return status;
+    }
+
+    /**
+     * Common logic for updating a device status from request.
+     * 
+     * @param request
+     * @param target
+     * @param existing
+     * @throws SiteWhereException
+     */
+    public static void deviceStatusUpdateLogic(IDeviceStatusCreateRequest request, DeviceStatus target,
+	    List<IDeviceStatus> existing) throws SiteWhereException {
+	if (request.getCode() != null) {
+	    target.setCode(request.getCode());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getBackgroundColor() != null) {
+	    target.setBackgroundColor(request.getBackgroundColor());
+	}
+	if (request.getForegroundColor() != null) {
+	    target.setForegroundColor(request.getForegroundColor());
+	}
+	if (request.getIcon() != null) {
+	    target.setIcon(request.getIcon());
+	}
+	checkDuplicateStatus(target, existing);
+    }
+
+    /**
+     * Checks whether a command is already in the given list (same name and
+     * namespace).
+     * 
+     * @param command
+     * @param existing
+     * @throws SiteWhereException
+     */
+    protected static void checkDuplicateStatus(DeviceStatus status, List<IDeviceStatus> existing)
+	    throws SiteWhereException {
+	for (IDeviceStatus current : existing) {
+	    if (current.getCode().equals(status.getCode())) {
+		throw new SiteWhereSystemException(ErrorCode.DeviceStatusExists, ErrorLevel.ERROR);
+	    }
+	}
+    }
+
+    /**
      * Common logic for creating new device object and populating it from
      * request.
      * 
@@ -397,7 +475,7 @@ public class SiteWherePersistence {
 	device.setSpecificationToken(request.getSpecificationToken());
 
 	device.setComments(request.getComments());
-	device.setStatus(DeviceStatus.Ok);
+	device.setStatus(null);
 
 	MetadataProvider.copy(request.getMetadata(), device);
 	SiteWherePersistence.initializeEntityMetadata(device);

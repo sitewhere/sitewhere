@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -160,6 +161,56 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException;
+
+    /**
+     * Creates a device status associated with an existing device specification.
+     * 
+     * @param specToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceStatus createDeviceStatus(String specToken, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException;
+
+    /**
+     * Get a device status by unique code.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceStatus getDeviceStatusByCode(String specToken, String code) throws SiteWhereException;
+
+    /**
+     * Update an existing device status.
+     * 
+     * @param code
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceStatus updateDeviceStatus(String specToken, String code, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException;
+
+    /**
+     * List device statuses associated with a device specification.
+     * 
+     * @param specToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDeviceStatus> listDeviceStatuses(String specToken) throws SiteWhereException;
+
+    /**
+     * Delete an existing device status.
+     * 
+     * @param specToken
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceStatus deleteDeviceStatus(String specToken, String code) throws SiteWhereException;
 
     /**
      * Create a new device.

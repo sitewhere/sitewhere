@@ -35,6 +35,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.batch.IBatchElement;
@@ -53,6 +54,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -282,6 +284,68 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
 	return HBaseDeviceCommand.deleteDeviceCommand(context, token, force);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
+    @Override
+    public IDeviceStatus createDeviceStatus(String specToken, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * lang.String)
+     */
+    @Override
+    public IDeviceStatus getDeviceStatusByCode(String specToken, String code) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
+    @Override
+    public IDeviceStatus updateDeviceStatus(String specToken, String code, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * String)
+     */
+    @Override
+    public List<IDeviceStatus> listDeviceStatuses(String specToken) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * String, java.lang.String)
+     */
+    @Override
+    public IDeviceStatus deleteDeviceStatus(String specToken, String code) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*

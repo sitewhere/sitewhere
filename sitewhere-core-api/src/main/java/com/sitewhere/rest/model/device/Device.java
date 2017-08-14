@@ -14,7 +14,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -49,7 +48,7 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     private String comments;
 
     /** Status indicator */
-    private DeviceStatus status;
+    private String status;
 
     /** Token for current assignment */
     private String assignmentToken;
@@ -158,11 +157,11 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
      * 
      * @see com.sitewhere.spi.device.IDevice#getStatus()
      */
-    public DeviceStatus getStatus() {
+    public String getStatus() {
 	return status;
     }
 
-    public void setStatus(DeviceStatus status) {
+    public void setStatus(String status) {
 	this.status = status;
     }
 

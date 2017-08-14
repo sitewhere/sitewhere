@@ -32,6 +32,9 @@ public interface IDeviceManagementMongoClient {
     /** Default collection name for SiteWhere device commands */
     public static final String DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME = "commands";
 
+    /** Default collection name for SiteWhere device statuses */
+    public static final String DEFAULT_DEVICE_STATUSES_COLLECTION_NAME = "statuses";
+
     /** Default collection name for SiteWhere devices */
     public static final String DEFAULT_DEVICES_COLLECTION_NAME = "devices";
 
@@ -76,6 +79,15 @@ public interface IDeviceManagementMongoClient {
      * @throws SiteWhereException
      */
     public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Collection for device statuses.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getDeviceStatusesCollection(ITenant tenant) throws SiteWhereException;
 
     /**
      * Collection for devices.

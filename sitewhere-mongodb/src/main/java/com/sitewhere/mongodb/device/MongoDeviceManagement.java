@@ -32,6 +32,7 @@ import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchElement;
@@ -55,6 +56,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.batch.IBatchElement;
@@ -73,6 +75,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -153,10 +156,18 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
+	// Site indexes.
 	getMongoClient().getSitesCollection(getTenant()).createIndex(new Document(MongoSite.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
+
+	// Specification-related indexes.
 	getMongoClient().getDeviceSpecificationsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceSpecification.PROP_TOKEN, 1), new IndexOptions().unique(true));
+	getMongoClient().getDeviceStatusesCollection(getTenant()).createIndex(
+		new Document(MongoDeviceStatus.PROP_SPEC_TOKEN, 1).append(MongoDeviceStatus.PROP_CODE, 1),
+		new IndexOptions().unique(true));
+
+	// Device and assignment indexes.
 	getMongoClient().getDevicesCollection(getTenant()).createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection(getTenant())
@@ -165,6 +176,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 		.createIndex(new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
+
+	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getDeviceGroupsCollection(getTenant())
@@ -176,6 +189,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	getMongoClient().getGroupElementsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
 			.append(MongoDeviceGroupElement.PROP_ROLES, 1));
+
+	// Batch operation indexes.
 	getMongoClient().getBatchOperationsCollection(getTenant())
 		.createIndex(new Document(MongoBatchOperation.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getBatchOperationElementsCollection(getTenant())
@@ -475,6 +490,138 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document match = getDeviceCommandDocumentByToken(token);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
+	}
+	return match;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
+    @Override
+    public IDeviceStatus createDeviceStatus(String specToken, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException {
+	// Get list of existing statuses to prevent duplicates.
+	List<IDeviceStatus> existing = listDeviceStatuses(specToken);
+	IDeviceSpecification specification = getDeviceSpecificationByToken(specToken);
+	if (specification == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+	}
+
+	// Use common logic so all backend implementations work the same.
+	DeviceStatus status = SiteWherePersistence.deviceStatusCreateLogic(specification, request, existing);
+
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
+	Document created = MongoDeviceStatus.toDocument(status);
+	MongoPersistence.insert(statuses, created, ErrorCode.DeviceStatusExists);
+	return MongoDeviceStatus.fromDocument(created);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * lang.String, java.lang.String)
+     */
+    @Override
+    public IDeviceStatus getDeviceStatusByCode(String specToken, String code) throws SiteWhereException {
+	Document result = getDeviceStatusDocument(specToken, code);
+	if (result != null) {
+	    return MongoDeviceStatus.fromDocument(result);
+	}
+	return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * String, java.lang.String,
+     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
+    @Override
+    public IDeviceStatus updateDeviceStatus(String specToken, String code, IDeviceStatusCreateRequest request)
+	    throws SiteWhereException {
+	Document match = assertDeviceStatus(specToken, code);
+	DeviceStatus status = MongoDeviceStatus.fromDocument(match);
+
+	List<IDeviceStatus> existing = listDeviceStatuses(specToken);
+
+	// Use common update logic.
+	SiteWherePersistence.deviceStatusUpdateLogic(request, status, existing);
+	Document updated = MongoDeviceStatus.toDocument(status);
+
+	Document query = new Document(MongoDeviceStatus.PROP_SPEC_TOKEN, specToken).append(MongoDeviceStatus.PROP_CODE,
+		code);
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
+	MongoPersistence.update(statuses, query, updated);
+	return MongoDeviceStatus.fromDocument(updated);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * String, boolean)
+     */
+    @Override
+    public List<IDeviceStatus> listDeviceStatuses(String specToken) throws SiteWhereException {
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
+	Document dbCriteria = new Document();
+	dbCriteria.put(MongoDeviceStatus.PROP_SPEC_TOKEN, specToken);
+	Document sort = new Document(MongoDeviceStatus.PROP_NAME, 1);
+	return MongoPersistence.list(IDeviceStatus.class, statuses, dbCriteria, sort);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * String, java.lang.String)
+     */
+    @Override
+    public IDeviceStatus deleteDeviceStatus(String specToken, String code) throws SiteWhereException {
+	Document existing = assertDeviceStatus(specToken, code);
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
+	MongoPersistence.delete(statuses, existing);
+	return MongoDeviceStatus.fromDocument(existing);
+    }
+
+    /**
+     * Return the {@link Document} for a device status based on specification
+     * token and status code.
+     * 
+     * @param specToken
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getDeviceStatusDocument(String specToken, String code) throws SiteWhereException {
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
+	Document query = new Document(MongoDeviceStatus.PROP_SPEC_TOKEN, specToken).append(MongoDeviceStatus.PROP_CODE,
+		code);
+	return statuses.find(query).first();
+    }
+
+    /**
+     * Return the {@link Document} for the device status. Throws an exception if
+     * the token is not valid.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertDeviceStatus(String specToken, String code) throws SiteWhereException {
+	Document match = getDeviceStatusDocument(specToken, code);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceStatusCode, ErrorLevel.ERROR);
 	}
 	return match;
     }

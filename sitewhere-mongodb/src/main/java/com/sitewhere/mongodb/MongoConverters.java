@@ -29,6 +29,7 @@ import com.sitewhere.mongodb.device.MongoDeviceLocation;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceSpecification;
 import com.sitewhere.mongodb.device.MongoDeviceStateChange;
+import com.sitewhere.mongodb.device.MongoDeviceStatus;
 import com.sitewhere.mongodb.device.MongoDeviceStream;
 import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.batch.IBatchElement;
@@ -78,6 +80,7 @@ public class MongoConverters implements IMongoConverterLookup {
 	// Converters for device management.
 	CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
 	CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
+	CONVERTERS.put(IDeviceStatus.class, new MongoDeviceStatus());
 	CONVERTERS.put(IDevice.class, new MongoDevice());
 	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
 	CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());

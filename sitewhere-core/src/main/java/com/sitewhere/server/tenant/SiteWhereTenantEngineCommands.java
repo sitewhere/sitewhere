@@ -8,8 +8,6 @@
 package com.sitewhere.server.tenant;
 
 import com.sitewhere.rest.model.command.CommandResponse;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;

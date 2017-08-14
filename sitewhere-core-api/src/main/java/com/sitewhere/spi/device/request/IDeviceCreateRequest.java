@@ -10,7 +10,6 @@ package com.sitewhere.spi.device.request;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 
 /**
@@ -70,11 +69,11 @@ public interface IDeviceCreateRequest {
     public String getComments();
 
     /**
-     * Get device status indicator.
+     * Get device status indicator code.
      * 
      * @return
      */
-    public DeviceStatus getStatus();
+    public String getStatus();
 
     /**
      * Get metadata values.

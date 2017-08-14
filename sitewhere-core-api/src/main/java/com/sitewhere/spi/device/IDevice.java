@@ -67,7 +67,7 @@ public interface IDevice extends IMetadataProviderEntity {
      * 
      * @return
      */
-    public DeviceStatus getStatus();
+    public String getStatus();
 
     /**
      * Get the current device assignment token if assigned.

@@ -90,6 +90,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /** Injected name used for device commands collection */
     private String deviceCommandsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
 
+    /** Injected name used for device statuses collection */
+    private String deviceStatusesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_STATUSES_COLLECTION_NAME;
+
     /** Injected name used for devices collection */
     private String devicesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICES_COLLECTION_NAME;
 
@@ -473,6 +476,17 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+     * getDeviceStatusesCollection(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public MongoCollection<Document> getDeviceStatusesCollection(ITenant tenant) throws SiteWhereException {
+	return getTenantDatabase(tenant).getCollection(getDeviceStatusesCollectionName());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(
      * com. sitewhere .spi.user.ITenant)
@@ -744,6 +758,14 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     public void setDeviceCommandsCollectionName(String deviceCommandsCollectionName) {
 	this.deviceCommandsCollectionName = deviceCommandsCollectionName;
+    }
+
+    public String getDeviceStatusesCollectionName() {
+	return deviceStatusesCollectionName;
+    }
+
+    public void setDeviceStatusesCollectionName(String deviceStatusesCollectionName) {
+	this.deviceStatusesCollectionName = deviceStatusesCollectionName;
     }
 
     public String getDevicesCollectionName() {

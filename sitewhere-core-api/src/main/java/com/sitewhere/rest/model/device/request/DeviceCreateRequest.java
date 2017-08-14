@@ -16,7 +16,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
-import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -54,7 +53,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     private String comments;
 
     /** Device status indicator */
-    private DeviceStatus status;
+    private String status;
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -157,16 +156,11 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	this.comments = comments;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getStatus()
-     */
-    public DeviceStatus getStatus() {
+    public String getStatus() {
 	return status;
     }
 
-    public void setStatus(DeviceStatus status) {
+    public void setStatus(String status) {
 	this.status = status;
     }
 
@@ -209,7 +203,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	    request.setSiteToken(siteToken);
 	    request.setSpecificationToken(specificationToken);
 	    request.setHardwareId(hardwareId);
-	    request.setStatus(DeviceStatus.Ok);
+	    request.setStatus(null);
 	    request.setComments("");
 	}
 
