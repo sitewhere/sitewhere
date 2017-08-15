@@ -1,53 +1,70 @@
 <template>
-  <div>
-    <base-dialog :title="title" :width="width" :visible="dialogVisible"
-      :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
-      @createClicked="onCreateClicked" @cancelClicked="onCancelClicked"
-      hideButtons="true">
-      <v-stepper v-model="step">
-        <v-stepper-header>
-          <v-stepper-step step="1" :complete="step > 1">Specification</v-stepper-step>
-          <v-divider></v-divider>
-          <v-stepper-step step="2" :complete="step > 2">Asset</v-stepper-step>
-          <v-divider></v-divider>
-          <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
-        </v-stepper-header>
-        <v-stepper-content step="1">
-          <v-card flat>
-            <v-card-text>
-              <v-container fluid>
-                <v-layout row wrap>
-                  <v-flex xs12>
-                    <v-text-field required class="mt-1" label="Specification name"
-                      v-model="specName" prepend-icon="info"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-select required :items="containerPolicies" v-model="specContainerPolicy"
-                      label="Container policy" prepend-icon="developer_board"></v-select>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-select required :items="assetModules" v-model="specAssetModule"
-                      item-text="name" item-value="id" label="Asset module"
-                      prepend-icon="local_offer"></v-select>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-          </v-card>
+  <base-dialog :title="title" :width="width" :visible="dialogVisible"
+    :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
+    @createClicked="onCreateClicked" @cancelClicked="onCancelClicked"
+    hideButtons="true">
+    <v-stepper v-model="step">
+      <v-stepper-header>
+        <v-stepper-step step="1" :complete="step > 1">Specification</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step step="2" :complete="step > 2">Asset</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
+      </v-stepper-header>
+      <v-stepper-content step="1">
+        <v-card flat>
+          <v-card-text>
+            <v-container fluid>
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <v-text-field required class="mt-1" label="Specification name"
+                    v-model="specName" prepend-icon="info"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-select required :items="containerPolicies" v-model="specContainerPolicy"
+                    label="Container policy" prepend-icon="developer_board"></v-select>
+                </v-flex>
+                <v-flex xs12>
+                  <v-select required :items="assetModules" v-model="specAssetModule"
+                    item-text="name" item-value="id" label="Asset module"
+                    prepend-icon="local_offer"></v-select>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+        </v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
+          <v-btn :disabled="!firstPageComplete" flat primary
+            @click.native="step = 2">Choose Asset
+            <v-icon light primary>keyboard_arrow_right</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-stepper-content>
+      <v-stepper-content step="2">
+        <asset-chooser :assetModuleId="specAssetModule" :assetId="specAssetId"
+          @assetUpdated="onAssetUpdated"></asset-chooser>
+        <v-card-actions>
+          <v-btn flat primary @click.native="step = 1">
+            <v-icon light primary>keyboard_arrow_left</v-icon>
+            Back
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
+          <v-btn flat primary :disabled="!secondPageComplete"
+            @click.native="onCreateClicked">{{ createLabel }}</v-btn>
+          <v-btn flat primary :disabled="!secondPageComplete"
+            @click.native="step = 3">Add Metadata
+            <v-icon light primary>keyboard_arrow_right</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-stepper-content>
+      <v-stepper-content step="3">
+        <metadata-panel class="mb-3" :metadata="metadata"
+          @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
           <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="step = 2">Choose Asset
-              <v-icon light primary>keyboard_arrow_right</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-stepper-content>
-        <v-stepper-content step="2">
-          <asset-chooser :assetModuleId="specAssetModule" :assetId="specAssetId"
-            @assetUpdated="onAssetUpdated"></asset-chooser>
-          <v-card-actions>
-            <v-btn flat primary @click.native="step = 1">
+            <v-btn flat primary @click.native="step = 2">
               <v-icon light primary>keyboard_arrow_left</v-icon>
               Back
             </v-btn>
@@ -55,29 +72,10 @@
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn flat primary :disabled="!secondPageComplete"
               @click.native="onCreateClicked">{{ createLabel }}</v-btn>
-            <v-btn flat primary :disabled="!secondPageComplete"
-              @click.native="step = 3">Add Metadata
-              <v-icon light primary>keyboard_arrow_right</v-icon>
-            </v-btn>
           </v-card-actions>
-        </v-stepper-content>
-        <v-stepper-content step="3">
-          <metadata-panel class="mb-3" :metadata="metadata"
-            @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
-            <v-card-actions>
-              <v-btn flat primary @click.native="step = 2">
-                <v-icon light primary>keyboard_arrow_left</v-icon>
-                Back
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-              <v-btn flat primary :disabled="!secondPageComplete"
-                @click.native="onCreateClicked">{{ createLabel }}</v-btn>
-            </v-card-actions>
-        </v-stepper-content>
-      </v-stepper>
-    </base-dialog>
-  </div>
+      </v-stepper-content>
+    </v-stepper>
+  </base-dialog>
 </template>
 
 <script>

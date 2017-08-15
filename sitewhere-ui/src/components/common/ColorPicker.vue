@@ -26,17 +26,17 @@ export default {
       }
     },
     currentColor: function () {
-      return this.updatedColor || this.color
+      return this.updatedColor || this.value
     }
   },
 
-  props: ['color', 'text'],
+  props: ['value', 'text'],
 
   methods: {
     // Called when a color is chosen.
     onColorChosen: function (val) {
       this.updatedColor = val.hex
-      this.$emit('colorChanged', val.hex)
+      this.$emit('input', val.hex)
       this.$emit('opacityChanged', val.a)
     }
   }
