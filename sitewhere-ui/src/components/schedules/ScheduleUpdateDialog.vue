@@ -3,11 +3,6 @@
     <schedule-dialog ref="dialog" title="Edit Schedule" width="700"
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
     </schedule-dialog>
-    <v-btn dark icon small class="grey pa-0 ma-0"
-      v-tooltip:top="{ html: 'Edit' }"
-      @click.native.stop="onOpenDialog">
-      <v-icon fa>edit</v-icon>
-    </v-btn>
   </span>
 </template>
 
@@ -61,7 +56,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('scheduleUpdated')
+      this.$emit('edited')
     }
   }
 }

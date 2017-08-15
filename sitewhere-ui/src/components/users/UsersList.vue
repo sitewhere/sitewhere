@@ -30,12 +30,14 @@
               {{ utils.formatDate(props.item.updatedDate) }}
             </td>
             <td width="12%" class="action-buttons">
-              <user-update-dialog :username="props.item.username"
-                @userUpdated="refresh">
-              </user-update-dialog>
-              <user-delete-dialog :username="props.item.username"
-                @userDeleted="refresh">
-              </user-delete-dialog>
+              <actions-block @edited="refresh" @deleted="refresh">
+                <user-update-dialog slot="edit"
+                  :username="props.item.username">
+                </user-update-dialog>
+                <user-delete-dialog slot="delete"
+                  :username="props.item.username">
+                </user-delete-dialog>
+              </actions-block>
             </td>
           </template>
         </v-data-table>
@@ -53,6 +55,7 @@
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
+import ActionsBlock from '../common/ActionsBlock'
 import UserCreateDialog from './UserCreateDialog'
 import UserUpdateDialog from './UserUpdateDialog'
 import UserDeleteDialog from './UserDeleteDialog'
@@ -119,6 +122,7 @@ export default {
   components: {
     Pager,
     NoResultsPanel,
+    ActionsBlock,
     UserCreateDialog,
     UserUpdateDialog,
     UserDeleteDialog
@@ -160,7 +164,4 @@ export default {
 </script>
 
 <style scoped>
-.action-buttons {
-  white-space: nowrap;
-}
 </style>

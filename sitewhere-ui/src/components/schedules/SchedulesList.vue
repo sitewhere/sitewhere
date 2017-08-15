@@ -23,12 +23,12 @@
               {{ utils.formatDate(props.item.createdDate) }}
             </td>
             <td width="15%">
-              <schedule-update-dialog :token="props.item.token"
-                @scheduleUpdated="refresh">
-              </schedule-update-dialog>
-              <schedule-delete-dialog :token="props.item.token"
-                @scheduleDeleted="refresh">
-              </schedule-delete-dialog>
+              <actions-block @edited="refresh" @deleted="refresh">
+                <schedule-update-dialog slot="edit" :token="props.item.token">
+                </schedule-update-dialog>
+                <schedule-delete-dialog slot="delete" :token="props.item.token">
+                </schedule-delete-dialog>
+              </actions-block>
             </td>
           </template>
         </v-data-table>
@@ -45,6 +45,7 @@
 <script>
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
+import ActionsBlock from '../common/ActionsBlock'
 import NoResultsPanel from '../common/NoResultsPanel'
 import ScheduleCreateDialog from './ScheduleCreateDialog'
 import ScheduleUpdateDialog from './ScheduleUpdateDialog'
@@ -101,6 +102,7 @@ export default {
 
   components: {
     Pager,
+    ActionsBlock,
     NoResultsPanel,
     ScheduleCreateDialog,
     ScheduleUpdateDialog,

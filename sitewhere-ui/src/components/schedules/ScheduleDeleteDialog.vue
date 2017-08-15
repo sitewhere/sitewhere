@@ -1,17 +1,10 @@
 <template>
-  <span>
-    <delete-dialog ref="dialog" title="Delete Schedule" width="400"
-      :error="error" @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this schedule?
-      </v-card-text>
-    </delete-dialog>
-    <v-btn dark icon small class="grey pa-0 ma-0"
-      v-tooltip:top="{ html: 'Delete' }"
-      @click.native.stop="showDeleteDialog">
-      <v-icon fa>remove</v-icon>
-    </v-btn>
-  </span>
+  <delete-dialog ref="dialog" title="Delete Schedule" width="400"
+    :error="error" @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this schedule?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>
@@ -54,7 +47,7 @@ export default {
     // Handle successful delete.
     onDeleted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('scheduleDeleted')
+      this.$emit('deleted')
     }
   }
 }
