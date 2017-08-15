@@ -1,11 +1,13 @@
 package com.sitewhere.spi.device.request;
 
+import com.sitewhere.spi.common.IMetadataProvider;
+
 /**
  * Information needed to create a device status.
  * 
  * @author Derek
  */
-public interface IDeviceStatusCreateRequest {
+public interface IDeviceStatusCreateRequest extends IMetadataProvider {
 
     /**
      * Get the unique status code.
@@ -41,6 +43,13 @@ public interface IDeviceStatusCreateRequest {
      * @return
      */
     public String getForegroundColor();
+
+    /**
+     * Border color for user interface.
+     * 
+     * @return
+     */
+    public String getBorderColor();
 
     /**
      * Icon for user interface.

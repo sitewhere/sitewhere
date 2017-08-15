@@ -11,6 +11,9 @@
           <v-tabs-item key="commands" href="#commands">
             Commands
           </v-tabs-item>
+          <v-tabs-item key="statuses" href="#statuses">
+            Device Statuses
+          </v-tabs-item>
           <v-tabs-item key="code" href="#code">
             Code Generation
           </v-tabs-item>
@@ -22,6 +25,11 @@
         <v-tabs-content key="commands" id="commands">
           <specification-commands ref="commands" :specification="specification">
           </specification-commands>
+        </v-tabs-content>
+        <v-tabs-content key="statuses" id="statuses">
+          <specification-device-statuses ref="statuses"
+            :specification="specification">
+          </specification-device-statuses>
         </v-tabs-content>
         <v-tabs-content key="code" id="code">
           <specification-codegen :specification="specification">
@@ -35,6 +43,9 @@
       </v-tabs>
       <command-create-dialog v-if="active === 'commands'"
         :specification="specification" @commandAdded="onCommandAdded"/>
+      <device-status-create-dialog v-if="active === 'statuses'"
+        :specification="specification" @statusAdded="onStatusAdded">
+      </device-status-create-dialog>
     </v-app>
   </div>
 </template>
@@ -43,9 +54,11 @@
 import Utils from '../common/Utils'
 import SpecificationDetailHeader from './SpecificationDetailHeader'
 import SpecificationCommands from './SpecificationCommands'
+import SpecificationDeviceStatuses from './SpecificationDeviceStatuses'
 import SpecificationCodegen from './SpecificationCodegen'
 import SpecificationComposition from './SpecificationComposition'
 import CommandCreateDialog from './CommandCreateDialog'
+import DeviceStatusCreateDialog from './DeviceStatusCreateDialog'
 
 import {_getDeviceSpecification} from '../../http/sitewhere-api-wrapper'
 
@@ -61,9 +74,11 @@ export default {
   components: {
     SpecificationDetailHeader,
     SpecificationCommands,
+    SpecificationDeviceStatuses,
     SpecificationCodegen,
     SpecificationComposition,
-    CommandCreateDialog
+    CommandCreateDialog,
+    DeviceStatusCreateDialog
   },
 
   created: function () {
@@ -110,8 +125,12 @@ export default {
 
     // Called after a command is added.
     onCommandAdded: function () {
-      console.log('command added')
       this.$refs['commands'].refresh()
+    },
+
+    // Called after a status is added.
+    onStatusAdded: function () {
+      this.$refs['statuses'].refresh()
     }
   }
 }

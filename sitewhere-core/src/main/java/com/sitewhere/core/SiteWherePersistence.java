@@ -189,6 +189,17 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Detect whether the request has an updated value.
+     * 
+     * @param request
+     * @param target
+     * @return
+     */
+    protected static boolean isUpdated(Object request, Object target) {
+	return (request != null) && (!request.equals(target));
+    }
+
+    /**
      * Common logic for creating new device specification and populating it from
      * request.
      * 
@@ -398,9 +409,12 @@ public class SiteWherePersistence {
 	status.setSpecificationToken(spec.getToken());
 	status.setBackgroundColor(request.getBackgroundColor());
 	status.setForegroundColor(request.getForegroundColor());
+	status.setBorderColor(request.getBorderColor());
 	status.setIcon(request.getIcon());
 
 	checkDuplicateStatus(status, existing);
+
+	MetadataProvider.copy(request.getMetadata(), status);
 	return status;
     }
 
@@ -414,8 +428,9 @@ public class SiteWherePersistence {
      */
     public static void deviceStatusUpdateLogic(IDeviceStatusCreateRequest request, DeviceStatus target,
 	    List<IDeviceStatus> existing) throws SiteWhereException {
-	if (request.getCode() != null) {
+	if (isUpdated(request.getCode(), target.getCode())) {
 	    target.setCode(request.getCode());
+	    checkDuplicateStatus(target, existing);
 	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -426,10 +441,16 @@ public class SiteWherePersistence {
 	if (request.getForegroundColor() != null) {
 	    target.setForegroundColor(request.getForegroundColor());
 	}
+	if (request.getBorderColor() != null) {
+	    target.setBorderColor(request.getBorderColor());
+	}
 	if (request.getIcon() != null) {
 	    target.setIcon(request.getIcon());
 	}
-	checkDuplicateStatus(target, existing);
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
     }
 
     /**

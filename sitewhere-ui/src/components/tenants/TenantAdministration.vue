@@ -25,7 +25,8 @@
           {{ fullname }}
         </v-btn>
         <v-list>
-          <v-list-tile @click.native="onUserAction(action)" v-for="action in userActions" :key="action">
+          <v-list-tile @click.native="onUserAction(action)"
+            v-for="action in userActions" :key="action.id">
             <v-icon left light class="mr-2">{{action.icon}}</v-icon>
             <v-list-tile-title v-text="action.title"></v-list-tile-title>
           </v-list-tile>

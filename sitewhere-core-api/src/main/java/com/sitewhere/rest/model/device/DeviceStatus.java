@@ -1,5 +1,6 @@
 package com.sitewhere.rest.model.device;
 
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.IDeviceStatus;
 
 /**
@@ -7,7 +8,10 @@ import com.sitewhere.spi.device.IDeviceStatus;
  * 
  * @author Derek
  */
-public class DeviceStatus implements IDeviceStatus {
+public class DeviceStatus extends MetadataProvider implements IDeviceStatus {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = 3276455653992126853L;
 
     /** Status code */
     private String code;
@@ -23,6 +27,9 @@ public class DeviceStatus implements IDeviceStatus {
 
     /** Foreground color */
     private String foregroundColor;
+
+    /** Border color */
+    private String borderColor;
 
     /** Icon */
     private String icon;
@@ -90,6 +97,19 @@ public class DeviceStatus implements IDeviceStatus {
 
     public void setForegroundColor(String foregroundColor) {
 	this.foregroundColor = foregroundColor;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceStatus#getBorderColor()
+     */
+    public String getBorderColor() {
+	return borderColor;
+    }
+
+    public void setBorderColor(String borderColor) {
+	this.borderColor = borderColor;
     }
 
     /*

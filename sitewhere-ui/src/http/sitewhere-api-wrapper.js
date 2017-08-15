@@ -58,7 +58,12 @@ import {
   listDeviceCommands,
   updateDeviceCommand,
   listDeviceCommandsByNamespace,
-  deleteDeviceCommand
+  deleteDeviceCommand,
+  createDeviceStatus,
+  getDeviceStatus,
+  listDeviceStatuses,
+  updateDeviceStatus,
+  deleteDeviceStatus
 } from './sitewhere-specifications-api.js'
 
 // Devices.
@@ -680,6 +685,51 @@ export function _listDeviceCommandsByNamespace (store, token, includeDeleted) {
 export function _deleteDeviceCommand (store, token, force) {
   let axios = createAxiosFromStore(store)
   let api = deleteDeviceCommand(axios, token, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a device status.
+ */
+export function _createDeviceStatus (store, token, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDeviceStatus(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a device status by code.
+ */
+export function _getDeviceStatus (store, token, code) {
+  let axios = createAxiosFromStore(store)
+  let api = getDeviceStatus(axios, token, code)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing device status.
+ */
+export function _updateDeviceStatus (store, token, code, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateDeviceStatus(axios, token, code, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List statuses for a device specification.
+ */
+export function _listDeviceStatuses (store, token) {
+  let axios = createAxiosFromStore(store)
+  let api = listDeviceStatuses(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a device status.
+ */
+export function _deleteDeviceStatus (store, token, code) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteDeviceStatus(axios, token, code)
   return loaderWrapper(store, api)
 }
 
