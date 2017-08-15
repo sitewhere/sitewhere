@@ -354,6 +354,12 @@ function buildContent (context) {
         element.hasContent = true
         elements.push(element)
       }
+      if (childRole.multiple) {
+        let placeholder = buildPlaceholder(childRole)
+        placeholder.options = availableForRole
+        placeholder.hasContent = false
+        elements.push(placeholder)
+      }
     }
   }
   children.elements = elements
