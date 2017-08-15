@@ -14,14 +14,15 @@
             <v-text-field hide-details label="Zone name" v-model="zoneName"></v-text-field>
           </v-flex>
           <v-flex xs2 pa-2>
-            <color-picker text="Border" :color="zoneBorder"
-              @colorChanged="onBorderColorUpdated"
-              v-tooltip:top="{ html: 'Border Color' }"></color-picker>
+            <color-picker text="Border" v-model="zoneBorder"
+              v-tooltip:top="{ html: 'Border Color' }">
+            </color-picker>
           </v-flex>
           <v-flex xs2 pa-2>
-            <color-picker text="Fill" :color="zoneFill"
-              @colorChanged="onFillColorUpdated" @opacityChanged="onFillOpacityUpdated"
-              v-tooltip:top="{ html: 'Fill Color' }"></color-picker>
+            <color-picker text="Fill" v-model="zoneFill"
+              @opacityChanged="onFillOpacityUpdated"
+              v-tooltip:top="{ html: 'Fill Color' }">
+            </color-picker>
           </v-flex>
         </v-layout>
       </v-container>
@@ -65,7 +66,14 @@ export default {
       }
     },
 
-    // Update zone name.
+    zoneBorder: function (value) {
+      this.emitZoneIfReady()
+    },
+
+    zoneFill: function (value) {
+      this.emitZoneIfReady()
+    },
+
     zoneName: function (name) {
       this.emitZoneIfReady()
     }
@@ -86,18 +94,6 @@ export default {
     onZoneAdded: function (val) {
       console.log(val)
       this.$data.zoneCoordinates = val
-      this.emitZoneIfReady()
-    },
-
-    // Called when zone border color is chosen.
-    onBorderColorUpdated: function (val) {
-      this.$data.zoneBorder = val
-      this.emitZoneIfReady()
-    },
-
-    // Called when zone fill color is chosen.
-    onFillColorUpdated: function (val) {
-      this.$data.zoneFill = val
       this.emitZoneIfReady()
     },
 

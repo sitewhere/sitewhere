@@ -11,7 +11,8 @@
             <v-flex xs9>
               <v-select :items="mapTypes" v-model="mapSelection"
                 label="Select Map Type" light single-line auto
-                prepend-icon="map" hide-details></v-select>
+                prepend-icon="map" hide-details>
+              </v-select>
             </v-flex>
           </v-layout>
           <v-divider class="mt-2"></v-divider>

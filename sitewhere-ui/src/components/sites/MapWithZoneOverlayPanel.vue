@@ -170,12 +170,8 @@ export default {
       // Asyncronously load zones and add layer to map.
       var component = this
       var site = this.site
-      var query = {
-        page: 1,
-        pageSize: 0
-      }
       if (site) {
-        _listZonesForSite(this.$store, site.token, query)
+        _listZonesForSite(this.$store, site.token)
           .then(function (response) {
             component.addZonesToFeatureGroup(response.data.results)
           }).catch(function (e) {
@@ -260,29 +256,33 @@ export default {
 
     // Enables editing features on map.
     enableMapEditing: function () {
-      var editFeatures = new L.FeatureGroup()
-      var editZone = this.createPolygonForZone(this.zone)
-      editFeatures.addLayer(editZone)
-      this.getMap().addLayer(editFeatures)
-      editFeatures.bringToFront()
+      if (this.zone) {
+        var editFeatures = new L.FeatureGroup()
+        var editZone = this.createPolygonForZone(this.zone)
+        editFeatures.addLayer(editZone)
+        this.getMap().addLayer(editFeatures)
+        editFeatures.bringToFront()
 
-      var options = {
-        position: 'topright',
-        draw: false,
-        edit: {
-          featureGroup: editFeatures,
-          remove: false
+        var options = {
+          position: 'topright',
+          draw: false,
+          edit: {
+            featureGroup: editFeatures,
+            remove: false
+          }
         }
+
+        var drawControl = new L.Control.Draw(options)
+        this.getMap().addControl(drawControl)
+        this.$data.editControl = drawControl
+
+        var bounds = editZone.getBounds()
+        this.getMap().fitBounds(bounds, {
+          padding: [ 0, 0 ]
+        })
+      } else {
+        console.log('no zone to edit!')
       }
-
-      var drawControl = new L.Control.Draw(options)
-      this.getMap().addControl(drawControl)
-      this.$data.editControl = drawControl
-
-      var bounds = editZone.getBounds()
-      this.getMap().fitBounds(bounds, {
-        padding: [ 0, 0 ]
-      })
     }
   }
 }

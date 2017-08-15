@@ -27,12 +27,13 @@
               {{ formatDate(props.item.updatedDate) }}
             </td>
             <td width="1%" style="white-space: nowrap" title="Edit/Delete">
-              <zone-delete-dialog :token="props.item.token"
-                @zoneDeleted="onZoneDeleted">
-              </zone-delete-dialog>
-              <zone-update-dialog :site="site" :token="props.item.token"
-                @zoneUpdated="onZoneUpdated">
-              </zone-update-dialog>
+              <actions-block @edited="refresh" @deleted="refresh">
+                <zone-update-dialog slot="edit" :site="site"
+                  :token="props.item.token">
+                </zone-update-dialog>
+                <zone-delete-dialog slot="delete" :token="props.item.token">
+                </zone-delete-dialog>
+              </actions-block>
             </td>
           </template>
         </v-data-table>
@@ -44,6 +45,7 @@
 
 <script>
 import Pager from '../common/Pager'
+import ActionsBlock from '../common/ActionsBlock'
 import NoResultsPanel from '../common/NoResultsPanel'
 import ZoneUpdateDialog from './ZoneUpdateDialog'
 import ZoneDeleteDialog from './ZoneDeleteDialog'
@@ -101,6 +103,7 @@ export default {
 
   components: {
     Pager,
+    ActionsBlock,
     NoResultsPanel,
     ZoneUpdateDialog,
     ZoneDeleteDialog

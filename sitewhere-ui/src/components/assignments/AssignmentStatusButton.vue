@@ -11,7 +11,7 @@
         v-tooltip:top="{ html: 'Update Status' }">Active</v-btn>
       <v-list>
         <v-list-tile @click.native.stop="showDialog(item.action)"
-          v-for="item in statusActiveItems" :key="item">
+          v-for="item in statusActiveItems" :key="item.text">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -21,7 +21,7 @@
         v-tooltip:top="{ html: 'Update Status' }">Missing</v-btn>
       <v-list>
         <v-list-tile @click.native.stop="showDialog(item.action)"
-          v-for="item in statusMissingItems" :key="item">
+          v-for="item in statusMissingItems" :key="item.text">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
       </v-list>

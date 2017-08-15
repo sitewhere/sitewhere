@@ -37,6 +37,7 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
+    zone: null,
     updatedZone: null,
     metadata: [],
     error: null
@@ -48,7 +49,7 @@ export default {
     ZoneMapPanel
   },
 
-  props: ['site', 'zone', 'title', 'width', 'createLabel', 'cancelLabel', 'mode'],
+  props: ['site', 'title', 'width', 'createLabel', 'cancelLabel', 'mode'],
 
   methods: {
     // Generate payload from UI.
@@ -74,6 +75,7 @@ export default {
     // Load dialog from a given payload.
     load: function (payload) {
       this.reset()
+      this.$data.zone = payload
 
       if (payload) {
         var meta = payload.metadata
