@@ -77,6 +77,14 @@ export function getTenantConfigurationRoles (axios) {
 }
 
 /**
+ * Stage tenant updates.
+ */
+export function stageTenantUpdates (axios, tenantId, payload) {
+  return restAuthPost(axios,
+    '/tenants/' + tenantId + '/engine/configuration/json', payload)
+}
+
+/**
  * Start a tenant (with progress monitoring).
  */
 export function startTenant (axios, tenantId, callback) {
@@ -90,4 +98,12 @@ export function startTenant (axios, tenantId, callback) {
 export function stopTenant (axios, tenantId, callback) {
   return restAuthPostWithProgress(axios,
     'tenants/' + tenantId + '/engine/stop', null, callback)
+}
+
+/**
+ * Reboot a tenant (with progress monitoring).
+ */
+export function rebootTenant (axios, tenantId, callback) {
+  return restAuthPostWithProgress(axios,
+    'tenants/' + tenantId + '/engine/reboot', null, callback)
 }

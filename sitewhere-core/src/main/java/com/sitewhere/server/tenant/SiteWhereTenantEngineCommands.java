@@ -21,7 +21,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class SiteWhereTenantEngineCommands {
 
     public static enum Command {
-	Start("start", StartCommand.class), Stop("stop", StopCommand.class);
+	Start("start", StartCommand.class), Stop("stop", StopCommand.class), Reboot("reboot", RebootCommand.class);
 
 	/** Command string */
 	private String command;
@@ -115,6 +115,45 @@ public class SiteWhereTenantEngineCommands {
 		return new CommandResponse(CommandResult.Failed, e.getMessage());
 	    }
 	    return new CommandResponse(CommandResult.Successful, "Tenant engine stopped.");
+	}
+    }
+
+    /**
+     * Command that completely reboots a tenant engine. This command forces a
+     * stop->terminate->initialize->start cycle.
+     * 
+     * @author Derek
+     */
+    public static class RebootCommand extends TenantEngineCommand {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.concurrent.Callable#call()
+	 */
+	@Override
+	public ICommandResponse call() throws Exception {
+	    try {
+		getEngine().lifecycleStop(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+		getEngine().lifecycleTerminate(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+		getEngine().lifecycleInitialize(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+		getEngine().lifecycleStart(getProgressMonitor());
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		}
+	    } catch (Exception e) {
+		return new CommandResponse(CommandResult.Failed, e.getMessage());
+	    }
+	    return new CommandResponse(CommandResult.Successful, "Tenant engine rebooted.");
 	}
     }
 

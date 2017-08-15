@@ -4,7 +4,7 @@
       <tenant-detail-header :tenant="tenant"
         :tenantCommandRunning="tenantCommandRunning"
         :tenantCommandPercent="tenantCommandPercent" class="mb-3"
-        @start="onStartTenant" @stop="onStopTenant">
+        @start="onStartTenant" @stop="onStopTenant" @reboot="onRebootTenant">
       </tenant-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -108,9 +108,9 @@
         :model="tenantDialogModel" :config="tenantDialogConfig"
         @elementUpdated="onConfigurationElementUpdated">
       </configuration-element-update-dialog>
-      <floating-action-button label="Stage Updates" icon="cloud_upload"
-        @action="onStageUpdates">
-      </floating-action-button>
+      <stage-updates-dialog :tenantId="tenantId" :json="tenantConfig"
+        @staged="onStagingComplete">
+      </stage-updates-dialog>
     </v-app>
   </div>
 </template>
@@ -122,6 +122,7 @@ import TenantDetailHeader from './TenantDetailHeader'
 import ElementPlaceholder from './ElementPlaceholder'
 import AttributeField from './AttributeField'
 import ElementDeleteDialog from './ElementDeleteDialog'
+import StageUpdatesDialog from './StageUpdatesDialog'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
 import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
 import {wizard} from './TenantConfigEditor'
@@ -131,7 +132,8 @@ import {
   _getTenantConfigurationModel,
   _getTenantConfigurationRoles,
   _startTenant,
-  _stopTenant
+  _stopTenant,
+  _rebootTenant
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -157,6 +159,7 @@ export default {
     ElementPlaceholder,
     AttributeField,
     ElementDeleteDialog,
+    StageUpdatesDialog,
     ConfigurationElementCreateDialog,
     ConfigurationElementUpdateDialog
   },
@@ -308,12 +311,11 @@ export default {
 
     // Called to delete the current context.
     onDeleteCurrent: function () {
-      console.log('delete context')
     },
 
     // Called to stage updates.
-    onStageUpdates: function () {
-      console.log('stage updates')
+    onStagingComplete: function () {
+      this.refresh()
     },
 
     // Gets JSON object for last complete progress record.
@@ -360,6 +362,26 @@ export default {
       this.$data.tenantCommandRunning = true
       this.$data.tenantCommandPercent = 0
       _stopTenant(this.$store, this.$data.tenantId,
+        e => {
+          let record = this.lastRecord(e.currentTarget.response)
+          if (record.progressPercentage) {
+            this.$data.tenantCommandPercent = record.progressPercentage
+          }
+        })
+        .then(function (response) {
+          component.$data.tenantCommandRunning = false
+          component.refresh()
+        }).catch(function (e) {
+          component.$data.tenantCommandRunning = false
+        })
+    },
+
+    // Reboot a tenant while monitoring progress.
+    onRebootTenant: function () {
+      var component = this
+      this.$data.tenantCommandRunning = true
+      this.$data.tenantCommandPercent = 0
+      _rebootTenant(this.$store, this.$data.tenantId,
         e => {
           let record = this.lastRecord(e.currentTarget.response)
           if (record.progressPercentage) {
