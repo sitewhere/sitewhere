@@ -902,6 +902,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceAssignment(token);
+	SiteWherePersistence.deviceAssignmentDeleteLogic(MongoDeviceAssignment.fromDocument(existing));
 	if (force) {
 	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	    MongoPersistence.delete(assignments, existing);

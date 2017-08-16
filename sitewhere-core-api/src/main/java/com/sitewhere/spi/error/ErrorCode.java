@@ -208,7 +208,16 @@ public enum ErrorCode {
     /**
      * Attempting to create a new status that duplicates an existing status
      */
-    DeviceStatusExists(560, "Device status with same code already exists for specification."),
+    DeviceStatusExists(580, "Device status with same code already exists for specification."),
+
+    /*********************
+     * DEVICE ASSIGNMENT *
+     *********************/
+
+    /**
+     * Attempting to delete an active assignment.
+     */
+    CanNotDeleteActiveAssignment(590, "Can not delete an active device assignment."),
 
     /**********
      * DEVICE *

@@ -746,6 +746,18 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Logic applied before deleting a device assignment.
+     * 
+     * @param assignment
+     * @throws SiteWhereException
+     */
+    public static void deviceAssignmentDeleteLogic(IDeviceAssignment assignment) throws SiteWhereException {
+	if (assignment.getReleasedDate() == null) {
+	    throw new SiteWhereSystemException(ErrorCode.CanNotDeleteActiveAssignment, ErrorLevel.ERROR);
+	}
+    }
+
+    /**
      * Executes logic to process a batch of device events.
      * 
      * @param assignmentToken
