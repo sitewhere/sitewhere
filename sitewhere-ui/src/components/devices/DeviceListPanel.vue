@@ -1,6 +1,6 @@
 <template>
   <v-card hover class="white">
-    <v-card-text :style="styleForStatus" class="device-root">
+    <v-card-text :style="styleForDevice()" class="device-root">
       <div class="device-image"
         :style="backgroundImageStyle(device.specification.assetImageUrl)"></div>
       <div class="device-hardware-id">
@@ -12,8 +12,18 @@
       <div class="device-comments">
         {{ ellipsis(device.comments, charWidth)  }}
       </div>
-      <div v-if="device.assignment" class="device-asset"
+      <div v-if="isAssociated" class="device-asset"
         :style="backgroundImageStyle(device.assignment.assetImageUrl)"></div>
+      <div v-else-if="!device.assignment" class="device-assign-button">
+        <v-btn dark icon
+          class="blue ml-0"
+          v-tooltip:left="{ html: 'Assign Device' }"
+          @click.native.stop="onAssignDevice">
+          <v-icon fa class="fa-lg">tag</v-icon>
+        </v-btn>
+      </div>
+      <assignment-create-dialog ref="assign" :hardwareId="device.hardwareId"
+        @created="onDeviceAssigned"/>
     </v-card-text>
   </v-card>
 </template>
@@ -21,6 +31,7 @@
 <script>
 import Utils from '../common/Utils'
 import Style from '../common/Style'
+import AssignmentCreateDialog from '../assignments/AssignmentCreateDialog'
 
 export default {
 
@@ -31,6 +42,7 @@ export default {
   },
 
   components: {
+    AssignmentCreateDialog
   },
 
   props: ['device'],
@@ -38,10 +50,20 @@ export default {
   computed: {
     styleForStatus: function () {
       return Style.styleForAssignmentStatus(this.device.assignment)
+    },
+    isAssociated: function () {
+      return this.device.assignment &&
+        (this.device.assignment.assignmentType === 'Associated')
     }
   },
 
   methods: {
+    styleForDevice: function () {
+      let style = {}
+      style['background-color'] = (this.device.assignment ? '#eee' : '#cff')
+      style['border'] = '1px solid' + (this.device.assignment ? '#ddd' : '#6cc')
+      return style
+    },
     // Create background image style.
     backgroundImageStyle: function (image) {
       return {
@@ -51,9 +73,20 @@ export default {
         'background-position': '50% 50%'
       }
     },
+
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+
+    // Open device assignment dialog.
+    onAssignDevice: function () {
+      this.$refs['assign'].onOpenDialog()
+    },
+
+    // Fire event to indicate device should be assigned.
+    onDeviceAssigned: function () {
+      this.$emit('assigned', this.device)
     },
 
     // Format date.
@@ -96,7 +129,7 @@ export default {
 }
 .device-hardware-id {
   position: absolute;
-  top: 37px;
+  top: 40px;
   left: 100px;
   font-size: 14px;
   color: #333;
@@ -106,7 +139,7 @@ export default {
 }
 .device-comments {
   position: absolute;
-  top: 65px;
+  top: 68px;
   left: 100px;
   font-size: 12px;
   color: #333;
@@ -121,5 +154,10 @@ export default {
   height: 50px;
   background-color: #fff;
   border: 1px solid #eee;
+}
+.device-assign-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 </style>

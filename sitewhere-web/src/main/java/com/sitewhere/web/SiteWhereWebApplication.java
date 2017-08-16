@@ -42,6 +42,7 @@ import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.mvc.MvcConfiguration;
 import com.sitewhere.web.rest.RestMvcConfiguration;
 import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
+import com.sitewhere.web.vue.VueConfiguration;
 
 /**
  * Spring Boot application that loads SiteWhere with embedded Tomcat container,
@@ -124,6 +125,18 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	dispatcherServlet.setApplicationContext(applicationContext);
 	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/admin/*");
 	registration.setName("sitewhereAdminInterface");
+	registration.setLoadOnStartup(2);
+	return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean sitewhereVueAdminInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(VueConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/beta/*");
+	registration.setName("vueAdminInterface");
 	registration.setLoadOnStartup(2);
 	return registration;
     }

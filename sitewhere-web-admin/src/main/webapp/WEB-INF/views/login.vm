@@ -42,6 +42,13 @@
 	font-size: 16px;
 	margin-top: 10px;
 }
+
+.beta-submit-button {
+	width: 300px;
+	font-size: 18px;
+	font-weight: bold;
+	margin-top: 20px;
+}
 </style>
 
 <script>
@@ -111,6 +118,12 @@
 				style="width: 550px; margin-left: auto; margin-right: auto; text-align: center; margin-top: 10px;">
 				<font data-i18n="login.msg"></font><b> admin</b>:<b>password</b>.
 			</div>
+			<div class="" style="width: 750px;margin-left: auto;margin-right: auto;text-align: center;margin-top: 40px;font-size: 20px;font-weight: 700;">
+				A beta release of the next-generation SiteWhere Administrative Console is available!
+				<a href="/sitewhere/beta/" class="btn btn-sw-red beta-submit-button">
+					Use the New Interface Instead!
+				</a>
+			</div>		
 		</div>
 		<div style="height: 10px;"></div>
 		<div class="sw-footer">

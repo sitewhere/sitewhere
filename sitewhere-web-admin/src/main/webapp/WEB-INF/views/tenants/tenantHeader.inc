@@ -94,6 +94,9 @@
 # if (data.engineState.staged) { #
 	<div class="sw-tenant-staged">
 		Tenant has staged updates that have not been applied. Restart tenant to apply changes.
+		<a id="btn-reboot-tenant" class="btn" href="javascript:void(0)" onclick="onTenantRebootClicked()">
+			<i class="fa fa-refresh sw-button-icon"></i> <span>Reboot Tenant</span>
+		</a>
 	</div>
 # } #
 </script>

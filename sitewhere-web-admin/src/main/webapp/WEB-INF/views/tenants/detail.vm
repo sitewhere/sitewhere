@@ -368,6 +368,16 @@ div.wz-button-bar {
 		onProcessCommand("start");
 	}
 
+	/** Called when reboot button is clicked */
+	function onTenantRebootClicked() {
+		swConfirm("Reboot Tenant", "Are you sure you want to reboot tenant '" + tenantId + "'?", function(result) {
+			if (result) {
+				cmdOpen();
+				onProcessCommand("reboot");
+			}
+		});
+	}
+
 	/** Called to start pushing data to repository */
 	function onProcessCommand(command) {
 		var progress;

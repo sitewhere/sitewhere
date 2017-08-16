@@ -6,7 +6,8 @@
       <v-layout row wrap>
          <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
           <device-list-panel :device="device"
-            @click.native="onOpenDevice(device)">
+            @click.native="onOpenDevice(device)"
+            @assigned="refresh">
           </device-list-panel>
         </v-flex>
       </v-layout>
