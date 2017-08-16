@@ -1,5 +1,5 @@
 import {
-  BASE_URL, createAxiosAuthorized
+  createAxiosAuthorized
 } from './sitewhere-api'
 
 // Users.
@@ -81,6 +81,7 @@ import {
 
 // Assignments.
 import {
+  createDeviceAssignment,
   getDeviceAssignment,
   releaseAssignment,
   missingAssignment,
@@ -146,10 +147,18 @@ import {
 } from './sitewhere-schedules-api.js'
 
 /**
+ * Create base URL based on hostname/port settings.
+ */
+export function createBaseUrl (store) {
+  return 'http://' + store.getters.server + ':' + store.getters.port +
+    '/sitewhere/api/'
+}
+
+/**
  * Create authorized axios client based on store values.
  */
 export function createAxiosFromStore (store) {
-  var baseUrl = BASE_URL
+  var baseUrl = createBaseUrl(store)
   var authToken = store.getters.authToken
   var tenantToken = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
   return createAxiosAuthorized(baseUrl, authToken, tenantToken)
@@ -471,6 +480,15 @@ export function _updateZone (store, zoneToken, updated) {
 export function _deleteZone (store, zoneToken) {
   let axios = createAxiosFromStore(store)
   let api = deleteZone(axios, zoneToken)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a device assignment.
+ */
+export function _createDeviceAssignment (store, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = createDeviceAssignment(axios, payload)
   return loaderWrapper(store, api)
 }
 

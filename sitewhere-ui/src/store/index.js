@@ -5,6 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    server: 'localhost',
+    port: 8080,
     user: null,
     authToken: null,
     authTenants: null,
@@ -14,6 +16,16 @@ export default new Vuex.Store({
     error: null
   },
   mutations: {
+    // Set server hostname.
+    server (state, server) {
+      state.server = server
+    },
+
+    // Set server port.
+    port (state, port) {
+      state.port = port
+    },
+
     // Set currently logged in user.
     user (state, user) {
       state.user = user
@@ -65,6 +77,14 @@ export default new Vuex.Store({
   },
 
   getters: {
+    server: state => {
+      return state.server
+    },
+
+    port: state => {
+      return state.port
+    },
+
     user: state => {
       return state.user
     },

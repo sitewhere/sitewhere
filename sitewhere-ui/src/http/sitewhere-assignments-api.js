@@ -4,6 +4,13 @@
 import {restAuthGet, restAuthPost, restAuthDelete} from './sitewhere-api'
 
 /**
+ * Create a device assignment.
+ */
+export function createDeviceAssignment (axios, payload) {
+  return restAuthPost(axios, 'assignments/', payload)
+}
+
+/**
  * Get an assignment by unique token.
  */
 export function getDeviceAssignment (axios, token) {

@@ -18,7 +18,7 @@
         </v-list-tile>
       </v-list>
     </div>
-    <div v-else>
+    <div v-else-if="assets.length > 0">
       <v-text-field label="Enter search criteria" v-model="search"
         append-icon="search">
       </v-text-field>
@@ -70,11 +70,15 @@ export default {
     assetModuleId: function (value) {
       var component = this
       component.asset = null
-      _searchAssets(this.$store, value, '')
-        .then(function (response) {
-          component.assets = response.data.results
-        }).catch(function (e) {
-        })
+      if (value) {
+        _searchAssets(this.$store, value, '')
+          .then(function (response) {
+            component.assets = response.data.results
+          }).catch(function (e) {
+          })
+      } else {
+        this.$data.assets = []
+      }
     },
 
     // Asset id passed from external.
@@ -97,12 +101,16 @@ export default {
     // Called when an asset is chosen.
     onAssetChosen: function (assetId) {
       var component = this
-      _getAssetById(this.$store, this.assetModuleId, assetId)
-        .then(function (response) {
-          component.asset = response.data
-          component.$emit('assetUpdated', response.data)
-        }).catch(function (e) {
-        })
+      if (assetId) {
+        _getAssetById(this.$store, this.assetModuleId, assetId)
+          .then(function (response) {
+            component.asset = response.data
+            component.$emit('assetUpdated', response.data)
+          }).catch(function (e) {
+          })
+      } else {
+        this.$data.asset = null
+      }
     },
 
     // Allow another asset to be chosen.

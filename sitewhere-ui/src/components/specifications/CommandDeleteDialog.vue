@@ -6,10 +6,6 @@
         Are you sure you want to delete this device command?
       </v-card-text>
     </delete-dialog>
-    <v-btn icon v-tooltip:top="{ html: 'Delete Command' }"
-      @click.native.stop="showDeleteDialog">
-      <v-icon class="grey--text">delete</v-icon>
-    </v-btn>
   </span>
 </template>
 
@@ -53,7 +49,7 @@ export default {
     // Handle successful delete.
     onDeleted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('commandDeleted')
+      this.$emit('deleted')
     }
   }
 }

@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import {_getDeviceSpecificationProtobuf} from '../../http/sitewhere-api-wrapper'
-import {BASE_URL} from '../../http/sitewhere-api'
+import {createBaseUrl, _getDeviceSpecificationProtobuf} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -51,8 +50,9 @@ export default {
     onProtobufDownload: function () {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        let url = BASE_URL + 'specifications/' + this.specification.token +
-          '/spec.proto?tenantAuthToken=' + tenant.authenticationToken
+        let url = createBaseUrl(this.$store) + 'specifications/' +
+          this.specification.token + '/spec.proto?tenantAuthToken=' +
+          tenant.authenticationToken
         window.open(url, '_blank')
       }
     }

@@ -3,10 +3,6 @@
     <command-dialog title="Edit Device Command" width="600" resetOnOpen="true"
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
     </command-dialog>
-    <v-btn icon v-tooltip:top="{ html: 'Edit Command' }"
-      @click.native.stop="onOpenDialog">
-      <v-icon class="grey--text">edit</v-icon>
-    </v-btn>
   </span>
 </template>
 
@@ -55,7 +51,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.$children[0].closeDialog()
-      this.$emit('commandUpdated')
+      this.$emit('edited')
     }
   }
 }

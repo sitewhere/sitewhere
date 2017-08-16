@@ -67,7 +67,7 @@ function customize (prototype) {
 // END HACK.
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   routes: [
     {
       path: '/',

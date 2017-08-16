@@ -1,11 +1,6 @@
 import axios from 'axios'
 
 /**
- * Base URL for SiteWhere server.
- */
-export const BASE_URL = `http://localhost:9090/sitewhere/api/`
-
-/**
  * Create authorized axios client based on values.
  */
 export function createAxiosAuthorized (baseUrl, authToken, tenantToken) {

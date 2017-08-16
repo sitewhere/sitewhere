@@ -2,10 +2,20 @@
 <v-app>
   <main>
     <v-container>
-      <v-card raised class="grey lighten-4 white--text mt-3"
+      <v-card>
+        <v-card-text class="yellow lighten-4" style="text-align: center;">
+          <v-icon fa class="red--text mr-2">warning</v-icon>
+          This is a preview release of the next-generation SiteWhere UI. It
+          should be considered <strong>beta</strong> quality at this point and is not intended
+          for production use.
+        </v-card-text>
+      </v-card>
+      <v-card raised class="grey lighten-4 white--text mt-5"
         style="width: 600px; margin-left: auto; margin-right: auto;">
-        <v-card-media class="white" contain src="/static/sitewhere.png" height="200px">
-        </v-card-media>
+        <v-card-text class="white">
+          <img src="../assets/sitewhere.png" style="height: 185px;"/>
+        </v-card-text>
+        <v-divider></v-divider>
         <v-progress-linear v-if="loading" class="login-progress">
         </v-progress-linear>
         <error-banner :error="error"></error-banner>
@@ -18,13 +28,26 @@
             </v-flex>
           </v-layout>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-text>
           <v-layout row wrap pl-3 pr-0 mb-2 style="width: 100%">
             <v-flex xs12 pt-4>
-              <v-text-field hide-details label="Username" v-model="username"></v-text-field>
+              <v-text-field hide-details label="Username" v-model="username">
+              </v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-text-field hide-details label="Password" v-model="password" type="password"></v-text-field>
+              <v-text-field hide-details label="Password" v-model="password"
+                type="password">
+              </v-text-field>
+            </v-flex>
+            <v-flex xs7>
+              <v-text-field hide-details label="Server" v-model="server">
+              </v-text-field>
+            </v-flex>
+            <v-flex xs5>
+              <v-text-field hide-details label="Port" type="number"
+                v-model="port">
+              </v-text-field>
             </v-flex>
           </v-layout>
         </v-card-text>
@@ -46,11 +69,30 @@ export default {
 
   data: () => ({
     username: '',
-    password: ''
+    password: '',
+    server: null,
+    port: null
   }),
 
   components: {
     ErrorBanner
+  },
+
+  created: function () {
+    this.$data.server = this.$store.getters.server
+    this.$data.port = this.$store.getters.port
+  },
+
+  watch: {
+    // Push server value to store.
+    server: function (value) {
+      this.$store.commit('server', value)
+    },
+
+    // Push port value to store.
+    port: function (value) {
+      this.$store.commit('port', value)
+    }
   },
 
   computed: {

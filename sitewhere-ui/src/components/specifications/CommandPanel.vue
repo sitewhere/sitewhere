@@ -4,19 +4,18 @@
       <command-html :command="command"></command-html>
     </v-list-tile-content>
     <v-list-tile-action>
-      <div style="width: 80px;">
-        <command-update-dialog ref="update" :token="command.token"
-          @commandUpdated="onCommandUpdated">
+      <actions-block @edited="onCommandUpdated" @deleted="onCommandDeleted">
+        <command-update-dialog slot="edit" ref="update" :token="command.token">
         </command-update-dialog>
-        <command-delete-dialog :token="command.token"
-          @commandDeleted="onCommandDeleted">
+        <command-delete-dialog slot="delete" :token="command.token">
         </command-delete-dialog>
-      </div>
+      </actions-block>
     </v-list-tile-action>
   </v-list-tile>
 </template>
 
 <script>
+import ActionsBlock from '../common/ActionsBlock'
 import CommandHtml from './CommandHtml'
 import CommandDeleteDialog from './CommandDeleteDialog'
 import CommandUpdateDialog from './CommandUpdateDialog'
@@ -27,6 +26,7 @@ export default {
   }),
 
   components: {
+    ActionsBlock,
     CommandHtml,
     CommandDeleteDialog,
     CommandUpdateDialog
