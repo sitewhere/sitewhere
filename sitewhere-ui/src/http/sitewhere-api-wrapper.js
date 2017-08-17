@@ -19,6 +19,7 @@ import {
   getTenant,
   updateTenant,
   listTenants,
+  deleteTenant,
   getTenantTemplates,
   getTenantConfiguration,
   getTenantConfigurationModel,
@@ -124,6 +125,9 @@ import {
   createPersonAsset,
   createLocationAsset,
   getAssetById,
+  updateHardwareAsset,
+  updatePersonAsset,
+  updateLocationAsset,
   deleteAsset
 } from './sitewhere-assets-api.js'
 
@@ -281,6 +285,15 @@ export function _listTenants (store, textSearch, authUserId, includeRuntime,
   let axios = createAxiosFromStore(store)
   let api = listTenants(axios, textSearch, authUserId, includeRuntime,
     paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete a tenant.
+ */
+export function _deleteTenant (store, tenantId, force) {
+  let axios = createAxiosFromStore(store)
+  let api = deleteTenant(axios, tenantId, force)
   return loaderWrapper(store, api)
 }
 
@@ -1019,6 +1032,33 @@ export function _createLocationAsset (store, categoryId, payload) {
 export function _getAssetById (store, moduleId, assetId) {
   let axios = createAxiosFromStore(store)
   let api = getAssetById(axios, moduleId, assetId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing hardware asset.
+ */
+export function _updateHardwareAsset (store, moduleId, assetId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateHardwareAsset(axios, moduleId, assetId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing person asset.
+ */
+export function _updatePersonAsset (store, moduleId, assetId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updatePersonAsset(axios, moduleId, assetId, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing location asset.
+ */
+export function _updateLocationAsset (store, moduleId, assetId, payload) {
+  let axios = createAxiosFromStore(store)
+  let api = updateLocationAsset(axios, moduleId, assetId, payload)
   return loaderWrapper(store, api)
 }
 

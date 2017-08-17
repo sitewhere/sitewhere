@@ -6,7 +6,7 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-menu offset-y left>
-      <v-btn dark class="grey" slot="activator">Add Component</v-btn>
+      <v-btn dark class="grey mr-0" slot="activator">Add Component</v-btn>
       <v-list dense>
         <v-list-tile v-for="option in contextElement.options"
           :key="option.role"

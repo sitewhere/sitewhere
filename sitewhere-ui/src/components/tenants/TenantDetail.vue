@@ -4,7 +4,8 @@
       <tenant-detail-header :tenant="tenant"
         :tenantCommandRunning="tenantCommandRunning"
         :tenantCommandPercent="tenantCommandPercent" class="mb-3"
-        @start="onStartTenant" @stop="onStopTenant" @reboot="onRebootTenant">
+        @start="onStartTenant" @stop="onStopTenant" @reboot="onRebootTenant"
+        @refresh="refresh">
       </tenant-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
         <v-tabs-bar slot="activators" class="blue darken-2">
@@ -205,13 +206,11 @@ export default {
     },
     // Called to refresh data.
     refresh: function () {
-      // Load information.
+      // Load tenant data.
+      this.refreshTenant()
+
+      // Load configuration data.
       var component = this
-      _getTenant(this.$store, this.$data.tenantId, true)
-        .then(function (response) {
-          component.onLoaded(response.data)
-        }).catch(function (e) {
-        })
       _getTenantConfiguration(this.$store, this.$data.tenantId)
         .then(function (response) {
           component.$data.tenantConfig = response.data
@@ -225,6 +224,16 @@ export default {
       _getTenantConfigurationRoles(this.$store)
         .then(function (response) {
           component.$data.tenantConfigRoles = response.data
+        }).catch(function (e) {
+        })
+    },
+
+    // Refresh only tenant information.
+    refreshTenant: function () {
+      var component = this
+      _getTenant(this.$store, this.$data.tenantId, true)
+        .then(function (response) {
+          component.onLoaded(response.data)
         }).catch(function (e) {
         })
     },

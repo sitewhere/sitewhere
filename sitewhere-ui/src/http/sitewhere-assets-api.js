@@ -108,6 +108,30 @@ export function getAssetById (axios, moduleId, assetId) {
 }
 
 /**
+ * Update a hardware asset.
+ */
+export function updateHardwareAsset (axios, categoryId, assetId, payload) {
+  return restAuthPut(axios,
+    'assets/categories/' + categoryId + '/hardware/' + assetId, payload)
+}
+
+/**
+ * Update a person asset.
+ */
+export function updatePersonAsset (axios, categoryId, assetId, payload) {
+  return restAuthPut(axios,
+    'assets/categories/' + categoryId + '/persons/' + assetId, payload)
+}
+
+/**
+ * Update a person asset.
+ */
+export function updateLocationAsset (axios, categoryId, assetId, payload) {
+  return restAuthPut(axios,
+    'assets/categories/' + categoryId + '/locations/' + assetId, payload)
+}
+
+/**
  * Delete asset.
  */
 export function deleteAsset (axios, categoryId, assetId) {

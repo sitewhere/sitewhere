@@ -24,6 +24,9 @@
       <span v-if="isLocation" class="asset-description">
         Longitude: {{ asset.longitude }}
       </span>
+      <asset-update-dialog class="asset-edit mr-2"
+        :category="category" :asset="asset" @assetUpdated="refresh">
+      </asset-update-dialog>
       <asset-delete-dialog class="asset-delete"
         :category="category" :asset="asset" @assetDeleted="refresh">
       </asset-delete-dialog>
@@ -33,6 +36,7 @@
 
 <script>
 import AssetDeleteDialog from './AssetDeleteDialog'
+import AssetUpdateDialog from './AssetUpdateDialog'
 
 export default {
 
@@ -43,7 +47,8 @@ export default {
   },
 
   components: {
-    AssetDeleteDialog
+    AssetDeleteDialog,
+    AssetUpdateDialog
   },
 
   props: ['category', 'asset'],
@@ -115,10 +120,15 @@ export default {
   position: absolute;
   top: 65px;
   left: 100px;
-  right: 45px;
+  right: 70px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.asset-edit {
+  position: absolute;
+  bottom: 3px;
+  right: 20px;
 }
 .asset-delete {
   position: absolute;

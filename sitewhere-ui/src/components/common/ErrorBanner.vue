@@ -1,6 +1,6 @@
 <template>
   <v-snackbar class="error-banner" v-if="error" :timeout="4000" error v-model="errorDisplayed">
-    {{ error.message }}
+    {{ errorMessage }}
     <v-btn dark flat @click.native="errorDisplayed = false">Close</v-btn>
   </v-snackbar>
 </template>
@@ -20,6 +20,19 @@ export default {
       if (value) {
         this.$data.errorDisplayed = true
       }
+    }
+  },
+
+  computed: {
+    errorMessage: function () {
+      if (!this.error) {
+        return ''
+      } else if (this.error.response && this.error.response.headers) {
+        if (this.error.response.headers['x-sitewhere-error']) {
+          return this.error.response.headers['x-sitewhere-error']
+        }
+      }
+      return this.error.message
     }
   },
 

@@ -1,7 +1,13 @@
 /**
  * API calls associated with SiteWhere tenants.
  */
-import {restAuthGet, restAuthPost, restAuthPut, restAuthPostWithProgress} from './sitewhere-api'
+import {
+  restAuthGet,
+  restAuthPost,
+  restAuthPut,
+  restAuthPostWithProgress,
+  restAuthDelete
+} from './sitewhere-api'
 
 /**
  * Create a tenant.
@@ -24,7 +30,7 @@ export function getTenant (axios, tenantId, includeRuntimeInfo) {
  * Update an existing tenant.
  */
 export function updateTenant (axios, id, payload) {
-  return restAuthPut(axios, '/tenants/' + id, payload)
+  return restAuthPut(axios, 'tenants/' + id, payload)
 }
 
 /**
@@ -45,6 +51,16 @@ export function listTenants (axios, textSearch, authUserId, includeRuntimeInfo,
     query += '&' + paging
   }
   return restAuthGet(axios, 'tenants' + query)
+}
+
+/**
+ * Delete tenant.
+ */
+export function deleteTenant (axios, tenantId, force) {
+  let query = ''
+  query += (force)
+    ? '?force=true' : '?force=false'
+  return restAuthDelete(axios, 'tenants/' + tenantId + query)
 }
 
 /**
