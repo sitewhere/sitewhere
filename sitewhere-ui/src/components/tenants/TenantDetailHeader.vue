@@ -49,13 +49,13 @@
         v-model="tenantCommandPercent"></v-progress-linear>
     </v-card>
     <v-card v-if="tenant.engineState.staged" class="mt-2">
-      <v-card-text class="yellow stage-warning">
+      <v-card-text class="yellow lighten-3 stage-warning">
         Tenant has staged updates that have not been applied. Reboot tenant to apply changes.
-        <v-btn dark small left
-          class="red darken-2 pa-0 ma-0 ml-3"
+        <v-btn dark left
+          class="red darken-2 pa-1 ma-0 ml-3"
           v-tooltip:top="{ html: 'Reboot Tenant' }"
           @click.native.stop="onRebootTenant">
-          <v-icon fa class="fa-lg mr-2">refresh</v-icon>
+          <v-icon fa class="fa-lg mr-2 white--text">refresh</v-icon>
           Reboot Tenant
         </v-btn>
       </v-card-text>

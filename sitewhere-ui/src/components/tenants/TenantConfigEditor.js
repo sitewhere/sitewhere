@@ -70,12 +70,27 @@ export var wizard = {
   /**
    * Get context relative to current.
    */
-  getRelativeContext: function (name) {
+  getRelativeContext: function (localName) {
     var context = this.getLastContext()
     var configNode = this.findConfigNodeByName(
-      context.config, name)
+      context.config, localName)
     var modelNode = this.findModelNodeByName(
-      context.model, name)
+      context.model, localName)
+    return {
+      'config': configNode,
+      'model': modelNode
+    }
+  },
+
+  /**
+   * Get context for a specific child.
+   */
+  getRelativeContextFor: function (id, localName) {
+    var context = this.getLastContext()
+    var configNode = this.findConfigNodeById(
+      context.config, id)
+    var modelNode = this.findModelNodeByName(
+      context.model, localName)
     return {
       'config': configNode,
       'model': modelNode
@@ -83,8 +98,8 @@ export var wizard = {
   },
 
   /** Push context on the stack */
-  pushRelativeContext: function (name) {
-    var context = this.getRelativeContext(name)
+  pushRelativeContext: function (id, localName) {
+    var context = this.getRelativeContextFor(id, localName)
     return this.pushContext(context.config, context.model)
   },
 

@@ -50,5 +50,6 @@ export default {
 <style scoped>
 .input-group {
   padding: 0;
+  margin: 0;
 }
 </style>

@@ -282,8 +282,9 @@ export default {
     },
 
     // Push a context on to the stack.
-    onPushContext: function (role) {
-      let contexts = wizard.pushRelativeContext(role.localName)
+    onPushContext: function (contextElement) {
+      let contexts = wizard.pushRelativeContext(
+        contextElement.id, contextElement.localName)
       this.onWizardContextsUpdated(contexts)
     },
 
