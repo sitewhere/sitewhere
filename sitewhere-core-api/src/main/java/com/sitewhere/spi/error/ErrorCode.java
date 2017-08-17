@@ -80,6 +80,9 @@ public enum ErrorCode {
     /** Indicates 'stop' command issued to tenant that was already stopped */
     TenantAlreadyStopped(301, "Tenant was already stopped."),
 
+    /** Indicates a tenant id was passed with the wrong format */
+    TenantIdFormat(305, "Tenant id should be an alphanumeric value with no spaces."),
+
     /***************************
      * INVALID OR DUPLICATE ID *
      ***************************/

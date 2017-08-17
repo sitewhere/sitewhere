@@ -189,6 +189,19 @@ public class SiteWherePersistence {
     }
 
     /**
+     * Requires that a String field be a non null, non space-filled value.
+     * 
+     * @param field
+     * @throws SiteWhereException
+     */
+    protected static void requireFormat(String field, String regex, ErrorCode ifFails) throws SiteWhereException {
+	require(field);
+	if (!field.matches(regex)) {
+	    throw new SiteWhereSystemException(ifFails, ErrorLevel.ERROR);
+	}
+    }
+
+    /**
      * Detect whether the request has an updated value.
      * 
      * @param request
@@ -1448,7 +1461,7 @@ public class SiteWherePersistence {
 	Tenant tenant = new Tenant();
 
 	// Id is required.
-	require(request.getId());
+	requireFormat(request.getId(), "[\\w]*", ErrorCode.TenantIdFormat);
 	tenant.setId(request.getId());
 
 	// Name is required.

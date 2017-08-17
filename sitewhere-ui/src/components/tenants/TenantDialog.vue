@@ -20,7 +20,8 @@
               <v-layout row wrap>
                 <v-flex xs12>
                   <v-text-field required class="mt-1" label="Tenant id"
-                    v-model="tenantId" hide-details prepend-icon="info">
+                    v-model="tenantId" hide-details prepend-icon="info"
+                    :rules="[rules.tenantId]">
                   </v-text-field>
                 </v-flex>
                 <v-flex xs12>
@@ -86,6 +87,12 @@ export default {
     metadata: [],
     templatesList: [],
     allUsers: [],
+    rules: {
+      tenantId: (value) => {
+        const pattern = /^[\w]*$/
+        return pattern.test(value) || 'Tenant id should be alphanumeric with no spaces.'
+      }
+    },
     error: null
   }),
 
