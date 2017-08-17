@@ -134,9 +134,12 @@ public class SiteWhereTenantEngineCommands {
 	@Override
 	public ICommandResponse call() throws Exception {
 	    try {
-		getEngine().lifecycleStop(getProgressMonitor());
-		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		// Only stop engine if its started.
+		if (getEngine().getLifecycleStatus() == LifecycleStatus.Started) {
+		    getEngine().lifecycleStop(getProgressMonitor());
+		    if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+			return new CommandResponse(CommandResult.Failed, getEngine().getLifecycleError().getMessage());
+		    }
 		}
 		getEngine().lifecycleTerminate(getProgressMonitor());
 		if (getEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
