@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.ILocationAsset;
 
@@ -25,8 +26,8 @@ public class LocationAssetModule extends DataStoreAssetModule<ILocationAsset> im
     /** Serial version UID */
     private static final long serialVersionUID = 8162055977499293110L;
 
-    public LocationAssetModule(IAssetCategory category) {
-	super(category);
+    public LocationAssetModule(IAssetCategory category, IAssetManagement assetManagement) {
+	super(category, assetManagement);
     }
 
     /*

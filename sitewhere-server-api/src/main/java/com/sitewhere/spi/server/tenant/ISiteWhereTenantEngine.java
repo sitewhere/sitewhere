@@ -96,6 +96,13 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
     public IScheduleManagement getScheduleManagement() throws SiteWhereException;
 
     /**
+     * Get service for bootstrapping tenant data.
+     * 
+     * @return
+     */
+    public ITenantBootstrapService getBootstrapService();
+
+    /**
      * Get the device management cache provider implementation.
      * 
      * @return

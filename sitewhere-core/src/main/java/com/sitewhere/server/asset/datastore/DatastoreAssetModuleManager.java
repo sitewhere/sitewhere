@@ -46,18 +46,6 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	initializeDatastoreModules(
-		new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initializing datastore asset modules")));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
      * .server.lifecycle.ILifecycleProgressMonitor)
@@ -65,6 +53,9 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
+
+	refreshDatastoreModules(
+		new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Refreshing datastore asset modules")));
 
 	for (IAssetModule<?> module : dsModulesById.values()) {
 	    startNestedComponent(module, monitor, true);
@@ -204,28 +195,15 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
     }
 
     /**
-     * Initialize a datastore module.
-     * 
-     * @param category
-     * @param module
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    protected void initializeDatastoreModule(IAssetCategory category, IAssetModule<?> module,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	dsModulesById.put(category.getId(), module);
-    }
-
-    /**
-     * Create and initialize datastore asset modules.
+     * Refresh list of datastore asset modules.
      * 
      * @param monitor
      * @throws SiteWhereException
      */
-    protected void initializeDatastoreModules(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    protected void refreshDatastoreModules(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	dsModulesById.clear();
 	ISearchResults<IAssetCategory> categories = getAssetManagement().listAssetCategories(SearchCriteria.ALL);
-	LOGGER.info("Loading asset modules for " + categories.getNumResults() + " asset categories.");
+	LOGGER.info("Refreshing asset modules for " + categories.getNumResults() + " asset categories.");
 	for (IAssetCategory category : categories.getResults()) {
 	    addAssetCategoryModule(category, monitor);
 	    LOGGER.info("Added module for '" + category.getName() + " (" + category.getId() + ").");
@@ -244,21 +222,34 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
 	switch (category.getAssetType()) {
 	case Device:
 	case Hardware: {
-	    HardwareAssetModule module = new HardwareAssetModule(category);
+	    HardwareAssetModule module = new HardwareAssetModule(category, getAssetManagement());
 	    initializeDatastoreModule(category, module, monitor);
 	    break;
 	}
 	case Person: {
-	    PersonAssetModule module = new PersonAssetModule(category);
+	    PersonAssetModule module = new PersonAssetModule(category, getAssetManagement());
 	    initializeDatastoreModule(category, module, monitor);
 	    break;
 	}
 	case Location: {
-	    LocationAssetModule module = new LocationAssetModule(category);
+	    LocationAssetModule module = new LocationAssetModule(category, getAssetManagement());
 	    initializeDatastoreModule(category, module, monitor);
 	    break;
 	}
 	}
+    }
+
+    /**
+     * Initialize a datastore module.
+     * 
+     * @param category
+     * @param module
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    protected void initializeDatastoreModule(IAssetCategory category, IAssetModule<?> module,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	dsModulesById.put(category.getId(), module);
     }
 
     /**

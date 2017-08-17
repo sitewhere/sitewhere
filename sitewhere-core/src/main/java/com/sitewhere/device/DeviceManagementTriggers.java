@@ -7,13 +7,14 @@
  */
 package com.sitewhere.device;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
@@ -27,8 +28,17 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  */
 public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
-    public DeviceManagementTriggers(IDeviceManagement delegate) {
+    /** Device event management */
+    private IDeviceEventManagement deviceEventManangement;
+
+    /** Device communication */
+    private IDeviceCommunication deviceCommunication;
+
+    public DeviceManagementTriggers(IDeviceManagement delegate, IDeviceEventManagement deviceEventManangement,
+	    IDeviceCommunication deviceCommunication) {
 	super(delegate);
+	this.deviceEventManangement = deviceEventManangement;
+	this.deviceCommunication = deviceCommunication;
     }
 
     /*
@@ -43,7 +53,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	IDeviceAssignment created = super.createDeviceAssignment(request);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Created, null, null);
-	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(created.getToken(), state);
+	getDeviceEventManangement().addDeviceStateChange(created.getToken(), state);
 	return created;
     }
 
@@ -60,7 +70,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(token, metadata);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Updated, null, null);
-	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(), state);
+	getDeviceEventManangement().addDeviceStateChange(updated.getToken(), state);
 	return updated;
     }
 
@@ -76,7 +86,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	IDeviceAssignment updated = super.endDeviceAssignment(token);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Released, null, null);
-	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStateChange(updated.getToken(), state);
+	getDeviceEventManangement().addDeviceStateChange(updated.getToken(), state);
 	return updated;
     }
 
@@ -90,7 +100,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 	IBatchOperation operation = super.createBatchOperation(request);
-	SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(operation);
+	getDeviceCommunication().getBatchOperationManager().process(operation);
 	return operation;
     }
 
@@ -105,7 +115,23 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	IBatchOperation operation = super.createBatchCommandInvocation(request);
-	SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(operation);
+	getDeviceCommunication().getBatchOperationManager().process(operation);
 	return operation;
+    }
+
+    public IDeviceEventManagement getDeviceEventManangement() {
+	return deviceEventManangement;
+    }
+
+    public void setDeviceEventManangement(IDeviceEventManagement deviceEventManangement) {
+	this.deviceEventManangement = deviceEventManangement;
+    }
+
+    public IDeviceCommunication getDeviceCommunication() {
+	return deviceCommunication;
+    }
+
+    public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
+	this.deviceCommunication = deviceCommunication;
     }
 }

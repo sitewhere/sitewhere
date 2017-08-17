@@ -27,10 +27,7 @@ import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
-import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
-import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
-import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
 import com.sitewhere.hazelcast.DeviceManagementCacheProvider;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
@@ -47,7 +44,6 @@ import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
-import com.sitewhere.server.tenant.TenantTemplate;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -64,7 +60,6 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.ResourceCreateMode;
@@ -84,6 +79,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantBootstrapService;
 import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -125,6 +121,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Interface to device management implementation */
     private IDeviceManagement deviceManagement;
 
+    /** Device management with associated triggers */
+    private IDeviceManagement deviceManagementWithTriggers;
+
     /** Interface to device event management implementation */
     private IDeviceEventManagement deviceEventManagement;
 
@@ -148,6 +147,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Interface for the schedule manager */
     private IScheduleManager scheduleManager;
+
+    /** Interface for tenant bootstrap service */
+    private ITenantBootstrapService bootstrapService;
 
     /** Threads used to issue engine commands */
     private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
@@ -207,8 +209,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     public void initialize(ILifecycleProgressMonitor monitor) {
 	try {
-	    // Verify that tenant configuration exists.
-	    verifyTenantConfigured();
+	    // Copy tenant configuration from template if needed.
+	    initializeBootstrapService(monitor);
 
 	    // Initialize the tenant Spring context.
 	    initializeSpringContext();
@@ -263,6 +265,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start tenant management API implementations.
 	startManagementImplementations(start);
 
+	// Start bootstrap service to generate sample data if necessary.
+	start.addStep(new StartComponentLifecycleStep(this, getBootstrapService(), "Started tenant bootstrap service.",
+		"Tenant bootstrap failed.", true));
+
+	// Start asset module manager (after potentially bootstrapping assets).
+	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Started asset module manager",
+		"Asset module manager startup failed.", true));
+
 	// Execute all operations.
 	start.execute(monitor);
     }
@@ -275,106 +285,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     @Override
     public ApplicationContext getSpringContext() {
 	return tenantContext;
-    }
-
-    /**
-     * Verifies that a configuration exists for the tenant. If not, assume the
-     * tenant has not been initialized and copy all resources from tenant
-     * template.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void verifyTenantConfigured() throws SiteWhereException {
-	if (!getTenantConfigurationResolver().hasValidConfiguration()) {
-	    try {
-		LOGGER.info("Copying tenant template resources.");
-		getTenantConfigurationResolver().copyTenantTemplateResources();
-	    } catch (Throwable t) {
-		throw new SiteWhereException("Unable copy tenant template resources.", t);
-	    }
-	}
-    }
-
-    /**
-     * Verify that tenant has been bootstrapped by model initializers registered
-     * in tenant template.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void verifyTenantBootstrapped() throws SiteWhereException {
-	IResource templateResource = getTenantConfigurationResolver()
-		.getResourceForPath(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
-	if (templateResource == null) {
-	    LOGGER.info("Tenant already bootstrapped with tenant template data.");
-	    return;
-	}
-	// Unmarshal template and bootstrap from it.
-	TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
-	try {
-	    LOGGER.info("Bootstrapping tenant with template data.");
-	    bootstrapFromTemplate(template);
-	} catch (Throwable t) {
-	    throw new SiteWhereException("Unable to bootstrap tenant from tenant template configuration.", t);
-	}
-
-	// Delete template file to prevent bootstrapping on future startups.
-	SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
-		IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
-    }
-
-    /**
-     * Bootstrap tenant data based on information contained in the tenant
-     * template.
-     * 
-     * @param template
-     * @throws SiteWhereException
-     */
-    protected void bootstrapFromTemplate(TenantTemplate template) throws SiteWhereException {
-	if (template.getInitializers() != null) {
-
-	    // Execute asset management model initializers if configured.
-	    if (template.getInitializers().getAssetManagement() != null) {
-		for (String script : template.getInitializers().getAssetManagement()) {
-		    GroovyAssetModelInitializer amInit = new GroovyAssetModelInitializer(getGroovyConfiguration(),
-			    script);
-		    try {
-			amInit.initialize(getAssetModuleManager(), getAssetManagement());
-		    } catch (ResourceExistsException e) {
-			LOGGER.warn("Asset management initializer data overlaps existing data. "
-				+ "Skipping further asset management initialization.");
-		    }
-		}
-	    }
-
-	    // Execute device management model initializers if configured.
-	    if (template.getInitializers().getDeviceManagement() != null) {
-		for (String script : template.getInitializers().getDeviceManagement()) {
-		    GroovyDeviceModelInitializer dmInit = new GroovyDeviceModelInitializer(getGroovyConfiguration(),
-			    script);
-		    try {
-			dmInit.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetManagement(),
-				getAssetModuleManager());
-		    } catch (ResourceExistsException e) {
-			LOGGER.warn("Device management initializer data overlaps existing data. "
-				+ "Skipping further device management initialization.");
-		    }
-		}
-	    }
-
-	    // Execute schedule management model initializers if configured.
-	    if (template.getInitializers().getScheduleManagement() != null) {
-		for (String script : template.getInitializers().getScheduleManagement()) {
-		    GroovyScheduleModelInitializer smInit = new GroovyScheduleModelInitializer(getGroovyConfiguration(),
-			    script);
-		    try {
-			smInit.initialize(getScheduleManagement());
-		    } catch (ResourceExistsException e) {
-			LOGGER.warn("Schedule management initializer data overlaps existing data. "
-				+ "Skipping further asset management initialization.");
-		    }
-		}
-	    }
-	}
     }
 
     /**
@@ -454,6 +364,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Initialize schedule management.
 	setScheduleManagement(initializeScheduleManagement());
+
+	// Update device management to include systems required by triggers.
+	setDeviceManagement(
+		new DeviceManagementTriggers(deviceManagement, getDeviceEventManagement(), getDeviceCommunication()));
     }
 
     /**
@@ -471,11 +385,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Verify that a device management implementation exists.
 	try {
-	    IDeviceManagement deviceManagementImpl = (IDeviceManagement) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
-	    LOGGER.info("Device management implementation using: " + deviceManagementImpl.getClass().getName());
+	    deviceManagement = (IDeviceManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
+	    LOGGER.info("Device management implementation using: " + deviceManagement.getClass().getName());
 
-	    return configureDeviceManagement(deviceManagementImpl);
+	    return configureDeviceManagement(deviceManagement);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No device management implementation configured.");
 	}
@@ -496,8 +409,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	} else {
 	    LOGGER.info("Device management implementation not using cache provider.");
 	}
-
-	return new DeviceManagementTriggers(management);
+	return management;
     }
 
     /**
@@ -534,7 +446,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	management.setDeviceManagement(getDeviceManagement());
 
 	// Routes stored events to outbound processing strategy.
-	return new DeviceEventManagementTriggers(management);
+	return new DeviceEventManagementTriggers(management, getEventProcessing());
     }
 
     /**
@@ -575,30 +487,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    // Locate and initialize asset management implementation.
 	    IAssetManagement implementation = (IAssetManagement) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
-	    IAssetManagement configured = configureAssetManagement(implementation);
-	    initializeNestedComponent(configured, monitor);
+	    initializeNestedComponent(implementation, monitor);
 
-	    // Locate and initialize asset module manager.
+	    // Create asset module manager.
 	    assetModuleManager = (IAssetModuleManager) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
-	    assetModuleManager.setAssetManagement(configured);
+	    assetModuleManager.setAssetManagement(implementation);
 	    initializeNestedComponent(assetModuleManager, monitor);
-	    return configured;
+
+	    // Wrap triggers around implementation.
+	    IAssetManagement withTriggers = new AssetManagementTriggers(implementation, assetModuleManager);
+	    return withTriggers;
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No asset module manager implementation configured.");
 	}
-    }
-
-    /**
-     * Configure asset management implementation by injecting configured options
-     * or wrapping to add functionality.
-     * 
-     * @param management
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IAssetManagement configureAssetManagement(IAssetManagement management) throws SiteWhereException {
-	return new AssetManagementTriggers(management);
     }
 
     /**
@@ -611,12 +513,26 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	try {
 	    IScheduleManagement implementation = (IScheduleManagement) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
-	    IScheduleManagement withTriggers = new ScheduleManagementTriggers(implementation);
-	    scheduleManager = (IScheduleManager) new QuartzScheduleManager(withTriggers);
+	    scheduleManager = (IScheduleManager) new QuartzScheduleManager(implementation);
+
+	    IScheduleManagement withTriggers = new ScheduleManagementTriggers(implementation, scheduleManager);
 	    return withTriggers;
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No schedule manager implementation configured.");
 	}
+    }
+
+    /**
+     * Initialize the tenant bootstrap service.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenantBootstrapService initializeBootstrapService(ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	bootstrapService = new TenantBootstrapService(this);
+	initializeNestedComponent(bootstrapService, monitor);
+	return bootstrapService;
     }
 
     /**
@@ -740,9 +656,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		// Force refresh on components-by-id map.
 		lifecycleComponentsById = buildComponentMap();
-
-		// Verify data models bootstrapped from tenant template.
-		verifyTenantBootstrapped();
 	    }
 	});
 
@@ -758,10 +671,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start asset module manager.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Started asset module manager",
-		"Asset module manager startup failed.", true));
-
 	// Start search provider manager.
 	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(),
 		"Started search provider manager", "Search provider manager startup failed.", true));
@@ -877,9 +786,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stopped search provider manager"));
 
-	// Stop asset module manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stopped asset module manager"));
-
 	// Stop the Groovy configuration.
 	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy engine"));
     }
@@ -947,6 +853,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Stop device management cache provider if configured.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
 		"Stopped device management cache provider"));
+
+	// Stop asset module manager.
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stopped asset module manager"));
 
 	// Stop asset management.
 	stop.addStep(
@@ -1197,11 +1106,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagement()
      */
     public IDeviceManagement getDeviceManagement() {
-	return deviceManagement;
+	return deviceManagementWithTriggers;
     }
 
     public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
+	this.deviceManagementWithTriggers = deviceManagement;
     }
 
     /*
@@ -1244,6 +1153,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setScheduleManagement(IScheduleManagement scheduleManagement) {
 	this.scheduleManagement = scheduleManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
+     * getBootstrapService()
+     */
+    public ITenantBootstrapService getBootstrapService() {
+	return bootstrapService;
+    }
+
+    public void setBootstrapService(ITenantBootstrapService bootstrapService) {
+	this.bootstrapService = bootstrapService;
     }
 
     /*

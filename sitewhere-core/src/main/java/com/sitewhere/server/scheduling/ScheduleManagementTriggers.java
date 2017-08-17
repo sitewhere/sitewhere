@@ -11,6 +11,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -22,8 +23,12 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
  */
 public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 
-    public ScheduleManagementTriggers(IScheduleManagement delegate) {
+    /** Schedule manager */
+    private IScheduleManager scheduleManager;
+
+    public ScheduleManagementTriggers(IScheduleManagement delegate, IScheduleManager scheduleManager) {
 	super(delegate);
+	this.scheduleManager = scheduleManager;
     }
 
     /*
@@ -36,7 +41,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
 	ISchedule schedule = super.createSchedule(request);
-	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleAdded(schedule);
+	getScheduleManager().scheduleAdded(schedule);
 	return schedule;
     }
 
@@ -49,7 +54,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     @Override
     public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
 	ISchedule schedule = super.deleteSchedule(token, force);
-	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleRemoved(schedule);
+	getScheduleManager().scheduleRemoved(schedule);
 	return schedule;
     }
 
@@ -63,7 +68,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     @Override
     public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
 	IScheduledJob job = super.createScheduledJob(request);
-	SiteWhere.getServer().getScheduleManager(getTenant()).scheduleJob(job);
+	getScheduleManager().scheduleJob(job);
 	return job;
     }
 
@@ -78,5 +83,13 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 	IScheduledJob job = super.deleteScheduledJob(token, force);
 	SiteWhere.getServer().getScheduleManager(getTenant()).unscheduleJob(job);
 	return job;
+    }
+
+    public IScheduleManager getScheduleManager() {
+	return scheduleManager;
+    }
+
+    public void setScheduleManager(IScheduleManager scheduleManager) {
+	this.scheduleManager = scheduleManager;
     }
 }

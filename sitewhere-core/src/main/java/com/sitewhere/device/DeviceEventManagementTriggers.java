@@ -10,11 +10,9 @@ package com.sitewhere.device;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -24,6 +22,7 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -42,11 +41,12 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Cached strategy */
-    private IOutboundProcessingStrategy strategy;
+    /** Event processing */
+    private IEventProcessing eventProcessing;
 
-    public DeviceEventManagementTriggers(IDeviceEventManagement delegate) {
+    public DeviceEventManagementTriggers(IDeviceEventManagement delegate, IEventProcessing eventProcessing) {
 	super(delegate);
+	this.eventProcessing = eventProcessing;
     }
 
     /*
@@ -74,8 +74,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceMeasurements addDeviceMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceMeasurements result = super.addDeviceMeasurements(assignmentToken, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onMeasurements(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onMeasurements(result);
 	} else {
 	    handleOutboundProcessingNotAvailable(result);
 	}
@@ -94,8 +94,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceLocation result = super.addDeviceLocation(assignmentToken, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onLocation(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onLocation(result);
 	}
 	return result;
     }
@@ -112,8 +112,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAlert result = super.addDeviceAlert(assignmentToken, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onAlert(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onAlert(result);
 	}
 	return result;
     }
@@ -130,8 +130,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceStateChange addDeviceStateChange(String assignmentToken, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceStateChange result = super.addDeviceStateChange(assignmentToken, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onStateChange(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onStateChange(result);
 	}
 	return result;
     }
@@ -149,8 +149,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onCommandInvocation(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onCommandInvocation(result);
 	}
 	return result;
     }
@@ -167,8 +167,8 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	IDeviceCommandResponse result = super.addDeviceCommandResponse(assignmentToken, request);
-	if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getOutboundProcessingStrategy().onCommandResponse(result);
+	if (isReadyForOutboundProcessing()) {
+	    getEventProcessing().getOutboundProcessingStrategy().onCommandResponse(result);
 	}
 	return result;
     }
@@ -183,15 +183,19 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     }
 
     /**
-     * Get the configured outbound processing strategy.
      * 
      * @return
-     * @throws SiteWhereException
      */
-    protected IOutboundProcessingStrategy getOutboundProcessingStrategy() throws SiteWhereException {
-	if (strategy == null) {
-	    strategy = SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundProcessingStrategy();
-	}
-	return strategy;
+    protected boolean isReadyForOutboundProcessing() {
+	return (getEventProcessing().getLifecycleStatus() == LifecycleStatus.Started) && (getEventProcessing()
+		.getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started);
+    }
+
+    public IEventProcessing getEventProcessing() {
+	return eventProcessing;
+    }
+
+    public void setEventProcessing(IEventProcessing eventProcessing) {
+	this.eventProcessing = eventProcessing;
     }
 }

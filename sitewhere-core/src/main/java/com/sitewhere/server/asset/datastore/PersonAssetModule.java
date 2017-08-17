@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IPersonAsset;
 
@@ -25,8 +26,8 @@ public class PersonAssetModule extends DataStoreAssetModule<IPersonAsset> implem
     /** Serial version UID */
     private static final long serialVersionUID = -6530318818641755281L;
 
-    public PersonAssetModule(IAssetCategory category) {
-	super(category);
+    public PersonAssetModule(IAssetCategory category, IAssetManagement assetManagement) {
+	super(category, assetManagement);
     }
 
     /*

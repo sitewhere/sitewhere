@@ -15,7 +15,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.asset.AssetMatcher;
@@ -24,6 +23,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -48,15 +48,19 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
     /** Asset category */
     private IAssetCategory category;
 
+    /** Asset management */
+    private IAssetManagement assetManagement;
+
     /** Asset store for category */
     protected Map<String, T> assets = new HashMap<String, T>();
 
     /** Matcher used for searches */
     protected AssetMatcher matcher = new AssetMatcher();
 
-    public DataStoreAssetModule(IAssetCategory category) {
+    public DataStoreAssetModule(IAssetCategory category, IAssetManagement assetManagement) {
 	super(LifecycleComponentType.AssetModule);
 	this.category = category;
+	this.assetManagement = assetManagement;
     }
 
     /*
@@ -68,7 +72,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	refresh(monitor);
+	reloadAssetData();
     }
 
     /*
@@ -108,6 +112,22 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
 	return getCategory().getAssetType();
     }
 
+    /**
+     * Reload asset data for module.
+     * 
+     * @throws SiteWhereException
+     */
+    @SuppressWarnings("unchecked")
+    public void reloadAssetData() throws SiteWhereException {
+	ISearchResults<IAsset> matches = getAssetManagement().listAssets(category.getId(), SearchCriteria.ALL);
+	assets.clear();
+
+	LOGGER.info("Adding " + matches.getNumResults() + " assets from datastore.");
+	for (IAsset asset : matches.getResults()) {
+	    assets.put(asset.getId(), (T) asset);
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -115,16 +135,9 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
      * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
      * lifecycle.ILifecycleProgressMonitor)
      */
-    @SuppressWarnings("unchecked")
     public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
-	    LOGGER.debug("Locking asset module to load assets from datastore.");
-	    ISearchResults<IAsset> matches = SiteWhere.getServer().getAssetManagement(getTenant())
-		    .listAssets(category.getId(), SearchCriteria.ALL);
-	    assets.clear();
-	    for (IAsset asset : matches.getResults()) {
-		assets.put(asset.getId(), (T) asset);
-	    }
+	    reloadAssetData();
 	    return new CommandResponse(CommandResult.Successful, "Asset list loaded from datastore.");
 	} catch (Throwable t) {
 	    return new CommandResponse(CommandResult.Failed, "Asset load operation failed. " + t.getMessage());
@@ -207,5 +220,13 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifec
 
     public void setCategory(IAssetCategory category) {
 	this.category = category;
+    }
+
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
+    }
+
+    public void setAssetManagement(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
     }
 }

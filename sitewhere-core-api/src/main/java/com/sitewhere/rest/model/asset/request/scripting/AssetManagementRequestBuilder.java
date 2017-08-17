@@ -6,6 +6,7 @@ import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -68,7 +69,7 @@ public class AssetManagementRequestBuilder {
     }
 
     public List<? extends IAsset> allAssetsInModule(String moduleId) throws SiteWhereException {
-	return getAssetModuleManager().search(moduleId, "");
+	return getAssetManagement().listAssets(moduleId, SearchCriteria.ALL).getResults();
     }
 
     public IAssetManagement getAssetManagement() {

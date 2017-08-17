@@ -10,7 +10,6 @@ package com.sitewhere.server.asset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,10 +34,15 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class AssetManagementTriggers extends AssetManagementDecorator {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
-    public AssetManagementTriggers(IAssetManagement delegate) {
+    /** Asset module manager reference */
+    private IAssetModuleManager assetModuleManager;
+
+    public AssetManagementTriggers(IAssetManagement delegate, IAssetModuleManager assetModuleManager) {
 	super(delegate);
+	this.assetModuleManager = assetModuleManager;
     }
 
     /*
@@ -51,11 +55,10 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	IAssetCategory category = super.createAssetCategory(request);
-	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
-	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryAdded(category,
-		    new LifecycleProgressMonitor(
-			    new LifecycleProgressContext(1, "Add asset module for new category.")));
+	IAssetModuleManager manager = getAssetModuleManager();
+	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
+	    manager.onAssetCategoryAdded(category, new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Add asset module for new category.")));
 	}
 	return category;
     }
@@ -72,11 +75,10 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
 	IAssetCategory category = super.updateAssetCategory(categoryId, request);
-	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
-	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryUpdated(category,
-		    new LifecycleProgressMonitor(
-			    new LifecycleProgressContext(1, "Reload asset module for updated category.")));
+	IAssetModuleManager manager = getAssetModuleManager();
+	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
+	    manager.onAssetCategoryUpdated(category, new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Reload asset module for updated category.")));
 	}
 	return category;
     }
@@ -91,11 +93,10 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	IAssetCategory category = super.deleteAssetCategory(categoryId);
-	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
-	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    SiteWhere.getServer().getAssetModuleManager(getTenant()).onAssetCategoryRemoved(category,
-		    new LifecycleProgressMonitor(
-			    new LifecycleProgressContext(1, "Remove asset module for deleted category.")));
+	IAssetModuleManager manager = getAssetModuleManager();
+	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
+	    manager.onAssetCategoryRemoved(category, new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Remove asset module for deleted category.")));
 	}
 	return category;
     }
@@ -218,11 +219,18 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
      * @throws SiteWhereException
      */
     protected <T extends IAsset> void refreshAssetModule(String categoryId, T asset) throws SiteWhereException {
-	IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
-	if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
-	    LOGGER.info("Refreshing asset module due to changes.");
-	    SiteWhere.getServer().getAssetModuleManager(getTenant()).getModule(categoryId)
+	IAssetModuleManager manager = getAssetModuleManager();
+	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
+	    manager.getModule(categoryId)
 		    .refresh(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Refresh asset module.")));
 	}
+    }
+
+    public IAssetModuleManager getAssetModuleManager() {
+	return assetModuleManager;
+    }
+
+    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
+	this.assetModuleManager = assetModuleManager;
     }
 }

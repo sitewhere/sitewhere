@@ -59,7 +59,7 @@
 
 				<!-- Event source for air traffic example STOMP messages -->
 				<sw:activemq-event-source transportUri="stomp://localhost:2345?trace=true"
-					sourceId="stomp" queueName="SITEWHERE.STOMP" dataDirectory="${sitewhere.home}/stompdata"
+					sourceId="stomp" queueName="SITEWHERE.STOMP" dataDirectory="${sitewhere.home}/${tenant.id}/stompdata"
 					numConsumers="5">
 					<sw:json-batch-event-decoder />
 				</sw:activemq-event-source>

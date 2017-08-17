@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IHardwareAsset;
 
@@ -25,8 +26,8 @@ public class HardwareAssetModule extends DataStoreAssetModule<IHardwareAsset> im
     /** Serial version UID */
     private static final long serialVersionUID = 8273484848445563832L;
 
-    public HardwareAssetModule(IAssetCategory category) {
-	super(category);
+    public HardwareAssetModule(IAssetCategory category, IAssetManagement assetManagement) {
+	super(category, assetManagement);
     }
 
     /*
