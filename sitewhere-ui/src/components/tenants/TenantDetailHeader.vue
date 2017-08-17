@@ -49,7 +49,7 @@
         v-model="tenantCommandPercent"></v-progress-linear>
     </v-card>
     <v-card v-if="tenant.engineState.staged" class="mt-2">
-      <v-card-text class="yellow lighten-3 stage-warning">
+      <v-card-text class="yellow lighten-4 stage-warning">
         Tenant has staged updates that have not been applied. Reboot tenant to apply changes.
         <v-btn dark left
           class="red darken-2 pa-1 ma-0 ml-3"
