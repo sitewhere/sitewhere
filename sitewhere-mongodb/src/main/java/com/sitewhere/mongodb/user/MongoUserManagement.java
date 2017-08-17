@@ -154,8 +154,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	String inPassword = SiteWherePersistence.encodePassword(password);
 	User match = MongoUser.fromDocument(userObj);
 	if (!match.getHashedPassword().equals(inPassword)) {
-	    LOGGER.info("User: " + username + " Password: " + password + " " + inPassword + " != "
-		    + match.getHashedPassword());
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_UNAUTHORIZED);
 	}
