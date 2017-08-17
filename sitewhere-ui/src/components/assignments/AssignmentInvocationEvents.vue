@@ -5,8 +5,10 @@
         <no-results-panel v-if="alerts.length === 0"
           text="No Command Invocation Events Found for Assignment">
         </no-results-panel>
-        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0" :headers="headers" :items="alerts"
-          :hide-actions="true" no-data-text="No Command Invocations Found for Assignment">
+        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="alerts" :hide-actions="true"
+          no-data-text="No Command Invocations Found for Assignment"
+          total-items="0">
           <template slot="items" scope="props">
             <td width="20%" :title="props.item.command.name">
               {{ props.item.command.name }}

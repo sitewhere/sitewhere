@@ -7,7 +7,8 @@
         </no-results-panel>
         <v-data-table v-if="schedules.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="schedules"
-          :hide-actions="true" no-data-text="No Schedules Found">
+          :hide-actions="true" no-data-text="No Schedules Found"
+          total-items="0">
           <template slot="items" scope="props">
             <td width="17%" :title="props.item.name">
               {{ props.item.name }}

@@ -5,8 +5,10 @@
         <no-results-panel v-if="locations.length === 0"
           text="No Location Events Found for Site">
         </no-results-panel>
-        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0" :headers="headers" :items="locations"
-          :hide-actions="true" no-data-text="No Locations Found for Site">
+        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="locations" :hide-actions="true"
+          no-data-text="No Locations Found for Site"
+          total-items="0">
           <template slot="items" scope="props">
             <td width="40%" :title="props.item.assetName">
               {{ props.item.assetName }}

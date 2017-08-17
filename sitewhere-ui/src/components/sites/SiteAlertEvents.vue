@@ -5,8 +5,10 @@
         <no-results-panel v-if="alerts.length === 0"
           text="No Alert Events Found for Site">
         </no-results-panel>
-        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0" :headers="headers" :items="alerts"
-          :hide-actions="true" no-data-text="No Alerts Found for Site">
+        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="alerts" :hide-actions="true"
+          no-data-text="No Alerts Found for Site"
+          total-items="0">
           <template slot="items" scope="props">
             <td width="30%" :title="props.item.assetName">
               {{ props.item.assetName }}

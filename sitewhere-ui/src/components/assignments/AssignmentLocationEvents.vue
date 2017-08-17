@@ -6,7 +6,8 @@
           text="No Location Events Found for Assignment">
         </no-results-panel>
         <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="locations" :hide-actions="true">
+          :headers="headers" :items="locations" :hide-actions="true"
+          total-items="0">
           <template slot="items" scope="props">
             <td width="40%" title="Lat/Lon/Elevation">
               {{ utils.fourDecimalPlaces(props.item.latitude) }}
