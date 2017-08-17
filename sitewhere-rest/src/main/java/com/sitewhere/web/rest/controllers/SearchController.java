@@ -53,7 +53,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek
  */
 @Controller
-@CrossOrigin
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/search")
 @Api(value = "search", description = "Operations related to external search providers.")
 @DocumentedController(name = "External Search")

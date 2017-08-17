@@ -38,7 +38,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * @author Derek Adams
  */
 @Controller
-@CrossOrigin
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/system")
 @Api(value = "system", description = "Operations related to SiteWhere CE system management.")
 @DocumentedController(name = "System Information")

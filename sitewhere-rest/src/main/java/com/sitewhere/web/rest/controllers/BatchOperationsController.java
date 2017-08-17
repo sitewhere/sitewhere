@@ -65,7 +65,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
-@CrossOrigin
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/batch")
 @Api(value = "batch", description = "Operations related to SiteWhere batch operations.")
 @DocumentedController(name = "Batch Operations")

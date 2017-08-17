@@ -43,7 +43,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
-@CrossOrigin
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/events")
 @Api(value = "events", description = "Operations related to SiteWhere device events.")
 @DocumentedController(name = "Events")

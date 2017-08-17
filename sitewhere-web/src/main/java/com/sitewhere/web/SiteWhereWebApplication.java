@@ -25,9 +25,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -102,19 +99,6 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	filterRegistrationBean.setFilter(new DelegatingFilterProxy(springSessionRepositoryFilter));
 	filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
 	return filterRegistrationBean;
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	CorsConfiguration config = new CorsConfiguration();
-	config.addAllowedOrigin("*");
-	config.addAllowedHeader("*");
-	config.addAllowedMethod("*");
-	config.addExposedHeader("Authorization");
-	config.addExposedHeader("Content-Type");
-	source.registerCorsConfiguration("/api/**", config);
-	return new CorsFilter(source);
     }
 
     @Bean

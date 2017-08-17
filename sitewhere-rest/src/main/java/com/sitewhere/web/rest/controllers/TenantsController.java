@@ -78,7 +78,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
-@CrossOrigin
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/tenants")
 @Api(value = "tenants", description = "Operations related to SiteWhere tenants.")
 @DocumentedController(name = "Tenants")
