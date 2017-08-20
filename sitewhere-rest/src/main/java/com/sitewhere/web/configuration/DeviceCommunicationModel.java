@@ -227,6 +227,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		.description("Fully-qualified path to trust store for secured connections.").build()));
 	builder.attribute((new AttributeNode.Builder("Trust store password", "trustStorePassword", AttributeType.String)
 		.description("Password used to authenticate with trust store.").build()));
+	builder.attribute((new AttributeNode.Builder("Keystore path", "keyStorePath", AttributeType.String)
+		.description("Fully-qualified path to keystore for secured connections.").build()));
+	builder.attribute((new AttributeNode.Builder("Keystore password", "keyStorePassword", AttributeType.String)
+		.description("Password used to authenticate with keystore.").build()));
     }
 
     /**

@@ -62,4 +62,18 @@ public interface IMqttComponent {
      * @return
      */
     public String getTrustStorePassword();
+
+    /**
+     * Get full path to trust store for TLS/SSL.
+     * 
+     * @return
+     */
+    public String getKeyStorePath();
+
+    /**
+     * Get password for TLS/SSL trust store.
+     * 
+     * @return
+     */
+    public String getKeyStorePassword();
 }

@@ -62,6 +62,12 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     /** TrustStore password */
     private String trustStorePassword;
 
+    /** KeyStore path */
+    private String keyStorePath;
+
+    /** KeyStore password */
+    private String keyStorePassword;
+
     /** Topic events are posted to */
     private String topic;
 
@@ -391,6 +397,34 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     public void setTrustStorePassword(String trustStorePassword) {
 	this.trustStorePassword = trustStorePassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
+     */
+    public String getKeyStorePath() {
+	return keyStorePath;
+    }
+
+    public void setKeyStorePath(String keyStorePath) {
+	this.keyStorePath = keyStorePath;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
+     * getKeyStorePassword()
+     */
+    public String getKeyStorePassword() {
+	return keyStorePassword;
+    }
+
+    public void setKeyStorePassword(String keyStorePassword) {
+	this.keyStorePassword = keyStorePassword;
     }
 
     public String getTopic() {

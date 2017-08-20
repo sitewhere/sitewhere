@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -66,6 +67,12 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
     /** TrustStore password */
     private String trustStorePassword;
+
+    /** KeyStore path */
+    private String keyStorePath;
+
+    /** KeyStore password */
+    private String keyStorePassword;
 
     /** Username */
     private String username;
@@ -124,6 +131,75 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     }
 
     /**
+     * Configure trust store.
+     * 
+     * @param sslContext
+     * @param trustStorePath
+     * @param trustStorePassword
+     * @throws Exception
+     */
+    protected static TrustManagerFactory configureTrustStore(SSLContext sslContext, String trustStorePath,
+	    String trustStorePassword) throws Exception {
+	LOGGER.info("MQTT client using truststore path: " + trustStorePath);
+	TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+	KeyStore tks = KeyStore.getInstance("JKS");
+	File trustFile = new File(trustStorePath);
+	tks.load(new FileInputStream(trustFile), trustStorePassword.toCharArray());
+	tmf.init(tks);
+	return tmf;
+    }
+
+    protected static KeyManagerFactory configureKeyStore(SSLContext sslContext, String keyStorePath,
+	    String keyStorePassword) throws Exception {
+	LOGGER.info("MQTT client using keystore path: " + keyStorePath);
+	KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+	KeyStore ks = KeyStore.getInstance("JKS");
+	File keyFile = new File(keyStorePath);
+	ks.load(new FileInputStream(keyFile), keyStorePassword.toCharArray());
+	kmf.init(ks, keyStorePassword.toCharArray());
+	return kmf;
+    }
+
+    /**
+     * Handle configuration of secure transport.
+     * 
+     * @param component
+     * @param mqtt
+     * @throws SiteWhereException
+     */
+    protected static void handleSecureTransport(IMqttComponent component, MQTT mqtt) throws SiteWhereException {
+	LOGGER.info("MQTT client using secure protocol '" + component.getProtocol() + "'.");
+	boolean trustStoreConfigured = (component.getTrustStorePath() != null)
+		&& (component.getTrustStorePassword() != null);
+	boolean keyStoreConfigured = (component.getKeyStorePath() != null) && (component.getKeyStorePassword() != null);
+	try {
+	    SSLContext sslContext = SSLContext.getInstance("TLS");
+	    TrustManagerFactory tmf = null;
+	    KeyManagerFactory kmf;
+
+	    // Handle trust store configuration.
+	    if (trustStoreConfigured) {
+		tmf = configureTrustStore(sslContext, component.getTrustStorePath(), component.getTrustStorePassword());
+	    } else {
+		LOGGER.info("No trust store configured for MQTT client.");
+	    }
+
+	    // Handle key store configuration.
+	    if (keyStoreConfigured) {
+		kmf = configureKeyStore(sslContext, component.getKeyStorePath(), component.getKeyStorePassword());
+		sslContext.init(kmf.getKeyManagers(), tmf != null ? tmf.getTrustManagers() : null, null);
+	    } else if (trustStoreConfigured) {
+		sslContext.init(null, tmf != null ? tmf.getTrustManagers() : null, null);
+	    }
+
+	    mqtt.setSslContext(sslContext);
+	    LOGGER.info("Created SSL context for MQTT receiver.");
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to configure secure transport.", t);
+	}
+    }
+
+    /**
      * Configures MQTT parameters based on component settings.
      * 
      * @param component
@@ -132,23 +208,12 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      */
     public static MQTT configure(IMqttComponent component, DispatchQueue queue) throws SiteWhereException {
 	MQTT mqtt = new MQTT();
-	if ((component.getProtocol().startsWith("ssl")) || (component.getProtocol().startsWith("tls"))) {
-	    if ((component.getTrustStorePath() != null) && (component.getTrustStorePassword() != null)) {
-		try {
-		    SSLContext sslContext = SSLContext.getInstance("TLS");
-		    TrustManagerFactory tmf = TrustManagerFactory
-			    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		    KeyStore ks = KeyStore.getInstance("JKS");
-		    File trustFile = new File(component.getTrustStorePath());
-		    ks.load(new FileInputStream(trustFile), component.getTrustStorePassword().toCharArray());
-		    tmf.init(ks);
-		    sslContext.init(null, tmf.getTrustManagers(), null);
-		    mqtt.setSslContext(sslContext);
-		    LOGGER.info("Created SSL context for MQTT receiver.");
-		} catch (Exception e) {
-		    throw new SiteWhereException("Unable to load SSL context.", e);
-		}
-	    }
+
+	boolean usingSSL = component.getProtocol().startsWith("ssl");
+	boolean usingTLS = component.getProtocol().startsWith("tls");
+
+	if (usingSSL || usingTLS) {
+	    handleSecureTransport(component, mqtt);
 	}
 	// Set username if provided.
 	if (!StringUtils.isEmpty(component.getUsername())) {
@@ -289,5 +354,33 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
     public void setTrustStorePassword(String trustStorePassword) {
 	this.trustStorePassword = trustStorePassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
+     */
+    public String getKeyStorePath() {
+	return keyStorePath;
+    }
+
+    public void setKeyStorePath(String keyStorePath) {
+	this.keyStorePath = keyStorePath;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
+     * getKeyStorePassword()
+     */
+    public String getKeyStorePassword() {
+	return keyStorePassword;
+    }
+
+    public void setKeyStorePassword(String keyStorePassword) {
+	this.keyStorePassword = keyStorePassword;
     }
 }

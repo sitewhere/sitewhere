@@ -2218,6 +2218,24 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="keyStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 
 	<!-- Event source that pulls binary information from a RabbitMQ queue and 
