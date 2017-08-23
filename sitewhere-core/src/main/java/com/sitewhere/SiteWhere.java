@@ -60,6 +60,19 @@ public class SiteWhere {
     }
 
     /**
+     * Stop embedded Zookeeper instance.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public static void stopEmbeddedZookeeper(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	ZOOKEEPER.lifecycleStop(monitor);
+	if (ZOOKEEPER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    LOGGER.error("Exception while shutting down embedded Zookeeper.", ZOOKEEPER.getLifecycleError());
+	}
+    }
+
+    /**
      * Start embedded Kafka instance.
      * 
      * @param monitor
@@ -74,6 +87,19 @@ public class SiteWhere {
 	KAFKA.start(monitor);
 	if (KAFKA.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 	    LOGGER.error("Exception while starting embedded Kafka broker.", KAFKA.getLifecycleError());
+	}
+    }
+
+    /**
+     * Stop embedded Kafka instance.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public static void stopEmbeddedKafka(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	KAFKA.lifecycleStop(monitor);
+	if (KAFKA.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    LOGGER.error("Exception while shutting down embedded Zookeeper.", KAFKA.getLifecycleError());
 	}
     }
 
@@ -137,6 +163,10 @@ public class SiteWhere {
 	if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 	    LOGGER.error("Exception while terminating server.", SERVER.getLifecycleError());
 	}
+
+	// Stop Kafka and Zookeeper instances.
+	stopEmbeddedKafka(monitor);
+	stopEmbeddedZookeeper(monitor);
     }
 
     /**
@@ -170,5 +200,17 @@ public class SiteWhere {
 	    throw new RuntimeException("SiteWhere server has not been initialized.");
 	}
 	return VERSION;
+    }
+
+    /**
+     * Access the embedded Zookeeper instance.
+     * 
+     * @return
+     */
+    public static EmbeddedZookeeper getZookeeper() {
+	if (ZOOKEEPER == null) {
+	    throw new RuntimeException("Zookeeper has not been initialized.");
+	}
+	return ZOOKEEPER;
     }
 }

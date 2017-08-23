@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -108,6 +110,7 @@ public class EmbeddedKafkaCluster extends LifecycleComponent {
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getKafka().shutdown();
+	getKafka().awaitShutdown();
 	if (isDeleteOnShutdown()) {
 	    try {
 		FileUtils.forceDelete(getLogFolder());
@@ -115,6 +118,16 @@ public class EmbeddedKafkaCluster extends LifecycleComponent {
 		LOGGER.warn("Unable to delete log folder.", e);
 	    }
 	}
+    }
+
+    /**
+     * Get a Zookeeper client that can be used to directly affect Kafka
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ZkClient getZookeeperClient() throws SiteWhereException {
+	return new ZkClient(SiteWhere.getZookeeper().getHostname() + ":" + SiteWhere.getZookeeper().getPort());
     }
 
     /*

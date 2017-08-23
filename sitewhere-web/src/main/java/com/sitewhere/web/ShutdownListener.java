@@ -18,7 +18,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Handles server shutdown logic when servlet context is destroyed.
@@ -41,11 +41,11 @@ public class ShutdownListener implements ServletContextListener {
 	// TODO: What monitors shutdown?
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Stopping SiteWhere Server"));
-	SiteWhere.getServer().lifecycleStop(monitor);
-
-	// Verify shutdown was successful.
-	if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Stopped) {
+	try {
+	    SiteWhere.stop(monitor);
 	    LOGGER.info("Server shut down successfully.");
+	} catch (SiteWhereException e) {
+	    LOGGER.info("Server shutdown failed.", e);
 	}
 
 	// Shut down Log4J manually.
