@@ -23,6 +23,7 @@ ext {
 ext['swArtifact'] = 'sitewhere-server'
 ext['spring-session.version'] = '1.3.0.RELEASE'
 ext['solr.version'] = '6.4.0'
+ext['kafka.version'] = '0.11.0.0'
 
 apply plugin: 'distribution'
 
@@ -40,7 +41,7 @@ docker {
 
 allprojects {
     group = 'com.sitewhere'
-	version = '1.13.0'
+	version = '2.0.0'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
