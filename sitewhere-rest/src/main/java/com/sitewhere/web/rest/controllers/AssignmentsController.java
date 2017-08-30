@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
@@ -48,7 +47,6 @@ import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -93,7 +91,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
@@ -139,32 +136,27 @@ public class AssignmentsController extends RestController {
 	    @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "createAssociatedResponse.md") })
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createDeviceAssignment", LOGGER);
-	try {
-	    if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
-		throw new SiteWhereException("Hardware id required.");
-	    }
-	    if (request.getAssignmentType() == null) {
-		throw new SiteWhereException("Assignment type required.");
-	    }
-	    if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-		if (request.getAssetModuleId() == null) {
-		    throw new SiteWhereException("Asset module id required.");
-		}
-		if (request.getAssetId() == null) {
-		    throw new SiteWhereException("Asset id required.");
-		}
-	    }
-	    IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
-	    IDeviceAssignment created = management.createDeviceAssignment(request);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(created, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
+	if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
+	    throw new SiteWhereException("Hardware id required.");
 	}
+	if (request.getAssignmentType() == null) {
+	    throw new SiteWhereException("Assignment type required.");
+	}
+	if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
+	    if (request.getAssetModuleId() == null) {
+		throw new SiteWhereException("Asset module id required.");
+	    }
+	    if (request.getAssetId() == null) {
+		throw new SiteWhereException("Asset id required.");
+	    }
+	}
+	IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
+	IDeviceAssignment created = management.createDeviceAssignment(request);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(created, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**
@@ -183,17 +175,12 @@ public class AssignmentsController extends RestController {
     public DeviceAssignment getDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceAssignment", LOGGER);
-	try {
-	    IDeviceAssignment assignment = assureAssignment(token, servletRequest);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceAssignment assignment = assureAssignment(token, servletRequest);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**
@@ -214,18 +201,13 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") @Concerns(values = {
 		    ConcernType.ForceDelete }) boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "deleteDeviceAssignment", LOGGER);
-	try {
-	    IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .deleteDeviceAssignment(token, force);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.deleteDeviceAssignment(token, force);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**
@@ -243,18 +225,13 @@ public class AssignmentsController extends RestController {
     public DeviceAssignment updateDeviceAssignmentMetadata(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody MetadataProvider metadata, HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "updateDeviceAssignmentMetadata", LOGGER);
-	try {
-	    IDeviceAssignment result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .updateDeviceAssignmentMetadata(token, metadata);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceAssignment result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.updateDeviceAssignmentMetadata(token, metadata);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**
@@ -283,17 +260,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listEvents", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceEvents(token,
-		    criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceEvents(token,
+		criteria);
     }
 
     /**
@@ -318,17 +289,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listMeasurements", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .listDeviceMeasurements(token, criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(token,
+		criteria);
     }
 
     /**
@@ -379,19 +344,13 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listMeasurementsAsChartSeries", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    ISearchResults<IDeviceMeasurements> measurements = SiteWhere.getServer()
-		    .getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(token, criteria);
-	    ChartBuilder builder = new ChartBuilder();
-	    return builder.process(measurements.getResults(), measurementIds);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	ISearchResults<IDeviceMeasurements> measurements = SiteWhere.getServer()
+		.getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(token, criteria);
+	ChartBuilder builder = new ChartBuilder();
+	return builder.process(measurements.getResults(), measurementIds);
     }
 
     /**
@@ -413,14 +372,9 @@ public class AssignmentsController extends RestController {
     public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createMeasurements", LOGGER);
-	try {
-	    IDeviceMeasurements result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceMeasurements(token, input);
-	    return DeviceMeasurements.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceMeasurements result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceMeasurements(token, input);
+	return DeviceMeasurements.copy(result);
     }
 
     /**
@@ -445,17 +399,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listLocations", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocations(token,
-		    criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocations(token,
+		criteria);
     }
 
     /**
@@ -474,24 +422,18 @@ public class AssignmentsController extends RestController {
     public void pushLatestLocationToState(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "pushLatestLocationToState", LOGGER);
-	try {
-	    IDeviceAssignment assignment = getDeviceAssignment(token, servletRequest);
-	    DeviceAssignmentState state = (DeviceAssignmentState) assignment.getState();
-	    ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest,
-		    response);
-	    if (locations.getNumResults() > 0) {
-		DeviceLocation location = (DeviceLocation) locations.getResults().get(0);
-		if (state == null) {
-		    state = new DeviceAssignmentState();
-		}
-		state.setLastLocation(location);
-		SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
-			state);
-	    }
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+//	IDeviceAssignment assignment = getDeviceAssignment(token, servletRequest);
+//	DeviceAssignmentState state = (DeviceAssignmentState) assignment.getState();
+//	ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest, response);
+//	if (locations.getNumResults() > 0) {
+//	    DeviceLocation location = (DeviceLocation) locations.getResults().get(0);
+//	    if (state == null) {
+//		state = new DeviceAssignmentState();
+//	    }
+//	    state.setLastLocation(location);
+//	    SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
+//		    state);
+//	}
     }
 
     /**
@@ -513,14 +455,9 @@ public class AssignmentsController extends RestController {
     public DeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createLocation", LOGGER);
-	try {
-	    IDeviceLocation result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceLocation(token, input);
-	    return DeviceLocation.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceLocation result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceLocation(token, input);
+	return DeviceLocation.copy(result);
     }
 
     /**
@@ -545,17 +482,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listAlerts", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlerts(token,
-		    criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlerts(token,
+		criteria);
     }
 
     /**
@@ -577,14 +508,9 @@ public class AssignmentsController extends RestController {
     public DeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createAlert", LOGGER);
-	try {
-	    IDeviceAlert result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceAlert(token, input);
-	    return DeviceAlert.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceAlert result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceAlert(token, input);
+	return DeviceAlert.copy(result);
     }
 
     /**
@@ -605,14 +531,9 @@ public class AssignmentsController extends RestController {
     public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createDeviceStream", LOGGER);
-	try {
-	    IDeviceStream result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .createDeviceStream(token, request);
-	    return DeviceStream.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceStream result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.createDeviceStream(token, request);
+	return DeviceStream.copy(result);
     }
 
     @RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
@@ -630,22 +551,16 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listDeviceStreams", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    ISearchResults<IDeviceStream> matches = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .listDeviceStreams(token, criteria);
-	    List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
-	    for (IDeviceStream stream : matches.getResults()) {
-		converted.add(DeviceStream.copy(stream));
-	    }
-	    return new SearchResults<IDeviceStream>(converted);
-	} finally {
-	    Tracer.stop(LOGGER);
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	ISearchResults<IDeviceStream> matches = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.listDeviceStreams(token, criteria);
+	List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
+	for (IDeviceStream stream : matches.getResults()) {
+	    converted.add(DeviceStream.copy(stream));
 	}
+	return new SearchResults<IDeviceStream>(converted);
     }
 
     /**
@@ -666,18 +581,13 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceStream", LOGGER);
-	try {
-	    IDeviceStream result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .getDeviceStream(token, streamId);
-	    if (result == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
-			HttpServletResponse.SC_NOT_FOUND);
-	    }
-	    return DeviceStream.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
+	IDeviceStream result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+		.getDeviceStream(token, streamId);
+	if (result == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	return DeviceStream.copy(result);
     }
 
     /**
@@ -699,7 +609,6 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "addDeviceStreamData", LOGGER);
 	try {
 	    ServletInputStream inData = servletRequest.getInputStream();
 	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
@@ -727,8 +636,6 @@ public class AssignmentsController extends RestController {
 	} catch (IOException e) {
 	    LOGGER.error(e);
 	    svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -750,7 +657,6 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
 	IDeviceStreamData chunk = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
 		.getDeviceStreamData(token, streamId, sequenceNumber);
 	if (chunk == null) {
@@ -772,7 +678,6 @@ public class AssignmentsController extends RestController {
     public void listDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
 	IDeviceStream stream = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
 		.getDeviceStream(token, streamId);
 	if (stream == null) {
@@ -820,17 +725,12 @@ public class AssignmentsController extends RestController {
     public DeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createCommandInvocation", LOGGER);
-	try {
-	    IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
-	    IDeviceCommandInvocation result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceCommandInvocation(token, command, request);
-	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
-		    getTenant(servletRequest));
-	    return helper.convert(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
+	IDeviceCommandInvocation result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceCommandInvocation(token, command, request);
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getTenant(servletRequest));
+	return helper.convert(result);
     }
 
     @RequestMapping(value = "/{token}/invocations/schedules/{scheduleToken}", method = RequestMethod.POST)
@@ -844,15 +744,10 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "scheduleCommandInvocation", LOGGER);
-	try {
-	    assureDeviceCommand(request.getCommandToken(), servletRequest);
-	    IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(),
-		    token, request.getCommandToken(), request.getParameterValues(), scheduleToken);
-	    return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	assureDeviceCommand(request.getCommandToken(), servletRequest);
+	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(),
+		token, request.getCommandToken(), request.getParameterValues(), scheduleToken);
+	return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
     }
 
     /**
@@ -878,25 +773,19 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listCommandInvocations", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    ISearchResults<IDeviceCommandInvocation> matches = SiteWhere.getServer()
-		    .getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocations(token, criteria);
-	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
-		    getTenant(servletRequest));
-	    helper.setIncludeCommand(includeCommand);
-	    List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
-	    for (IDeviceCommandInvocation invocation : matches.getResults()) {
-		converted.add(helper.convert(invocation));
-	    }
-	    return new SearchResults<IDeviceCommandInvocation>(converted);
-	} finally {
-	    Tracer.stop(LOGGER);
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	ISearchResults<IDeviceCommandInvocation> matches = SiteWhere.getServer()
+		.getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocations(token, criteria);
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getTenant(servletRequest));
+	helper.setIncludeCommand(includeCommand);
+	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
+	for (IDeviceCommandInvocation invocation : matches.getResults()) {
+	    converted.add(helper.convert(invocation));
 	}
+	return new SearchResults<IDeviceCommandInvocation>(converted);
     }
 
     /**
@@ -914,14 +803,9 @@ public class AssignmentsController extends RestController {
     public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createStateChange", LOGGER);
-	try {
-	    IDeviceStateChange result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceStateChange(token, input);
-	    return DeviceStateChange.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceStateChange result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceStateChange(token, input);
+	return DeviceStateChange.copy(result);
     }
 
     /**
@@ -944,17 +828,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listStateChanges", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .listDeviceStateChanges(token, criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceStateChanges(token,
+		criteria);
     }
 
     /**
@@ -976,14 +854,9 @@ public class AssignmentsController extends RestController {
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createCommandResponse", LOGGER);
-	try {
-	    IDeviceCommandResponse result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .addDeviceCommandResponse(token, input);
-	    return DeviceCommandResponse.copy(result);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceCommandResponse result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.addDeviceCommandResponse(token, input);
+	return DeviceCommandResponse.copy(result);
     }
 
     /**
@@ -1008,17 +881,11 @@ public class AssignmentsController extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listCommandResponses", LOGGER);
-	try {
-	    Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	    Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	    DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate,
-		    parsedEndDate);
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .listDeviceCommandResponses(token, criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.listDeviceCommandResponses(token, criteria);
     }
 
     /**
@@ -1036,24 +903,19 @@ public class AssignmentsController extends RestController {
     public ResponseEntity<byte[]> getDeviceAssignmentSymbol(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceAssignmentSymbol", LOGGER);
-	try {
-	    IDeviceAssignment assignment = assureAssignmentWithoutUserValidation(token, servletRequest);
-	    IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-	    ISymbolGeneratorManager symbols = SiteWhere.getServer()
-		    .getDeviceCommunication(getTenant(servletRequest, false)).getSymbolGeneratorManager();
-	    ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
-	    if (generator != null) {
-		byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
+	IDeviceAssignment assignment = assureAssignmentWithoutUserValidation(token, servletRequest);
+	IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
+	ISymbolGeneratorManager symbols = SiteWhere.getServer().getDeviceCommunication(getTenant(servletRequest, false))
+		.getSymbolGeneratorManager();
+	ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
+	if (generator != null) {
+	    byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
 
-		final HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.IMAGE_PNG);
-		return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
-	    } else {
-		return null;
-	    }
-	} finally {
-	    Tracer.stop(LOGGER);
+	    final HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.IMAGE_PNG);
+	    return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
+	} else {
+	    return null;
 	}
     }
 
@@ -1073,18 +935,13 @@ public class AssignmentsController extends RestController {
     public DeviceAssignment endDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "endDeviceAssignment", LOGGER);
-	try {
-	    IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
-	    IDeviceAssignment updated = management.endDeviceAssignment(token);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
+	IDeviceAssignment updated = management.endDeviceAssignment(token);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**
@@ -1103,18 +960,13 @@ public class AssignmentsController extends RestController {
     public DeviceAssignment missingDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "missingDeviceAssignment", LOGGER);
-	try {
-	    IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
-	    IDeviceAssignment updated = management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
-	    DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	    helper.setIncludeAsset(true);
-	    helper.setIncludeDevice(true);
-	    helper.setIncludeSite(true);
-	    return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
+	IDeviceAssignment updated = management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	helper.setIncludeAsset(true);
+	helper.setIncludeDevice(true);
+	helper.setIncludeSite(true);
+	return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
     }
 
     /**

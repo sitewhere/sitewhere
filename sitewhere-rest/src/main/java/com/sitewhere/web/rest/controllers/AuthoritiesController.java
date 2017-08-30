@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
@@ -35,7 +34,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -65,6 +63,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class AuthoritiesController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -83,13 +82,8 @@ public class AuthoritiesController extends RestController {
     public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
-	try {
-	    IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
-	    return GrantedAuthority.copy(auth);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
+	return GrantedAuthority.copy(auth);
     }
 
     /**
@@ -108,17 +102,12 @@ public class AuthoritiesController extends RestController {
 	    @ApiParam(value = "Authority name", required = true) @PathVariable String name,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "getAuthorityByName", LOGGER);
-	try {
-	    IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
-	    if (auth == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
-			HttpServletResponse.SC_NOT_FOUND);
-	    }
-	    return GrantedAuthority.copy(auth);
-	} finally {
-	    Tracer.stop(LOGGER);
+	IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
+	if (auth == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	return GrantedAuthority.copy(auth);
     }
 
     /**
@@ -136,18 +125,13 @@ public class AuthoritiesController extends RestController {
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "listAuthorities", LOGGER);
-	try {
-	    List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
-	    GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	    List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	    for (IGrantedAuthority auth : auths) {
-		authsConv.add(GrantedAuthority.copy(auth));
-	    }
-	    return new SearchResults<GrantedAuthority>(authsConv);
-	} finally {
-	    Tracer.stop(LOGGER);
+	List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
+	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
+	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
+	for (IGrantedAuthority auth : auths) {
+	    authsConv.add(GrantedAuthority.copy(auth));
 	}
+	return new SearchResults<GrantedAuthority>(authsConv);
     }
 
     /**
@@ -165,14 +149,9 @@ public class AuthoritiesController extends RestController {
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
-	try {
-	    GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	    List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	    return GrantedAuthorityHierarchyBuilder.build(auths);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
+	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
+	return GrantedAuthorityHierarchyBuilder.build(auths);
     }
 
     /**

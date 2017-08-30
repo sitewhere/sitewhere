@@ -15,7 +15,6 @@ import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -42,7 +41,6 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
@@ -253,26 +251,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
-	    throws SiteWhereException {
-	return delegate.updateDeviceAssignmentState(token, state);
-    }
-
-    @Override
     public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
 	return delegate.endDeviceAssignment(token);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return delegate.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.getMissingDeviceAssignments(siteToken, criteria);
     }
 
     @Override

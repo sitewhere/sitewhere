@@ -1,7 +1,0 @@
-
-description = 'SiteWhere InfluxData Integration'
-dependencies {
-    compile project(':sitewhere-core')
-    compile group: 'org.influxdb', name: 'influxdb-java', version:'2.3'
-    compile group: 'joda-time', name: 'joda-time', version:'2.9.1'
-}

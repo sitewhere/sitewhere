@@ -1,0 +1,5 @@
+description = 'SiteWhere Web/REST Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+}

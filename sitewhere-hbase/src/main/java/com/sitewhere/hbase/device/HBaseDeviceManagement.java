@@ -60,7 +60,6 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
@@ -567,32 +566,6 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
     public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
 	return HBaseSite.listDeviceAssignmentsForSite(context, siteToken, criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#
-     * getDeviceAssignmentsWithLastInteraction( java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseSite.listDeviceAssignmentsWithLastInteraction(context, siteToken, criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getMissingDeviceAssignments(
-     * java.lang. String, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseSite.listMissingDeviceAssignments(context, siteToken, criteria);
     }
 
     /*

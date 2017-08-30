@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -34,7 +33,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
@@ -61,6 +59,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class ScheduledJobsController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -80,12 +79,7 @@ public class ScheduledJobsController extends RestController {
 	    @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "createScheduledJobResponse.md") })
     public IScheduledJob createScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createScheduledJob", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).createScheduledJob(request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).createScheduledJob(request);
     }
 
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
@@ -96,12 +90,7 @@ public class ScheduledJobsController extends RestController {
 	    @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
     public IScheduledJob getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getScheduledJobByToken", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).getScheduledJobByToken(token);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).getScheduledJobByToken(token);
     }
 
     /**
@@ -123,12 +112,7 @@ public class ScheduledJobsController extends RestController {
     public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "updateScheduledJob", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).updateScheduledJob(token, request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).updateScheduledJob(token, request);
     }
 
     /**
@@ -154,22 +138,17 @@ public class ScheduledJobsController extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listScheduledJobs", LOGGER);
-	try {
-	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	    ISearchResults<IScheduledJob> results = getScheduleManagement(servletRequest).listScheduledJobs(criteria);
-	    if (!includeContext) {
-		return results;
-	    } else {
-		List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
-		ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
-		for (IScheduledJob job : results.getResults()) {
-		    converted.add(helper.convert(job));
-		}
-		return new SearchResults<IScheduledJob>(converted, results.getNumResults());
+	SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	ISearchResults<IScheduledJob> results = getScheduleManagement(servletRequest).listScheduledJobs(criteria);
+	if (!includeContext) {
+	    return results;
+	} else {
+	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
+	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
+	    for (IScheduledJob job : results.getResults()) {
+		converted.add(helper.convert(job));
 	    }
-	} finally {
-	    Tracer.stop(LOGGER);
+	    return new SearchResults<IScheduledJob>(converted, results.getNumResults());
 	}
     }
 
@@ -191,12 +170,7 @@ public class ScheduledJobsController extends RestController {
     public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "deleteScheduledJob", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).deleteScheduledJob(token, force);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).deleteScheduledJob(token, force);
     }
 
     /**

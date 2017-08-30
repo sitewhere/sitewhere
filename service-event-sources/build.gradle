@@ -1,0 +1,23 @@
+description = 'SiteWhere Event Sources Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+	compile project(':sitewhere-spring')
+	
+	// ActiveMQ dependencies.
+    compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'
+    compile group: 'org.apache.activemq', name: 'activemq-mqtt', version:'5.14.0'
+    compile group: 'org.apache.activemq', name: 'activemq-stomp', version:'5.14.0'
+    compile group: 'org.apache.activemq', name: 'activemq-kahadb-store', version:'5.14.0'
+    
+    // Azure dependencies.
+    compile group: 'org.apache.qpid', name: 'qpid-amqp-1-0-client', version:'0.32'
+    compile (group: 'org.apache.curator', name: 'curator-framework', version:'2.5.0') {
+		exclude (module: 'log4j')   
+ 		exclude (module: 'slf4j-log4j12')   
+    }
+    compile group: 'org.apache.activemq', name: 'activemq-broker'
+    
+    // RabbitMQ dependencies.
+    compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
+}

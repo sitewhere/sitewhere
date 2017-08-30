@@ -1,0 +1,6 @@
+description = 'SiteWhere User Management Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+	compile project(':sitewhere-mongodb')
+}

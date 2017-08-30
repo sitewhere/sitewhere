@@ -39,9 +39,9 @@ public class PresenceNotificationStrategies {
 	@Override
 	public boolean shouldGenerateEvent(IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request)
 		throws SiteWhereException {
-	    if (assignment.getState().getPresenceMissingDate() != null) {
-		return false;
-	    }
+//	    if (assignment.getState().getPresenceMissingDate() != null) {
+//		return false;
+//	    }
 	    return true;
 	}
     }

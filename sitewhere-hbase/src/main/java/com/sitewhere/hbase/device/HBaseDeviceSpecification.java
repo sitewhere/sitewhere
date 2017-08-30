@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.hbase.IHBaseContext;
@@ -40,7 +39,6 @@ import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
-import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * HBase specifics for dealing with SiteWhere device specifications.
@@ -50,6 +48,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseDeviceSpecification {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Length of specification identifier (subset of 8 byte long) */
@@ -100,30 +99,25 @@ public class HBaseDeviceSpecification {
      */
     public static IDeviceSpecification createDeviceSpecification(IHBaseContext context,
 	    IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "createDeviceSpecification (HBase)", LOGGER);
-	try {
-	    String uuid = null;
-	    if (request.getToken() != null) {
-		uuid = context.getDeviceIdManager().getSpecificationKeys().useExistingId(request.getToken());
-	    } else {
-		uuid = context.getDeviceIdManager().getSpecificationKeys().createUniqueId();
-	    }
-
-	    // Use common logic so all backend implementations work the same.
-	    DeviceSpecification specification = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
-
-	    Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
-	    byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
-	    qualifiers.put(COMMAND_COUNTER, maxLong);
-	    IDeviceSpecification created = HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
-		    ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid, KEY_BUILDER, qualifiers);
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceSpecificationCache().put(uuid, created);
-	    }
-	    return created;
-	} finally {
-	    Tracer.pop(LOGGER);
+	String uuid = null;
+	if (request.getToken() != null) {
+	    uuid = context.getDeviceIdManager().getSpecificationKeys().useExistingId(request.getToken());
+	} else {
+	    uuid = context.getDeviceIdManager().getSpecificationKeys().createUniqueId();
 	}
+
+	// Use common logic so all backend implementations work the same.
+	DeviceSpecification specification = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
+
+	Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
+	byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
+	qualifiers.put(COMMAND_COUNTER, maxLong);
+	IDeviceSpecification created = HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
+		ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid, KEY_BUILDER, qualifiers);
+	if (context.getCacheProvider() != null) {
+	    context.getCacheProvider().getDeviceSpecificationCache().put(uuid, created);
+	}
+	return created;
     }
 
     /**
@@ -136,26 +130,20 @@ public class HBaseDeviceSpecification {
      */
     public static DeviceSpecification getDeviceSpecificationByToken(IHBaseContext context, String token)
 	    throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceSpecificationByToken (HBase) " + token, LOGGER);
-	try {
-	    if (context.getCacheProvider() != null) {
-		IDeviceSpecification result = context.getCacheProvider().getDeviceSpecificationCache().get(token);
-		if (result != null) {
-		    Tracer.info("Returning cached device specification.", LOGGER);
-		    DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(context.getTenant())
-			    .setIncludeAsset(true);
-		    return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
-		}
+	if (context.getCacheProvider() != null) {
+	    IDeviceSpecification result = context.getCacheProvider().getDeviceSpecificationCache().get(token);
+	    if (result != null) {
+		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(context.getTenant())
+			.setIncludeAsset(true);
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 	    }
-	    DeviceSpecification found = HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
-		    DeviceSpecification.class);
-	    if ((context.getCacheProvider() != null) && (found != null)) {
-		context.getCacheProvider().getDeviceSpecificationCache().put(token, found);
-	    }
-	    return found;
-	} finally {
-	    Tracer.pop(LOGGER);
 	}
+	DeviceSpecification found = HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+		DeviceSpecification.class);
+	if ((context.getCacheProvider() != null) && (found != null)) {
+	    context.getCacheProvider().getDeviceSpecificationCache().put(token, found);
+	}
+	return found;
     }
 
     /**
@@ -169,18 +157,13 @@ public class HBaseDeviceSpecification {
      */
     public static IDeviceSpecification updateDeviceSpecification(IHBaseContext context, String token,
 	    IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceSpecification (HBase) " + token, LOGGER);
-	try {
-	    DeviceSpecification updated = assertDeviceSpecification(context, token);
-	    SiteWherePersistence.deviceSpecificationUpdateLogic(request, updated);
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceSpecificationCache().put(token, updated);
-	    }
-	    return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, updated,
-		    token, KEY_BUILDER);
-	} finally {
-	    Tracer.pop(LOGGER);
+	DeviceSpecification updated = assertDeviceSpecification(context, token);
+	SiteWherePersistence.deviceSpecificationUpdateLogic(request, updated);
+	if (context.getCacheProvider() != null) {
+	    context.getCacheProvider().getDeviceSpecificationCache().put(token, updated);
 	}
+	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, updated,
+		token, KEY_BUILDER);
     }
 
     /**
@@ -194,26 +177,21 @@ public class HBaseDeviceSpecification {
      */
     public static SearchResults<IDeviceSpecification> listDeviceSpecifications(IHBaseContext context,
 	    boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceSpecifications (HBase)", LOGGER);
-	try {
-	    Comparator<DeviceSpecification> comparator = new Comparator<DeviceSpecification>() {
+	Comparator<DeviceSpecification> comparator = new Comparator<DeviceSpecification>() {
 
-		public int compare(DeviceSpecification a, DeviceSpecification b) {
-		    return -1 * (a.getCreatedDate().compareTo(b.getCreatedDate()));
-		}
+	    public int compare(DeviceSpecification a, DeviceSpecification b) {
+		return -1 * (a.getCreatedDate().compareTo(b.getCreatedDate()));
+	    }
 
-	    };
-	    IFilter<DeviceSpecification> filter = new IFilter<DeviceSpecification>() {
+	};
+	IFilter<DeviceSpecification> filter = new IFilter<DeviceSpecification>() {
 
-		public boolean isExcluded(DeviceSpecification item) {
-		    return false;
-		}
-	    };
-	    return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER, includeDeleted,
-		    IDeviceSpecification.class, DeviceSpecification.class, filter, criteria, comparator);
-	} finally {
-	    Tracer.pop(LOGGER);
-	}
+	    public boolean isExcluded(DeviceSpecification item) {
+		return false;
+	    }
+	};
+	return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER, includeDeleted,
+		IDeviceSpecification.class, DeviceSpecification.class, filter, criteria, comparator);
     }
 
     /**
@@ -227,16 +205,11 @@ public class HBaseDeviceSpecification {
      */
     public static IDeviceSpecification deleteDeviceSpecification(IHBaseContext context, String token, boolean force)
 	    throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceSpecification (HBase) " + token, LOGGER);
-	try {
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceSpecificationCache().remove(token);
-	    }
-	    return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
-		    force, KEY_BUILDER, DeviceSpecification.class);
-	} finally {
-	    Tracer.pop(LOGGER);
+	if (context.getCacheProvider() != null) {
+	    context.getCacheProvider().getDeviceSpecificationCache().remove(token);
 	}
+	return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
+		force, KEY_BUILDER, DeviceSpecification.class);
     }
 
     /**
@@ -280,23 +253,18 @@ public class HBaseDeviceSpecification {
      * @throws SiteWhereException
      */
     public static Long allocateNextCommandId(IHBaseContext context, Long specId) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextCommandId (HBase)", LOGGER);
+	byte[] primary = getPrimaryRowKey(specId);
+	Table devices = null;
 	try {
-	    byte[] primary = getPrimaryRowKey(specId);
-	    Table devices = null;
-	    try {
-		devices = getDeviceTableInterface(context);
-		Increment increment = new Increment(primary);
-		increment.addColumn(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, -1);
-		Result result = devices.increment(increment);
-		return Bytes.toLong(result.value());
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to allocate next command id.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(devices);
-	    }
+	    devices = getDeviceTableInterface(context);
+	    Increment increment = new Increment(primary);
+	    increment.addColumn(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, -1);
+	    Result result = devices.increment(increment);
+	    return Bytes.toLong(result.value());
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to allocate next command id.", e);
 	} finally {
-	    Tracer.pop(LOGGER);
+	    HBaseUtils.closeCleanly(devices);
 	}
     }
 

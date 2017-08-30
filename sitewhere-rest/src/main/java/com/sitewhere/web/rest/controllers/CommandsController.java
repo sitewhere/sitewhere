@@ -23,14 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -55,6 +53,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class CommandsController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -75,13 +74,7 @@ public class CommandsController extends RestController {
     public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "updateDeviceCommand", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(token,
-		    request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(token, request);
     }
 
     /**
@@ -99,12 +92,7 @@ public class CommandsController extends RestController {
     public IDeviceCommand getDeviceCommandByToken(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
-	try {
-	    return assertDeviceCommandByToken(token, servletRequest);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return assertDeviceCommandByToken(token, servletRequest);
     }
 
     /**
@@ -124,13 +112,7 @@ public class CommandsController extends RestController {
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "deleteDeviceCommand", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(token,
-		    force);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(token, force);
     }
 
     /**

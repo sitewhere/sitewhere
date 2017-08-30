@@ -30,7 +30,6 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
-import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
@@ -143,16 +142,6 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public void setServerStartupError(ServerStartupException e) {
 	server.setServerStartupError(e);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getTracer()
-     */
-    @Override
-    public ITracer getTracer() {
-	return server.getTracer();
     }
 
     /*

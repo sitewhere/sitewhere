@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
@@ -29,7 +28,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -56,6 +54,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class InvocationsController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -74,19 +73,14 @@ public class InvocationsController extends RestController {
     public IDeviceCommandInvocation getDeviceCommandInvocation(
 	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandInvocation", LOGGER);
-	try {
-	    IDeviceEvent found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .getDeviceEventById(id);
-	    if (!(found instanceof IDeviceCommandInvocation)) {
-		throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
-	    }
-	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
-		    getTenant(servletRequest));
-	    return helper.convert((IDeviceCommandInvocation) found);
-	} finally {
-	    Tracer.stop(LOGGER);
+	IDeviceEvent found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.getDeviceEventById(id);
+	if (!(found instanceof IDeviceCommandInvocation)) {
+	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getTenant(servletRequest));
+	return helper.convert((IDeviceCommandInvocation) found);
     }
 
     /**
@@ -105,25 +99,20 @@ public class InvocationsController extends RestController {
     public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
 	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandInvocationSummary", LOGGER);
-	try {
-	    IDeviceEvent found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .getDeviceEventById(id);
-	    if (!(found instanceof IDeviceCommandInvocation)) {
-		throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
-	    }
-	    IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
-	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
-		    getTenant(servletRequest));
-	    helper.setIncludeCommand(true);
-	    DeviceCommandInvocation converted = helper.convert(invocation);
-	    ISearchResults<IDeviceCommandResponse> responses = SiteWhere.getServer()
-		    .getDeviceEventManagement(getTenant(servletRequest))
-		    .listDeviceCommandInvocationResponses(found.getId());
-	    return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getTenant(servletRequest));
-	} finally {
-	    Tracer.stop(LOGGER);
+	IDeviceEvent found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.getDeviceEventById(id);
+	if (!(found instanceof IDeviceCommandInvocation)) {
+	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
+	IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getTenant(servletRequest));
+	helper.setIncludeCommand(true);
+	DeviceCommandInvocation converted = helper.convert(invocation);
+	ISearchResults<IDeviceCommandResponse> responses = SiteWhere.getServer()
+		.getDeviceEventManagement(getTenant(servletRequest))
+		.listDeviceCommandInvocationResponses(found.getId());
+	return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getTenant(servletRequest));
     }
 
     /**
@@ -142,12 +131,7 @@ public class InvocationsController extends RestController {
     public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 	    @ApiParam(value = "Invocation id", required = true) @PathVariable String id,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listCommandInvocationResponses", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .listDeviceCommandInvocationResponses(id);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.listDeviceCommandInvocationResponses(id);
     }
 }

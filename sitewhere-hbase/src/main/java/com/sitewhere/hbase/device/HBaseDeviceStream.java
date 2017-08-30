@@ -19,7 +19,6 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -37,7 +36,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * HBase specifics for dealing with SiteWhere device streams.
@@ -47,6 +45,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseDeviceStream {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -60,42 +59,37 @@ public class HBaseDeviceStream {
      */
     public static IDeviceStream createDeviceStream(IHBaseContext context, String assignmentToken,
 	    IDeviceStreamCreateRequest request) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "createDeviceStream (HBase)", LOGGER);
-	try {
-	    // Verify that the assignment token is valid.
-	    DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
-	    byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
-	    if (assignment == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-	    }
-
-	    // Verify that the device stream does not exist.
-	    DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
-	    if (stream != null) {
-		throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
-	    }
-
-	    byte[] streamKey = getDeviceStreamKey(assnKey, request.getStreamId());
-
-	    DeviceStream newStream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
-	    byte[] payload = context.getPayloadMarshaler().encode(newStream);
-
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Put put = new Put(streamKey);
-		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-		sites.put(put);
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to create device stream.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
-
-	    return newStream;
-	} finally {
-	    Tracer.pop(LOGGER);
+	// Verify that the assignment token is valid.
+	DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	if (assignment == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
+
+	// Verify that the device stream does not exist.
+	DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
+	if (stream != null) {
+	    throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
+	}
+
+	byte[] streamKey = getDeviceStreamKey(assnKey, request.getStreamId());
+
+	DeviceStream newStream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
+	byte[] payload = context.getPayloadMarshaler().encode(newStream);
+
+	Table sites = null;
+	try {
+	    sites = getSitesTableInterface(context);
+	    Put put = new Put(streamKey);
+	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+	    sites.put(put);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to create device stream.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(sites);
+	}
+
+	return newStream;
     }
 
     /**

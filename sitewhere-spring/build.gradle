@@ -5,19 +5,9 @@ dependencies {
     compile project(':sitewhere-core')
     compile project(':sitewhere-spring-spi')
     
-    compile project(':sitewhere-activemq')
-    compile project(':sitewhere-aws')
-    compile project(':sitewhere-azure')
-    compile project(':sitewhere-cloud')
     compile project(':sitewhere-hbase')
-    compile project(':sitewhere-influx')
     compile project(':sitewhere-mongodb')
     compile project(':sitewhere-protobuf')
-    compile project(':sitewhere-rabbit-mq')
-    compile project(':sitewhere-siddhi')
-    compile project(':sitewhere-solr')
-    compile project(':sitewhere-twilio')
-    compile project(':sitewhere-wso2')
-    
+     
     compile group: 'org.springframework', name: 'spring-beans'
 }

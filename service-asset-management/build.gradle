@@ -1,0 +1,12 @@
+description = 'SiteWhere Asset Management Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+	compile project(':sitewhere-spring-spi')
+	compile project(':sitewhere-mongodb')
+	
+	// WSO2 dependencies.
+    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-android', version:'3.4.0'
+    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-j2se', version:'3.4.0'
+    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-extras', version:'3.4.0'
+}

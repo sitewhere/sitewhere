@@ -21,31 +21,7 @@ public interface ITenantDatastoreParser {
 	MongoInfluxDbTenantDatastore("mongo-influxdb-tenant-datastore"),
 
 	/** HBase tenant datastore service providers */
-	HBaseTenantDatastore("hbase-tenant-datastore"),
-
-	/** EHCache device mananagement cache provider */
-	@Deprecated
-	EHCacheDeviceManagementCache("ehcache-device-management-cache"),
-
-	/** Hazelcast cache provider */
-	@Deprecated
-	HazelcastCache("hazelcast-cache"),
-
-	/** Creates sample data if no device data is present */
-	@Deprecated
-	DefaultDeviceModelInitializer("default-device-model-initializer"),
-
-	/** Create sample device data based on logic in a Groovy script */
-	@Deprecated
-	GroovyDeviceModelInitializer("groovy-device-model-initializer"),
-
-	/** Creates sample data if no asset data is present */
-	@Deprecated
-	DefaultAssetModelInitializer("default-asset-model-initializer"),
-
-	/** Creates sample data if no schedule data is present */
-	@Deprecated
-	DefaultScheduleModelInitializer("default-schedule-model-initializer");
+	HBaseTenantDatastore("hbase-tenant-datastore");
 
 	/** Event code */
 	private String localName;

@@ -26,7 +26,6 @@ import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
-import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
@@ -99,13 +98,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @param e
      */
     public void setServerStartupError(ServerStartupException e);
-
-    /**
-     * Get tracer for debug operations.
-     * 
-     * @return
-     */
-    public ITracer getTracer();
 
     /**
      * Get the Hazelcast configuration for this node.

@@ -16,7 +16,6 @@ import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
@@ -76,9 +75,9 @@ public class DeviceAssignmentMarshalHelper {
 	result.setAssetModuleId(source.getAssetModuleId());
 	result.setAssetId(source.getAssetId());
 	MetadataProviderEntity.copy(source, result);
-	if (source.getState() != null) {
-	    result.setState(DeviceAssignmentState.copy(source.getState()));
-	}
+//	if (source.getState() != null) { TODO: Fix state management
+//	    result.setState(DeviceAssignmentState.copy(source.getState()));
+//	}
 	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
 	    IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 

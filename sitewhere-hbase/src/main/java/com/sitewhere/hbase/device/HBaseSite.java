@@ -9,7 +9,6 @@ package com.sitewhere.hbase.device;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Date;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
@@ -28,14 +27,12 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.Pager;
@@ -53,7 +50,6 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
-import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * HBase specifics for dealing with SiteWhere sites.
@@ -63,6 +59,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseSite {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Length of site identifier (subset of 8 byte long) */
@@ -89,37 +86,32 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static ISite createSite(IHBaseContext context, ISiteCreateRequest request) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "createSite (HBase)", LOGGER);
+	// Use common logic so all backend implementations work the same.
+	Site site = SiteWherePersistence.siteCreateLogic(request);
+
+	Long value = context.getDeviceIdManager().getSiteKeys().getNextCounterValue();
+	context.getDeviceIdManager().getSiteKeys().create(site.getToken(), value);
+
+	byte[] primary = getPrimaryRowkey(value);
+
+	// Create primary site record.
+	byte[] payload = context.getPayloadMarshaler().encodeSite(site);
+	byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
+
+	Table sites = null;
 	try {
-	    // Use common logic so all backend implementations work the same.
-	    Site site = SiteWherePersistence.siteCreateLogic(request);
-
-	    Long value = context.getDeviceIdManager().getSiteKeys().getNextCounterValue();
-	    context.getDeviceIdManager().getSiteKeys().create(site.getToken(), value);
-
-	    byte[] primary = getPrimaryRowkey(value);
-
-	    // Create primary site record.
-	    byte[] payload = context.getPayloadMarshaler().encodeSite(site);
-	    byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
-
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Put put = new Put(primary);
-		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-		put.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
-		put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, maxLong);
-		sites.put(put);
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to create site.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
-	    return site;
+	    sites = getSitesTableInterface(context);
+	    Put put = new Put(primary);
+	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, maxLong);
+	    sites.put(put);
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to create site.", e);
 	} finally {
-	    Tracer.pop(LOGGER);
+	    HBaseUtils.closeCleanly(sites);
 	}
+	return site;
     }
 
     /**
@@ -131,45 +123,39 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static Site getSiteByToken(IHBaseContext context, String token) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "getSiteByToken (HBase) " + token, LOGGER);
+	if (context.getCacheProvider() != null) {
+	    ISite result = context.getCacheProvider().getSiteCache().get(token);
+	    if (result != null) {
+		return Site.copy(result);
+	    }
+	}
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	if (siteId == null) {
+	    return null;
+	}
+	byte[] primary = getPrimaryRowkey(siteId);
+	Table sites = null;
 	try {
+	    sites = getSitesTableInterface(context);
+	    Get get = new Get(primary);
+	    HBaseUtils.addPayloadFields(get);
+	    Result result = sites.get(get);
+
+	    byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+	    byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+	    if ((type == null) || (payload == null)) {
+		throw new SiteWhereException("Payload fields not found for site.");
+	    }
+
+	    Site site = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
 	    if (context.getCacheProvider() != null) {
-		ISite result = context.getCacheProvider().getSiteCache().get(token);
-		if (result != null) {
-		    Tracer.info("Returning cached site.", LOGGER);
-		    return Site.copy(result);
-		}
+		context.getCacheProvider().getSiteCache().put(token, site);
 	    }
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
-	    if (siteId == null) {
-		return null;
-	    }
-	    byte[] primary = getPrimaryRowkey(siteId);
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Get get = new Get(primary);
-		HBaseUtils.addPayloadFields(get);
-		Result result = sites.get(get);
-
-		byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
-		byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-		if ((type == null) || (payload == null)) {
-		    throw new SiteWhereException("Payload fields not found for site.");
-		}
-
-		Site site = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getSiteCache().put(token, site);
-		}
-		return site;
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to load site by token.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
+	    return site;
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to load site by token.", e);
 	} finally {
-	    Tracer.pop(LOGGER);
+	    HBaseUtils.closeCleanly(sites);
 	}
     }
 
@@ -184,39 +170,34 @@ public class HBaseSite {
      */
     public static Site updateSite(IHBaseContext context, String token, ISiteCreateRequest request)
 	    throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "updateSite (HBase) " + token, LOGGER);
-	try {
-	    Site updated = getSiteByToken(context, token);
-	    if (updated == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	    }
-
-	    // Use common update logic so that backend implemetations act the
-	    // same way.
-	    SiteWherePersistence.siteUpdateLogic(request, updated);
-
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
-	    byte[] rowkey = getPrimaryRowkey(siteId);
-	    byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
-
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Put put = new Put(rowkey);
-		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-		sites.put(put);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getSiteCache().put(token, updated);
-		}
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to update site.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
-	    return updated;
-	} finally {
-	    Tracer.pop(LOGGER);
+	Site updated = getSiteByToken(context, token);
+	if (updated == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
+
+	// Use common update logic so that backend implemetations act the
+	// same way.
+	SiteWherePersistence.siteUpdateLogic(request, updated);
+
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	byte[] rowkey = getPrimaryRowkey(siteId);
+	byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
+
+	Table sites = null;
+	try {
+	    sites = getSitesTableInterface(context);
+	    Put put = new Put(rowkey);
+	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+	    sites.put(put);
+	    if (context.getCacheProvider() != null) {
+		context.getCacheProvider().getSiteCache().put(token, updated);
+	    }
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to update site.", e);
+	} finally {
+	    HBaseUtils.closeCleanly(sites);
+	}
+	return updated;
     }
 
     /**
@@ -229,15 +210,10 @@ public class HBaseSite {
      */
     public static SearchResults<ISite> listSites(IHBaseContext context, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listSites (HBase)", LOGGER);
-	try {
-	    RegexStringComparator comparator = new RegexStringComparator(REGEX_SITE);
-	    Pager<ISite> pager = getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
-		    ISite.class);
-	    return new SearchResults<ISite>(pager.getResults());
-	} finally {
-	    Tracer.pop(LOGGER);
-	}
+	RegexStringComparator comparator = new RegexStringComparator(REGEX_SITE);
+	Pager<ISite> pager = getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
+		ISite.class);
+	return new SearchResults<ISite>(pager.getResults());
     }
 
     /**
@@ -251,8 +227,6 @@ public class HBaseSite {
      */
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, String siteToken,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) " + siteToken,
-		LOGGER);
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
@@ -285,9 +259,9 @@ public class HBaseSite {
 		    DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
 			    .getMarshaler(type).decode(payload, DeviceAssignment.class);
 		    if (state != null) {
-			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
-				.decodeDeviceAssignmentState(state);
-			assignment.setState(assnState);
+//			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+//				.decodeDeviceAssignmentState(state);
+//			assignment.setState(assnState);
 		    }
 		    if ((criteria.getStatus() == null) || (criteria.getStatus().equals(assignment.getStatus()))) {
 			pager.process(assignment);
@@ -302,7 +276,6 @@ public class HBaseSite {
 		scanner.close();
 	    }
 	    HBaseUtils.closeCleanly(sites);
-	    Tracer.pop(LOGGER);
 	}
     }
 
@@ -319,8 +292,6 @@ public class HBaseSite {
      */
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(IHBaseContext context,
 	    String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall,
-		"listDeviceAssignmentsWithLastInteraction (HBase) " + siteToken, LOGGER);
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
@@ -350,22 +321,23 @@ public class HBaseSite {
 		byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
 		if ((type != null) && (payload != null)) {
+		    @SuppressWarnings("unused")
 		    DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
 			    .getMarshaler(type).decode(payload, DeviceAssignment.class);
-		    if (state != null) {
-			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
-				.decodeDeviceAssignmentState(state);
-			assignment.setState(assnState);
-			if (assignment.getState().getLastInteractionDate() != null) {
-			    Date last = assignment.getState().getLastInteractionDate();
-			    if ((criteria.getStartDate() != null) && (criteria.getStartDate().after(last))) {
-				continue;
-			    }
-			    if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
-				continue;
-			    }
-			    pager.process(assignment);
-			}
+		    if (state != null) { // TODO: Fix assignment state.
+//			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+//				.decodeDeviceAssignmentState(state);
+//			assignment.setState(assnState);
+//			if (assignment.getState().getLastInteractionDate() != null) {
+//			    Date last = assignment.getState().getLastInteractionDate();
+//			    if ((criteria.getStartDate() != null) && (criteria.getStartDate().after(last))) {
+//				continue;
+//			    }
+//			    if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
+//				continue;
+//			    }
+//			    pager.process(assignment);
+//			}
 		    }
 		}
 	    }
@@ -377,7 +349,6 @@ public class HBaseSite {
 		scanner.close();
 	    }
 	    HBaseUtils.closeCleanly(sites);
-	    Tracer.pop(LOGGER);
 	}
     }
 
@@ -392,8 +363,6 @@ public class HBaseSite {
      */
     public static SearchResults<IDeviceAssignment> listMissingDeviceAssignments(IHBaseContext context, String siteToken,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listMissingDeviceAssignments (HBase) " + siteToken,
-		LOGGER);
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
@@ -424,15 +393,16 @@ public class HBaseSite {
 		byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
 		if ((type != null) && (payload != null)) {
+		    @SuppressWarnings("unused")
 		    DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
 			    .getMarshaler(type).decode(payload, DeviceAssignment.class);
 		    if (state != null) {
-			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
-				.decodeDeviceAssignmentState(state);
-			assignment.setState(assnState);
-			if (assignment.getState().getPresenceMissingDate() != null) {
-			    pager.process(assignment);
-			}
+//			DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+//				.decodeDeviceAssignmentState(state);
+//			assignment.setState(assnState);
+//			if (assignment.getState().getPresenceMissingDate() != null) {
+//			    pager.process(assignment);
+//			}
 		    }
 		}
 	    }
@@ -444,7 +414,6 @@ public class HBaseSite {
 		scanner.close();
 	    }
 	    HBaseUtils.closeCleanly(sites);
-	    Tracer.pop(LOGGER);
 	}
     }
 
@@ -462,7 +431,6 @@ public class HBaseSite {
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
 	    String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
 	    throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForAsset (HBase) ", LOGGER);
 	Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 	if (criteria.getSiteToken() != null) {
 	    locateDeviceAssignmentsForAsset(context, pager, criteria.getSiteToken(), assetModuleId, assetId, criteria);
@@ -535,7 +503,6 @@ public class HBaseSite {
 		scanner.close();
 	    }
 	    HBaseUtils.closeCleanly(sites);
-	    Tracer.pop(LOGGER);
 	}
     }
 
@@ -550,21 +517,16 @@ public class HBaseSite {
      */
     public static SearchResults<IZone> listZonesForSite(IHBaseContext context, String siteToken,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "listZonesForSite (HBase) " + siteToken, LOGGER);
-	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
-	    if (siteId == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	    }
-	    byte[] zonePrefix = getZoneRowKey(siteId);
-	    byte[] after = getAssignmentRowKey(siteId);
-	    BinaryPrefixComparator comparator = new BinaryPrefixComparator(zonePrefix);
-	    Pager<IZone> pager = getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after,
-		    Zone.class, IZone.class);
-	    return new SearchResults<IZone>(pager.getResults());
-	} finally {
-	    Tracer.pop(LOGGER);
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+	if (siteId == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
+	byte[] zonePrefix = getZoneRowKey(siteId);
+	byte[] after = getAssignmentRowKey(siteId);
+	BinaryPrefixComparator comparator = new BinaryPrefixComparator(zonePrefix);
+	Pager<IZone> pager = getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after, Zone.class,
+		IZone.class);
+	return new SearchResults<IZone>(pager.getResults());
     }
 
     /**
@@ -636,55 +598,50 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static Site deleteSite(IHBaseContext context, String token, boolean force) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteSite (HBase) " + token, LOGGER);
-	try {
-	    Site existing = getSiteByToken(context, token);
-	    if (existing == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	    }
-	    existing.setDeleted(true);
-
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
-	    byte[] rowkey = getPrimaryRowkey(siteId);
-	    if (force) {
-		context.getDeviceIdManager().getSiteKeys().delete(token);
-		Table sites = null;
-		try {
-		    Delete delete = new Delete(rowkey);
-		    sites = getSitesTableInterface(context);
-		    sites.delete(delete);
-		    if (context.getCacheProvider() != null) {
-			context.getCacheProvider().getSiteCache().remove(token);
-		    }
-		} catch (IOException e) {
-		    throw new SiteWhereException("Unable to delete site.", e);
-		} finally {
-		    HBaseUtils.closeCleanly(sites);
-		}
-	    } else {
-		byte[] marker = { (byte) 0x01 };
-		SiteWherePersistence.setUpdatedEntityMetadata(existing);
-		byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
-		Table sites = null;
-		try {
-		    sites = getSitesTableInterface(context);
-		    Put put = new Put(rowkey);
-		    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
-		    put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
-		    sites.put(put);
-		    if (context.getCacheProvider() != null) {
-			context.getCacheProvider().getSiteCache().remove(token);
-		    }
-		} catch (IOException e) {
-		    throw new SiteWhereException("Unable to set deleted flag for site.", e);
-		} finally {
-		    HBaseUtils.closeCleanly(sites);
-		}
-	    }
-	    return existing;
-	} finally {
-	    Tracer.pop(LOGGER);
+	Site existing = getSiteByToken(context, token);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
+	existing.setDeleted(true);
+
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	byte[] rowkey = getPrimaryRowkey(siteId);
+	if (force) {
+	    context.getDeviceIdManager().getSiteKeys().delete(token);
+	    Table sites = null;
+	    try {
+		Delete delete = new Delete(rowkey);
+		sites = getSitesTableInterface(context);
+		sites.delete(delete);
+		if (context.getCacheProvider() != null) {
+		    context.getCacheProvider().getSiteCache().remove(token);
+		}
+	    } catch (IOException e) {
+		throw new SiteWhereException("Unable to delete site.", e);
+	    } finally {
+		HBaseUtils.closeCleanly(sites);
+	    }
+	} else {
+	    byte[] marker = { (byte) 0x01 };
+	    SiteWherePersistence.setUpdatedEntityMetadata(existing);
+	    byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
+	    Table sites = null;
+	    try {
+		sites = getSitesTableInterface(context);
+		Put put = new Put(rowkey);
+		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
+		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
+		sites.put(put);
+		if (context.getCacheProvider() != null) {
+		    context.getCacheProvider().getSiteCache().remove(token);
+		}
+	    } catch (IOException e) {
+		throw new SiteWhereException("Unable to set deleted flag for site.", e);
+	    } finally {
+		HBaseUtils.closeCleanly(sites);
+	    }
+	}
+	return existing;
     }
 
     /**
@@ -697,23 +654,18 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static Long allocateNextZoneId(IHBaseContext context, Long siteId) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextZoneId (HBase)", LOGGER);
+	byte[] primary = getPrimaryRowkey(siteId);
+	Table sites = null;
 	try {
-	    byte[] primary = getPrimaryRowkey(siteId);
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Increment increment = new Increment(primary);
-		increment.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, -1);
-		Result result = sites.increment(increment);
-		return Bytes.toLong(result.value());
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to allocate next zone id.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
+	    sites = getSitesTableInterface(context);
+	    Increment increment = new Increment(primary);
+	    increment.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, -1);
+	    Result result = sites.increment(increment);
+	    return Bytes.toLong(result.value());
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to allocate next zone id.", e);
 	} finally {
-	    Tracer.pop(LOGGER);
+	    HBaseUtils.closeCleanly(sites);
 	}
     }
 
@@ -727,23 +679,18 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId) throws SiteWhereException {
-	Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextAssignmentId (HBase)", LOGGER);
+	byte[] primary = getPrimaryRowkey(siteId);
+	Table sites = null;
 	try {
-	    byte[] primary = getPrimaryRowkey(siteId);
-	    Table sites = null;
-	    try {
-		sites = getSitesTableInterface(context);
-		Increment increment = new Increment(primary);
-		increment.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, -1);
-		Result result = sites.increment(increment);
-		return Bytes.toLong(result.value());
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to allocate next assignment id.", e);
-	    } finally {
-		HBaseUtils.closeCleanly(sites);
-	    }
+	    sites = getSitesTableInterface(context);
+	    Increment increment = new Increment(primary);
+	    increment.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, -1);
+	    Result result = sites.increment(increment);
+	    return Bytes.toLong(result.value());
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to allocate next assignment id.", e);
 	} finally {
-	    Tracer.pop(LOGGER);
+	    HBaseUtils.closeCleanly(sites);
 	}
     }
 

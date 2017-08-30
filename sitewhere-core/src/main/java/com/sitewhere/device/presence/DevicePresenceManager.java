@@ -7,7 +7,6 @@
  */
 package com.sitewhere.device.presence;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,24 +19,14 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
-import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
-import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.state.PresenceState;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.presence.IPresenceNotificationStrategy;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -81,6 +70,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
     private IDeviceManagement devices;
 
     /** Inbound processing strategy for tenant */
+    @SuppressWarnings("unused")
     private IInboundProcessingStrategy inbound;
 
     public DevicePresenceManager() {
@@ -161,29 +151,29 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 		try {
 		    // Loop through all sites and detect presence changes.
 		    List<ISite> sites = devices.listSites(SearchCriteria.ALL).getResults();
-		    for (ISite site : sites) {
-			// Calculate time window for presence calculation.
-			Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
-			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
-			ISearchResults<IDeviceAssignment> missing = devices
-				.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
-			if (missing.getNumResults() > 0) {
-			    LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
-				    + missing.getNumResults() + " events for non-present devices.");
-			}
-			for (IDeviceAssignment assignment : missing.getResults()) {
-			    DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
-				    StateChangeCategory.Presence, StateChangeType.Presence_Updated,
-				    PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
-			    create.setUpdateState(true);
-
-			    // Only send an event if the strategy permits it.
-			    if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
-				IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
-					assignment.getDeviceHardwareId(), null, create);
-				inbound.processDeviceStateChange(decoded);
-			    }
-			}
+		    for (@SuppressWarnings("unused") ISite site : sites) {
+//			// Calculate time window for presence calculation.
+//			Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
+//			DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
+//			ISearchResults<IDeviceAssignment> missing = devices
+//				.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
+//			if (missing.getNumResults() > 0) {
+//			    LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
+//				    + missing.getNumResults() + " events for non-present devices.");
+//			}
+//			for (IDeviceAssignment assignment : missing.getResults()) {
+//			    DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest(
+//				    StateChangeCategory.Presence, StateChangeType.Presence_Updated,
+//				    PresenceState.PRESENT.name(), PresenceState.NOT_PRESENT.name());
+//			    create.setUpdateState(true);
+//
+//			    // Only send an event if the strategy permits it.
+//			    if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
+//				IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
+//					assignment.getDeviceHardwareId(), null, create);
+//				inbound.processDeviceStateChange(decoded);
+//			    }
+//			}
 		    }
 		} catch (SiteWhereException e) {
 		    LOGGER.error("Error processing presence query.", e);

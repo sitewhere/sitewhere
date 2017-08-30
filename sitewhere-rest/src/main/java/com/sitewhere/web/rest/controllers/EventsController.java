@@ -21,11 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -50,6 +48,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class EventsController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -68,13 +67,7 @@ public class EventsController extends RestController {
 	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
     public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .getDeviceEventById(eventId);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(eventId);
     }
 
     /**
@@ -97,13 +90,8 @@ public class EventsController extends RestController {
     public IDeviceEvent updateEvent(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    @RequestBody DeviceEventCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "updateEvent", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).updateDeviceEvent(eventId,
-		    request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).updateDeviceEvent(eventId,
+		request);
     }
 
     /**
@@ -119,12 +107,7 @@ public class EventsController extends RestController {
     public IDeviceEvent getEventByAlternateId(
 	    @ApiParam(value = "Alternate id", required = true) @PathVariable String alternateId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getEventByAlternateId", LOGGER);
-	try {
-	    return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .getDeviceEventByAlternateId(alternateId);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		.getDeviceEventByAlternateId(alternateId);
     }
 }

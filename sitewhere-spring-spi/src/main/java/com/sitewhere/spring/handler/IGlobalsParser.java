@@ -14,16 +14,8 @@ public interface IGlobalsParser {
      */
     public static enum Elements {
 
-	/** Global Hazelcast configuration */
-	@Deprecated
-	HazelcastConfiguration("hazelcast-configuration"),
-
 	/** Global Solr configuration */
-	SolrConfiguration("solr-configuration"),
-
-	/** Global Groovy configuration */
-	@Deprecated
-	GroovyConfiguration("groovy-configuration");
+	SolrConfiguration("solr-configuration");
 
 	/** Event code */
 	private String localName;

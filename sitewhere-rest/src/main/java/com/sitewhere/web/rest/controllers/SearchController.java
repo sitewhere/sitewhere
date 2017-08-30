@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -35,7 +34,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -60,6 +58,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class SearchController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     @RequestMapping(method = RequestMethod.GET)
@@ -69,18 +68,13 @@ public class SearchController extends RestController {
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
     public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
-	try {
-	    List<ISearchProvider> providers = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		    .getSearchProviders();
-	    List<SearchProvider> retval = new ArrayList<SearchProvider>();
-	    for (ISearchProvider provider : providers) {
-		retval.add(SearchProvider.copy(provider));
-	    }
-	    return retval;
-	} finally {
-	    Tracer.stop(LOGGER);
+	List<ISearchProvider> providers = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
+		.getSearchProviders();
+	List<SearchProvider> retval = new ArrayList<SearchProvider>();
+	for (ISearchProvider provider : providers) {
+	    retval.add(SearchProvider.copy(provider));
 	}
+	return retval;
     }
 
     /**
@@ -100,22 +94,17 @@ public class SearchController extends RestController {
     public List<IDeviceEvent> searchDeviceEvents(
 	    @ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "searchDeviceEvents", LOGGER);
-	try {
-	    ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		    .getSearchProvider(providerId);
-	    if (provider == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
-			HttpServletResponse.SC_NOT_FOUND);
-	    }
-	    if (!(provider instanceof IDeviceEventSearchProvider)) {
-		throw new SiteWhereException("Search provider does not provide event search capability.");
-	    }
-	    String query = request.getQueryString();
-	    return ((IDeviceEventSearchProvider) provider).executeQuery(query);
-	} finally {
-	    Tracer.stop(LOGGER);
+	ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
+		.getSearchProvider(providerId);
+	if (provider == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	if (!(provider instanceof IDeviceEventSearchProvider)) {
+	    throw new SiteWhereException("Search provider does not provide event search capability.");
+	}
+	String query = request.getQueryString();
+	return ((IDeviceEventSearchProvider) provider).executeQuery(query);
     }
 
     /**
@@ -133,20 +122,15 @@ public class SearchController extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public JsonNode rawSearch(@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    @RequestBody String query, HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "searchDeviceEvents", LOGGER);
-	try {
-	    ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		    .getSearchProvider(providerId);
-	    if (provider == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
-			HttpServletResponse.SC_NOT_FOUND);
-	    }
-	    if (!(provider instanceof IDeviceEventSearchProvider)) {
-		throw new SiteWhereException("Search provider does not provide event search capability.");
-	    }
-	    return ((IDeviceEventSearchProvider) provider).executeQueryWithRawResponse(query);
-	} finally {
-	    Tracer.stop(LOGGER);
+	ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
+		.getSearchProvider(providerId);
+	if (provider == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	if (!(provider instanceof IDeviceEventSearchProvider)) {
+	    throw new SiteWhereException("Search provider does not provide event search capability.");
+	}
+	return ((IDeviceEventSearchProvider) provider).executeQueryWithRawResponse(query);
     }
 }

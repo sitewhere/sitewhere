@@ -74,9 +74,6 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Device being assigned */
     private Device device;
 
-    /** Last known location */
-    private DeviceAssignmentState state;
-
     /** Associated person asset */
     private PersonAsset associatedPerson;
 
@@ -237,26 +234,12 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 	this.releasedDate = releasedDate;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getState()
-     */
-    @Override
-    public DeviceAssignmentState getState() {
-	return state;
-    }
-
     public Device getDevice() {
 	return device;
     }
 
     public void setDevice(Device device) {
 	this.device = device;
-    }
-
-    public void setState(DeviceAssignmentState state) {
-	this.state = state;
     }
 
     public PersonAsset getAssociatedPerson() {

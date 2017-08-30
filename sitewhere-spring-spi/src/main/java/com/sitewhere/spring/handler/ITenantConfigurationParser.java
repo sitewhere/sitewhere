@@ -20,10 +20,6 @@ public interface ITenantConfigurationParser {
 	/** Tenant datastore */
 	TenantDatastore("tenant-datastore"),
 
-	/** Provisioning (DEPRECATED) */
-	@Deprecated
-	Provisioning("provisioning"),
-
 	/** Device Communication Subsystem */
 	DeviceCommunication("device-communication"),
 

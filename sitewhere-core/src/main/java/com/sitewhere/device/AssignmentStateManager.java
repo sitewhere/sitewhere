@@ -27,7 +27,6 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IAssignmentStateManager;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -190,19 +189,19 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 		}
 
 		Set<String> keys = working.keySet();
-		for (String key : keys) {
-		    try {
-			IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(key);
-			DeviceAssignmentState state = (assignment.getState() != null)
-				? DeviceAssignmentState.copy(assignment.getState()) : new DeviceAssignmentState();
-			List<IDeviceEvent> events = working.get(key);
-			mergeEvents(state, events);
-			getDeviceManagement().updateDeviceAssignmentState(key, state);
-		    } catch (SiteWhereException e) {
-			LOGGER.error("Unable to update device assignment state.", e);
-		    } catch (Throwable t) {
-			LOGGER.error("Unhandled exeception while updating assignment state.", t);
-		    }
+		for (@SuppressWarnings("unused") String key : keys) {
+//		    try {
+//			IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(key);
+//			DeviceAssignmentState state = (assignment.getState() != null)
+//				? DeviceAssignmentState.copy(assignment.getState()) : new DeviceAssignmentState();
+//			List<IDeviceEvent> events = working.get(key);
+//			mergeEvents(state, events);
+//			getDeviceManagement().updateDeviceAssignmentState(key, state);
+//		    } catch (SiteWhereException e) {
+//			LOGGER.error("Unable to update device assignment state.", e);
+//		    } catch (Throwable t) {
+//			LOGGER.error("Unhandled exeception while updating assignment state.", t);
+//		    }
 		}
 
 		long diff = System.currentTimeMillis() - start;
@@ -224,6 +223,7 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 	 * @param events
 	 * @throws SiteWhereException
 	 */
+	@SuppressWarnings("unused")
 	protected void mergeEvents(DeviceAssignmentState state, List<IDeviceEvent> events) throws SiteWhereException {
 	    for (IDeviceEvent event : events) {
 		switch (event.getEventType()) {

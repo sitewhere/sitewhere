@@ -23,28 +23,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
-import com.sitewhere.mongodb.device.IDeviceEventBuffer;
-import com.sitewhere.mongodb.device.MongoDeviceAlert;
-import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
-import com.sitewhere.mongodb.device.MongoDeviceCommandResponse;
-import com.sitewhere.mongodb.device.MongoDeviceEvent;
-import com.sitewhere.mongodb.device.MongoDeviceLocation;
-import com.sitewhere.mongodb.device.MongoDeviceMeasurement;
-import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
-import com.sitewhere.mongodb.device.MongoDeviceStateChange;
-import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.DeviceEventType;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -59,9 +39,6 @@ public class MongoPersistence {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Default lookup */
-    private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /**
      * Common handler for creating new objects. Assures that errors are handled
@@ -82,31 +59,6 @@ public class MongoPersistence {
 	    if (ErrorCategory.DUPLICATE_KEY == category) {
 		throw new ResourceExistsException(ifDuplicate);
 	    }
-	    throw new SiteWhereException("Error during MongoDB insert.", e);
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
-	}
-    }
-
-    /**
-     * Insert an event, taking into account whether the device management
-     * implementation in configured for bulk operations.
-     * 
-     * @param collection
-     * @param object
-     * @param bulk
-     * @param buffer
-     * @throws SiteWhereException
-     */
-    public static void insertEvent(MongoCollection<Document> collection, Document object, boolean bulk,
-	    IDeviceEventBuffer buffer) throws SiteWhereException {
-	try {
-	    if (bulk) {
-		buffer.add(object);
-	    } else {
-		collection.insertOne(object);
-	    }
-	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
@@ -153,19 +105,6 @@ public class MongoPersistence {
     }
 
     /**
-     * Perform a get using the default lookup.
-     * 
-     * @param id
-     * @param api
-     * @param collection
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T> T get(String id, Class<T> api, MongoCollection<Document> collection) throws SiteWhereException {
-	return get(id, api, collection, LOOKUP);
-    }
-
-    /**
      * Get a single entity by unique id.
      * 
      * @param id
@@ -190,22 +129,6 @@ public class MongoPersistence {
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
-    }
-
-    /**
-     * Search using the default lookup.
-     * 
-     * @param api
-     * @param collection
-     * @param query
-     * @param sort
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
-	    Document sort, ISearchCriteria criteria) throws SiteWhereException {
-	return search(api, collection, query, sort, criteria, LOOKUP);
     }
 
     /**
@@ -254,21 +177,6 @@ public class MongoPersistence {
     }
 
     /**
-     * Search using the default lookup.
-     * 
-     * @param api
-     * @param collection
-     * @param query
-     * @param sort
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T> SearchResults<T> search(Class<T> api, MongoCollection<Document> collection, Document query,
-	    Document sort) throws SiteWhereException {
-	return search(api, collection, query, sort, LOOKUP);
-    }
-
-    /**
      * Search the given collection using the provided query and sort.
      * 
      * @param api
@@ -303,21 +211,6 @@ public class MongoPersistence {
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
-    }
-
-    /**
-     * List using the default lookup.
-     * 
-     * @param api
-     * @param collection
-     * @param query
-     * @param sort
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T> List<T> list(Class<T> api, MongoCollection<Document> collection, Document query, Document sort)
-	    throws SiteWhereException {
-	return list(api, collection, query, sort, LOOKUP);
     }
 
     /**
@@ -373,93 +266,5 @@ public class MongoPersistence {
 	    dateClause.append("$lte", criteria.getEndDate());
 	}
 	query.put(dateField, dateClause);
-    }
-
-    /**
-     * Marshal an {@link IDeviceEvent} into a {@link Document}.
-     * 
-     * @param event
-     * @return
-     * @throws SiteWhereException
-     */
-    public static Document marshalEvent(IDeviceEvent event) throws SiteWhereException {
-	switch (event.getEventType()) {
-	case Measurements: {
-	    return MongoDeviceMeasurements.toDocument((IDeviceMeasurements) event, false);
-	}
-	case Measurement: {
-	    return MongoDeviceMeasurement.toDocument((IDeviceMeasurement) event, false);
-	}
-	case Location: {
-	    return MongoDeviceLocation.toDocument((IDeviceLocation) event, false);
-	}
-	case Alert: {
-	    return MongoDeviceAlert.toDocument((IDeviceAlert) event, false);
-	}
-	case StreamData: {
-	    return MongoDeviceStreamData.toDocument((IDeviceStreamData) event, false);
-	}
-	case CommandInvocation: {
-	    return MongoDeviceCommandInvocation.toDocument((IDeviceCommandInvocation) event);
-	}
-	case CommandResponse: {
-	    return MongoDeviceCommandResponse.toDocument((IDeviceCommandResponse) event);
-	}
-	case StateChange: {
-	    return MongoDeviceStateChange.toDocument((IDeviceStateChange) event);
-	}
-	default: {
-	    throw new SiteWhereException("Event type not handled: " + event.getEventType());
-	}
-	}
-    }
-
-    /**
-     * Given a {@link Document} that contains event information, unmarhal it to
-     * the correct type.
-     * 
-     * @param found
-     * @return
-     * @throws SiteWhereException
-     */
-    public static IDeviceEvent unmarshalEvent(Document found) throws SiteWhereException {
-	String type = (String) found.get(MongoDeviceEvent.PROP_EVENT_TYPE);
-	if (type == null) {
-	    throw new SiteWhereException("Event matched but did not contain event type field.");
-	}
-	DeviceEventType eventType = DeviceEventType.valueOf(type);
-	if (eventType == null) {
-	    throw new SiteWhereException("Event type not recognized: " + type);
-	}
-
-	switch (eventType) {
-	case Measurements: {
-	    return MongoDeviceMeasurements.fromDocument(found, false);
-	}
-	case Measurement: {
-	    return MongoDeviceMeasurement.fromDocument(found, false);
-	}
-	case Location: {
-	    return MongoDeviceLocation.fromDocument(found, false);
-	}
-	case Alert: {
-	    return MongoDeviceAlert.fromDocument(found, false);
-	}
-	case StreamData: {
-	    return MongoDeviceStreamData.fromDocument(found, false);
-	}
-	case CommandInvocation: {
-	    return MongoDeviceCommandInvocation.fromDocument(found);
-	}
-	case CommandResponse: {
-	    return MongoDeviceCommandResponse.fromDocument(found);
-	}
-	case StateChange: {
-	    return MongoDeviceStateChange.fromDocument(found);
-	}
-	default: {
-	    throw new SiteWhereException("Event type not handled: " + type);
-	}
-	}
     }
 }

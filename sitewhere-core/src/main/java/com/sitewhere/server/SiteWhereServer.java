@@ -42,7 +42,6 @@ import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
-import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -77,7 +76,6 @@ import com.sitewhere.spi.server.IBackwardCompatibilityService;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
-import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
@@ -129,9 +127,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Server startup error */
     private ServerStartupException serverStartupError;
-
-    /** Provides hierarchical tracing for debugging */
-    protected ITracer tracer = new NullTracer();
 
     /** Hazelcast configuration for this node */
     protected IHazelcastConfiguration hazelcastConfiguration;
@@ -275,15 +270,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public void setServerStartupError(ServerStartupException e) {
 	this.serverStartupError = e;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getTracer()
-     */
-    public ITracer getTracer() {
-	return tracer;
     }
 
     /*
@@ -756,9 +742,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize version checker.
 	initializeVersionChecker();
 
-	// Initialize tracer.
-	initializeTracer();
-
 	// Initialize management implementations.
 	initializeManagementImplementations();
 
@@ -887,21 +870,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		    .getBean(SiteWhereServerBeans.BEAN_VERSION_CHECK);
 	} catch (NoSuchBeanDefinitionException e) {
 	    LOGGER.info("Version checking not enabled.");
-	}
-    }
-
-    /**
-     * Initialize debug tracing implementation.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeTracer() throws SiteWhereException {
-	try {
-	    this.tracer = (ITracer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_TRACER);
-	    LOGGER.info("Tracer implementation using: " + tracer.getClass().getName());
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No Tracer implementation configured.");
-	    this.tracer = new NullTracer();
 	}
     }
 

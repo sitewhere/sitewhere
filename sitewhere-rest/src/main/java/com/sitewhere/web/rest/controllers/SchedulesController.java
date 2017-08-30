@@ -22,14 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
@@ -56,6 +54,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class SchedulesController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -73,12 +72,7 @@ public class SchedulesController extends RestController {
 	    @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "createScheduleResponse.md") })
     public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "createSchedule", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).createSchedule(request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).createSchedule(request);
     }
 
     /**
@@ -97,12 +91,7 @@ public class SchedulesController extends RestController {
 	    @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "getScheduleByTokenResponse.md") })
     public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getScheduleByToken", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).getScheduleByToken(token);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).getScheduleByToken(token);
     }
 
     /**
@@ -124,12 +113,7 @@ public class SchedulesController extends RestController {
     public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "updateSchedule", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).updateSchedule(token, request);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).updateSchedule(token, request);
     }
 
     /**
@@ -153,13 +137,8 @@ public class SchedulesController extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
 		    ConcernType.Paging }) int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "listSchedules", LOGGER);
-	try {
-	    SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	    return getScheduleManagement(servletRequest).listSchedules(criteria);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	return getScheduleManagement(servletRequest).listSchedules(criteria);
     }
 
     /**
@@ -180,12 +159,7 @@ public class SchedulesController extends RestController {
     public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "deleteSchedule", LOGGER);
-	try {
-	    return getScheduleManagement(servletRequest).deleteSchedule(token, force);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return getScheduleManagement(servletRequest).deleteSchedule(token, force);
     }
 
     /**

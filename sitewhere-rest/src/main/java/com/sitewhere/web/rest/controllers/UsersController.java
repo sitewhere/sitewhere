@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -38,7 +37,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.AccountStatus;
@@ -70,6 +68,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class UsersController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -88,20 +87,15 @@ public class UsersController extends RestController {
     public User createUser(@RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
-	try {
-	    if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
-		    || (input.getLastName() == null)) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
-	    }
-	    if (input.getStatus() == null) {
-		input.setStatus(AccountStatus.Active);
-	    }
-	    IUser user = getUserManagement().createUser(input, true);
-	    return User.copy(user);
-	} finally {
-	    Tracer.stop(LOGGER);
+	if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
+		|| (input.getLastName() == null)) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
+	if (input.getStatus() == null) {
+	    input.setStatus(AccountStatus.Active);
+	}
+	IUser user = getUserManagement().createUser(input, true);
+	return User.copy(user);
     }
 
     /**
@@ -121,13 +115,8 @@ public class UsersController extends RestController {
 	    @RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
 	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
-	try {
-	    IUser user = getUserManagement().updateUser(username, input, true);
-	    return User.copy(user);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IUser user = getUserManagement().updateUser(username, input, true);
+	return User.copy(user);
     }
 
     /**
@@ -145,17 +134,12 @@ public class UsersController extends RestController {
     public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
-	try {
-	    IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
-	    if (user == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
-			HttpServletResponse.SC_NOT_FOUND);
-	    }
-	    return User.copy(user);
-	} finally {
-	    Tracer.stop(LOGGER);
+	IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
+	if (user == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
+		    HttpServletResponse.SC_NOT_FOUND);
 	}
+	return User.copy(user);
     }
 
     /**
@@ -176,13 +160,8 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
-	try {
-	    IUser user = getUserManagement().deleteUser(username, force);
-	    return User.copy(user);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	IUser user = getUserManagement().deleteUser(username, force);
+	return User.copy(user);
     }
 
     /**
@@ -201,17 +180,12 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
-	try {
-	    List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
-	    List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
-	    for (IGrantedAuthority auth : matches) {
-		converted.add(GrantedAuthority.copy(auth));
-	    }
-	    return new SearchResults<GrantedAuthority>(converted);
-	} finally {
-	    Tracer.stop(LOGGER);
+	List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
+	List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
+	for (IGrantedAuthority auth : matches) {
+	    converted.add(GrantedAuthority.copy(auth));
 	}
+	return new SearchResults<GrantedAuthority>(converted);
     }
 
     /**
@@ -230,20 +204,15 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
-	try {
-	    List<User> usersConv = new ArrayList<User>();
-	    UserSearchCriteria criteria = new UserSearchCriteria();
-	    criteria.setIncludeDeleted(includeDeleted);
-	    List<IUser> users = getUserManagement().listUsers(criteria);
-	    for (IUser user : users) {
-		usersConv.add(User.copy(user));
-	    }
-	    SearchResults<User> results = new SearchResults<User>(usersConv);
-	    return results;
-	} finally {
-	    Tracer.stop(LOGGER);
+	List<User> usersConv = new ArrayList<User>();
+	UserSearchCriteria criteria = new UserSearchCriteria();
+	criteria.setIncludeDeleted(includeDeleted);
+	List<IUser> users = getUserManagement().listUsers(criteria);
+	for (IUser user : users) {
+	    usersConv.add(User.copy(user));
 	}
+	SearchResults<User> results = new SearchResults<User>(usersConv);
+	return results;
     }
 
     /**
@@ -263,26 +232,16 @@ public class UsersController extends RestController {
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	Tracer.start(TracerCategory.RestApiCall, "getTenantsForUsername", LOGGER);
-
-	// TODO: This should be in the system controller since it's not using
-	// the user management implementation, but rather uses the runtime
-	// tenant engine state to build the list.
-
-	try {
-	    List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
-	    if (includeRuntimeInfo) {
-		for (ITenant tenant : results) {
-		    ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
-		    if (engine != null) {
-			((Tenant) tenant).setEngineState(engine.getEngineState());
-		    }
+	List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
+	if (includeRuntimeInfo) {
+	    for (ITenant tenant : results) {
+		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+		if (engine != null) {
+		    ((Tenant) tenant).setEngineState(engine.getEngineState());
 		}
 	    }
-	    return results;
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
+	return results;
     }
 
     /**

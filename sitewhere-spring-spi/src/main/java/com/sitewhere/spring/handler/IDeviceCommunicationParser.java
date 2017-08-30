@@ -17,18 +17,6 @@ public interface IDeviceCommunicationParser {
 	/** Event sources list */
 	EventSources("event-sources"),
 
-	/** Inbound processing strategy (moved into event processing) */
-	@Deprecated
-	InboundProcessingStrategy("inbound-processing-strategy"),
-
-	/** Outbound processing strategy (moved into event processing) */
-	@Deprecated
-	OutboundProcessingStrategy("outbound-processing-strategy"),
-
-	/** Device registration (renamed to device services) */
-	@Deprecated
-	Registration("registration"),
-
 	/** Device services */
 	DeviceServices("device-services"),
 

@@ -31,7 +31,6 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
@@ -361,17 +360,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
-     * Updates the current state of a device assignment.
-     * 
-     * @param token
-     * @param state
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
-	    throws SiteWhereException;
-
-    /**
      * Ends a device assignment.
      * 
      * @param token
@@ -401,32 +389,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      */
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * Finds all device assignments for a site with a last interaction date in
-     * the given date range. Note that events must be posted with the
-     * 'updateState' option in order for the last interaction date to be
-     * updated.
-     * 
-     * @param siteToken
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * Find all device assignments that have been marked missing by the presence
-     * manager.
-     * 
-     * @param siteToken
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
-	    throws SiteWhereException;
 
     /**
      * Get a list of device assignments associated with a given asset.

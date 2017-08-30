@@ -1,0 +1,5 @@
+description = 'SiteWhere Rule Processing Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+}

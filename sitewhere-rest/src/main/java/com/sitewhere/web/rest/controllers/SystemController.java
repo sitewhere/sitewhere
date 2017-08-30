@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
@@ -45,6 +43,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 public class SystemController extends RestController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -60,12 +59,7 @@ public class SystemController extends RestController {
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
     public IVersion getVersion() throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
-	try {
-	    return SiteWhere.getServer().getVersion();
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getVersion();
     }
 
     /**
@@ -81,11 +75,6 @@ public class SystemController extends RestController {
     @Documented(examples = {
 	    @Example(stage = Stage.Response, json = SystemInfo.GetServerRuntimeResponse.class, description = "getServerStateResponse.md") })
     public ISiteWhereServerRuntime getServerRuntimeInformation() throws SiteWhereException {
-	Tracer.start(TracerCategory.RestApiCall, "getServerRuntimeInformation", LOGGER);
-	try {
-	    return SiteWhere.getServer().getServerRuntimeInformation(true);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	return SiteWhere.getServer().getServerRuntimeInformation(true);
     }
 }

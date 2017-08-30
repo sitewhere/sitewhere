@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -45,7 +44,6 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ITenantRuntimeState;
-import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
@@ -67,6 +65,7 @@ import com.sitewhere.web.mvc.NoTenantException;
 public class AdminInterfaceController extends MvcController {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -76,20 +75,15 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/")
     public ModelAndView login() {
-	Tracer.start(TracerCategory.AdminUserInterface, "login", LOGGER);
-	try {
-	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, SiteWhere.getVersion());
-	    if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Started) {
-		return new ModelAndView("login", data);
-	    } else {
-		ServerStartupException failure = SiteWhere.getServer().getServerStartupError();
-		data.put("subsystem", failure.getDescription());
-		data.put("component", failure.getComponent().getLifecycleError().getMessage());
-		return new ModelAndView("noserver", data);
-	    }
-	} finally {
-	    Tracer.stop(LOGGER);
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put(DATA_VERSION, SiteWhere.getVersion());
+	if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Started) {
+	    return new ModelAndView("login", data);
+	} else {
+	    ServerStartupException failure = SiteWhere.getServer().getServerStartupError();
+	    data.put("subsystem", failure.getDescription());
+	    data.put("component", failure.getComponent().getLifecycleError().getMessage());
+	    return new ModelAndView("noserver", data);
 	}
     }
 
@@ -103,7 +97,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/tenant")
     public ModelAndView showTenantChoices(@RequestParam(required = false) String redirect,
 	    HttpServletRequest servletRequest) {
-	Tracer.start(TracerCategory.AdminUserInterface, "showTenantChoices", LOGGER);
 	try {
 	    if ((SecurityContextHolder.getContext() == null)
 		    || (SecurityContextHolder.getContext().getAuthentication() == null)) {
@@ -129,8 +122,6 @@ public class AdminInterfaceController extends MvcController {
 	    return new ModelAndView("tenant", data);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -151,7 +142,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/tenant/{tenantId}")
     public ModelAndView chooseTenant(@PathVariable("tenantId") String tenantId,
 	    @RequestParam(required = false) String redirect, HttpServletRequest servletRequest) {
-	Tracer.start(TracerCategory.AdminUserInterface, "chooseTenant", LOGGER);
 	try {
 	    if ((SecurityContextHolder.getContext() == null)
 		    || (SecurityContextHolder.getContext().getAuthentication() == null)) {
@@ -182,8 +172,6 @@ public class AdminInterfaceController extends MvcController {
 	    return new ModelAndView("redirect:" + redirect);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -194,15 +182,10 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/loginFailed")
     public ModelAndView loginFailed() {
-	Tracer.start(TracerCategory.AdminUserInterface, "loginFailed", LOGGER);
-	try {
-	    Map<String, Object> data = new HashMap<String, Object>();
-	    data.put(DATA_VERSION, SiteWhere.getVersion());
-	    data.put("loginFailed", true);
-	    return new ModelAndView("login", data);
-	} finally {
-	    Tracer.stop(LOGGER);
-	}
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put(DATA_VERSION, SiteWhere.getVersion());
+	data.put("loginFailed", true);
+	return new ModelAndView("login", data);
     }
 
     /**
@@ -214,7 +197,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/server")
     @Secured({ SiteWhereRoles.VIEW_SERVER_INFO })
     public ModelAndView serverInfo(HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "serverInfo", LOGGER);
 	try {
 	    Map<String, Object> data = createBaseData(request);
 	    return new ModelAndView("server/server", data);
@@ -222,8 +204,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -236,7 +216,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/sites/list")
     public ModelAndView listSites(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listSites", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("sites/list", data);
@@ -244,8 +223,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -260,7 +237,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/sites/{siteToken}")
     public ModelAndView siteDetail(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("siteToken") String siteToken, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "siteDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -275,8 +251,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -291,7 +265,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/assignments/{token}")
     public ModelAndView assignmentDetail(@PathVariable("tenantId") String tenantId, @PathVariable("token") String token,
 	    HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "assignmentDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -309,8 +282,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -325,7 +296,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/assignments/{token}/emulator")
     public ModelAndView assignmentEmulator(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("token") String token, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "assignmentEmulator", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -341,8 +311,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -355,7 +323,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/specifications/list")
     public ModelAndView listSpecifications(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listSpecifications", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("specifications/list", data);
@@ -363,8 +330,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -379,7 +344,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/specifications/{token}")
     public ModelAndView specificationDetail(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("token") String token, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "specificationDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -394,8 +358,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -421,7 +383,6 @@ public class AdminInterfaceController extends MvcController {
 	    @RequestParam(required = false) String dateRange, @RequestParam(required = false) String beforeDate,
 	    @RequestParam(required = false) String afterDate, @RequestParam(required = false) boolean excludeAssigned,
 	    HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listDevices", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -467,8 +428,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -483,7 +442,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/devices/{hardwareId}")
     public ModelAndView deviceDetail(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("hardwareId") String hardwareId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "deviceDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -501,8 +459,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -515,7 +471,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/groups/list")
     public ModelAndView listDeviceGroups(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listDeviceGroups", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("groups/list", data);
@@ -523,8 +478,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -539,7 +492,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/groups/{groupToken}")
     public ModelAndView deviceGroupDetail(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("groupToken") String groupToken, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "deviceGroupDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -554,8 +506,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -568,7 +518,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/assets/categories")
     public ModelAndView listAssetCategories(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listAssetCategories", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("assets/categories", data);
@@ -576,8 +525,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -592,7 +539,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/assets/categories/{categoryId}")
     public ModelAndView listCategoryAssets(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("categoryId") String categoryId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listCategoryAssets", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -603,8 +549,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -617,7 +561,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/batch/list")
     public ModelAndView listBatchOperations(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listBatchOperations", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("batch/list", data);
@@ -625,8 +568,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -641,7 +582,6 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/{tenantId}/batch/command/{token}")
     public ModelAndView batchCommandInvocationDetail(@PathVariable("tenantId") String tenantId,
 	    @PathVariable("token") String batchToken, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "batchCommandInvocationDetail", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    ITenant tenant = (ITenant) data.get(DATA_TENANT);
@@ -662,8 +602,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -676,7 +614,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/schedules/list")
     public ModelAndView listSchedules(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listSchedules", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("schedules/list", data);
@@ -684,8 +621,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -698,7 +633,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/{tenantId}/jobs/list")
     public ModelAndView listScheduledjobs(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listScheduledjobs", LOGGER);
 	try {
 	    Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 	    return new ModelAndView("jobs/list", data);
@@ -706,8 +640,6 @@ public class AdminInterfaceController extends MvcController {
 	    return showTenantChoices(getUrl(request), request);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -719,14 +651,11 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/users/list")
     public ModelAndView listUsers(HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listUsers", LOGGER);
 	try {
 	    Map<String, Object> data = createBaseData(request);
 	    return new ModelAndView("users/list", data);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -739,14 +668,11 @@ public class AdminInterfaceController extends MvcController {
     @RequestMapping("/tenants/list")
     @Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
     public ModelAndView listTenants(HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "listTenants", LOGGER);
 	try {
 	    Map<String, Object> data = createBaseData(request);
 	    return new ModelAndView("tenants/list", data);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
@@ -759,7 +685,6 @@ public class AdminInterfaceController extends MvcController {
      */
     @RequestMapping("/tenants/{tenantId}")
     public ModelAndView viewTenant(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
-	Tracer.start(TracerCategory.AdminUserInterface, "viewTenant", LOGGER);
 	try {
 	    Map<String, Object> data = createBaseData(request);
 
@@ -789,8 +714,6 @@ public class AdminInterfaceController extends MvcController {
 	    return new ModelAndView("tenants/detail", data);
 	} catch (SiteWhereException e) {
 	    return showError(e);
-	} finally {
-	    Tracer.stop(LOGGER);
 	}
     }
 
