@@ -83,7 +83,6 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.system.IVersionChecker;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -107,9 +106,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Contains version information */
     private IVersion version;
-
-    /** Version checker implementation */
-    private IVersionChecker versionChecker;
 
     /** Persistent server state information */
     private ISiteWhereServerState serverState;
@@ -682,9 +678,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize discoverable beans.
 	initializeDiscoverableBeans(monitor);
 
-	// Initialize version checker.
-	initializeVersionChecker();
-
 	// Initialize management implementations.
 	initializeManagementImplementations();
 
@@ -782,20 +775,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
 	    initializeNestedComponent(component, monitor);
 	    getRegisteredLifecycleComponents().add(component);
-	}
-    }
-
-    /**
-     * Initialize debug tracing implementation.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeVersionChecker() throws SiteWhereException {
-	try {
-	    this.versionChecker = (IVersionChecker) SERVER_SPRING_CONTEXT
-		    .getBean(SiteWhereServerBeans.BEAN_VERSION_CHECK);
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("Version checking not enabled.");
 	}
     }
 
@@ -911,11 +890,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Schedule JVM monitor.
 		executor = Executors.newFixedThreadPool(2);
 		executor.execute(jvmHistory);
-
-		// If version checker configured, perform in a separate thread.
-		if (versionChecker != null) {
-		    executor.execute(versionChecker);
-		}
 	    }
 	});
 

@@ -14,16 +14,6 @@ package com.sitewhere.server;
  */
 public interface SiteWhereServerBeans {
 
-    /*******************************
-     * COMMON SYSTEM FUNCTIONALITY *
-     *******************************/
-
-    /** Bean id for system tracer implementation */
-    public static final String BEAN_TRACER = "tracer";
-
-    /** Bean id for version checker */
-    public static final String BEAN_VERSION_CHECK = "versionChecker";
-
     /*************************
      * MANAGEMENT INTERFACES *
      *************************/
