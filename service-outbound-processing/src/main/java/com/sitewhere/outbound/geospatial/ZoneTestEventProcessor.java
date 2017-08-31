@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.geospatial;
+package com.sitewhere.outbound.geospatial;
 
 import java.util.ArrayList;
 import java.util.Date;

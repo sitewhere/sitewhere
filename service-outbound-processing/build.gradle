@@ -37,4 +37,7 @@ dependencies {
     // Apache Solr
     compile group: 'org.apache.solr', name: 'solr-solrj', version:'6.4.0'
 	provided group: 'org.apache.solr', name: 'solr-core', version:'6.4.0'
+	
+	// Zone testing
+    compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
 }

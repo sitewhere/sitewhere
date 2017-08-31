@@ -31,7 +31,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
-    compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
     compile group: 'com.google.guava', name: 'guava', version:'18.0'
