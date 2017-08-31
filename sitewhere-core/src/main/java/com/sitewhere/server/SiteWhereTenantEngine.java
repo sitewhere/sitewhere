@@ -25,7 +25,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
-import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.hazelcast.DeviceManagementCacheProvider;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
@@ -359,10 +358,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Initialize schedule management.
 	setScheduleManagement(initializeScheduleManagement());
-
-	// Update device management to include systems required by triggers.
-	setDeviceManagement(
-		new DeviceManagementTriggers(deviceManagement, getDeviceEventManagement(), getDeviceCommunication()));
     }
 
     /**
