@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.tenant;
+package com.sitewhere.tenant;
 
 import java.util.Arrays;
 
@@ -18,9 +18,9 @@ import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.tenant.spi.ITenantModelInitializer;
 
 /**
  * Used to load a default tenant into an empty tenant model. This acts as a

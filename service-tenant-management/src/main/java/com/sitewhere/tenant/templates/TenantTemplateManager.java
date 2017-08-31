@@ -1,4 +1,4 @@
-package com.sitewhere.server.tenant;
+package com.sitewhere.tenant.templates;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +18,7 @@ import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.tenant.ITenantTemplate;
-import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
+import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
 
 /**
  * Manages templates that can be used to create new tenants.

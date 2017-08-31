@@ -1,23 +1,19 @@
-package com.sitewhere.server;
+package com.sitewhere.tenant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.groovy.asset.GroovyAssetModelInitializer;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.groovy.scheduling.GroovyScheduleModelInitializer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.server.tenant.TenantTemplate;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.error.ResourceExistsException;
-import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantBootstrapService;
+import com.sitewhere.tenant.spi.ITenantBootstrapService;
+import com.sitewhere.tenant.templates.TenantTemplate;
 
 /**
  * Service that bootstraps a tenant with sample data from the tenant template it
@@ -65,24 +61,29 @@ public class TenantBootstrapService extends TenantLifecycleComponent implements 
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	IResource templateResource = getTenantEngine().getTenantConfigurationResolver()
-		.getResourceForPath(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
-	if (templateResource == null) {
-	    LOGGER.info("Tenant already bootstrapped with tenant template data.");
-	    return;
-	}
-	// Unmarshal template and bootstrap from it.
-	TenantTemplate template = MarshalUtils.unmarshalJson(templateResource.getContent(), TenantTemplate.class);
-	try {
-	    LOGGER.info("Bootstrapping tenant with template data.");
-	    bootstrapFromTemplate(template);
-	} catch (Throwable t) {
-	    throw new SiteWhereException("Unable to bootstrap tenant from tenant template configuration.", t);
-	}
-
-	// Delete template file to prevent bootstrapping on future startups.
-	SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
-		IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+	// IResource templateResource =
+	// getTenantEngine().getTenantConfigurationResolver()
+	// .getResourceForPath(IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+	// if (templateResource == null) {
+	// LOGGER.info("Tenant already bootstrapped with tenant template
+	// data.");
+	// return;
+	// }
+	// // Unmarshal template and bootstrap from it.
+	// TenantTemplate template =
+	// MarshalUtils.unmarshalJson(templateResource.getContent(),
+	// TenantTemplate.class);
+	// try {
+	// LOGGER.info("Bootstrapping tenant with template data.");
+	// bootstrapFromTemplate(template);
+	// } catch (Throwable t) {
+	// throw new SiteWhereException("Unable to bootstrap tenant from tenant
+	// template configuration.", t);
+	// }
+	//
+	// // Delete template file to prevent bootstrapping on future startups.
+	// SiteWhere.getServer().getRuntimeResourceManager().deleteTenantResource(getTenant().getId(),
+	// IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
     }
 
     /**

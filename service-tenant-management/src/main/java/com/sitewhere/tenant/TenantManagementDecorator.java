@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.tenant;
+package com.sitewhere.tenant;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;

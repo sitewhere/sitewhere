@@ -73,7 +73,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantBootstrapService;
 import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -139,9 +138,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Interface for the schedule manager */
     private IScheduleManager scheduleManager;
 
-    /** Interface for tenant bootstrap service */
-    private ITenantBootstrapService bootstrapService;
-
     /** Threads used to issue engine commands */
     private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
@@ -200,9 +196,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     public void initialize(ILifecycleProgressMonitor monitor) {
 	try {
-	    // Copy tenant configuration from template if needed.
-	    initializeBootstrapService(monitor);
-
 	    // Initialize the tenant Spring context.
 	    initializeSpringContext();
 
@@ -255,10 +248,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Start tenant management API implementations.
 	startManagementImplementations(start);
-
-	// Start bootstrap service to generate sample data if necessary.
-	start.addStep(new StartComponentLifecycleStep(this, getBootstrapService(), "Started tenant bootstrap service.",
-		"Tenant bootstrap failed.", true));
 
 	// Start asset module manager (after potentially bootstrapping assets).
 	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Started asset module manager",
@@ -436,19 +425,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No schedule manager implementation configured.");
 	}
-    }
-
-    /**
-     * Initialize the tenant bootstrap service.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenantBootstrapService initializeBootstrapService(ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	bootstrapService = new TenantBootstrapService(this);
-	initializeNestedComponent(bootstrapService, monitor);
-	return bootstrapService;
     }
 
     /**
@@ -1047,20 +1023,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setScheduleManagement(IScheduleManagement scheduleManagement) {
 	this.scheduleManagement = scheduleManagement;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
-     * getBootstrapService()
-     */
-    public ITenantBootstrapService getBootstrapService() {
-	return bootstrapService;
-    }
-
-    public void setBootstrapService(ITenantBootstrapService bootstrapService) {
-	this.bootstrapService = bootstrapService;
     }
 
     /*

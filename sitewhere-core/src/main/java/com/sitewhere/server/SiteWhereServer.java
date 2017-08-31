@@ -50,8 +50,6 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
-import com.sitewhere.server.tenant.TenantManagementTriggers;
-import com.sitewhere.server.tenant.TenantTemplateManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -70,7 +68,6 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
-import com.sitewhere.spi.server.IBackwardCompatibilityService;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
@@ -83,9 +80,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
 import com.sitewhere.spi.server.tenant.ITenantPersistentState;
-import com.sitewhere.spi.server.tenant.ITenantTemplateManager;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.system.IVersionChecker;
@@ -137,9 +132,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /** Allows Spring configuration to be resolved */
     protected IGlobalConfigurationResolver configurationResolver;
 
-    /** Tenant template manager implementation */
-    protected ITenantTemplateManager tenantTemplateManager;
-
     /** Interface to user management implementation */
     protected IUserManagement userManagement;
 
@@ -175,9 +167,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Thread pool for starting tenants in parallel */
     private ExecutorService tenantOperations;
-
-    /** Supports migrating old server version to new format */
-    private IBackwardCompatibilityService backwardCompatibilityService = new BackwardCompatibilityService();
 
     public SiteWhereServer() {
 	super(LifecycleComponentType.System);
@@ -305,16 +294,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public IGlobalConfigurationResolver getConfigurationResolver() {
 	return configurationResolver;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantTemplateManager()
-     */
-    @Override
-    public ITenantTemplateManager getTenantTemplateManager() {
-	return tenantTemplateManager;
     }
 
     /*
@@ -686,9 +665,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Handle backward compatibility.
-	backwardCompatibilityService.beforeServerInitialize(monitor);
-
 	// Initialize bootstrap resource manager.
 	initializeBootstrapResourceManager();
 	LOGGER.info("Bootstrap resources loading from: " + getBootstrapResourceManager().getClass().getCanonicalName());
@@ -716,9 +692,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	initializeRuntimeResourceManager();
 	LOGGER.info("Runtime resources loading from: " + getRuntimeResourceManager().getClass().getCanonicalName());
 	getRuntimeResourceManager().start(monitor);
-
-	// Initialize tenant template manager.
-	initializeTenantTemplateManager();
 
 	// Show banner containing server information.
 	showServerBanner();
@@ -827,15 +800,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     }
 
     /**
-     * Initialize the tenant template manager.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeTenantTemplateManager() throws SiteWhereException {
-	this.tenantTemplateManager = new TenantTemplateManager(getRuntimeResourceManager());
-    }
-
-    /**
      * Initialize management implementations.
      * 
      * @throws SiteWhereException
@@ -870,9 +834,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void initializeTenantManagement() throws SiteWhereException {
 	try {
-	    ITenantManagement implementation = (ITenantManagement) SERVER_SPRING_CONTEXT
+	    this.tenantManagement = (ITenantManagement) SERVER_SPRING_CONTEXT
 		    .getBean(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT);
-	    this.tenantManagement = new TenantManagementTriggers(implementation);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No user management implementation configured.");
 	}
@@ -917,9 +880,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		// Handle backward compatibility.
-		backwardCompatibilityService.beforeServerStart(monitor);
-
 		// Clear the component list.
 		getLifecycleComponents().clear();
 	    }
@@ -956,9 +916,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		if (versionChecker != null) {
 		    executor.execute(versionChecker);
 		}
-
-		// Handle backward compatibility.
-		backwardCompatibilityService.afterServerStart(monitor);
 	    }
 	});
 
@@ -985,10 +942,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    base.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
 		    component.getComponentName() + " startup failed.", true));
 	}
-
-	// Start the tenant template manager.
-	base.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(),
-		"Started tenant template manager", "Tenant template manager startup failed.", true));
 
 	start.addStep(base);
     }
@@ -1017,15 +970,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		verifyUserModel();
-	    }
-	});
-
-	// Populate tenant data if requested.
-	mgmt.addStep(new SimpleLifecycleStep("Verified tenant model") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		verifyTenantModel();
 	    }
 	});
 
@@ -1266,10 +1210,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    stop.addStep(new StopComponentLifecycleStep(this, component, "Stopped " + component.getComponentName()));
 	}
 
-	// Stop the tenant template manager.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getTenantTemplateManager(), "Stopped tenant template manager"));
-
 	// Stop the Groovy configuration.
 	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy script engine"));
     }
@@ -1445,22 +1385,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    return;
 	} catch (SiteWhereException e) {
 	    LOGGER.warn("Error verifying user model.", e);
-	}
-    }
-
-    /**
-     * Check whether tenant model is populated and bootstrap system if not.
-     */
-    protected void verifyTenantModel() {
-	try {
-	    ITenantModelInitializer init = (ITenantModelInitializer) SERVER_SPRING_CONTEXT
-		    .getBean(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER);
-	    init.initialize(getTenantManagement());
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No tenant model initializer found in Spring bean configuration. Skipping.");
-	    return;
-	} catch (SiteWhereException e) {
-	    LOGGER.warn("Error verifying tenant model.", e);
 	}
     }
 

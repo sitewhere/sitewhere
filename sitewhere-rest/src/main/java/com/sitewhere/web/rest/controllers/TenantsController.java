@@ -425,7 +425,9 @@ public class TenantsController extends RestController {
 	if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	return SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
+	// return
+	// SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
+	return null; // TODO: Figure out access to tenant templates.
     }
 
     /**

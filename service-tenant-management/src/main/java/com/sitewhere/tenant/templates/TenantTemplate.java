@@ -1,4 +1,4 @@
-package com.sitewhere.server.tenant;
+package com.sitewhere.tenant.templates;
 
 import java.util.List;
 

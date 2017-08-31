@@ -1,4 +1,4 @@
-package com.sitewhere.spi.server.tenant;
+package com.sitewhere.tenant.spi;
 
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
