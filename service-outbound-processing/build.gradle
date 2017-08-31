@@ -3,7 +3,7 @@ description = 'SiteWhere Outbound Processing Microservice'
 apply plugin: 'nebula.provided-base'
 
 dependencies {
-	compile project(':sitewhere-core')
+	compile project(':sitewhere-communication')
 	compile project(':sitewhere-spring')
     
     // Amazon SQS dependencies.

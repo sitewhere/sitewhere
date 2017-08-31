@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.communication.mqtt;
+package com.sitewhere.outbound.mqtt;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +21,8 @@ import org.fusesource.mqtt.client.QoS;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.communication.mqtt.IMqttComponent;
+import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;

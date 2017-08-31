@@ -1,7 +1,7 @@
 description = 'SiteWhere Command Destinations Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
+	compile project(':sitewhere-communication')
 	compile project(':sitewhere-spring')
 	
 	// Twilio dependencies.

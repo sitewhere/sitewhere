@@ -22,8 +22,8 @@ import org.fusesource.mqtt.client.Message;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
+import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.device.communication.EventProcessingLogic;
-import com.sitewhere.device.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;

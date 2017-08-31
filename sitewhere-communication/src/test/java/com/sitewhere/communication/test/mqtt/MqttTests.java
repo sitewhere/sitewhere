@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.core.test.mqtt;
+package com.sitewhere.communication.test.mqtt;
 
 import java.net.URISyntaxException;
 import java.util.Date;

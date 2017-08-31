@@ -1,7 +1,7 @@
 description = 'SiteWhere Event Sources Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
+	compile project(':sitewhere-communication')
 	compile project(':sitewhere-spring')
 	
 	// ActiveMQ dependencies.

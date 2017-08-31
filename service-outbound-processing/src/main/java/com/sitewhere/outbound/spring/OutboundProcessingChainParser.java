@@ -20,7 +20,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
-import com.sitewhere.device.communication.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.event.processor.filter.FilterOperation;
 import com.sitewhere.device.event.processor.filter.SiteFilter;
@@ -36,6 +35,7 @@ import com.sitewhere.outbound.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.outbound.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.outbound.dweetio.DweetIoEventProcessor;
 import com.sitewhere.outbound.initialstate.InitialStateEventProcessor;
+import com.sitewhere.outbound.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.outbound.rabbitmq.RabbitMqOutboundEventProcessor;
 import com.sitewhere.outbound.siddhi.GroovyStreamProcessor;
 import com.sitewhere.outbound.siddhi.SiddhiEventProcessor;

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.communication.mqtt;
+package com.sitewhere.communication.mqtt;
 
 import java.io.File;
 import java.io.FileInputStream;

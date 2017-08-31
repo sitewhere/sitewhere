@@ -14,6 +14,7 @@ include ':service-user-management'
 include ':service-web-rest'
 
 include ':sitewhere-client'
+include ':sitewhere-communication'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-hbase'
@@ -42,6 +43,7 @@ project(':service-user-management').projectDir = "$rootDir/service-user-manageme
 project(':service-web-rest').projectDir = "$rootDir/service-web-rest" as File
 
 project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
+project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File

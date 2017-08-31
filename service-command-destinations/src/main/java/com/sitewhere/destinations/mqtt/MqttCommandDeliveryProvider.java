@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.communication.mqtt;
+package com.sitewhere.destinations.mqtt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +13,7 @@ import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.QoS;
 
+import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
