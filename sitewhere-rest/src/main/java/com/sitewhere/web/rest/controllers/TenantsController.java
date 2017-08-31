@@ -59,13 +59,6 @@ import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Concerns;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Tenants;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -79,7 +72,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/tenants")
 @Api(value = "tenants", description = "Operations related to SiteWhere tenants.")
-@DocumentedController(name = "Tenants")
 public class TenantsController extends RestController {
 
     /** Static logger instance */
@@ -95,9 +87,6 @@ public class TenantsController extends RestController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Create new tenant")
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Tenants.CreateTenantRequest.class, description = "createTenantRequest.md"),
-	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "createTenantResponse.md") })
     public ITenant createTenant(@RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
@@ -115,9 +104,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Update an existing tenant.")
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Tenants.UpdateTenantRequest.class, description = "updateTenantRequest.md"),
-	    @Example(stage = Stage.Response, json = Tenants.UpdateTenantResponse.class, description = "updateTenantResponse.md") })
     public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
@@ -136,8 +122,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get tenant by unique id")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
     public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -155,8 +139,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}/engine/{command}", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Send command to tenant engine")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
     public ICommandResponse issueTenantEngineCommand(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Command", required = true) @PathVariable String command,
@@ -210,7 +192,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}/engine/configuration", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get tenant engine configuration")
-    @Documented
     public String getTenantEngineConfiguration(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -233,7 +214,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get tenant engine configuration as JSON")
-    @Documented
     public ElementContent getTenantEngineConfigurationAsJson(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -256,7 +236,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Stage tenant engine configuration from JSON")
-    @Documented
     public ElementContent stageTenantEngineConfiguration(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -290,8 +269,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get tenant by authentication token")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
     public ITenant getTenantByAuthToken(
 	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -313,16 +290,12 @@ public class TenantsController extends RestController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List tenants that match criteria")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "listTenantsResponse.md") })
     public ISearchResults<ITenant> listTenants(
 	    @ApiParam(value = "Text search (partial id or name)", required = false) @RequestParam(required = false) String textSearch,
 	    @ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
 
@@ -362,8 +335,6 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
     @ResponseBody
     @ApiOperation(value = "Delete existing tenant")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
     public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {

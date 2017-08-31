@@ -63,13 +63,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Concerns;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Devices;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -83,7 +76,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/devices")
 @Api(value = "devices", description = "Operations related to SiteWhere devices.")
-@DocumentedController(name = "Devices")
 public class DevicesController extends RestController {
 
     /** Static logger instance */
@@ -100,9 +92,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create new device")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Devices.CreateDeviceRequest.class, description = "createDeviceGroupRequest.md"),
-	    @Example(stage = Stage.Response, json = Devices.CreateDeviceResponse.class, description = "createDeviceGroupResponse.md") })
     public IDevice createDevice(@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
 	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDevice(request);
@@ -122,8 +111,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get device by unique hardware id")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.GetDeviceByHardwareIdResponse.class, description = "getDeviceByHardwareIdResponse.md") })
     public IDevice getDeviceByHardwareId(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "true") boolean includeSpecification,
@@ -156,9 +143,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update an existing device")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Devices.UpdateDeviceRequest.class, description = "updateDeviceRequest.md"),
-	    @Example(stage = Stage.Response, json = Devices.UpdateDeviceResponse.class, description = "updateDeviceResponse.md") })
     public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDevice(hardwareId,
@@ -179,8 +163,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete device based on unique hardware id")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.CreateDeviceResponse.class, description = "deleteDeviceResponse.md") })
     public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -203,8 +185,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get current assignment for device")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.GetCurrentDeviceAssignmentResponse.class, description = "getDeviceCurrentAssignmentResponse.md") })
     public IDeviceAssignment getDeviceCurrentAssignment(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
@@ -236,17 +216,13 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List assignment history for device")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.ListDeviceAssignmentHistoryResponse.class, description = "listDeviceAssignmentHistoryResponse.md") })
     public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "false") boolean includeSite,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceAssignment> history = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
@@ -273,9 +249,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create new device element mapping")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Devices.AddMappingRequest.class, description = "addDeviceElementMappingRequest.md"),
-	    @Example(stage = Stage.Response, json = Devices.AddMappingResponse.class, description = "addDeviceElementMappingResponse.md") })
     public IDevice addDeviceElementMapping(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceElementMapping request, HttpServletRequest servletRequest) throws SiteWhereException {
@@ -291,8 +264,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete existing device element mapping")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.DeleteMappingResponse.class, description = "deleteDeviceElementMappingResponse.md") })
     public IDevice deleteDeviceElementMapping(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path,
@@ -346,8 +317,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List devices that match criteria")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.ListDevicesForCriteriaResponse.class, description = "listDevicesResponse.md") })
     public ISearchResults<IDevice> listDevices(
 	    @ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
 	    @ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
@@ -355,10 +324,8 @@ public class DevicesController extends RestController {
 	    @ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 	    @ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 	    @ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -383,8 +350,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List devices using a given specification")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForSpecificationResponse.md") })
     public ISearchResults<IDevice> listDevicesForSpecification(
 	    @ApiParam(value = "Specification token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
@@ -392,10 +357,8 @@ public class DevicesController extends RestController {
 	    @ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 	    @ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 	    @ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -419,8 +382,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List devices in device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupResponse.md") })
     public ISearchResults<IDevice> listDevicesForGroup(
 	    @ApiParam(value = "Group token", required = true) @PathVariable String groupToken,
 	    @ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
@@ -429,10 +390,8 @@ public class DevicesController extends RestController {
 	    @ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 	    @ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 	    @ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -455,8 +414,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List devices in device groups with role")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupsWithRoleResponse.md") })
     public ISearchResults<IDevice> listDevicesForGroupsWithRole(
 	    @ApiParam(value = "Group role", required = true) @PathVariable String role,
 	    @ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
@@ -465,10 +422,8 @@ public class DevicesController extends RestController {
 	    @ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 	    @ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 	    @ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -500,9 +455,6 @@ public class DevicesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Add multiple events for device")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Devices.AddDeviceEventBatchRequest.class, description = "addDeviceEventBatchRequest.md"),
-	    @Example(stage = Stage.Response, json = Devices.AddDeviceEventBatchResponse.class, description = "addDeviceEventBatchResponse.md") })
     public IDeviceEventBatchResponse addDeviceEventBatch(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceEventBatch batch, HttpServletRequest servletRequest) throws SiteWhereException {

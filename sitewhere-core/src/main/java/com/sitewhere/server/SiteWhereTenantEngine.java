@@ -33,7 +33,6 @@ import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.server.TenantRuntimeState;
-import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
@@ -359,9 +358,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Initialize device event management.
 	setDeviceEventManagement(initializeDeviceEventManagement());
 
-	// Initialize asset management.
-	setAssetManagement(initializeAssetManagement(monitor));
-
 	// Initialize schedule management.
 	setScheduleManagement(initializeScheduleManagement());
 
@@ -472,34 +468,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    return (IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No event processing subsystem implementation configured.");
-	}
-    }
-
-    /**
-     * Verify and initialize asset module manager.
-     * 
-     * @param monitor
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IAssetManagement initializeAssetManagement(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	try {
-	    // Locate and initialize asset management implementation.
-	    IAssetManagement implementation = (IAssetManagement) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
-	    initializeNestedComponent(implementation, monitor);
-
-	    // Create asset module manager.
-	    assetModuleManager = (IAssetModuleManager) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
-	    assetModuleManager.setAssetManagement(implementation);
-	    initializeNestedComponent(assetModuleManager, monitor);
-
-	    // Wrap triggers around implementation.
-	    IAssetManagement withTriggers = new AssetManagementTriggers(implementation, assetModuleManager);
-	    return withTriggers;
-	} catch (NoSuchBeanDefinitionException e) {
-	    throw new SiteWhereException("No asset module manager implementation configured.");
 	}
     }
 

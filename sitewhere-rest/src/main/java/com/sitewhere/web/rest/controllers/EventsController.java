@@ -26,11 +26,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Assignments;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -44,7 +39,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/events")
 @Api(value = "events", description = "Operations related to SiteWhere device events.")
-@DocumentedController(name = "Events")
 public class EventsController extends RestController {
 
     /** Static logger instance */
@@ -61,10 +55,6 @@ public class EventsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get event by unique id")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
     public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(eventId);
@@ -83,10 +73,6 @@ public class EventsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update event by unique id")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
     public IDeviceEvent updateEvent(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    @RequestBody DeviceEventCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {

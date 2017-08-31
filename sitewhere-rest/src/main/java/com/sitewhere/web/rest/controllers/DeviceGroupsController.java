@@ -43,13 +43,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Concerns;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.DeviceGroups;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -63,7 +56,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/devicegroups")
 @Api(value = "devicegroups", description = "Operations related to SiteWhere device groups.")
-@DocumentedController(name = "Device Groups")
 public class DeviceGroupsController extends RestController {
 
     /** Static logger instance */
@@ -80,9 +72,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create new device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = DeviceGroups.CreateDeviceGroupRequest.class, description = "createDeviceGroupRequest.md"),
-	    @Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "createDeviceGroupResponse.md") })
     public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceGroup result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
@@ -101,8 +90,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get a device group by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "getDeviceGroupByTokenResponse.md") })
     public IDeviceGroup getDeviceGroupByToken(
 	    @ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -126,9 +113,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update an existing device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = DeviceGroups.UpdateDeviceGroupRequest.class, description = "updateDeviceGroupRequest.md"),
-	    @Example(stage = Stage.Response, json = DeviceGroups.UpdateDeviceGroupResponse.class, description = "updateDeviceGroupResponse.md") })
     public IDeviceGroup updateDeviceGroup(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody DeviceGroupCreateRequest request, HttpServletRequest servletRequest)
@@ -150,8 +134,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete device group by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "deleteDeviceGroupResponse.md") })
     public IDeviceGroup deleteDeviceGroup(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -175,15 +157,11 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List device groups that match criteria")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupResponse.class, description = "listDeviceGroupsResponse.md") })
     public ISearchResults<IDeviceGroup> listDeviceGroups(
 	    @ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceGroup> results;
@@ -214,15 +192,11 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List elements in a device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupElementsResponse.class, description = "listDeviceGroupElementsResponse.md") })
     public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @ApiParam(value = "Include detailed element information", required = false) @RequestParam(defaultValue = "false") boolean includeDetails,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getTenant(servletRequest))
 		.setIncludeDetails(includeDetails);
@@ -249,9 +223,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Add elements to device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = DeviceGroups.AddGroupElementsRequest.class, description = "addDeviceGroupElementsRequest.md"),
-	    @Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupElementsResponse.class, description = "addDeviceGroupElementsResponse.md") })
     public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
@@ -340,9 +311,6 @@ public class DeviceGroupsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete elements from device group")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = DeviceGroups.DeleteGroupElementsRequest.class, description = "deleteDeviceGroupElementsRequest.md"),
-	    @Example(stage = Stage.Response, json = DeviceGroups.DeleteGroupElementsResponse.class, description = "deleteDeviceGroupElementsResponse.md") })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)

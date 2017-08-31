@@ -56,13 +56,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Concerns;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Specifications;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -76,7 +69,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/specifications")
 @Api(value = "specifications", description = "Operations related to SiteWhere device specifications.")
-@DocumentedController(name = "Device Specifications")
 public class SpecificationsController extends RestController {
 
     /** Static logger instance */
@@ -93,9 +85,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create new device specification")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Specifications.CreateSpecificationRequest.class, description = "createDeviceSpecificationRequest.md"),
-	    @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "createDeviceSpecificationResponse.md") })
     public IDeviceSpecification createDeviceSpecification(@RequestBody DeviceSpecificationCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IAsset asset = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
@@ -121,8 +110,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get specification by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "getDeviceSpecificationByTokenResponse.md") })
     public IDeviceSpecification getDeviceSpecificationByToken(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
@@ -143,7 +130,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get specification GPB by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented()
     public String getDeviceSpecificationProtoByToken(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest,
 	    HttpServletResponse response) throws SiteWhereException {
@@ -163,7 +149,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get specification GPB file by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented()
     public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest,
 	    HttpServletResponse response) throws SiteWhereException {
@@ -188,9 +173,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update existing device specification")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Specifications.UpdateSpecificationRequest.class, description = "updateDeviceSpecificationRequest.md"),
-	    @Example(stage = Stage.Response, json = Specifications.UpdateSpecificationResponse.class, description = "updateDeviceSpecificationResponse.md") })
     public IDeviceSpecification updateDeviceSpecification(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
@@ -216,15 +198,11 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List specifications that match criteria")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Specifications.ListSpecificationsResponse.class, description = "listDeviceSpecificationsResponse.md") })
     public ISearchResults<IDeviceSpecification> listDeviceSpecifications(
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceSpecification> results = SiteWhere.getServer()
@@ -256,8 +234,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete existing device specification")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "deleteDeviceSpecificationResponse.md") })
     public IDeviceSpecification deleteDeviceSpecification(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -292,9 +268,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create device command for specification.")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Specifications.CreateDeviceCommandRequest.class, description = "createDeviceCommandRequest.md"),
-	    @Example(stage = Stage.Response, json = Specifications.CreateDeviceCommandResponse.class, description = "createDeviceCommandResponse.md") })
     public IDeviceCommand createDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
@@ -308,8 +281,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List device commands for specification")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsResponse.class, description = "listDeviceCommandsResponse.md") })
     public ISearchResults<IDeviceCommand> listDeviceCommands(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -339,8 +310,6 @@ public class SpecificationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List device commands by namespace")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsByNamespaceResponse.class, description = "listDeviceCommandsByNamespaceResponse.md") })
     public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,

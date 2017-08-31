@@ -28,12 +28,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Sites;
-import com.sitewhere.web.rest.documentation.Zones;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -47,7 +41,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/zones")
 @Api(value = "zones", description = "Operations related to SiteWhere zones")
-@DocumentedController(name = "Zones")
 public class ZonesController extends RestController {
 
     /** Static logger instance */
@@ -58,8 +51,6 @@ public class ZonesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get zone by token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "getZoneResponse.md") })
     public Zone getZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -78,9 +69,6 @@ public class ZonesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update an existing zone")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Zones.UpdateZoneRequest.class, description = "updateZoneRequest.md"),
-	    @Example(stage = Stage.Response, json = Zones.UpdateZoneResponse.class, description = "updateZoneResponse.md") })
     public Zone updateZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
@@ -100,8 +88,6 @@ public class ZonesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete zone by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "deleteZoneResponse.md") })
     public Zone deleteZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,

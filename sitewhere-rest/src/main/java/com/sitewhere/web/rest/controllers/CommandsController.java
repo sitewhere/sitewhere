@@ -31,11 +31,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Commands;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -49,7 +44,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/commands")
 @Api(value = "commands", description = "Operations related to SiteWhere device commands.")
-@DocumentedController(name = "Device Commands")
 public class CommandsController extends RestController {
 
     /** Static logger instance */
@@ -68,9 +62,6 @@ public class CommandsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update an existing device command")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Commands.DeviceCommandUpdateRequest.class, description = "updateDeviceCommandRequest.md"),
-	    @Example(stage = Stage.Response, json = Commands.DeviceCommandUpdateResponse.class, description = "updateDeviceCommandResponse.md") })
     public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
@@ -87,8 +78,6 @@ public class CommandsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get device command by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
     public IDeviceCommand getDeviceCommandByToken(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
@@ -107,8 +96,6 @@ public class CommandsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete device command by unique token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {

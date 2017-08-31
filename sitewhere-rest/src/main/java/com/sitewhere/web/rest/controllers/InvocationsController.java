@@ -30,12 +30,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Assignments;
-import com.sitewhere.web.rest.documentation.Invocations;
 import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -50,7 +44,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/invocations")
 @Api(value = "invocations", description = "Operations related to SiteWhere command invocations.")
-@DocumentedController(name = "Device Command Invocations")
 public class InvocationsController extends RestController {
 
     /** Static logger instance */
@@ -68,8 +61,6 @@ public class InvocationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get command invocation by unique id.")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.CreateCommandInvocationResponse.class, description = "getDeviceCommandInvocationResponse.md") })
     public IDeviceCommandInvocation getDeviceCommandInvocation(
 	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
@@ -94,8 +85,6 @@ public class InvocationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get command invocation summary")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Invocations.GetDeviceCommandInvocationSummary.class, description = "getDeviceCommandInvocationSummaryResponse.md") })
     public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
 	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
@@ -126,8 +115,6 @@ public class InvocationsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List responses for command invocation")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Invocations.GetDeviceCommandInvocationResponsesResponse.class, description = "listCommandInvocationResponsesResponse.md") })
     public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 	    @ApiParam(value = "Invocation id", required = true) @PathVariable String id,
 	    HttpServletRequest servletRequest) throws SiteWhereException {

@@ -22,11 +22,6 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.SystemInfo;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -39,7 +34,6 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/system")
 @Api(value = "system", description = "Operations related to SiteWhere CE system management.")
-@DocumentedController(name = "System Information")
 public class SystemController extends RestController {
 
     /** Static logger instance */
@@ -56,8 +50,6 @@ public class SystemController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get version information")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
     public IVersion getVersion() throws SiteWhereException {
 	return SiteWhere.getServer().getVersion();
     }
@@ -72,8 +64,6 @@ public class SystemController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get server runtime information")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = SystemInfo.GetServerRuntimeResponse.class, description = "getServerStateResponse.md") })
     public ISiteWhereServerRuntime getServerRuntimeInformation() throws SiteWhereException {
 	return SiteWhere.getServer().getServerRuntimeInformation(true);
     }

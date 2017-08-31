@@ -36,11 +36,6 @@ import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Search;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -54,7 +49,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/search")
 @Api(value = "search", description = "Operations related to external search providers.")
-@DocumentedController(name = "External Search")
 public class SearchController extends RestController {
 
     /** Static logger instance */
@@ -65,8 +59,6 @@ public class SearchController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List available search providers")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
     public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
 	List<ISearchProvider> providers = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
 		.getSearchProviders();

@@ -39,11 +39,6 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Authorities;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyNode;
 import com.wordnik.swagger.annotations.Api;
@@ -59,7 +54,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/authorities")
 @Api(value = "authorities", description = "Operations related to SiteWhere authorities.")
-@DocumentedController(name = "Granted Authorities")
 public class AuthoritiesController extends RestController {
 
     /** Static logger instance */
@@ -76,9 +70,6 @@ public class AuthoritiesController extends RestController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "Create a new authority")
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Authorities.CreateAuthorityRequest.class, description = "createUnassociatedRequest.md"),
-	    @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })
     public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
@@ -96,8 +87,6 @@ public class AuthoritiesController extends RestController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "Get authority by id")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
     public GrantedAuthority getAuthorityByName(
 	    @ApiParam(value = "Authority name", required = true) @PathVariable String name,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -119,8 +108,6 @@ public class AuthoritiesController extends RestController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List authorities that match criteria")
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
     public SearchResults<GrantedAuthority> listAuthorities(
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -144,8 +131,6 @@ public class AuthoritiesController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get authorities hierarchy")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);

@@ -19,13 +19,13 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.assetmanagement.wso2.scim.Wso2ScimAssetModule;
+import com.sitewhere.assetmanagement.modules.AssetModuleManager;
+import com.sitewhere.assetmanagement.modules.filesystem.FileSystemDeviceAssetModule;
+import com.sitewhere.assetmanagement.modules.filesystem.FileSystemHardwareAssetModule;
+import com.sitewhere.assetmanagement.modules.filesystem.FileSystemLocationAssetModule;
+import com.sitewhere.assetmanagement.modules.filesystem.FileSystemPersonAssetModule;
+import com.sitewhere.assetmanagement.modules.wso2.scim.Wso2ScimAssetModule;
 import com.sitewhere.server.SiteWhereServerBeans;
-import com.sitewhere.server.asset.AssetModuleManager;
-import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
-import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
-import com.sitewhere.server.asset.filesystem.FileSystemLocationAssetModule;
-import com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule;
 import com.sitewhere.spring.handler.IAssetManagementParser.Elements;
 
 /**

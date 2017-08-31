@@ -93,14 +93,6 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
-import com.sitewhere.web.rest.annotations.Concerns;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
-import com.sitewhere.web.rest.annotations.Documented;
-import com.sitewhere.web.rest.annotations.DocumentedController;
-import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Example.Stage;
-import com.sitewhere.web.rest.documentation.Assignments;
-import com.sitewhere.web.rest.documentation.Schedules;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -114,7 +106,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/assignments")
 @Api(value = "assignments", description = "Operations related to SiteWhere device assignments.")
-@DocumentedController(name = "Device Assignments")
 public class AssignmentsController extends RestController {
 
     /** Static logger instance */
@@ -130,10 +121,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create a new device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateUnassociatedRequest.class, description = "createUnassociatedRequest.md"),
-	    @Example(stage = Stage.Request, json = Assignments.CreateAssociatedRequest.class, description = "createAssociatedRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "createAssociatedResponse.md") })
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
@@ -170,8 +157,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get device assignment by token")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "getDeviceAssignmentResponse.md") })
     public DeviceAssignment getDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -194,12 +179,9 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Delete an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "deleteDeviceAssignmentResponse.md") })
     public DeviceAssignment deleteDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") @Concerns(values = {
-		    ConcernType.ForceDelete }) boolean force,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
 		.deleteDeviceAssignment(token, force);
@@ -220,8 +202,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Update device assignment metadata")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.UpdateAssignmentMetadataRequest.class, description = "updateAssignmentMetadataRequest.md") })
     public DeviceAssignment updateDeviceAssignmentMetadata(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody MetadataProvider metadata, HttpServletRequest servletRequest) throws SiteWhereException {
@@ -249,14 +229,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List events for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentEventsResponse.class, description = "listEventsResponse.md") })
     public ISearchResults<IDeviceEvent> listEvents(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -278,14 +254,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List measurement events for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listMeasurementsResponse.md") })
     public ISearchResults<IDeviceMeasurements> listMeasurements(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -332,14 +304,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List assignment measurements as chart series")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsChartSeriesResponse.class, description = "listMeasurementsAsChartSeriesResponse.md") })
     public List<IChartSeries<Double>> listMeasurementsAsChartSeries(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
@@ -366,9 +334,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create measurements event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateAssignmentMeasurementsRequest.class, description = "createMeasurementsRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "createMeasurementsResponse.md") })
     public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -388,14 +353,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List location events for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
     public ISearchResults<IDeviceLocation> listLocations(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -417,23 +378,25 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Push most recent location to current state")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
     public void pushLatestLocationToState(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-//	IDeviceAssignment assignment = getDeviceAssignment(token, servletRequest);
-//	DeviceAssignmentState state = (DeviceAssignmentState) assignment.getState();
-//	ISearchResults<IDeviceLocation> locations = listLocations(token, 1, 1, null, null, servletRequest, response);
-//	if (locations.getNumResults() > 0) {
-//	    DeviceLocation location = (DeviceLocation) locations.getResults().get(0);
-//	    if (state == null) {
-//		state = new DeviceAssignmentState();
-//	    }
-//	    state.setLastLocation(location);
-//	    SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
-//		    state);
-//	}
+	// IDeviceAssignment assignment = getDeviceAssignment(token,
+	// servletRequest);
+	// DeviceAssignmentState state = (DeviceAssignmentState)
+	// assignment.getState();
+	// ISearchResults<IDeviceLocation> locations = listLocations(token, 1,
+	// 1, null, null, servletRequest, response);
+	// if (locations.getNumResults() > 0) {
+	// DeviceLocation location = (DeviceLocation)
+	// locations.getResults().get(0);
+	// if (state == null) {
+	// state = new DeviceAssignmentState();
+	// }
+	// state.setLastLocation(location);
+	// SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
+	// state);
+	// }
     }
 
     /**
@@ -449,9 +412,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create location event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateAssignmentLocationRequest.class, description = "createLocationRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "createLocationResponse.md") })
     public DeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -471,14 +431,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List alert events for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListAssignmenAlertsResponse.class, description = "listAlertsResponse.md") })
     public ISearchResults<IDeviceAlert> listAlerts(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -502,9 +458,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create alert event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateAssignmentAlertRequest.class, description = "createAlertRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "createAlertResponse.md") })
     public DeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -525,9 +478,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create data stream for a device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateDeviceStreamRequest.class, description = "createDeviceStreamRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateDeviceStreamResponse.class, description = "createDeviceStreamResponse.md") })
     public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -540,14 +490,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List data streams for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListDeviceStreamsResponse.class, description = "listDeviceStreamsResponse.md") })
     public ISearchResults<IDeviceStream> listDeviceStreams(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -575,8 +521,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get device assignment data stream by id")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.GetDeviceStreamResponse.class, description = "getDeviceStreamResponse.md") })
     public DeviceStream getDeviceStream(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
@@ -604,7 +548,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Add data to device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
-    @Documented
     public void addDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
@@ -652,7 +595,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get data from device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
-    @Documented
     public void getDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
@@ -674,7 +616,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get all data from device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
-    @Documented
     public void listDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
@@ -719,9 +660,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create command invocation event for assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateCommandInvocationRequest.class, description = "createCommandInvocationRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateCommandInvocationResponse.class, description = "createCommandInvocationResponse.md") })
     public DeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -737,9 +675,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Schedule command invocation")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateCommandInvocationRequest.class, description = "scheduleCommandInvocationRequest.md"),
-	    @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "scheduleCommandInvocationResponse.md") })
     public IScheduledJob scheduleCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
@@ -761,15 +696,11 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List command invocation events for assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListCommandInvocationsResponse.class, description = "listCommandInvocationsResponse.md") })
     public ISearchResults<IDeviceCommandInvocation> listCommandInvocations(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include command information", required = false) @RequestParam(defaultValue = "true") boolean includeCommand,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -821,10 +752,8 @@ public class AssignmentsController extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStateChange> listStateChanges(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -847,10 +776,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create command response event for assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Request, json = Assignments.CreateCommandResponseEventRequest.class, description = "createCommandResponseEventRequest.md"),
-	    @Example(stage = Stage.Request, json = Assignments.CreateCommandResponseSimpleRequest.class, description = "createCommandResponseSimpleRequest.md"),
-	    @Example(stage = Stage.Response, json = Assignments.CreateCommandResponseResponse.class, description = "createCommandResponseResponse.md") })
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -870,14 +795,10 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "List command response events for assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.ListCommandResponsesResponse.class, description = "listCommandResponsesResponse.md") })
     public ISearchResults<IDeviceCommandResponse> listCommandResponses(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
-		    ConcernType.Paging }) int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-		    ConcernType.Paging }) int pageSize,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -930,8 +851,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Release an active device assignment")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.EndDeviceAssignmentResponse.class, description = "endDeviceAssignmentResponse.md") })
     public DeviceAssignment endDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -955,8 +874,6 @@ public class AssignmentsController extends RestController {
     @ResponseBody
     @ApiOperation(value = "Mark device assignment as missing")
     @Secured({ SiteWhereRoles.REST })
-    @Documented(examples = {
-	    @Example(stage = Stage.Response, json = Assignments.MissingDeviceAssignmentResponse.class, description = "missingDeviceAssignmentResponse.md") })
     public DeviceAssignment missingDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
