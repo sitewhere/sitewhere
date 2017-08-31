@@ -1,0 +1,5 @@
+description = 'SiteWhere Presence Management Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+}

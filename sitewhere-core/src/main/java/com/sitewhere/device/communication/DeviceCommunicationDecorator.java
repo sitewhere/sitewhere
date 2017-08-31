@@ -21,7 +21,6 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -117,17 +116,6 @@ public class DeviceCommunicationDecorator extends LifecycleComponentDecorator im
     @Override
     public IDeviceStreamManager getDeviceStreamManager() {
 	return delegate.getDeviceStreamManager();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getDevicePresenceManager()
-     */
-    @Override
-    public IDevicePresenceManager getDevicePresenceManager() {
-	return delegate.getDevicePresenceManager();
     }
 
     /*

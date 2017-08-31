@@ -6,6 +6,7 @@ include ':service-event-management'
 include ':service-event-sources'
 include ':service-inbound-processing'
 include ':service-outbound-processing'
+include ':service-presence-management'
 include ':service-rule-processing'
 include ':service-schedule-management'
 include ':service-tenant-management'
@@ -33,6 +34,7 @@ project(':service-event-management').projectDir = "$rootDir/service-event-manage
 project(':service-event-sources').projectDir = "$rootDir/service-event-sources" as File
 project(':service-inbound-processing').projectDir = "$rootDir/service-inbound-processing" as File
 project(':service-outbound-processing').projectDir = "$rootDir/service-outbound-processing" as File
+project(':service-presence-management').projectDir = "$rootDir/service-presence-management" as File
 project(':service-rule-processing').projectDir = "$rootDir/service-rule-processing" as File
 project(':service-schedule-management').projectDir = "$rootDir/service-schedule-management" as File
 project(':service-tenant-management').projectDir = "$rootDir/service-tenant-management" as File

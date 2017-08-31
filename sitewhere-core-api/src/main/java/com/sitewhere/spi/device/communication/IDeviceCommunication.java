@@ -13,7 +13,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -58,13 +57,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
      * @return
      */
     public IDeviceStreamManager getDeviceStreamManager();
-
-    /**
-     * Get the configured device presence manager.
-     * 
-     * @return
-     */
-    public IDevicePresenceManager getDevicePresenceManager();
 
     /**
      * Get the command processing strategy.

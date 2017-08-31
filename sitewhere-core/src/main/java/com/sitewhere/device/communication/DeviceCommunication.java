@@ -24,7 +24,6 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -48,9 +47,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     /** Configured device stream manager */
     private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
-
-    /** Configured device presence manager */
-    private IDevicePresenceManager devicePresenceManager;
 
     /** Configured list of inbound event sources */
     private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
@@ -122,11 +118,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	}
 	startNestedComponent(getDeviceStreamManager(), monitor, true);
 
-	// Start device presence manager if configured.
-	if (getDevicePresenceManager() != null) {
-	    startNestedComponent(getDevicePresenceManager(), monitor, true);
-	}
-
 	// Start device event sources.
 	if (getInboundEventSources() != null) {
 	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
@@ -149,11 +140,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
 		processor.lifecycleStop(monitor);
 	    }
-	}
-
-	// Stop device stream manager.
-	if (getDevicePresenceManager() != null) {
-	    getDevicePresenceManager().lifecycleStop(monitor);
 	}
 
 	// Stop device stream manager.
@@ -266,20 +252,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     public void setDeviceStreamManager(IDeviceStreamManager deviceStreamManager) {
 	this.deviceStreamManager = deviceStreamManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getDevicePresenceManager()
-     */
-    public IDevicePresenceManager getDevicePresenceManager() {
-	return devicePresenceManager;
-    }
-
-    public void setDevicePresenceManager(IDevicePresenceManager devicePresenceManager) {
-	this.devicePresenceManager = devicePresenceManager;
     }
 
     /*
