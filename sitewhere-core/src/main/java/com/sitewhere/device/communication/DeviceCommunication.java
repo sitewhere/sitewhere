@@ -22,7 +22,6 @@ import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
-import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -35,9 +34,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public abstract class DeviceCommunication extends TenantLifecycleComponent implements IDeviceCommunication {
-
-    /** Configured registration manager */
-    private IRegistrationManager registrationManager = new RegistrationManager();
 
     /** Configured symbol generator manager */
     private ISymbolGeneratorManager symbolGeneratorManager = new SymbolGeneratorManager();
@@ -93,12 +89,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	}
 	getOutboundCommandRouter().initialize(getCommandDestinations());
 	startNestedComponent(getOutboundCommandRouter(), monitor, true);
-
-	// Start registration manager.
-	if (getRegistrationManager() == null) {
-	    throw new SiteWhereException("No registration manager configured for communication subsystem.");
-	}
-	startNestedComponent(getRegistrationManager(), monitor, true);
 
 	// Start symbol generator manager.
 	if (getSymbolGeneratorManager() == null) {
@@ -157,11 +147,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	    getSymbolGeneratorManager().lifecycleStop(monitor);
 	}
 
-	// Stop registration manager.
-	if (getRegistrationManager() != null) {
-	    getRegistrationManager().lifecycleStop(monitor);
-	}
-
 	// Stop command processing strategy.
 	if (getCommandProcessingStrategy() != null) {
 	    getCommandProcessingStrategy().lifecycleStop(monitor);
@@ -196,20 +181,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
     @Override
     public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException {
 	getCommandProcessingStrategy().deliverSystemCommand(this, hardwareId, command);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getRegistrationManager ()
-     */
-    public IRegistrationManager getRegistrationManager() {
-	return registrationManager;
-    }
-
-    public void setRegistrationManager(IRegistrationManager registrationManager) {
-	this.registrationManager = registrationManager;
     }
 
     /*

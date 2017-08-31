@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.event.processor;
+package com.sitewhere.inbound;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

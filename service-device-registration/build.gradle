@@ -1,0 +1,5 @@
+description = 'SiteWhere Device Registration Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+}

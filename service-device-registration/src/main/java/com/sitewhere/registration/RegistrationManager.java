@@ -5,12 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.communication;
+package com.sitewhere.registration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.command.DeviceMappingAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
@@ -27,7 +28,6 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
-import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.search.ISearchResults;

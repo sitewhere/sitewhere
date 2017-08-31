@@ -31,13 +31,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
     public List<IInboundEventSource<?>> getInboundEventSources();
 
     /**
-     * Get the configured registration manager.
-     * 
-     * @return
-     */
-    public IRegistrationManager getRegistrationManager();
-
-    /**
      * Get manager for generating symbols for entities.
      * 
      * @return
