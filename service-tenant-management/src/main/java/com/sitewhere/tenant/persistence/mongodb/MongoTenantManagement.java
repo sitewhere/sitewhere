@@ -20,7 +20,6 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -37,6 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.tenant.persistence.TenantManagementPersistence;
 
 /**
  * Tenant management implementation that uses MongoDB for persistence.
@@ -102,7 +102,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
+	Tenant tenant = TenantManagementPersistence.tenantCreateLogic(request);
 
 	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	Document created = MongoTenant.toDocument(tenant);
@@ -123,9 +123,8 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	Document dbExisting = assertTenant(id);
 	Tenant existing = MongoTenant.fromDocument(dbExisting);
 
-	// Use common update logic so that backend implemetations act the same
-	// way.
-	SiteWherePersistence.tenantUpdateLogic(request, existing);
+	// Common update logic so that backend implemetations act the same way.
+	TenantManagementPersistence.tenantUpdateLogic(request, existing);
 	Document updated = MongoTenant.toDocument(existing);
 
 	Document query = new Document(MongoTenant.PROP_ID, id);
@@ -202,7 +201,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	Document sort = new Document(MongoTenant.PROP_NAME, 1);
 	ISearchResults<ITenant> list = MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria,
 		LOOKUP);
-	SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
+	TenantManagementPersistence.tenantListLogic(list.getResults(), criteria);
 	return list;
     }
 

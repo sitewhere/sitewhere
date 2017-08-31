@@ -22,7 +22,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -42,6 +41,7 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
+import com.sitewhere.user.persistence.UserManagementPersistence;
 
 /**
  * User management implementation that uses MongoDB for persistence.
@@ -101,7 +101,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * request.IUserCreateRequest, boolean)
      */
     public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
-	User user = SiteWherePersistence.userCreateLogic(request, encodePassword);
+	User user = UserManagementPersistence.userCreateLogic(request, encodePassword);
 
 	MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	Document created = MongoUser.toDocument(user);
@@ -146,7 +146,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
 	}
 	Document userObj = assertUser(username);
-	String inPassword = SiteWherePersistence.encodePassword(password);
+	String inPassword = UserManagementPersistence.encodePassword(password);
 	User match = MongoUser.fromDocument(userObj);
 	if (!match.getHashedPassword().equals(inPassword)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
@@ -177,7 +177,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 
 	// Copy any non-null fields.
 	User updatedUser = MongoUser.fromDocument(existing);
-	SiteWherePersistence.userUpdateLogic(request, updatedUser, encodePassword);
+	UserManagementPersistence.userUpdateLogic(request, updatedUser, encodePassword);
 
 	Document updated = MongoUser.toDocument(updatedUser);
 
@@ -294,7 +294,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	if (force) {
 	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	    MongoPersistence.delete(users, existing);
-	    SiteWherePersistence.userDeleteLogic(username);
+	    UserManagementPersistence.userDeleteLogic(username);
 	    return MongoUser.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
@@ -313,7 +313,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      */
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-	GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
+	GrantedAuthority auth = UserManagementPersistence.grantedAuthorityCreateLogic(request);
 	MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
 	Document created = MongoGrantedAuthority.toDocument(auth);
 	MongoPersistence.insert(auths, created, ErrorCode.DuplicateAuthority);

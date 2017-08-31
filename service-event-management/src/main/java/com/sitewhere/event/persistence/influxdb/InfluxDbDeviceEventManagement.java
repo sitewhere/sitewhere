@@ -20,8 +20,8 @@ import org.influxdb.InfluxDB.LogLevel;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
 
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.AssignmentStateManager;
+import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -191,7 +191,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     @Override
     public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignmentToken, batch, this);
     }
 
     /**
@@ -280,7 +280,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceMeasurements mxs = SiteWherePersistence.deviceMeasurementsCreateLogic(measurements, assignment);
+	DeviceMeasurements mxs = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(measurements,
+		assignment);
 	mxs.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
@@ -334,7 +335,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
+	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
 	location.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceLocation.saveToBuilder(location, builder);
@@ -402,7 +403,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
+	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
 	alert.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceAlert.saveToBuilder(alert, builder);
@@ -498,8 +499,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceCommandInvocation ci = SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command,
-		request);
+	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
+		command, request);
 	ci.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
@@ -560,7 +561,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceCommandResponse cr = SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
+	DeviceCommandResponse cr = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
+		request);
 	cr.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
@@ -608,7 +610,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     public IDeviceStateChange addDeviceStateChange(String assignmentToken, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	DeviceStateChange sc = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
+	DeviceStateChange sc = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
 	sc.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceStateChange.saveToBuilder(sc, builder);

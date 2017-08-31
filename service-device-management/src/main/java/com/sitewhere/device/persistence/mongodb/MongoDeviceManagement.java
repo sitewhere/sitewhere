@@ -23,7 +23,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.result.DeleteResult;
-import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
@@ -214,7 +214,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	}
 
 	// Use common logic so all backend implementations work the same.
-	DeviceSpecification spec = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
+	DeviceSpecification spec = DeviceManagementPersistence.deviceSpecificationCreateLogic(request, uuid);
 
 	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	Document created = MongoDeviceSpecification.toDocument(spec);
@@ -268,7 +268,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	DeviceSpecification spec = MongoDeviceSpecification.fromDocument(match);
 
 	// Use common update logic.
-	SiteWherePersistence.deviceSpecificationUpdateLogic(request, spec);
+	DeviceManagementPersistence.deviceSpecificationUpdateLogic(request, spec);
 	Document updated = MongoDeviceSpecification.toDocument(spec);
 
 	Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
@@ -373,7 +373,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
 	// Use common logic so all backend implementations work the same.
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
+	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 	Document created = MongoDeviceCommand.toDocument(command);
@@ -414,7 +414,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	List<IDeviceCommand> existing = listDeviceCommands(token, false);
 
 	// Use common update logic.
-	SiteWherePersistence.deviceCommandUpdateLogic(request, command, existing);
+	DeviceManagementPersistence.deviceCommandUpdateLogic(request, command, existing);
 	Document updated = MongoDeviceCommand.toDocument(command);
 
 	Document query = new Document(MongoDeviceCommand.PROP_TOKEN, token);
@@ -511,7 +511,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	}
 
 	// Use common logic so all backend implementations work the same.
-	DeviceStatus status = SiteWherePersistence.deviceStatusCreateLogic(specification, request, existing);
+	DeviceStatus status = DeviceManagementPersistence.deviceStatusCreateLogic(specification, request, existing);
 
 	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection(getTenant());
 	Document created = MongoDeviceStatus.toDocument(status);
@@ -552,7 +552,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	List<IDeviceStatus> existing = listDeviceStatuses(specToken);
 
 	// Use common update logic.
-	SiteWherePersistence.deviceStatusUpdateLogic(request, status, existing);
+	DeviceManagementPersistence.deviceStatusUpdateLogic(request, status, existing);
 	Document updated = MongoDeviceStatus.toDocument(status);
 
 	Document query = new Document(MongoDeviceStatus.PROP_SPEC_TOKEN, specToken).append(MongoDeviceStatus.PROP_CODE,
@@ -634,7 +634,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice createDevice(IDeviceCreateRequest request) throws SiteWhereException {
-	Device newDevice = SiteWherePersistence.deviceCreateLogic(request);
+	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request);
 
 	// Convert and save device data.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
@@ -660,7 +660,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document existing = assertDevice(hardwareId);
 	Device updatedDevice = MongoDevice.fromDocument(existing);
 
-	SiteWherePersistence.deviceUpdateLogic(request, updatedDevice);
+	DeviceManagementPersistence.deviceUpdateLogic(request, updatedDevice);
 	Document updated = MongoDevice.toDocument(updatedDevice);
 
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
@@ -758,7 +758,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
 	    throws SiteWhereException {
-	return SiteWherePersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
+	return DeviceManagementPersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
     }
 
     /*
@@ -770,7 +770,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
-	return SiteWherePersistence.deviceElementMappingDeleteLogic(this, hardwareId, path);
+	return DeviceManagementPersistence.deviceElementMappingDeleteLogic(this, hardwareId, path);
     }
 
     /*
@@ -837,7 +837,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Device device = MongoDevice.fromDocument(deviceDb);
 
 	// Use common logic to load assignment from request.
-	DeviceAssignment newAssignment = SiteWherePersistence.deviceAssignmentCreateLogic(request, device);
+	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, device);
 	if (newAssignment.getToken() == null) {
 	    newAssignment.setToken(UUID.randomUUID().toString());
 	}
@@ -901,7 +901,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceAssignment(token);
-	SiteWherePersistence.deviceAssignmentDeleteLogic(MongoDeviceAssignment.fromDocument(existing));
+	DeviceManagementPersistence.deviceAssignmentDeleteLogic(MongoDeviceAssignment.fromDocument(existing));
 	if (force) {
 	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	    MongoPersistence.delete(assignments, existing);
@@ -951,7 +951,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document match = assertDeviceAssignment(token);
 	MongoMetadataProvider.toDocument(metadata, match);
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
-	SiteWherePersistence.setUpdatedEntityMetadata(assignment);
+	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));
@@ -1115,7 +1115,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceStream stream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
+	DeviceStream stream = DeviceManagementPersistence.deviceStreamCreateLogic(assignment, request);
 
 	MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenant());
 	Document created = MongoDeviceStream.toDocument(stream);
@@ -1165,7 +1165,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	Site site = SiteWherePersistence.siteCreateLogic(request);
+	Site site = DeviceManagementPersistence.siteCreateLogic(request);
 
 	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	Document created = MongoSite.toDocument(site);
@@ -1189,7 +1189,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Site site = MongoSite.fromDocument(match);
 
 	// Use common update logic.
-	SiteWherePersistence.siteUpdateLogic(request, site);
+	DeviceManagementPersistence.siteUpdateLogic(request, site);
 
 	Document updated = MongoSite.toDocument(site);
 
@@ -1295,7 +1295,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-	Zone zone = SiteWherePersistence.zoneCreateLogic(request, site.getToken(), UUID.randomUUID().toString());
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site.getToken(), UUID.randomUUID().toString());
 
 	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
 	Document created = MongoZone.toDocument(zone);
@@ -1316,7 +1316,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document match = assertZone(token);
 
 	Zone zone = MongoZone.fromDocument(match);
-	SiteWherePersistence.zoneUpdateLogic(request, zone);
+	DeviceManagementPersistence.zoneUpdateLogic(request, zone);
 
 	Document updated = MongoZone.toDocument(zone);
 
@@ -1386,7 +1386,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
+	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request, uuid);
 
 	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 	Document created = MongoDeviceGroup.toDocument(group);
@@ -1409,7 +1409,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document match = assertDeviceGroup(token);
 
 	DeviceGroup group = MongoDeviceGroup.fromDocument(match);
-	SiteWherePersistence.deviceGroupUpdateLogic(request, group);
+	DeviceManagementPersistence.deviceGroupUpdateLogic(request, group);
 
 	Document updated = MongoDeviceGroup.toDocument(group);
 
@@ -1515,7 +1515,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
 	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
-	    DeviceGroupElement element = SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
+	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 	    Document created = MongoDeviceGroupElement.toDocument(element);
 	    try {
 		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
@@ -1585,7 +1585,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
+	BatchOperation batch = DeviceManagementPersistence.batchOperationCreateLogic(request, uuid);
 
 	MongoCollection<Document> batches = getMongoClient().getBatchOperationsCollection(getTenant());
 	Document created = MongoBatchOperation.toDocument(batch);
@@ -1595,7 +1595,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	long index = 0;
 	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 	for (String hardwareId : request.getHardwareIds()) {
-	    BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+	    BatchElement element = DeviceManagementPersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
 	    Document dbElement = MongoBatchElement.toDocument(element);
 	    MongoPersistence.insert(elements, dbElement, ErrorCode.DuplicateBatchElement);
 	}
@@ -1617,7 +1617,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document match = assertBatchOperation(token);
 
 	BatchOperation operation = MongoBatchOperation.fromDocument(match);
-	SiteWherePersistence.batchOperationUpdateLogic(request, operation);
+	DeviceManagementPersistence.batchOperationUpdateLogic(request, operation);
 
 	Document updated = MongoBatchOperation.toDocument(operation);
 
@@ -1724,7 +1724,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document dbElement = assertBatchElement(operationToken, index);
 
 	BatchElement element = MongoBatchElement.fromDocument(dbElement);
-	SiteWherePersistence.batchElementUpdateLogic(request, element);
+	DeviceManagementPersistence.batchElementUpdateLogic(request, element);
 
 	Document updated = MongoBatchElement.toDocument(element);
 
@@ -1745,7 +1745,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	IBatchOperationCreateRequest generic = SiteWherePersistence.batchCommandInvocationCreateLogic(request, uuid);
+	IBatchOperationCreateRequest generic = DeviceManagementPersistence.batchCommandInvocationCreateLogic(request, uuid);
 	return createBatchOperation(generic);
     }
 

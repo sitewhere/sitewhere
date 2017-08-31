@@ -25,7 +25,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
-import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.hazelcast.DeviceManagementCacheProvider;
@@ -419,30 +418,12 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	try {
 	    IDeviceEventManagement management = (IDeviceEventManagement) tenantContext
 		    .getBean(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT);
-	    IDeviceEventManagement configured = configureDeviceEventManagement(management);
-	    LOGGER.info("Device event management implementation using: " + configured.getClass().getName());
-	    return configured;
+	    LOGGER.info("Device event management implementation using: " + management.getClass().getName());
+	    return management;
 
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No device event management implementation configured.");
 	}
-    }
-
-    /**
-     * Configure device event management implementation by injecting configured
-     * options or wrapping to add functionality.
-     * 
-     * @param management
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceEventManagement configureDeviceEventManagement(IDeviceEventManagement management)
-	    throws SiteWhereException {
-	// Add reference to device management implementation.
-	management.setDeviceManagement(getDeviceManagement());
-
-	// Routes stored events to outbound processing strategy.
-	return new DeviceEventManagementTriggers(management, getEventProcessing());
     }
 
     /**

@@ -23,11 +23,11 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.destinations.coap.CoapCommandDeliveryProvider;
+import com.sitewhere.destinations.coap.CoapCommandDestination;
+import com.sitewhere.destinations.coap.CoapParameters;
+import com.sitewhere.destinations.coap.MetadataCoapParameterExtractor;
 import com.sitewhere.destinations.twilio.TwilioCommandDeliveryProvider;
-import com.sitewhere.device.communication.coap.CoapCommandDeliveryProvider;
-import com.sitewhere.device.communication.coap.CoapCommandDestination;
-import com.sitewhere.device.communication.coap.CoapParameters;
-import com.sitewhere.device.communication.coap.MetadataCoapParameterExtractor;
 import com.sitewhere.device.communication.json.JsonCommandExecutionEncoder;
 import com.sitewhere.device.communication.mqtt.HardwareIdMqttParameterExtractor;
 import com.sitewhere.device.communication.mqtt.MqttCommandDeliveryProvider;

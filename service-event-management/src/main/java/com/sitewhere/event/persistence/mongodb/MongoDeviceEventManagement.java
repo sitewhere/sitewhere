@@ -22,8 +22,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.AssignmentStateManager;
+import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -187,7 +187,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     @Override
     public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignmentToken, batch, this);
     }
 
     /*
@@ -268,7 +268,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceMeasurements addDeviceMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceMeasurements measurements = SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
+	DeviceMeasurements measurements = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(request,
+		assignment);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document mObject = MongoDeviceMeasurements.toDocument(measurements, false);
@@ -333,7 +334,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
+	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document locObject = MongoDeviceLocation.toDocument(location, false);
@@ -418,7 +419,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
+	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document alertObject = MongoDeviceAlert.toDocument(alert, false);
@@ -485,7 +486,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	    throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceStreamData streamData = SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
+	DeviceStreamData streamData = DeviceEventManagementPersistence.deviceStreamDataCreateLogic(assignment, request);
 
 	// Verify that a stream with the given id exists for the assignment.
 	if (getDeviceManagement().getDeviceStream(assignmentToken, request.getStreamId()) == null) {
@@ -549,8 +550,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceCommandInvocation ci = SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command,
-		request);
+	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
+		command, request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document ciObject = MongoDeviceCommandInvocation.toDocument(ci);
@@ -626,7 +627,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceCommandResponse response = SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
+	DeviceCommandResponse response = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
+		request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document dbresponse = MongoDeviceCommandResponse.toDocument(response);
@@ -685,7 +687,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     public IDeviceStateChange addDeviceStateChange(String assignmentToken, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-	DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
+	DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document dbstate = MongoDeviceStateChange.toDocument(state);
@@ -751,7 +753,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	if (event == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR);
 	}
-	SiteWherePersistence.deviceEventUpdateLogic(request, (DeviceEvent) event);
+	DeviceEventManagementPersistence.deviceEventUpdateLogic(request, (DeviceEvent) event);
 	Document updated = MongoDeviceEventManagementPersistence.marshalEvent(event);
 	LOGGER.info("Updated document:\n" + MarshalUtils.marshalJsonAsPrettyString(updated));
 

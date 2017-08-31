@@ -3,6 +3,7 @@ description = 'SiteWhere Asset Management Microservice'
 dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-spring-spi')
+	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-mongodb')
 	
 	// WSO2 dependencies.

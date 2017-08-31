@@ -3,6 +3,7 @@ description = 'SiteWhere Device Event Management Microservice'
 dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-mongodb')
+	compile project(':sitewhere-hbase')
 	
 	// InfluxDB dependencies.
     compile group: 'org.influxdb', name: 'influxdb-java', version:'2.3'

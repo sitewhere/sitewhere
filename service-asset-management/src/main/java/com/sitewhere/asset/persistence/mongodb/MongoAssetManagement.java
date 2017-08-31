@@ -15,7 +15,7 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.rest.model.asset.Asset;
@@ -108,7 +108,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
+	AssetCategory category = AssetManagementPersistence.assetCategoryCreateLogic(request);
 
 	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 	Document created = MongoAssetCategory.toDocument(category);
@@ -146,7 +146,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	AssetCategory category = MongoAssetCategory.fromDocument(match);
 
 	// Use common update logic.
-	SiteWherePersistence.assetCategoryUpdateLogic(request, category);
+	AssetManagementPersistence.assetCategoryUpdateLogic(request, category);
 	Document updated = MongoAssetCategory.toDocument(category);
 
 	Document query = new Document(MongoAssetCategory.PROP_ID, categoryId);
@@ -199,7 +199,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	// Use common logic so all backend implementations work the same.
 	Document db = assertAssetCategory(categoryId);
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
-	PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
+	PersonAsset person = AssetManagementPersistence.personAssetCreateLogic(category, request);
 
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	Document created = MongoPersonAsset.toDocument(person);
@@ -223,7 +223,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	PersonAsset person = (PersonAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
-	SiteWherePersistence.personAssetUpdateLogic(person, request);
+	AssetManagementPersistence.personAssetUpdateLogic(person, request);
 	Document updated = MongoPersonAsset.toDocument(person);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
@@ -246,7 +246,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	// Use common logic so all backend implementations work the same.
 	Document db = assertAssetCategory(categoryId);
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
-	HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
+	HardwareAsset hw = AssetManagementPersistence.hardwareAssetCreateLogic(category, request);
 
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	Document created = MongoHardwareAsset.toDocument(hw);
@@ -270,7 +270,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	HardwareAsset hardware = (HardwareAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
-	SiteWherePersistence.hardwareAssetUpdateLogic(hardware, request);
+	AssetManagementPersistence.hardwareAssetUpdateLogic(hardware, request);
 	Document updated = MongoHardwareAsset.toDocument(hardware);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
@@ -293,7 +293,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	// Use common logic so all backend implementations work the same.
 	Document db = assertAssetCategory(categoryId);
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
-	LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
+	LocationAsset loc = AssetManagementPersistence.locationAssetCreateLogic(category, request);
 
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
 	Document created = MongoLocationAsset.toDocument(loc);
@@ -317,7 +317,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	LocationAsset location = (LocationAsset) unmarshalAsset(dbAsset);
 
 	// Use common logic so all backend implementations work the same.
-	SiteWherePersistence.locationAssetUpdateLogic(location, request);
+	AssetManagementPersistence.locationAssetUpdateLogic(location, request);
 	Document updated = MongoLocationAsset.toDocument(location);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);

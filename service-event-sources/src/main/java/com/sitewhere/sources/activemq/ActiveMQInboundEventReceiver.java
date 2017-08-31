@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
-import com.sitewhere.device.communication.InboundEventReceiver;
+import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

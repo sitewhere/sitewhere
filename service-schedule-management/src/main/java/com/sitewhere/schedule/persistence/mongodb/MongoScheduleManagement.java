@@ -16,12 +16,12 @@ import org.bson.Document;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
+import com.sitewhere.schedule.persistence.ScheduleManagementPersistence;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -108,7 +108,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	// Use common logic so all backend implementations work the same.
-	Schedule schedule = SiteWherePersistence.scheduleCreateLogic(request, uuid);
+	Schedule schedule = ScheduleManagementPersistence.scheduleCreateLogic(request, uuid);
 
 	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection(getTenant());
 	Document created = MongoSchedule.toDocument(schedule);
@@ -130,7 +130,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	Schedule schedule = MongoSchedule.fromDocument(match);
 
 	// Use common update logic.
-	SiteWherePersistence.scheduleUpdateLogic(schedule, request);
+	ScheduleManagementPersistence.scheduleUpdateLogic(schedule, request);
 	Document updated = MongoSchedule.toDocument(schedule);
 
 	Document query = new Document(MongoSchedule.PROP_TOKEN, token);
@@ -210,7 +210,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	}
 
 	// Use common logic so all backend implementations work the same.
-	ScheduledJob job = SiteWherePersistence.scheduledJobCreateLogic(request, uuid);
+	ScheduledJob job = ScheduleManagementPersistence.scheduledJobCreateLogic(request, uuid);
 
 	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection(getTenant());
 	Document created = MongoScheduledJob.toDocument(job);
@@ -234,7 +234,7 @@ public class MongoScheduleManagement extends TenantLifecycleComponent implements
 	ScheduledJob job = MongoScheduledJob.fromDocument(match);
 
 	// Use common update logic.
-	SiteWherePersistence.scheduledJobUpdateLogic(job, request);
+	ScheduleManagementPersistence.scheduledJobUpdateLogic(job, request);
 	Document updated = MongoScheduledJob.toDocument(job);
 
 	Document query = new Document(MongoScheduledJob.PROP_TOKEN, token);
