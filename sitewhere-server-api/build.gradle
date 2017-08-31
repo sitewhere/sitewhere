@@ -3,7 +3,6 @@ description = 'SiteWhere Server API'
 dependencies {
     compile project(':sitewhere-core-api')
     compile group: 'org.springframework', name: 'spring-web'
-    compile group: 'com.hazelcast', name: 'hazelcast'
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.4.3'
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.0'
     compile group: 'io.dropwizard.metrics', name: 'metrics-healthchecks', version:'3.1.0'
