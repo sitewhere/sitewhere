@@ -28,13 +28,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
@@ -75,17 +73,13 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement extends TenantLifecycleComponent
-	implements IDeviceManagement, ICachingDeviceManagement {
+public class HBaseDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
-
-    /** Injected cache provider */
-    private IDeviceManagementCacheProvider cacheProvider;
 
     /** Injected payload encoder */
     private IPayloadMarshaler payloadMarshaler = new ProtobufPayloadMarshaler();
@@ -112,7 +106,6 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	this.context = new HBaseContext();
 	context.setTenant(getTenant());
 	context.setClient(getClient());
-	context.setCacheProvider(getCacheProvider());
 	context.setPayloadMarshaler(getPayloadMarshaler());
 
 	ensureTablesExist();
@@ -143,22 +136,6 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.SITES_TABLE_NAME, BloomType.ROW);
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.DEVICES_TABLE_NAME, BloomType.ROW);
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.STREAMS_TABLE_NAME, BloomType.ROW);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.ICachingDeviceManagement#setCacheProvider(com.
-     * sitewhere .spi.device.IDeviceManagementCacheProvider)
-     */
-    @Override
-    public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
-	this.cacheProvider = cacheProvider;
-    }
-
-    public IDeviceManagementCacheProvider getCacheProvider() {
-	return cacheProvider;
     }
 
     /*

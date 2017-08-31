@@ -5,7 +5,7 @@ b * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.hazelcast;
+package com.sitewhere.communication.hazelcast;
 
 import java.io.ByteArrayInputStream;
 
@@ -23,7 +23,6 @@ import com.hazelcast.util.ServiceLoader;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.resource.IResource;
-import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

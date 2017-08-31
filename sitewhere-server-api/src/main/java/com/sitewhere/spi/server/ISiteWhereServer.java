@@ -18,7 +18,6 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
@@ -28,7 +27,6 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
-import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -98,13 +96,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @param e
      */
     public void setServerStartupError(ServerStartupException e);
-
-    /**
-     * Get the Hazelcast configuration for this node.
-     * 
-     * @return
-     */
-    public IHazelcastConfiguration getHazelcastConfiguration();
 
     /**
      * Get the common Groovy configuration for this node.
@@ -225,15 +216,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException;
-
-    /**
-     * Get device management cache provider for tenant.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get asset management implementation for the given tenant.

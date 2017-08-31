@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
-import com.sitewhere.SiteWhere;
+import com.sitewhere.communication.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.sources.InboundEventReceiver;
@@ -36,6 +36,9 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Hazelcast configuration */
+    private IHazelcastConfiguration hazelcastConfiguration;
+
     /** Queue of events to be processed */
     private IQueue<DecodedDeviceRequest<?>> eventQueue;
 
@@ -54,8 +57,7 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
-		.getQueue(getQueueName());
+	this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
 	LOGGER.info("Receiver listening for events on Hazelcast queue: " + getQueueName());
 	this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
 	executor.submit(new HazelcastQueueProcessor());
@@ -129,6 +131,14 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 	    return new Thread(r, "SiteWhere Hazelcast(" + getEventSource().getSourceId() + ") Receiver "
 		    + counter.incrementAndGet());
 	}
+    }
+
+    public IHazelcastConfiguration getHazelcastConfiguration() {
+	return hazelcastConfiguration;
+    }
+
+    public void setHazelcastConfiguration(IHazelcastConfiguration hazelcastConfiguration) {
+	this.hazelcastConfiguration = hazelcastConfiguration;
     }
 
     public IQueue<DecodedDeviceRequest<?>> getEventQueue() {

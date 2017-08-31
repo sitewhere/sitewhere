@@ -9,7 +9,6 @@ package com.sitewhere.hbase;
 
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.spi.device.IAssignmentStateManager;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -32,13 +31,6 @@ public interface IHBaseContext {
      * @return
      */
     public ISiteWhereHBaseClient getClient();
-
-    /**
-     * Get configured cache provider.
-     * 
-     * @return
-     */
-    public IDeviceManagementCacheProvider getCacheProvider();
 
     /**
      * Get configured payload marshaler.

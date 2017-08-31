@@ -24,8 +24,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -212,9 +210,6 @@ public class HBaseDevice {
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
 	    devices.put(put);
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceCache().put(device.getHardwareId(), device);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to put device data.", e);
 	} finally {
@@ -233,14 +228,6 @@ public class HBaseDevice {
      * @throws SiteWhereException
      */
     public static Device getDeviceByHardwareId(IHBaseContext context, String hardwareId) throws SiteWhereException {
-	if (context.getCacheProvider() != null) {
-	    IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
-	    if (result != null) {
-		DeviceMarshalHelper helper = new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(false)
-			.setIncludeAssignment(false).setIncludeSpecification(false);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
-	    }
-	}
 	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 	if (deviceId == null) {
 	    return null;
@@ -262,11 +249,7 @@ public class HBaseDevice {
 		return null;
 	    }
 
-	    Device found = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDevice(payload);
-	    if ((context.getCacheProvider() != null) && (found != null)) {
-		context.getCacheProvider().getDeviceCache().put(hardwareId, found);
-	    }
-	    return found;
+	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDevice(payload);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to load device by hardware id.", e);
 	} finally {
@@ -303,9 +286,6 @@ public class HBaseDevice {
 		Delete delete = new Delete(primary);
 		devices = getDeviceTableInterface(context);
 		devices.delete(delete);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getDeviceCache().remove(hardwareId);
-		}
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to delete device.", e);
 	    } finally {
@@ -325,9 +305,6 @@ public class HBaseDevice {
 		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
 		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 		devices.put(put);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getDeviceCache().remove(hardwareId);
-		}
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to set deleted flag for device.", e);
 	    } finally {
@@ -346,12 +323,6 @@ public class HBaseDevice {
      * @throws SiteWhereException
      */
     public static String getCurrentAssignmentId(IHBaseContext context, String hardwareId) throws SiteWhereException {
-	if (context.getCacheProvider() != null) {
-	    IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
-	    if (result != null) {
-		return result.getAssignmentToken();
-	    }
-	}
 	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 	if (deviceId == null) {
 	    return null;
@@ -414,11 +385,6 @@ public class HBaseDevice {
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT, assignmentToken.getBytes());
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, assnHistory, assignmentToken.getBytes());
 	    devices.put(put);
-
-	    // Make sure that cache is using updated device information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to set device assignment.", e);
 	} finally {
@@ -455,11 +421,6 @@ public class HBaseDevice {
 	    Delete delete = new Delete(primary);
 	    delete.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
 	    devices.delete(delete);
-
-	    // Make sure that cache is using updated device information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to remove device assignment.", e);
 	} finally {

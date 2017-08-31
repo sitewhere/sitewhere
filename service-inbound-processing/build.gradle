@@ -1,5 +1,5 @@
 description = 'SiteWhere Inbound Processing Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
+	compile project(':sitewhere-communication')
 }

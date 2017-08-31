@@ -20,8 +20,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -137,14 +135,6 @@ public class HBaseDeviceAssignment {
      * @throws SiteWhereException
      */
     public static DeviceAssignment getDeviceAssignment(IHBaseContext context, String token) throws SiteWhereException {
-	if (context.getCacheProvider() != null) {
-	    IDeviceAssignment result = context.getCacheProvider().getDeviceAssignmentCache().get(token);
-	    if (result != null) {
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(context.getTenant())
-			.setIncludeAsset(false).setIncludeDevice(false).setIncludeSite(false);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
-	    }
-	}
 	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 	if (assnKey == null) {
 	    return null;
@@ -173,9 +163,6 @@ public class HBaseDeviceAssignment {
 		// PayloadMarshalerResolver.getInstance().getMarshaler(type)
 		// .decodeDeviceAssignmentState(state);
 		// found.setState(assnState);
-	    }
-	    if ((context.getCacheProvider() != null) && (found != null)) {
-		context.getCacheProvider().getDeviceAssignmentCache().put(token, found);
 	    }
 	    return found;
 	} catch (IOException e) {
@@ -211,11 +198,6 @@ public class HBaseDeviceAssignment {
 	    Put put = new Put(primary);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 	    sites.put(put);
-
-	    // Make sure that cache is using updated assignment information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to update device assignment metadata.", e);
 	} finally {
@@ -248,11 +230,6 @@ public class HBaseDeviceAssignment {
 	    Put put = new Put(primary);
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
 	    sites.put(put);
-
-	    // Make sure that cache is using updated assignment information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to update device assignment state.", e);
 	} finally {
@@ -287,11 +264,6 @@ public class HBaseDeviceAssignment {
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
 	    sites.put(put);
-
-	    // Make sure that cache is using updated assignment information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to update device assignment status.", e);
 	} finally {
@@ -330,11 +302,6 @@ public class HBaseDeviceAssignment {
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
 		    DeviceAssignmentStatus.Released.name().getBytes());
 	    sites.put(put);
-
-	    // Make sure that cache is using updated assignment information.
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to update device assignment status.", e);
 	} finally {

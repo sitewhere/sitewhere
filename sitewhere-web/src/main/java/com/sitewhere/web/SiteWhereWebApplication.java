@@ -28,10 +28,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.sitewhere.SiteWhere;
 import com.sitewhere.SiteWhereApplication;
-import com.sitewhere.hazelcast.NoShutdownHazelcastInstance;
 import com.sitewhere.web.filters.JsonpFilter;
 import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
@@ -83,12 +80,6 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	registration.setName("sitewhereRestInterface");
 	registration.setLoadOnStartup(1);
 	return registration;
-    }
-
-    @Bean
-    public HazelcastInstance sitewhereHazelcast() {
-	return new NoShutdownHazelcastInstance(
-		SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance());
     }
 
     @Bean

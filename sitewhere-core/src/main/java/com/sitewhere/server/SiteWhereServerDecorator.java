@@ -19,7 +19,6 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
@@ -32,7 +31,6 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
-import com.sitewhere.spi.server.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -142,17 +140,6 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public void setServerStartupError(ServerStartupException e) {
 	server.setServerStartupError(e);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getHazelcastConfiguration()
-     */
-    @Override
-    public IHazelcastConfiguration getHazelcastConfiguration() {
-	return server.getHazelcastConfiguration();
     }
 
     /*
@@ -317,17 +304,6 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
 	return server.getDeviceEventManagement(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#
-     * getDeviceManagementCacheProvider(com. sitewhere.spi.user.ITenant)
-     */
-    @Override
-    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException {
-	return server.getDeviceManagementCacheProvider(tenant);
     }
 
     /*

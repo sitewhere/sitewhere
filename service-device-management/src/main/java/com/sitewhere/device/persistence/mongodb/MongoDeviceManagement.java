@@ -46,12 +46,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
@@ -93,8 +91,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class MongoDeviceManagement extends TenantLifecycleComponent
-	implements IDeviceManagement, ICachingDeviceManagement {
+public class MongoDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -104,9 +101,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 
     /** Injected with global SiteWhere Mongo client */
     private IDeviceManagementMongoClient mongoClient;
-
-    /** Provides caching for device management entities */
-    private IDeviceManagementCacheProvider cacheProvider;
 
     public MongoDeviceManagement() {
 	super(LifecycleComponentType.DataStore);
@@ -132,21 +126,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.ICachingDeviceManagement#setCacheProvider(com.
-     * sitewhere .spi.device.IDeviceManagementCacheProvider)
-     */
-    public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
-	this.cacheProvider = cacheProvider;
-    }
-
-    public IDeviceManagementCacheProvider getCacheProvider() {
-	return cacheProvider;
     }
 
     /**
@@ -220,10 +199,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document created = MongoDeviceSpecification.toDocument(spec);
 	MongoPersistence.insert(specs, created, ErrorCode.DuplicateDeviceSpecificationToken);
 
-	// Update cache with new data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceSpecificationCache().put(uuid, spec);
-	}
 	return MongoDeviceSpecification.fromDocument(created);
     }
 
@@ -236,19 +211,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-	    IDeviceSpecification cached = getCacheProvider().getDeviceSpecificationCache().get(token);
-	    if (cached != null) {
-		return cached;
-	    }
-	}
 	Document dbSpecification = getDeviceSpecificationDocumentByToken(token);
 	if (dbSpecification != null) {
-	    IDeviceSpecification result = MongoDeviceSpecification.fromDocument(dbSpecification);
-	    if ((getCacheProvider() != null) && (result != null)) {
-		getCacheProvider().getDeviceSpecificationCache().put(token, result);
-	    }
-	    return result;
+	    return MongoDeviceSpecification.fromDocument(dbSpecification);
 	}
 	return null;
     }
@@ -275,10 +240,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	MongoPersistence.update(specs, query, updated);
 
-	// Update cache with new data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceSpecificationCache().put(token, spec);
-	}
 	return MongoDeviceSpecification.fromDocument(updated);
     }
 
@@ -313,17 +274,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 	if (force) {
 	    MongoPersistence.delete(specs, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getDeviceSpecificationCache().remove(token);
-	    }
 	    return MongoDeviceSpecification.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
 	    MongoPersistence.update(specs, query, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getDeviceSpecificationCache().remove(token);
-	    }
 	    return MongoDeviceSpecification.fromDocument(existing);
 	}
     }
@@ -641,10 +596,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document created = MongoDevice.toDocument(newDevice);
 	MongoPersistence.insert(devices, created, ErrorCode.DuplicateHardwareId);
 
-	// Update cache with new data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceCache().put(request.getHardwareId(), newDevice);
-	}
 	return newDevice;
     }
 
@@ -667,10 +618,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	MongoPersistence.update(devices, query, updated);
 
-	// Update cache with new data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceCache().put(hardwareId, updatedDevice);
-	}
 	return MongoDevice.fromDocument(updated);
     }
 
@@ -683,19 +630,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-	    IDevice cached = getCacheProvider().getDeviceCache().get(hardwareId);
-	    if (cached != null) {
-		return cached;
-	    }
-	}
 	Document dbDevice = getDeviceDocumentByHardwareId(hardwareId);
 	if (dbDevice != null) {
-	    IDevice result = MongoDevice.fromDocument(dbDevice);
-	    if ((getCacheProvider() != null) && (result != null)) {
-		getCacheProvider().getDeviceCache().put(hardwareId, result);
-	    }
-	    return result;
+	    return MongoDevice.fromDocument(dbDevice);
 	}
 	return null;
     }
@@ -791,18 +728,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	if (force) {
 	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	    MongoPersistence.delete(devices, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getDeviceCache().remove(hardwareId);
-	    }
 	    return MongoDevice.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	    MongoPersistence.update(devices, query, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getDeviceCache().remove(hardwareId);
-	    }
 	    return MongoDevice.fromDocument(existing);
 	}
     }
@@ -846,22 +777,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document created = MongoDeviceAssignment.toDocument(newAssignment);
 	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
-	// Update cache with new assignment data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceAssignmentCache().put(newAssignment.getToken(), newAssignment);
-	}
-
 	// Update device to point to created assignment.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
 	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
 	MongoPersistence.update(devices, query, deviceDb);
 
-	// Update cache with new device data.
-	if (getCacheProvider() != null) {
-	    Device updated = MongoDevice.fromDocument(deviceDb);
-	    getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
-	}
 	return newAssignment;
     }
 
@@ -874,19 +795,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      */
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-	    IDeviceAssignment cached = getCacheProvider().getDeviceAssignmentCache().get(token);
-	    if (cached != null) {
-		return cached;
-	    }
-	}
 	Document dbAssignment = getDeviceAssignmentDocumentByToken(token);
 	if (dbAssignment != null) {
-	    IDeviceAssignment result = MongoDeviceAssignment.fromDocument(dbAssignment);
-	    if ((getCacheProvider() != null) && (result != null)) {
-		getCacheProvider().getDeviceAssignmentCache().put(token, result);
-	    }
-	    return result;
+	    return MongoDeviceAssignment.fromDocument(dbAssignment);
 	}
 	return null;
     }
@@ -956,11 +867,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));
 
-	// Update cache with new assignment data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceAssignmentCache().put(assignment.getToken(), assignment);
-	}
-
 	return MongoDeviceAssignment.fromDocument(match);
     }
 
@@ -979,14 +885,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoPersistence.update(assignments, query, match);
-	DeviceAssignment updated = MongoDeviceAssignment.fromDocument(match);
-
-	// Update cache with new assignment data.
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	}
-
-	return updated;
+	return MongoDeviceAssignment.fromDocument(match);
     }
 
     /*
@@ -1005,12 +904,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoPersistence.update(assignments, query, match);
 
-	// Update cache with new assignment data.
-	if (getCacheProvider() != null) {
-	    DeviceAssignment updated = MongoDeviceAssignment.fromDocument(match);
-	    getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
-	}
-
 	// Remove device assignment reference.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenant());
 	String hardwareId = (String) match.get(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID);
@@ -1018,12 +911,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
 	query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	MongoPersistence.update(devices, query, deviceMatch);
-
-	// Update cache with new device data.
-	if (getCacheProvider() != null) {
-	    Device updated = MongoDevice.fromDocument(deviceMatch);
-	    getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
-	}
 
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	return assignment;
@@ -1196,9 +1083,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	Document query = new Document(MongoSite.PROP_TOKEN, token);
 	MongoPersistence.update(sites, query, updated);
-	if (getCacheProvider() != null) {
-	    getCacheProvider().getSiteCache().put(token, site);
-	}
 	return MongoSite.fromDocument(updated);
     }
 
@@ -1230,18 +1114,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	if (force) {
 	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	    MongoPersistence.delete(sites, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getSiteCache().remove(siteToken);
-	    }
 	    return MongoSite.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoSite.PROP_TOKEN, siteToken);
 	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	    MongoPersistence.update(sites, query, existing);
-	    if (getCacheProvider() != null) {
-		getCacheProvider().getSiteCache().remove(siteToken);
-	    }
 	    return MongoSite.fromDocument(existing);
 	}
     }
@@ -1255,20 +1133,9 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @throws SiteWhereException
      */
     protected Document getSiteDocumentByToken(String token) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-	    ISite cached = getCacheProvider().getSiteCache().get(token);
-	    if (cached != null) {
-		return MongoSite.toDocument(cached);
-	    }
-	}
 	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenant());
 	Document query = new Document(MongoSite.PROP_TOKEN, token);
-	Document result = sites.find(query).first();
-	if ((getCacheProvider() != null) && (result != null)) {
-	    ISite site = MongoSite.fromDocument(result);
-	    getCacheProvider().getSiteCache().put(token, site);
-	}
-	return result;
+	return sites.find(query).first();
     }
 
     /*
@@ -1515,7 +1382,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
 	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
-	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, groupToken, index);
+	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, groupToken,
+		    index);
 	    Document created = MongoDeviceGroupElement.toDocument(element);
 	    try {
 		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created,
@@ -1595,7 +1463,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	long index = 0;
 	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 	for (String hardwareId : request.getHardwareIds()) {
-	    BatchElement element = DeviceManagementPersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+	    BatchElement element = DeviceManagementPersistence.batchElementCreateLogic(batch.getToken(), hardwareId,
+		    ++index);
 	    Document dbElement = MongoBatchElement.toDocument(element);
 	    MongoPersistence.insert(elements, dbElement, ErrorCode.DuplicateBatchElement);
 	}
@@ -1745,7 +1614,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	IBatchOperationCreateRequest generic = DeviceManagementPersistence.batchCommandInvocationCreateLogic(request, uuid);
+	IBatchOperationCreateRequest generic = DeviceManagementPersistence.batchCommandInvocationCreateLogic(request,
+		uuid);
 	return createBatchOperation(generic);
     }
 
@@ -1774,9 +1644,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @throws SiteWhereException
      */
     protected Document assertDevice(String hardwareId) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-
-	}
 	Document match = getDeviceDocumentByHardwareId(hardwareId);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.INFO);
@@ -1809,18 +1676,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
      * @throws SiteWhereException
      */
     protected IDeviceAssignment assertApiDeviceAssignment(String token) throws SiteWhereException {
-	if (getCacheProvider() != null) {
-	    IDeviceAssignment result = getCacheProvider().getDeviceAssignmentCache().get(token);
-	    if (result != null) {
-		return result;
-	    }
-	}
 	Document match = assertDeviceAssignment(token);
-	IDeviceAssignment result = MongoDeviceAssignment.fromDocument(match);
-	if ((getCacheProvider() != null) && (result != null)) {
-	    getCacheProvider().getDeviceAssignmentCache().put(token, result);
-	}
-	return result;
+	return MongoDeviceAssignment.fromDocument(match);
     }
 
     /**

@@ -5,13 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound;
+package com.sitewhere.inbound.hazelcast;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
-import com.sitewhere.SiteWhere;
+import com.sitewhere.communication.hazelcast.IHazelcastConfiguration;
+import com.sitewhere.inbound.InboundEventProcessor;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -35,6 +36,9 @@ public class HazelcastQueueSender extends InboundEventProcessor {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Hazelcast configuration */
+    private IHazelcastConfiguration hazelcastConfiguration;
+
     /** Queue of events to be processed */
     private IQueue<DecodedDeviceRequest<?>> eventQueue;
 
@@ -50,8 +54,7 @@ public class HazelcastQueueSender extends InboundEventProcessor {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.eventQueue = SiteWhere.getServer().getHazelcastConfiguration().getHazelcastInstance()
-		.getQueue(getQueueName());
+	this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
 	LOGGER.info("Sender posting events to Hazelcast queue: " + getQueueName());
     }
 
@@ -182,6 +185,14 @@ public class HazelcastQueueSender extends InboundEventProcessor {
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IHazelcastConfiguration getHazelcastConfiguration() {
+	return hazelcastConfiguration;
+    }
+
+    public void setHazelcastConfiguration(IHazelcastConfiguration hazelcastConfiguration) {
+	this.hazelcastConfiguration = hazelcastConfiguration;
     }
 
     public IQueue<DecodedDeviceRequest<?>> getEventQueue() {

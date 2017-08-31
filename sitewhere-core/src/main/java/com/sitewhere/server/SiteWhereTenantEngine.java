@@ -26,7 +26,6 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
-import com.sitewhere.hazelcast.DeviceManagementCacheProvider;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
@@ -49,9 +48,7 @@ import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
-import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
@@ -111,9 +108,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Map of component ids to lifecycle components */
     private Map<String, ILifecycleComponent> lifecycleComponentsById = new HashMap<String, ILifecycleComponent>();
-
-    /** Device management cache provider implementation */
-    private IDeviceManagementCacheProvider deviceManagementCacheProvider;
 
     /** Interface to device management implementation */
     private IDeviceManagement deviceManagement;
@@ -369,37 +363,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected IDeviceManagement initializeDeviceManagement(ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	// Load device management cache provider.
-	this.deviceManagementCacheProvider = new DeviceManagementCacheProvider();
-	initializeNestedComponent(deviceManagementCacheProvider, monitor);
-
 	// Verify that a device management implementation exists.
 	try {
 	    deviceManagement = (IDeviceManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
 	    LOGGER.info("Device management implementation using: " + deviceManagement.getClass().getName());
 
-	    return configureDeviceManagement(deviceManagement);
+	    return deviceManagement;
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No device management implementation configured.");
 	}
-    }
-
-    /**
-     * Configure device management implementation by injecting configured
-     * options or wrapping to add functionality.
-     * 
-     * @param management
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement configureDeviceManagement(IDeviceManagement management) throws SiteWhereException {
-	if (management instanceof ICachingDeviceManagement) {
-	    ((ICachingDeviceManagement) management).setCacheProvider(getDeviceManagementCacheProvider());
-	    LOGGER.info("Device management implementation is using configured cache provider.");
-	} else {
-	    LOGGER.info("Device management implementation not using cache provider.");
-	}
-	return management;
     }
 
     /**
@@ -507,10 +479,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start asset management.
 	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Started asset management",
 		"Asset management startup failed.", true));
-
-	// Start device management cache provider.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		"Started device management cache provider", "Device management cache provider startup failed.", true));
 
 	// Start device management.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Started device management",
@@ -794,10 +762,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement(),
 		"Stopped device management implementation"));
 
-	// Stop device management cache provider if configured.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementCacheProvider(),
-		"Stopped device management cache provider"));
-
 	// Stop asset module manager.
 	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stopped asset module manager"));
 
@@ -1027,20 +991,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setGroovyConfiguration(ITenantGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
-     * getDeviceManagementCacheProvider()
-     */
-    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider() {
-	return deviceManagementCacheProvider;
-    }
-
-    public void setDeviceManagementCacheProvider(IDeviceManagementCacheProvider deviceManagementCacheProvider) {
-	this.deviceManagementCacheProvider = deviceManagementCacheProvider;
     }
 
     /*

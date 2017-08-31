@@ -16,7 +16,6 @@ import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
@@ -101,13 +100,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public ITenantBootstrapService getBootstrapService();
-
-    /**
-     * Get the device management cache provider implementation.
-     * 
-     * @return
-     */
-    public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
 
     /**
      * Get the device communication subsystem implementation.

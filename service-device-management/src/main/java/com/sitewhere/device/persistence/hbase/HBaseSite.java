@@ -123,12 +123,6 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static Site getSiteByToken(IHBaseContext context, String token) throws SiteWhereException {
-	if (context.getCacheProvider() != null) {
-	    ISite result = context.getCacheProvider().getSiteCache().get(token);
-	    if (result != null) {
-		return Site.copy(result);
-	    }
-	}
 	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
 	if (siteId == null) {
 	    return null;
@@ -147,11 +141,7 @@ public class HBaseSite {
 		throw new SiteWhereException("Payload fields not found for site.");
 	    }
 
-	    Site site = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getSiteCache().put(token, site);
-	    }
-	    return site;
+	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to load site by token.", e);
 	} finally {
@@ -189,9 +179,6 @@ public class HBaseSite {
 	    Put put = new Put(rowkey);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 	    sites.put(put);
-	    if (context.getCacheProvider() != null) {
-		context.getCacheProvider().getSiteCache().put(token, updated);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to update site.", e);
 	} finally {
@@ -621,9 +608,6 @@ public class HBaseSite {
 		Delete delete = new Delete(rowkey);
 		sites = getSitesTableInterface(context);
 		sites.delete(delete);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getSiteCache().remove(token);
-		}
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to delete site.", e);
 	    } finally {
@@ -640,9 +624,6 @@ public class HBaseSite {
 		HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
 		put.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 		sites.put(put);
-		if (context.getCacheProvider() != null) {
-		    context.getCacheProvider().getSiteCache().remove(token);
-		}
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to set deleted flag for site.", e);
 	    } finally {
