@@ -1,0 +1,5 @@
+description = 'SiteWhere Batch Operations Microservice'
+
+dependencies {
+	compile project(':sitewhere-core')
+}

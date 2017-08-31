@@ -10,7 +10,6 @@ package com.sitewhere.spi.device.communication;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
@@ -36,13 +35,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
      * @return
      */
     public ISymbolGeneratorManager getSymbolGeneratorManager();
-
-    /**
-     * Get the configured batch operation manager.
-     * 
-     * @return
-     */
-    public IBatchOperationManager getBatchOperationManager();
 
     /**
      * Get the configured device stream manager.

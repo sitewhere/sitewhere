@@ -12,13 +12,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -88,35 +85,6 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 		StateChangeType.Assignment_Released, null, null);
 	getDeviceEventManangement().addDeviceStateChange(updated.getToken(), state);
 	return updated;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.device.DeviceManagementDecorator#createBatchOperation(com.
-     * sitewhere. spi.device.request.IBatchOperationCreateRequest)
-     */
-    @Override
-    public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
-	IBatchOperation operation = super.createBatchOperation(request);
-	getDeviceCommunication().getBatchOperationManager().process(operation);
-	return operation;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.sitewhere.device.DeviceManagementDecorator#
-     * createBatchCommandInvocation(com.sitewhere.
-     * spi.device.request.IBatchCommandInvocationRequest)
-     */
-    @Override
-    public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
-	    throws SiteWhereException {
-	IBatchOperation operation = super.createBatchCommandInvocation(request);
-	getDeviceCommunication().getBatchOperationManager().process(operation);
-	return operation;
     }
 
     public IDeviceEventManagement getDeviceEventManangement() {

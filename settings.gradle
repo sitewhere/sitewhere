@@ -1,5 +1,6 @@
 rootProject.name = 'sitewhere'
 include ':service-asset-management'
+include ':service-batch-operations'
 include ':service-command-destinations'
 include ':service-device-management'
 include ':service-device-registration'
@@ -30,6 +31,7 @@ include ':sitewhere-web'
 include ':sitewhere-web-admin'
 
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
+project(':service-batch-operations').projectDir = "$rootDir/service-batch-operations" as File
 project(':service-command-destinations').projectDir = "$rootDir/service-command-destinations" as File
 project(':service-device-management').projectDir = "$rootDir/service-device-management" as File
 project(':service-device-registration').projectDir = "$rootDir/service-device-registration" as File

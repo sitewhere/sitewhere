@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
-import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.ICommandProcessingStrategy;
@@ -37,9 +35,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     /** Configured symbol generator manager */
     private ISymbolGeneratorManager symbolGeneratorManager = new SymbolGeneratorManager();
-
-    /** Configured batch operation manager */
-    private IBatchOperationManager batchOperationManager = new BatchOperationManager();
 
     /** Configured device stream manager */
     private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
@@ -96,12 +91,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	}
 	startNestedComponent(getSymbolGeneratorManager(), monitor, true);
 
-	// Start batch operation manager.
-	if (getBatchOperationManager() == null) {
-	    throw new SiteWhereException("No batch operation manager configured for communication subsystem.");
-	}
-	startNestedComponent(getBatchOperationManager(), monitor, true);
-
 	// Start device stream manager.
 	if (getDeviceStreamManager() == null) {
 	    throw new SiteWhereException("No device stream manager configured for communication subsystem.");
@@ -135,11 +124,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	// Stop device stream manager.
 	if (getDeviceStreamManager() != null) {
 	    getDeviceStreamManager().lifecycleStop(monitor);
-	}
-
-	// Stop batch operation manager.
-	if (getBatchOperationManager() != null) {
-	    getBatchOperationManager().lifecycleStop(monitor);
 	}
 
 	// Stop symbol generator manager.
@@ -195,20 +179,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     public void setSymbolGeneratorManager(ISymbolGeneratorManager symbolGeneratorManager) {
 	this.symbolGeneratorManager = symbolGeneratorManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getBatchOperationManager ()
-     */
-    public IBatchOperationManager getBatchOperationManager() {
-	return batchOperationManager;
-    }
-
-    public void setBatchOperationManager(IBatchOperationManager batchOperationManager) {
-	this.batchOperationManager = batchOperationManager;
     }
 
     /*
