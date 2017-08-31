@@ -1,4 +1,4 @@
-package com.sitewhere.device.communication.decoder.composite;
+package com.sitewhere.sources.decoder.composite;
 
 import java.util.ArrayList;
 import java.util.HashMap;

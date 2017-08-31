@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.communication.json;
+package com.sitewhere.sources.decoder.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,29 +18,36 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
+import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Decodes binary device messages in JSON format into device requests for
- * processing.
+ * Event decoder that converts a binary payload into the default SiteWhere REST
+ * implementations using Jackson to marshal them as JSON.
+ * 
+ * DEPRECATED: This only supports events that can be wrapped in a
+ * {@link DeviceEventBatch} object and does not offer full-featured support. Use
+ * {@link JsonDeviceRequestDecoder} instead.
  * 
  * @author Derek
  */
-public class JsonDeviceRequestDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+public class JsonBatchEventDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Used to map data into an object based on JSON parsing */
-    private static ObjectMapper MAPPER = getObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
-    public JsonDeviceRequestDecoder() {
+    public JsonBatchEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
     }
 
@@ -56,8 +63,25 @@ public class JsonDeviceRequestDecoder extends TenantLifecycleComponent implement
 	    throws EventDecodeException {
 	try {
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
-	    DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
-	    events.add(decoded);
+	    DeviceEventBatch batch = mapper.readValue(payload, DeviceEventBatch.class);
+	    for (IDeviceLocationCreateRequest lc : batch.getLocations()) {
+		DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(lc);
+		events.add(decoded);
+	    }
+	    for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
+		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(mc);
+		events.add(decoded);
+	    }
+	    for (IDeviceAlertCreateRequest ac : batch.getAlerts()) {
+		DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
+		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setRequest(ac);
+		events.add(decoded);
+	    }
 	    return events;
 	} catch (JsonParseException e) {
 	    throw new EventDecodeException(e);
@@ -76,20 +100,5 @@ public class JsonDeviceRequestDecoder extends TenantLifecycleComponent implement
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /**
-     * Get configured {@link ObjectMapper}.
-     * 
-     * @return
-     */
-    public static ObjectMapper getObjectMapper() {
-	if (MAPPER == null) {
-	    MAPPER = new ObjectMapper();
-	    SimpleModule module = new SimpleModule();
-	    module.addDeserializer(DecodedDeviceRequest.class, new JsonDeviceRequestMarshaler());
-	    MAPPER.registerModule(module);
-	}
-	return MAPPER;
     }
 }
