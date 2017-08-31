@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    protocol: 'http',
     server: 'localhost',
     port: 8080,
     user: null,
@@ -16,6 +17,10 @@ export default new Vuex.Store({
     error: null
   },
   mutations: {
+    // Set server protocol.
+    protocol (state, protocol) {
+      state.protocol = protocol
+    },
     // Set server hostname.
     server (state, server) {
       state.server = server
@@ -77,6 +82,10 @@ export default new Vuex.Store({
   },
 
   getters: {
+    protocol: state => {
+      return state.protocol
+    },
+
     server: state => {
       return state.server
     },
