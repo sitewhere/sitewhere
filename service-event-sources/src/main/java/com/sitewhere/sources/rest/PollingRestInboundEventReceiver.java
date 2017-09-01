@@ -14,10 +14,10 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.groovy.device.communication.IGroovyVariables;
 import com.sitewhere.sources.PollingInboundEventReceiver;
+import com.sitewhere.sources.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

@@ -22,9 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;

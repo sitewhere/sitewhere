@@ -35,9 +35,6 @@ public class SiteWhere {
     /** Embedded Kafka cluster */
     private static EmbeddedKafkaCluster KAFKA;
 
-    /** Singleton server instance */
-    private static ISiteWhereServer SERVER;
-
     /** SiteWhere version information */
     private static IVersion VERSION;
 
@@ -112,37 +109,13 @@ public class SiteWhere {
      */
     public static void start(ISiteWhereApplication application, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	Class<? extends IVersion> version = application.getVersionClass();
-	Class<? extends ISiteWhereServer> server = application.getServerClass();
-	try {
-	    // Start embedded Zookeeper instance.
-	    LOGGER.info("\n\nStarting Embedded Zookeeper instance...\n");
-	    startEmbeddedZookeeper(monitor);
+	// Start embedded Zookeeper instance.
+	LOGGER.info("\n\nStarting Embedded Zookeeper instance...\n");
+	startEmbeddedZookeeper(monitor);
 
-	    // Start embedded Kafka instance.
-	    LOGGER.info("\n\nStarting Embedded Kafka instance...\n");
-	    startEmbeddedKafka(monitor);
-
-	    LOGGER.info("\n\nStarting SiteWhere...\n");
-	    VERSION = version.newInstance();
-	    SERVER = server.newInstance();
-
-	    // Initialize server.
-	    SERVER.lifecycleInitialize(monitor);
-	    if (SERVER.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		LOGGER.error("Exception while initializing server.", SERVER.getLifecycleError());
-	    }
-
-	    // Start server.
-	    SERVER.lifecycleStart(monitor);
-	    if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw SERVER.getLifecycleError();
-	    }
-	} catch (InstantiationException e) {
-	    throw new SiteWhereException("Unable to create SiteWhere server instance.", e);
-	} catch (IllegalAccessException e) {
-	    throw new SiteWhereException("Unable to access SiteWhere server class.", e);
-	}
+	// Start embedded Kafka instance.
+	LOGGER.info("\n\nStarting Embedded Kafka instance...\n");
+	startEmbeddedKafka(monitor);
     }
 
     /**
@@ -152,42 +125,13 @@ public class SiteWhere {
      * @throws SiteWhereException
      */
     public static void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Stop server.
-	SERVER.lifecycleStop(monitor);
-	if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-	    LOGGER.error("Exception while shutting down server.", SERVER.getLifecycleError());
-	}
-
-	// Terminate server.
-	SERVER.lifecycleTerminate(monitor);
-	if (SERVER.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-	    LOGGER.error("Exception while terminating server.", SERVER.getLifecycleError());
-	}
-
 	// Stop Kafka and Zookeeper instances.
 	stopEmbeddedKafka(monitor);
 	stopEmbeddedZookeeper(monitor);
     }
 
-    /**
-     * Get the singleton SiteWhere server instance.
-     * 
-     * @return
-     */
     public static ISiteWhereServer getServer() {
-	if (SERVER == null) {
-	    throw new RuntimeException("SiteWhere server has not been initialized.");
-	}
-	return SERVER;
-    }
-
-    /**
-     * Determine whether server is available.
-     * 
-     * @return
-     */
-    public static boolean isServerAvailable() {
-	return ((SERVER != null && (SERVER.getLifecycleStatus() == LifecycleStatus.Started)));
+	return null;
     }
 
     /**

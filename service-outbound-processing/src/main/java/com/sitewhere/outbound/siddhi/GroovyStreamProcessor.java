@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.DeviceActions;
+import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;

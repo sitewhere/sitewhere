@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources.activemq;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.apache.activemq.broker.TransportConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -100,12 +98,7 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	    throw new SiteWhereException("Queue name is required.");
 	}
 	if (getDataDirectory() == null) {
-	    File root = new File(SiteWhere.getServer().getConfigurationResolver().getFilesystemConfigurationRoot());
-	    File data = new File(root, "data");
-	    if (!data.exists()) {
-		data.mkdir();
-	    }
-	    setDataDirectory(data.getAbsolutePath());
+	    LOGGER.warn("Data directory is no longer supported.");
 	}
 	try {
 	    brokerService.setBrokerName(getBrokerName());

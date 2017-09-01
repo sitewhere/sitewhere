@@ -2,7 +2,6 @@ package com.sitewhere.tenant.persistence;
 
 import java.util.List;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -12,6 +11,7 @@ import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.tenant.SiteWhere;
 
 /**
  * Persistence logic for tenant management components.

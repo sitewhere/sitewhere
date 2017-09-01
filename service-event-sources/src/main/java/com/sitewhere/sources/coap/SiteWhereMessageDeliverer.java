@@ -19,9 +19,9 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.server.MessageDeliverer;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
+import com.sitewhere.sources.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.communication.EventDecodeException;

@@ -15,7 +15,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
+import com.sitewhere.asset.SiteWhere;
 import com.sitewhere.asset.modules.AssetMatcher;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.command.CommandResponse;

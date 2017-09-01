@@ -10,7 +10,6 @@ package com.sitewhere.registration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.command.DeviceMappingAckCommand;

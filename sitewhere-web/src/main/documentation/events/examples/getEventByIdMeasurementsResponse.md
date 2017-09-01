@@ -1,1 +1,0 @@
-If the result is a measurements event, the response will be similar to the one below:

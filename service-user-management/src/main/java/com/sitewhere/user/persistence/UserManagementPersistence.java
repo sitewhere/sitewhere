@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -18,6 +17,7 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
+import com.sitewhere.user.SiteWhere;
 
 /**
  * Persistence logic for user management components.

@@ -11,8 +11,6 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import com.sitewhere.SiteWhere;
-
 /**
  * Implementation of {@link NamespaceHandler} for supporting SiteWhere tenant
  * configuration elements.

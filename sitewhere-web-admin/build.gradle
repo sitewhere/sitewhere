@@ -8,6 +8,5 @@ springBoot {
 }
 
 dependencies {
-    compile project(':sitewhere-web')
     compile project(':sitewhere-spring')
 }
