@@ -9,7 +9,6 @@ package com.sitewhere.security;
 
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -32,7 +31,7 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
      * @see org.springframework.security.userdetails.UserDetailsService#
      * loadUserByUsername( java.lang. String)
      */
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	try {
 	    IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
 	    List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);

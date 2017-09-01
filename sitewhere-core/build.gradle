@@ -1,5 +1,3 @@
-apply plugin: 'nebula.provided-base'
-
 description = 'SiteWhere Core Library'
 
 configurations {
@@ -14,11 +12,6 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-beans'
     compile group: 'org.springframework', name: 'spring-context'
     compile group: 'org.springframework', name: 'spring-context-support'
-    compile group: 'org.springframework', name: 'spring-tx'
-    compile group: 'org.springframework', name: 'spring-orm'
-    compile group: 'org.springframework', name: 'spring-jdbc'
-    compile group: 'org.springframework', name: 'spring-jms'
-    compile group: 'org.springframework', name: 'spring-webmvc'
     compile group: 'org.springframework.security', name: 'spring-security-config'
     compile group: 'org.springframework.security', name: 'spring-security-core'
     

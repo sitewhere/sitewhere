@@ -7,8 +7,6 @@
  */
 package com.sitewhere.web;
 
-import java.util.Arrays;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.logging.log4j.LogManager;
@@ -21,11 +19,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
-import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
-import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitewhere.SiteWhereApplication;
@@ -45,7 +39,6 @@ import com.sitewhere.web.vue.VueConfiguration;
  * @author Derek
  */
 @Configuration
-@EnableHazelcastHttpSession
 @Import({ SiteWhereSecurity.class })
 public class SiteWhereWebApplication extends SiteWhereApplication {
 
@@ -80,16 +73,6 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	registration.setName("sitewhereRestInterface");
 	registration.setLoadOnStartup(1);
 	return registration;
-    }
-
-    @Bean
-    @Order(value = 0)
-    public FilterRegistrationBean sessionRepositoryFilterRegistration(
-	    SessionRepositoryFilter<?> springSessionRepositoryFilter) {
-	FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-	filterRegistrationBean.setFilter(new DelegatingFilterProxy(springSessionRepositoryFilter));
-	filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
-	return filterRegistrationBean;
     }
 
     @Bean

@@ -16,12 +16,7 @@ buildscript {
 	}
 }
 
-ext {
-	releaseBuild = hasProperty('releaseBuild') ? releaseBuild : System.getenv('RELEASE_BUILD')
-}
-
 ext['swArtifact'] = 'sitewhere-server'
-ext['spring-session.version'] = '1.3.0.RELEASE'
 ext['solr.version'] = '6.4.0'
 ext['mongodb.version'] = '3.4.2'
 ext['kafka.version'] = '0.11.0.0'
@@ -32,12 +27,6 @@ apply plugin: 's3'
 s3 {
     bucket = 'sitewhere'
     awsProfile = 'gradle'
-}
-
-// Use Docker plugin to allow for creating/pushing an image.
-apply plugin: 'com.bmuschko.docker-remote-api'
-docker {
-    url = dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 }
 
 allprojects {
@@ -58,12 +47,19 @@ allprojects {
 subprojects {
 	apply plugin: 'eclipse'
  	apply plugin: 'io.spring.dependency-management'
+
+	// Use Docker plugin to allow for creating/pushing an image.
+	apply plugin: 'com.bmuschko.docker-remote-api'
+	docker {
+	    url = dockerProtocol + '://' + dockerHostname + ':' + dockerPort
+	}
  	
+ 	// Choose Java settings.
     apply plugin: 'java'
-    
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     
+    // Use Spring dependency management.
 	dependencyManagement {
 		imports {
 			mavenBom 'io.spring.platform:platform-bom:2.0.5.RELEASE'
@@ -78,198 +74,4 @@ subprojects {
     test {
         exclude '**/*'
     }
-
-    javadoc {
-    	failOnError = false
-        options.footer = '<script>(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,"script","//www.google-analytics.com/analytics.js","ga");ga("create", "UA-42457307-1", {"cookieDomain": "sitewhere.org"});ga("send", "pageview");</script>'
-    }
-    
-	if (releaseBuild) {
-     	apply plugin: 'com.bmuschko.nexus'
-		
-		// Set up default POM to be uploaded to Nexus.
-		modifyPom {
-			project {
-				name project.description
-				description project.description
-				url 'http://www.sitewhere.org/'
-				inceptionYear '2009'
-				
-				scm {
-					url 'https://github.com/sitewhere/sitewhere'
-					connection 'https://github.com/sitewhere/sitewhere.git'
-				}
-	
-				issueManagement {
-					system 'Jira'
-					url 'https://sitewhere.atlassian.net'
-				}
-				
-				organization {
-					name 'SiteWhere, LLC.'
-					url 'http://www.sitewhere.com/'
-				}
-	
-				licenses {
-					license {
-						name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
-						url 'http://opensource.org/licenses/CPAL-1.0'
-						distribution 'repo'
-					}
-				}
-	
-				developers {
-					developer {
-						id 'derekadams'
-						name 'Derek Adams'
-						email 'derek.adams@sitewhere.com'
-					}
-				}
-			}
-		}
-    }
-}
-
-// Arranges files to be packaged as a distribution.
-task createServerDistro(dependsOn: subprojects.build) {
-    doLast {
- 
-        copy {
-            from(project.projectDir.path + '/server')
-            into "$buildDir/sitewhere" 
-		}
-    	
-        copy {
-            from(project(':sitewhere-web-admin').war)
-            into "$buildDir/sitewhere/lib" 
-
-            rename { String fileName ->
-                fileName.replace("sitewhere-web-admin-${version}.war", 'sitewhere.war')
-            }
-        }
-    }
-}
-
-// Build server zip distribution.
-task serverZip(type: Zip, dependsOn: createServerDistro) {
-    baseName = 'sitewhere-server'
-    from "$buildDir/sitewhere"
-    into "${baseName}-${project.version}"
-}
-
-// Upload server zip file to Amazon S3
-task uploadServerZip(type: com.github.skhatri.s3aws.plugin.S3UploadTask, dependsOn: serverZip) {
-    key = "sitewhere-server-${project.version}.zip"
-    file = "$buildDir/distributions/sitewhere-server-${project.version}.zip"
-    
-    doLast {
-    	println 'Uploaded server zip to Amazon S3.'
-    }
-}
-
-// Build server tar distribution.
-task serverTar(type: Tar, dependsOn: createServerDistro) {
-    baseName = 'sitewhere-server'
-    compression = 'GZIP'
- 	from("$buildDir/sitewhere") {
-		exclude ('**/*.sh')
-	}
-	from("$buildDir/sitewhere") {
-		include ('**/*.sh')
-		filter(FixCrLfFilter, eol:FixCrLfFilter.CrLf.newInstance("lf"))
-		fileMode 0755
-	}
-	into "${baseName}-${project.version}"
-}
-
-// Upload server tar file to Amazon S3
-task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, dependsOn: serverTar) {
-    key = "sitewhere-server-${project.version}.tgz"
-    file = "$buildDir/distributions/sitewhere-server-${project.version}.tgz"
-    
-    doLast {
-    	println 'Uploaded server tar to Amazon S3.'
-    }
-}
-
-// Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: serverTar) {
-    destFile = project.file('build/docker/Dockerfile')
-    from 'ubuntu:14.04'
-    maintainer 'Derek Adams "derek.adams@sitewhere.com"'
-    
-    // Install updates to the base image.
-    runCommand 'apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:openjdk-r/ppa && apt-get update && apt-get install -y wget openjdk-8-jre-headless'
-	
-	// Expose web and Hazelcast ports.
-	exposePort 8080, 5701
-
-	// Set environment variable.
-	environmentVariable 'SITEWHERE_HOME', "/opt/${swArtifact}-${version}"
-	
-	// Copy archive and install SiteWhere.
-	copyFile("${swArtifact}-${project.version}.tgz", "/opt")
-	runCommand "cd /opt && tar xvf ${swArtifact}-${version}.tgz && rm ${swArtifact}-${version}.tgz && ln -s /opt/${swArtifact}-${version} /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/${swArtifact}-${version} && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/${swArtifact}-${version}/bin/*.sh"
-
-	// Run the startup script and start tailing the log.
-	defaultCommand '/opt/sitewhere/bin/startup.sh' 
-}
-
-// Copy artifact to Docker input folder.
-task copyArtifactToDocker(type: Copy, dependsOn: dockerFile) {
-    from "$buildDir/distributions/${swArtifact}-${project.version}.tgz"
-    into 'build/docker'
-}
-
-// Build an image from the Dockerfile.
-task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactToDocker) {
-    inputDir = project.file('build/docker')
-    tag = "${dockerRepository}/sitewhere/sitewhere:${version}"
-}
-
-// Create a standalone Dockerfile.
-task standaloneDockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: serverTar) {
-    destFile = project.file('build/docker/Dockerfile')
-    from 'ubuntu:14.04'
-    maintainer 'Derek Adams "derek.adams@sitewhere.com"'
-    
-    // Install updates to the base image.
-    runCommand 'apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:openjdk-r/ppa && apt-get update && apt-get install -y wget openjdk-8-jre-headless'
-
-	// Install HiveMQ
-	runCommand "apt-get install -y unzip && cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip && unzip hivemq-3.0.2.zip"
-	copyFile("config.xml", "/opt/hivemq-3.0.2/conf/config.xml")
-	runCommand "ln -s /opt/hivemq-3.0.2 /opt/hivemq && useradd -d /opt/hivemq hivemq && chown -R hivemq.hivemq /opt/hivemq-3.0.2 && chown -R hivemq.hivemq /opt/hivemq && cd /opt/hivemq && chmod +x ./bin/run.sh"
-
-	// Install MongoDB
-	runCommand "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list && apt-get update && apt-get install -y mongodb-org && mkdir -p /data/db"
-	
-	// Expose MQTT, Web, Hazelcast, MonogDB, and MQTT/WebSocket ports.
-	exposePort 1883, 8080, 5701, 27017, 61623
-
-	// Set environment variable.
-	environmentVariable 'SITEWHERE_HOME', "/opt/${swArtifact}-${version}"
-	
-	// Copy archive and install SiteWhere.
-	copyFile("${swArtifact}-${project.version}.tgz", "/opt")
-	runCommand "cd /opt && tar xvf ${swArtifact}-${version}.tgz && rm ${swArtifact}-${version}.tgz && ln -s /opt/${swArtifact}-${version} /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/${swArtifact}-${version} && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/${swArtifact}-${version}/bin/*.sh"
-
-	// Copy startup file and execute it.
-	copyFile("start.sh", "/opt/start.sh")
-	runCommand "chmod +x /opt/start.sh"
-	defaultCommand "/opt/start.sh"
-}
-
-// Copy artifact to Docker input folder.
-task copyStandaloneArtifactsToDocker(type: Copy, dependsOn: standaloneDockerFile) {
-    from "$projectDir/sitewhere-docker/standalone/start.sh"
-    from "$projectDir/sitewhere-docker/hivemq/3.0.2/config.xml"
-    from "$buildDir/distributions/${swArtifact}-${project.version}.tgz"
-    into 'build/docker'
-}
-
-// Build an image from the Dockerfile.
-task dockerStandaloneImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyStandaloneArtifactsToDocker) {
-    inputDir = project.file('build/docker')
-    tag = "${dockerRepository}/sitewhere/standalone:${version}"
 }

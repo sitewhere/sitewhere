@@ -15,7 +15,6 @@ dependencies {
  	compile ('org.apache.velocity:velocity')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'
-    compile group: 'org.springframework.session', name: 'spring-session', version:'1.3.0.RELEASE'
   
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
