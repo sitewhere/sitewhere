@@ -20,6 +20,7 @@ include ':sitewhere-communication'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-hbase'
+include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
 include ':sitewhere-server-api'
@@ -49,6 +50,7 @@ project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communicati
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
+project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
 project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File

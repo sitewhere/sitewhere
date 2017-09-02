@@ -1,0 +1,5 @@
+description = 'SiteWhere Common Microservice Library'
+
+dependencies {
+	compile project(':sitewhere-core')
+}
