@@ -9,7 +9,6 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,7 +31,6 @@ import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
-import com.sitewhere.server.scheduling.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.batch.IBatchElement;
@@ -41,7 +39,6 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
-import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.SiteWhere;
@@ -173,9 +170,12 @@ public class BatchOperationsController extends RestController {
 	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	assureDeviceCommand(request.getCommandToken(), servletRequest);
-	IScheduledJobCreateRequest job = ScheduledJobHelper
-		.createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(), request, scheduleToken);
-	return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
+	// IScheduledJobCreateRequest job = ScheduledJobHelper
+	// .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
+	// request, scheduleToken);
+	// return
+	// SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
+	return null;
     }
 
     /**

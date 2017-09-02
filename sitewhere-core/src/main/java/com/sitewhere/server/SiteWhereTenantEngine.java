@@ -35,8 +35,6 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.server.scheduling.QuartzScheduleManager;
-import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
@@ -60,7 +58,6 @@ import com.sitewhere.spi.resource.ResourceCreateMode;
 import com.sitewhere.spi.resource.ResourceType;
 import com.sitewhere.spi.resource.request.IResourceCreateRequest;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.ITenantRuntimeState;
@@ -134,9 +131,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Interface for the search provider manager */
     private ISearchProviderManager searchProviderManager;
-
-    /** Interface for the schedule manager */
-    private IScheduleManager scheduleManager;
 
     /** Threads used to issue engine commands */
     private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
@@ -338,9 +332,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Initialize device event management.
 	setDeviceEventManagement(initializeDeviceEventManagement());
-
-	// Initialize schedule management.
-	setScheduleManagement(initializeScheduleManagement());
     }
 
     /**
@@ -405,25 +396,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    return (IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No event processing subsystem implementation configured.");
-	}
-    }
-
-    /**
-     * Verify and initialize schedule manager.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IScheduleManagement initializeScheduleManagement() throws SiteWhereException {
-	try {
-	    IScheduleManagement implementation = (IScheduleManagement) tenantContext
-		    .getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
-	    scheduleManager = (IScheduleManager) new QuartzScheduleManager(implementation);
-
-	    IScheduleManagement withTriggers = new ScheduleManagementTriggers(implementation, scheduleManager);
-	    return withTriggers;
-	} catch (NoSuchBeanDefinitionException e) {
-	    throw new SiteWhereException("No schedule manager implementation configured.");
 	}
     }
 
@@ -570,10 +542,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start device communication subsystem.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
 		"Started device communication subsystem", "Device communication subsystem startup failed.", true));
-
-	// Start schedule manager.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManager(), "Started schedule manager",
-		"Schedule manager startup failed.", true));
     }
 
     /*
@@ -662,9 +630,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
-	// Stop scheduling new jobs.
-	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManager(), "Stopped schedule manager"));
-
 	// Disable device communications.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication(),
 		"Stopped device communication subsystem"));
@@ -1079,18 +1044,5 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setSearchProviderManager(ISearchProviderManager searchProviderManager) {
 	this.searchProviderManager = searchProviderManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManager()
-     */
-    public IScheduleManager getScheduleManager() {
-	return scheduleManager;
-    }
-
-    public void setScheduleManager(IScheduleManager scheduleManager) {
-	this.scheduleManager = scheduleManager;
     }
 }

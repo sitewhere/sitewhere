@@ -5,13 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.scheduling;
+package com.sitewhere.schedule;
 
-import com.sitewhere.SiteWhere;
+import com.sitewhere.schedule.spi.IScheduleManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -81,7 +80,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     @Override
     public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
 	IScheduledJob job = super.deleteScheduledJob(token, force);
-	SiteWhere.getServer().getScheduleManager(getTenant()).unscheduleJob(job);
+	getScheduleManager().unscheduleJob(job);
 	return job;
     }
 

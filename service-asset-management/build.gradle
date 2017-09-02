@@ -26,28 +26,24 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
     // Install updates to the base image.
     runCommand 'apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:openjdk-r/ppa && apt-get update && apt-get install -y wget openjdk-8-jre-headless'
 	
-	// Expose web and Hazelcast ports.
-	exposePort 8080, 5701
-
-	// Set environment variable.
-	environmentVariable 'SITEWHERE_HOME', "/opt/${swArtifact}-${version}"
+	// Expose ports.
+	exposePort 8080
 	
-	// Copy archive and install SiteWhere.
-	copyFile("${swArtifact}-${project.version}.tgz", "/opt")
-	runCommand "cd /opt && tar xvf ${swArtifact}-${version}.tgz && rm ${swArtifact}-${version}.tgz && ln -s /opt/${swArtifact}-${version} /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/${swArtifact}-${version} && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/${swArtifact}-${version}/bin/*.sh"
+	// Copy Spring Boot jar.
+	copyFile("${project.name}-${project.version}.jar", "/opt")
 
 	// Run the startup script and start tailing the log.
-	defaultCommand '/opt/sitewhere/bin/startup.sh' 
+	defaultCommand 'java', '-jar', "/opt/${project.name}-${project.version}.jar"
 }
 
 // Copy artifact to Docker input folder.
 task copyArtifactToDocker(type: Copy, dependsOn: dockerFile) {
-    from "$buildDir/distributions/${swArtifact}-${project.version}.tgz"
+    from "${buildDir}/libs/${project.name}-${project.version}.jar"
     into 'build/docker'
 }
 
 // Build an image from the Dockerfile.
 task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactToDocker) {
     inputDir = project.file('build/docker')
-    tag = "${dockerRepository}/sitewhere/sitewhere:${version}"
+    tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
 }

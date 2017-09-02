@@ -20,7 +20,6 @@ import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
@@ -121,14 +120,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public ISearchProviderManager getSearchProviderManager();
-
-    /**
-     * Get the schedule manager implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public IScheduleManager getScheduleManager() throws SiteWhereException;
 
     /**
      * Get current runtime state of engine.

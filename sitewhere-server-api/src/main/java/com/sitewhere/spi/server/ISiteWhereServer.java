@@ -23,7 +23,6 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
@@ -262,15 +261,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException;
-
-    /**
-     * Get schedule manager for tenant.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get Groovy configuration for tenant.

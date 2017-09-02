@@ -18,23 +18,21 @@ dependencies {
 	compile ('org.springframework.boot:spring-boot-starter')
 	compile ('org.springframework.boot:spring-boot-starter-log4j2')
     
-    compile group: 'org.apache.kafka', name: 'kafka_2.11', version:'0.11.0.0'
-    compile group: 'org.apache.kafka', name: 'kafka-clients', version:'0.11.0.0'
+    compile group: 'org.apache.kafka', name: 'kafka_2.11', version: "${rootProject.ext['kafka.version']}"
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext['kafka.version']}"
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
     
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
-    compile group: 'com.google.guava', name: 'guava', version:'18.0'
     compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
     compile group: 'joda-time', name: 'joda-time', version:'2.9.1'
     
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'commons-collections', name: 'commons-collections'
     compile group: 'commons-io', name: 'commons-io'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient'
-    compile group: 'org.apache.httpcomponents', name: 'httpcore'
 }
 
 processResources {

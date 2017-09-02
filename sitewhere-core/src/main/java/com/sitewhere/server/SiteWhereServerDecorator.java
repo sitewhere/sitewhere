@@ -24,7 +24,6 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
@@ -361,17 +360,6 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException {
 	return server.getSearchProviderManager(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.
-     * sitewhere.spi. user.ITenant)
-     */
-    @Override
-    public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
-	return server.getScheduleManager(tenant);
     }
 
     /*
