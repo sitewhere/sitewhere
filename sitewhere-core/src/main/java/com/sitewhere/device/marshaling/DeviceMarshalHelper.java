@@ -83,6 +83,7 @@ public class DeviceMarshalHelper {
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteToken(source.getSiteToken());
 	result.setParentHardwareId(source.getParentHardwareId());
+	result.setStatus(source.getStatus());
 	result.setComments(source.getComments());
 	MetadataProviderEntity.copy(source, result);
 
