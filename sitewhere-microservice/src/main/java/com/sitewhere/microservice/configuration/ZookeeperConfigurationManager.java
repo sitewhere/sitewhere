@@ -7,6 +7,11 @@
  */
 package com.sitewhere.microservice.configuration;
 
+/**
+ * Handles microservice configuration by interacting with Apache Zookeeper.
+ * 
+ * @author Derek
+ */
 public class ZookeeperConfigurationManager {
 
     public ZookeeperConfigurationManager() {
