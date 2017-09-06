@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance;
+package com.sitewhere.instance.microservice;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,8 +54,8 @@ public class InstanceManagement extends Microservice {
 	// Create step that will
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Verify or create folder for instance information.
-	start.addStep(verifyOrCreateInstanceFolder());
+	// Verify or create Zk node for instance information.
+	start.addStep(verifyOrCreateInstanceNode());
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -68,35 +68,25 @@ public class InstanceManagement extends Microservice {
      * 
      * @return
      */
-    public ILifecycleStep verifyOrCreateInstanceFolder() {
-	return new SimpleLifecycleStep("Verify or create folder for instance information") {
+    public ILifecycleStep verifyOrCreateInstanceNode() {
+	return new SimpleLifecycleStep("Verify instance bootstrapped") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		try {
 		    Stat existing = getZookeeperConfigurationManager().getCurator().checkExists()
-			    .forPath(getInstanceNodePath());
+			    .forPath(getInstanceZkPath());
 		    if (existing == null) {
-			LOGGER.info("Zookeeper node for instance not found. Creating.");
-			String path = getZookeeperConfigurationManager().getCurator().create()
-				.forPath(getInstanceNodePath());
-			LOGGER.info("Created " + path + ".");
+			LOGGER.info("Zk node for instance not found. Creating...");
+			getZookeeperConfigurationManager().getCurator().create().forPath(getInstanceZkPath());
+			LOGGER.info("Created instance Zk node.");
 		    } else {
-			LOGGER.info("Found Zookeeper node for instance.");
+			LOGGER.info("Found Zk node for instance.");
 		    }
 		} catch (Exception e) {
 		    throw new SiteWhereException(e);
 		}
 	    }
 	};
-    }
-
-    /**
-     * Get path for storing instance information.
-     * 
-     * @return
-     */
-    protected String getInstanceNodePath() {
-	return "/" + getInstanceId();
     }
 }

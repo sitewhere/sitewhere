@@ -96,6 +96,40 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroservice#waitOnInstanceInitialization
+     * ()
+     */
+    @Override
+    public void waitOnInstanceInitialization() throws SiteWhereException {
+	try {
+	    LOGGER.info("Verifying that instance has been bootstrapped...");
+	    while (true) {
+		if (getZookeeperConfigurationManager().getCurator().checkExists()
+			.forPath(getInstanceZkPath()) != null) {
+		    break;
+		}
+		Thread.sleep(1000);
+	    }
+	    LOGGER.info("Confirmed that instance was bootstrapped.");
+	} catch (Exception e) {
+	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceZkPath()
+     */
+    @Override
+    public String getInstanceZkPath() {
+	return "/" + getInstanceId();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#
      * getZookeeperConfigurationManager()
      */

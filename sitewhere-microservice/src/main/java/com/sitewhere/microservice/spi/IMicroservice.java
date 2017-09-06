@@ -1,5 +1,6 @@
 package com.sitewhere.microservice.spi;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -17,6 +18,13 @@ public interface IMicroservice extends ILifecycleComponent {
     public String getInstanceId();
 
     /**
+     * Get Zookeeper node path for instance.
+     * 
+     * @return
+     */
+    public String getInstanceZkPath();
+
+    /**
      * Get name shown for microservice.
      * 
      * @return
@@ -29,4 +37,12 @@ public interface IMicroservice extends ILifecycleComponent {
      * @return
      */
     public IZookeeperConfigurationManager getZookeeperConfigurationManager();
+
+    /**
+     * Wait on SiteWhere instance configuration metadata to become initialized
+     * before proceeding.
+     * 
+     * @throws SiteWhereException
+     */
+    public void waitOnInstanceInitialization() throws SiteWhereException;
 }
