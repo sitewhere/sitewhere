@@ -26,8 +26,14 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Default instance id value */
+    private static final String DEFAULT_INSTANCE_ID = "default";
+
     /** Zookeeper configuration manager */
     private IZookeeperConfigurationManager zookeeperConfigurationManager = new ZookeeperConfigurationManager();
+
+    /** Instance id service belongs to */
+    private String instanceId = DEFAULT_INSTANCE_ID;
 
     /*
      * (non-Javadoc)
@@ -37,6 +43,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Load instance id from environment if available.
+	checkEnvForInstanceId();
+
 	// Organizes steps for starting microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -46,6 +55,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+    }
+
+    /**
+     * Check environment variable for SiteWhere instance id.
+     */
+    protected void checkEnvForInstanceId() {
+	String envInstanceId = System.getenv().get(MicroserviceEnvironment.ENV_INSTANCE_ID);
+	if (envInstanceId != null) {
+	    setInstanceId(envInstanceId);
+	    LOGGER.info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
+		    + envInstanceId);
+	}
     }
 
     /*
@@ -85,6 +106,20 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setZookeeperConfigurationManager(IZookeeperConfigurationManager zookeeperConfigurationManager) {
 	this.zookeeperConfigurationManager = zookeeperConfigurationManager;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceId()
+     */
+    @Override
+    public String getInstanceId() {
+	return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+	this.instanceId = instanceId;
     }
 
     /*

@@ -94,11 +94,12 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
 		.connectString(getZkConnection()).retryPolicy(retryPolicy).build();
 	getCurator().start();
 	try {
-	    getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS);
+	    if (!getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS)) {
+		throw new SiteWhereException("Unable to connect to Zookeeper.");
+	    }
 	} catch (InterruptedException e) {
-	    throw new SiteWhereException("Unable to connect to Zookeeper.", e);
+	    throw new SiteWhereException("Interrupted while connecting to Zookeeper.", e);
 	}
-	onConnected();
     }
 
     /**
@@ -110,15 +111,6 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
 	if (getCurator() != null) {
 	    getCurator().close();
 	}
-    }
-
-    /**
-     * Called when Zookeeper is connected.
-     * 
-     * @throws SiteWhereException
-     */
-    public void onConnected() throws SiteWhereException {
-	LOGGER.info("CONNECTED TO ZOOKEEPER!!!!");
     }
 
     /*

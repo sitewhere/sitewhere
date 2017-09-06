@@ -10,6 +10,13 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IMicroservice extends ILifecycleComponent {
 
     /**
+     * Get instance id service is associated with.
+     * 
+     * @return
+     */
+    public String getInstanceId();
+
+    /**
      * Get name shown for microservice.
      * 
      * @return

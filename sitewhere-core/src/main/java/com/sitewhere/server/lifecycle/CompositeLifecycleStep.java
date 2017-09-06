@@ -76,6 +76,10 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 		step.execute(monitor);
 		monitor.finishProgress();
 	    }
+	} catch (SiteWhereException e) {
+	    throw e;
+	} catch (Throwable e) {
+	    throw new SiteWhereException("Unhandled exception in composite lifeycle step.", e);
 	} finally {
 	    monitor.popContext();
 	}
