@@ -90,8 +90,8 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
      */
     protected void connect() throws SiteWhereException {
 	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-	this.curator = CuratorFrameworkFactory.newClient(getZkConnection(), retryPolicy)
-		.usingNamespace(SITEWHERE_ZK_NAMESPACE);
+	this.curator = CuratorFrameworkFactory.builder().namespace(SITEWHERE_ZK_NAMESPACE)
+		.connectString(getZkConnection()).retryPolicy(retryPolicy).build();
 	getCurator().start();
 	try {
 	    getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS);
@@ -118,6 +118,7 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
      * @throws SiteWhereException
      */
     public void onConnected() throws SiteWhereException {
+	LOGGER.info("CONNECTED TO ZOOKEEPER!!!!");
     }
 
     /*
