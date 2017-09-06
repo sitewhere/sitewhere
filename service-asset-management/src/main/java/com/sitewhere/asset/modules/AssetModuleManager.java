@@ -73,7 +73,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	initializeNestedComponent(dsModuleManager, monitor);
+	initializeNestedComponent(dsModuleManager, monitor, "Unable to initialize datastore asset manager.", true);
     }
 
     /*

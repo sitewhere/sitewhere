@@ -760,7 +760,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	LOGGER.info("Registering " + components.size() + " discoverable components.");
 	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
-	    initializeNestedComponent(component, monitor);
+	    initializeNestedComponent(component, monitor, "Unable to initialize discoverable component.", false);
 	    getRegisteredLifecycleComponents().add(component);
 	}
     }
@@ -993,8 +993,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
 	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
-	initializeNestedComponent(engine, new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")));
+	initializeNestedComponent(engine,
+		new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")),
+		"Tenant engine initialization failed.", false);
 	if (engine.getLifecycleStatus() != LifecycleStatus.InitializationError) {
 	    registerTenant(tenant, engine);
 	    return engine;

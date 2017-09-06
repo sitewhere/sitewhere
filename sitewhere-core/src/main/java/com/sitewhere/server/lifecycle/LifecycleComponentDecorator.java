@@ -155,12 +155,13 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
+     * java.lang.String, boolean)
      */
     @Override
-    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	delegate.initializeNestedComponent(component, monitor);
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
+	delegate.initializeNestedComponent(component, monitor, errorMessage, require);
     }
 
     /*

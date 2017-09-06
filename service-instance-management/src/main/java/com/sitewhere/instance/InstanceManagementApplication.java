@@ -7,7 +7,10 @@
  */
 package com.sitewhere.instance;
 
+import org.springframework.boot.SpringApplication;
+
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.microservice.spi.IMicroservice;
 
 /**
  * Spring Boot application for instance management microservice.
@@ -16,6 +19,26 @@ import com.sitewhere.microservice.MicroserviceApplication;
  */
 public class InstanceManagementApplication extends MicroserviceApplication {
 
-    public InstanceManagementApplication() {
+    /** Instance management microservice */
+    private InstanceManagement service = new InstanceManagement();
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return service;
+    }
+
+    /**
+     * Entry point for Spring Boot.
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+	SpringApplication.run(InstanceManagementApplication.class, args);
     }
 }

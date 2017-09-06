@@ -50,6 +50,10 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /** Map of contained lifecycle components */
     private Map<String, ILifecycleComponent> lifecycleComponents = new HashMap<String, ILifecycleComponent>();
 
+    public LifecycleComponent() {
+	this(LifecycleComponentType.Other);
+    }
+
     public LifecycleComponent(LifecycleComponentType type) {
 	this.componentType = type;
     }
@@ -155,12 +159,18 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
-    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
+    public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
+	    String errorMessage, boolean require) throws SiteWhereException {
 	component.lifecycleInitialize(monitor);
+	if (require) {
+	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw new ServerStartupException(component, errorMessage);
+	    }
+	}
+	getLifecycleComponents().put(component.getComponentId(), component);
     }
 
     /*

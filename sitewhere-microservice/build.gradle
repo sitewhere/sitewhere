@@ -2,4 +2,6 @@ description = 'SiteWhere Common Microservice Library'
 
 dependencies {
 	compile project(':sitewhere-core')
+	
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
 }

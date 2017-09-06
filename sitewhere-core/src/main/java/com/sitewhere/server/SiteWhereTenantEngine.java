@@ -315,7 +315,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	LOGGER.info("Registering " + components.size() + " discoverable components.");
 	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
-	    initializeNestedComponent(component, monitor);
+	    initializeNestedComponent(component, monitor, "Unable to initialize discoverable component.", false);
 	    getRegisteredLifecycleComponents().add(component);
 	}
     }
