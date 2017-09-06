@@ -7,14 +7,16 @@
  */
 package com.sitewhere.microservice.configuration;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 
+import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.spi.IZookeeperConfigurationManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,8 +29,14 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class ZookeeperConfigurationManager extends LifecycleComponent implements IZookeeperConfigurationManager {
 
+    /** Base namespace for all SiteWhere Zookeeper artifacts */
+    private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
+
     /** Default Zookeeper connection string */
     private static final String DEFAULT_ZK_CONNECTION = "localhost:2181";
+
+    /** Max time in seconds to wait for Zookeeper connection */
+    private static final int MAX_ZK_WAIT_SECS = 30;
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -36,8 +44,8 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
     /** Zookeeper connection information */
     private String zkConnection = DEFAULT_ZK_CONNECTION;
 
-    /** Zookeeper connection */
-    private ZooKeeper zookeeper;
+    /** Curator client */
+    private CuratorFramework curator;
 
     /*
      * (non-Javadoc)
@@ -47,6 +55,7 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	checkEnvForZkConnect();
 	connect();
     }
 
@@ -63,35 +72,33 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
     }
 
     /**
+     * Check environment variable for Zookeeper connection information.
+     */
+    protected void checkEnvForZkConnect() {
+	String envZkConnect = System.getenv().get(MicroserviceEnvironment.ENV_ZOOKEEPER_CONNECT);
+	if (envZkConnect != null) {
+	    setZkConnection(envZkConnect);
+	    LOGGER.info("Zookeeper connection string loaded from " + MicroserviceEnvironment.ENV_ZOOKEEPER_CONNECT
+		    + ": " + envZkConnect);
+	}
+    }
+
+    /**
      * Connect to Zookeeper.
      * 
      * @throws SiteWhereException
      */
     protected void connect() throws SiteWhereException {
+	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+	this.curator = CuratorFrameworkFactory.newClient(getZkConnection(), retryPolicy)
+		.usingNamespace(SITEWHERE_ZK_NAMESPACE);
+	getCurator().start();
 	try {
-	    zookeeper = new ZooKeeper(getZkConnection(), 3000, new Watcher() {
-		public void process(WatchedEvent event) {
-		    switch (event.getState()) {
-		    case SyncConnected: {
-			LOGGER.info("Connected to Zookeeper.");
-			try {
-			    onConnected(event);
-			} catch (SiteWhereException e) {
-			    LOGGER.error("Connected handler threw exception.", e);
-			}
-			break;
-		    }
-		    default: {
-			LOGGER.warn("Zookeeper state was " + event.getState().name());
-			break;
-		    }
-		    }
-		}
-	    });
-	} catch (IOException e) {
-	    LOGGER.error("Unable to connect to Zookeeper.", e);
+	    getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS);
+	} catch (InterruptedException e) {
 	    throw new SiteWhereException("Unable to connect to Zookeeper.", e);
 	}
+	onConnected();
     }
 
     /**
@@ -100,22 +107,32 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
      * @throws SiteWhereException
      */
     protected void disconnect() throws SiteWhereException {
-	if (zookeeper != null) {
-	    try {
-		zookeeper.close();
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Unable to close Zookeeper connection.", e);
-	    }
+	if (getCurator() != null) {
+	    getCurator().close();
 	}
     }
 
     /**
      * Called when Zookeeper is connected.
      * 
-     * @param event
      * @throws SiteWhereException
      */
-    public void onConnected(WatchedEvent event) throws SiteWhereException {
+    public void onConnected() throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IZookeeperConfigurationManager#getCurator(
+     * )
+     */
+    public CuratorFramework getCurator() {
+	return curator;
+    }
+
+    public void setCurator(CuratorFramework curator) {
+	this.curator = curator;
     }
 
     /*

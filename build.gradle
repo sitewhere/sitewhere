@@ -20,6 +20,7 @@ ext['solr.version'] = '6.4.0'
 ext['mongodb.version'] = '3.4.2'
 ext['kafka.version'] = '0.11.0.0'
 ext['zookeeper.version'] = '3.4.8'
+ext['curator.version'] = '3.3.0'
 
 apply plugin: 'distribution'
 

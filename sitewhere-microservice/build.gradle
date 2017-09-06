@@ -4,4 +4,5 @@ dependencies {
 	compile project(':sitewhere-core')
 	
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
+    compile group: 'org.apache.curator', name: 'curator-recipes', version: "${rootProject.ext['curator.version']}"
 }
