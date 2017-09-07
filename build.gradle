@@ -8,7 +8,7 @@ buildscript {
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
 		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
-		classpath 'gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3'
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
 		classpath 'io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE'
 		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
 		classpath 'com.github.skhatri:gradle-s3-plugin:1.0.2'

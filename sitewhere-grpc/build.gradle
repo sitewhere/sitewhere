@@ -1,0 +1,6 @@
+description = 'SiteWhere GRPC Library'
+
+dependencies {
+}
+
+apply plugin: 'com.google.protobuf'
