@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "TenantModel";
+
+import "sitewhere-common.proto";
+
+// Information for creating a tenant.
+message GTenantCreateRequest {
+	string id = 1;
+	string name = 2;
+	string authenticationToken = 3;
+	string logoUrl = 4;
+	string tenantTemplateId = 5;
+	repeated string authorizedUserIds = 6;
+	map<string, string> metadata = 7;
+}
+
+// Information for a tenant.
+message GTenant {
+	string id = 1;
+	string name = 2;
+	string authenticationToken = 3;
+	string logoUrl = 4;
+	string tenantTemplateId = 5;
+	repeated string authorizedUserIds = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}

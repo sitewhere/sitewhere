@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.model";
+option java_outer_classname = "TenantServices";
+
+import "tenant-model.proto";
+
+service TenantManagement {
+
+	// Create a new tenant.
+	rpc CreateTenant (GTenantCreateRequest) returns (GTenant) {}
+}

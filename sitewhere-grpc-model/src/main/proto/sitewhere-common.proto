@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "CommonModel";
+
+// Common entity information.
+message GEntityInformation {
+	int64 createdDate = 1;
+	string createdBy = 2;
+	int64 updatedDate = 3;
+	string updatedBy = 4;
+	bool deleted = 5;
+}
