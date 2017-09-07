@@ -1,6 +1,36 @@
 description = 'SiteWhere GRPC Library'
 
+apply plugin: 'com.google.protobuf'
+
 dependencies {
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.3.0'
+	compile group: 'io.grpc', name: 'grpc-stub', version: '1.5.0'
+	compile group: 'io.grpc', name: 'grpc-protobuf', version: '1.5.0'
 }
 
-apply plugin: 'com.google.protobuf'
+protobuf {
+
+	// Configure the protoc executable
+	protoc {
+	
+		// Download from repositories.
+		artifact = "com.google.protobuf:protoc:3.3.0"
+	}
+  
+  	// Add GRPC plugin.
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.5.0'
+		}
+	}
+  
+	// Choose which tasks are executed.
+	generateProtoTasks {
+		all().each { task ->
+      		task.plugins {
+        		grpc {}
+      		}
+      		task.generateDescriptorSet = true		
+      	}
+	}
+}
