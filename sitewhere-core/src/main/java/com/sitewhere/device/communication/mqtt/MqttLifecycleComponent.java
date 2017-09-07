@@ -24,6 +24,7 @@ import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
+import org.fusesource.mqtt.client.QoS;
 import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -79,6 +80,15 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
     /** Password */
     private String password;
+
+    /** Client id */
+    private String clientId;
+
+    /** Clean session flag */
+    private boolean cleanSession = true;
+
+    /** Quality of service */
+    private String qos = QoS.AT_LEAST_ONCE.name();
 
     /** MQTT client */
     private MQTT mqtt;
@@ -211,6 +221,15 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
 	boolean usingSSL = component.getProtocol().startsWith("ssl");
 	boolean usingTLS = component.getProtocol().startsWith("tls");
+
+	// Optionally set client id.
+	if (component.getClientId() != null) {
+	    mqtt.setClientId(component.getClientId());
+	    LOGGER.info("MQTT connection will use client id '" + component.getClientId() + "'.");
+	}
+	// Set flag for clean session.
+	mqtt.setCleanSession(component.isCleanSession());
+	LOGGER.info("MQTT clean session flag being set to '" + component.isCleanSession() + "'.");
 
 	if (usingSSL || usingTLS) {
 	    handleSecureTransport(component, mqtt);
@@ -382,5 +401,45 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
     public void setKeyStorePassword(String keyStorePassword) {
 	this.keyStorePassword = keyStorePassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getClientId()
+     */
+    public String getClientId() {
+	return clientId;
+    }
+
+    public void setClientId(String clientId) {
+	this.clientId = clientId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#isCleanSession()
+     */
+    public boolean isCleanSession() {
+	return cleanSession;
+    }
+
+    public void setCleanSession(boolean cleanSession) {
+	this.cleanSession = cleanSession;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getQos()
+     */
+    public String getQos() {
+	return qos;
+    }
+
+    public void setQos(String qos) {
+	this.qos = qos;
     }
 }

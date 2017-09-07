@@ -77,6 +77,15 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     /** Broker password */
     private String password;
 
+    /** Client id */
+    private String clientId;
+
+    /** Clean session flag */
+    private boolean cleanSession = true;
+
+    /** Quality of service */
+    private String qos = QoS.AT_LEAST_ONCE.name();
+
     /** MQTT client */
     private MQTT mqtt;
 
@@ -255,8 +264,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @throws SiteWhereException
      */
     protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
-	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
-	LOGGER.info("Publishing event " + event.getId() + " to route: " + topic);
+	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.valueOf(getQos()), false);
+	LOGGER.info("Publishing event " + event.getId() + " to route: " + topic + " with QOS " + getQos());
     }
 
     /*
@@ -425,6 +434,46 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     public void setKeyStorePassword(String keyStorePassword) {
 	this.keyStorePassword = keyStorePassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getClientId()
+     */
+    public String getClientId() {
+	return clientId;
+    }
+
+    public void setClientId(String clientId) {
+	this.clientId = clientId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#isCleanSession()
+     */
+    public boolean isCleanSession() {
+	return cleanSession;
+    }
+
+    public void setCleanSession(boolean cleanSession) {
+	this.cleanSession = cleanSession;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getQos()
+     */
+    public String getQos() {
+	return qos;
+    }
+
+    public void setQos(String qos) {
+	this.qos = qos;
     }
 
     public String getTopic() {

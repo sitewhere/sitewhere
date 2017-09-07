@@ -231,6 +231,13 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		.description("Fully-qualified path to keystore for secured connections.").build()));
 	builder.attribute((new AttributeNode.Builder("Keystore password", "keyStorePassword", AttributeType.String)
 		.description("Password used to authenticate with keystore.").build()));
+	builder.attribute((new AttributeNode.Builder("MQTT client id", "clientId", AttributeType.String)
+		.description("Client id used for MQTT client connection.").build()));
+	builder.attribute((new AttributeNode.Builder("Use clean session", "cleanSession", AttributeType.Boolean)
+		.description("Indicates if 'clean session' flag should be set.").defaultValue("true").build()));
+	builder.attribute((new AttributeNode.Builder("Quality of service", "qos", AttributeType.String)
+		.description("Quality of service for connection").defaultValue("AT_LEAST_ONCE").choice("AT_LEAST_ONCE")
+		.choice("AT_MOST_ONCE").choice("EXACTLY_ONCE").build()));
     }
 
     /**
