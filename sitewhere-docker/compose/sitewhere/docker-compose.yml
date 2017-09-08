@@ -40,3 +40,7 @@ services:
     image: sitewhere/service-tenant-management:${SW_VERSION}
     environment:
       SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}
+  web-rest:
+    image: sitewhere/service-web-rest:${SW_VERSION}
+    environment:
+      SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}

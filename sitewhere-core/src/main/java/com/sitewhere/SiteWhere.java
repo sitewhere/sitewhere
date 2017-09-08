@@ -36,7 +36,7 @@ public class SiteWhere {
     private static EmbeddedKafkaCluster KAFKA;
 
     /** SiteWhere version information */
-    private static IVersion VERSION;
+    private static IVersion VERSION = new Version();
 
     /**
      * Start embedded Zookeeper instance.
@@ -140,9 +140,6 @@ public class SiteWhere {
      * @return
      */
     public static IVersion getVersion() {
-	if (VERSION == null) {
-	    throw new RuntimeException("SiteWhere server has not been initialized.");
-	}
 	return VERSION;
     }
 
