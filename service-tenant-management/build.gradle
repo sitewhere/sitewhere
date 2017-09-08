@@ -5,6 +5,7 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-microservice')
+	compile project(':sitewhere-grpc-model')
 }
 
 apply plugin: 'spring-boot'

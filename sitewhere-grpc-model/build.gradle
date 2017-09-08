@@ -4,8 +4,8 @@ apply plugin: 'com.google.protobuf'
 
 dependencies {
 	compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.3.0'
-	compile group: 'io.grpc', name: 'grpc-stub', version: '1.5.0'
-	compile group: 'io.grpc', name: 'grpc-protobuf', version: '1.5.0'
+	compile group: 'io.grpc', name: 'grpc-stub', version: "${rootProject.ext['grpc.version']}"
+	compile group: 'io.grpc', name: 'grpc-protobuf', version: "${rootProject.ext['grpc.version']}"
 }
 
 protobuf {
@@ -20,7 +20,7 @@ protobuf {
   	// Add GRPC plugin.
 	plugins {
 		grpc {
-			artifact = 'io.grpc:protoc-gen-grpc-java:1.5.0'
+			artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.ext['grpc.version']}"
 		}
 	}
   

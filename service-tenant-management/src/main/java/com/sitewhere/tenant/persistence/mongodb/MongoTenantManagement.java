@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.tenant.persistence.TenantManagementPersistence;
+import com.sitewhere.tenant.persistence.TenantManagementPersistenceLogic;
 
 /**
  * Tenant management implementation that uses MongoDB for persistence.
@@ -102,7 +102,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	Tenant tenant = TenantManagementPersistence.tenantCreateLogic(request);
+	Tenant tenant = TenantManagementPersistenceLogic.tenantCreateLogic(request);
 
 	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	Document created = MongoTenant.toDocument(tenant);
@@ -124,7 +124,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	Tenant existing = MongoTenant.fromDocument(dbExisting);
 
 	// Common update logic so that backend implemetations act the same way.
-	TenantManagementPersistence.tenantUpdateLogic(request, existing);
+	TenantManagementPersistenceLogic.tenantUpdateLogic(request, existing);
 	Document updated = MongoTenant.toDocument(existing);
 
 	Document query = new Document(MongoTenant.PROP_ID, id);
@@ -201,7 +201,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	Document sort = new Document(MongoTenant.PROP_NAME, 1);
 	ISearchResults<ITenant> list = MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria,
 		LOOKUP);
-	TenantManagementPersistence.tenantListLogic(list.getResults(), criteria);
+	TenantManagementPersistenceLogic.tenantListLogic(list.getResults(), criteria);
 	return list;
     }
 

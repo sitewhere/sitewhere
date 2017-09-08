@@ -28,7 +28,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.tenant.persistence.TenantManagementPersistence;
+import com.sitewhere.tenant.persistence.TenantManagementPersistenceLogic;
 
 /**
  * HBase specifics for dealing with SiteWhere tenants.
@@ -87,7 +87,7 @@ public class HBaseTenant {
 	String id = KEY_BUILDER.getMap(context).useExistingId(request.getId());
 
 	// Use common logic so all backend implementations work the same.
-	Tenant tenant = TenantManagementPersistence.tenantCreateLogic(request);
+	Tenant tenant = TenantManagementPersistenceLogic.tenantCreateLogic(request);
 
 	Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 	return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME,
@@ -121,7 +121,7 @@ public class HBaseTenant {
     public static Tenant updateTenant(IHBaseContext context, String id, ITenantCreateRequest request)
 	    throws SiteWhereException {
 	Tenant updated = assertTenant(context, id);
-	TenantManagementPersistence.tenantUpdateLogic(request, updated);
+	TenantManagementPersistenceLogic.tenantUpdateLogic(request, updated);
 	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME, updated, id,
 		KEY_BUILDER);
     }
@@ -186,7 +186,7 @@ public class HBaseTenant {
 	};
 	SearchResults<ITenant> list = HBaseUtils.getFilteredList(context, ISiteWhereHBase.USERS_TABLE_NAME, KEY_BUILDER,
 		true, ITenant.class, Tenant.class, filter, criteria, comparator);
-	TenantManagementPersistence.tenantListLogic(list.getResults(), criteria);
+	TenantManagementPersistenceLogic.tenantListLogic(list.getResults(), criteria);
 	return list;
     }
 
