@@ -9,6 +9,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 public class VueConfiguration extends WebMvcConfigurationSupport {
 
+    /** URL prefix for matching Vue admin calls */
+    public static final String VUE_ADMIN_MATCHER = "/admin/*";
+
     /*
      * (non-Javadoc)
      * 

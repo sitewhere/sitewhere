@@ -42,5 +42,7 @@ services:
       SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}
   web-rest:
     image: sitewhere/service-web-rest:${SW_VERSION}
+    ports:
+     - "8080:8080"
     environment:
       SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}

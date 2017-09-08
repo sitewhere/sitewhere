@@ -13,9 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -82,7 +82,8 @@ public class WebRestApplication {
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(VueConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet, "/beta/*");
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		VueConfiguration.VUE_ADMIN_MATCHER);
 	registration.setName("vueAdminInterface");
 	registration.setLoadOnStartup(2);
 	return registration;
