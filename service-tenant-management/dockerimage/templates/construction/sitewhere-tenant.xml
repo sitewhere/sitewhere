@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce/tenant"
+	xmlns:global="http://www.sitewhere.com/schema/sitewhere/ce"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd
+           http://www.sitewhere.com/schema/sitewhere/ce/tenant http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere-tenant.xsd">
+
+	<!-- Load property values for substitution -->
+	<context:property-placeholder
+		location="file:${sitewhere.home}/conf/tenants/${tenant.id}/sitewhere-tenant.properties"
+		ignore-resource-not-found="true" />
+
+	<!-- ######################## -->
+	<!-- # TENANT CONFIGURATION # -->
+	<!-- ######################## -->
+	<sw:tenant-configuration>
+
+		<!-- ########################### -->
+		<!-- # DATASTORE CONFIGURATION # -->
+		<!-- ########################### -->
+		<sw:tenant-datastore>
+
+			<!-- Default MongoDB Datastore -->
+			<sw:mongo-tenant-datastore
+				useBulkEventInserts="true" bulkInsertMaxChunkSize="1000" />
+
+		</sw:tenant-datastore>
+
+		<!-- ######################## -->
+		<!-- # DEVICE COMMUNICATION # -->
+		<!-- ######################## -->
+		<sw:device-communication>
+
+			<!-- Inbound event sources -->
+			<sw:event-sources>
+
+				<!-- Event source for protobuf messages over MQTT -->
+				<sw:mqtt-event-source sourceId="protobuf"
+					hostname="${mqtt.host}" port="1883" topic="SiteWhere/input/protobuf">
+					<sw:protobuf-event-decoder />
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON device requests over MQTT -->
+				<sw:mqtt-event-source sourceId="json" hostname="${mqtt.host}"
+					port="1883" topic="SiteWhere/input/json">
+					<sw:json-device-request-decoder />
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON event batches over MQTT -->
+				<sw:mqtt-event-source sourceId="json-batch"
+					hostname="${mqtt.host}" port="1883" topic="SiteWhere/input/jsonbatch">
+					<sw:json-batch-event-decoder />
+				</sw:mqtt-event-source>
+
+			</sw:event-sources>
+
+			<!-- Device services -->
+			<sw:device-services>
+
+				<!-- Configure registration options -->
+				<sw:default-registration-manager
+					allowNewDevices="true" />
+
+				<!-- Configures symbol generation -->
+				<sw:symbol-generator-manager>
+
+					<!-- Generate QR Codes -->
+					<sw:qr-code-symbol-generator id="qrcode"
+						name="Basic QR Code" width="250" height="250" backgroundColor="FFFFFFFF"
+						foregroundColor="FF111111" />
+
+				</sw:symbol-generator-manager>
+
+				<!-- Configures presence management -->
+				<sw:default-presence-manager
+					checkInterval="PT5M" presenceMissingInterval="PT8H" />
+
+			</sw:device-services>
+
+			<!-- Batch operation management -->
+			<sw:batch-operations>
+				<sw:default-batch-operation-manager
+					throttleDelayMs="1000" />
+			</sw:batch-operations>
+
+			<!-- Device command routing -->
+			<sw:command-routing>
+				<sw:specification-mapping-router
+					defaultDestination="default">
+					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
+						destination="hybrid" />
+					<sw:mapping specification="7dfd6d63-5e8d-4380-be04-fc5c73801dfb"
+						destination="hybrid" />
+					<sw:mapping specification="5a95f3f2-96f0-47f9-b98d-f5c081d01948"
+						destination="hybrid" />
+					<sw:mapping specification="964e7613-dab3-4fb3-8919-266a91370884"
+						destination="json" />
+				</sw:specification-mapping-router>
+			</sw:command-routing>
+
+			<!-- Outbound command destinations -->
+			<sw:command-destinations>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination
+					destinationId="default" hostname="${mqtt.host}" port="1883">
+					<sw:protobuf-command-encoder />
+					<sw:hardware-id-topic-extractor
+						commandTopicExpr="SiteWhere/commands/%s" systemTopicExpr="SiteWhere/system/%s" />
+				</sw:mqtt-command-destination>
+
+				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
+				<sw:mqtt-command-destination
+					destinationId="hybrid" hostname="${mqtt.host}" port="1883">
+					<sw:java-protobuf-hybrid-encoder />
+					<sw:hardware-id-topic-extractor
+						commandTopicExpr="SiteWhere/commands/%s" systemTopicExpr="SiteWhere/system/%s" />
+				</sw:mqtt-command-destination>
+
+				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
+				<sw:mqtt-command-destination
+					destinationId="json" hostname="${mqtt.host}" port="1883">
+					<sw:json-command-encoder />
+					<sw:hardware-id-topic-extractor
+						commandTopicExpr="SiteWhere/commands/%s" systemTopicExpr="SiteWhere/system/%s" />
+				</sw:mqtt-command-destination>
+
+			</sw:command-destinations>
+
+		</sw:device-communication>
+
+		<!-- #################### -->
+		<!-- # EVENT PROCESSING # -->
+		<!-- #################### -->
+		<sw:event-processing>
+
+			<!-- Inbound Processing Strategy -->
+			<sw:inbound-processing-strategy>
+				<sw:blocking-queue-inbound-processing-strategy
+					maxQueueSize="10000" numEventProcessorThreads="10"
+					enableMonitoring="false" monitoringIntervalSec="3" />
+			</sw:inbound-processing-strategy>
+
+			<!-- Inbound Processing Chain -->
+			<sw:inbound-processing-chain>
+
+				<!-- Store events -->
+				<sw:event-storage-processor />
+
+				<!-- Allow devices to dynamically register -->
+				<sw:registration-processor />
+
+				<!-- Allow devices to create streams and send stream data -->
+				<sw:device-stream-processor />
+
+			</sw:inbound-processing-chain>
+
+			<!-- Outbound Processing Strategy -->
+			<sw:outbound-processing-strategy>
+				<sw:blocking-queue-outbound-processing-strategy
+					maxQueueSize="10000" numEventProcessorThreads="10" />
+			</sw:outbound-processing-strategy>
+
+			<!-- Outbound Processing Chain -->
+			<sw:outbound-processing-chain>
+
+				<!-- Routes commands for outbound processing -->
+				<sw:command-delivery-event-processor />
+
+				<!-- Send outbound device events over Hazelcast -->
+				<sw:hazelcast-event-processor />
+
+			</sw:outbound-processing-chain>
+
+		</sw:event-processing>
+
+		<!-- #################### -->
+		<!-- # ASSET MANAGEMENT # -->
+		<!-- #################### -->
+		<sw:asset-management />
+
+	</sw:tenant-configuration>
+
+</beans>
