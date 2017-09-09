@@ -1,24 +1,25 @@
-package com.sitewhere.tenant.persistence;
+package com.sitewhere.microservice.grpc;
 
 import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.spi.grpc.IManagedGrpcServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.tenant.spi.persistence.ITenantManagementGrpcServer;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 /**
- * Hosts a GRPC server that handles tenant management requests.
+ * Base class for GRPC servers used by microservices.
  * 
  * @author Derek
  */
-public class TenantManagementGrpcManager extends LifecycleComponent implements ITenantManagementGrpcServer {
+public abstract class ManagedGrpcServer extends LifecycleComponent implements IManagedGrpcServer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -26,9 +27,26 @@ public class TenantManagementGrpcManager extends LifecycleComponent implements I
     /** Wrapped GRPC server */
     private Server server;
 
-    public TenantManagementGrpcManager(int port) {
+    public ManagedGrpcServer() {
+	this(getDefaultPortOrOverride());
+    }
+
+    public ManagedGrpcServer(int port) {
 	ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	this.server = builder.addService(new TenantManagementService()).build();
+	this.server = builder.addService(getServerServiceDefinition()).build();
+    }
+
+    /**
+     * Check environment variable for SiteWhere instance id.
+     */
+    protected static int getDefaultPortOrOverride() {
+	String envPortOverride = System.getenv().get(MicroserviceEnvironment.ENV_GRPC_PORT_OVERRIDE);
+	if (envPortOverride != null) {
+	    LOGGER.info("GRPC port overridden using " + MicroserviceEnvironment.ENV_GRPC_PORT_OVERRIDE + ": "
+		    + envPortOverride);
+	    return Integer.parseInt(envPortOverride);
+	}
+	return MicroserviceEnvironment.DEFAULT_GRPC_PORT;
     }
 
     /*

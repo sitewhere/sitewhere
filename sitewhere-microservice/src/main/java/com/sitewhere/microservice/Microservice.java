@@ -6,7 +6,7 @@ import org.springframework.beans.factory.DisposableBean;
 
 import com.sitewhere.microservice.configuration.ZookeeperConfigurationManager;
 import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.IZookeeperConfigurationManager;
+import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;

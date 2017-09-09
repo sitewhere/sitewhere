@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.MicroserviceEnvironment;
-import com.sitewhere.microservice.spi.IZookeeperConfigurationManager;
+import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

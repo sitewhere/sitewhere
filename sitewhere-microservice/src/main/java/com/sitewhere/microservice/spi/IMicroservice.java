@@ -1,5 +1,6 @@
 package com.sitewhere.microservice.spi;
 
+import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 

@@ -1,4 +1,4 @@
-package com.sitewhere.tenant.persistence;
+package com.sitewhere.tenant.grpc;
 
 import com.sitewhere.grpc.model.TenantManagementGrpc;
 
