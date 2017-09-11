@@ -33,5 +33,5 @@ protobuf {
       	}
 	}
 	
-	generatedFilesBaseDir = "$projectDir/src/generated"
+	generatedFilesBaseDir = "$projectDir/src"
 }
