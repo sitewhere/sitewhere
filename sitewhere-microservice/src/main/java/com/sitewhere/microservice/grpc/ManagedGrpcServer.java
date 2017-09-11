@@ -33,7 +33,7 @@ public abstract class ManagedGrpcServer extends LifecycleComponent implements IM
 
     public ManagedGrpcServer(int port) {
 	ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	this.server = builder.addService(getServerServiceDefinition()).build();
+	this.server = builder.addService(getServiceImplementation()).build();
     }
 
     /**

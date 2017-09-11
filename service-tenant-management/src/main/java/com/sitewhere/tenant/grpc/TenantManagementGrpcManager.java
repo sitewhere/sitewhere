@@ -3,6 +3,7 @@ package com.sitewhere.tenant.grpc;
 import com.sitewhere.microservice.grpc.ManagedGrpcServer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcManager;
 
+import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
 
 /**
@@ -12,14 +13,25 @@ import io.grpc.ServerServiceDefinition;
  */
 public class TenantManagementGrpcManager extends ManagedGrpcServer implements ITenantManagementGrpcManager {
 
+    /** Service that provides tenant management implementation */
+    private TenantManagementService tenantManagementService = new TenantManagementService();
+
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.grpc.IManagedGrpcServer#
-     * getServerServiceDefinition()
+     * getServiceImplementation()
      */
     @Override
-    public ServerServiceDefinition getServerServiceDefinition() {
-	return new TenantManagementService().bindService();
+    public BindableService getServiceImplementation() {
+	return getTenantManagementService();
+    }
+
+    public TenantManagementService getTenantManagementService() {
+	return tenantManagementService;
+    }
+
+    public void setTenantManagementService(TenantManagementService tenantManagementService) {
+	this.tenantManagementService = tenantManagementService;
     }
 }
