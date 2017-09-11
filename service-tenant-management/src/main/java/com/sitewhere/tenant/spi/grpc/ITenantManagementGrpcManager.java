@@ -1,4 +1,4 @@
-package com.sitewhere.tenant.spi.persistence;
+package com.sitewhere.tenant.spi.grpc;
 
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -7,5 +7,5 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface ITenantManagementGrpcServer extends ILifecycleComponent {
+public interface ITenantManagementGrpcManager extends ILifecycleComponent {
 }

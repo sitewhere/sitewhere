@@ -13,8 +13,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
+import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
+import com.sitewhere.tenant.grpc.TenantManagementGrpcManager;
+import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcManager;
 
 /**
  * Microservice that provides tenant management functionality.
@@ -35,6 +42,9 @@ public class TenantManagement extends GlobalMicroservice {
     /** Relative path for template population lock */
     private static final String TEMPLATE_POPULATION_LOCK_PATH = "/locks/templates";
 
+    /** Responds to tenant management GRPC requests */
+    private ITenantManagementGrpcManager tenantManagementGrpcManager = new TenantManagementGrpcManager();
+
     /*
      * (non-Javadoc)
      * 
@@ -54,7 +64,28 @@ public class TenantManagement extends GlobalMicroservice {
      */
     @Override
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	populateTemplatesIfNotPresent();
+	// Create step that will
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Verify or create Zk node for instance information.
+	start.addStep(populateTemplatesIfNotPresent());
+
+	// Verify or create Zk node for instance information.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcManager(),
+		"Tenant management GRPC manager", "Unable to start tenant management GRPC manager.", true));
+
+	// Execute initialization steps.
+	start.execute(monitor);
+    }
+
+    public ILifecycleStep populateTemplatesIfNotPresent() {
+	return new SimpleLifecycleStep("Populate tenant templates.") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		templatePopulationLogic();
+	    }
+	};
     }
 
     /**
@@ -64,7 +95,7 @@ public class TenantManagement extends GlobalMicroservice {
      * 
      * @throws SiteWhereException
      */
-    protected void populateTemplatesIfNotPresent() throws SiteWhereException {
+    protected void templatePopulationLogic() throws SiteWhereException {
 	CuratorFramework curator = getZookeeperConfigurationManager().getCurator();
 	InterProcessSemaphoreMutex lock = new InterProcessSemaphoreMutex(curator,
 		getInstanceZkPath() + TEMPLATE_POPULATION_LOCK_PATH);
@@ -143,5 +174,13 @@ public class TenantManagement extends GlobalMicroservice {
 		}
 	    }
 	}
+    }
+
+    public ITenantManagementGrpcManager getTenantManagementGrpcManager() {
+	return tenantManagementGrpcManager;
+    }
+
+    public void setTenantManagementGrpcManager(ITenantManagementGrpcManager tenantManagementGrpcManager) {
+	this.tenantManagementGrpcManager = tenantManagementGrpcManager;
     }
 }
