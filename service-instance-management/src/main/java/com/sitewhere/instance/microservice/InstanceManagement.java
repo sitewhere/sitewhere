@@ -74,11 +74,10 @@ public class InstanceManagement extends Microservice {
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		try {
-		    Stat existing = getZookeeperConfigurationManager().getCurator().checkExists()
-			    .forPath(getInstanceZkPath());
+		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath());
 		    if (existing == null) {
 			LOGGER.info("Zk node for instance not found. Creating...");
-			getZookeeperConfigurationManager().getCurator().create().forPath(getInstanceZkPath());
+			getZookeeperManager().getCurator().create().forPath(getInstanceZkPath());
 			LOGGER.info("Created instance Zk node.");
 		    } else {
 			LOGGER.info("Found Zk node for instance.");

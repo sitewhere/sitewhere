@@ -3,9 +3,9 @@ package com.sitewhere.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.configuration.ZookeeperConfigurationManager;
+import com.sitewhere.microservice.configuration.ZookeeperManager;
 import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManager;
+import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -26,8 +26,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Default instance id value */
     private static final String DEFAULT_INSTANCE_ID = "default";
 
-    /** Zookeeper configuration manager */
-    private IZookeeperConfigurationManager zookeeperConfigurationManager = new ZookeeperConfigurationManager();
+    /** Zookeeper manager */
+    private IZookeeperManager zookeeperManager = new ZookeeperManager();
 
     /** Instance id service belongs to */
     private String instanceId = DEFAULT_INSTANCE_ID;
@@ -47,8 +47,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize Zookeeper configuration management.
-	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperConfigurationManager(),
-		"Zookeeper Configuration Manager", "Unable to initialize Zookeeper Configuration Manager", true));
+	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperManager(), "Zookeeper Manager",
+		"Unable to initialize Zookeeper Manager", true));
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -75,7 +75,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getZookeeperConfigurationManager().lifecycleTerminate(monitor);
+	getZookeeperManager().lifecycleTerminate(monitor);
     }
 
     /*
@@ -90,8 +90,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	try {
 	    LOGGER.info("Verifying that instance has been bootstrapped...");
 	    while (true) {
-		if (getZookeeperConfigurationManager().getCurator().checkExists()
-			.forPath(getInstanceZkPath()) != null) {
+		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath()) != null) {
 		    break;
 		}
 		Thread.sleep(1000);
@@ -115,16 +114,15 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#
-     * getZookeeperConfigurationManager()
+     * @see com.sitewhere.microservice.spi.IMicroservice#getZookeeperManager()
      */
     @Override
-    public IZookeeperConfigurationManager getZookeeperConfigurationManager() {
-	return zookeeperConfigurationManager;
+    public IZookeeperManager getZookeeperManager() {
+	return zookeeperManager;
     }
 
-    public void setZookeeperConfigurationManager(IZookeeperConfigurationManager zookeeperConfigurationManager) {
-	this.zookeeperConfigurationManager = zookeeperConfigurationManager;
+    public void setZookeeperManager(IZookeeperManager zookeeperManager) {
+	this.zookeeperManager = zookeeperManager;
     }
 
     /*

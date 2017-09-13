@@ -9,7 +9,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IZookeeperConfigurationManager extends ILifecycleComponent {
+public interface IZookeeperManager extends ILifecycleComponent {
 
     /**
      * Get connected {@link CuratorFramework} instance.

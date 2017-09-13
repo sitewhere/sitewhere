@@ -2,7 +2,7 @@ package com.sitewhere.tenant.templates;
 
 import java.util.List;
 
-import com.sitewhere.spi.server.tenant.ITenantTemplate;
+import com.sitewhere.tenant.spi.templates.ITenantTemplate;
 
 /**
  * Model object for an {@link ITenantTemplate}.

@@ -17,7 +17,7 @@ import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ITenantTemplate;
+import com.sitewhere.tenant.spi.templates.ITenantTemplate;
 import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
 
 /**

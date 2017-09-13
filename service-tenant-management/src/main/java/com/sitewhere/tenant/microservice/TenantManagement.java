@@ -128,7 +128,7 @@ public class TenantManagement extends GlobalMicroservice {
      * @throws SiteWhereException
      */
     protected void templatePopulationLogic() throws SiteWhereException {
-	CuratorFramework curator = getZookeeperConfigurationManager().getCurator();
+	CuratorFramework curator = getZookeeperManager().getCurator();
 	InterProcessSemaphoreMutex lock = new InterProcessSemaphoreMutex(curator,
 		getInstanceZkPath() + TEMPLATE_POPULATION_LOCK_PATH);
 	try {
@@ -187,7 +187,7 @@ public class TenantManagement extends GlobalMicroservice {
      * @throws SiteWhereException
      */
     protected void copyTemplateFolderToZk(File templates, File folder) throws Exception {
-	CuratorFramework curator = getZookeeperConfigurationManager().getCurator();
+	CuratorFramework curator = getZookeeperManager().getCurator();
 	Path relative = templates.toPath().relativize(folder.toPath());
 	String zkFolder = getInstanceZkPath() + TEMPLATES_PATH + "/" + relative.toString();
 	curator.create().forPath(zkFolder);

@@ -1,14 +1,14 @@
-package com.sitewhere.spi.server.tenant;
+package com.sitewhere.instance.spi.templates;
 
 import java.util.List;
 
 /**
  * Contains information about a template that can be used to populate a new
- * tenant.
+ * SiteWhere instance.
  * 
  * @author Derek
  */
-public interface ITenantTemplate {
+public interface IInstanceTemplate {
 
     /**
      * Get unique template id.
@@ -39,24 +39,17 @@ public interface ITenantTemplate {
     public static interface Initializers {
 
 	/**
-	 * Get device management initializer Groovy script locations.
+	 * Get user management initializer Groovy script locations.
 	 * 
 	 * @return
 	 */
-	public List<String> getDeviceManagement();
+	public List<String> getUserManagement();
 
 	/**
-	 * Get asset management initializer Groovy script locations.
+	 * Get tenant management initializer Groovy script locations.
 	 * 
 	 * @return
 	 */
-	public List<String> getAssetManagement();
-
-	/**
-	 * Get schedule management initializer Groovy script locations.
-	 * 
-	 * @return
-	 */
-	public List<String> getScheduleManagement();
+	public List<String> getTenantManagement();
     }
 }

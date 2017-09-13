@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.MicroserviceEnvironment;
-import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManager;
+import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -27,7 +27,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class ZookeeperConfigurationManager extends LifecycleComponent implements IZookeeperConfigurationManager {
+public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Base namespace for all SiteWhere Zookeeper artifacts */
     private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
@@ -37,9 +40,6 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
 
     /** Max time in seconds to wait for Zookeeper connection */
     private static final int MAX_ZK_WAIT_SECS = 30;
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Zookeeper connection information */
     private String zkConnection = DEFAULT_ZK_CONNECTION;
@@ -117,8 +117,8 @@ public class ZookeeperConfigurationManager extends LifecycleComponent implements
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.IZookeeperConfigurationManager#getCurator(
-     * )
+     * com.sitewhere.microservice.spi.configuration.IZookeeperManager#getCurator
+     * ()
      */
     public CuratorFramework getCurator() {
 	return curator;

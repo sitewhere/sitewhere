@@ -49,7 +49,6 @@ import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantTemplate;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -419,8 +418,8 @@ public class TenantsController extends RestController {
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List templates available for creating tenants")
-    public List<ITenantTemplate> listTenantTemplates(HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
+    public List<String> listTenantTemplateNames(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+	    throws SiteWhereException {
 	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
 	if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
