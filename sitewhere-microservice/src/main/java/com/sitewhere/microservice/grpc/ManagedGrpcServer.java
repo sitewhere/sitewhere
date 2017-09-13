@@ -24,6 +24,9 @@ public abstract class ManagedGrpcServer extends LifecycleComponent implements IM
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Port for GRPC server */
+    private int port;
+
     /** Wrapped GRPC server */
     private Server server;
 
@@ -32,8 +35,7 @@ public abstract class ManagedGrpcServer extends LifecycleComponent implements IM
     }
 
     public ManagedGrpcServer(int port) {
-	ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	this.server = builder.addService(getServiceImplementation()).build();
+	this.port = port;
     }
 
     /**
@@ -47,6 +49,22 @@ public abstract class ManagedGrpcServer extends LifecycleComponent implements IM
 	    return Integer.parseInt(envPortOverride);
 	}
 	return MicroserviceEnvironment.DEFAULT_GRPC_PORT;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	try {
+	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
+	    this.server = builder.addService(getServiceImplementation()).build();
+	} catch (Throwable e) {
+	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
+	}
     }
 
     /*

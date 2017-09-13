@@ -16,7 +16,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
@@ -43,7 +42,7 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
     private ISiteWhereHBaseClient client;
 
     /** Injected payload encoder */
-    private IPayloadMarshaler payloadMarshaler = new ProtobufPayloadMarshaler();
+    private IPayloadMarshaler payloadMarshaler;
 
     /** Supplies context to implementation methods */
     private HBaseContext context;

@@ -2,7 +2,6 @@ package com.sitewhere.microservice;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.DisposableBean;
 
 import com.sitewhere.microservice.configuration.ZookeeperConfigurationManager;
 import com.sitewhere.microservice.spi.IMicroservice;
@@ -10,8 +9,6 @@ import com.sitewhere.microservice.spi.configuration.IZookeeperConfigurationManag
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -21,7 +18,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class Microservice extends LifecycleComponent implements IMicroservice, DisposableBean {
+public abstract class Microservice extends LifecycleComponent implements IMicroservice {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -51,7 +48,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Initialize Zookeeper configuration management.
 	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperConfigurationManager(),
-		"Zookeeper Configuration Manager"));
+		"Zookeeper Configuration Manager", "Unable to initialize Zookeeper Configuration Manager", true));
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -67,18 +64,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	    LOGGER.info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
 		    + envInstanceId);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.beans.factory.DisposableBean#destroy()
-     */
-    @Override
-    public void destroy() throws Exception {
-	LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Terminate " + getName()));
-	terminate(termMonitor);
     }
 
     /*

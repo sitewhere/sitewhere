@@ -11,10 +11,26 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public interface IGlobalMicroservice extends IMicroservice {
 
     /**
+     * Perform microservice initialization.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
      * Called to start microservice after initialization.
      * 
      * @param monitor
      * @throws SiteWhereException
      */
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Called to stop microservice before termination.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 }

@@ -3,7 +3,7 @@ description = 'SiteWhere GRPC Model'
 apply plugin: 'com.google.protobuf'
 
 dependencies {
-	compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.3.0'
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
 	compile group: 'io.grpc', name: 'grpc-stub', version: "${rootProject.ext['grpc.version']}"
 	compile group: 'io.grpc', name: 'grpc-protobuf', version: "${rootProject.ext['grpc.version']}"
 }

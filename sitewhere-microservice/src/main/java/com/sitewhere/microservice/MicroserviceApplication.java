@@ -8,6 +8,7 @@
 package com.sitewhere.microservice;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +62,38 @@ public abstract class MicroserviceApplication implements IMicroserviceApplicatio
 	    System.exit(2);
 	} catch (Throwable e) {
 	    LOGGER.error("Unhandled exception in '" + service.getComponentName() + "' microservice startup.", e);
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("\n!!!! Unhandled Exception !!!!\n");
+	    builder.append("\n");
+	    builder.append("Error: " + e.getMessage() + "\n");
+	    LOGGER.info("\n" + builder.toString() + "\n");
+	    System.exit(3);
+	}
+    }
+
+    @PreDestroy
+    public void stop() {
+	IMicroservice service = getMicroservice();
+	try {
+	    // Stop microservice.
+	    LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Stop " + service.getName()));
+	    service.stop(stopMonitor);
+
+	    // Terminate microservice.
+	    LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Terminate " + service.getName()));
+	    service.terminate(termMonitor);
+	} catch (SiteWhereException e) {
+	    LOGGER.error("Exception on microservice shutdown.", e);
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("\n!!!! Microservice '" + service.getComponentName() + "' failed to shutdown !!!!\n");
+	    builder.append("\n");
+	    builder.append("Error: " + e.getMessage() + "\n");
+	    LOGGER.info("\n" + builder.toString() + "\n");
+	    System.exit(2);
+	} catch (Throwable e) {
+	    LOGGER.error("Unhandled exception in '" + service.getComponentName() + "' microservice shutdown.", e);
 	    StringBuilder builder = new StringBuilder();
 	    builder.append("\n!!!! Unhandled Exception !!!!\n");
 	    builder.append("\n");

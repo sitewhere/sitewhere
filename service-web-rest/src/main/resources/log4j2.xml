@@ -10,6 +10,8 @@
 		</File>
 	</Appenders>
 	<Loggers>
+		<Logger name="com.mangofactory" level="warn" additivity="false" />
+		<Logger name="org.springframework.web" level="warn" additivity="false" />
 		<Root level="INFO">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="Service" />

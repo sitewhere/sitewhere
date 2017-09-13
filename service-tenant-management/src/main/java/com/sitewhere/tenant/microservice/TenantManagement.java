@@ -14,14 +14,15 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
-import com.sitewhere.tenant.grpc.TenantManagementGrpcManager;
-import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcManager;
+import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
+import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 
 /**
  * Microservice that provides tenant management functionality.
@@ -43,7 +44,7 @@ public class TenantManagement extends GlobalMicroservice {
     private static final String TEMPLATE_POPULATION_LOCK_PATH = "/locks/templates";
 
     /** Responds to tenant management GRPC requests */
-    private ITenantManagementGrpcManager tenantManagementGrpcManager = new TenantManagementGrpcManager();
+    private ITenantManagementGrpcServer tenantManagementGrpcManager = new TenantManagementGrpcServer();
 
     /*
      * (non-Javadoc)
@@ -59,12 +60,32 @@ public class TenantManagement extends GlobalMicroservice {
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceInitialize
+     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for initializing microservice.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Verify or create Zk node for instance information.
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcManager(),
+		"Tenant management GRPC manager", "Unable to initialize tenant management GRPC manager", true));
+
+	// Execute initialization steps.
+	init.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStart(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will
+	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Verify or create Zk node for instance information.
@@ -76,6 +97,17 @@ public class TenantManagement extends GlobalMicroservice {
 
 	// Execute initialization steps.
 	start.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     public ILifecycleStep populateTemplatesIfNotPresent() {
@@ -176,11 +208,11 @@ public class TenantManagement extends GlobalMicroservice {
 	}
     }
 
-    public ITenantManagementGrpcManager getTenantManagementGrpcManager() {
+    public ITenantManagementGrpcServer getTenantManagementGrpcManager() {
 	return tenantManagementGrpcManager;
     }
 
-    public void setTenantManagementGrpcManager(ITenantManagementGrpcManager tenantManagementGrpcManager) {
+    public void setTenantManagementGrpcManager(ITenantManagementGrpcServer tenantManagementGrpcManager) {
 	this.tenantManagementGrpcManager = tenantManagementGrpcManager;
     }
 }

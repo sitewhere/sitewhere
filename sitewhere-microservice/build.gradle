@@ -4,6 +4,8 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-grpc-model')
 	
+	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
+	
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
     compile group: 'org.apache.curator', name: 'curator-recipes', version: "${rootProject.ext['curator.version']}"
 }

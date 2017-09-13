@@ -11,7 +11,7 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class TenantManagementService extends TenantManagementGrpc.TenantManagementImplBase {
+public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementImplBase {
 
     /*
      * (non-Javadoc)

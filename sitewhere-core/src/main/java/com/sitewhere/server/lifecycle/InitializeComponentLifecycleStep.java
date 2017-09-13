@@ -17,8 +17,11 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
     /** Indicates of required for parent component to function */
     private boolean require;
 
-    public InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name) {
+    public InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name,
+	    String errorMessage, boolean require) {
 	super(owner, component, name);
+	this.errorMessage = errorMessage;
+	this.require = require;
     }
 
     @Override

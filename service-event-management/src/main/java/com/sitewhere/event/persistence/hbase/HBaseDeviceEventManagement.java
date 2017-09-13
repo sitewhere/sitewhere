@@ -21,7 +21,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -72,7 +71,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     private ISiteWhereHBaseClient client;
 
     /** Injected payload encoder */
-    private IPayloadMarshaler payloadMarshaler = new ProtobufPayloadMarshaler();
+    private IPayloadMarshaler payloadMarshaler;
 
     /** Supplies context to implementation methods */
     private HBaseContext context;
@@ -356,10 +355,8 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     @Override
     public IDeviceStreamData addDeviceStreamData(String assignmentToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
-	 IDeviceAssignment assignment =
-	 assertDeviceAssignment(assignmentToken);
-	 return HBaseDeviceStreamData.createDeviceStreamData(context,
-	 assignment, request);
+	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+	return HBaseDeviceStreamData.createDeviceStreamData(context, assignment, request);
     }
 
     /*
