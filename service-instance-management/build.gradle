@@ -38,7 +38,7 @@ task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
 }
 
 // Build an image from the Dockerfile.
-task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactToDocker) {
+task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
     inputDir = project.file('build/docker')
     tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
 }
