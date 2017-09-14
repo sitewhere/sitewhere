@@ -26,7 +26,11 @@ public class StopComponentLifecycleStep extends ComponentOperationLifecycleStep 
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
-	    getComponent().lifecycleStop(monitor);
+	    try {
+		getComponent().lifecycleStop(monitor);
+	    } catch (Throwable t) {
+		throw new SiteWhereException("Unhandled exception shutting down component.", t);
+	    }
 	}
     }
 }

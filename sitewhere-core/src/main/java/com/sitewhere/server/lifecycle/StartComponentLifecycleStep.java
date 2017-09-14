@@ -34,7 +34,13 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
-	    getOwner().startNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+	    try {
+		getOwner().startNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+	    } catch (SiteWhereException t) {
+		throw t;
+	    } catch (Throwable t) {
+		throw new SiteWhereException(getErrorMessage(), t);
+	    }
 	} else {
 	    throw new SiteWhereException("Attempting to start component '" + getName() + "' but component is null.");
 	}

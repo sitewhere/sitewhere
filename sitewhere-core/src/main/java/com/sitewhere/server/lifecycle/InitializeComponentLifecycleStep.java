@@ -24,10 +24,23 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
 	this.require = require;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
-	    getOwner().initializeNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+	    try {
+		getOwner().initializeNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+	    } catch (SiteWhereException t) {
+		throw t;
+	    } catch (Throwable t) {
+		throw new SiteWhereException(getErrorMessage(), t);
+	    }
 	} else {
 	    throw new SiteWhereException(
 		    "Attempting to initialize component '" + getName() + "' but component is null.");

@@ -1,5 +1,6 @@
 package com.sitewhere.microservice.spi;
 
+import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -8,7 +9,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public interface IGlobalMicroservice extends IMicroservice {
+public interface IGlobalMicroservice extends IConfigurableMicroservice {
 
     /**
      * Perform microservice initialization.

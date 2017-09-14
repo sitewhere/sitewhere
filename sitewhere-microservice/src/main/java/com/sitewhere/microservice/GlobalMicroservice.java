@@ -1,5 +1,6 @@
 package com.sitewhere.microservice;
 
+import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -9,7 +10,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class GlobalMicroservice extends Microservice implements IGlobalMicroservice {
+public abstract class GlobalMicroservice extends ConfigurableMicroservice implements IGlobalMicroservice {
 
     /*
      * (non-Javadoc)
@@ -38,6 +39,8 @@ public abstract class GlobalMicroservice extends Microservice implements IGlobal
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Call logic for starting microservice subclass.
 	microserviceStart(monitor);
     }
@@ -51,6 +54,8 @@ public abstract class GlobalMicroservice extends Microservice implements IGlobal
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
 	// Call logic for stopping microservice subclass.
 	microserviceStop(monitor);
     }

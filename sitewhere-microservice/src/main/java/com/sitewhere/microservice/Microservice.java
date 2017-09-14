@@ -46,7 +46,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Load instance id from environment if available.
 	checkEnvForInstanceId();
 
-	// Organizes steps for starting microservice.
+	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize Zookeeper configuration management.
@@ -78,6 +78,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Terminate Zk manager.
 	getZookeeperManager().lifecycleTerminate(monitor);
     }
 
@@ -93,7 +94,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	try {
 	    LOGGER.info("Verifying that instance has been bootstrapped...");
 	    while (true) {
-		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath()) != null) {
+		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigurationPath()) != null) {
 		    break;
 		}
 		Thread.sleep(1000);

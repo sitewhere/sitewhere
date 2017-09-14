@@ -2,10 +2,14 @@ package com.sitewhere.microservice.configuration;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
+import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -22,17 +26,17 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Curator */
-    private CuratorFramework curator;
+    private IZookeeperManager zkManager;
 
-    /** Instance Zk path */
-    private String instanceZkPath;
+    /** Instance configuration Zk path */
+    private String configurationPath;
 
     /** Tree cache for configuration data */
     private TreeCache treeCache;
 
-    public ConfigurationMonitor(CuratorFramework curator, String instanceZkPath) {
-	this.curator = curator;
-	this.instanceZkPath = instanceZkPath;
+    public ConfigurationMonitor(IZookeeperManager zkManager, String configurationPath) {
+	this.zkManager = zkManager;
+	this.configurationPath = configurationPath;
     }
 
     /*
@@ -43,7 +47,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.treeCache = new TreeCache(getCurator(), getInstanceZkPath());
+	this.treeCache = new TreeCache(getZkManager().getCurator(), getConfigurationPath());
     }
 
     /*
@@ -55,6 +59,45 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	try {
+	    getTreeCache().getListenable().addListener(new TreeCacheListener() {
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.apache.curator.framework.recipes.cache.TreeCacheListener#
+		 * childEvent(org.apache.curator.framework.CuratorFramework,
+		 * org.apache.curator.framework.recipes.cache.TreeCacheEvent)
+		 */
+		@Override
+		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+		    switch (event.getType()) {
+		    case INITIALIZED: {
+			onCacheInitialized();
+			break;
+		    }
+		    case NODE_ADDED:
+		    case NODE_UPDATED: {
+			onNodeChanged(event);
+			break;
+		    }
+		    case NODE_REMOVED: {
+			onNodeDeleted(event);
+			break;
+		    }
+		    default: {
+			String json = MarshalUtils.marshalJsonAsPrettyString(event);
+			LOGGER.info("Tree cache event.\n\n" + json);
+		    }
+		    }
+		}
+	    });
+	    getTreeCache().start();
+	    LOGGER.info("Configuration manager listening for configuration updates.");
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to start tree cache for configuration monitor.", e);
+	}
     }
 
     /*
@@ -66,6 +109,32 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getTreeCache().close();
+    }
+
+    /**
+     * Called after cache has been initialized.
+     */
+    protected void onCacheInitialized() {
+	LOGGER.info("Configuration cache initialized successfully.");
+    }
+
+    /**
+     * Called when node data is added/updated.
+     * 
+     * @param event
+     */
+    protected void onNodeChanged(TreeCacheEvent event) {
+	LOGGER.info("Node added/updated for '" + event.getData().getPath() + "'.");
+    }
+
+    /**
+     * Called when node data is deleted.
+     * 
+     * @param event
+     */
+    protected void onNodeDeleted(TreeCacheEvent event) {
+	LOGGER.info("Node deleted for '" + event.getData().getPath() + "'.");
     }
 
     /*
@@ -78,20 +147,20 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 	return LOGGER;
     }
 
-    public CuratorFramework getCurator() {
-	return curator;
+    public IZookeeperManager getZkManager() {
+	return zkManager;
     }
 
-    public void setCurator(CuratorFramework curator) {
-	this.curator = curator;
+    public void setZkManager(IZookeeperManager zkManager) {
+	this.zkManager = zkManager;
     }
 
-    public String getInstanceZkPath() {
-	return instanceZkPath;
+    public String getConfigurationPath() {
+	return configurationPath;
     }
 
-    public void setInstanceZkPath(String instanceZkPath) {
-	this.instanceZkPath = instanceZkPath;
+    public void setConfigurationPath(String configurationPath) {
+	this.configurationPath = configurationPath;
     }
 
     public TreeCache getTreeCache() {
