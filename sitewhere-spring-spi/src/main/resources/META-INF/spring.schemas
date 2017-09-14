@@ -1,2 +1,1 @@
-http\://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd=META-INF/sitewhere.xsd
-http\://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere-tenant.xsd=META-INF/sitewhere-tenant.xsd
+http\://www.sitewhere.com/schema/sitewhere/microservice/common/current/microservice-common.xsd=META-INF/microservice-common.xsd

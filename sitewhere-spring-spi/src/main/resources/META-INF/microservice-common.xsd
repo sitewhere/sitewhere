@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans"
+		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
+
+
+	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-datastore" abstract="true"
+		type="abstractDatastoreType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for datastore elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common datastore information -->
+	<xsd:complexType name="abstractDatastoreType" />
+
+	<!-- Configuration data for a MongoDB datastore -->
+	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Global datastore that uses MongoDB for data
+				persistence.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mongoDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attributeGroup ref="mongo-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- MongoDB datastore attributes -->
+	<xsd:attributeGroup name="mongo-attributes">
+		<xsd:attribute name="hostname" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Server hostname for MongoDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Server port for MongoDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="databaseName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>MongoDB database name for SiteWhere storage.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="useDockerLinking" type="xsd:boolean"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>If enabled, uses environment variables set by
+					Docker linking to
+					derive host and port to connect to.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="authDatabaseName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Authentication database name.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Username used to authenticate.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Password used to authenticate.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="replicaSetName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Name of replica set if using replication.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="autoConfigureReplication" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Indicates whether replication should be
+					configured automatically when multiple hosts/ports are specified.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Configuration data for an HBase datastore -->
+	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Datastore that uses Apache HBase for data
+				persistence.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hbaseDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attributeGroup ref="hbase-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- HBase datastore attributes -->
+	<xsd:attributeGroup name="hbase-attributes">
+		<xsd:attribute name="quorum" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper quorum address</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperClientPort" type="xsd:int"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper client port. Defaults to 2181.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperZnodeParent" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper znode root server. Defaults to
+					'root-region-server'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	
+</xsd:schema>
