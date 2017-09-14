@@ -26,6 +26,13 @@ public interface IMicroservice extends ILifecycleComponent {
     public String getInstanceZkPath();
 
     /**
+     * Get Zookeeper path for instance configuration.
+     * 
+     * @return
+     */
+    public String getInstanceConfigurationPath();
+
+    /**
      * Get name shown for microservice.
      * 
      * @return

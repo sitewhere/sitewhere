@@ -26,6 +26,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Default instance id value */
     private static final String DEFAULT_INSTANCE_ID = "default";
 
+    /** Instance configuration folder name */
+    private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
+
     /** Zookeeper manager */
     private IZookeeperManager zookeeperManager = new ZookeeperManager();
 
@@ -109,6 +112,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public String getInstanceZkPath() {
 	return "/" + getInstanceId();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroservice#getInstanceConfigurationPath
+     * ()
+     */
+    @Override
+    public String getInstanceConfigurationPath() {
+	return getInstanceZkPath() + INSTANCE_CONFIGURATION_FOLDER;
     }
 
     /*

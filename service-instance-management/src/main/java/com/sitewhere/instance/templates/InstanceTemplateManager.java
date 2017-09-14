@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,6 +60,74 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
 	return templates;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.instance.spi.templates.IInstanceTemplateManager#
+     * copyTemplateConfigurationToZk(java.lang.String,
+     * org.apache.curator.framework.CuratorFramework, java.lang.String)
+     */
+    @Override
+    public void copyTemplateConfigurationToZk(String templateId, CuratorFramework curator, String confPath)
+	    throws SiteWhereException {
+	IInstanceTemplate template = getInstanceTemplates().get(templateId);
+	if (template == null) {
+	    throw new SiteWhereException("Instance template not found: " + templateId);
+	}
+	File root = getTemplatesRoot();
+	File templateFolder = new File(root, templateId);
+	if (!templateFolder.exists()) {
+	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
+	}
+	File confFolder = new File(templateFolder, "conf");
+	if (!confFolder.exists()) {
+	    throw new SiteWhereException(
+		    "Template configuration folder not found at '" + confFolder.getAbsolutePath() + "'.");
+	}
+	File[] contents = confFolder.listFiles();
+	for (File file : contents) {
+	    if (!file.isDirectory()) {
+		copyTemplateFileToZk(curator, file, confPath);
+	    }
+	}
+    }
+
+    /**
+     * Copy a single template file to Zookeeper.
+     * 
+     * @param curator
+     * @param templateFile
+     * @param confPath
+     * @throws SiteWhereException
+     */
+    protected void copyTemplateFileToZk(CuratorFramework curator, File templateFile, String confPath)
+	    throws SiteWhereException {
+	String zkFile = confPath + "/" + templateFile.getName();
+	FileInputStream input = null;
+	try {
+	    input = new FileInputStream(templateFile);
+	    byte[] data = IOUtils.toByteArray(input);
+	    curator.create().forPath(zkFile, data);
+	} catch (Exception e) {
+	    LOGGER.error("Unable to copy template file to Zk.", e);
+	    IOUtils.closeQuietly(input);
+	}
+    }
+
+    /**
+     * Get file handle for instance templates root.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected File getTemplatesRoot() throws SiteWhereException {
+	File root = new File(TEMPLATES_ROOT);
+	if (!root.exists()) {
+	    throw new SiteWhereException("Root folder for instance templates not found!");
+	}
+	return root;
+    }
+
     /**
      * Refresh the list of templates.
      * 
@@ -67,10 +136,7 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
      */
     protected void refreshTemplates(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	Map<String, IInstanceTemplate> updated = new HashMap<String, IInstanceTemplate>();
-	File root = new File(TEMPLATES_ROOT);
-	if (!root.exists()) {
-	    throw new SiteWhereException("Root folder for instance templates not found!");
-	}
+	File root = getTemplatesRoot();
 	File[] folders = root.listFiles(File::isDirectory);
 	for (File folder : folders) {
 	    IInstanceTemplate template = createTemplate(folder);

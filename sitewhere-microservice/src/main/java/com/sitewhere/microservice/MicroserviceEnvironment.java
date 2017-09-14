@@ -16,6 +16,9 @@ public class MicroserviceEnvironment {
     /** Environment variable for Zookeeper connection string */
     public static final String ENV_ZOOKEEPER_CONNECT = "SW_ZOOKEEPER_CONNECT";
 
+    /** Environment variable for instance template */
+    public static final String ENV_INSTANCE_TEMPLATE_ID = "SW_INSTANCE_TEMPLATE";
+
     /** Environment variable for SiteWhere instance id */
     public static final String ENV_GRPC_PORT_OVERRIDE = "SW_GRPC_PORT_OVERRIDE";
 }

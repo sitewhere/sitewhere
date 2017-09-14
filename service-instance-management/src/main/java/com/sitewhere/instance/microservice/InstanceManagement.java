@@ -12,9 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagement;
+import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
 import com.sitewhere.microservice.Microservice;
+import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
@@ -36,6 +38,9 @@ public class InstanceManagement extends Microservice implements IInstanceManagem
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
+
+    /** Default instance template id used if not set in environment */
+    private static final String DEFAULT_INSTANCE_TEMPLATE_ID = "mongodb-default";
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -69,6 +74,9 @@ public class InstanceManagement extends Microservice implements IInstanceManagem
 	start.addStep(new StartComponentLifecycleStep(this, getInstanceTemplateManager(), "Instance Template Manager",
 		"Unable to start instance template manager", true));
 
+	// Verify Zk node for instance configuration or bootstrap instance.
+	start.addStep(verifyOrBootstrapConfiguration());
+
 	// Execute initialization steps.
 	start.execute(monitor);
     }
@@ -93,9 +101,9 @@ public class InstanceManagement extends Microservice implements IInstanceManagem
     }
 
     /**
-     * Verify that a Zk node exists to hold instance configuration information.
-     * Create the folder if it does not exist. Other microservices block while
-     * waiting on this node to be created.
+     * Verify that a Zk node exists to hold instance information. Create the
+     * folder if it does not exist. Other microservices block while waiting on
+     * this node to be created.
      * 
      * @return
      */
@@ -118,6 +126,82 @@ public class InstanceManagement extends Microservice implements IInstanceManagem
 		}
 	    }
 	};
+    }
+
+    /**
+     * Verify that a Zk node exists to hold instance configuration information.
+     * Create the folder and bootstrap from the instance template if it does not
+     * exist. Other microservices block while waiting on this node to be
+     * created.
+     * 
+     * @return
+     */
+    public ILifecycleStep verifyOrBootstrapConfiguration() {
+	return new SimpleLifecycleStep("Verify instance configured") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		try {
+		    Stat existing = getZookeeperManager().getCurator().checkExists()
+			    .forPath(getInstanceConfigurationPath());
+		    if (existing == null) {
+			LOGGER.info("Zk node for instance configuration not found. Bootstrapping...");
+			bootstrapInstanceConfiguration();
+			LOGGER.info("Bootstrapped instance configuration from template.");
+		    } else {
+			LOGGER.info("Found Zk node for instance configuration. Skipping instance bootstrap.");
+		    }
+		} catch (SiteWhereException e) {
+		    throw e;
+		} catch (Exception e) {
+		    throw new SiteWhereException(e);
+		}
+	    }
+	};
+    }
+
+    /**
+     * Bootstrap instance configuration data from chosen instance template.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void bootstrapInstanceConfiguration() throws SiteWhereException {
+	try {
+	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigurationPath());
+	    getInstanceTemplateManager().copyTemplateConfigurationToZk(getDefaultInstanceTemplateOrOverride(),
+		    getZookeeperManager().getCurator(), getInstanceConfigurationPath());
+	} catch (Exception e) {
+	    throw new SiteWhereException(e);
+	}
+    }
+
+    /**
+     * Check environment variable for SiteWhere instance template id or use
+     * default template if not specified.
+     */
+    protected static String getDefaultInstanceTemplateOrOverride() {
+	String envInstanceTemplate = System.getenv().get(MicroserviceEnvironment.ENV_INSTANCE_TEMPLATE_ID);
+	if (envInstanceTemplate != null) {
+	    LOGGER.info("Instance template found in " + MicroserviceEnvironment.ENV_INSTANCE_TEMPLATE_ID + ": "
+		    + envInstanceTemplate);
+	    return envInstanceTemplate;
+	}
+	return DEFAULT_INSTANCE_TEMPLATE_ID;
+    }
+
+    /**
+     * Get instance template chosen via enviroment variable or default.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IInstanceTemplate getChosenInstanceTemplate() throws SiteWhereException {
+	String templateId = getDefaultInstanceTemplateOrOverride();
+	IInstanceTemplate template = getInstanceTemplateManager().getInstanceTemplates().get(templateId);
+	if (template == null) {
+	    throw new SiteWhereException("Unable to locate instance template: " + templateId);
+	}
+	return template;
     }
 
     /*
