@@ -1,5 +1,8 @@
 package com.sitewhere.microservice.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -8,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
 import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -33,6 +37,9 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 
     /** Tree cache for configuration data */
     private TreeCache treeCache;
+
+    /** List of configuration listeners */
+    private List<IConfigurationListener> listeners = new ArrayList<IConfigurationListener>();
 
     public ConfigurationMonitor(IZookeeperManager zkManager, String configurationPath) {
 	this.zkManager = zkManager;
@@ -77,9 +84,12 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 			onCacheInitialized();
 			break;
 		    }
-		    case NODE_ADDED:
+		    case NODE_ADDED: {
+			onNodeAdded(event);
+			break;
+		    }
 		    case NODE_UPDATED: {
-			onNodeChanged(event);
+			onNodeUpdated(event);
 			break;
 		    }
 		    case NODE_REMOVED: {
@@ -116,16 +126,31 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * Called after cache has been initialized.
      */
     protected void onCacheInitialized() {
-	LOGGER.info("Configuration cache initialized successfully.");
+	for (IConfigurationListener listener : getListeners()) {
+	    listener.onConfigurationCacheInitialized();
+	}
     }
 
     /**
-     * Called when node data is added/updated.
+     * Called when node data is added.
      * 
      * @param event
      */
-    protected void onNodeChanged(TreeCacheEvent event) {
-	LOGGER.info("Node added/updated for '" + event.getData().getPath() + "'.");
+    protected void onNodeAdded(TreeCacheEvent event) {
+	for (IConfigurationListener listener : getListeners()) {
+	    listener.onConfigurationAdded(event.getData().getPath(), event.getData().getData());
+	}
+    }
+
+    /**
+     * Called when node data is updated.
+     * 
+     * @param event
+     */
+    protected void onNodeUpdated(TreeCacheEvent event) {
+	for (IConfigurationListener listener : getListeners()) {
+	    listener.onConfigurationUpdated(event.getData().getPath(), event.getData().getData());
+	}
     }
 
     /**
@@ -134,7 +159,24 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * @param event
      */
     protected void onNodeDeleted(TreeCacheEvent event) {
-	LOGGER.info("Node deleted for '" + event.getData().getPath() + "'.");
+	for (IConfigurationListener listener : getListeners()) {
+	    listener.onConfigurationDeleted(event.getData().getPath());
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationMonitor#
+     * getListeners()
+     */
+    @Override
+    public List<IConfigurationListener> getListeners() {
+	return listeners;
+    }
+
+    public void setListeners(List<IConfigurationListener> listeners) {
+	this.listeners = listeners;
     }
 
     /*

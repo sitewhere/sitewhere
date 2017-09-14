@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
+import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
 import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
@@ -20,13 +21,68 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class ConfigurableMicroservice extends Microservice implements IConfigurableMicroservice {
+public abstract class ConfigurableMicroservice extends Microservice
+	implements IConfigurableMicroservice, IConfigurationListener {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
+
+    /** Indicates if configuration cache is ready to use */
+    private boolean configurationCacheReady = false;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationCacheInitialized()
+     */
+    @Override
+    public void onConfigurationCacheInitialized() {
+	LOGGER.info("Configuration cache initialized.");
+	setConfigurationCacheReady(true);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationAdded(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    LOGGER.info("Configuration added for '" + path + "'.");
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationUpdated(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    LOGGER.info("Configuration updated for '" + path + "'.");
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationDeleted(java.lang.String)
+     */
+    @Override
+    public void onConfigurationDeleted(String path) {
+	if (isConfigurationCacheReady()) {
+	    LOGGER.info("Configuration deleted for '" + path + "'.");
+	}
+    }
 
     /*
      * (non-Javadoc)
@@ -100,6 +156,7 @@ public abstract class ConfigurableMicroservice extends Microservice implements I
      */
     protected void createConfigurationMonitor() throws SiteWhereException {
 	this.configurationMonitor = new ConfigurationMonitor(getZookeeperManager(), getInstanceConfigurationPath());
+	getConfigurationMonitor().getListeners().add(this);
     }
 
     /*
@@ -129,6 +186,22 @@ public abstract class ConfigurableMicroservice extends Microservice implements I
 
     public void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
 	this.configurationMonitor = configurationMonitor;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * isConfigurationCacheReady()
+     */
+    @Override
+    public boolean isConfigurationCacheReady() {
+	return configurationCacheReady;
+    }
+
+    public void setConfigurationCacheReady(boolean configurationCacheReady) {
+	this.configurationCacheReady = configurationCacheReady;
     }
 
     /*

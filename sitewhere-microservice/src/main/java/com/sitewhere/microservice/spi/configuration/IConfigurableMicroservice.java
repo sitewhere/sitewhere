@@ -15,4 +15,11 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      */
     public IConfigurationMonitor getConfigurationMonitor();
+
+    /**
+     * Indicates if configuration has been cached from Zk.
+     * 
+     * @return
+     */
+    public boolean isConfigurationCacheReady();
 }

@@ -1,5 +1,7 @@
 package com.sitewhere.microservice.spi.configuration;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -9,4 +11,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * @author Derek
  */
 public interface IConfigurationMonitor extends ILifecycleComponent {
+
+    /**
+     * Get list of listeners.
+     * 
+     * @return
+     */
+    public List<IConfigurationListener> getListeners();
 }
