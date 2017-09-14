@@ -1,6 +1,6 @@
 package com.sitewhere.instance.spi.templates;
 
-import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -13,11 +13,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IInstanceTemplateManager extends ILifecycleComponent {
 
     /**
-     * Get list of templates that can be used to create a new SiteWhere
-     * instance.
+     * Get map of instance templates indexed by template id.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public List<IInstanceTemplate> getInstanceTemplates() throws SiteWhereException;
+    public Map<String, IInstanceTemplate> getInstanceTemplates() throws SiteWhereException;
 }
