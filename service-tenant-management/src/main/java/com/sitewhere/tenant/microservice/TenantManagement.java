@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
@@ -37,6 +38,12 @@ public class TenantManagement extends GlobalMicroservice {
     /** Microservice name */
     private static final String NAME = "Tenant Management";
 
+    /** Tenant management configuration file name */
+    private static final String TENANT_MANAGEMENT_CONFIGURATION = "tenant-management.xml";
+
+    /** List of configuration paths required by microservice */
+    private static final String[] CONFIGURATION_PATHS = { TENANT_MANAGEMENT_CONFIGURATION };
+
     /** Relative path for storing tenant templates */
     private static final String TEMPLATES_PATH = "/templates";
 
@@ -54,6 +61,18 @@ public class TenantManagement extends GlobalMicroservice {
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths(
+     * )
+     */
+    @Override
+    public String[] getConfigurationPaths() throws SiteWhereException {
+	return CONFIGURATION_PATHS;
     }
 
     /*
@@ -110,6 +129,24 @@ public class TenantManagement extends GlobalMicroservice {
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#onConfigurationsLoaded
+     * (byte[], java.util.Map)
+     */
+    @Override
+    public void onConfigurationsLoaded(byte[] global, Map<String, byte[]> configs) throws SiteWhereException {
+	LOGGER.info("Global:\n\n" + new String(global));
+	LOGGER.info("Tenant:\n\n" + new String(configs.get(TENANT_MANAGEMENT_CONFIGURATION)));
+    }
+
+    /**
+     * Run template population logic in a monitorable step.
+     * 
+     * @return
+     */
     public ILifecycleStep populateTemplatesIfNotPresent() {
 	return new SimpleLifecycleStep("Populate tenant templates.") {
 

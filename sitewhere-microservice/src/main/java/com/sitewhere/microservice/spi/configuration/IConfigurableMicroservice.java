@@ -1,6 +1,7 @@
 package com.sitewhere.microservice.spi.configuration;
 
 import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Microservice that supports dynamic monitoring of configuration.
@@ -22,4 +23,13 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      */
     public boolean isConfigurationCacheReady();
+
+    /**
+     * Get configuration data for the given path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getConfigurationDataFor(String path) throws SiteWhereException;
 }

@@ -87,6 +87,21 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getConfigurationDataFor(java.lang.String)
+     */
+    @Override
+    public byte[] getConfigurationDataFor(String path) throws SiteWhereException {
+	if (!isConfigurationCacheReady()) {
+	    throw new SiteWhereException("Configuration cache not initialized.");
+	}
+	return getConfigurationMonitor().getConfigurationDataFor(path);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */

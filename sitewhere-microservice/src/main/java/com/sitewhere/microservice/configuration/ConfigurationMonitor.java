@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
@@ -120,6 +121,18 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getTreeCache().close();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationMonitor#
+     * getConfigurationDataFor(java.lang.String)
+     */
+    @Override
+    public byte[] getConfigurationDataFor(String path) throws SiteWhereException {
+	ChildData data = getTreeCache().getCurrentData(path);
+	return (data != null) ? data.getData() : null;
     }
 
     /**
