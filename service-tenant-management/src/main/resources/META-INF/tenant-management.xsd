@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/tenant-management"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/tenant-management"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans"
+		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
+
+	<xsd:element name="tenant-management" type="tenantManagementType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere tenant management microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="tenantManagementType">
+	</xsd:complexType>
+</xsd:schema>

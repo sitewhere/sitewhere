@@ -1,0 +1,12 @@
+{
+	"id": "monogodb-default",
+	"name": "MongoDB Default",
+	"initializers": {
+		"userManagement": [
+			"scripts/groovy/initializer/userModel.groovy"
+		],
+		"tenantManagement": [
+			"scripts/groovy/initializer/tenantModel.groovy"
+		]
+	}
+}

@@ -22,14 +22,18 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}.jar", "/opt")
+	
+	// Copy tenant templates.
+	copyFile("templates", "/opt/templates")
 
 	// Run the startup script and start tailing the log.
 	defaultCommand 'java', '-jar', "/opt/${project.name}-${project.version}.jar"
 }
 
 // Copy artifact to Docker input folder.
-task copyArtifactToDocker(type: Copy, dependsOn: dockerFile) {
+task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
     from "${buildDir}/libs/${project.name}-${project.version}.jar"
+	from "${projectDir}/dockerimage" 
     into 'build/docker'
 }
 
