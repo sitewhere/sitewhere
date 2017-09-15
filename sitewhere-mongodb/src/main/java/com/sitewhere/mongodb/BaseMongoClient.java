@@ -42,47 +42,15 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Default hostname for Mongo */
-    private static final String DEFAULT_HOSTNAME = "localhost";
-
-    /** Default port for Mongo */
-    private static final String DEFAULT_PORT = "27017";
-
-    /** Default database name */
-    private static final String DEFAULT_DATABASE_NAME = "sitewhere";
-
-    /** Default authentication database name */
-    private static final String DEFAULT_AUTH_DATABASE_NAME = "admin";
-
-    /** Mongo client */
+    /** MongoDB client */
     private MongoClient client;
 
-    /** Hostname used to access the Mongo datastore */
-    private String hostname = DEFAULT_HOSTNAME;
+    /** MongoDB Configuration */
+    private MongoConfiguration configuration;
 
-    /** Port used to access the Mongo datastore */
-    private String port = DEFAULT_PORT;
-
-    /** Username used for authentication */
-    private String username;
-
-    /** Password used for authentication */
-    private String password;
-
-    /** Replica set name (blank or null for none) */
-    private String replicaSetName;
-
-    /** Indicates if replication should be auto-configured */
-    private boolean autoConfigureReplication = true;
-
-    /** Database that holds sitewhere collections */
-    private String databaseName = DEFAULT_DATABASE_NAME;
-
-    /** Database that holds user credentials */
-    private String authDatabaseName = DEFAULT_AUTH_DATABASE_NAME;
-
-    public BaseMongoClient() {
+    public BaseMongoClient(MongoConfiguration configuration) {
 	super(LifecycleComponentType.DataStore);
+	this.configuration = configuration;
     }
 
     /*
@@ -97,14 +65,15 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
-	    LOGGER.info("MongoDB Connection: hosts=" + getHostname() + " ports=" + getPort() + " replicaSet="
-		    + getReplicaSetName());
+	    LOGGER.info("MongoDB Connection: hosts=" + getConfiguration().getHostname() + " ports="
+		    + getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
 
 	    // Parse hostname(s) and port(s) into address list.
 	    List<ServerAddress> addresses = parseServerAddresses();
 
 	    // Indicator for whether a replica set is being used.
-	    boolean isUsingReplicaSet = ((addresses.size() > 1) && (!StringUtils.isEmpty(getReplicaSetName())));
+	    boolean isUsingReplicaSet = ((addresses.size() > 1)
+		    && (!StringUtils.isEmpty(getConfiguration().getReplicaSetName())));
 
 	    if (isUsingReplicaSet) {
 		LOGGER.info("MongoDB using replicated mode.");
@@ -113,9 +82,9 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    }
 
 	    // Handle authenticated access.
-	    if ((getUsername() != null) && (getPassword() != null)) {
-		MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
-			getPassword().toCharArray());
+	    if ((getConfiguration().getUsername() != null) && (getConfiguration().getPassword() != null)) {
+		MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
+			getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
 		if (isUsingReplicaSet) {
 		    this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
 		} else {
@@ -133,7 +102,7 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    }
 
 	    // Handle automatic configuration of replication.
-	    if ((isUsingReplicaSet) && (isAutoConfigureReplication())) {
+	    if ((isUsingReplicaSet) && (getConfiguration().isAutoConfigureReplication())) {
 		doAutoConfigureReplication(addresses);
 	    }
 
@@ -141,7 +110,8 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    getGlobalDatabase().listCollectionNames();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
-		    + "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
+		    + "Verify that MongoDB is running on " + getConfiguration().getHostname() + ":"
+		    + getConfiguration().getPort() + " and restart server.", e);
 	}
     }
 
@@ -153,9 +123,9 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
      */
     protected MongoClient getPrimaryConnection(List<ServerAddress> addresses) {
 	MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
-	if ((getUsername() != null) && (getPassword() != null)) {
-	    MongoCredential credential = MongoCredential.createCredential(getUsername(), getAuthDatabaseName(),
-		    getPassword().toCharArray());
+	if ((getConfiguration().getUsername() != null) && (getConfiguration().getPassword() != null)) {
+	    MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
+		    getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
 	    return new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
 	} else {
 	    return new MongoClient(addresses.get(0), builder.build());
@@ -185,8 +155,8 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 
 	// Create configuration for new replica set.
 	try {
-	    LOGGER.info("Configuring new replica set '" + getReplicaSetName() + "'.");
-	    BasicDBObject config = new BasicDBObject("_id", getReplicaSetName());
+	    LOGGER.info("Configuring new replica set '" + getConfiguration().getReplicaSetName() + "'.");
+	    BasicDBObject config = new BasicDBObject("_id", getConfiguration().getReplicaSetName());
 	    List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
 
 	    // Create list of members in replica set.
@@ -210,7 +180,7 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    if (result.getDouble("ok") != 1) {
 		throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
 	    }
-	    LOGGER.info("Replica set '" + getReplicaSetName() + "' creation command successful.");
+	    LOGGER.info("Replica set '" + getConfiguration().getReplicaSetName() + "' creation command successful.");
 	} finally {
 	    primary.close();
 	}
@@ -240,8 +210,8 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
      * @throws SiteWhereException
      */
     protected List<ServerAddress> parseServerAddresses() throws SiteWhereException {
-	String[] hosts = getHostname().split(",");
-	String[] ports = getPort().split(",");
+	String[] hosts = getConfiguration().getHostname().split(",");
+	String[] ports = getConfiguration().getPort().split(",");
 
 	if (hosts.length != ports.length) {
 	    throw new SiteWhereException("Number of hosts does not match number of ports. Hosts(" + arrayAsString(hosts)
@@ -272,9 +242,9 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	messages.add("------------------");
 	messages.add("-- MONGO CLIENT --");
 	messages.add("------------------");
-	messages.add("Hostname: " + hostname);
-	messages.add("Port: " + port);
-	messages.add("Database Name: " + databaseName);
+	messages.add("Hostname: " + getConfiguration().getHostname());
+	messages.add("Port: " + getConfiguration().getPort());
+	messages.add("Database Name: " + getConfiguration().getDatabaseName());
 	String message = Boilerplate.boilerplate(messages, "*");
 	LOGGER.info("\n" + message + "\n");
     }
@@ -340,70 +310,14 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
      * @return
      */
     public MongoDatabase getGlobalDatabase() {
-	return client.getDatabase(getDatabaseName());
+	return client.getDatabase(getConfiguration().getDatabaseName());
     }
 
-    public String getHostname() {
-	return hostname;
+    public MongoConfiguration getConfiguration() {
+	return configuration;
     }
 
-    public void setHostname(String hostname) {
-	this.hostname = hostname;
-    }
-
-    public String getPort() {
-	return port;
-    }
-
-    public void setPort(String port) {
-	this.port = port;
-    }
-
-    public String getUsername() {
-	return username;
-    }
-
-    public void setUsername(String username) {
-	this.username = username;
-    }
-
-    public String getPassword() {
-	return password;
-    }
-
-    public void setPassword(String password) {
-	this.password = password;
-    }
-
-    public String getReplicaSetName() {
-	return replicaSetName;
-    }
-
-    public void setReplicaSetName(String replicaSetName) {
-	this.replicaSetName = replicaSetName;
-    }
-
-    public boolean isAutoConfigureReplication() {
-	return autoConfigureReplication;
-    }
-
-    public void setAutoConfigureReplication(boolean autoConfigureReplication) {
-	this.autoConfigureReplication = autoConfigureReplication;
-    }
-
-    public String getDatabaseName() {
-	return databaseName;
-    }
-
-    public void setDatabaseName(String databaseName) {
-	this.databaseName = databaseName;
-    }
-
-    public String getAuthDatabaseName() {
-	return authDatabaseName;
-    }
-
-    public void setAuthDatabaseName(String authDatabaseName) {
-	this.authDatabaseName = authDatabaseName;
+    public void setConfiguration(MongoConfiguration configuration) {
+	this.configuration = configuration;
     }
 }

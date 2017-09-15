@@ -21,9 +21,6 @@ public interface SiteWhereServerBeans {
     /** Bean id for user management in server configuration */
     public static final String BEAN_USER_MANAGEMENT = "userManagement";
 
-    /** Bean id for tenant management in server configuration */
-    public static final String BEAN_TENANT_MANAGEMENT = "tenantManagement";
-
     /** Bean id for device management in server configuration */
     public static final String BEAN_DEVICE_MANAGEMENT = "deviceManagement";
 

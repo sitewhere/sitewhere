@@ -18,6 +18,20 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public IConfigurationMonitor getConfigurationMonitor();
 
     /**
+     * Get current configuration state.
+     * 
+     * @return
+     */
+    public ConfigurationState getConfigurationState();
+
+    /**
+     * Wait for configuration to be loaded.
+     * 
+     * @throws SiteWhereException
+     */
+    public void waitForConfigurationReady() throws SiteWhereException;
+
+    /**
      * Indicates if configuration has been cached from Zk.
      * 
      * @return

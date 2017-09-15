@@ -23,15 +23,17 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
+import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
+import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
 /**
  * Microservice that provides tenant management functionality.
  * 
  * @author Derek
  */
-public class TenantManagement extends GlobalMicroservice {
+public class TenantManagementMicroservice extends GlobalMicroservice implements ITenantManagementMicroservice {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -52,7 +54,10 @@ public class TenantManagement extends GlobalMicroservice {
     private static final String TEMPLATE_POPULATION_LOCK_PATH = "/locks/templates";
 
     /** Responds to tenant management GRPC requests */
-    private ITenantManagementGrpcServer tenantManagementGrpcManager = new TenantManagementGrpcServer();
+    private ITenantManagementGrpcServer tenantManagementGrpcServer = new TenantManagementGrpcServer();
+
+    /** Tenant management persistence API */
+    private ITenantManagement tenantManagement;
 
     /*
      * (non-Javadoc)
@@ -79,6 +84,19 @@ public class TenantManagement extends GlobalMicroservice {
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
+     * initializeFromSpringContexts(org.springframework.context.
+     * ApplicationContext, java.util.Map)
+     */
+    @Override
+    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
+	    throws SiteWhereException {
+	LOGGER.info("Spring contexts loaded.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceInitialize
      * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
@@ -89,8 +107,8 @@ public class TenantManagement extends GlobalMicroservice {
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Verify or create Zk node for instance information.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcManager(),
-		"Tenant management GRPC manager", "Unable to initialize tenant management GRPC manager", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
+		"Tenant management GRPC server", "Unable to initialize tenant management GRPC server", true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -112,7 +130,7 @@ public class TenantManagement extends GlobalMicroservice {
 	start.addStep(populateTemplatesIfNotPresent());
 
 	// Verify or create Zk node for instance information.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcManager(),
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC manager", "Unable to start tenant management GRPC manager.", true));
 
 	// Execute initialization steps.
@@ -128,19 +146,6 @@ public class TenantManagement extends GlobalMicroservice {
      */
     @Override
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#onConfigurationsLoaded
-     * (org.springframework.context.ApplicationContext, java.util.Map)
-     */
-    @Override
-    public void onConfigurationsLoaded(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
-	LOGGER.info("Spring contexts loaded.");
     }
 
     /**
@@ -246,11 +251,33 @@ public class TenantManagement extends GlobalMicroservice {
 	}
     }
 
-    public ITenantManagementGrpcServer getTenantManagementGrpcManager() {
-	return tenantManagementGrpcManager;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagement#
+     * getTenantManagementGrpcServer()
+     */
+    @Override
+    public ITenantManagementGrpcServer getTenantManagementGrpcServer() {
+	return tenantManagementGrpcServer;
     }
 
-    public void setTenantManagementGrpcManager(ITenantManagementGrpcServer tenantManagementGrpcManager) {
-	this.tenantManagementGrpcManager = tenantManagementGrpcManager;
+    public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
+	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getTenantManagement()
+     */
+    @Override
+    public ITenantManagement getTenantManagement() {
+	return tenantManagement;
+    }
+
+    public void setTenantManagement(ITenantManagement tenantManagement) {
+	this.tenantManagement = tenantManagement;
     }
 }

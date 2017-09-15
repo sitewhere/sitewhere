@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -52,6 +53,10 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
 
     /** Injected name used for batch operation elements collection */
     private String batchOperationElementsCollectionName = IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
+
+    public DeviceManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

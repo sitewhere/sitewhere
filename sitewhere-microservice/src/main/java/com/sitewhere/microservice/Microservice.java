@@ -85,12 +85,11 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.IMicroservice#waitOnInstanceInitialization
-     * ()
+     * @see com.sitewhere.microservice.spi.IMicroservice#
+     * waitForInstanceInitialization()
      */
     @Override
-    public void waitOnInstanceInitialization() throws SiteWhereException {
+    public void waitForInstanceInitialization() throws SiteWhereException {
 	try {
 	    LOGGER.info("Verifying that instance has been bootstrapped...");
 	    while (true) {

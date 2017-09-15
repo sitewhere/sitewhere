@@ -5,6 +5,7 @@ import org.bson.Document;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -16,6 +17,10 @@ public class TenantManagementMongoClient extends BaseMongoClient implements ITen
 
     /** Injected name used for tenants collection */
     private String tenantsCollectionName = ITenantManagementMongoClient.DEFAULT_TENANTS_COLLECTION_NAME;
+
+    public TenantManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

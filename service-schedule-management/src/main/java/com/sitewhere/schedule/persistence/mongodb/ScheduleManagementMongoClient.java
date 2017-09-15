@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -19,6 +20,10 @@ public class ScheduleManagementMongoClient extends BaseMongoClient implements IS
 
     /** Injected name used for scheduled jobs collection */
     private String scheduledJobsCollectionName = IScheduleManagementMongoClient.DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME;
+
+    public ScheduleManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

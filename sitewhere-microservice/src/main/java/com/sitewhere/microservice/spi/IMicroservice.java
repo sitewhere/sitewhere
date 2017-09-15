@@ -47,10 +47,10 @@ public interface IMicroservice extends ILifecycleComponent {
     public IZookeeperManager getZookeeperManager();
 
     /**
-     * Wait on SiteWhere instance configuration metadata to become initialized
+     * Wait for SiteWhere instance configuration metadata to become initialized
      * before proceeding.
      * 
      * @throws SiteWhereException
      */
-    public void waitOnInstanceInitialization() throws SiteWhereException;
+    public void waitForInstanceInitialization() throws SiteWhereException;
 }

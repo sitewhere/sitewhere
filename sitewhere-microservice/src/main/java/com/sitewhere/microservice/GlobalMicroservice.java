@@ -13,6 +13,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.spi.IGlobalMicroservice;
+import com.sitewhere.microservice.spi.configuration.ConfigurationState;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -41,7 +42,10 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 	super.initialize(monitor);
 
 	// Wait for validation from Zk that instance is initialized.
-	waitOnInstanceInitialization();
+	waitForInstanceInitialization();
+
+	// Wait for microservice to be configured.
+	waitForConfigurationReady();
 
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
@@ -123,6 +127,7 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 	@Override
 	public void run() {
 	    try {
+		setConfigurationState(ConfigurationState.Loading);
 		byte[] global = getInstanceGlobalConfigurationData();
 		if (global == null) {
 		    throw new SiteWhereException("Global instance configuration file not found.");
@@ -141,9 +146,11 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 			contexts.put(path, subcontext);
 		    }
 		}
-		onConfigurationsLoaded(globalContext, contexts);
+		initializeFromSpringContexts(globalContext, contexts);
+		setConfigurationState(ConfigurationState.Succeeded);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to load configuration data.", e);
+		setConfigurationState(ConfigurationState.Failed);
 	    }
 	}
     }

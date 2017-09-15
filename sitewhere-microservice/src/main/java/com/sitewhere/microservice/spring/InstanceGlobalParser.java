@@ -15,7 +15,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.spring.handler.IInstanceGlobalParser.Elements;
+import com.sitewhere.spring.parser.IInstanceGlobalParser.Elements;
 
 /**
  * Parses configuration data for the instance global configuration.
@@ -40,8 +40,8 @@ public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown instance global element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case MongoDatastore: {
-		parseMongoDatasource(child, context);
+	    case MongoConfiguration: {
+		parseMongoConfigurations(child, context);
 		break;
 	    }
 	    }
@@ -56,6 +56,7 @@ public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseMongoDatasource(Element element, ParserContext context) {
+    protected void parseMongoConfigurations(Element element, ParserContext context) {
+	(new MongoConfigurationParser()).parse(element, context);
     }
 }

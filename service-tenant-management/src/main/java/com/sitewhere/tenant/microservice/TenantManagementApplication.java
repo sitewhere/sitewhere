@@ -13,7 +13,7 @@ import com.sitewhere.microservice.spi.IMicroservice;
 public class TenantManagementApplication extends MicroserviceApplication {
 
     /** Tenant management microservice */
-    private TenantManagement service = new TenantManagement();
+    private TenantManagementMicroservice service = new TenantManagementMicroservice();
 
     /*
      * (non-Javadoc)

@@ -760,9 +760,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Initialize user management.
 	initializeUserManagement();
-
-	// Initialize tenant management.
-	initializeTenantManagement();
     }
 
     /**
@@ -774,20 +771,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	try {
 	    this.userManagement = (IUserManagement) SERVER_SPRING_CONTEXT
 		    .getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
-	} catch (NoSuchBeanDefinitionException e) {
-	    throw new SiteWhereException("No user management implementation configured.");
-	}
-    }
-
-    /**
-     * Verify and initialize tenant management implementation.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeTenantManagement() throws SiteWhereException {
-	try {
-	    this.tenantManagement = (ITenantManagement) SERVER_SPRING_CONTEXT
-		    .getBean(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No user management implementation configured.");
 	}

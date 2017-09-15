@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -19,6 +20,10 @@ public class AssetManagementMongoClient extends BaseMongoClient implements IAsse
 
     /** Injected name used for assets collection */
     private String assetsCollectionName = IAssetManagementMongoClient.DEFAULT_ASSETS_COLLECTION_NAME;
+
+    public AssetManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

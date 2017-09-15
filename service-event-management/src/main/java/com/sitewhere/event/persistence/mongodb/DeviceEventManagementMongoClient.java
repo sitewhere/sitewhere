@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -16,6 +17,10 @@ public class DeviceEventManagementMongoClient extends BaseMongoClient implements
 
     /** Injected name used for events collection */
     private String eventsCollectionName = IDeviceEventManagementMongoClient.DEFAULT_EVENTS_COLLECTION_NAME;
+
+    public DeviceEventManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

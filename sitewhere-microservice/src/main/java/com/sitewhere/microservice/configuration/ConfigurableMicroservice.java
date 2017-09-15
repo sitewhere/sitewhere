@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.Microservice;
+import com.sitewhere.microservice.spi.configuration.ConfigurationState;
 import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
 import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
 import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
@@ -27,8 +28,14 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Max wait time for configuration in seconds */
+    private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
+
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
+
+    /** Configuration state */
+    private ConfigurationState configurationState = ConfigurationState.NotStarted;
 
     /** Indicates if configuration cache is ready to use */
     private boolean configurationCacheReady = false;
@@ -117,51 +124,12 @@ public abstract class ConfigurableMicroservice extends Microservice
 	initialize.addStep(new InitializeComponentLifecycleStep(this, getConfigurationMonitor(),
 		"Configuration Monitor", "Unable to initialize configuration monitor", true));
 
-	// Execute initialization steps.
-	initialize.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-
-	// Organizes steps for starting microservice.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
 	// Start configuration monitor.
-	start.addStep(new StartComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor",
+	initialize.addStep(new StartComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor",
 		"Unable to start configuration monitor", true));
 
-	// Execute startup steps.
-	start.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.stop(monitor);
-
-	// Organizes steps for stopping microservice.
-	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
-
-	// Stop configuration monitor.
-	stop.addStep(new StopComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor"));
-
-	// Execute shutdown steps.
-	stop.execute(monitor);
+	// Execute initialization steps.
+	initialize.execute(monitor);
     }
 
     /**
@@ -185,8 +153,47 @@ public abstract class ConfigurableMicroservice extends Microservice
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.terminate(monitor);
 
+	// Organizes steps for stopping microservice.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop configuration monitor.
+	stop.addStep(new StopComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor"));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+
 	// Terminate configuration monitor.
 	getConfigurationMonitor().lifecycleTerminate(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * waitForConfigurationReady()
+     */
+    @Override
+    public void waitForConfigurationReady() throws SiteWhereException {
+	LOGGER.info("Waiting for configuration to be loaded...");
+	long deadline = System.currentTimeMillis() + (1000 * MAX_CONFIGURATION_WAIT_SEC);
+	while (true) {
+	    if ((deadline - System.currentTimeMillis()) < 0) {
+		throw new SiteWhereException("Microservice not configured within allowable timeframe.");
+	    }
+	    if (getConfigurationState() == ConfigurationState.Failed) {
+		throw new SiteWhereException("Microservice configuration failed.");
+	    }
+	    if (getConfigurationState() == ConfigurationState.Succeeded) {
+		LOGGER.info("Configuration loaded successfully.");
+		return;
+	    }
+	    try {
+		Thread.sleep(1000);
+	    } catch (InterruptedException e) {
+		return;
+	    }
+	}
     }
 
     /*
@@ -201,6 +208,22 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     public void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
 	this.configurationMonitor = configurationMonitor;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getConfigurationState()
+     */
+    @Override
+    public ConfigurationState getConfigurationState() {
+	return configurationState;
+    }
+
+    public void setConfigurationState(ConfigurationState configurationState) {
+	this.configurationState = configurationState;
     }
 
     /*

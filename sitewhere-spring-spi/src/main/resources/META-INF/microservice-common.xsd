@@ -8,7 +8,6 @@
 	<xsd:import namespace="http://www.springframework.org/schema/beans"
 		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
 
-
 	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
 	<xsd:element name="abstract-datastore" abstract="true"
 		type="abstractDatastoreType">
@@ -19,25 +18,49 @@
 		</xsd:annotation>
 	</xsd:element>
 
-	<!-- Common datastore information -->
-	<xsd:complexType name="abstractDatastoreType" />
-
-	<!-- Configuration data for a MongoDB datastore -->
-	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
+	<!-- Default MongoDB datastore reference -->
+	<xsd:element name="default-mongodb-datastore" type="defaultMongoDatastoreType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Global datastore that uses MongoDB for data
-				persistence.
+			<xsd:documentation>
+				Connects to MongoDB using the default global
+				configuration.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="mongoDatastoreType">
+	<xsd:complexType name="defaultMongoDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attributeGroup ref="mongo-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- Alternate MongoDB datastore reference -->
+	<xsd:element name="alternate-mongodb-datastore" type="alternateMongoDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to MongoDB using an alternate MongoDB
+				datastore configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="alternateMongoDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="id" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for alternate datastore configuration.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Common datastore information -->
+	<xsd:complexType name="abstractDatastoreType" />
 
 	<!-- MongoDB datastore attributes -->
 	<xsd:attributeGroup name="mongo-attributes">
@@ -100,23 +123,6 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Configuration data for an HBase datastore -->
-	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
-		substitutionGroup="abstract-datastore">
-		<xsd:annotation>
-			<xsd:documentation>Datastore that uses Apache HBase for data
-				persistence.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="hbaseDatastoreType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreType">
-				<xsd:attributeGroup ref="hbase-attributes" />
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- HBase datastore attributes -->
 	<xsd:attributeGroup name="hbase-attributes">
 		<xsd:attribute name="quorum" type="xsd:string">
@@ -147,5 +153,4 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
-	
 </xsd:schema>

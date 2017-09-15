@@ -21,35 +21,52 @@
 		</xsd:annotation>
 	</xsd:element>
 
+	<!-- Top-level global elements -->
 	<xsd:complexType name="instanceGlobalType">
 		<xsd:all>
-			<xsd:element ref="abstract-instance-datastore" />
+			<xsd:element name="mongodb-configuration" type="mongoConfigurationType"
+				minOccurs="0" />
 		</xsd:all>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for instance datastores to allow substitutionGroups -->
-	<xsd:element name="abstract-instance-datastore" abstract="true"
-		type="sw:abstractDatastoreType">
-		<xsd:annotation>
-			<xsd:documentation>
-				A placeholder for instance datastore elements.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
+	<!-- Mongo configuration elements -->
+	<xsd:complexType name="mongoConfigurationType">
+		<xsd:sequence>
+			<xsd:element name="default-mongodb-configuration"
+				type="defaultMongoDatastoreConfigurationType" minOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Default configuration data for MongoDB
+						datastores.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="alternate-mongodb-configuration"
+				type="alternateMongoDatastoreConfigurationType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Alternate configuration data for MongoDB
+						datastores.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
 
-	<!-- Instance datastore based on base MongoDB datastore -->
-	<xsd:element name="mongo-datastore" type="mongoInstanceDatastoreType"
-		substitutionGroup="abstract-instance-datastore">
-		<xsd:annotation>
-			<xsd:documentation>Instance datastore that uses MongoDB for data
-				persistence.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="mongoInstanceDatastoreType">
-		<xsd:complexContent>
-			<xsd:extension base="sw:mongoDatastoreType">
-			</xsd:extension>
-		</xsd:complexContent>
+	<!-- Default MongoDB datastore configuration -->
+	<xsd:complexType name="defaultMongoDatastoreConfigurationType">
+		<xsd:attributeGroup ref="sw:mongo-attributes" />
+	</xsd:complexType>
+
+	<!-- Alternate MongoDB datastore configuration -->
+	<xsd:complexType name="alternateMongoDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for datastore configuration.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="sw:mongo-attributes" />
 	</xsd:complexType>
 </xsd:schema>

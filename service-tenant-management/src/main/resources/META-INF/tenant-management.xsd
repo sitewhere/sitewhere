@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/tenant-management"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
 	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/tenant-management"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xsd:import namespace="http://www.springframework.org/schema/beans"
 		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
+	<xsd:import
+		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:element name="tenant-management" type="tenantManagementType">
 		<xsd:annotation>
@@ -18,5 +22,14 @@
 	</xsd:element>
 
 	<xsd:complexType name="tenantManagementType">
+		<xsd:all>
+			<xsd:element ref="sw:abstract-datastore">
+				<xsd:annotation>
+					<xsd:documentation>
+						Datastore used for persistence.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
 	</xsd:complexType>
 </xsd:schema>

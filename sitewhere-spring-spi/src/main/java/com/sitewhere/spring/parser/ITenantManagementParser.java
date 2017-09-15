@@ -1,21 +1,16 @@
-package com.sitewhere.spring.handler;
+package com.sitewhere.spring.parser;
 
 /**
- * Enumerates elements used by instance global parser.
+ * Enumerates elements used by tenant management parser.
  * 
  * @author Derek
  */
-public interface IInstanceGlobalParser {
+public interface ITenantManagementParser {
 
-    /**
-     * Expected child elements.
-     * 
-     * @author Derek
-     */
     public static enum Elements {
 
-	/** MongoDB instance datastore */
-	MongoDatastore("mongo-datastore");
+	/** Default MongoDB datastore */
+	DefaultMongoDatastore("default-mongodb-datastore");
 
 	/** Event code */
 	private String localName;

@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoConfiguration;
 
 /**
  * Mongo client for interacting with user management object model.
@@ -17,6 +18,10 @@ public class UserManagementMongoClient extends BaseMongoClient implements IUserM
 
     /** Injected name used for authorities collection */
     private String authoritiesCollectionName = IUserManagementMongoClient.DEFAULT_AUTHORITIES_COLLECTION_NAME;
+
+    public UserManagementMongoClient(MongoConfiguration configuration) {
+	super(configuration);
+    }
 
     /*
      * (non-Javadoc)

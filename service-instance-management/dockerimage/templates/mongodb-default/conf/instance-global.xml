@@ -11,10 +11,15 @@
 	<!-- Instance global configuration -->
 	<ig:instance-global>
 
-		<!-- MongoDB instance datastore -->
-		<ig:mongo-datastore hostname="${datastore.host}"
-			port="${datastore.port}" databaseName="${datastore.database}"
-			replicaSetName="${datastore.replicaset}" />
+		<!-- MongoDB configuration managment -->
+		<ig:mongodb-configuration>
+		
+			<!-- Default configuration for MongoDB data access -->
+			<ig:default-mongodb-configuration
+				hostname="${datastore.host}" port="${datastore.port}" databaseName="${datastore.database}"
+				replicaSetName="${datastore.replicaset}" />
+				
+		</ig:mongodb-configuration>
 
 	</ig:instance-global>
 

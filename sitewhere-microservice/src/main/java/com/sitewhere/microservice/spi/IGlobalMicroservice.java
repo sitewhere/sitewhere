@@ -65,12 +65,13 @@ public interface IGlobalMicroservice extends IConfigurableMicroservice {
     public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException;
 
     /**
-     * Called after all configuration files have been loaded.
+     * Initializes microservice components based on Spring contexts that were
+     * loaded.
      * 
      * @param global
      * @param contexts
      * @throws SiteWhereException
      */
-    public void onConfigurationsLoaded(ApplicationContext global, Map<String, ApplicationContext> contexts)
+    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException;
 }
