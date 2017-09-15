@@ -12,6 +12,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -134,12 +135,12 @@ public class TenantManagement extends GlobalMicroservice {
      * 
      * @see
      * com.sitewhere.microservice.spi.IGlobalMicroservice#onConfigurationsLoaded
-     * (byte[], java.util.Map)
+     * (org.springframework.context.ApplicationContext, java.util.Map)
      */
     @Override
-    public void onConfigurationsLoaded(byte[] global, Map<String, byte[]> configs) throws SiteWhereException {
-	LOGGER.info("Global:\n\n" + new String(global));
-	LOGGER.info("Tenant:\n\n" + new String(configs.get(TENANT_MANAGEMENT_CONFIGURATION)));
+    public void onConfigurationsLoaded(ApplicationContext global, Map<String, ApplicationContext> contexts)
+	    throws SiteWhereException {
+	LOGGER.info("Spring contexts loaded.");
     }
 
     /**

@@ -23,7 +23,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
@@ -87,9 +86,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Spring context for tenant */
     private ApplicationContext tenantContext;
 
-    /** SiteWhere global application context */
-    private ApplicationContext globalContext;
-
     /** Supports global configuration management */
     private IGlobalConfigurationResolver globalConfigurationResolver;
 
@@ -138,7 +134,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent, IGlobalConfigurationResolver global) {
 	super(LifecycleComponentType.TenantEngine);
 	setTenant(tenant);
-	this.globalContext = parent;
 	this.globalConfigurationResolver = global;
 	this.tenantConfigurationResolver = new ResourceManagerTenantConfigurationResolver(tenant,
 		SiteWhere.getServer().getVersion(), global);
@@ -286,8 +281,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	if (config == null) {
 	    throw new SiteWhereException("Tenant configuration not found. Aborting initialization.");
 	}
-	this.tenantContext = ConfigurationUtils.buildTenantContext(config, getTenant(),
-		SiteWhere.getServer().getVersion(), globalContext);
     }
 
     /**

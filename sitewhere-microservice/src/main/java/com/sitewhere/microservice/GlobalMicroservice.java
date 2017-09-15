@@ -2,7 +2,15 @@ package com.sitewhere.microservice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.context.ApplicationContext;
+
+import com.sitewhere.SiteWhere;
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -17,6 +25,9 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 
     /** Relative path to instance global configuration file */
     private static final String INSTANCE_GLOBAL_CONFIGURATION_PATH = "/instance-global.xml";
+
+    /** Executor for loading/parsing configuration updates */
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new ConfigurationLoaderThreadFactory());
 
     /*
      * (non-Javadoc)
@@ -75,21 +86,9 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     @Override
     public void onConfigurationCacheInitialized() {
 	super.onConfigurationCacheInitialized();
-	try {
-	    byte[] global = getInstanceGlobalConfigurationData();
-	    Map<String, byte[]> configs = new HashMap<String, byte[]>();
-	    for (String path : getConfigurationPaths()) {
-		String fullPath = getInstanceConfigurationPath() + "/" + path;
-		getLogger().info("Loading configuration at path: " + fullPath);
-		byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
-		if (data != null) {
-		    configs.put(path, data);
-		}
-	    }
-	    onConfigurationsLoaded(global, configs);
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to load configuration data.", e);
-	}
+
+	// Load and parse configuration in separate thread.
+	executor.execute(new ConfigurationLoader());
     }
 
     /*
@@ -112,5 +111,51 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     @Override
     public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException {
 	return getConfigurationMonitor().getConfigurationDataFor(getInstanceGlobalConfigurationPath());
+    }
+
+    /**
+     * Allow configurations to be loaded and parsed in a separate thread.
+     * 
+     * @author Derek
+     */
+    public class ConfigurationLoader implements Runnable {
+
+	@Override
+	public void run() {
+	    try {
+		byte[] global = getInstanceGlobalConfigurationData();
+		if (global == null) {
+		    throw new SiteWhereException("Global instance configuration file not found.");
+		}
+		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
+			SiteWhere.getVersion());
+
+		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
+		for (String path : getConfigurationPaths()) {
+		    String fullPath = getInstanceConfigurationPath() + "/" + path;
+		    getLogger().info("Loading configuration at path: " + fullPath);
+		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
+		    if (data != null) {
+			ApplicationContext subcontext = ConfigurationUtils.buildSubcontext(data, SiteWhere.getVersion(),
+				globalContext);
+			contexts.put(path, subcontext);
+		    }
+		}
+		onConfigurationsLoaded(globalContext, contexts);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to load configuration data.", e);
+	    }
+	}
+    }
+
+    /** Used for naming tenant operation threads */
+    private class ConfigurationLoaderThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Configuration Loader " + counter.incrementAndGet());
+	}
     }
 }

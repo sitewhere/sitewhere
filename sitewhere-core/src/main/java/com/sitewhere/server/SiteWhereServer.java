@@ -28,7 +28,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.groovy.configuration.GroovyConfiguration;
@@ -659,9 +658,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize the Groovy configuration.
 	initializeGroovyConfiguration();
 
-	// Initialize Spring.
-	initializeSpringContext();
-
 	// Initialize discoverable beans.
 	initializeDiscoverableBeans(monitor);
 
@@ -732,16 +728,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void initializeGroovyConfiguration() throws SiteWhereException {
 	this.groovyConfiguration = new GroovyConfiguration();
-    }
-
-    /**
-     * Verifies and loads the Spring configuration file.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeSpringContext() throws SiteWhereException {
-	IResource global = getConfigurationResolver().getGlobalConfiguration(getVersion());
-	SERVER_SPRING_CONTEXT = ConfigurationUtils.buildGlobalContext(global, getVersion());
     }
 
     /**

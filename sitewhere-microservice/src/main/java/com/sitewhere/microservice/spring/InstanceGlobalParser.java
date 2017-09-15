@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.spring;
+package com.sitewhere.microservice.spring;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -13,11 +13,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Parses configuration data for the SiteWhere asset management section.
+ * Parses configuration data for the instance global configuration.
  * 
  * @author Derek
  */
-public class InstanceManagementParser extends AbstractBeanDefinitionParser {
+public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
 
     /*
      * (non-Javadoc)

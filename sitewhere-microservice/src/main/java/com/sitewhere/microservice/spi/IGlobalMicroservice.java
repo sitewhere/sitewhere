@@ -2,6 +2,8 @@ package com.sitewhere.microservice.spi;
 
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+
 import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -66,8 +68,9 @@ public interface IGlobalMicroservice extends IConfigurableMicroservice {
      * Called after all configuration files have been loaded.
      * 
      * @param global
-     * @param configs
+     * @param contexts
      * @throws SiteWhereException
      */
-    public void onConfigurationsLoaded(byte[] global, Map<String, byte[]> configs) throws SiteWhereException;
+    public void onConfigurationsLoaded(ApplicationContext global, Map<String, ApplicationContext> contexts)
+	    throws SiteWhereException;
 }
