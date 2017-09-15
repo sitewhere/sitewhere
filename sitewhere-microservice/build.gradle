@@ -3,6 +3,8 @@ description = 'SiteWhere Common Microservice Library'
 dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-grpc-model')
+	compile project(':sitewhere-mongodb')
+	compile project(':sitewhere-spring-spi')
 	
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
 	

@@ -7,10 +7,15 @@
  */
 package com.sitewhere.microservice.spring;
 
+import java.util.List;
+
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import com.sitewhere.spring.handler.IInstanceGlobalParser.Elements;
 
 /**
  * Parses configuration data for the instance global configuration.
@@ -28,6 +33,29 @@ public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown instance global element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoDatastore: {
+		parseMongoDatasource(child, context);
+		break;
+	    }
+	    }
+	}
 	return null;
+    }
+
+    /**
+     * Parse a MongoDB datasource configuration and create beans needed to
+     * realize it.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseMongoDatasource(Element element, ParserContext context) {
     }
 }

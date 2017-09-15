@@ -3,6 +3,7 @@ description = 'SiteWhere Event Sources Microservice'
 dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-spring')
+	compile project(':sitewhere-protobuf')
 	
 	// ActiveMQ dependencies.
     compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'
