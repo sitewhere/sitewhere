@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -91,7 +92,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
-	LOGGER.info("Spring contexts loaded.");
+	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
+	this.tenantManagement = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
     }
 
     /*
@@ -105,6 +107,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize tenant management implementation.
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
+		"Tenant management persistence", "Unable to initialize tenant management persistence", true));
 
 	// Verify or create Zk node for instance information.
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),

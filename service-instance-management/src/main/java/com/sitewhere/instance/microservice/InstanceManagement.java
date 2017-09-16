@@ -170,6 +170,7 @@ public class InstanceManagement extends Microservice implements IInstanceManagem
 	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigurationPath());
 	    getInstanceTemplateManager().copyTemplateConfigurationToZk(getDefaultInstanceTemplateOrOverride(),
 		    getZookeeperManager().getCurator(), getInstanceConfigurationPath());
+	    getZookeeperManager().getCurator().create().forPath(getInstanceBootstrappedMarker());
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
 	}

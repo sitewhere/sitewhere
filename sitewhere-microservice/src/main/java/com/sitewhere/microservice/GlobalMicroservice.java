@@ -41,9 +41,6 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
-	// Wait for validation from Zk that instance is initialized.
-	waitForInstanceInitialization();
-
 	// Wait for microservice to be configured.
 	waitForConfigurationReady();
 

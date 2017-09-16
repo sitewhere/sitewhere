@@ -116,6 +116,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
+	// Make sure that instance is bootstrapped before configuring.
+	waitForInstanceInitialization();
+
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 

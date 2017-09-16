@@ -33,6 +33,14 @@ public interface IMicroservice extends ILifecycleComponent {
     public String getInstanceConfigurationPath();
 
     /**
+     * Get path for marker used to indicate instance is bootstrapped.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceBootstrappedMarker() throws SiteWhereException;
+
+    /**
      * Get name shown for microservice.
      * 
      * @return

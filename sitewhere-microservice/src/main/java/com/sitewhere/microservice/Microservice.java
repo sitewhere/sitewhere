@@ -29,6 +29,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Instance configuration folder name */
     private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
 
+    /** Relative path to instance bootstrap marker */
+    private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
+
     /** Zookeeper manager */
     private IZookeeperManager zookeeperManager = new ZookeeperManager();
 
@@ -93,7 +96,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	try {
 	    LOGGER.info("Verifying that instance has been bootstrapped...");
 	    while (true) {
-		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigurationPath()) != null) {
+		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
 		    break;
 		}
 		Thread.sleep(1000);
@@ -124,6 +127,17 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public String getInstanceConfigurationPath() {
 	return getInstanceZkPath() + INSTANCE_CONFIGURATION_FOLDER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#
+     * getInstanceBootstrappedMarker()
+     */
+    @Override
+    public String getInstanceBootstrappedMarker() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_BOOTSTRAP_MARKER;
     }
 
     /*
