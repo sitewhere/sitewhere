@@ -20,6 +20,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -108,9 +109,12 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize discoverable lifecycle components.
+	initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+
 	// Initialize tenant management implementation.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
-		"Tenant management persistence", "Unable to initialize tenant management persistence", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
+		"Unable to initialize tenant management persistence", true));
 
 	// Verify or create Zk node for instance information.
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
@@ -135,7 +139,14 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	// Verify or create Zk node for instance information.
 	start.addStep(populateTemplatesIfNotPresent());
 
-	// Verify or create Zk node for instance information.
+	// Start discoverable lifecycle components.
+	startDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+
+	// Start tenant mangement persistence.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
+		"Unable to start tenant management persistence.", true));
+
+	// Start GRPC manager.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC manager", "Unable to start tenant management GRPC manager.", true));
 
@@ -152,6 +163,21 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
      */
     @Override
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for stopping microservice.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop GRPC manager.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer(),
+		"Tenant management GRPC manager"));
+
+	// Stop tenant management persistence.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
+
+	// Stop discoverable lifecycle components.
+	stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+
+	// Stop tenant management persistence.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
     }
 
     /**
@@ -285,5 +311,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     public void setTenantManagement(ITenantManagement tenantManagement) {
 	this.tenantManagement = tenantManagement;
+    }
+
+    protected ApplicationContext getTenantManagementApplicationContext() {
+	return getGlobalContexts().get(TENANT_MANAGEMENT_CONFIGURATION);
     }
 }

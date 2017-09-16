@@ -143,6 +143,12 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 			contexts.put(path, subcontext);
 		    }
 		}
+
+		// Store contexts for later use.
+		setInstanceGlobalContext(globalContext);
+		setGlobalContexts(contexts);
+
+		// Allow components depending on configuration to proceed.
 		initializeFromSpringContexts(globalContext, contexts);
 		setConfigurationState(ConfigurationState.Succeeded);
 	    } catch (SiteWhereException e) {

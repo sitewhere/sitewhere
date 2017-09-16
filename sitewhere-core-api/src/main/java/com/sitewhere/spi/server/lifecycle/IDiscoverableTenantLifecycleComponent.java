@@ -16,4 +16,11 @@ package com.sitewhere.spi.server.lifecycle;
  * @author Derek
  */
 public interface IDiscoverableTenantLifecycleComponent extends ITenantLifecycleComponent {
+
+    /**
+     * Indicates whether the component is required.
+     * 
+     * @return
+     */
+    public boolean isRequired();
 }

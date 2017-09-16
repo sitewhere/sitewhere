@@ -56,6 +56,18 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent#
+     * isRequired()
+     */
+    @Override
+    public boolean isRequired() {
+	return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */

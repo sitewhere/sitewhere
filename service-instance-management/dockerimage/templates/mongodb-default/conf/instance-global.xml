@@ -8,17 +8,20 @@
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
            http://www.sitewhere.com/schema/sitewhere/microservice/instance-global http://www.sitewhere.org/schema/sitewhere/microservice/instance-global/current/instance-global.xsd">
 
+	<!-- Allow property placeholder substitution -->
+	<context:property-placeholder />
+
 	<!-- Instance global configuration -->
 	<ig:instance-global>
 
 		<!-- MongoDB configuration managment -->
 		<ig:mongodb-configuration>
-		
+
 			<!-- Default configuration for MongoDB data access -->
 			<ig:default-mongodb-configuration
-				hostname="${datastore.host}" port="${datastore.port}" databaseName="${datastore.database}"
-				replicaSetName="${datastore.replicaset}" />
-				
+				hostname="${datastore.host:monogdb}" port="${datastore.port:27017}"
+				databaseName="${datastore.database:sitewhere}" replicaSetName="${datastore.replicaset:}" />
+
 		</ig:mongodb-configuration>
 
 	</ig:instance-global>

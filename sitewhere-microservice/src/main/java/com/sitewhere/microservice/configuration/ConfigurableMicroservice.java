@@ -1,7 +1,10 @@
 package com.sitewhere.microservice.configuration;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.spi.configuration.ConfigurationState;
@@ -14,6 +17,7 @@ import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -39,6 +43,12 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     /** Indicates if configuration cache is ready to use */
     private boolean configurationCacheReady = false;
+
+    /** Instance global context information */
+    private ApplicationContext instanceGlobalContext;
+
+    /** Get map of global contexts by path */
+    private Map<String, ApplicationContext> globalContexts;
 
     /*
      * (non-Javadoc)
@@ -133,6 +143,66 @@ public abstract class ConfigurableMicroservice extends Microservice
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * initializeDiscoverableBeans(org.springframework.context.
+     * ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+	    initializeNestedComponent(component, monitor, "Unable to initialize " + component.getComponentName() + ".",
+		    component.isRequired());
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * startDiscoverableBeans(org.springframework.context.ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+	    startNestedComponent(component, monitor, "Unable to start " + component.getComponentName() + ".",
+		    component.isRequired());
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * stopDiscoverableBeans(org.springframework.context.ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+	    component.lifecycleStop(monitor);
+	}
     }
 
     /**
@@ -243,6 +313,38 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     public void setConfigurationCacheReady(boolean configurationCacheReady) {
 	this.configurationCacheReady = configurationCacheReady;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceGlobalContext()
+     */
+    @Override
+    public ApplicationContext getInstanceGlobalContext() {
+	return instanceGlobalContext;
+    }
+
+    public void setInstanceGlobalContext(ApplicationContext instanceGlobalContext) {
+	this.instanceGlobalContext = instanceGlobalContext;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getGlobalContexts()
+     */
+    @Override
+    public Map<String, ApplicationContext> getGlobalContexts() {
+	return globalContexts;
+    }
+
+    public void setGlobalContexts(Map<String, ApplicationContext> globalContexts) {
+	this.globalContexts = globalContexts;
     }
 
     /*

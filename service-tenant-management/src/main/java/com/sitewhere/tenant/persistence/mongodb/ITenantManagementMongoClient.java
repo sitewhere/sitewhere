@@ -11,13 +11,14 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Mongo client that provides tenant management collections.
  * 
  * @author Derek
  */
-public interface ITenantManagementMongoClient {
+public interface ITenantManagementMongoClient extends ILifecycleComponent {
 
     /** Default collection name for SiteWhere tenants */
     public static final String DEFAULT_TENANTS_COLLECTION_NAME = "tenants";

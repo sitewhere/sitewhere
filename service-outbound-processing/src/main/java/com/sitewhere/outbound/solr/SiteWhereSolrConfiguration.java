@@ -49,6 +49,18 @@ public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
      * (non-Javadoc)
      * 
      * @see
+     * com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent#
+     * isRequired()
+     */
+    @Override
+    public boolean isRequired() {
+	return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
      * .server.lifecycle.ILifecycleProgressMonitor)
      */
