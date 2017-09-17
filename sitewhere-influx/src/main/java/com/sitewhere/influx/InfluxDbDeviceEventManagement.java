@@ -99,11 +99,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /** Database name */
     private String database = "sitewhere";
 
-    /** Default retention policy **/
-    private final String DEFAULT_RETENTION_POLICY = "autogen";
-
     /** Retention policy */
-    private String retention = DEFAULT_RETENTION_POLICY;
+    private String retention = "autogen";
 
     /** Indicates if batch delivery is enabled */
     private boolean enableBatch = true;
@@ -286,14 +283,15 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
      * Check if the user has specific a retention policy in the assignment meta-data
      * If so, override the default one.
     */
-    private void setAssignmentSpecificRetentionPolicy(IDeviceAssignment assignment) {
+    private String getAssignmentSpecificRetentionPolicy(IDeviceAssignment assignment) {
 	String policy = assignment.getMetadata(ASSIGNMENT_META_DATA_RETENTION_POLICY);
+
 	if(policy == null) {
-	    setRetention(DEFAULT_RETENTION_POLICY);
+	    return getRetention();
 	 }
-	else{
-	    setRetention(policy);
-	}
+
+	return policy;
+
     }
     /*
      * (non-Javadoc)
@@ -311,9 +309,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 	// Update assignment state if requested.
 	if (measurements.isUpdateState()) {
 	    getAssignmentStateManager().addMeasurements(assignmentToken, mxs);
@@ -366,8 +362,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceLocation.saveToBuilder(location, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 
 	// Update assignment state if requested.
 	if (request.isUpdateState()) {
@@ -435,8 +430,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceAlert.saveToBuilder(alert, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 
 	// Update assignment state if requested.
 	if (request.isUpdateState()) {
@@ -533,8 +527,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 	return ci;
     }
 
@@ -595,8 +588,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 	return cr;
     }
 
@@ -644,8 +636,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
 	addUserDefinedTags(assignment, builder);
-	setAssignmentSpecificRetentionPolicy(assignment);
-	influx.write(getDatabase(), getRetention(), builder.build());
+	influx.write(getDatabase(), getAssignmentSpecificRetentionPolicy(assignment), builder.build());
 
 	// Update assignment state if requested.
 	if (request.isUpdateState()) {
