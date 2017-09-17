@@ -19,7 +19,7 @@
 
 			<!-- Default configuration for MongoDB data access -->
 			<ig:default-mongodb-configuration
-				hostname="${datastore.host:monogdb}" port="${datastore.port:27017}"
+				hostname="${datastore.host:mongodb}" port="${datastore.port:27017}"
 				databaseName="${datastore.database:sitewhere}" replicaSetName="${datastore.replicaset:}" />
 
 		</ig:mongodb-configuration>

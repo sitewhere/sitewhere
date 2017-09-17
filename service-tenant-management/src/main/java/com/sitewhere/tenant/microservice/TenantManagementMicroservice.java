@@ -56,7 +56,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     private static final String TEMPLATE_POPULATION_LOCK_PATH = "/locks/templates";
 
     /** Responds to tenant management GRPC requests */
-    private ITenantManagementGrpcServer tenantManagementGrpcServer = new TenantManagementGrpcServer();
+    private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
     /** Tenant management persistence API */
     private ITenantManagement tenantManagement;
@@ -95,6 +95,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	    throws SiteWhereException {
 	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
 	this.tenantManagement = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(getTenantManagement());
     }
 
     /*

@@ -20,6 +20,7 @@ include ':sitewhere-client'
 include ':sitewhere-communication'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
+include ':sitewhere-core-lifecycle'
 include ':sitewhere-grpc'
 include ':sitewhere-grpc-model'
 include ':sitewhere-hbase'
@@ -52,6 +53,7 @@ project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
 project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
+project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
 project(':sitewhere-grpc').projectDir = "$rootDir/sitewhere-grpc" as File
 project(':sitewhere-grpc-model').projectDir = "$rootDir/sitewhere-grpc-model" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File

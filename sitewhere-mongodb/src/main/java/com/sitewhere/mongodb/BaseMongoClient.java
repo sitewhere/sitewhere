@@ -251,9 +251,6 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	List<String> messages = new ArrayList<String>();
-	messages.add("------------------");
-	messages.add("-- MONGO CLIENT --");
-	messages.add("------------------");
 	messages.add("Hostname: " + getConfiguration().getHostname());
 	messages.add("Port: " + getConfiguration().getPort());
 	messages.add("Database Name: " + getConfiguration().getDatabaseName());
