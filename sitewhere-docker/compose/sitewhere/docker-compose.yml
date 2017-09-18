@@ -32,6 +32,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: ${ZK_CONNECT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  mongodb:
+    image: mongo:3
   instance-management:
     image: sitewhere/service-instance-management:${SW_VERSION}
     environment:
