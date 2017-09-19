@@ -29,7 +29,7 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Root folder for instance templates */
-    private static final String TEMPLATES_ROOT = "/opt/templates";
+    private static final String TEMPLATES_ROOT = "/templates";
 
     /** File name for instance template metadata */
     private static final String TEMPLATE_FILE = "template.json";

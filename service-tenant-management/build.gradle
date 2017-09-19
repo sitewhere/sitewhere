@@ -15,20 +15,17 @@ springBoot {
 // Create a Dockerfile.
 task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootRepackage) {
     destFile = project.file('build/docker/Dockerfile')
-    from 'ubuntu:14.04'
-    maintainer 'Derek Adams "derek.adams@sitewhere.com"'
-    
-    // Install updates to the base image.
-    runCommand 'apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:openjdk-r/ppa && apt-get update && apt-get install -y wget openjdk-8-jre-headless'
+    from "${rootProject.ext['docker.base.image']}"
+    maintainer "${rootProject.ext['docker.maintainer']}"
 	
 	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}.jar", "/opt")
+	copyFile("${project.name}-${project.version}.jar", "/")
 	
 	// Copy tenant templates.
-	copyFile("templates", "/opt/templates")
+	copyFile("templates", "/templates")
 
 	// Run the startup script and start tailing the log.
-	defaultCommand 'java', '-jar', "/opt/${project.name}-${project.version}.jar"
+	defaultCommand 'java', '-jar', "/${project.name}-${project.version}.jar"
 }
 
 // Copy artifacts to Docker input folder.

@@ -49,6 +49,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { TENANT_MANAGEMENT_CONFIGURATION };
 
+    /** Root folder for instance templates */
+    private static final String TEMPLATES_ROOT = "/templates";
+
     /** Relative path for storing tenant templates */
     private static final String TEMPLATES_PATH = "/templates";
 
@@ -241,7 +244,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
      * @throws SiteWhereException
      */
     protected void copyTemplatesToZk() throws SiteWhereException {
-	File templates = new File("/opt/templates");
+	File templates = new File(TEMPLATES_ROOT);
 	if (!templates.exists()) {
 	    throw new SiteWhereException("Templates folder not found in Docker image.");
 	}
