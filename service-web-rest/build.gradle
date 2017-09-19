@@ -19,7 +19,8 @@ dependencies {
 	
 	compile ('org.springframework.boot:spring-boot-starter-web')
     compile group: 'io.swagger', name: 'swagger-annotations', version:'1.5.10'	
-    compile group: 'com.mangofactory', name: 'swagger-springmvc', version:'1.0.2'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version:'2.7.0'
     compile group: 'org.springframework.security', name: 'spring-security-web'
 }
 

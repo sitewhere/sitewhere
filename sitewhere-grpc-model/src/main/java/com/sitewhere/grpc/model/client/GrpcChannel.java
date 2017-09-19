@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -22,6 +24,12 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Remote host */
+    private String hostname;
+
+    /** Remote port */
+    private int port;
+
     /** GRPC managed channe */
     private ManagedChannel channel;
 
@@ -31,14 +39,37 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     /** Asynchronous stub */
     private A asyncStub;
 
-    public GrpcChannel(String host, int port) {
-	this(ManagedChannelBuilder.forAddress(host, port).usePlaintext(true));
+    public GrpcChannel(String hostname, int port) {
+	this.hostname = hostname;
+	this.port = port;
     }
 
-    public GrpcChannel(ManagedChannelBuilder<?> channelBuilder) {
-	this.channel = channelBuilder.build();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getChannel() != null) {
+	    getChannel().shutdown();
+	}
     }
 
     /*
@@ -104,5 +135,21 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public String getHostname() {
+	return hostname;
+    }
+
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
+
+    public int getPort() {
+	return port;
+    }
+
+    public void setPort(int port) {
+	this.port = port;
     }
 }

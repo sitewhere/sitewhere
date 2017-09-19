@@ -58,9 +58,10 @@ import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestController;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for tenant operations.
@@ -70,8 +71,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/tenants")
-@Api(value = "tenants", description = "Operations related to SiteWhere tenants.")
-public class TenantsController extends RestController {
+@Api(value = "tenants")
+public class Tenants extends RestController {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

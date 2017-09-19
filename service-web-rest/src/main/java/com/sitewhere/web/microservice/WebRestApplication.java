@@ -30,7 +30,6 @@ import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestMvcConfiguration;
-import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**
@@ -67,7 +66,7 @@ public class WebRestApplication {
     public ServletRegistrationBean sitewhereRestInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-	applicationContext.register(RestMvcConfiguration.class, SiteWhereSwaggerConfig.class);
+	applicationContext.register(RestMvcConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
 	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
 		RestMvcConfiguration.REST_API_MATCHER);

@@ -11,70 +11,56 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.sitewhere.security.SitewhereAuthenticationProvider;
-import com.sitewhere.spi.user.SiteWhereRoles;
 
 @Configuration
 @EnableWebSecurity
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-public class SiteWhereSecurity {
+public class SiteWhereSecurity extends WebSecurityConfigurerAdapter {
 
-    @Order(1)
-    @Configuration
-    @EnableWebSecurity
-    @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-    public static class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.config.annotation.web.configuration.
+     * WebSecurityConfigurerAdapter#authenticationManagerBean()
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+	return super.authenticationManagerBean();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.config.annotation.web.configuration.
-	 * WebSecurityConfigurerAdapter#authenticationManagerBean()
-	 */
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-	    return super.authenticationManagerBean();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.config.annotation.web.configuration.
+     * WebSecurityConfigurerAdapter#configure(org.springframework.security.
+     * config. annotation.authentication.builders.AuthenticationManagerBuilder)
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+	auth.authenticationProvider(new SitewhereAuthenticationProvider(null));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.config.annotation.web.configuration.
-	 * WebSecurityConfigurerAdapter#configure(org.springframework.security.
-	 * config.
-	 * annotation.authentication.builders.AuthenticationManagerBuilder)
-	 */
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-	    auth.authenticationProvider(new SitewhereAuthenticationProvider(null));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.security.config.annotation.web.configuration.
-	 * WebSecurityConfigurerAdapter#configure(org.springframework.security.
-	 * config. annotation.web.builders.HttpSecurity)
-	 */
-	protected void configure(HttpSecurity http) throws Exception {
-	    http.csrf().disable();
-	    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/**")
-		    .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-		    .antMatchers(HttpMethod.GET, "/api/**/symbol").permitAll().antMatchers("/api/**")
-		    .hasRole(SiteWhereRoles.AUTH_REST).and().httpBasic();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.security.config.annotation.web.configuration.
+     * WebSecurityConfigurerAdapter#configure(org.springframework.security.
+     * config. annotation.web.builders.HttpSecurity)
+     */
+    protected void configure(HttpSecurity http) throws Exception {
+	// http.csrf().disable();
+	// http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/**")
+	// .authorizeRequests().antMatchers(HttpMethod.GET, "/").permitAll()
+	// .antMatchers(HttpMethod.OPTIONS,
+	// "/api/**").permitAll().antMatchers(HttpMethod.GET, "/api/**/symbol")
+	// .permitAll().antMatchers("/api/**").hasRole(SiteWhereRoles.AUTH_REST).and().httpBasic();
     }
 }
