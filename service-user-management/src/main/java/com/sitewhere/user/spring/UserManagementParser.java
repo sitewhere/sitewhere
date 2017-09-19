@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.tenant.spring;
+package com.sitewhere.user.spring;
 
 import java.util.List;
 
@@ -17,17 +17,17 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
-import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
-import com.sitewhere.spring.parser.ITenantManagementParser.Elements;
-import com.sitewhere.tenant.persistence.mongodb.MongoTenantManagement;
-import com.sitewhere.tenant.persistence.mongodb.TenantManagementMongoClient;
+import com.sitewhere.microservice.spi.spring.UserManagementBeans;
+import com.sitewhere.spring.parser.IUserManagementParser.Elements;
+import com.sitewhere.user.persistence.mongodb.MongoUserManagement;
+import com.sitewhere.user.persistence.mongodb.UserManagementMongoClient;
 
 /**
- * Parses configuration data for the SiteWhere tenant management microservice.
+ * Parses configuration data for the SiteWhere user management microservice.
  * 
  * @author Derek
  */
-public class TenantManagementParser extends AbstractBeanDefinitionParser {
+public class UserManagementParser extends AbstractBeanDefinitionParser {
 
     /*
      * (non-Javadoc)
@@ -62,17 +62,17 @@ public class TenantManagementParser extends AbstractBeanDefinitionParser {
      */
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
-	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(TenantManagementMongoClient.class);
+	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
 	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
-	context.getRegistry().registerBeanDefinition(TenantManagementBeans.BEAN_MONGODB_CLIENT,
+	context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());
 
 	// Build tenant mangement implementation.
-	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoTenantManagement.class);
-	management.addPropertyReference("mongoClient", TenantManagementBeans.BEAN_MONGODB_CLIENT);
+	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
+	management.addPropertyReference("mongoClient", UserManagementBeans.BEAN_MONGODB_CLIENT);
 
-	context.getRegistry().registerBeanDefinition(TenantManagementBeans.BEAN_TENANT_MANAGEMENT,
+	context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_USER_MANAGEMENT,
 		management.getBeanDefinition());
     }
 }
