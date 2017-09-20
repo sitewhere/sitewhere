@@ -14,18 +14,17 @@ enum GUserAccountStatus {
 	LOCKED = 2;
 }
 
-// Information for creating a user.
+// Request for creating a user.
 message GUserCreateRequest {
 	string username = 1;
 	string password = 2;
 	string firstName = 3;
 	string lastName = 4;
-	int64 lastLogin = 5;
-	GUserAccountStatus status = 6;
-	repeated string authorities = 7;
-	map<string, string> metadata = 8;
+	GUserAccountStatus status = 5;
+	repeated string authorities = 6;
+	map<string, string> metadata = 7;
 }
-  
+
 // Information for a user.
 message GUser {
 	string username = 1;

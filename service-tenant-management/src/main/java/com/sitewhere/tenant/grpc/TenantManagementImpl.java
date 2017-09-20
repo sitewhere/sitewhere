@@ -3,10 +3,10 @@ package com.sitewhere.tenant.grpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.TenantManagementGrpc;
-import com.sitewhere.grpc.model.TenantModel.GTenant;
-import com.sitewhere.grpc.model.TenantModel.GTenantCreateRequest;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
+import com.sitewhere.grpc.service.GCreateTenantRequest;
+import com.sitewhere.grpc.service.GCreateTenantResponse;
+import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -35,17 +35,18 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.grpc.model.TenantManagementGrpc.TenantManagementImplBase#
-     * createTenant(com.sitewhere.grpc.model.TenantModel.GTenantCreateRequest,
+     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
+     * createTenant(com.sitewhere.grpc.service.GCreateTenantRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createTenant(GTenantCreateRequest request, StreamObserver<GTenant> responseObserver) {
+    public void createTenant(GCreateTenantRequest request, StreamObserver<GCreateTenantResponse> responseObserver) {
 	try {
-	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request);
+	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request.getRequest());
 	    ITenant apiResult = getTenantMangagement().createTenant(apiRequest);
-	    GTenant response = TenantModelConverter.asGrpcTenant(apiResult);
-	    responseObserver.onNext(response);
+	    GCreateTenantResponse.Builder response = GCreateTenantResponse.newBuilder();
+	    response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
+	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (SiteWhereException e) {
 	    LOGGER.error("Unable to create tenant.", e);

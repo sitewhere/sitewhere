@@ -3,9 +3,11 @@ package com.sitewhere.user.grpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.UserManagementGrpc;
-import com.sitewhere.grpc.model.UserModel.GUser;
-import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
+import com.sitewhere.grpc.service.GCreateUserRequest;
+import com.sitewhere.grpc.service.GCreateUserResponse;
+import com.sitewhere.grpc.service.GImportUserRequest;
+import com.sitewhere.grpc.service.GImportUserResponse;
+import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.user.IUserManagement;
 
 import io.grpc.stub.StreamObserver;
@@ -32,13 +34,22 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
      * (non-Javadoc)
      * 
      * @see com.sitewhere.grpc.model.UserManagementGrpc.UserManagementImplBase#
-     * createUser(com.sitewhere.grpc.model.UserModel.GUserCreateRequest,
+     * createUser(com.sitewhere.grpc.model.GCreateUserRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createUser(GUserCreateRequest request, StreamObserver<GUser> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createUser(request, responseObserver);
+    public void createUser(GCreateUserRequest request, StreamObserver<GCreateUserResponse> responseObserver) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.grpc.model.UserManagementGrpc.UserManagementImplBase#
+     * importUser(com.sitewhere.grpc.model.GImportUserRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void importUser(GImportUserRequest request, StreamObserver<GImportUserResponse> responseObserver) {
     }
 
     public IUserManagement getUserMangagement() {

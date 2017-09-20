@@ -1,15 +1,38 @@
 syntax = "proto3";
 
-package com.sitewhere.grpc.model;
+package com.sitewhere.grpc.service;
 
 option java_multiple_files = true;
-option java_package = "com.sitewhere.grpc.model";
+option java_package = "com.sitewhere.grpc.service";
 option java_outer_classname = "UserServices";
 
 import "user-model.proto";
 
 service UserManagement {
-
 	// Create a new user.
-	rpc CreateUser (GUserCreateRequest) returns (GUser) {}
+	rpc CreateUser (GCreateUserRequest) returns (GCreateUserResponse) {}
+
+	// Import an existing user.
+	rpc ImportUser (GImportUserRequest) returns (GImportUserResponse) {}
+}
+	
+// Request for creating a user.
+message GCreateUserRequest {
+	com.sitewhere.grpc.model.GUserCreateRequest request = 1;
+}
+
+// Response from creating a user.
+message GCreateUserResponse {
+	com.sitewhere.grpc.model.GUser user = 1;
+}
+	
+// Request for importing a user.
+message GImportUserRequest {
+	com.sitewhere.grpc.model.GUser user = 1;
+	bool overwrite = 2;
+}
+
+// Response from creating a user.
+message GImportUserResponse {
+	com.sitewhere.grpc.model.GUser user = 1;
 }

@@ -1,6 +1,6 @@
 package com.sitewhere.user.grpc;
 
-import com.sitewhere.grpc.model.UserManagementGrpc.UserManagementImplBase;
+import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase;
 import com.sitewhere.microservice.grpc.ManagedGrpcServer;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;

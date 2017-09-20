@@ -4,6 +4,7 @@ import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GUser;
 import com.sitewhere.grpc.model.UserModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
+import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.AccountStatus;
@@ -39,6 +40,25 @@ public class UserModelConverter {
     }
 
     /**
+     * Convert account status from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GUserAccountStatus asGrpcAccountStatus(AccountStatus api) throws SiteWhereException {
+	switch (api) {
+	case Active:
+	    return GUserAccountStatus.ACTIVE;
+	case Expired:
+	    return GUserAccountStatus.EXPIRED;
+	case Locked:
+	    return GUserAccountStatus.LOCKED;
+	}
+	throw new SiteWhereException("Unknown account status: " + api.name());
+    }
+
+    /**
      * Convert user create request from GRPC to API.
      * 
      * @param grpc
@@ -57,22 +77,40 @@ public class UserModelConverter {
     }
 
     /**
-     * Convert account status from API to GRPC.
+     * Convert user create request from API to GRPC.
      * 
      * @param api
      * @return
      * @throws SiteWhereException
      */
-    public static GUserAccountStatus asGrpcAccountStatus(AccountStatus api) throws SiteWhereException {
-	switch (api) {
-	case Active:
-	    return GUserAccountStatus.ACTIVE;
-	case Expired:
-	    return GUserAccountStatus.EXPIRED;
-	case Locked:
-	    return GUserAccountStatus.LOCKED;
-	}
-	throw new SiteWhereException("Unknown account status: " + api.name());
+    public static GUserCreateRequest asGrpcUserCreateRequest(IUserCreateRequest api) throws SiteWhereException {
+	GUserCreateRequest.Builder builder = GUserCreateRequest.newBuilder();
+	builder.setUsername(api.getUsername());
+	builder.setPassword(api.getPassword());
+	builder.setFirstName(api.getFirstName());
+	builder.setLastName(api.getLastName());
+	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
+	builder.getMetadataMap().putAll(api.getMetadata());
+	return builder.build();
+    }
+
+    /**
+     * Convert user from API to GRPC.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IUser asApiUser(GUser grpc) throws SiteWhereException {
+	User api = new User();
+	api.setUsername(grpc.getUsername());
+	api.setHashedPassword(grpc.getHashedPassword());
+	api.setFirstName(grpc.getFirstName());
+	api.setLastName(grpc.getLastName());
+	api.setLastLogin(CommonModelConverter.asDate(grpc.getLastLogin()));
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
     }
 
     /**
