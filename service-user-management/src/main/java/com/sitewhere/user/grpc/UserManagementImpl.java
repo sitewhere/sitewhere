@@ -14,6 +14,8 @@ import com.sitewhere.grpc.service.GCreateGrantedAuthorityRequest;
 import com.sitewhere.grpc.service.GCreateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GCreateUserRequest;
 import com.sitewhere.grpc.service.GCreateUserResponse;
+import com.sitewhere.grpc.service.GDeleteGrantedAuthorityRequest;
+import com.sitewhere.grpc.service.GDeleteGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GDeleteUserRequest;
 import com.sitewhere.grpc.service.GDeleteUserResponse;
 import com.sitewhere.grpc.service.GGetGrantedAuthoritiesRequest;
@@ -24,6 +26,8 @@ import com.sitewhere.grpc.service.GGetUserByUsernameRequest;
 import com.sitewhere.grpc.service.GGetUserByUsernameResponse;
 import com.sitewhere.grpc.service.GImportUserRequest;
 import com.sitewhere.grpc.service.GImportUserResponse;
+import com.sitewhere.grpc.service.GListGrantedAuthoritiesRequest;
+import com.sitewhere.grpc.service.GListGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GListUsersRequest;
 import com.sitewhere.grpc.service.GListUsersResponse;
 import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesRequest;
@@ -34,6 +38,7 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
+import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -276,6 +281,52 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 		    UserModelConverter.asApiGrantedAuthorityCreateRequest(request.getRequest()));
 	    GUpdateGrantedAuthorityResponse.Builder response = GUpdateGrantedAuthorityResponse.newBuilder();
 	    response.setAuthority(UserModelConverter.asGrpcGrantedAuthority(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (SiteWhereException e) {
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * listGrantedAuthorities(com.sitewhere.grpc.service.
+     * GListGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listGrantedAuthorities(GListGrantedAuthoritiesRequest request,
+	    StreamObserver<GListGrantedAuthoritiesResponse> responseObserver) {
+	try {
+	    List<IGrantedAuthority> apiResult = getUserMangagement()
+		    .listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
+	    GListGrantedAuthoritiesResponse.Builder response = GListGrantedAuthoritiesResponse.newBuilder();
+	    for (IGrantedAuthority apiAuth : apiResult) {
+		response.getAuthoritiesList().add(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (SiteWhereException e) {
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * deleteGrantedAuthority(com.sitewhere.grpc.service.
+     * GDeleteGrantedAuthorityRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteGrantedAuthority(GDeleteGrantedAuthorityRequest request,
+	    StreamObserver<GDeleteGrantedAuthorityResponse> responseObserver) {
+	try {
+	    getUserMangagement().deleteGrantedAuthority(request.getName());
+	    GDeleteGrantedAuthorityResponse.Builder response = GDeleteGrantedAuthorityResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (SiteWhereException e) {

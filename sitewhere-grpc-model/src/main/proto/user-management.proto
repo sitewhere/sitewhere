@@ -41,6 +41,12 @@ service UserManagement {
 	// Update an existing granted authority.
 	rpc UpdateGrantedAuthority (GUpdateGrantedAuthorityRequest) returns (GUpdateGrantedAuthorityResponse) {}
 
+	// List granted authorities that match criteria.
+	rpc ListGrantedAuthorities (GListGrantedAuthoritiesRequest) returns (GListGrantedAuthoritiesResponse) {}
+
+	// Delete an existing granted authority.
+	rpc DeleteGrantedAuthority (GDeleteGrantedAuthorityRequest) returns (GDeleteGrantedAuthorityResponse) {}
+
 	// Get granted authorities for a user.
 	rpc GetGrantedAuthoritiesForUser (GGetGrantedAuthoritiesRequest) returns (GGetGrantedAuthoritiesResponse) {}
 
@@ -159,9 +165,28 @@ message GUpdateGrantedAuthorityResponse {
 	com.sitewhere.grpc.model.GGrantedAuthority authority = 1; 
 }
 
+// Request for listing authorities by critieria.
+message GListGrantedAuthoritiesRequest {
+}
+
+// Response for listing authorities by critieria.
+message GListGrantedAuthoritiesResponse {
+	repeated com.sitewhere.grpc.model.GGrantedAuthority authorities = 1; 
+}
+
 // Request for getting granted authorities for a user.
 message GGetGrantedAuthoritiesRequest {
 	string username = 1;
+}
+
+// Request for deleting a granted authority.
+message GDeleteGrantedAuthorityRequest {
+	string name = 1;
+}
+
+// Response for deleting a granted authority.
+message GDeleteGrantedAuthorityResponse {
+	com.sitewhere.grpc.model.GGrantedAuthority authority = 1; 
 }
 
 // Response for getting granted authorities for a user.

@@ -10,18 +10,30 @@ import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GAuthenticateRequest;
 import com.sitewhere.grpc.service.GAuthenticateResponse;
+import com.sitewhere.grpc.service.GCreateGrantedAuthorityRequest;
+import com.sitewhere.grpc.service.GCreateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GCreateUserRequest;
 import com.sitewhere.grpc.service.GCreateUserResponse;
+import com.sitewhere.grpc.service.GDeleteGrantedAuthorityRequest;
+import com.sitewhere.grpc.service.GDeleteGrantedAuthorityResponse;
+import com.sitewhere.grpc.service.GDeleteUserRequest;
+import com.sitewhere.grpc.service.GDeleteUserResponse;
 import com.sitewhere.grpc.service.GGetGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GGetGrantedAuthoritiesResponse;
+import com.sitewhere.grpc.service.GGetGrantedAuthorityByNameRequest;
+import com.sitewhere.grpc.service.GGetGrantedAuthorityByNameResponse;
 import com.sitewhere.grpc.service.GGetUserByUsernameRequest;
 import com.sitewhere.grpc.service.GGetUserByUsernameResponse;
 import com.sitewhere.grpc.service.GImportUserRequest;
 import com.sitewhere.grpc.service.GImportUserResponse;
+import com.sitewhere.grpc.service.GListGrantedAuthoritiesRequest;
+import com.sitewhere.grpc.service.GListGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GListUsersRequest;
 import com.sitewhere.grpc.service.GListUsersResponse;
 import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesResponse;
+import com.sitewhere.grpc.service.GUpdateGrantedAuthorityRequest;
+import com.sitewhere.grpc.service.GUpdateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -198,42 +210,99 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
 	return UserModelConverter.asApiUsers(gresponse.getUserList());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
+     * boolean)
+     */
     @Override
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GDeleteUserRequest.Builder grequest = GDeleteUserRequest.newBuilder();
+	grequest.setUsername(username);
+	grequest.setForce(force);
+	GDeleteUserResponse gresponse = getGrpcChannel().getBlockingStub().deleteUser(grequest.build());
+	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.
+     * sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+     */
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GCreateGrantedAuthorityRequest.Builder grequest = GCreateGrantedAuthorityRequest.newBuilder();
+	grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
+	GCreateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		.createGrantedAuthority(grequest.build());
+	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+     * lang.String)
+     */
     @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GGetGrantedAuthorityByNameRequest.Builder grequest = GGetGrantedAuthorityByNameRequest.newBuilder();
+	grequest.setName(name);
+	GGetGrantedAuthorityByNameResponse gresponse = getGrpcChannel().getBlockingStub()
+		.getGrantedAuthorityByName(grequest.build());
+	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+     * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+     */
     @Override
     public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GUpdateGrantedAuthorityRequest.Builder grequest = GUpdateGrantedAuthorityRequest.newBuilder();
+	grequest.setName(name);
+	grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
+	GUpdateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		.updateGrantedAuthority(grequest.build());
+	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
+     * sitewhere.spi.user.IGrantedAuthoritySearchCriteria)
+     */
     @Override
     public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GListGrantedAuthoritiesRequest.Builder grequest = GListGrantedAuthoritiesRequest.newBuilder();
+	GListGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		.listGrantedAuthorities(grequest.build());
+	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+     * String)
+     */
     @Override
     public void deleteGrantedAuthority(String authority) throws SiteWhereException {
-	// TODO Auto-generated method stub
-
+	GDeleteGrantedAuthorityRequest.Builder grequest = GDeleteGrantedAuthorityRequest.newBuilder();
+	grequest.setName(authority);
+	GDeleteGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		.deleteGrantedAuthority(grequest.build());
+	return;
     }
 
     /*
