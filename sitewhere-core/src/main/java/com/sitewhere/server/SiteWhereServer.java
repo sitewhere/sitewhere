@@ -79,7 +79,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantPersistentState;
-import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -894,15 +893,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	mgmt.addStep(new StartComponentLifecycleStep(this, getTenantManagement(),
 		"Started tenant management implementation", "Tenant management startup failed", true));
 
-	// Populate user data if requested.
-	mgmt.addStep(new SimpleLifecycleStep("Verified user model") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		verifyUserModel();
-	    }
-	});
-
 	start.addStep(mgmt);
     }
 
@@ -1302,22 +1292,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     protected void registerTenant(ITenant tenant, ISiteWhereTenantEngine engine) throws SiteWhereException {
 	tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 	getTenantEnginesById().put(tenant.getId(), engine);
-    }
-
-    /**
-     * Check whether user model is populated and bootstrap system if not.
-     */
-    protected void verifyUserModel() {
-	try {
-	    IUserModelInitializer init = (IUserModelInitializer) SERVER_SPRING_CONTEXT
-		    .getBean(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
-	    init.initialize(getUserManagement());
-	} catch (NoSuchBeanDefinitionException e) {
-	    LOGGER.info("No user model initializer found in Spring bean configuration. Skipping.");
-	    return;
-	} catch (SiteWhereException e) {
-	    LOGGER.warn("Error verifying user model.", e);
-	}
     }
 
     /** Used for naming tenant operation threads */

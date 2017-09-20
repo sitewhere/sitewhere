@@ -4,11 +4,13 @@ package com.sitewhere.grpc.model;
 
 option java_outer_classname = "CommonModel";
 
+import "google/protobuf/timestamp.proto";
+
 // Common entity information.
 message GEntityInformation {
-	int64 createdDate = 1;
+	google.protobuf.Timestamp createdDate = 1;
 	string createdBy = 2;
-	int64 updatedDate = 3;
+	google.protobuf.Timestamp updatedDate = 3;
 	string updatedBy = 4;
 	bool deleted = 5;
 }

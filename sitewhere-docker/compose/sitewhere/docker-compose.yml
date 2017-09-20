@@ -38,6 +38,10 @@ services:
     image: sitewhere/service-instance-management:${SW_VERSION}
     environment:
       SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}
+  user-management:
+    image: sitewhere/service-user-management:${SW_VERSION}
+    environment:
+      SW_ZOOKEEPER_CONNECT: ${ZK_CONNECT}
   tenant-management:
     image: sitewhere/service-tenant-management:${SW_VERSION}
     environment:

@@ -120,7 +120,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
 		"Unable to initialize tenant management persistence", true));
 
-	// Verify or create Zk node for instance information.
+	// Initialize tenant management GRPC server.
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC server", "Unable to initialize tenant management GRPC server", true));
 
@@ -150,7 +150,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
 		"Unable to start tenant management persistence.", true));
 
-	// Start GRPC manager.
+	// Start GRPC server.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC manager", "Unable to start tenant management GRPC manager.", true));
 
@@ -179,9 +179,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
 	// Stop discoverable lifecycle components.
 	stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
-
-	// Stop tenant management persistence.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
     }
 
     /**

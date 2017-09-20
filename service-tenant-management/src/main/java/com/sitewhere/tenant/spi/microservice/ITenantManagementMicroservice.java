@@ -1,5 +1,6 @@
 package com.sitewhere.tenant.spi.microservice;
 
+import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 
@@ -8,7 +9,7 @@ import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
  * 
  * @author Derek
  */
-public interface ITenantManagementMicroservice {
+public interface ITenantManagementMicroservice extends IGlobalMicroservice {
 
     /**
      * Get GRPC server for tenant managment APIS.

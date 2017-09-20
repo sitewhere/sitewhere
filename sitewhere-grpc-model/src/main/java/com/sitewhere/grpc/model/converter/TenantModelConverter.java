@@ -9,7 +9,7 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
- * Convert between SiteWhere API model and GRPC model.
+ * Convert tenant entities between SiteWhere API model and GRPC model.
  * 
  * @author Derek
  */
@@ -51,6 +51,7 @@ public class TenantModelConverter {
 	builder.setLogoUrl(api.getLogoUrl());
 	builder.setTenantTemplateId(api.getTenantTemplateId());
 	builder.getMetadataMap().putAll(api.getMetadata());
+	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return builder.build();
     }
 }

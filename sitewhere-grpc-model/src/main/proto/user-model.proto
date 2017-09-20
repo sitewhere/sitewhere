@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "UserModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// User account status
+enum GUserAccountStatus {
+	ACTIVE = 0;
+	EXPIRED = 1;
+	LOCKED = 2;
+}
+
+// Information for creating a user.
+message GUserCreateRequest {
+	string username = 1;
+	string password = 2;
+	string firstName = 3;
+	string lastName = 4;
+	int64 lastLogin = 5;
+	GUserAccountStatus status = 6;
+	repeated string authorities = 7;
+	map<string, string> metadata = 8;
+}
+  
+// Information for a user.
+message GUser {
+	string username = 1;
+	string hashedPassword = 2;
+	string firstName = 3;
+	string lastName = 4;
+	google.protobuf.Timestamp lastLogin = 5;
+	GUserAccountStatus status = 6;
+	repeated string authorities = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
+}
