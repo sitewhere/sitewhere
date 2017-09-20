@@ -6,14 +6,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.converter.UserModelConverter;
+import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
+import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GAuthenticateRequest;
 import com.sitewhere.grpc.service.GAuthenticateResponse;
 import com.sitewhere.grpc.service.GCreateUserRequest;
 import com.sitewhere.grpc.service.GCreateUserResponse;
+import com.sitewhere.grpc.service.GGetGrantedAuthoritiesRequest;
+import com.sitewhere.grpc.service.GGetGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GGetUserByUsernameRequest;
 import com.sitewhere.grpc.service.GGetUserByUsernameResponse;
 import com.sitewhere.grpc.service.GImportUserRequest;
 import com.sitewhere.grpc.service.GImportUserResponse;
+import com.sitewhere.grpc.service.GListUsersRequest;
+import com.sitewhere.grpc.service.GListUsersResponse;
+import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesRequest;
+import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -123,30 +131,71 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
 	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+     * String)
+     */
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GGetGrantedAuthoritiesRequest.Builder grequest = GGetGrantedAuthoritiesRequest.newBuilder();
+	grequest.setUsername(username);
+	GGetGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		.getGrantedAuthoritiesForUser(grequest.build());
+	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+     * String, java.util.List)
+     */
     @Override
     public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GAddGrantedAuthoritiesRequest.Builder grequest = GAddGrantedAuthoritiesRequest.newBuilder();
+	grequest.setUsername(username);
+	grequest.getAuthoritiesList().addAll(authorities);
+	GAddGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		.addGrantedAuthoritiesForUser(grequest.build());
+	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang
+     * .String, java.util.List)
+     */
     @Override
     public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GRemoveGrantedAuthoritiesRequest.Builder grequest = GRemoveGrantedAuthoritiesRequest.newBuilder();
+	grequest.setUsername(username);
+	grequest.getAuthoritiesList().addAll(authorities);
+	GRemoveGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		.removeGrantedAuthoritiesForUser(grequest.build());
+	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+     * IUserSearchCriteria)
+     */
     @Override
     public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GListUsersRequest.Builder grequest = GListUsersRequest.newBuilder();
+	grequest.setCriteria(UserModelConverter.asGrpcUserSearchCriteria(criteria));
+	GListUsersResponse gresponse = getGrpcChannel().getBlockingStub().listUsers(grequest.build());
+	return UserModelConverter.asApiUsers(gresponse.getUserList());
     }
 
     @Override

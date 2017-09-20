@@ -25,6 +25,11 @@ message GUserCreateRequest {
 	map<string, string> metadata = 7;
 }
 
+// Criteria for user search.
+message GUserSearchCriteria {
+	bool includeDeleted = 1;
+}
+
 // Information for a user.
 message GUser {
 	string username = 1;
@@ -36,4 +41,20 @@ message GUser {
 	repeated string authorities = 7;
 	map<string, string> metadata = 8;
 	GEntityInformation entityInformation = 9;
+}
+
+// Request for creating a granted authority.
+message GGrantedAuthorityCreateRequest {
+	string authority = 1;
+	string description = 2;
+	string parent = 3;
+	bool group = 4;
+}
+
+// Information for a granted authority.
+message GGrantedAuthority {
+	string authority = 1;
+	string description = 2;
+	string parent = 3;
+	bool group = 4;
 }
