@@ -22,6 +22,7 @@ import io.grpc.stub.StreamObserver;
 public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementImplBase {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Tenant management persistence */
@@ -49,7 +50,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (SiteWhereException e) {
-	    LOGGER.error("Unable to create tenant.", e);
+	    responseObserver.onError(e);
 	}
     }
 

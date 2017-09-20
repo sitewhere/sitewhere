@@ -6,8 +6,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.converter.UserModelConverter;
+import com.sitewhere.grpc.service.GAuthenticateRequest;
+import com.sitewhere.grpc.service.GAuthenticateResponse;
 import com.sitewhere.grpc.service.GCreateUserRequest;
 import com.sitewhere.grpc.service.GCreateUserResponse;
+import com.sitewhere.grpc.service.GGetUserByUsernameRequest;
+import com.sitewhere.grpc.service.GGetUserByUsernameResponse;
+import com.sitewhere.grpc.service.GImportUserRequest;
+import com.sitewhere.grpc.service.GImportUserResponse;
+import com.sitewhere.grpc.service.GUpdateUserRequest;
+import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -51,29 +59,68 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
 	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
+     * IUser, boolean)
+     */
     @Override
     public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GImportUserRequest.Builder grequest = GImportUserRequest.newBuilder();
+	grequest.setUser(UserModelConverter.asGrpcUser(user));
+	grequest.setOverwrite(overwrite);
+	GImportUserResponse gresponse = getGrpcChannel().getBlockingStub().importUser(grequest.build());
+	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+     * java.lang.String, boolean)
+     */
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GAuthenticateRequest.Builder grequest = GAuthenticateRequest.newBuilder();
+	grequest.setUsername(username);
+	grequest.setPassword(password);
+	grequest.setUpdateLastLogin(updateLastLogin);
+	GAuthenticateResponse gresponse = getGrpcChannel().getBlockingStub().authenticate(grequest.build());
+	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
+     * com.sitewhere.spi.user.request.IUserCreateRequest, boolean)
+     */
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GUpdateUserRequest.Builder grequest = GUpdateUserRequest.newBuilder();
+	grequest.setUsername(username);
+	grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
+	grequest.setEncodePassword(encodePassword);
+	GUpdateUserResponse gresponse = getGrpcChannel().getBlockingStub().updateUser(grequest.build());
+	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.
+     * String)
+     */
     @Override
     public IUser getUserByUsername(String username) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	GGetUserByUsernameRequest.Builder grequest = GGetUserByUsernameRequest.newBuilder();
+	grequest.setUsername(username);
+	GGetUserByUsernameResponse gresponse = getGrpcChannel().getBlockingStub().getUserByUsername(grequest.build());
+	return UserModelConverter.asApiUser(gresponse.getUser());
     }
 
     @Override
