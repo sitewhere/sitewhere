@@ -1,5 +1,7 @@
 package com.sitewhere.asset.persistence.mongodb;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -14,6 +16,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class AssetManagementMongoClient extends BaseMongoClient implements IAssetManagementMongoClient {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Injected name used for asset categories collection */
     private String assetCategoriesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
@@ -44,6 +49,16 @@ public class AssetManagementMongoClient extends BaseMongoClient implements IAsse
      */
     public MongoCollection<Document> getAssetsCollection(ITenant tenant) throws SiteWhereException {
 	return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public String getAssetCategoriesCollectionName() {

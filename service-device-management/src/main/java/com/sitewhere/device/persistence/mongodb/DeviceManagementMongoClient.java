@@ -1,5 +1,7 @@
 package com.sitewhere.device.persistence.mongodb;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -14,6 +16,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class DeviceManagementMongoClient extends BaseMongoClient implements IDeviceManagementMongoClient {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Injected name used for device specifications collection */
     private String deviceSpecificationsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
@@ -191,6 +196,16 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
      */
     public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) throws SiteWhereException {
 	return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public String getDeviceSpecificationsCollectionName() {

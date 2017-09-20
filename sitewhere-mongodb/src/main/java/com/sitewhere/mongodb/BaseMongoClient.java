@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
 
@@ -37,10 +35,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author dadams
  */
-public class BaseMongoClient extends TenantLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+public abstract class BaseMongoClient extends TenantLifecycleComponent
+	implements IDiscoverableTenantLifecycleComponent {
 
     /** MongoDB client */
     private MongoClient client;
@@ -77,7 +73,7 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
-	    LOGGER.info("MongoDB Connection: hosts=" + getConfiguration().getHostname() + " ports="
+	    getLogger().info("MongoDB Connection: hosts=" + getConfiguration().getHostname() + " ports="
 		    + getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
 
 	    // Parse hostname(s) and port(s) into address list.
@@ -88,9 +84,9 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 		    && (!StringUtils.isEmpty(getConfiguration().getReplicaSetName())));
 
 	    if (isUsingReplicaSet) {
-		LOGGER.info("MongoDB using replicated mode.");
+		getLogger().info("MongoDB using replicated mode.");
 	    } else {
-		LOGGER.info("MongoDB using standalone mode.");
+		getLogger().info("MongoDB using standalone mode.");
 	    }
 
 	    // Handle authenticated access.
@@ -154,20 +150,20 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	MongoClient primary = getPrimaryConnection(addresses);
 
 	// Check for existing replica set configuration.
-	LOGGER.info("Checking for existing replica set...");
+	getLogger().info("Checking for existing replica set...");
 	try {
 	    Document result = primary.getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
 	    if (result.getDouble("ok") == 1) {
-		LOGGER.warn("Replica set already configured. Skipping auto-configuration.");
+		getLogger().warn("Replica set already configured. Skipping auto-configuration.");
 		return;
 	    }
 	} catch (MongoCommandException e) {
-	    LOGGER.info("Replica set was not configured.");
+	    getLogger().info("Replica set was not configured.");
 	}
 
 	// Create configuration for new replica set.
 	try {
-	    LOGGER.info("Configuring new replica set '" + getConfiguration().getReplicaSetName() + "'.");
+	    getLogger().info("Configuring new replica set '" + getConfiguration().getReplicaSetName() + "'.");
 	    BasicDBObject config = new BasicDBObject("_id", getConfiguration().getReplicaSetName());
 	    List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
 
@@ -192,7 +188,8 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	    if (result.getDouble("ok") != 1) {
 		throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
 	    }
-	    LOGGER.info("Replica set '" + getConfiguration().getReplicaSetName() + "' creation command successful.");
+	    getLogger()
+		    .info("Replica set '" + getConfiguration().getReplicaSetName() + "' creation command successful.");
 	} finally {
 	    primary.close();
 	}
@@ -255,17 +252,7 @@ public class BaseMongoClient extends TenantLifecycleComponent implements IDiscov
 	messages.add("Port: " + getConfiguration().getPort());
 	messages.add("Database Name: " + getConfiguration().getDatabaseName());
 	String message = Boilerplate.boilerplate(messages, "*");
-	LOGGER.info("\n" + message + "\n");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Logger getLogger() {
-	return LOGGER;
+	getLogger().info("\n" + message + "\n");
     }
 
     /*
