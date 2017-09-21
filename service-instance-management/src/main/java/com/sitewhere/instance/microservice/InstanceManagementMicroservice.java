@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
-import com.sitewhere.instance.spi.microservice.IInstanceManagement;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * 
  * @author Derek
  */
-public class InstanceManagement extends Microservice implements IInstanceManagement {
+public class InstanceManagementMicroservice extends Microservice implements IInstanceManagementMicroservice {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

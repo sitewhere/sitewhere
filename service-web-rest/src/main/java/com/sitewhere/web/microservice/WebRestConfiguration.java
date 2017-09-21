@@ -13,12 +13,12 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitewhere.web.RedirectServlet;
-import com.sitewhere.web.SiteWhereSecurity;
 import com.sitewhere.web.filters.JsonpFilter;
 import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestMvcConfiguration;
+import com.sitewhere.web.security.SiteWhereSecurity;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**

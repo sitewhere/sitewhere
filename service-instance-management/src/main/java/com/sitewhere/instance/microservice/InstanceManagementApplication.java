@@ -9,18 +9,18 @@ package com.sitewhere.instance.microservice;
 
 import org.springframework.boot.SpringApplication;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.microservice.spi.IMicroservice;
 
 /**
  * Spring Boot application for instance management microservice.
  * 
  * @author Derek
  */
-public class InstanceManagementApplication extends MicroserviceApplication {
+public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
     /** Instance management microservice */
-    private InstanceManagement service = new InstanceManagement();
+    private IInstanceManagementMicroservice service = new InstanceManagementMicroservice();
 
     /*
      * (non-Javadoc)
@@ -29,7 +29,7 @@ public class InstanceManagementApplication extends MicroserviceApplication {
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public IInstanceManagementMicroservice getMicroservice() {
 	return service;
     }
 

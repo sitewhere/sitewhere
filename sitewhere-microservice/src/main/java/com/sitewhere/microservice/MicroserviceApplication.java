@@ -28,7 +28,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public abstract class MicroserviceApplication implements IMicroserviceApplication {
+public abstract class MicroserviceApplication<T extends IMicroservice> implements IMicroserviceApplication<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -74,7 +74,7 @@ public abstract class MicroserviceApplication implements IMicroserviceApplicatio
 
 	@Override
 	public void run() {
-	    IMicroservice service = getMicroservice();
+	    T service = getMicroservice();
 	    try {
 		// Initialize microservice.
 		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(

@@ -13,10 +13,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 
-import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * SiteWhere implementation of Spring security UserDetailsManager.
@@ -24,6 +25,13 @@ import com.sitewhere.spi.user.IUser;
  * @author Derek
  */
 public class SitewhereUserDetailsService implements UserDetailsManager {
+
+    /** User management implementation */
+    private IUserManagement userManagement;
+
+    public SitewhereUserDetailsService(IUserManagement userManagement) {
+	this.userManagement = userManagement;
+    }
 
     /*
      * (non-Javadoc)
@@ -33,8 +41,8 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
      */
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	try {
-	    IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
-	    List<IGrantedAuthority> auths = SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
+	    IUser user = getUserManagement().getUserByUsername(username);
+	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
 	    return new SitewhereUserDetails(user, auths);
 	} catch (SiteWhereException e) {
 	    throw new UsernameNotFoundException("Unable to load user by username.", e);
@@ -49,14 +57,14 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
      * org. springframework .security.userdetails .UserDetails)
      */
     public void createUser(UserDetails info) {
-	// User user = new User();
-	// user.setUsername(info.getUsername());
-	// user.setHashedPassword(info.getPassword());
-	// try {
-	// SiteWhereServer.getInstance().getUserManagement().createUser(user);
-	// } catch (SiteWhereException e) {
-	// throw new RuntimeException(e);
-	// }
+	UserCreateRequest user = new UserCreateRequest();
+	user.setUsername(info.getUsername());
+	user.setPassword(info.getPassword());
+	try {
+	    getUserManagement().createUser(user, true);
+	} catch (SiteWhereException e) {
+	    throw new RuntimeException(e);
+	}
     }
 
     /*
@@ -68,7 +76,7 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
      */
     public void deleteUser(String username) {
 	try {
-	    SiteWhere.getServer().getUserManagement().deleteUser(username, true);
+	    getUserManagement().deleteUser(username, true);
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException("Unable to delete user.", e);
 	}
@@ -104,5 +112,13 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
      */
     public void changePassword(String oldPassword, String newPassword) {
 	throw new RuntimeException("User updates not supported.");
+    }
+
+    public IUserManagement getUserManagement() {
+	return userManagement;
+    }
+
+    public void setUserManagement(IUserManagement userManagement) {
+	this.userManagement = userManagement;
     }
 }

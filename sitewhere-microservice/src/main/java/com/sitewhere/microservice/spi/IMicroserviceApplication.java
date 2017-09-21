@@ -5,13 +5,15 @@ package com.sitewhere.microservice.spi;
  * microservices.
  * 
  * @author Derek
+ *
+ * @param <T>
  */
-public interface IMicroserviceApplication {
+public interface IMicroserviceApplication<T extends IMicroservice> {
 
     /**
      * Get wrapped microservice.
      * 
      * @return
      */
-    public IMicroservice getMicroservice();
+    public T getMicroservice();
 }

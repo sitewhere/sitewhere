@@ -3,17 +3,17 @@ package com.sitewhere.tenant.microservice;
 import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
 /**
  * Spring Boot application for tenant management microservice.
  * 
  * @author Derek
  */
-public class TenantManagementApplication extends MicroserviceApplication {
+public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice> {
 
     /** Tenant management microservice */
-    private TenantManagementMicroservice service = new TenantManagementMicroservice();
+    private ITenantManagementMicroservice service = new TenantManagementMicroservice();
 
     /*
      * (non-Javadoc)
@@ -22,7 +22,7 @@ public class TenantManagementApplication extends MicroserviceApplication {
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public ITenantManagementMicroservice getMicroservice() {
 	return service;
     }
 

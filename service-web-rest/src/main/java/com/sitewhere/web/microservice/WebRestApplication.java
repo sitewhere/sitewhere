@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Spring Boot application for web/REST microservice.
@@ -12,10 +12,10 @@ import com.sitewhere.microservice.spi.IMicroservice;
  * @author Derek
  */
 @ComponentScan
-public class WebRestApplication extends MicroserviceApplication {
+public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice> {
 
     /** Web/REST microservice */
-    private WebRestMicroservice service = new WebRestMicroservice();
+    public static IWebRestMicroservice SERVICE = new WebRestMicroservice();
 
     /**
      * Run in background thread since servlet container keeps context alive.
@@ -31,8 +31,8 @@ public class WebRestApplication extends MicroserviceApplication {
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
-	return service;
+    public IWebRestMicroservice getMicroservice() {
+	return SERVICE;
     }
 
     /**

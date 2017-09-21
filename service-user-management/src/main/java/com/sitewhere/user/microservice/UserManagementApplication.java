@@ -3,17 +3,17 @@ package com.sitewhere.user.microservice;
 import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
  * Spring Boot application for tenant management microservice.
  * 
  * @author Derek
  */
-public class UserManagementApplication extends MicroserviceApplication {
+public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
 
     /** User management microservice */
-    private UserManagementMicroservice service = new UserManagementMicroservice();
+    public static IUserManagementMicroservice SERVICE = new UserManagementMicroservice();
 
     /*
      * (non-Javadoc)
@@ -22,8 +22,8 @@ public class UserManagementApplication extends MicroserviceApplication {
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
-	return service;
+    public IUserManagementMicroservice getMicroservice() {
+	return SERVICE;
     }
 
     /**

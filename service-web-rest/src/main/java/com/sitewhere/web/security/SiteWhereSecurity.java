@@ -5,14 +5,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web;
+package com.sitewhere.web.security;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,23 +17,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.security.JwtAuthenticationProvider;
+import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SiteWhereSecurity extends WebSecurityConfigurerAdapter {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.security.config.annotation.web.configuration.
-     * WebSecurityConfigurerAdapter#authenticationManagerBean()
-     */
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-	return super.authenticationManagerBean();
+    public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
+        return new TokenAuthenticationFilter();
     }
 
     /*
