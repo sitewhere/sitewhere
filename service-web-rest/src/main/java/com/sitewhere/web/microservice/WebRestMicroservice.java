@@ -75,21 +75,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     @Override
     public void afterMicroserviceStarted() {
-	try {
-	    LOGGER.info("Web/REST microservice started!!!!");
-	    ITokenManagement tokens = WebRestApplication.getWebRestMicroservice().getTokenManagement();
-	    User user = new User();
-	    user.setUsername("dadams");
-	    user.setAuthorities(Arrays.asList(new String[] { "this", "that", "other" }));
-	    String token = tokens.generateToken(user);
-	    LOGGER.info("Generated token '" + token + "' for '" + user.getUsername() + "'.");
-	    String username = tokens.getUsernameFromToken(token);
-	    LOGGER.info("Decoded username: " + username);
-	    List<String> auths = tokens.getGrantedAuthoritiesFromToken(token);
-	    LOGGER.info("Decoded auths: " + auths);
-	} catch (SiteWhereException e) {
-	    LOGGER.error("Token tests failed.", e);
-	}
     }
 
     /*

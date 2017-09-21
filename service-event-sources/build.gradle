@@ -27,3 +27,6 @@ dependencies {
     compile group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.13.1'
     compile group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.13.1'
 }
+test {
+    exclude '**/*'
+}

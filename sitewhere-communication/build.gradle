@@ -13,3 +13,6 @@ dependencies {
     // Hazelcast dependencies.
     compile group: 'com.hazelcast', name: 'hazelcast'
 }
+test {
+    exclude '**/*'
+}

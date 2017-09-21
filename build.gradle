@@ -78,7 +78,4 @@ subprojects {
         compile(group: 'org.apache.logging.log4j', name: 'log4j-core')
         testCompile group: 'junit', name: 'junit'
     }
-    test {
-        exclude '**/*'
-    }
 }

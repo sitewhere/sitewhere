@@ -8,3 +8,6 @@ dependencies {
     testCompile group: 'org.apache.activemq', name: 'activemq-all', version:'5.10.0'
     testRuntime group: 'commons-logging', name: 'commons-logging'
 }
+test {
+    exclude '**/*'
+}

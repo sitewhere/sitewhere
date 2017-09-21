@@ -10,3 +10,6 @@ dependencies {
     testCompile group: 'org.apache.qpid', name: 'proton-j', version:'0.8'
     testCompile group: 'org.apache.activemq', name: 'activemq-all', version:'5.10.0'
 }
+test {
+    exclude '**/*'
+}
