@@ -22,7 +22,7 @@ import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
- * Spring authentication provider backed by Atlas.
+ * Spring authentication provider using SiteWhere user management APIs.
  * 
  * @author Derek
  */

@@ -141,6 +141,8 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 			ApplicationContext subcontext = ConfigurationUtils.buildSubcontext(data, SiteWhere.getVersion(),
 				globalContext);
 			contexts.put(path, subcontext);
+		    } else {
+			throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
 		    }
 		}
 

@@ -16,6 +16,7 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-spring-spi')
 	compile project(':sitewhere-protobuf')
+	compile project(':sitewhere-microservice')
 	
 	compile ('org.springframework.boot:spring-boot-starter-web')
     compile group: 'io.swagger', name: 'swagger-annotations', version:'1.5.10'	
