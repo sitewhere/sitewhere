@@ -18,7 +18,6 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.batch.BatchUtils;
@@ -74,7 +73,6 @@ public class BatchCommandInvocationJob implements Job {
 
 	    SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
 
-	    SecurityContextHolder.getContext().setAuthentication(null);
 	    LOGGER.info("Executed batch command invocation job.");
 	} catch (SiteWhereException e) {
 	    throw new JobExecutionException("Unable to create batch command invocation.", e);

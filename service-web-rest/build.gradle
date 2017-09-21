@@ -22,6 +22,8 @@ dependencies {
     compile group: 'io.swagger', name: 'swagger-annotations', version:'1.5.10'	
     compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.7.0'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version:'2.7.0'
+    compile group: 'org.springframework.security', name: 'spring-security-config'
+    compile group: 'org.springframework.security', name: 'spring-security-core'
     compile group: 'org.springframework.security', name: 'spring-security-web'
 }
 

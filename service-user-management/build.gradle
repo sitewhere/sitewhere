@@ -5,6 +5,8 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-microservice')
+	
+    compile group: 'org.springframework.security', name: 'spring-security-core'
 }
 
 apply plugin: 'spring-boot'

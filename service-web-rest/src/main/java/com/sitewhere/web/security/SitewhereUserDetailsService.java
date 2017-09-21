@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.user.security;
+package com.sitewhere.web.security;
 
 import java.util.List;
 
