@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 
 /**
  * Spring Boot application for instance management microservice.
@@ -20,7 +21,13 @@ import com.sitewhere.microservice.MicroserviceApplication;
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
     /** Instance management microservice */
-    private IInstanceManagementMicroservice service = new InstanceManagementMicroservice();
+    private static IInstanceManagementMicroservice SERVICE = new InstanceManagementMicroservice();
+
+    /** Get microservice instance after verifying it is available */
+    public static IInstanceManagementMicroservice getInstanceManagementMicroservice()
+	    throws MicroserviceNotAvailableException {
+	return assureAvailable(SERVICE);
+    }
 
     /*
      * (non-Javadoc)
@@ -30,7 +37,7 @@ public class InstanceManagementApplication extends MicroserviceApplication<IInst
      */
     @Override
     public IInstanceManagementMicroservice getMicroservice() {
-	return service;
+	return SERVICE;
     }
 
     /**

@@ -3,6 +3,7 @@ package com.sitewhere.user.microservice;
 import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
@@ -14,6 +15,11 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
 
     /** User management microservice */
     public static IUserManagementMicroservice SERVICE = new UserManagementMicroservice();
+
+    /** Get microservice instance after verifying it is available */
+    public static IUserManagementMicroservice getUserManagementMicroservice() throws MicroserviceNotAvailableException {
+	return assureAvailable(SERVICE);
+    }
 
     /*
      * (non-Javadoc)

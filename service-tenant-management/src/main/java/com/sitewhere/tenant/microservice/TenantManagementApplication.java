@@ -3,6 +3,7 @@ package com.sitewhere.tenant.microservice;
 import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
 /**
@@ -13,7 +14,13 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice> {
 
     /** Tenant management microservice */
-    private ITenantManagementMicroservice service = new TenantManagementMicroservice();
+    private static ITenantManagementMicroservice SERVICE = new TenantManagementMicroservice();
+
+    /** Get microservice instance after verifying it is available */
+    public static ITenantManagementMicroservice getTenantManagementMicroservice()
+	    throws MicroserviceNotAvailableException {
+	return assureAvailable(SERVICE);
+    }
 
     /*
      * (non-Javadoc)
@@ -23,7 +30,7 @@ public class TenantManagementApplication extends MicroserviceApplication<ITenant
      */
     @Override
     public ITenantManagementMicroservice getMicroservice() {
-	return service;
+	return SERVICE;
     }
 
     /**

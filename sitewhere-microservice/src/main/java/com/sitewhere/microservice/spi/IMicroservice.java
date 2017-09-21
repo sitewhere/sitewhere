@@ -1,6 +1,7 @@
 package com.sitewhere.microservice.spi;
 
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
+import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -12,11 +13,30 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IMicroservice extends ILifecycleComponent {
 
     /**
+     * Get name shown for microservice.
+     * 
+     * @return
+     */
+    public String getName();
+
+    /**
      * Get instance id service is associated with.
      * 
      * @return
      */
     public String getInstanceId();
+
+    /**
+     * Get token management interface.
+     * 
+     * @return
+     */
+    public ITokenManagement getTokenManagement();
+
+    /**
+     * Code executed after microservice has been started.
+     */
+    public void afterMicroserviceStarted();
 
     /**
      * Get Zookeeper node path for instance.
@@ -39,13 +59,6 @@ public interface IMicroservice extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public String getInstanceBootstrappedMarker() throws SiteWhereException;
-
-    /**
-     * Get name shown for microservice.
-     * 
-     * @return
-     */
-    public String getName();
 
     /**
      * Get Zookeeper manager.

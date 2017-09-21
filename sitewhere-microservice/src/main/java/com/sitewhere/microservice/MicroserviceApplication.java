@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.IMicroserviceApplication;
+import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
@@ -66,6 +67,20 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
     }
 
     /**
+     * Common code for testing whether a service is available.
+     * 
+     * @param service
+     * @return
+     * @throws SiteWhereException
+     */
+    public static <T extends IMicroservice> T assureAvailable(T service) throws MicroserviceNotAvailableException {
+	if (service.getLifecycleStatus() != LifecycleStatus.Started) {
+	    throw new MicroserviceNotAvailableException("Microservice '" + service.getName() + "' is not started.");
+	}
+	return service;
+    }
+
+    /**
      * Runnable for starting microservice.
      * 
      * @author Derek
@@ -79,12 +94,21 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 		// Initialize microservice.
 		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initialize " + service.getName()));
-		service.initialize(initMonitor);
+		service.lifecycleInitialize(initMonitor);
+		if (service.getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		    throw service.getLifecycleError();
+		}
 
 		// Start microservice.
 		LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Start " + service.getName()));
-		service.start(startMonitor);
+		service.lifecycleStart(startMonitor);
+		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw service.getLifecycleError();
+		}
+
+		// Execute any post-startup code.
+		service.afterMicroserviceStarted();
 
 		// Wait for microservice to terminate.
 		while (true) {
@@ -128,7 +152,10 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 		// Stop microservice.
 		LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Stop " + service.getName()));
-		service.stop(stopMonitor);
+		service.lifecycleStop(stopMonitor);
+		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw service.getLifecycleError();
+		}
 
 		// Terminate microservice.
 		LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(

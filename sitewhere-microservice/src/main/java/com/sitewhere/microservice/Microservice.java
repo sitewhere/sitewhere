@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.configuration.ZookeeperManager;
+import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
+import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -34,6 +36,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     /** Zookeeper manager */
     private IZookeeperManager zookeeperManager = new ZookeeperManager();
+
+    /** JWT token management */
+    private ITokenManagement tokenManagement = new TokenManagement();
 
     /** Instance id service belongs to */
     private String instanceId = DEFAULT_INSTANCE_ID;
@@ -70,6 +75,16 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	    LOGGER.info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
 		    + envInstanceId);
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroservice#afterMicroserviceStarted()
+     */
+    @Override
+    public void afterMicroserviceStarted() {
     }
 
     /*
@@ -152,6 +167,20 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setZookeeperManager(IZookeeperManager zookeeperManager) {
 	this.zookeeperManager = zookeeperManager;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getTokenManagement()
+     */
+    @Override
+    public ITokenManagement getTokenManagement() {
+	return tokenManagement;
+    }
+
+    public void setTokenManagement(ITokenManagement tokenManagement) {
+	this.tokenManagement = tokenManagement;
     }
 
     /*

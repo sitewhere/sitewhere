@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sitewhere.microservice.security.TokenManagement;
+
 /**
  * Filter that pulls JWT from authentication header and pushes it into Spring
  * {@link SecurityContextHolder}.
@@ -24,7 +26,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHENTICATION_HEADER = "Authentication";
 
     /** Token utility methods */
-    private TokenUtils tokenUtils = new TokenUtils();
+    private TokenManagement tokenUtils = new TokenManagement();
 
     /** User management implementation */
     private UserDetailsService userDetailsService;
@@ -68,11 +70,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	return null;
     }
 
-    public TokenUtils getTokenUtils() {
+    public TokenManagement getTokenUtils() {
 	return tokenUtils;
     }
 
-    public void setTokenUtils(TokenUtils tokenUtils) {
+    public void setTokenUtils(TokenManagement tokenUtils) {
 	this.tokenUtils = tokenUtils;
     }
 

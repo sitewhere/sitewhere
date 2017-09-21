@@ -1,5 +1,7 @@
 package com.sitewhere.web.microservice;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -7,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.spi.security.ITokenManagement;
+import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -19,7 +23,6 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class WebRestMicroservice extends GlobalMicroservice implements IWebRestMicroservice {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice name */
@@ -63,6 +66,30 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
+     */
+    @Override
+    public void afterMicroserviceStarted() {
+	try {
+	    LOGGER.info("Web/REST microservice started!!!!");
+	    ITokenManagement tokens = WebRestApplication.getWebRestMicroservice().getTokenManagement();
+	    User user = new User();
+	    user.setUsername("dadams");
+	    user.setAuthorities(Arrays.asList(new String[] { "this", "that", "other" }));
+	    String token = tokens.generateToken(user);
+	    LOGGER.info("Generated token '" + token + "' for '" + user.getUsername() + "'.");
+	    String username = tokens.getUsernameFromToken(token);
+	    LOGGER.info("Decoded username: " + username);
+	    List<String> auths = tokens.getGrantedAuthoritiesFromToken(token);
+	    LOGGER.info("Decoded auths: " + auths);
+	} catch (SiteWhereException e) {
+	    LOGGER.error("Token tests failed.", e);
+	}
     }
 
     /*
