@@ -2,11 +2,9 @@ package com.sitewhere.groovy.scheduling;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
@@ -57,15 +55,11 @@ public class GroovyScheduleModelInitializer extends ModelInitializer implements 
 	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
 
 	try {
-	    // Use system account for logging "created by" on created elements.
-	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
 	} catch (ScriptException e) {
 	    throw new SiteWhereException("Unable to run Groovy script.", e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(null);
 	}
     }
 

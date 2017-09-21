@@ -12,7 +12,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -26,26 +25,28 @@ import com.sitewhere.spi.error.ErrorLevel;
 public class Persistence {
 
     /**
-     * Initialize entity fields.
+     * Initialize entity fields. TODO: Use credentials for subject.
      * 
+     * @param createdBy
      * @param entity
      * @throws SiteWhereException
      */
     public static void initializeEntityMetadata(MetadataProviderEntity entity) throws SiteWhereException {
 	entity.setCreatedDate(new Date());
-	entity.setCreatedBy(LoginManager.getCurrentlyLoggedInUser().getUsername());
+	entity.setCreatedBy(null);
 	entity.setDeleted(false);
     }
 
     /**
-     * Set updated fields.
+     * Set updated fields. TODO: Use credentials for subject.
      * 
+     * @param updatedBy
      * @param entity
      * @throws SiteWhereException
      */
     public static void setUpdatedEntityMetadata(MetadataProviderEntity entity) throws SiteWhereException {
 	entity.setUpdatedDate(new Date());
-	entity.setUpdatedBy(LoginManager.getCurrentlyLoggedInUser().getUsername());
+	entity.setUpdatedBy(null);
     }
 
     /**

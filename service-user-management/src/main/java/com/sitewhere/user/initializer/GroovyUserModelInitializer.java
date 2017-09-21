@@ -9,12 +9,10 @@ package com.sitewhere.user.initializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.initializer.IUserModelInitializer;
@@ -55,15 +53,11 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
 	try {
-	    // Use system account for logging "created by" on created elements.
-	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 	    SiteWhere.getServer().getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
 	} catch (ScriptException e) {
 	    throw new SiteWhereException("Unable to run Groovy script.", e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(null);
 	}
     }
 

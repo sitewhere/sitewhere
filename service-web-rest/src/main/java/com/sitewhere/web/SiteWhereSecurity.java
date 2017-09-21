@@ -19,8 +19,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import com.sitewhere.security.SitewhereAuthenticationProvider;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.security.JwtAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -48,7 +48,7 @@ public class SiteWhereSecurity extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-	auth.authenticationProvider(new SitewhereAuthenticationProvider(null));
+	auth.authenticationProvider(new JwtAuthenticationProvider());
     }
 
     /*

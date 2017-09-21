@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.rest.ISiteWhereWebConstants;
-import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -81,7 +80,7 @@ public class RestController {
 	}
 
 	if (checkAuthUser) {
-	    String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
+	    String username = SiteWhere.getCurrentlyLoggedInUser().getUsername();
 	    if (match.getAuthorizedUserIds().contains(username)) {
 		return match;
 	    }

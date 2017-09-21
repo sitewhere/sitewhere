@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.server.ModelInitializer;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
@@ -52,9 +51,6 @@ public class DefaultScheduleModelInitializer extends ModelInitializer implements
 	if (!isEnabled()) {
 	    return;
 	}
-
-	// Use the system account for logging "created by" on created elements.
-	SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
 	createDefaultSchedules();
 

@@ -35,7 +35,6 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
-import com.sitewhere.security.LoginManager;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.tenant.TenantUtils;
@@ -310,7 +309,7 @@ public class Tenants extends RestController {
 
 	// Only return auth tenants if user has 'admin own tenant'.
 	else if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = SiteWhere.getCurrentlyLoggedInUser();
 	    if (loggedIn != null) {
 		TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 		criteria.setTextSearch(textSearch);
@@ -360,7 +359,7 @@ public class Tenants extends RestController {
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	List<ITenant> tenants = SiteWhere.getServer()
-		.getAuthorizedTenants(LoginManager.getCurrentlyLoggedInUser().getUsername(), true);
+		.getAuthorizedTenants(SiteWhere.getCurrentlyLoggedInUser().getUsername(), true);
 	List<ITenant> matches = new ArrayList<ITenant>();
 	for (ITenant tenant : tenants) {
 	    if (SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId) != null) {
@@ -459,7 +458,7 @@ public class Tenants extends RestController {
 	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
 	if (!checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminTenants, false)) {
 	    checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, true);
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = SiteWhere.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
 		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
 			HttpServletResponse.SC_FORBIDDEN);

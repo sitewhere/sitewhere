@@ -19,14 +19,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.request.BatchElementUpdateRequest;
 import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
-import com.sitewhere.security.SitewhereAuthentication;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
@@ -153,8 +150,6 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 	/** Operation being processed */
 	private IBatchOperation operation;
 
-	private SitewhereAuthentication systemUser;
-
 	public BatchOperationProcessor(IBatchOperation operation) {
 	    this.operation = operation;
 	}
@@ -163,9 +158,6 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 	public void run() {
 	    LOGGER.debug("Processing batch operation: " + operation.getToken());
 	    try {
-		systemUser = SiteWhereServer.getSystemAuthentication();
-		SecurityContextHolder.getContext().setAuthentication(systemUser);
-
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.Processing);
 		request.setProcessingStartedDate(new Date());
@@ -307,7 +299,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 	    DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
 	    request.setCommandToken(commandToken);
 	    request.setInitiator(CommandInitiator.BatchOperation);
-	    request.setInitiatorId(systemUser.getName());
+	    request.setInitiatorId(null);
 	    request.setTarget(CommandTarget.Assignment);
 	    request.setTargetId(assignment.getToken());
 	    request.setParameterValues(operation.getMetadata());

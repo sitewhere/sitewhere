@@ -37,9 +37,6 @@ import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerState;
 import com.sitewhere.rest.model.server.TenantPersistentState;
-import com.sitewhere.rest.model.user.User;
-import com.sitewhere.security.SitewhereAuthentication;
-import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -82,7 +79,6 @@ import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -597,21 +593,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public HealthCheckRegistry getHealthCheckRegistry() {
 	return healthCheckRegistry;
-    }
-
-    /**
-     * Returns a fake account used for operations on the data model done by the
-     * system.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public static SitewhereAuthentication getSystemAuthentication() throws SiteWhereException {
-	User fake = new User();
-	fake.setUsername("system");
-	SitewhereUserDetails details = new SitewhereUserDetails(fake, new ArrayList<IGrantedAuthority>());
-	SitewhereAuthentication auth = new SitewhereAuthentication(details, null);
-	return auth;
     }
 
     /**

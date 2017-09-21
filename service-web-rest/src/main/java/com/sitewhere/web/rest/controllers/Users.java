@@ -31,7 +31,6 @@ import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
-import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -235,7 +234,7 @@ public class Users extends RestController {
 	    String username) throws SiteWhereException {
 	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
 	if (!checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminUsers, false)) {
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = SiteWhere.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
 		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
 			HttpServletResponse.SC_FORBIDDEN);

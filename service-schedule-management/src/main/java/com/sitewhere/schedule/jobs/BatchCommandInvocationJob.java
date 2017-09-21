@@ -24,7 +24,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -72,10 +71,6 @@ public class BatchCommandInvocationJob implements Job {
 	    invoke.setCommandToken(criteria.getCommandToken());
 	    invoke.setParameterValues(criteria.getParameterValues());
 	    invoke.setHardwareIds(hardwareIds);
-
-	    // Use the system account for logging "created by" on created
-	    // elements.
-	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
 	    SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
 

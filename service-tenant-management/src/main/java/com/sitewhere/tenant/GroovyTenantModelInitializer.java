@@ -9,12 +9,10 @@ package com.sitewhere.tenant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.device.communication.IGroovyVariables;
 import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.ITenantModelInitializer;
@@ -57,15 +55,11 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 		new TenantManagementRequestBuilder(tenantManagement));
 
 	try {
-	    // Use system account for logging "created by" on created elements.
-	    SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 	    SiteWhere.getServer().getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
 	} catch (ScriptException e) {
 	    throw new SiteWhereException("Unable to run Groovy script.", e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(null);
 	}
     }
 

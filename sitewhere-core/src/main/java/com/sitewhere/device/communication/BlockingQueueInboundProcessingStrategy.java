@@ -17,9 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
@@ -475,17 +473,6 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 
 	@Override
 	public void run() {
-	    // Event creation APIs expect an authenticated user in order to
-	    // check permissions and log who creates events. When called in this
-	    // context, the authenticated user will always be 'system'.
-	    // TODO: Alternatively, we may want the client to authenticate on
-	    // registration and pass a token on each request.
-	    try {
-		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
-	    } catch (SiteWhereException e) {
-		throw new RuntimeException(
-			"Unable to use system authentication for inbound device " + " event processor thread.", e);
-	    }
 	    while (true) {
 		try {
 		    PerformanceWrapper wrapper = queue.take();
