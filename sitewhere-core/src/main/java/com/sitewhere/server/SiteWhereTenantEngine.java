@@ -246,16 +246,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	start.execute(monitor);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getSpringContext()
-     */
-    @Override
-    public ApplicationContext getSpringContext() {
-	return tenantContext;
-    }
-
     /**
      * Loads the tenant configuration file. If a new configuration is staged, it
      * is transitioned into the active configuration. If no configuration is
