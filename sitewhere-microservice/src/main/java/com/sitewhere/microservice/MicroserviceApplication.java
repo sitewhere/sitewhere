@@ -40,7 +40,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
     private ExecutorService executor;
 
     public MicroserviceApplication() {
-	this(false);
+	this(true);
     }
 
     public MicroserviceApplication(boolean runInBackground) {

@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
@@ -142,8 +141,8 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 		if (global == null) {
 		    throw new SiteWhereException("Global instance configuration file not found.");
 		}
-		GenericApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
-			SiteWhere.getVersion(), getMicroserviceContext());
+		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, SiteWhere.getVersion(),
+			getMicroserviceContext());
 
 		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
 		for (String path : getConfigurationPaths()) {

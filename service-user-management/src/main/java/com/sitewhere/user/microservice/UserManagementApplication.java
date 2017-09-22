@@ -1,7 +1,8 @@
 package com.sitewhere.user.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -11,11 +12,17 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * 
  * @author Derek
  */
+@ComponentScan
 public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
 
-    @Bean
-    public IUserManagementMicroservice userManagementMicroservice() {
-	return new UserManagementMicroservice();
+    @Autowired
+    private IUserManagementMicroservice microservice;
+
+    /**
+     * Run in background thread since servlet container keeps context alive.
+     */
+    public UserManagementApplication() {
+	super(true);
     }
 
     /*
@@ -26,7 +33,7 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
      */
     @Override
     public IUserManagementMicroservice getMicroservice() {
-	return userManagementMicroservice();
+	return microservice;
     }
 
     /**

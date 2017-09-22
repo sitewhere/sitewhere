@@ -7,8 +7,9 @@
  */
 package com.sitewhere.instance.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -18,12 +19,11 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
+@ComponentScan
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
-    @Bean
-    public IInstanceManagementMicroservice instanceManagementMicroservice() {
-	return new InstanceManagementMicroservice();
-    }
+    @Autowired
+    private IInstanceManagementMicroservice microservice;
 
     /*
      * (non-Javadoc)
@@ -33,7 +33,7 @@ public class InstanceManagementApplication extends MicroserviceApplication<IInst
      */
     @Override
     public IInstanceManagementMicroservice getMicroservice() {
-	return instanceManagementMicroservice();
+	return microservice;
     }
 
     /**

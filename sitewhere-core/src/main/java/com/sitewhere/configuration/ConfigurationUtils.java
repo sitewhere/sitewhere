@@ -30,6 +30,7 @@ import com.sitewhere.spi.system.IVersion;
 public class ConfigurationUtils {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -42,7 +43,7 @@ public class ConfigurationUtils {
      * @return
      * @throws SiteWhereException
      */
-    public static GenericApplicationContext buildGlobalContext(byte[] configuration, IVersion version,
+    public static ApplicationContext buildGlobalContext(byte[] configuration, IVersion version,
 	    ApplicationContext microservice) throws SiteWhereException {
 	GenericApplicationContext context = new GenericApplicationContext(microservice);
 
@@ -58,9 +59,7 @@ public class ConfigurationUtils {
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
-	LOGGER.info("About to refresh global context.");
 	context.refresh();
-	LOGGER.info("Refreshed global context.");
 	return context;
     }
 
@@ -90,9 +89,7 @@ public class ConfigurationUtils {
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
-	LOGGER.info("About to refresh subcontext.");
 	context.refresh();
-	LOGGER.info("Refreshed subcontext.");
 	return context;
     }
 }
