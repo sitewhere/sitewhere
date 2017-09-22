@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.security;
+package com.sitewhere.web.security.basic;
 
 import java.util.List;
 
@@ -20,18 +20,20 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.web.security.SitewhereAuthentication;
+import com.sitewhere.web.security.SitewhereUserDetails;
 
 /**
  * Spring authentication provider using SiteWhere user management APIs.
  * 
  * @author Derek
  */
-public class SitewhereAuthenticationProvider implements AuthenticationProvider {
+public class BasicAuthenticationProvider implements AuthenticationProvider {
 
     /** User management implementation */
     private IUserManagement userManagement;
 
-    public SitewhereAuthenticationProvider(IUserManagement userManagement) {
+    public BasicAuthenticationProvider(IUserManagement userManagement) {
 	this.userManagement = userManagement;
     }
 
@@ -72,7 +74,8 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
-	return true;
+	return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(clazz))
+		|| (SitewhereAuthentication.class.isAssignableFrom(clazz));
     }
 
     public IUserManagement getUserManagement() {

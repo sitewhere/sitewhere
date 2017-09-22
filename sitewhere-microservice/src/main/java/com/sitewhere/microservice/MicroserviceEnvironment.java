@@ -21,4 +21,7 @@ public class MicroserviceEnvironment {
 
     /** Environment variable for SiteWhere instance id */
     public static final String ENV_GRPC_PORT_OVERRIDE = "SW_GRPC_PORT_OVERRIDE";
+
+    /** Default Docker hostname for user management microservice */
+    public static final String HOST_USER_MANAGEMENT = "user-management";
 }

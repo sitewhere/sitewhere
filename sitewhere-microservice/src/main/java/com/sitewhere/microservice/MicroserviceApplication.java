@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.IMicroserviceApplication;
-import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
@@ -64,20 +63,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 	    executor.shutdown();
 	    (new StopMicroservice()).run();
 	}
-    }
-
-    /**
-     * Common code for testing whether a service is available.
-     * 
-     * @param service
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T extends IMicroservice> T assureAvailable(T service) throws MicroserviceNotAvailableException {
-	if (service.getLifecycleStatus() != LifecycleStatus.Started) {
-	    throw new MicroserviceNotAvailableException("Microservice '" + service.getName() + "' is not started.");
-	}
-	return service;
     }
 
     /**

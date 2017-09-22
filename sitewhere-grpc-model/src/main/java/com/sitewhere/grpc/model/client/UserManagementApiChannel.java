@@ -104,12 +104,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
-	GAuthenticateRequest.Builder grequest = GAuthenticateRequest.newBuilder();
-	grequest.setUsername(username);
-	grequest.setPassword(password);
-	grequest.setUpdateLastLogin(updateLastLogin);
-	GAuthenticateResponse gresponse = getGrpcChannel().getBlockingStub().authenticate(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GAuthenticateRequest.Builder grequest = GAuthenticateRequest.newBuilder();
+	    grequest.setUsername(username);
+	    grequest.setPassword(password);
+	    grequest.setUpdateLastLogin(updateLastLogin);
+	    GAuthenticateResponse gresponse = getGrpcChannel().getBlockingStub().authenticate(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:authenticate failed.", t);
+	}
     }
 
     /*

@@ -18,7 +18,8 @@ import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestMvcConfiguration;
-import com.sitewhere.web.security.SiteWhereSecurity;
+import com.sitewhere.web.security.WebRestSecurity;
+import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**
@@ -27,7 +28,7 @@ import com.sitewhere.web.vue.VueConfiguration;
  * @author Derek
  */
 @Configuration
-@Import({ SiteWhereSecurity.class })
+@Import({ WebRestSecurity.class })
 public class WebRestConfiguration {
 
     @Bean
@@ -78,6 +79,15 @@ public class WebRestConfiguration {
 	ServletRegistrationBean registration = new ServletRegistrationBean(redirect, "/admin");
 	registration.setName("sitewhereRedirect");
 	registration.setLoadOnStartup(3);
+	return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean jwtTokenAuthFilter() {
+	TokenAuthenticationFilter filter = new TokenAuthenticationFilter();
+	FilterRegistrationBean registration = new FilterRegistrationBean();
+	registration.setFilter(filter);
+	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
 	return registration;
     }
 

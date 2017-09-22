@@ -1,8 +1,5 @@
 package com.sitewhere.grpc.model.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.sitewhere.grpc.model.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,9 +17,6 @@ import io.grpc.ManagedChannelBuilder;
  * @param <A>
  */
 public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IGrpcChannel<B, A> {
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Remote host */
     private String hostname;
@@ -126,16 +120,6 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
      */
     @Override
     public abstract A createAsyncStub();
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Logger getLogger() {
-	return LOGGER;
-    }
 
     public String getHostname() {
 	return hostname;

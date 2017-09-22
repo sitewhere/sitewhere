@@ -1,5 +1,8 @@
 package com.sitewhere.grpc.model.client;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingStub;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
@@ -11,6 +14,9 @@ import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
  * @author Derek
  */
 public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlockingStub, TenantManagementStub> {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     public TenantManagementGrpcChannel(String host, int port) {
 	super(host, port);
@@ -34,5 +40,15 @@ public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlo
     @Override
     public TenantManagementStub createAsyncStub() {
 	return TenantManagementGrpc.newStub(getChannel());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }
