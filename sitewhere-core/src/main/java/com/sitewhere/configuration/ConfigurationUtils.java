@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -27,18 +29,22 @@ import com.sitewhere.spi.system.IVersion;
  */
 public class ConfigurationUtils {
 
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
     /**
      * Builds a Spring {@link ApplicationContext} from a byte array containing
      * the XML configuration.
      * 
      * @param configuration
      * @param version
+     * @param microservice
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildGlobalContext(byte[] configuration, IVersion version)
-	    throws SiteWhereException {
-	GenericApplicationContext context = new GenericApplicationContext();
+    public static GenericApplicationContext buildGlobalContext(byte[] configuration, IVersion version,
+	    ApplicationContext microservice) throws SiteWhereException {
+	GenericApplicationContext context = new GenericApplicationContext(microservice);
 
 	// Plug in custom property source.
 	Map<String, Object> properties = new HashMap<String, Object>();
@@ -52,7 +58,9 @@ public class ConfigurationUtils {
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
+	LOGGER.info("About to refresh global context.");
 	context.refresh();
+	LOGGER.info("Refreshed global context.");
 	return context;
     }
 
@@ -82,7 +90,9 @@ public class ConfigurationUtils {
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
+	LOGGER.info("About to refresh subcontext.");
 	context.refresh();
+	LOGGER.info("Refreshed subcontext.");
 	return context;
     }
 }

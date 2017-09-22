@@ -7,7 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
@@ -29,6 +31,9 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 
     /** Executor for loading/parsing configuration updates */
     private ExecutorService executor = Executors.newSingleThreadExecutor(new ConfigurationLoaderThreadFactory());
+
+    @Autowired
+    private ApplicationContext microserviceContext;
 
     /*
      * (non-Javadoc)
@@ -114,6 +119,14 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 	return getConfigurationMonitor().getConfigurationDataFor(getInstanceGlobalConfigurationPath());
     }
 
+    public ApplicationContext getMicroserviceContext() {
+	return microserviceContext;
+    }
+
+    public void setMicroserviceContext(ApplicationContext microserviceContext) {
+	this.microserviceContext = microserviceContext;
+    }
+
     /**
      * Allow configurations to be loaded and parsed in a separate thread.
      * 
@@ -129,8 +142,8 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 		if (global == null) {
 		    throw new SiteWhereException("Global instance configuration file not found.");
 		}
-		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
-			SiteWhere.getVersion());
+		GenericApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
+			SiteWhere.getVersion(), getMicroserviceContext());
 
 		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
 		for (String path : getConfigurationPaths()) {
@@ -155,6 +168,9 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 		setConfigurationState(ConfigurationState.Succeeded);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to load configuration data.", e);
+		setConfigurationState(ConfigurationState.Failed);
+	    } catch (Throwable e) {
+		getLogger().error("Unhandled exception while loading configuration data.", e);
 		setConfigurationState(ConfigurationState.Failed);
 	    }
 	}

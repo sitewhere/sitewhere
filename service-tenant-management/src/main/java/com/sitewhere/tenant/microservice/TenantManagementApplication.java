@@ -2,8 +2,6 @@ package com.sitewhere.tenant.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
@@ -13,8 +11,6 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
  * 
  * @author Derek
  */
-@Configuration
-@ComponentScan
 public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice> {
 
     @Bean

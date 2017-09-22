@@ -3,7 +3,6 @@ package com.sitewhere.web.microservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -13,7 +12,6 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * 
  * @author Derek
  */
-@Configuration
 @ComponentScan
 public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice> {
 

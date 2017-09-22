@@ -2,8 +2,6 @@ package com.sitewhere.user.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -13,8 +11,6 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * 
  * @author Derek
  */
-@Configuration
-@ComponentScan
 public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
 
     @Bean

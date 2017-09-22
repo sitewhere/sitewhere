@@ -9,8 +9,6 @@ package com.sitewhere.instance.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -20,8 +18,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@Configuration
-@ComponentScan
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
     @Bean
