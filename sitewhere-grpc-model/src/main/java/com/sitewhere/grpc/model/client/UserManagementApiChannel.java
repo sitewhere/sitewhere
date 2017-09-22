@@ -73,10 +73,14 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
-	GCreateUserRequest.Builder grequest = GCreateUserRequest.newBuilder();
-	grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
-	GCreateUserResponse gresponse = getGrpcChannel().getBlockingStub().createUser(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GCreateUserRequest.Builder grequest = GCreateUserRequest.newBuilder();
+	    grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
+	    GCreateUserResponse gresponse = getGrpcChannel().getBlockingStub().createUser(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:createUser failed.", t);
+	}
     }
 
     /*
@@ -88,11 +92,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
-	GImportUserRequest.Builder grequest = GImportUserRequest.newBuilder();
-	grequest.setUser(UserModelConverter.asGrpcUser(user));
-	grequest.setOverwrite(overwrite);
-	GImportUserResponse gresponse = getGrpcChannel().getBlockingStub().importUser(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GImportUserRequest.Builder grequest = GImportUserRequest.newBuilder();
+	    grequest.setUser(UserModelConverter.asGrpcUser(user));
+	    grequest.setOverwrite(overwrite);
+	    GImportUserResponse gresponse = getGrpcChannel().getBlockingStub().importUser(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:importUser failed.", t);
+	}
     }
 
     /*
@@ -125,12 +133,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
-	GUpdateUserRequest.Builder grequest = GUpdateUserRequest.newBuilder();
-	grequest.setUsername(username);
-	grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
-	grequest.setEncodePassword(encodePassword);
-	GUpdateUserResponse gresponse = getGrpcChannel().getBlockingStub().updateUser(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GUpdateUserRequest.Builder grequest = GUpdateUserRequest.newBuilder();
+	    grequest.setUsername(username);
+	    grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
+	    grequest.setEncodePassword(encodePassword);
+	    GUpdateUserResponse gresponse = getGrpcChannel().getBlockingStub().updateUser(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:updateUser failed.", t);
+	}
     }
 
     /*
@@ -141,10 +153,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IUser getUserByUsername(String username) throws SiteWhereException {
-	GGetUserByUsernameRequest.Builder grequest = GGetUserByUsernameRequest.newBuilder();
-	grequest.setUsername(username);
-	GGetUserByUsernameResponse gresponse = getGrpcChannel().getBlockingStub().getUserByUsername(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GGetUserByUsernameRequest.Builder grequest = GGetUserByUsernameRequest.newBuilder();
+	    grequest.setUsername(username);
+	    GGetUserByUsernameResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getUserByUsername(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:getUserByUsername failed.", t);
+	}
     }
 
     /*
@@ -156,11 +173,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-	GGetGrantedAuthoritiesRequest.Builder grequest = GGetGrantedAuthoritiesRequest.newBuilder();
-	grequest.setUsername(username);
-	GGetGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
-		.getGrantedAuthoritiesForUser(grequest.build());
-	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	try {
+	    GGetGrantedAuthoritiesRequest.Builder grequest = GGetGrantedAuthoritiesRequest.newBuilder();
+	    grequest.setUsername(username);
+	    GGetGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getGrantedAuthoritiesForUser(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:getGrantedAuthorities failed.", t);
+	}
     }
 
     /*
@@ -173,12 +194,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
-	GAddGrantedAuthoritiesRequest.Builder grequest = GAddGrantedAuthoritiesRequest.newBuilder();
-	grequest.setUsername(username);
-	grequest.getAuthoritiesList().addAll(authorities);
-	GAddGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
-		.addGrantedAuthoritiesForUser(grequest.build());
-	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	try {
+	    GAddGrantedAuthoritiesRequest.Builder grequest = GAddGrantedAuthoritiesRequest.newBuilder();
+	    grequest.setUsername(username);
+	    grequest.getAuthoritiesList().addAll(authorities);
+	    GAddGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .addGrantedAuthoritiesForUser(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:addGrantedAuthorities failed.", t);
+	}
     }
 
     /*
@@ -191,12 +216,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
-	GRemoveGrantedAuthoritiesRequest.Builder grequest = GRemoveGrantedAuthoritiesRequest.newBuilder();
-	grequest.setUsername(username);
-	grequest.getAuthoritiesList().addAll(authorities);
-	GRemoveGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
-		.removeGrantedAuthoritiesForUser(grequest.build());
-	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	try {
+	    GRemoveGrantedAuthoritiesRequest.Builder grequest = GRemoveGrantedAuthoritiesRequest.newBuilder();
+	    grequest.setUsername(username);
+	    grequest.getAuthoritiesList().addAll(authorities);
+	    GRemoveGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .removeGrantedAuthoritiesForUser(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:removeGrantedAuthorities failed.", t);
+	}
     }
 
     /*
@@ -208,10 +237,14 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-	GListUsersRequest.Builder grequest = GListUsersRequest.newBuilder();
-	grequest.setCriteria(UserModelConverter.asGrpcUserSearchCriteria(criteria));
-	GListUsersResponse gresponse = getGrpcChannel().getBlockingStub().listUsers(grequest.build());
-	return UserModelConverter.asApiUsers(gresponse.getUserList());
+	try {
+	    GListUsersRequest.Builder grequest = GListUsersRequest.newBuilder();
+	    grequest.setCriteria(UserModelConverter.asGrpcUserSearchCriteria(criteria));
+	    GListUsersResponse gresponse = getGrpcChannel().getBlockingStub().listUsers(grequest.build());
+	    return UserModelConverter.asApiUsers(gresponse.getUserList());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:listUsers failed.", t);
+	}
     }
 
     /*
@@ -222,11 +255,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	GDeleteUserRequest.Builder grequest = GDeleteUserRequest.newBuilder();
-	grequest.setUsername(username);
-	grequest.setForce(force);
-	GDeleteUserResponse gresponse = getGrpcChannel().getBlockingStub().deleteUser(grequest.build());
-	return UserModelConverter.asApiUser(gresponse.getUser());
+	try {
+	    GDeleteUserRequest.Builder grequest = GDeleteUserRequest.newBuilder();
+	    grequest.setUsername(username);
+	    grequest.setForce(force);
+	    GDeleteUserResponse gresponse = getGrpcChannel().getBlockingStub().deleteUser(grequest.build());
+	    return UserModelConverter.asApiUser(gresponse.getUser());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:deleteUser failed.", t);
+	}
     }
 
     /*
@@ -237,11 +274,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-	GCreateGrantedAuthorityRequest.Builder grequest = GCreateGrantedAuthorityRequest.newBuilder();
-	grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
-	GCreateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
-		.createGrantedAuthority(grequest.build());
-	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	try {
+	    GCreateGrantedAuthorityRequest.Builder grequest = GCreateGrantedAuthorityRequest.newBuilder();
+	    grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
+	    GCreateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createGrantedAuthority(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:createGrantedAuthority failed.", t);
+	}
     }
 
     /*
@@ -253,11 +294,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
-	GGetGrantedAuthorityByNameRequest.Builder grequest = GGetGrantedAuthorityByNameRequest.newBuilder();
-	grequest.setName(name);
-	GGetGrantedAuthorityByNameResponse gresponse = getGrpcChannel().getBlockingStub()
-		.getGrantedAuthorityByName(grequest.build());
-	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	try {
+	    GGetGrantedAuthorityByNameRequest.Builder grequest = GGetGrantedAuthorityByNameRequest.newBuilder();
+	    grequest.setName(name);
+	    GGetGrantedAuthorityByNameResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getGrantedAuthorityByName(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:getGrantedAuthorityByName failed.", t);
+	}
     }
 
     /*
@@ -270,12 +315,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
 	    throws SiteWhereException {
-	GUpdateGrantedAuthorityRequest.Builder grequest = GUpdateGrantedAuthorityRequest.newBuilder();
-	grequest.setName(name);
-	grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
-	GUpdateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
-		.updateGrantedAuthority(grequest.build());
-	return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	try {
+	    GUpdateGrantedAuthorityRequest.Builder grequest = GUpdateGrantedAuthorityRequest.newBuilder();
+	    grequest.setName(name);
+	    grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
+	    GUpdateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateGrantedAuthority(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:updateGrantedAuthority failed.", t);
+	}
     }
 
     /*
@@ -287,10 +336,14 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
-	GListGrantedAuthoritiesRequest.Builder grequest = GListGrantedAuthoritiesRequest.newBuilder();
-	GListGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
-		.listGrantedAuthorities(grequest.build());
-	return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	try {
+	    GListGrantedAuthoritiesRequest.Builder grequest = GListGrantedAuthoritiesRequest.newBuilder();
+	    GListGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listGrantedAuthorities(grequest.build());
+	    return UserModelConverter.asApiGrantedAuthorities(gresponse.getAuthoritiesList());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:listGrantedAuthorities failed.", t);
+	}
     }
 
     /*
@@ -302,11 +355,15 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
      */
     @Override
     public void deleteGrantedAuthority(String authority) throws SiteWhereException {
-	GDeleteGrantedAuthorityRequest.Builder grequest = GDeleteGrantedAuthorityRequest.newBuilder();
-	grequest.setName(authority);
-	GDeleteGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
-		.deleteGrantedAuthority(grequest.build());
-	return;
+	try {
+	    GDeleteGrantedAuthorityRequest.Builder grequest = GDeleteGrantedAuthorityRequest.newBuilder();
+	    grequest.setName(authority);
+	    GDeleteGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteGrantedAuthority(grequest.build());
+	    return;
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Call to UserManagement:deleteGrantedAuthority failed.", t);
+	}
     }
 
     /*
