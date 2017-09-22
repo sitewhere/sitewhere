@@ -1,6 +1,9 @@
 package com.sitewhere.user.microservice;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -10,14 +13,13 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * 
  * @author Derek
  */
+@Configuration
+@ComponentScan
 public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
 
-    /** User management microservice */
-    public static IUserManagementMicroservice SERVICE = new UserManagementMicroservice();
-
-    /** Get microservice instance */
-    public static IUserManagementMicroservice getUserManagementMicroservice() {
-	return SERVICE;
+    @Bean
+    public IUserManagementMicroservice userManagementMicroservice() {
+	return new UserManagementMicroservice();
     }
 
     /*
@@ -28,7 +30,7 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
      */
     @Override
     public IUserManagementMicroservice getMicroservice() {
-	return SERVICE;
+	return userManagementMicroservice();
     }
 
     /**

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,9 +21,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.microservice.WebRestApplication;
 import com.sitewhere.web.security.basic.BasicAuthenticationProvider;
 import com.sitewhere.web.security.jwt.JwtAuthenticationProvider;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Configures Spring Security for web/REST.
@@ -32,6 +33,9 @@ import com.sitewhere.web.security.jwt.JwtAuthenticationProvider;
 @Configuration
 @EnableWebSecurity
 public class WebRestSecurity extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    protected IWebRestMicroservice webRestMicroservice;
 
     /*
      * (non-Javadoc)
@@ -63,7 +67,7 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected BasicAuthenticationProvider basicAuthenticationProvider() throws MicroserviceNotAvailableException {
-	IUserManagement userManagement = WebRestApplication.getWebRestMicroservice().getUserManagement();
+	IUserManagement userManagement = getWebRestMicroservice().getUserManagement();
 	return new BasicAuthenticationProvider(userManagement);
     }
 
@@ -81,5 +85,13 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
 	http.antMatcher("/api/**").authorizeRequests().antMatchers(HttpMethod.GET, "/").permitAll()
 		.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll().antMatchers(HttpMethod.GET, "/api/**/symbol")
 		.permitAll().antMatchers("/api/**").hasRole(SiteWhereRoles.AUTH_REST).and().httpBasic();
+    }
+
+    public IWebRestMicroservice getWebRestMicroservice() {
+	return webRestMicroservice;
+    }
+
+    public void setWebRestMicroservice(IWebRestMicroservice webRestMicroservice) {
+	this.webRestMicroservice = webRestMicroservice;
     }
 }

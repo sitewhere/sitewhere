@@ -1,6 +1,9 @@
 package com.sitewhere.tenant.microservice;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
@@ -10,14 +13,13 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
  * 
  * @author Derek
  */
+@Configuration
+@ComponentScan
 public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice> {
 
-    /** Tenant management microservice */
-    private static ITenantManagementMicroservice SERVICE = new TenantManagementMicroservice();
-
-    /** Get microservice instance */
-    public static ITenantManagementMicroservice getTenantManagementMicroservice() {
-	return SERVICE;
+    @Bean
+    public ITenantManagementMicroservice tenantManagementMicroservice() {
+	return new TenantManagementMicroservice();
     }
 
     /*
@@ -28,7 +30,7 @@ public class TenantManagementApplication extends MicroserviceApplication<ITenant
      */
     @Override
     public ITenantManagementMicroservice getMicroservice() {
-	return SERVICE;
+	return tenantManagementMicroservice();
     }
 
     /**
