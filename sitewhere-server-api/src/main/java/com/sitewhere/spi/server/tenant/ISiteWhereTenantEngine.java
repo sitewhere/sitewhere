@@ -20,7 +20,6 @@ import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
-import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
@@ -46,13 +45,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public ITenantConfigurationResolver getTenantConfigurationResolver();
-
-    /**
-     * Get tenant-scoped Groovy configuration.
-     * 
-     * @return
-     */
-    public ITenantGroovyConfiguration getGroovyConfiguration();
 
     /**
      * Get the device management implementation.

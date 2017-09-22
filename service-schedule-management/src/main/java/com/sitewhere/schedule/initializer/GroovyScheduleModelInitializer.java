@@ -1,51 +1,50 @@
-/*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
-package com.sitewhere.user.initializer;
+package com.sitewhere.schedule.initializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
+import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
+import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.user.spi.initializer.IUserModelInitializer;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IUserModelInitializer} that delegates creation logic
- * to a Groovy script.
+ * Implementation of {@link IScheduleModelInitializer} that delegates creation
+ * logic to a Groovy script.
  * 
  * @author Derek
  */
-public class GroovyUserModelInitializer extends ModelInitializer implements IUserModelInitializer {
+public class GroovyScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Groovy configuration */
+    /** Tenant Groovy configuration */
     private GroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
+    public GroovyScheduleModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+	this.groovyConfiguration = groovyConfiguration;
+	this.scriptPath = scriptPath;
+    }
+
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.
-     * sitewhere.spi. user.IUserManagement)
+     * @see
+     * com.sitewhere.spi.server.scheduling.IScheduleModelInitializer#initialize(
+     * com.sitewhere.spi.scheduling.IScheduleManagement)
      */
     @Override
-    public void initialize(IUserManagement userManagement) throws SiteWhereException {
+    public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
 	// Skip if not enabled.
 	if (!isEnabled()) {
 	    return;
@@ -53,7 +52,7 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
-	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
+	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
 
 	try {
 	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);

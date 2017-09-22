@@ -13,6 +13,7 @@ import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
 import com.sitewhere.device.DeviceActions;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -50,6 +51,9 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
     /** Tenant set by event processor */
     private ITenant tenant;
 
+    /** Groovy configuration */
+    private GroovyConfiguration groovyConfiguration;
+
     /** Path to script used for decoder */
     private String scriptPath;
 
@@ -74,8 +78,7 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 		binding.setVariable(VAR_ACTIONS, actions);
 		binding.setVariable(VAR_LOGGER, LOGGER);
 		try {
-		    SiteWhere.getServer().getTenantGroovyConfiguration(getTenant()).getGroovyScriptEngine()
-			    .run(getScriptPath(), binding);
+		    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 		} catch (ResourceException e) {
 		    LOGGER.error("Unable to access Groovy decoder script.", e);
 		} catch (ScriptException e) {
@@ -105,6 +108,14 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
      */
     public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
+    }
+
+    public GroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
+    }
+
+    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+	this.groovyConfiguration = groovyConfiguration;
     }
 
     public String getScriptPath() {

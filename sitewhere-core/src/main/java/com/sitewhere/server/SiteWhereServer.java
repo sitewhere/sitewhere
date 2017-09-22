@@ -30,7 +30,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
-import com.sitewhere.groovy.configuration.GroovyConfiguration;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
@@ -66,8 +65,6 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
-import com.sitewhere.spi.server.groovy.IGroovyConfiguration;
-import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -108,9 +105,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Server startup error */
     private ServerStartupException serverStartupError;
-
-    /** Groovy configuration for this node */
-    protected IGroovyConfiguration groovyConfiguration;
 
     /** Bootstrap resource manager implementation */
     protected IResourceManager bootstrapResourceManager;
@@ -242,16 +236,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public void setServerStartupError(ServerStartupException e) {
 	this.serverStartupError = e;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getGroovyConfiguration()
-     */
-    @Override
-    public IGroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
     }
 
     /*
@@ -518,19 +502,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	return engine.getSearchProviderManager();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getTenantGroovyConfiguration(
-     * com.sitewhere.spi.tenant.ITenant)
-     */
-    @Override
-    public ITenantGroovyConfiguration getTenantGroovyConfiguration(ITenant tenant) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-	return engine.getGroovyConfiguration();
-    }
-
     /**
      * Get tenant engine for tenant. Throw an exception if not found.
      * 
@@ -635,9 +606,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Initialize persistent state.
 	initializeServerState();
 
-	// Initialize the Groovy configuration.
-	initializeGroovyConfiguration();
-
 	// Initialize discoverable beans.
 	initializeDiscoverableBeans(monitor);
 
@@ -699,15 +667,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	    state = MarshalUtils.unmarshalJson(stateResource.getContent(), SiteWhereServerState.class);
 	}
 	this.serverState = state;
-    }
-
-    /**
-     * Initialize the Groovy configuration.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeGroovyConfiguration() throws SiteWhereException {
-	this.groovyConfiguration = new GroovyConfiguration();
     }
 
     /**
@@ -842,10 +801,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Organizes steps for starting base services.
 	ICompositeLifecycleStep base = new CompositeLifecycleStep("Started Base Services");
-
-	// Start the Groovy configuration.
-	base.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(), "Started Groovy scripting engine",
-		"Groovy startup failed.", true));
 
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
@@ -1094,27 +1049,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	// Stop management implementations.
 	stopManagementImplementations(stop);
 
-	// Stop base server services.
-	stopBaseServices(stop);
-
 	// Execute stop operation and report progress.
 	stop.execute(monitor);
-    }
-
-    /**
-     * Stop base server services.
-     * 
-     * @param stop
-     * @throws SiteWhereException
-     */
-    protected void stopBaseServices(ICompositeLifecycleStep stop) throws SiteWhereException {
-	// Stop all lifecycle components.
-	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    stop.addStep(new StopComponentLifecycleStep(this, component, "Stopped " + component.getComponentName()));
-	}
-
-	// Stop the Groovy configuration.
-	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy script engine"));
     }
 
     /**

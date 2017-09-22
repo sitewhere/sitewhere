@@ -4,6 +4,7 @@ dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-spring')
 	compile project(':sitewhere-protobuf')
+	compile project(':sitewhere-microservice')
 	
 	// ActiveMQ dependencies.
     compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'

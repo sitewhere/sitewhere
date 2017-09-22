@@ -10,10 +10,10 @@ package com.sitewhere.schedule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
 
 /**
  * Used to load default schedule data into the datastore. The server only offers

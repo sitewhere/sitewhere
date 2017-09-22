@@ -11,6 +11,8 @@ dependencies {
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
     compile group: 'org.apache.curator', name: 'curator-recipes', version: "${rootProject.ext['curator.version']}"
     
+    compile group: 'org.codehaus.groovy', name: 'groovy'
+    
     // JWT
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
 }

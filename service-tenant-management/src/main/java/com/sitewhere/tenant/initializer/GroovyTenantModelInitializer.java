@@ -5,29 +5,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.user.initializer;
+package com.sitewhere.tenant.initializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
+import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.user.spi.initializer.IUserModelInitializer;
+import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.tenant.spi.initializer.ITenantModelInitializer;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IUserModelInitializer} that delegates creation logic
- * to a Groovy script.
+ * Implementation of {@link ITenantModelInitializer} that delegates creation
+ * logic to a Groovy script.
  * 
  * @author Derek
  */
-public class GroovyUserModelInitializer extends ModelInitializer implements IUserModelInitializer {
+public class GroovyTenantModelInitializer extends ModelInitializer implements ITenantModelInitializer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -41,19 +42,21 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.user.IUserModelInitializer#initialize(com.
-     * sitewhere.spi. user.IUserManagement)
+     * @see
+     * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
+     * sitewhere. spi.tenant.ITenantManagement)
      */
     @Override
-    public void initialize(IUserManagement userManagement) throws SiteWhereException {
+    public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
 	// Skip if not enabled.
 	if (!isEnabled()) {
 	    return;
 	}
 
 	Binding binding = new Binding();
-	binding.setVariable("logger", LOGGER);
-	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
+	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	binding.setVariable(IGroovyVariables.VAR_TENANT_MANAGEMENT_BUILDER,
+		new TenantManagementRequestBuilder(tenantManagement));
 
 	try {
 	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);

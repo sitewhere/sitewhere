@@ -15,9 +15,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
-import com.sitewhere.groovy.device.communication.IGroovyVariables;
+import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.sources.PollingInboundEventReceiver;
-import com.sitewhere.sources.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -41,6 +41,9 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 
     /** Groovy variable that contains json payloads to be parsed */
     private static final String VAR_PAYLOADS = "payloads";
+
+    /** Groovy configuration */
+    private GroovyConfiguration groovyConfiguration;
 
     /** Path to script used for decoder */
     private String scriptPath;
@@ -86,8 +89,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	    binding.setVariable(VAR_PAYLOADS, payloads);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    LOGGER.debug("About to execute '" + getScriptPath() + "'");
-	    SiteWhere.getServer().getTenantGroovyConfiguration(getTenant()).getGroovyScriptEngine().run(getScriptPath(),
-		    binding);
+	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	    payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
 
 	    // Process each payload individually.
@@ -121,6 +123,14 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     @Override
     public String getDisplayName() {
 	return "Polling REST Receiver";
+    }
+
+    public GroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
+    }
+
+    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+	this.groovyConfiguration = groovyConfiguration;
     }
 
     public String getScriptPath() {

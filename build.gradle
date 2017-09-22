@@ -19,8 +19,6 @@ buildscript {
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'SiteWhere "admin@sitewhere.com"'
 
-ext['solr.version'] = '6.4.0'
-ext['mongodb.version'] = '3.4.2'
 ext['kafka.version'] = '0.11.0.0'
 ext['zookeeper.version'] = '3.4.8'
 ext['curator.version'] = '2.12.0'
@@ -28,6 +26,9 @@ ext['protobuf.version'] = '3.3.0'
 ext['grpc.version'] = '1.6.0'
 ext['guava.version'] = '20.0'
 ext['netty.version'] = '4.1.14.Final'
+ext['groovy.version'] = '2.4.12'
+ext['mongodb.version'] = '3.4.2'
+ext['solr.version'] = '6.4.0'
 
 apply plugin: 'distribution'
 

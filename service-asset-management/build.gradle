@@ -5,6 +5,7 @@ dependencies {
 	compile project(':sitewhere-spring-spi')
 	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-mongodb')
+	compile project(':sitewhere-microservice')
 	
 	// WSO2 dependencies.
     compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-android', version:'3.4.0'

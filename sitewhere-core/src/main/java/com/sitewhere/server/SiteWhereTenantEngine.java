@@ -24,7 +24,6 @@ import org.springframework.context.ApplicationContext;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
-import com.sitewhere.groovy.configuration.TenantGroovyConfiguration;
 import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantPersistentState;
@@ -60,7 +59,6 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.ITenantRuntimeState;
-import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -91,9 +89,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Supports tenant configuration management */
     private ITenantConfigurationResolver tenantConfigurationResolver;
-
-    /** Tenant-scoped Groovy configuration */
-    private ITenantGroovyConfiguration groovyConfiguration;
 
     /** Components registered to participate in SiteWhere server lifecycle */
     private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
@@ -188,9 +183,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    // Initialize the tenant Spring context.
 	    initializeSpringContext();
 
-	    // Initialize the Groovy configuration.
-	    initializeGroovyConfiguration();
-
 	    // Register discoverable beans.
 	    initializeDiscoverableBeans(monitor);
 
@@ -271,15 +263,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	if (config == null) {
 	    throw new SiteWhereException("Tenant configuration not found. Aborting initialization.");
 	}
-    }
-
-    /**
-     * Initialize the Groovy configuration.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeGroovyConfiguration() throws SiteWhereException {
-	this.groovyConfiguration = new TenantGroovyConfiguration();
     }
 
     /**
@@ -389,10 +372,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start Groovy configuration.
-	start.addStep(new StartComponentLifecycleStep(this, getGroovyConfiguration(),
-		"Started tenant Groovy script engine", "Groovy configuration startup failed.", true));
-
 	// Start lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 	    start.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
@@ -621,9 +600,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Stop search provider manager.
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stopped search provider manager"));
-
-	// Stop the Groovy configuration.
-	stop.addStep(new StopComponentLifecycleStep(this, getGroovyConfiguration(), "Stopped Groovy engine"));
     }
 
     /*
@@ -901,20 +877,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
 	this.tenantConfigurationResolver = tenantConfigurationResolver;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
-     * getGroovyConfiguration()
-     */
-    public ITenantGroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(ITenantGroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
     }
 
     /*
