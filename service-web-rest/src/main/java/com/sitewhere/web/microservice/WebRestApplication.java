@@ -1,7 +1,7 @@
 package com.sitewhere.web.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -15,17 +15,8 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 @ComponentScan
 public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice> {
 
-    @Bean
-    public IWebRestMicroservice webRestMicroservice() {
-	return new WebRestMicroservice();
-    }
-
-    /**
-     * Run in background thread since servlet container keeps context alive.
-     */
-    public WebRestApplication() {
-	super(true);
-    }
+    @Autowired
+    private IWebRestMicroservice microservice;
 
     /*
      * (non-Javadoc)
@@ -35,7 +26,7 @@ public class WebRestApplication extends MicroserviceApplication<IWebRestMicroser
      */
     @Override
     public IWebRestMicroservice getMicroservice() {
-	return webRestMicroservice();
+	return microservice;
     }
 
     /**

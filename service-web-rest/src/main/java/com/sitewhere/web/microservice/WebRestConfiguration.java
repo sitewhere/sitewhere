@@ -20,6 +20,7 @@ import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestMvcConfiguration;
 import com.sitewhere.web.security.WebRestSecurity;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**
@@ -30,6 +31,11 @@ import com.sitewhere.web.vue.VueConfiguration;
 @Configuration
 @Import({ WebRestSecurity.class })
 public class WebRestConfiguration {
+
+    @Bean
+    public IWebRestMicroservice webRestMicroservice() {
+	return new WebRestMicroservice();
+    }
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {

@@ -18,13 +18,6 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
     @Autowired
     private IUserManagementMicroservice microservice;
 
-    /**
-     * Run in background thread since servlet container keeps context alive.
-     */
-    public UserManagementApplication() {
-	super(true);
-    }
-
     /*
      * (non-Javadoc)
      * 

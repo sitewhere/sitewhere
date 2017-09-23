@@ -33,28 +33,13 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Run in background thread */
-    private boolean runInBackground = false;
-
     /** Executor for background thread */
     private ExecutorService executor;
 
-    public MicroserviceApplication() {
-	this(true);
-    }
-
-    public MicroserviceApplication(boolean runInBackground) {
-	this.runInBackground = runInBackground;
-    }
-
     @PostConstruct
     public void start() {
-	if (isRunInBackground()) {
-	    executor = Executors.newSingleThreadExecutor();
-	    executor.execute(new StartMicroservice());
-	} else {
-	    (new StartMicroservice()).run();
-	}
+	executor = Executors.newSingleThreadExecutor();
+	executor.execute(new StartMicroservice());
     }
 
     @PreDestroy
@@ -164,13 +149,5 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 		System.exit(3);
 	    }
 	}
-    }
-
-    public boolean isRunInBackground() {
-	return runInBackground;
-    }
-
-    public void setRunInBackground(boolean runInBackground) {
-	this.runInBackground = runInBackground;
     }
 }
