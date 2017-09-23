@@ -15,6 +15,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.IMicroserviceApplication;
@@ -28,6 +29,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
+@ComponentScan
 public abstract class MicroserviceApplication<T extends IMicroservice> implements IMicroserviceApplication<T> {
 
     /** Static logger instance */

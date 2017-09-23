@@ -2,9 +2,9 @@ package com.sitewhere.microservice;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.sitewhere.microservice.configuration.ZookeeperManager;
-import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
@@ -25,23 +25,23 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Default instance id value */
-    private static final String DEFAULT_INSTANCE_ID = "default";
-
     /** Instance configuration folder name */
     private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
 
     /** Relative path to instance bootstrap marker */
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
 
+    /** Instance id service belongs to */
+    @Value("${sitewhere.instance.id:default}")
+    private String instanceId;
+
     /** Zookeeper manager */
-    private IZookeeperManager zookeeperManager = new ZookeeperManager();
+    @Autowired
+    private IZookeeperManager zookeeperManager;
 
     /** JWT token management */
-    private ITokenManagement tokenManagement = new TokenManagement();
-
-    /** Instance id service belongs to */
-    private String instanceId = DEFAULT_INSTANCE_ID;
+    @Autowired
+    private ITokenManagement tokenManagement;
 
     /*
      * (non-Javadoc)
