@@ -9,6 +9,7 @@ package com.sitewhere.microservice;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -40,7 +41,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 
     @PostConstruct
     public void start() {
-	executor = Executors.newSingleThreadExecutor();
+	executor = Executors.newSingleThreadExecutor(new MicroserviceThreadFactory());
 	executor.execute(new StartMicroservice());
     }
 
@@ -150,6 +151,14 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 		LOGGER.info("\n" + builder.toString() + "\n");
 		System.exit(3);
 	    }
+	}
+    }
+
+    /** Used for naming primary microservice thread */
+    private class MicroserviceThreadFactory implements ThreadFactory {
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Microservice Main");
 	}
     }
 }
