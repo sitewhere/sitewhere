@@ -1,13 +1,9 @@
 package com.sitewhere.tenant.microservice;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
+import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -245,43 +242,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	if (!templates.exists()) {
 	    throw new SiteWhereException("Templates folder not found in Docker image.");
 	}
-	File[] folders = templates.listFiles(File::isDirectory);
-	for (File folder : folders) {
-	    try {
-		copyTemplateFolderToZk(templates, folder);
-	    } catch (Exception e) {
-		throw new SiteWhereException("Unable to copy template folder.", e);
-	    }
-	}
-    }
-
-    /**
-     * Copy a template folder recursively into Zk.
-     * 
-     * @param templates
-     * @param folder
-     * @throws SiteWhereException
-     */
-    protected void copyTemplateFolderToZk(File templates, File folder) throws Exception {
-	CuratorFramework curator = getZookeeperManager().getCurator();
-	Path relative = templates.toPath().relativize(folder.toPath());
-	String zkFolder = getInstanceZkPath() + TEMPLATES_PATH + "/" + relative.toString();
-	curator.create().forPath(zkFolder);
-	File[] contents = folder.listFiles();
-	for (File file : contents) {
-	    if (file.isDirectory()) {
-		copyTemplateFolderToZk(templates, file);
-	    } else if (file.isFile()) {
-		String zkFile = zkFolder + "/" + file.getName();
-		FileInputStream input = new FileInputStream(file);
-		try {
-		    byte[] data = IOUtils.toByteArray(input);
-		    curator.create().forPath(zkFile, data);
-		} catch (IOException e) {
-		    IOUtils.closeQuietly(input);
-		}
-	    }
-	}
+	ZkUtils.copyFolderRecursivelytoZk(getZookeeperManager().getCurator(), getInstanceZkPath() + "/templates",
+		templates, templates);
     }
 
     /*

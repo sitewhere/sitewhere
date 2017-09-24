@@ -167,9 +167,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      */
     protected void bootstrapInstanceConfiguration() throws SiteWhereException {
 	try {
-	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigurationPath());
-	    getInstanceTemplateManager().copyTemplateConfigurationToZk(getDefaultInstanceTemplateOrOverride(),
-		    getZookeeperManager().getCurator(), getInstanceConfigurationPath());
+	    getInstanceTemplateManager().copyTemplateContentsToZk(getDefaultInstanceTemplateOrOverride(),
+		    getZookeeperManager().getCurator(), getInstanceZkPath());
 	    getZookeeperManager().getCurator().create().forPath(getInstanceBootstrappedMarker());
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);

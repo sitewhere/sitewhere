@@ -23,14 +23,14 @@ public interface IInstanceTemplateManager extends ILifecycleComponent {
     public Map<String, IInstanceTemplate> getInstanceTemplates() throws SiteWhereException;
 
     /**
-     * Copies configuration files from an instance template into Zookeeper at
-     * the given instance path.
+     * Copies contents of an instnace template into the Zookeeper instance
+     * folder.
      * 
      * @param templateId
      * @param curator
-     * @param confPath
+     * @param instancePath
      * @throws SiteWhereException
      */
-    public void copyTemplateConfigurationToZk(String templateId, CuratorFramework curator, String confPath)
+    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String instancePath)
 	    throws SiteWhereException;
 }

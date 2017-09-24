@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
+import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -64,11 +65,11 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
      * (non-Javadoc)
      * 
      * @see com.sitewhere.instance.spi.templates.IInstanceTemplateManager#
-     * copyTemplateConfigurationToZk(java.lang.String,
+     * copyTemplateContentsToZk(java.lang.String,
      * org.apache.curator.framework.CuratorFramework, java.lang.String)
      */
     @Override
-    public void copyTemplateConfigurationToZk(String templateId, CuratorFramework curator, String confPath)
+    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String instancePath)
 	    throws SiteWhereException {
 	IInstanceTemplate template = getInstanceTemplates().get(templateId);
 	if (template == null) {
@@ -79,39 +80,7 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
 	if (!templateFolder.exists()) {
 	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
 	}
-	File confFolder = new File(templateFolder, "conf");
-	if (!confFolder.exists()) {
-	    throw new SiteWhereException(
-		    "Template configuration folder not found at '" + confFolder.getAbsolutePath() + "'.");
-	}
-	File[] contents = confFolder.listFiles();
-	for (File file : contents) {
-	    if (!file.isDirectory()) {
-		copyTemplateFileToZk(curator, file, confPath);
-	    }
-	}
-    }
-
-    /**
-     * Copy a single template file to Zookeeper.
-     * 
-     * @param curator
-     * @param templateFile
-     * @param confPath
-     * @throws SiteWhereException
-     */
-    protected void copyTemplateFileToZk(CuratorFramework curator, File templateFile, String confPath)
-	    throws SiteWhereException {
-	String zkFile = confPath + "/" + templateFile.getName();
-	FileInputStream input = null;
-	try {
-	    input = new FileInputStream(templateFile);
-	    byte[] data = IOUtils.toByteArray(input);
-	    curator.create().forPath(zkFile, data);
-	} catch (Exception e) {
-	    LOGGER.error("Unable to copy template file to Zk.", e);
-	    IOUtils.closeQuietly(input);
-	}
+	ZkUtils.copyFolderRecursivelytoZk(curator, instancePath, templateFolder, templateFolder);
     }
 
     /**
