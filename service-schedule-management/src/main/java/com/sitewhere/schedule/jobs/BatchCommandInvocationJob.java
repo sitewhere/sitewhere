@@ -23,7 +23,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
-import com.sitewhere.server.schedule.BatchCommandInvocationJobParser;
+import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 

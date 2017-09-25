@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.schedule.ScheduledJobMarshalHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -35,6 +34,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

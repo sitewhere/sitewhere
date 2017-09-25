@@ -5,4 +5,6 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-microservice')
+	
+    compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }

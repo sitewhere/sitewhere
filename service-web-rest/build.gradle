@@ -31,6 +31,9 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-config'
     compile group: 'org.springframework.security', name: 'spring-security-core'
     compile group: 'org.springframework.security', name: 'spring-security-web'
+	
+	// Quartz.
+    compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }
 
 // Create a Dockerfile.
