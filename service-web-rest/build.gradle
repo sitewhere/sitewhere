@@ -2,7 +2,7 @@ description = 'SiteWhere Web/REST Microservice'
 
 apply plugin: 'war'
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.web.microservice.WebRestApplication'
 }

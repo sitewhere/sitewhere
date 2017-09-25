@@ -7,7 +7,7 @@ dependencies {
 	compile project(':sitewhere-microservice')
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.tenant.microservice.TenantManagementApplication'
 }

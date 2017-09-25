@@ -9,7 +9,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core'
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.user.microservice.UserManagementApplication'
 }

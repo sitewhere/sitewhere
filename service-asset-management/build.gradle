@@ -13,7 +13,7 @@ dependencies {
     compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-extras', version:'3.4.0'
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.asset.AssetManagementApplication'
 }
