@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -17,7 +18,6 @@ import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -43,8 +43,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** User management GRPC channel */
     private UserManagementGrpcChannel userManagementGrpcChannel;
 
-    /** User management implementation */
-    private IUserManagement userManagement;
+    /** User management API channel */
+    private IUserManagementApiChannel userManagementApiChannel;
 
     public WebRestMicroservice() {
 	createGrpcComponents();
@@ -106,7 +106,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize discoverable lifecycle components.
-	initializeDiscoverableBeans(getWebRestApplicationContext(), monitor);
+	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Initialize user management GRPC channel.
 	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(),
@@ -122,7 +122,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     protected void createGrpcComponents() {
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
 		MicroserviceEnvironment.DEFAULT_GRPC_PORT);
-	this.userManagement = new UserManagementApiChannel(getUserManagementGrpcChannel());
+	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
     }
 
     /*
@@ -138,7 +138,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start discoverable lifecycle components.
-	startDiscoverableBeans(getWebRestApplicationContext(), monitor);
+	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Start user mangement GRPC channel.
 	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
@@ -165,7 +165,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 		new StopComponentLifecycleStep(this, getUserManagementGrpcChannel(), "User management GRPC channel"));
 
 	// Stop discoverable lifecycle components.
-	stopDiscoverableBeans(getWebRestApplicationContext(), monitor);
+	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
     }
 
     /*
@@ -186,17 +186,16 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.web.spi.microservice.IWebRestMicroservice#getUserManagement
-     * ()
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getUserManagementApiChannel()
      */
     @Override
-    public IUserManagement getUserManagement() {
-	return userManagement;
+    public IUserManagementApiChannel getUserManagementApiChannel() {
+	return userManagementApiChannel;
     }
 
-    public void setUserManagement(IUserManagement userManagement) {
-	this.userManagement = userManagement;
+    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
+	this.userManagementApiChannel = userManagementApiChannel;
     }
 
     protected ApplicationContext getWebRestApplicationContext() {

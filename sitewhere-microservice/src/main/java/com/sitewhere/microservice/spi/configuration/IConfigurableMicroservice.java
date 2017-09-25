@@ -8,6 +8,7 @@ import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
 /**
  * Microservice that supports dynamic monitoring of configuration.
@@ -75,9 +76,10 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * 
      * @param context
      * @param monitor
+     * @return
      * @throws SiteWhereException
      */
-    public void initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException;
 
     /**
@@ -86,9 +88,10 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * 
      * @param context
      * @param monitor
+     * @return
      * @throws SiteWhereException
      */
-    public void startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException;
 
     /**
@@ -97,8 +100,9 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * 
      * @param context
      * @param monitor
+     * @return
      * @throws SiteWhereException
      */
-    public void stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException;
 }

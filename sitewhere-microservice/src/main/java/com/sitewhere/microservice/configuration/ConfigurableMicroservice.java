@@ -13,12 +13,14 @@ import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
 import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
 /**
  * Base class for microservices that monitor the configuration folder for
@@ -155,15 +157,21 @@ public abstract class ConfigurableMicroservice extends Microservice
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	Map<String, IDiscoverableTenantLifecycleComponent> components = context
-		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+	return new SimpleLifecycleStep("Initialize discoverable beans") {
 
-	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-	    initializeNestedComponent(component, monitor, "Unable to initialize " + component.getComponentName() + ".",
-		    component.isRequired());
-	}
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components = context
+			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		    initializeNestedComponent(component, monitor,
+			    "Unable to initialize " + component.getComponentName() + ".", component.isRequired());
+		}
+	    }
+	};
     }
 
     /*
@@ -175,15 +183,21 @@ public abstract class ConfigurableMicroservice extends Microservice
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	Map<String, IDiscoverableTenantLifecycleComponent> components = context
-		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+	return new SimpleLifecycleStep("Start discoverable beans") {
 
-	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-	    startNestedComponent(component, monitor, "Unable to start " + component.getComponentName() + ".",
-		    component.isRequired());
-	}
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components = context
+			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		    startNestedComponent(component, monitor, "Unable to start " + component.getComponentName() + ".",
+			    component.isRequired());
+		}
+	    }
+	};
     }
 
     /*
@@ -195,14 +209,20 @@ public abstract class ConfigurableMicroservice extends Microservice
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
+    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	Map<String, IDiscoverableTenantLifecycleComponent> components = context
-		.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+	return new SimpleLifecycleStep("Stop discoverable beans") {
 
-	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-	    component.lifecycleStop(monitor);
-	}
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components = context
+			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		    component.lifecycleStop(monitor);
+		}
+	    }
+	};
     }
 
     /**

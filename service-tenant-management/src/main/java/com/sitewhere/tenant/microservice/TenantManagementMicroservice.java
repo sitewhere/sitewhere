@@ -111,7 +111,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize discoverable lifecycle components.
-	initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+	init.addStep(initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Initialize tenant management implementation.
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
@@ -141,7 +141,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	start.addStep(populateTemplatesIfNotPresent());
 
 	// Start discoverable lifecycle components.
-	startDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+	start.addStep(startDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Start tenant mangement persistence.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
@@ -175,7 +175,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
 
 	// Stop discoverable lifecycle components.
-	stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor);
+	stop.addStep(stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
     }
 
     /**

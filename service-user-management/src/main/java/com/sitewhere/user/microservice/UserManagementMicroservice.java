@@ -96,7 +96,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize discoverable lifecycle components.
-	initializeDiscoverableBeans(getUserManagementApplicationContext(), monitor);
+	init.addStep(initializeDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Initialize user management implementation.
 	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagement(), "User management persistence",
@@ -123,7 +123,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start discoverable lifecycle components.
-	startDiscoverableBeans(getUserManagementApplicationContext(), monitor);
+	start.addStep(startDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Start user mangement persistence.
 	start.addStep(new StartComponentLifecycleStep(this, getUserManagement(), "User management persistence",
@@ -157,7 +157,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement(), "User management persistence"));
 
 	// Stop discoverable lifecycle components.
-	stopDiscoverableBeans(getUserManagementApplicationContext(), monitor);
+	stop.addStep(stopDiscoverableBeans(getUserManagementApplicationContext(), monitor));
     }
 
     /*

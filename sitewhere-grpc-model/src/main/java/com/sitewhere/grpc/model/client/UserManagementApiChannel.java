@@ -1,11 +1,14 @@
 package com.sitewhere.grpc.model.client;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.converter.UserModelConverter;
+import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GAuthenticateRequest;
@@ -41,7 +44,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
-import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -52,7 +54,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * 
  * @author Derek
  */
-public class UserManagementApiChannel extends LifecycleComponent implements IUserManagement {
+public class UserManagementApiChannel extends LifecycleComponent implements IUserManagementApiChannel {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -62,6 +64,23 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
 
     public UserManagementApiChannel(UserManagementGrpcChannel grpcChannel) {
 	this.grpcChannel = grpcChannel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.grpc.spi.IApiChannel#waitForApiAvailable(long,
+     * java.util.concurrent.TimeUnit)
+     */
+    @Override
+    public void waitForApiAvailable(long duration, TimeUnit unit) throws ApiNotAvailableException {
+	try {
+	    GListGrantedAuthoritiesRequest.Builder request = GListGrantedAuthoritiesRequest.newBuilder();
+	    getGrpcChannel().createBlockingStub().withDeadlineAfter(duration, unit)
+		    .listGrantedAuthorities(request.build());
+	} catch (Exception e) {
+	    throw new ApiNotAvailableException("Error waiting for API to become available.", e);
+	}
     }
 
     /*

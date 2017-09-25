@@ -1,8 +1,8 @@
 package com.sitewhere.web.spi.microservice;
 
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.spi.IGlobalMicroservice;
-import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides web/REST functionality.
@@ -23,5 +23,5 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * 
      * @return
      */
-    public IUserManagement getUserManagement();
+    public IUserManagementApiChannel getUserManagementApiChannel();
 }

@@ -67,7 +67,7 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected BasicAuthenticationProvider basicAuthenticationProvider() throws MicroserviceNotAvailableException {
-	IUserManagement userManagement = getWebRestMicroservice().getUserManagement();
+	IUserManagement userManagement = getWebRestMicroservice().getUserManagementApiChannel();
 	return new BasicAuthenticationProvider(userManagement);
     }
 
