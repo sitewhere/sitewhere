@@ -1,7 +1,5 @@
 package com.sitewhere.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -21,9 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public abstract class Microservice extends LifecycleComponent implements IMicroservice {
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Instance configuration folder name */
     private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
@@ -72,7 +67,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	String envInstanceId = System.getenv().get(MicroserviceEnvironment.ENV_INSTANCE_ID);
 	if (envInstanceId != null) {
 	    setInstanceId(envInstanceId);
-	    LOGGER.info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
+	    getLogger().info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
 		    + envInstanceId);
 	}
     }
@@ -109,14 +104,15 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public void waitForInstanceInitialization() throws SiteWhereException {
 	try {
-	    LOGGER.info("Verifying that instance has been bootstrapped...");
+	    getLogger().info("Verifying that instance has been bootstrapped...");
 	    while (true) {
 		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
 		    break;
 		}
+		getLogger().info("Bootstrap marker not found at '" + getInstanceBootstrappedMarker() + "'. Waiting...");
 		Thread.sleep(1000);
 	    }
-	    LOGGER.info("Confirmed that instance was bootstrapped.");
+	    getLogger().info("Confirmed that instance was bootstrapped.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
 	}
@@ -195,15 +191,5 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setInstanceId(String instanceId) {
 	this.instanceId = instanceId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Logger getLogger() {
-	return LOGGER;
     }
 }

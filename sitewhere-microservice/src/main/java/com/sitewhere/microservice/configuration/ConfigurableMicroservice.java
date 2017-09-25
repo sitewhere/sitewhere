@@ -2,8 +2,6 @@ package com.sitewhere.microservice.configuration;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.Microservice;
@@ -31,9 +29,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 public abstract class ConfigurableMicroservice extends Microservice
 	implements IConfigurableMicroservice, IConfigurationListener {
 
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
-
     /** Max wait time for configuration in seconds */
     private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
 
@@ -60,7 +55,7 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public void onConfigurationCacheInitialized() {
-	LOGGER.info("Configuration cache initialized.");
+	getLogger().info("Configuration cache initialized.");
 	setConfigurationCacheReady(true);
     }
 
@@ -73,7 +68,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
 	if (isConfigurationCacheReady()) {
-	    LOGGER.info("Configuration added for '" + path + "'.");
+	    getLogger().info("Configuration added for '" + path + "'.");
 	}
     }
 
@@ -86,7 +81,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
 	if (isConfigurationCacheReady()) {
-	    LOGGER.info("Configuration updated for '" + path + "'.");
+	    getLogger().info("Configuration updated for '" + path + "'.");
 	}
     }
 
@@ -99,7 +94,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationDeleted(String path) {
 	if (isConfigurationCacheReady()) {
-	    LOGGER.info("Configuration deleted for '" + path + "'.");
+	    getLogger().info("Configuration deleted for '" + path + "'.");
 	}
     }
 
@@ -268,7 +263,7 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
-	LOGGER.info("Waiting for configuration to be loaded...");
+	getLogger().info("Waiting for configuration to be loaded...");
 	long deadline = System.currentTimeMillis() + (1000 * MAX_CONFIGURATION_WAIT_SEC);
 	while (true) {
 	    if ((deadline - System.currentTimeMillis()) < 0) {
@@ -278,7 +273,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 		throw new SiteWhereException("Microservice configuration failed.");
 	    }
 	    if (getConfigurationState() == ConfigurationState.Succeeded) {
-		LOGGER.info("Configuration loaded successfully.");
+		getLogger().info("Configuration loaded successfully.");
 		return;
 	    }
 	    try {
@@ -365,15 +360,5 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     public void setGlobalContexts(Map<String, ApplicationContext> globalContexts) {
 	this.globalContexts = globalContexts;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Logger getLogger() {
-	return LOGGER;
     }
 }

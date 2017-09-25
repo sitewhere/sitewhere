@@ -28,7 +28,6 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 public class UserManagementMicroservice extends GlobalMicroservice implements IUserManagementMicroservice {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice name */
@@ -158,6 +157,9 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getUserManagementApplicationContext(), monitor));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
@@ -188,6 +190,16 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 
     public void setUserManagement(IUserManagement userManagement) {
 	this.userManagement = userManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     protected ApplicationContext getUserManagementApplicationContext() {

@@ -218,4 +218,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     public void setInstanceTemplateManager(IInstanceTemplateManager instanceTemplateManager) {
 	this.instanceTemplateManager = instanceTemplateManager;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
 }

@@ -1,6 +1,7 @@
 package com.sitewhere.web.microservice;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
@@ -28,7 +30,6 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class WebRestMicroservice extends GlobalMicroservice implements IWebRestMicroservice {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice name */
@@ -91,6 +92,21 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     @Override
     public void afterMicroserviceStarted() {
+	try {
+	    waitForApisAvailable();
+	    getLogger().info("Required APIs are available!");
+	} catch (ApiNotAvailableException e) {
+	    getLogger().error("Required APIs not available for web/REST.", e);
+	}
+    }
+
+    /**
+     * Wait for required APIs to become available.
+     * 
+     * @throws ApiNotAvailableException
+     */
+    protected void waitForApisAvailable() throws ApiNotAvailableException {
+	getUserManagementApiChannel().waitForApiAvailable(10, TimeUnit.SECONDS);
     }
 
     /*
@@ -144,7 +160,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
 		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
 
-	// Execute initialization steps.
+	// Execute startup steps.
 	start.execute(monitor);
     }
 
@@ -166,6 +182,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
@@ -196,6 +215,16 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
 	this.userManagementApiChannel = userManagementApiChannel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     protected ApplicationContext getWebRestApplicationContext() {

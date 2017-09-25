@@ -176,6 +176,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /**
@@ -274,6 +277,16 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     public void setTenantManagement(ITenantManagement tenantManagement) {
 	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     protected ApplicationContext getTenantManagementApplicationContext() {
