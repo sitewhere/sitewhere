@@ -7,6 +7,8 @@
  */
 package com.sitewhere.instance.microservice;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
@@ -141,7 +143,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 		    Stat existing = getZookeeperManager().getCurator().checkExists()
 			    .forPath(getInstanceBootstrappedMarker());
 		    if (existing == null) {
-			LOGGER.info("Bootstrap marker node not found. Bootstrapping...");
+			LOGGER.info("Bootstrap marker node '" + getInstanceBootstrappedMarker()
+				+ "' not found. Bootstrapping...");
 			bootstrapInstanceConfiguration();
 			LOGGER.info("Bootstrapped instance configuration from template.");
 		    } else {
@@ -180,6 +183,32 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     protected void initializeModelFromInstanceTemplate() throws SiteWhereException {
 	IInstanceTemplate template = getChosenInstanceTemplate();
 	getLogger().info("Initializing instance from template '" + template.getName() + "'.");
+	String templatePath = getInstanceZkPath() + "/" + template.getId();
+	if (template.getInitializers() != null) {
+	    List<String> umScripts = template.getInitializers().getUserManagement();
+	    initializeUserModelFromInstanceTemplateScripts(templatePath, umScripts);
+	}
+    }
+
+    /**
+     * Initialize user model from scripts included in instance template scripts.
+     * 
+     * @param templatePath
+     * @param scripts
+     * @throws SiteWhereException
+     */
+    protected void initializeUserModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
+	    throws SiteWhereException {
+	for (String script : scripts) {
+	    String path = getInstanceZkPath() + "/" + script;
+	    try {
+		getLogger().info("Loading data for script '" + path + "'...");
+		byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
+		getLogger().info("Data for script '" + path + "' was \n\n" + new String(content));
+	    } catch (Exception e) {
+		throw new SiteWhereException("Unable to get data for script from Zookeeper.", e);
+	    }
+	}
     }
 
     /**

@@ -15,4 +15,18 @@ public interface IInstanceSettings {
      * @return
      */
     public String getInstanceTemplateId();
+
+    /**
+     * Get hostname used by microservices to connect to Zookeeper.
+     * 
+     * @return
+     */
+    public String getZookeeperHost();
+
+    /**
+     * Get port used by microservices to connect to Zookeeper.
+     * 
+     * @return
+     */
+    public int getZookeeperPort();
 }

@@ -15,9 +15,10 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
+import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -35,17 +36,14 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
     /** Base namespace for all SiteWhere Zookeeper artifacts */
     private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
 
-    /** Default Zookeeper connection string */
-    private static final String DEFAULT_ZK_CONNECTION = "localhost:2181";
-
     /** Max time in seconds to wait for Zookeeper connection */
     private static final int MAX_ZK_WAIT_SECS = 30;
 
-    /** Zookeeper connection information */
-    private String zkConnection = DEFAULT_ZK_CONNECTION;
-
     /** Curator client */
     private CuratorFramework curator;
+
+    @Autowired
+    private IInstanceSettings instanceSettings;
 
     /*
      * (non-Javadoc)
@@ -55,7 +53,6 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	checkEnvForZkConnect();
 	connect();
     }
 
@@ -72,26 +69,15 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
     }
 
     /**
-     * Check environment variable for Zookeeper connection information.
-     */
-    protected void checkEnvForZkConnect() {
-	String envZkConnect = System.getenv().get(MicroserviceEnvironment.ENV_ZOOKEEPER_CONNECT);
-	if (envZkConnect != null) {
-	    setZkConnection(envZkConnect);
-	    LOGGER.info("Zookeeper connection string loaded from " + MicroserviceEnvironment.ENV_ZOOKEEPER_CONNECT
-		    + ": " + envZkConnect);
-	}
-    }
-
-    /**
      * Connect to Zookeeper.
      * 
      * @throws SiteWhereException
      */
     protected void connect() throws SiteWhereException {
+	String zk = getInstanceSettings().getZookeeperHost() + ":" + getInstanceSettings().getZookeeperPort();
 	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-	this.curator = CuratorFrameworkFactory.builder().namespace(SITEWHERE_ZK_NAMESPACE)
-		.connectString(getZkConnection()).retryPolicy(retryPolicy).build();
+	this.curator = CuratorFrameworkFactory.builder().namespace(SITEWHERE_ZK_NAMESPACE).connectString(zk)
+		.retryPolicy(retryPolicy).build();
 	getCurator().start();
 	try {
 	    if (!getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS)) {
@@ -138,11 +124,11 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
 	return LOGGER;
     }
 
-    public String getZkConnection() {
-	return zkConnection;
+    public IInstanceSettings getInstanceSettings() {
+	return instanceSettings;
     }
 
-    public void setZkConnection(String zkConnection) {
-	this.zkConnection = zkConnection;
+    public void setInstanceSettings(IInstanceSettings instanceSettings) {
+	this.instanceSettings = instanceSettings;
     }
 }

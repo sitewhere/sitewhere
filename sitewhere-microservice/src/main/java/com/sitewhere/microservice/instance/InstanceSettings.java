@@ -19,6 +19,14 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.instance.template.id:mongodb-default}")
     private String instanceTemplateId;
 
+    /** Zookeeper hostname info for microservices */
+    @Value("${sitewhere.zookeeper.host:localhost}")
+    private String zookeeperHost;
+
+    /** Zookeeper port info for microservices */
+    @Value("${sitewhere.zookeeper.port:2181}")
+    private int zookeeperPort;
+
     /*
      * (non-Javadoc)
      * 
@@ -47,5 +55,35 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setInstanceTemplateId(String instanceTemplateId) {
 	this.instanceTemplateId = instanceTemplateId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * getZookeeperHost()
+     */
+    @Override
+    public String getZookeeperHost() {
+	return zookeeperHost;
+    }
+
+    public void setZookeeperHost(String zookeeperHost) {
+	this.zookeeperHost = zookeeperHost;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * getZookeeperPort()
+     */
+    @Override
+    public int getZookeeperPort() {
+	return zookeeperPort;
+    }
+
+    public void setZookeeperPort(int zookeeperPort) {
+	this.zookeeperPort = zookeeperPort;
     }
 }
