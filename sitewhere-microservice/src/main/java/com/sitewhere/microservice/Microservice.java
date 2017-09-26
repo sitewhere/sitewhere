@@ -1,10 +1,10 @@
 package com.sitewhere.microservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
+import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
@@ -26,9 +26,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Relative path to instance bootstrap marker */
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
 
-    /** Instance id service belongs to */
-    @Value("${sitewhere.instance.id:default}")
-    private String instanceId;
+    /** Instance settings */
+    @Autowired
+    private IInstanceSettings instanceSettings;
 
     /** Zookeeper manager */
     @Autowired
@@ -46,9 +46,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Load instance id from environment if available.
-	checkEnvForInstanceId();
-
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -58,18 +55,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
-    }
-
-    /**
-     * Check environment variable for SiteWhere instance id.
-     */
-    protected void checkEnvForInstanceId() {
-	String envInstanceId = System.getenv().get(MicroserviceEnvironment.ENV_INSTANCE_ID);
-	if (envInstanceId != null) {
-	    setInstanceId(envInstanceId);
-	    getLogger().info("SiteWhere instance id loaded from " + MicroserviceEnvironment.ENV_INSTANCE_ID + ": "
-		    + envInstanceId);
-	}
     }
 
     /*
@@ -125,7 +110,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public String getInstanceZkPath() {
-	return "/" + getInstanceId();
+	return "/" + getInstanceSettings().getInstanceId();
     }
 
     /*
@@ -182,14 +167,14 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceId()
+     * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceSettings()
      */
     @Override
-    public String getInstanceId() {
-	return instanceId;
+    public IInstanceSettings getInstanceSettings() {
+	return instanceSettings;
     }
 
-    public void setInstanceId(String instanceId) {
-	this.instanceId = instanceId;
+    public void setInstanceSettings(IInstanceSettings instanceSettings) {
+	this.instanceSettings = instanceSettings;
     }
 }

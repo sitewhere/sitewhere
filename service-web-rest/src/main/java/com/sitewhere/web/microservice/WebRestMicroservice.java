@@ -94,7 +94,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     public void afterMicroserviceStarted() {
 	try {
 	    waitForApisAvailable();
-	    getLogger().info("Required APIs are available!");
+	    getLogger().info("All required APIs detected as available.");
 	} catch (ApiNotAvailableException e) {
 	    getLogger().error("Required APIs not available for web/REST.", e);
 	}
@@ -107,6 +107,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void waitForApisAvailable() throws ApiNotAvailableException {
 	getUserManagementApiChannel().waitForApiAvailable(10, TimeUnit.SECONDS);
+	getLogger().info("User management API detected as available.");
     }
 
     /*

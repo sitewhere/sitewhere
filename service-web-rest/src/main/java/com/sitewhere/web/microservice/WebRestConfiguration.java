@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -30,6 +31,10 @@ import com.sitewhere.web.vue.VueConfiguration;
 @Configuration
 @Import({ WebRestSecurity.class })
 public class WebRestConfiguration {
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+	return new PropertySourcesPlaceholderConfigurer();
+    }
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {

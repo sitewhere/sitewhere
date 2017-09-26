@@ -1,6 +1,7 @@
 package com.sitewhere.microservice.spi;
 
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
+import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -20,11 +21,11 @@ public interface IMicroservice extends ILifecycleComponent {
     public String getName();
 
     /**
-     * Get instance id service is associated with.
+     * Get settings for SiteWhere instance.
      * 
      * @return
      */
-    public String getInstanceId();
+    public IInstanceSettings getInstanceSettings();
 
     /**
      * Get token management interface.
