@@ -8,4 +8,11 @@ public interface IInstanceSettings {
      * @return
      */
     public String getInstanceId();
+
+    /**
+     * Get id of instance template to use.
+     * 
+     * @return
+     */
+    public String getInstanceTemplateId();
 }

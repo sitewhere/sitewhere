@@ -15,6 +15,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.instance.id:default}")
     private String instanceId;
 
+    /** Id of instance template to use */
+    @Value("${sitewhere.instance.template.id:mongodb-default}")
+    private String instanceTemplateId;
+
     /*
      * (non-Javadoc)
      * 
@@ -28,5 +32,20 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setInstanceId(String instanceId) {
 	this.instanceId = instanceId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * getInstanceTemplateId()
+     */
+    @Override
+    public String getInstanceTemplateId() {
+	return instanceTemplateId;
+    }
+
+    public void setInstanceTemplateId(String instanceTemplateId) {
+	this.instanceTemplateId = instanceTemplateId;
     }
 }
