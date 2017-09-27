@@ -13,12 +13,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
+import com.sitewhere.grpc.model.client.UserManagementApiChannel;
+import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
+import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
 import com.sitewhere.microservice.Microservice;
+import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
@@ -43,6 +53,16 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
+    /** User management GRPC channel */
+    private UserManagementGrpcChannel userManagementGrpcChannel;
+
+    /** User management API channel */
+    private IUserManagementApiChannel userManagementApiChannel;
+
+    public InstanceManagementMicroservice() {
+	createGrpcComponents();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -51,6 +71,15 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /**
+     * Create components that interact via GRPC.
+     */
+    protected void createGrpcComponents() {
+	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
+		MicroserviceEnvironment.DEFAULT_GRPC_PORT);
+	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
     }
 
     /*
@@ -71,6 +100,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	// Start instance template manager.
 	start.addStep(new StartComponentLifecycleStep(this, getInstanceTemplateManager(), "Instance Template Manager",
 		"Unable to start instance template manager", true));
+
+	// Initialize user management GRPC channel.
+	start.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(),
+		"User management GRPC channel", "Unable to initialize user management GRPC channel", true));
+
+	// Start user mangement GRPC channel.
+	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
+		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
 
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
@@ -168,8 +205,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	try {
 	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
 		    getZookeeperManager().getCurator(), getInstanceZkPath());
-	    initializeModelFromInstanceTemplate();
 	    getZookeeperManager().getCurator().create().forPath(getInstanceBootstrappedMarker());
+	    initializeModelFromInstanceTemplate();
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
 	}
@@ -199,15 +236,22 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      */
     protected void initializeUserModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
 	    throws SiteWhereException {
+	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
 	for (String script : scripts) {
-	    String path = getInstanceZkPath() + "/" + script;
-	    try {
-		getLogger().info("Loading data for script '" + path + "'...");
-		byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
-		getLogger().info("Data for script '" + path + "' was \n\n" + new String(content));
-	    } catch (Exception e) {
-		throw new SiteWhereException("Unable to get data for script from Zookeeper.", e);
-	    }
+	    synchronizer.add(getInstanceZkPath() + "/" + script);
+	}
+
+	// Wait for user management APIs to become available.
+	getUserManagementApiChannel().waitForApiAvailable();
+	getLogger().info("User management API detected as available.");
+
+	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model.")));
+	for (String script : scripts) {
+	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer();
+	    initializer.setGroovyConfiguration(groovy);
+	    initializer.setScriptPath(script);
+	    initializer.initialize(getUserManagementApiChannel());
 	}
     }
 
@@ -249,5 +293,21 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public UserManagementGrpcChannel getUserManagementGrpcChannel() {
+	return userManagementGrpcChannel;
+    }
+
+    public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
+	this.userManagementGrpcChannel = userManagementGrpcChannel;
+    }
+
+    public IUserManagementApiChannel getUserManagementApiChannel() {
+	return userManagementApiChannel;
+    }
+
+    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
+	this.userManagementApiChannel = userManagementApiChannel;
     }
 }

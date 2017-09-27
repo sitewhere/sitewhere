@@ -1,7 +1,6 @@
 package com.sitewhere.web.microservice;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,7 +105,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * @throws ApiNotAvailableException
      */
     protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getUserManagementApiChannel().waitForApiAvailable(10, TimeUnit.SECONDS);
+	getUserManagementApiChannel().waitForApiAvailable();
 	getLogger().info("User management API detected as available.");
     }
 

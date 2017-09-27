@@ -2,9 +2,7 @@ package com.sitewhere.user.grpc;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.UserModelConverter;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
@@ -39,7 +37,6 @@ import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -53,10 +50,6 @@ import io.grpc.stub.StreamObserver;
  * @author Derek
  */
 public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Uesr management persistence */
     private IUserManagement userMangagement;
@@ -75,13 +68,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void createUser(GCreateUserRequest request, StreamObserver<GCreateUserResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_CREATE_USER);
 	    IUserCreateRequest apiRequest = UserModelConverter.asApiUserCreateRequest(request.getRequest());
 	    IUser apiResult = getUserMangagement().createUser(apiRequest, request.getEncodePassword());
 	    GCreateUserResponse.Builder response = GCreateUserResponse.newBuilder();
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_CREATE_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -102,7 +97,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -124,7 +119,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -147,7 +142,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -169,7 +164,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -194,7 +189,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -215,7 +210,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -232,13 +227,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void createGrantedAuthority(GCreateGrantedAuthorityRequest request,
 	    StreamObserver<GCreateGrantedAuthorityResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY);
 	    IGrantedAuthority apiResult = getUserMangagement().createGrantedAuthority(
 		    UserModelConverter.asApiGrantedAuthorityCreateRequest(request.getRequest()));
 	    GCreateGrantedAuthorityResponse.Builder response = GCreateGrantedAuthorityResponse.newBuilder();
 	    response.setAuthority(UserModelConverter.asGrpcGrantedAuthority(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -255,12 +252,16 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getGrantedAuthorityByName(GGetGrantedAuthorityByNameRequest request,
 	    StreamObserver<GGetGrantedAuthorityByNameResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME);
 	    IGrantedAuthority apiResult = getUserMangagement().getGrantedAuthorityByName(request.getName());
 	    GGetGrantedAuthorityByNameResponse.Builder response = GGetGrantedAuthorityByNameResponse.newBuilder();
-	    response.setAuthority(UserModelConverter.asGrpcGrantedAuthority(apiResult));
+	    if (apiResult != null) {
+		response.setAuthority(UserModelConverter.asGrpcGrantedAuthority(apiResult));
+	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -283,7 +284,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    response.setAuthority(UserModelConverter.asGrpcGrantedAuthority(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -308,7 +309,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -329,7 +330,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    GDeleteGrantedAuthorityResponse.Builder response = GDeleteGrantedAuthorityResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -353,7 +354,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -378,7 +379,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }
@@ -403,7 +404,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
 	    responseObserver.onError(e);
 	}
     }

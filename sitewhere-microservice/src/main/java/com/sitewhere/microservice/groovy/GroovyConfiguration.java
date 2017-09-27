@@ -1,8 +1,12 @@
 package com.sitewhere.microservice.groovy;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.spi.groovy.IScriptSynchronizer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -20,8 +24,8 @@ public class GroovyConfiguration extends LifecycleComponent {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Used to connect Groovy engine to SiteWhere resource manager */
-    private GlobalResourceConnector resourceConnector;
+    /** Synchronizer for loading Zk scripts to filesystem */
+    private IScriptSynchronizer scriptSynchronizer;
 
     /** Groovy script engine */
     private GroovyScriptEngine groovyScriptEngine;
@@ -32,8 +36,9 @@ public class GroovyConfiguration extends LifecycleComponent {
     /** Field for setting GSE debug flag */
     private boolean debug = false;
 
-    public GroovyConfiguration() {
+    public GroovyConfiguration(IScriptSynchronizer scriptSynchronizer) {
 	super(LifecycleComponentType.Other);
+	this.scriptSynchronizer = scriptSynchronizer;
     }
 
     /*
@@ -45,13 +50,14 @@ public class GroovyConfiguration extends LifecycleComponent {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	resourceConnector = new GlobalResourceConnector();
-	groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
-
-	groovyScriptEngine.getConfig().setVerbose(isVerbose());
-	groovyScriptEngine.getConfig().setDebug(isDebug());
-	LOGGER.info(
-		"Global Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:" + isDebug() + ").");
+	try {
+	    groovyScriptEngine = new GroovyScriptEngine(
+		    new URL[] { getScriptSynchronizer().getFileSystemRoot().toURI().toURL() });
+	    groovyScriptEngine.getConfig().setVerbose(isVerbose());
+	    groovyScriptEngine.getConfig().setDebug(isDebug());
+	} catch (MalformedURLException e) {
+	    throw new SiteWhereException("Unable to create Groovy script engine.", e);
+	}
     }
 
     /*
@@ -76,6 +82,14 @@ public class GroovyConfiguration extends LifecycleComponent {
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IScriptSynchronizer getScriptSynchronizer() {
+	return scriptSynchronizer;
+    }
+
+    public void setScriptSynchronizer(IScriptSynchronizer scriptSynchronizer) {
+	this.scriptSynchronizer = scriptSynchronizer;
     }
 
     public boolean isVerbose() {

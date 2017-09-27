@@ -12,6 +12,13 @@ import com.sitewhere.spi.SiteWhereException;
 public interface IApiChannel {
 
     /**
+     * Wait the default amount of time for API to become available.
+     * 
+     * @throws ApiNotAvailableException
+     */
+    public void waitForApiAvailable() throws ApiNotAvailableException;
+
+    /**
      * Wait for a maximum amount of time for the API to become available.
      * 
      * @param duration

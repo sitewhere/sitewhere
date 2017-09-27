@@ -29,4 +29,11 @@ public interface IInstanceSettings {
      * @return
      */
     public int getZookeeperPort();
+
+    /**
+     * Get root filesystem path where microservice resources may be stored.
+     * 
+     * @return
+     */
+    public String getFileSystemStorageRoot();
 }

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.user.spi.initializer;
+package com.sitewhere.instance.spi.initializer;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.IModelInitializer;

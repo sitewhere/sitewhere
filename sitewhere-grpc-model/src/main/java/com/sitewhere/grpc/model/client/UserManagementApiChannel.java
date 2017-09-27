@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.UserModelConverter;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
@@ -39,6 +40,7 @@ import com.sitewhere.grpc.service.GUpdateGrantedAuthorityRequest;
 import com.sitewhere.grpc.service.GUpdateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
+import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -48,13 +50,16 @@ import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
+import io.grpc.ConnectivityState;
+
 /**
  * Supports SiteWhere user management APIs on top of a
  * {@link UserManagementGrpcChannel}.
  * 
  * @author Derek
  */
-public class UserManagementApiChannel extends LifecycleComponent implements IUserManagementApiChannel {
+public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
+	implements IUserManagementApiChannel {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -69,23 +74,6 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.grpc.spi.IApiChannel#waitForApiAvailable(long,
-     * java.util.concurrent.TimeUnit)
-     */
-    @Override
-    public void waitForApiAvailable(long duration, TimeUnit unit) throws ApiNotAvailableException {
-	try {
-	    GListGrantedAuthoritiesRequest.Builder request = GListGrantedAuthoritiesRequest.newBuilder();
-	    getGrpcChannel().createBlockingStub().withDeadlineAfter(duration, unit)
-		    .listGrantedAuthorities(request.build());
-	} catch (Exception e) {
-	    throw new ApiNotAvailableException("Error waiting for API to become available.", e);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
      * request.IUserCreateRequest, boolean)
@@ -93,12 +81,13 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
 	try {
+	    GrpcUtils.logClientMethodEntry(UserManagementGrpc.METHOD_CREATE_USER);
 	    GCreateUserRequest.Builder grequest = GCreateUserRequest.newBuilder();
 	    grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
 	    GCreateUserResponse gresponse = getGrpcChannel().getBlockingStub().createUser(grequest.build());
 	    return UserModelConverter.asApiUser(gresponse.getUser());
 	} catch (Throwable t) {
-	    throw new SiteWhereException("Call to UserManagement:createUser failed.", t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_CREATE_USER, t);
 	}
     }
 
@@ -294,13 +283,16 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 	try {
+	    GrpcUtils.logClientMethodEntry(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY);
 	    GCreateGrantedAuthorityRequest.Builder grequest = GCreateGrantedAuthorityRequest.newBuilder();
 	    grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
 	    GCreateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createGrantedAuthority(grequest.build());
-	    return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	    IGrantedAuthority response = UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, response);
+	    return response;
 	} catch (Throwable t) {
-	    throw new SiteWhereException("Call to UserManagement:createGrantedAuthority failed.", t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, t);
 	}
     }
 
@@ -314,13 +306,19 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
 	try {
+	    GrpcUtils.logClientMethodEntry(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME);
 	    GGetGrantedAuthorityByNameRequest.Builder grequest = GGetGrantedAuthorityByNameRequest.newBuilder();
 	    grequest.setName(name);
 	    GGetGrantedAuthorityByNameResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getGrantedAuthorityByName(grequest.build());
-	    return UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+	    if (gresponse.hasAuthority()) {
+		IGrantedAuthority response = UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
+		GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, response);
+		return response;
+	    }
+	    return null;
 	} catch (Throwable t) {
-	    throw new SiteWhereException("Call to UserManagement:getGrantedAuthorityByName failed.", t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, t);
 	}
     }
 
@@ -388,18 +386,24 @@ public class UserManagementApiChannel extends LifecycleComponent implements IUse
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
      */
     @Override
-    public Logger getLogger() {
-	return LOGGER;
-    }
-
     public UserManagementGrpcChannel getGrpcChannel() {
 	return grpcChannel;
     }
 
     public void setGrpcChannel(UserManagementGrpcChannel grpcChannel) {
 	this.grpcChannel = grpcChannel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }

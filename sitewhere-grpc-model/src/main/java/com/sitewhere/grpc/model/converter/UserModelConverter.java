@@ -6,6 +6,7 @@ import java.util.List;
 import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthority;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityCreateRequest;
+import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityParent;
 import com.sitewhere.grpc.model.UserModel.GUser;
 import com.sitewhere.grpc.model.UserModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
@@ -183,7 +184,7 @@ public class UserModelConverter {
 	GrantedAuthorityCreateRequest api = new GrantedAuthorityCreateRequest();
 	api.setAuthority(grpc.getAuthority());
 	api.setDescription(grpc.getDescription());
-	api.setParent(grpc.getParent());
+	api.setParent(grpc.hasParent() ? grpc.getParent().getAuthority() : null);
 	api.setGroup(grpc.getGroup());
 	return api;
     }
@@ -200,7 +201,11 @@ public class UserModelConverter {
 	GGrantedAuthorityCreateRequest.Builder builder = GGrantedAuthorityCreateRequest.newBuilder();
 	builder.setAuthority(api.getAuthority());
 	builder.setDescription(api.getDescription());
-	builder.setParent(api.getParent());
+	if (api.getParent() != null) {
+	    GGrantedAuthorityParent.Builder parent = GGrantedAuthorityParent.newBuilder();
+	    parent.setAuthority(api.getParent());
+	    builder.setParent(parent);
+	}
 	builder.setGroup(api.isGroup());
 	return builder.build();
     }
@@ -216,7 +221,7 @@ public class UserModelConverter {
 	GrantedAuthority api = new GrantedAuthority();
 	api.setAuthority(grpc.getAuthority());
 	api.setDescription(grpc.getDescription());
-	api.setParent(grpc.getParent());
+	api.setParent(grpc.hasParent() ? grpc.getParent().getAuthority() : null);
 	api.setGroup(grpc.getGroup());
 	return api;
     }
@@ -248,7 +253,11 @@ public class UserModelConverter {
 	GGrantedAuthority.Builder builder = UserModel.GGrantedAuthority.newBuilder();
 	builder.setAuthority(api.getAuthority());
 	builder.setDescription(api.getDescription());
-	builder.setParent(api.getParent());
+	if (api.getParent() != null) {
+	    GGrantedAuthorityParent.Builder parent = GGrantedAuthorityParent.newBuilder();
+	    parent.setAuthority(api.getParent());
+	    builder.setParent(parent);
+	}
 	builder.setGroup(api.isGroup());
 	return builder.build();
     }

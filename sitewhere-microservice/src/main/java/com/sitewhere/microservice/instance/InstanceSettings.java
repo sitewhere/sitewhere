@@ -27,6 +27,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.zookeeper.port:2181}")
     private int zookeeperPort;
 
+    /** File system root for storing SiteWhere data for microservices */
+    @Value("${sitewhere.filesystem.storage.root:/var/sitewhere}")
+    private String fileSystemStorageRoot;
+
     /*
      * (non-Javadoc)
      * 
@@ -85,5 +89,20 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setZookeeperPort(int zookeeperPort) {
 	this.zookeeperPort = zookeeperPort;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * getFileSystemStorageRoot()
+     */
+    @Override
+    public String getFileSystemStorageRoot() {
+	return fileSystemStorageRoot;
+    }
+
+    public void setFileSystemStorageRoot(String fileSystemStorageRoot) {
+	this.fileSystemStorageRoot = fileSystemStorageRoot;
     }
 }
