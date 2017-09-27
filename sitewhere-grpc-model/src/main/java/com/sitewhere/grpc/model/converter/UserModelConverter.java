@@ -121,7 +121,8 @@ public class UserModelConverter {
 	api.setHashedPassword(grpc.getHashedPassword());
 	api.setFirstName(grpc.getFirstName());
 	api.setLastName(grpc.getLastName());
-	api.setLastLogin(CommonModelConverter.asDate(grpc.getLastLogin()));
+	api.setStatus(UserModelConverter.asApiAccountStatus(grpc.getStatus()));
+	api.setLastLogin((grpc.hasLastLogin()) ? CommonModelConverter.asDate(grpc.getLastLogin()) : null);
 	api.setAuthorities(grpc.getAuthoritiesList());
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
@@ -142,6 +143,9 @@ public class UserModelConverter {
 	builder.setFirstName(api.getFirstName());
 	builder.setLastName(api.getLastName());
 	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
+	if (api.getLastLogin() != null) {
+	    builder.setLastLogin(CommonModelConverter.asGrpcTimestamp(api.getLastLogin()));
+	}
 	if (api.getAuthorities() != null) {
 	    builder.addAllAuthorities(api.getAuthorities());
 	}
