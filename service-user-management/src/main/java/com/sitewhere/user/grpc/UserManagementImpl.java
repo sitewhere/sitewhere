@@ -320,7 +320,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 		    .listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
 	    GListGrantedAuthoritiesResponse.Builder response = GListGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.getAuthoritiesList().add(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
+		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();

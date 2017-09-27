@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +61,10 @@ import io.swagger.annotations.ApiParam;
 @RequestMapping(value = "/users")
 @Api(value = "users")
 public class Users extends RestController {
+
+    /** Injected reference to microservice */
+    @Autowired
+    IWebRestMicroservice webRestMicroservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -251,6 +257,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     protected IUserManagement getUserManagement() throws SiteWhereException {
-	return SiteWhere.getServer().getUserManagement();
+	return webRestMicroservice.getUserManagementApiChannel();
     }
 }

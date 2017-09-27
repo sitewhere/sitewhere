@@ -34,7 +34,6 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Wraps an {@link ISiteWhereServer} implementation so new functionality can be
@@ -237,16 +236,6 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
 	server.onTenantDeleted(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getUserManagement()
-     */
-    @Override
-    public IUserManagement getUserManagement() {
-	return server.getUserManagement();
     }
 
     /*

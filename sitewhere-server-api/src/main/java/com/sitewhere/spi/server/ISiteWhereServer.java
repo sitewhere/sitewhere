@@ -30,7 +30,6 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Interface for interacting with core SiteWhere server functionality.
@@ -166,13 +165,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public void onTenantDeleted(ITenant tenant) throws SiteWhereException;
-
-    /**
-     * Get the user management implementation.
-     * 
-     * @return
-     */
-    public IUserManagement getUserManagement();
 
     /**
      * Get the tenant management implementation.
