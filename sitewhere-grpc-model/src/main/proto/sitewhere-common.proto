@@ -6,11 +6,16 @@ option java_outer_classname = "CommonModel";
 
 import "google/protobuf/timestamp.proto";
 
+// Reference user by username.
+message GUserReference {
+	string username = 1;
+}
+
 // Common entity information.
 message GEntityInformation {
 	google.protobuf.Timestamp createdDate = 1;
-	string createdBy = 2;
+	GUserReference createdBy = 2;
 	google.protobuf.Timestamp updatedDate = 3;
-	string updatedBy = 4;
+	GUserReference updatedBy = 4;
 	bool deleted = 5;
 }

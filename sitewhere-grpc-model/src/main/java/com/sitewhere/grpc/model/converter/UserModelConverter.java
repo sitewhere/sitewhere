@@ -102,7 +102,7 @@ public class UserModelConverter {
 	builder.setFirstName(api.getFirstName());
 	builder.setLastName(api.getLastName());
 	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
-	builder.getMetadataMap().putAll(api.getMetadata());
+	builder.putAllMetadata(api.getMetadata());
 	return builder.build();
     }
 
@@ -139,7 +139,7 @@ public class UserModelConverter {
 	builder.setFirstName(api.getFirstName());
 	builder.setLastName(api.getLastName());
 	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
-	builder.getMetadataMap().putAll(api.getMetadata());
+	builder.putAllMetadata(api.getMetadata());
 	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return builder.build();
     }

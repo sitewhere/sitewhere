@@ -5,6 +5,7 @@ import java.util.Date;
 import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
+import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -56,10 +57,22 @@ public class CommonModelConverter {
      */
     public static GEntityInformation asGrpcEntityInformation(IMetadataProviderEntity api) throws SiteWhereException {
 	GEntityInformation.Builder grpc = CommonModel.GEntityInformation.newBuilder();
-	grpc.setCreatedBy(api.getCreatedBy());
-	grpc.setCreatedDate(CommonModelConverter.asGrpcTimestamp(api.getCreatedDate()));
-	grpc.setUpdatedBy(api.getUpdatedBy());
-	grpc.setUpdatedDate(CommonModelConverter.asGrpcTimestamp(api.getUpdatedDate()));
+	if (api.getCreatedBy() != null) {
+	    GUserReference.Builder ref = GUserReference.newBuilder();
+	    ref.setUsername(api.getCreatedBy());
+	    grpc.setCreatedBy(ref);
+	}
+	if (api.getCreatedDate() != null) {
+	    grpc.setCreatedDate(CommonModelConverter.asGrpcTimestamp(api.getCreatedDate()));
+	}
+	if (api.getUpdatedBy() != null) {
+	    GUserReference.Builder ref = GUserReference.newBuilder();
+	    ref.setUsername(api.getUpdatedBy());
+	    grpc.setUpdatedBy(ref);
+	}
+	if (api.getUpdatedDate() != null) {
+	    grpc.setUpdatedDate(CommonModelConverter.asGrpcTimestamp(api.getUpdatedDate()));
+	}
 	grpc.setDeleted(api.isDeleted());
 	return grpc.build();
     }
@@ -74,10 +87,10 @@ public class CommonModelConverter {
     public static void setEntityInformation(MetadataProviderEntity api, GEntityInformation grpc)
 	    throws SiteWhereException {
 	if (grpc != null) {
-	    api.setCreatedBy(grpc.getCreatedBy());
-	    api.setCreatedDate(CommonModelConverter.asDate(grpc.getCreatedDate()));
-	    api.setUpdatedBy(grpc.getUpdatedBy());
-	    api.setUpdatedDate(CommonModelConverter.asDate(grpc.getUpdatedDate()));
+	    api.setCreatedBy(grpc.hasCreatedBy() ? grpc.getCreatedBy().getUsername() : null);
+	    api.setCreatedDate(grpc.hasCreatedDate() ? CommonModelConverter.asDate(grpc.getCreatedDate()) : null);
+	    api.setUpdatedBy(grpc.hasUpdatedBy() ? grpc.getUpdatedBy().getUsername() : null);
+	    api.setUpdatedDate(grpc.hasUpdatedDate() ? CommonModelConverter.asDate(grpc.getUpdatedDate()) : null);
 	    api.setDeleted(grpc.getDeleted());
 	}
     }
