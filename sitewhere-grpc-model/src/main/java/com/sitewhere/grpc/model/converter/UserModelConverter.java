@@ -84,6 +84,7 @@ public class UserModelConverter {
 	api.setFirstName(grpc.getFirstName());
 	api.setLastName(grpc.getLastName());
 	api.setStatus(UserModelConverter.asApiAccountStatus(grpc.getStatus()));
+	api.setAuthorities(grpc.getAuthoritiesList());
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -102,6 +103,7 @@ public class UserModelConverter {
 	builder.setFirstName(api.getFirstName());
 	builder.setLastName(api.getLastName());
 	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
+	builder.addAllAuthorities(api.getAuthorities());
 	builder.putAllMetadata(api.getMetadata());
 	return builder.build();
     }
@@ -120,6 +122,7 @@ public class UserModelConverter {
 	api.setFirstName(grpc.getFirstName());
 	api.setLastName(grpc.getLastName());
 	api.setLastLogin(CommonModelConverter.asDate(grpc.getLastLogin()));
+	api.setAuthorities(grpc.getAuthoritiesList());
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -139,7 +142,12 @@ public class UserModelConverter {
 	builder.setFirstName(api.getFirstName());
 	builder.setLastName(api.getLastName());
 	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
-	builder.putAllMetadata(api.getMetadata());
+	if (api.getAuthorities() != null) {
+	    builder.addAllAuthorities(api.getAuthorities());
+	}
+	if (api.getMetadata() != null) {
+	    builder.putAllMetadata(api.getMetadata());
+	}
 	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return builder.build();
     }

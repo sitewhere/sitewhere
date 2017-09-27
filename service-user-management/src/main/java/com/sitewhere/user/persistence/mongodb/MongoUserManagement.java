@@ -106,10 +106,12 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-     * request.IUserCreateRequest, boolean)
+     * request.IUserCreateRequest, java.lang.Boolean)
      */
-    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
-	User user = UserManagementPersistence.userCreateLogic(request, encodePassword);
+    @Override
+    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
+	boolean encode = ((encodePassword != null) && (encodePassword == false)) ? false : true;
+	User user = UserManagementPersistence.userCreateLogic(request, encode);
 
 	MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	Document created = MongoUser.toDocument(user);

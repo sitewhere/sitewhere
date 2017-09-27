@@ -104,10 +104,10 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-     * request .IUserCreateRequest)
+     * request.IUserCreateRequest, java.lang.Boolean)
      */
     @Override
-    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
+    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
 	return HBaseUser.createUser(context, request, encodePassword);
     }
 

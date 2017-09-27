@@ -40,10 +40,10 @@ public class UserManagementDecorator extends LifecycleComponentDecorator impleme
      * 
      * @see
      * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-     * request.IUserCreateRequest, boolean)
+     * request.IUserCreateRequest, java.lang.Boolean)
      */
     @Override
-    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
+    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
 	return delegate.createUser(request, encodePassword);
     }
 

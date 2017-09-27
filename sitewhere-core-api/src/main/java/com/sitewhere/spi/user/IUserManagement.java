@@ -29,7 +29,7 @@ public interface IUserManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IUser createUser(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException;
+    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException;
 
     /**
      * Imports a user (including encrypted password) from an external system.

@@ -91,6 +91,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void importUser(GImportUserRequest request, StreamObserver<GImportUserResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_IMPORT_USER);
 	    IUser apiUser = UserModelConverter.asApiUser(request.getUser());
 	    IUser apiResult = getUserMangagement().importUser(apiUser, request.getOverwrite());
 	    GImportUserResponse.Builder response = GImportUserResponse.newBuilder();
@@ -98,6 +99,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_IMPORT_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -113,6 +115,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void authenticate(GAuthenticateRequest request, StreamObserver<GAuthenticateResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_AUTHENTICATE);
 	    IUser apiResult = getUserMangagement().authenticate(request.getUsername(), request.getPassword(),
 		    request.getUpdateLastLogin());
 	    GAuthenticateResponse.Builder response = GAuthenticateResponse.newBuilder();
@@ -120,6 +123,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_AUTHENTICATE, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -135,6 +139,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void updateUser(GUpdateUserRequest request, StreamObserver<GUpdateUserResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_UPDATE_USER);
 	    IUserCreateRequest apiRequest = UserModelConverter.asApiUserCreateRequest(request.getRequest());
 	    IUser apiResult = getUserMangagement().updateUser(request.getUsername(), apiRequest,
 		    request.getEncodePassword());
@@ -143,6 +148,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_UPDATE_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -159,12 +165,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getUserByUsername(GGetUserByUsernameRequest request,
 	    StreamObserver<GGetUserByUsernameResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME);
 	    IUser apiResult = getUserMangagement().getUserByUsername(request.getUsername());
 	    GGetUserByUsernameResponse.Builder response = GGetUserByUsernameResponse.newBuilder();
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -180,16 +188,18 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void listUsers(GListUsersRequest request, StreamObserver<GListUsersResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_LIST_USERS);
 	    UserSearchCriteria criteria = new UserSearchCriteria();
 	    criteria.setIncludeDeleted(request.getCriteria().getIncludeDeleted());
 	    List<IUser> apiResult = getUserMangagement().listUsers(criteria);
 	    GListUsersResponse.Builder response = GListUsersResponse.newBuilder();
 	    for (IUser apiUser : apiResult) {
-		response.getUserList().add(UserModelConverter.asGrpcUser(apiUser));
+		response.addUser(UserModelConverter.asGrpcUser(apiUser));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_LIST_USERS, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -205,12 +215,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void deleteUser(GDeleteUserRequest request, StreamObserver<GDeleteUserResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_DELETE_USER);
 	    IUser apiResult = getUserMangagement().deleteUser(request.getUsername(), request.getForce());
 	    GDeleteUserResponse.Builder response = GDeleteUserResponse.newBuilder();
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_DELETE_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -278,6 +290,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void updateGrantedAuthority(GUpdateGrantedAuthorityRequest request,
 	    StreamObserver<GUpdateGrantedAuthorityResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY);
 	    IGrantedAuthority apiResult = getUserMangagement().updateGrantedAuthority(request.getName(),
 		    UserModelConverter.asApiGrantedAuthorityCreateRequest(request.getRequest()));
 	    GUpdateGrantedAuthorityResponse.Builder response = GUpdateGrantedAuthorityResponse.newBuilder();
@@ -285,6 +298,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -301,6 +315,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void listGrantedAuthorities(GListGrantedAuthoritiesRequest request,
 	    StreamObserver<GListGrantedAuthoritiesResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES);
 	    List<IGrantedAuthority> apiResult = getUserMangagement()
 		    .listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
 	    GListGrantedAuthoritiesResponse.Builder response = GListGrantedAuthoritiesResponse.newBuilder();
@@ -310,6 +325,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -326,11 +342,13 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void deleteGrantedAuthority(GDeleteGrantedAuthorityRequest request,
 	    StreamObserver<GDeleteGrantedAuthorityResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY);
 	    getUserMangagement().deleteGrantedAuthority(request.getName());
 	    GDeleteGrantedAuthorityResponse.Builder response = GDeleteGrantedAuthorityResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -347,6 +365,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getGrantedAuthoritiesForUser(GGetGrantedAuthoritiesRequest request,
 	    StreamObserver<GGetGrantedAuthoritiesResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER);
 	    List<IGrantedAuthority> apiResult = getUserMangagement().getGrantedAuthorities(request.getUsername());
 	    GGetGrantedAuthoritiesResponse.Builder response = GGetGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
@@ -355,6 +374,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -371,6 +391,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void addGrantedAuthoritiesForUser(GAddGrantedAuthoritiesRequest request,
 	    StreamObserver<GAddGrantedAuthoritiesResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER);
 	    List<IGrantedAuthority> apiResult = getUserMangagement().addGrantedAuthorities(request.getUsername(),
 		    request.getAuthoritiesList());
 	    GAddGrantedAuthoritiesResponse.Builder response = GAddGrantedAuthoritiesResponse.newBuilder();
@@ -380,6 +401,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, e);
 	    responseObserver.onError(e);
 	}
     }
@@ -396,6 +418,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void removeGrantedAuthoritiesForUser(GRemoveGrantedAuthoritiesRequest request,
 	    StreamObserver<GRemoveGrantedAuthoritiesResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER);
 	    List<IGrantedAuthority> apiResult = getUserMangagement().removeGrantedAuthorities(request.getUsername(),
 		    request.getAuthoritiesList());
 	    GRemoveGrantedAuthoritiesResponse.Builder response = GRemoveGrantedAuthoritiesResponse.newBuilder();
@@ -405,6 +428,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER, e);
 	    responseObserver.onError(e);
 	}
     }
