@@ -369,7 +369,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    List<IGrantedAuthority> apiResult = getUserMangagement().getGrantedAuthorities(request.getUsername());
 	    GGetGrantedAuthoritiesResponse.Builder response = GGetGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.getAuthoritiesList().add(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
+		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -396,7 +396,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 		    request.getAuthoritiesList());
 	    GAddGrantedAuthoritiesResponse.Builder response = GAddGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.getAuthoritiesList().add(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
+		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -423,7 +423,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 		    request.getAuthoritiesList());
 	    GRemoveGrantedAuthoritiesResponse.Builder response = GRemoveGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.getAuthoritiesList().add(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
+		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
