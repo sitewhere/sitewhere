@@ -26,8 +26,6 @@ public class TokenManagementTest {
 	user.setAuthorities(AUTHS);
 	String token = tokens.generateToken(user);
 	String username = tokens.getUsernameFromToken(token);
-	List<String> auths = tokens.getGrantedAuthoritiesFromToken(token);
 	assertEquals(username, USERNAME);
-	assertEquals(auths, AUTHS);
     }
 }

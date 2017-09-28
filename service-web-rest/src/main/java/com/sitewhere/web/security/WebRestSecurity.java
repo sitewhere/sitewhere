@@ -11,18 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.sitewhere.microservice.spi.MicroserviceNotAvailableException;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.security.basic.BasicAuthenticationProvider;
-import com.sitewhere.web.security.jwt.JwtAuthenticationProvider;
+import com.sitewhere.web.security.basic.AuthenticateOnlyFilter;
+import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -46,29 +47,45 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-	auth.authenticationProvider(jwtAuthenticationProvider()).authenticationProvider(basicAuthenticationProvider());
+	auth.authenticationProvider(sitewhereAuthenticationProvider());
     }
 
-    /**
-     * Build {@link AuthenticationProvider} for JWT authentication.
-     * 
-     * @return
-     */
-    @Bean
-    protected JwtAuthenticationProvider jwtAuthenticationProvider() {
-	return new JwtAuthenticationProvider();
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+	return super.authenticationManagerBean();
     }
 
     /**
      * Build {@link AuthenticationProvider} for basic authentication.
      * 
      * @return
-     * @throws MicroserviceNotAvailableException
      */
     @Bean
-    protected BasicAuthenticationProvider basicAuthenticationProvider() throws MicroserviceNotAvailableException {
+    protected SiteWhereAuthenticationProvider sitewhereAuthenticationProvider() {
 	IUserManagement userManagement = getWebRestMicroservice().getUserManagementApiChannel();
-	return new BasicAuthenticationProvider(userManagement);
+	return new SiteWhereAuthenticationProvider(userManagement);
+    }
+
+    /**
+     * Filters inbound requests to pull JWT header and establish Spring Security
+     * context.
+     * 
+     * @return
+     */
+    @Bean
+    protected TokenAuthenticationFilter tokenAuthenticationFilter() {
+	return new TokenAuthenticationFilter();
+    }
+
+    /**
+     * Only applies basic auth to the authentication URL.
+     * 
+     * @return
+     */
+    @Bean
+    protected AuthenticateOnlyFilter authenticationOnlyFilter() throws Exception {
+	return new AuthenticateOnlyFilter(authenticationManagerBean());
     }
 
     /*
@@ -80,11 +97,12 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     protected void configure(HttpSecurity http) throws Exception {
 	http.csrf().disable();
-	http.anonymous().disable();
 	http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	http.antMatcher("/api/**").authorizeRequests().antMatchers(HttpMethod.GET, "/").permitAll()
-		.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll().antMatchers(HttpMethod.GET, "/api/**/symbol")
-		.permitAll().antMatchers("/api/**").hasRole(SiteWhereRoles.AUTH_REST).and().httpBasic();
+	http.antMatcher("/api/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/api/**/symbol").permitAll().antMatchers(HttpMethod.GET, "/api/v2/**")
+		.permitAll().antMatchers(HttpMethod.GET, "/api/**").authenticated();
+	http.addFilterBefore(authenticationOnlyFilter(), UsernamePasswordAuthenticationFilter.class);
+	http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     public IWebRestMicroservice getWebRestMicroservice() {

@@ -21,6 +21,7 @@ import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestMvcConfiguration;
 import com.sitewhere.web.security.WebRestSecurity;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
+import com.sitewhere.web.swagger.SwaggerConfiguration;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**
@@ -75,6 +76,19 @@ public class WebRestConfiguration {
 		VueConfiguration.VUE_ADMIN_MATCHER);
 	registration.setName("vueAdminInterface");
 	registration.setLoadOnStartup(2);
+	return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean sitewhereSwaggerInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(SwaggerConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		SwaggerConfiguration.SWAGGER_MATCHER);
+	registration.setName("swaggerInterface");
+	registration.setLoadOnStartup(3);
 	return registration;
     }
 

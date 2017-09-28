@@ -3,6 +3,7 @@ package com.sitewhere.microservice.spi.security;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 import io.jsonwebtoken.Claims;
@@ -48,5 +49,5 @@ public interface ITokenManagement {
      * @return
      * @throws SiteWhereException
      */
-    public List<String> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException;
+    public List<IGrantedAuthority> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException;
 }

@@ -20,6 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -229,6 +230,21 @@ public class RestController {
 	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
 	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
 	response.sendError(responseCode, errorCode.getMessage());
+    }
+
+    /**
+     * Handles uncaught runtime exceptions such as null pointers.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler
+    protected void jwtExpiredException(JwtExpiredException e, HttpServletResponse response) {
+	try {
+	    response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+	} catch (IOException e1) {
+	    e1.printStackTrace();
+	}
     }
 
     /**

@@ -1,16 +1,22 @@
 package com.sitewhere.microservice.security;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.microservice.spi.security.ITokenManagement;
+import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
  * Manages creation and validation of JWT tokens.
@@ -61,8 +67,14 @@ public class TokenManagement implements ITokenManagement {
     public Claims getClaimsForToken(String token) throws SiteWhereException {
 	try {
 	    return Jwts.parser().setSigningKey(getSecret()).parseClaimsJws(token).getBody();
+	} catch (ExpiredJwtException e) {
+	    throw new JwtExpiredException("JWT has expired.", e);
+	} catch (UnsupportedJwtException e) {
+	    throw new InvalidJwtException("JWT not in supported format.", e);
+	} catch (MalformedJwtException e) {
+	    throw new InvalidJwtException("JWT not correctly formatted.", e);
 	} catch (Throwable t) {
-	    throw new SiteWhereException("Unable to parse JWT.", t);
+	    throw new SiteWhereException("Error decoding JWT.", t);
 	}
     }
 
@@ -83,8 +95,15 @@ public class TokenManagement implements ITokenManagement {
      * getGrantedAuthoritiesFromToken(java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public List<String> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException {
-	return (List<String>) getClaimsForToken(token).get(CLAIM_GRANTED_AUTHORITIES, List.class);
+    public List<IGrantedAuthority> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException {
+	List<String> authIds = (List<String>) getClaimsForToken(token).get(CLAIM_GRANTED_AUTHORITIES, List.class);
+	List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
+	for (String authId : authIds) {
+	    GrantedAuthority auth = new GrantedAuthority();
+	    auth.setAuthority(authId);
+	    auths.add(auth);
+	}
+	return auths;
     }
 
     public Date getExpirationDate() {

@@ -1,7 +1,9 @@
 package com.sitewhere.web.security.jwt;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Extends {@link AbstractAuthenticationToken} with JWT details.
@@ -13,15 +15,15 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     /** Serial version UID */
     private static final long serialVersionUID = 246330914120864789L;
 
-    /** Wrapped principle */
-    private final UserDetails principle;
+    /** Username */
+    private String username;
 
     /** Token */
     private String token;
 
-    public JwtAuthenticationToken(UserDetails principle, String token) {
-	super(principle.getAuthorities());
-	this.principle = principle;
+    public JwtAuthenticationToken(String username, List<GrantedAuthority> authorities, String token) {
+	super(authorities);
+	this.username = username;
 	this.token = token;
     }
 
@@ -34,7 +36,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      */
     @Override
     public boolean isAuthenticated() {
-	return true;
+	return false;
     }
 
     /*
@@ -53,7 +55,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
      * @see org.springframework.security.core.Authentication#getPrincipal()
      */
     @Override
-    public UserDetails getPrincipal() {
-	return principle;
+    public Object getPrincipal() {
+	return username;
     }
 }
