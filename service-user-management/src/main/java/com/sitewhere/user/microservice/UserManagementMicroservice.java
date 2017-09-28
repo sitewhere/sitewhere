@@ -79,7 +79,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	    throws SiteWhereException {
 	ApplicationContext context = contexts.get(USER_MANAGEMENT_CONFIGURATION);
 	this.userManagement = (IUserManagement) context.getBean(UserManagementBeans.BEAN_USER_MANAGEMENT);
-	this.userManagementGrpcServer = new UserManagementGrpcServer(getUserManagement());
+	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
     }
 
     /*

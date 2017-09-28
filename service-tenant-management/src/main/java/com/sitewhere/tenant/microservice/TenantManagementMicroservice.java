@@ -95,7 +95,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	    throws SiteWhereException {
 	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
 	this.tenantManagement = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(getTenantManagement());
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
     }
 
     /*

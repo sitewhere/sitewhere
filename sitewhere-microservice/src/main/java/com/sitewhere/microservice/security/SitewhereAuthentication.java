@@ -5,14 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.security;
+package com.sitewhere.microservice.security;
 
 import java.util.Collection;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-
-import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Implementation of Spring security interface.
@@ -33,7 +31,7 @@ public class SitewhereAuthentication implements Authentication {
     /** Authenticated flag */
     private boolean authenticated;
 
-    public SitewhereAuthentication(SitewhereUserDetails details, String password) throws SiteWhereException {
+    public SitewhereAuthentication(SitewhereUserDetails details, String password) {
 	this.userDetails = details;
 	this.password = password;
     }

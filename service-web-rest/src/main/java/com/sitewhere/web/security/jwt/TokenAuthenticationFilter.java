@@ -19,9 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
+import com.sitewhere.microservice.security.SitewhereGrantedAuthority;
 import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.web.security.SitewhereGrantedAuthority;
 
 /**
  * Filter that pulls JWT from authentication header and pushes it into Spring

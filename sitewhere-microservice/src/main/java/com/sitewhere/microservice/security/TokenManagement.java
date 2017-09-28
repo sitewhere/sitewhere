@@ -35,7 +35,7 @@ public class TokenManagement implements ITokenManagement {
     private String secret = "secret";
 
     /** Token expiration in minutes */
-    private int expirationInMinutes = 10;
+    private int expirationInMinutes = 60;
 
     /** Signature algorithm */
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
@@ -85,7 +85,18 @@ public class TokenManagement implements ITokenManagement {
      * getUsernameFromToken(java.lang.String)
      */
     public String getUsernameFromToken(String token) throws SiteWhereException {
-	return getClaimsForToken(token).getSubject();
+	return getUsernameFromClaims(getClaimsForToken(token));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.security.ITokenManagement#
+     * getUsernameFromClaims(io.jsonwebtoken.Claims)
+     */
+    @Override
+    public String getUsernameFromClaims(Claims claims) throws SiteWhereException {
+	return claims.getSubject();
     }
 
     /*
@@ -94,9 +105,20 @@ public class TokenManagement implements ITokenManagement {
      * @see com.sitewhere.microservice.spi.security.ITokenManagement#
      * getGrantedAuthoritiesFromToken(java.lang.String)
      */
-    @SuppressWarnings("unchecked")
     public List<IGrantedAuthority> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException {
-	List<String> authIds = (List<String>) getClaimsForToken(token).get(CLAIM_GRANTED_AUTHORITIES, List.class);
+	return getGrantedAuthoritiesFromClaims(getClaimsForToken(token));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.security.ITokenManagement#
+     * getGrantedAuthoritiesFromClaims(io.jsonwebtoken.Claims)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<IGrantedAuthority> getGrantedAuthoritiesFromClaims(Claims claims) throws SiteWhereException {
+	List<String> authIds = (List<String>) claims.get(CLAIM_GRANTED_AUTHORITIES, List.class);
 	List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
 	for (String authId : authIds) {
 	    GrantedAuthority auth = new GrantedAuthority();

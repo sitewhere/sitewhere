@@ -28,7 +28,6 @@ dependencies {
     
     // Spring Security
     compile group: 'org.springframework.security', name: 'spring-security-config'
-    compile group: 'org.springframework.security', name: 'spring-security-core'
     compile group: 'org.springframework.security', name: 'spring-security-web'
 	
 	// Quartz.

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 
+import com.sitewhere.microservice.security.SitewhereUserDetails;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;

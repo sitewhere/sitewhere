@@ -43,6 +43,15 @@ public interface ITokenManagement {
     public String getUsernameFromToken(String token) throws SiteWhereException;
 
     /**
+     * Get username from claims.
+     * 
+     * @param claims
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getUsernameFromClaims(Claims claims) throws SiteWhereException;
+
+    /**
      * Get granted authorities from given token.
      * 
      * @param token
@@ -50,4 +59,13 @@ public interface ITokenManagement {
      * @throws SiteWhereException
      */
     public List<IGrantedAuthority> getGrantedAuthoritiesFromToken(String token) throws SiteWhereException;
+
+    /**
+     * Get granted authorities from claims.
+     * 
+     * @param claims
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IGrantedAuthority> getGrantedAuthoritiesFromClaims(Claims claims) throws SiteWhereException;
 }

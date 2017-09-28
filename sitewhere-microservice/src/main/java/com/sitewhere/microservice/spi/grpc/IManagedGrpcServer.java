@@ -1,5 +1,6 @@
 package com.sitewhere.microservice.spi.grpc;
 
+import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 import io.grpc.BindableService;
@@ -11,6 +12,13 @@ import io.grpc.BindableService;
  * @author Derek
  */
 public interface IManagedGrpcServer extends ILifecycleComponent {
+
+    /**
+     * Get the parent {@link IMicroservice}.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
 
     /**
      * Get the wrapped {@link BindableService}.

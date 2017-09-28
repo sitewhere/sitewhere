@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
+import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
@@ -37,6 +38,10 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** JWT token management */
     @Autowired
     private ITokenManagement tokenManagement;
+
+    /** System superuser */
+    @Autowired
+    private ISystemUser systemUser;
 
     /*
      * (non-Javadoc)
@@ -162,6 +167,20 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setTokenManagement(ITokenManagement tokenManagement) {
 	this.tokenManagement = tokenManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getSystemUser()
+     */
+    @Override
+    public ISystemUser getSystemUser() {
+	return systemUser;
+    }
+
+    public void setSystemUser(ISystemUser systemUser) {
+	this.systemUser = systemUser;
     }
 
     /*

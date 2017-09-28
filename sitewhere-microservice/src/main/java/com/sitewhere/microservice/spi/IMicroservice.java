@@ -2,6 +2,7 @@ package com.sitewhere.microservice.spi;
 
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
+import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -33,6 +34,13 @@ public interface IMicroservice extends ILifecycleComponent {
      * @return
      */
     public ITokenManagement getTokenManagement();
+
+    /**
+     * Get system superuser.
+     * 
+     * @return
+     */
+    public ISystemUser getSystemUser();
 
     /**
      * Code executed after microservice has been started.

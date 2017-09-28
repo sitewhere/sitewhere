@@ -8,6 +8,8 @@ dependencies {
 	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
 	compile group: 'io.grpc', name: 'grpc-stub', version: "${rootProject.ext['grpc.version']}"
 	compile group: 'io.grpc', name: 'grpc-protobuf', version: "${rootProject.ext['grpc.version']}"
+	
+    compile group: 'org.springframework.security', name: 'spring-security-core'
 }
 
 protobuf {

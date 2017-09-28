@@ -17,7 +17,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.microservice.security.SitewhereAuthentication;
+import com.sitewhere.microservice.security.SitewhereUserDetails;
+import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -35,10 +39,14 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** System superuser */
+    private ISystemUser systemUser;
+
     /** User management implementation */
     private IUserManagement userManagement;
 
-    public SiteWhereAuthenticationProvider(IUserManagement userManagement) {
+    public SiteWhereAuthenticationProvider(ISystemUser systemUser, IUserManagement userManagement) {
+	this.systemUser = systemUser;
 	this.userManagement = userManagement;
     }
 
@@ -51,32 +59,64 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 	try {
 	    if (authentication instanceof UsernamePasswordAuthenticationToken) {
-		String username = (String) authentication.getPrincipal();
-		String password = (String) authentication.getCredentials();
-		if (getUserManagement() == null) {
-		    throw new AuthenticationServiceException("User management not available. Check logs for details.");
-		}
-		IUser user = getUserManagement().authenticate(username, password, false);
-		List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
-		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
-		return new SitewhereAuthentication(details, password);
+		return authenticateBasicAuth(authentication);
 	    } else if (authentication instanceof JwtAuthenticationToken) {
-		// TODO: This is overkill since the auths are in the JWT.
-		String username = (String) authentication.getPrincipal();
-		String password = (String) authentication.getCredentials();
-		if (getUserManagement() == null) {
-		    throw new AuthenticationServiceException("User management not available. Check logs for details.");
-		}
-		IUser user = getUserManagement().getUserByUsername(username);
-		List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
-		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
-		return new SitewhereAuthentication(details, password);
+		return authenticateJwt(authentication);
 	    } else if (authentication instanceof SitewhereAuthentication) {
 		return authentication;
 	    }
 	    throw new AuthenticationServiceException("Unknown authentication: " + authentication.getClass().getName());
 	} catch (SiteWhereException e) {
 	    throw new BadCredentialsException("Unable to authenticate.", e);
+	}
+    }
+
+    /**
+     * Validate basic authentication credentials.
+     * 
+     * @param authentication
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Authentication authenticateBasicAuth(Authentication authentication) throws SiteWhereException {
+	String username = (String) authentication.getPrincipal();
+	String password = (String) authentication.getCredentials();
+
+	// Swap thread to superuser to authenticate login.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+	    IUser user = validateUserManagement().authenticate(username, password, false);
+	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
+	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
+	    return new SitewhereAuthentication(details, password);
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
+	}
+    }
+
+    /**
+     * Validate basic JWT credentials.
+     * 
+     * @param authentication
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Authentication authenticateJwt(Authentication authentication) throws SiteWhereException {
+	// TODO: This is overkill since the auths are in the JWT.
+	String username = (String) authentication.getPrincipal();
+	String password = (String) authentication.getCredentials();
+
+	// Swap thread to superuser to authenticate login.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+	    IUser user = validateUserManagement().getUserByUsername(username);
+	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
+	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
+	    return new SitewhereAuthentication(details, password);
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
     }
 
@@ -92,6 +132,27 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(clazz))
 		|| (JwtAuthenticationToken.class.isAssignableFrom(clazz))
 		|| (SitewhereAuthentication.class.isAssignableFrom(clazz));
+    }
+
+    /**
+     * Validate that user management is avaliable.
+     * 
+     * @return
+     * @throws AuthenticationServiceException
+     */
+    protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
+	if (getUserManagement() == null) {
+	    throw new AuthenticationServiceException("User management not available. Check logs for details.");
+	}
+	return getUserManagement();
+    }
+
+    public ISystemUser getSystemUser() {
+	return systemUser;
+    }
+
+    public void setSystemUser(ISystemUser systemUser) {
+	this.systemUser = systemUser;
     }
 
     public IUserManagement getUserManagement() {

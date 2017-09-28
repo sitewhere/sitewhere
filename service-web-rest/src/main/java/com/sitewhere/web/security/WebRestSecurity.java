@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.security.basic.AuthenticateOnlyFilter;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
@@ -63,8 +64,9 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected SiteWhereAuthenticationProvider sitewhereAuthenticationProvider() {
+	ISystemUser systemUser = getWebRestMicroservice().getSystemUser();
 	IUserManagement userManagement = getWebRestMicroservice().getUserManagementApiChannel();
-	return new SiteWhereAuthenticationProvider(userManagement);
+	return new SiteWhereAuthenticationProvider(systemUser, userManagement);
     }
 
     /**

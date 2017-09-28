@@ -33,6 +33,9 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     /** Asynchronous stub */
     private A asyncStub;
 
+    /** Client interceptor for adding JWT from Spring Security context */
+    private JwtClientInterceptor jwt = new JwtClientInterceptor();
+
     public GrpcChannel(String hostname, int port) {
 	this.hostname = hostname;
 	this.port = port;
@@ -47,7 +50,8 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).build();
+	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).intercept(jwt)
+		.build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
     }
