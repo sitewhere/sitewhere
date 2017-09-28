@@ -11,9 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sitewhere.microservice.security.InvalidJwtException;
@@ -42,8 +43,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /** Token utility methods */
     private TokenManagement tokenUtils = new TokenManagement();
 
-    /** User management implementation */
-    private UserDetailsService userDetailsService;
+    /** Authentication manager */
+    private AuthenticationManager authenticationManager;
+
+    public TokenAuthenticationFilter(AuthenticationManager authenticationManager) {
+	this.authenticationManager = authenticationManager;
+    }
 
     /*
      * (non-Javadoc)
@@ -59,10 +64,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	String jwt = getJwtFromHeader(request);
 	if (jwt != null) {
-	    LOGGER.debug("Found JWT header: " + jwt);
+	    LOGGER.info("Found JWT header: " + jwt);
 	    try {
 		// Get username from token and load user.
 		String username = getTokenUtils().getUsernameFromToken(jwt);
+		LOGGER.info("Decoded username: " + username);
 		List<IGrantedAuthority> auths = getTokenUtils().getGrantedAuthoritiesFromToken(jwt);
 		List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
 		for (IGrantedAuthority auth : auths) {
@@ -71,7 +77,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		// Create authentication
 		JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
-		SecurityContextHolder.getContext().setAuthentication(token);
+		Authentication authenticated = getAuthenticationManager().authenticate(token);
+		SecurityContextHolder.getContext().setAuthentication(authenticated);
+		LOGGER.info("Added authentication to context.");
 		chain.doFilter(request, response);
 	    } catch (JwtExpiredException e) {
 		LOGGER.error("Expired JWT.", e);
@@ -81,7 +89,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT was invalid.");
 	    }
 	} else {
-	    LOGGER.debug("No JWT found in header.");
+	    LOGGER.info("No JWT found in header.");
 	    chain.doFilter(request, response);
 	}
     }
@@ -109,11 +117,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	this.tokenUtils = tokenUtils;
     }
 
-    public UserDetailsService getUserDetailsService() {
-	return userDetailsService;
+    public AuthenticationManager getAuthenticationManager() {
+	return authenticationManager;
     }
 
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-	this.userDetailsService = userDetailsService;
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+	this.authenticationManager = authenticationManager;
     }
 }

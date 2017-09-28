@@ -32,6 +32,7 @@ import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
 public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** User management implementation */
@@ -60,7 +61,16 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 		return new SitewhereAuthentication(details, password);
 	    } else if (authentication instanceof JwtAuthenticationToken) {
-		LOGGER.info("MADE IT TO JWT AUTHENTICATION!!!");
+		// TODO: This is overkill since the auths are in the JWT.
+		String username = (String) authentication.getPrincipal();
+		String password = (String) authentication.getCredentials();
+		if (getUserManagement() == null) {
+		    throw new AuthenticationServiceException("User management not available. Check logs for details.");
+		}
+		IUser user = getUserManagement().getUserByUsername(username);
+		List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
+		SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
+		return new SitewhereAuthentication(details, password);
 	    } else if (authentication instanceof SitewhereAuthentication) {
 		return authentication;
 	    }

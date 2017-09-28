@@ -74,8 +74,8 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      * @return
      */
     @Bean
-    protected TokenAuthenticationFilter tokenAuthenticationFilter() {
-	return new TokenAuthenticationFilter();
+    protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
+	return new TokenAuthenticationFilter(authenticationManagerBean());
     }
 
     /**
