@@ -104,6 +104,21 @@ public class TenantModelConverter {
     }
 
     /**
+     * Convert a list of tenants from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GTenant> asGrpcTenants(List<ITenant> apis) throws SiteWhereException {
+	List<GTenant> grpcs = new ArrayList<GTenant>();
+	for (ITenant apiTenant : apis) {
+	    grpcs.add(TenantModelConverter.asGrpcTenant(apiTenant));
+	}
+	return grpcs;
+    }
+
+    /**
      * Convert an {@link ITenant} to a {@link GTenant}.
      * 
      * @param api
@@ -187,5 +202,20 @@ public class TenantModelConverter {
 	    throws SiteWhereException {
 	List<ITenant> tenants = TenantModelConverter.asApiTenants(grpc.getTenantsList());
 	return new SearchResults<ITenant>(tenants, grpc.getCount());
+    }
+
+    /**
+     * Convert API tenant search results to {@link GTenantSearchResults}.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GTenantSearchResults asGrpcTenantSearchResults(ISearchResults<ITenant> api)
+	    throws SiteWhereException {
+	GTenantSearchResults.Builder grpc = GTenantSearchResults.newBuilder();
+	grpc.setCount(api.getNumResults());
+	grpc.addAllTenants(TenantModelConverter.asGrpcTenants(api.getResults()));
+	return grpc.build();
     }
 }

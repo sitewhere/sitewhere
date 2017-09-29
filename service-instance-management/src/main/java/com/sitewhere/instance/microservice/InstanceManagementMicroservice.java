@@ -15,9 +15,13 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
+import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
+import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
@@ -61,6 +65,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
 
+    /** Tenant management GRPC channel */
+    private TenantManagementGrpcChannel tenantManagementGrpcChannel;
+
+    /** Tenant management API channel */
+    private ITenantManagementApiChannel tenantManagementApiChannel;
+
     public InstanceManagementMicroservice() {
 	createGrpcComponents();
     }
@@ -82,6 +92,10 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
 		MicroserviceEnvironment.DEFAULT_GRPC_PORT);
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
+
+	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, MicroserviceEnvironment.DEFAULT_GRPC_PORT);
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 
     /*
@@ -111,6 +125,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
 		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
 
+	// Initialize tenant management GRPC channel.
+	start.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
+		"Tenant management GRPC channel", "Unable to initialize tenant management GRPC channel", true));
+
+	// Start tenant mangement GRPC channel.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
+		"Tenant management GRPC channel", "Unable to start tenant management GRPC channel.", true));
+
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
 
@@ -129,6 +151,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop tenant management GRPC channel.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
+		"Tenant Managment GRPC Channel"));
+
+	// Stop user management GRPC channel.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getUserManagementGrpcChannel(), "User Managment GRPC Channel"));
 
 	// Stop instance template manager.
 	stop.addStep(new StopComponentLifecycleStep(this, getInstanceTemplateManager(), "Instance Template Manager"));
@@ -229,8 +259,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	    getLogger().info("Initializing instance from template '" + template.getName() + "'.");
 	    String templatePath = getInstanceZkPath() + "/" + template.getId();
 	    if (template.getInitializers() != null) {
-		List<String> umScripts = template.getInitializers().getUserManagement();
-		initializeUserModelFromInstanceTemplateScripts(templatePath, umScripts);
+		List<String> userScripts = template.getInitializers().getUserManagement();
+		initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
+
+		List<String> tenantScripts = template.getInitializers().getTenantManagement();
+		initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
@@ -262,6 +295,35 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	    initializer.setGroovyConfiguration(groovy);
 	    initializer.setScriptPath(script);
 	    initializer.initialize(getUserManagementApiChannel());
+	}
+    }
+
+    /**
+     * Initialize tenant model from scripts included in instance template
+     * scripts.
+     * 
+     * @param templatePath
+     * @param scripts
+     * @throws SiteWhereException
+     */
+    protected void initializeTenantModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
+	    throws SiteWhereException {
+	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
+	for (String script : scripts) {
+	    synchronizer.add(getInstanceZkPath() + "/" + script);
+	}
+
+	// Wait for tenant management APIs to become available.
+	getTenantManagementApiChannel().waitForApiAvailable();
+	getLogger().info("Tenant management API detected as available.");
+
+	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model.")));
+	for (String script : scripts) {
+	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer();
+	    initializer.setGroovyConfiguration(groovy);
+	    initializer.setScriptPath(script);
+	    initializer.initialize(getTenantManagementApiChannel());
 	}
     }
 
@@ -305,6 +367,38 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	return LOGGER;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getUserManagementApiChannel()
+     */
+    @Override
+    public IUserManagementApiChannel getUserManagementApiChannel() {
+	return userManagementApiChannel;
+    }
+
+    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
+	this.userManagementApiChannel = userManagementApiChannel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantManagementApiChannel()
+     */
+    @Override
+    public ITenantManagementApiChannel getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
+    }
+
+    public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    }
+
     public UserManagementGrpcChannel getUserManagementGrpcChannel() {
 	return userManagementGrpcChannel;
     }
@@ -313,11 +407,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	this.userManagementGrpcChannel = userManagementGrpcChannel;
     }
 
-    public IUserManagementApiChannel getUserManagementApiChannel() {
-	return userManagementApiChannel;
+    public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {
+	return tenantManagementGrpcChannel;
     }
 
-    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
-	this.userManagementApiChannel = userManagementApiChannel;
+    public void setTenantManagementGrpcChannel(TenantManagementGrpcChannel tenantManagementGrpcChannel) {
+	this.tenantManagementGrpcChannel = tenantManagementGrpcChannel;
     }
 }

@@ -15,4 +15,7 @@ public class MicroserviceEnvironment {
 
     /** Default Docker hostname for user management microservice */
     public static final String HOST_USER_MANAGEMENT = "user-management";
+
+    /** Default Docker hostname for tenant management microservice */
+    public static final String HOST_TENANT_MANAGEMENT = "tenant-management";
 }

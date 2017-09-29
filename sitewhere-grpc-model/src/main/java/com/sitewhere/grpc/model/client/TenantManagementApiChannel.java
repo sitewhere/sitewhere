@@ -102,7 +102,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	    GGetTenantByIdRequest.Builder grequest = GGetTenantByIdRequest.newBuilder();
 	    grequest.setId(id);
 	    GGetTenantByIdResponse gresponse = getGrpcChannel().getBlockingStub().getTenantById(grequest.build());
-	    ITenant response = TenantModelConverter.asApiTenant(gresponse.getTenant());
+	    ITenant response = (gresponse.hasTenant()) ? TenantModelConverter.asApiTenant(gresponse.getTenant()) : null;
 	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, response);
 	    return response;
 	} catch (Throwable t) {
@@ -126,7 +126,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	    grequest.setToken(token);
 	    GGetTenantByAuthenticationTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getTenantByAuthenticationToken(grequest.build());
-	    ITenant response = TenantModelConverter.asApiTenant(gresponse.getTenant());
+	    ITenant response = (gresponse.hasTenant()) ? TenantModelConverter.asApiTenant(gresponse.getTenant()) : null;
 	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN, response);
 	    return response;
 	} catch (Throwable t) {

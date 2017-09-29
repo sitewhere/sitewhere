@@ -26,7 +26,7 @@ message GTenantSearchCriteria {
 
 // Results for tenant search.
 message GTenantSearchResults {
-	int32 count = 1;
+	int64 count = 1;
 	repeated GTenant tenants = 2;
 }
 

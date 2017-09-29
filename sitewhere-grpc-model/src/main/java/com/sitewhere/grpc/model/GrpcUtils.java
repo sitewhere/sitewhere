@@ -24,10 +24,21 @@ public class GrpcUtils {
 	LOGGER.debug("Server received call to  " + method.getFullMethodName() + ".");
     }
 
+    /**
+     * Log response returned by client method invocation.
+     * 
+     * @param method
+     * @param o
+     * @throws SiteWhereException
+     */
     public static void logClientMethodResponse(MethodDescriptor<?, ?> method, Object o) throws SiteWhereException {
-	if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug(
-		    "Response to " + method.getFullMethodName() + ":\n\n" + MarshalUtils.marshalJsonAsPrettyString(o));
+	if (o != null) {
+	    if (LOGGER.isDebugEnabled()) {
+		LOGGER.debug("Response to " + method.getFullMethodName() + ":\n\n"
+			+ MarshalUtils.marshalJsonAsPrettyString(o));
+	    }
+	} else {
+	    LOGGER.debug("Response to " + method.getFullMethodName() + " was NULL");
 	}
     }
 

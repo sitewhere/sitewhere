@@ -170,7 +170,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME);
 	    IUser apiResult = getUserMangagement().getUserByUsername(request.getUsername());
 	    GGetUserByUsernameResponse.Builder response = GGetUserByUsernameResponse.newBuilder();
-	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
+	    if (apiResult != null) {
+		response.setUser(UserModelConverter.asGrpcUser(apiResult));
+	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {

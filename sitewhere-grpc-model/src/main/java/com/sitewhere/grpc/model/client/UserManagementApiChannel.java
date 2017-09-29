@@ -174,7 +174,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 	    grequest.setUsername(username);
 	    GGetUserByUsernameResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getUserByUsername(grequest.build());
-	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
+	    IUser response = (gresponse.hasUser()) ? UserModelConverter.asApiUser(gresponse.getUser()) : null;
 	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, response);
 	    return response;
 	} catch (Throwable t) {
