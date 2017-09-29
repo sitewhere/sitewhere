@@ -43,16 +43,11 @@ message GUser {
 	GEntityInformation entityInformation = 9;
 }
 
-// Pointer to parent authority.
-message GGrantedAuthorityParent {
-	string authority = 1;
-}
-
 // Request for creating a granted authority.
 message GGrantedAuthorityCreateRequest {
 	string authority = 1;
 	string description = 2;
-	GGrantedAuthorityParent parent = 3;
+	GGrantedAuthorityReference parent = 3;
 	bool group = 4;
 }
 
@@ -60,6 +55,6 @@ message GGrantedAuthorityCreateRequest {
 message GGrantedAuthority {
 	string authority = 1;
 	string description = 2;
-	GGrantedAuthorityParent parent = 3;
+	GGrantedAuthorityReference parent = 3;
 	bool group = 4;
 }

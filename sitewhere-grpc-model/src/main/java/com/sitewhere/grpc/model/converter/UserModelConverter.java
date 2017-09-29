@@ -3,10 +3,10 @@ package com.sitewhere.grpc.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.grpc.model.CommonModel.GGrantedAuthorityReference;
 import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthority;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityCreateRequest;
-import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityParent;
 import com.sitewhere.grpc.model.UserModel.GUser;
 import com.sitewhere.grpc.model.UserModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
@@ -214,7 +214,7 @@ public class UserModelConverter {
 	builder.setAuthority(api.getAuthority());
 	builder.setDescription(api.getDescription());
 	if (api.getParent() != null) {
-	    GGrantedAuthorityParent.Builder parent = GGrantedAuthorityParent.newBuilder();
+	    GGrantedAuthorityReference.Builder parent = GGrantedAuthorityReference.newBuilder();
 	    parent.setAuthority(api.getParent());
 	    builder.setParent(parent);
 	}
@@ -266,7 +266,7 @@ public class UserModelConverter {
 	builder.setAuthority(api.getAuthority());
 	builder.setDescription(api.getDescription());
 	if (api.getParent() != null) {
-	    GGrantedAuthorityParent.Builder parent = GGrantedAuthorityParent.newBuilder();
+	    GGrantedAuthorityReference.Builder parent = GGrantedAuthorityReference.newBuilder();
 	    parent.setAuthority(api.getParent());
 	    builder.setParent(parent);
 	}

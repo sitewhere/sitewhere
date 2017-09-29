@@ -5,18 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.tenant.initializer;
+package com.sitewhere.instance.initializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.instance.spi.initializer.ITenantModelInitializer;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.tenant.spi.initializer.ITenantModelInitializer;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;

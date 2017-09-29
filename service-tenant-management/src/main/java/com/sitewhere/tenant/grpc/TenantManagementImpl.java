@@ -3,11 +3,11 @@ package com.sitewhere.tenant.grpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
@@ -43,13 +43,15 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void createTenant(GCreateTenantRequest request, StreamObserver<GCreateTenantResponse> responseObserver) {
 	try {
+	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_CREATE_TENANT);
 	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request.getRequest());
 	    ITenant apiResult = getTenantMangagement().createTenant(apiRequest);
 	    GCreateTenantResponse.Builder response = GCreateTenantResponse.newBuilder();
 	    response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
-	} catch (SiteWhereException e) {
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_CREATE_TENANT, e);
 	    responseObserver.onError(e);
 	}
     }

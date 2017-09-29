@@ -17,6 +17,19 @@ message GTenantCreateRequest {
 	map<string, string> metadata = 7;
 }
 
+// Criteria for tenant search.
+message GTenantSearchCriteria {
+	GSearchText searchText = 1;
+	GUserReference authorizedUser = 2;
+	GPaging paging = 3;
+}
+
+// Results for tenant search.
+message GTenantSearchResults {
+	int32 count = 1;
+	repeated GTenant tenants = 2;
+}
+
 // Information for a tenant.
 message GTenant {
 	string id = 1;

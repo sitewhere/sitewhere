@@ -6,11 +6,6 @@ option java_outer_classname = "CommonModel";
 
 import "google/protobuf/timestamp.proto";
 
-// Reference user by username.
-message GUserReference {
-	string username = 1;
-}
-
 // Common entity information.
 message GEntityInformation {
 	google.protobuf.Timestamp createdDate = 1;
@@ -18,4 +13,30 @@ message GEntityInformation {
 	google.protobuf.Timestamp updatedDate = 3;
 	GUserReference updatedBy = 4;
 	bool deleted = 5;
+}
+
+// Information about paging for searches.
+message GPaging {
+	int32 pageNumber = 1;
+	int32 pageSize = 2;
+}
+
+// Reference user by username.
+message GUserReference {
+	string username = 1;
+}
+
+// Reference to a granted authority by authority.
+message GGrantedAuthorityReference {
+	string authority = 1;
+}
+
+// Reference to a tenant by id.
+message GTenantReference {
+	string id = 1;
+}
+
+// Text used for search.
+message GSearchText {
+	string search = 1;
 }

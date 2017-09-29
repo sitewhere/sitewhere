@@ -8,10 +8,26 @@ option java_outer_classname = "TenantServices";
 
 import "tenant-model.proto";
 
+// Tenant management APIs.
 service TenantManagement {
 
 	// Create a new tenant.
 	rpc CreateTenant (GCreateTenantRequest) returns (GCreateTenantResponse) {}
+
+	// Update an existing tenant.
+	rpc UpdateTenant (GUpdateTenantRequest) returns (GUpdateTenantResponse) {}
+
+	// Get a tenant by unique id.
+	rpc GetTenantById (GGetTenantByIdRequest) returns (GGetTenantByIdResponse) {}
+
+	// Get a tenant by authentication token.
+	rpc GetTenantByAuthenticationToken (GGetTenantByAuthenticationTokenRequest) returns (GGetTenantByAuthenticationTokenResponse) {}
+
+	// List tenants based on criteria.
+	rpc ListTenants (GListTenantsRequest) returns (GListTenantsResponse) {}
+
+	// Delete an existing tenant.
+	rpc DeleteTenant (GDeleteTenantRequest) returns (GDeleteTenantResponse) {}
 }
 	
 // Request for creating a tenant.
@@ -23,3 +39,56 @@ message GCreateTenantRequest {
 message GCreateTenantResponse {
 	com.sitewhere.grpc.model.GTenant tenant = 1;
 }
+	
+// Request for updating a tenant.
+message GUpdateTenantRequest {
+	string id = 1;
+	com.sitewhere.grpc.model.GTenantCreateRequest request = 2;
+}
+
+// Response from updating a tenant.
+message GUpdateTenantResponse {
+	com.sitewhere.grpc.model.GTenant tenant = 1;
+}
+	
+// Request for getting a tenant by id.
+message GGetTenantByIdRequest {
+	string id = 1;
+}
+
+// Response for getting a tenant by id.
+message GGetTenantByIdResponse {
+	com.sitewhere.grpc.model.GTenant tenant = 1;
+}
+	
+// Request for getting a tenant by authentication token.
+message GGetTenantByAuthenticationTokenRequest {
+	string token = 1;
+}
+
+// Response for getting a tenant by authentication token.
+message GGetTenantByAuthenticationTokenResponse {
+	com.sitewhere.grpc.model.GTenant tenant = 1;
+}
+
+// Request for listing tenants by critieria.
+message GListTenantsRequest {
+	com.sitewhere.grpc.model.GTenantSearchCriteria criteria = 1; 
+}
+
+// Response for listing tenants by critieria.
+message GListTenantsResponse {
+	com.sitewhere.grpc.model.GTenantSearchResults results = 1; 
+}
+
+// Request for deleting a tenant.
+message GDeleteTenantRequest {
+	string id = 1;
+	bool force = 2;
+}
+
+// Response for deleting a tenant.
+message GDeleteTenantResponse {
+	com.sitewhere.grpc.model.GTenant tenant = 1; 
+}
+	
