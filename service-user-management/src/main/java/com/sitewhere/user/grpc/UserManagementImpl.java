@@ -35,11 +35,13 @@ import com.sitewhere.grpc.service.GUpdateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
+import com.sitewhere.microservice.security.annotations.GrpcSecured;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 import io.grpc.stub.StreamObserver;
@@ -186,6 +188,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
      * io.grpc.stub.StreamObserver)
      */
     @Override
+    @GrpcSecured({ SiteWhereAuthority.AdminUsers })
     public void listUsers(GListUsersRequest request, StreamObserver<GListUsersResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_LIST_USERS);

@@ -36,6 +36,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.AccountStatus;
@@ -184,19 +185,18 @@ public class Users extends RestController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "List users matching criteria")
-    public SearchResults<User> listUsers(
+    public ISearchResults<IUser> listUsers(
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	List<User> usersConv = new ArrayList<User>();
 	UserSearchCriteria criteria = new UserSearchCriteria();
 	criteria.setIncludeDeleted(includeDeleted);
 	List<IUser> users = getUserManagement().listUsers(criteria);
+	List<IUser> usersConv = new ArrayList<IUser>();
 	for (IUser user : users) {
 	    usersConv.add(User.copy(user));
 	}
-	SearchResults<User> results = new SearchResults<User>(usersConv);
+	SearchResults<IUser> results = new SearchResults<IUser>(usersConv);
 	return results;
     }
 

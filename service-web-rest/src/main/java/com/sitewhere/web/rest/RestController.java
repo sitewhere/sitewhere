@@ -15,12 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -125,47 +121,6 @@ public class RestController {
     }
 
     /**
-     * Handles a system exception by setting the HTML response code and response
-     * headers.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleSystemException(SiteWhereException e, HttpServletRequest request,
-	    HttpServletResponse response) {
-	try {
-	    String flexMode = request.getHeader("X-SiteWhere-Error-Mode");
-	    if (flexMode != null) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(response.getOutputStream(), e);
-		response.flushBuffer();
-	    } else {
-		if (e instanceof SiteWhereSystemException) {
-		    SiteWhereSystemException sse = (SiteWhereSystemException) e;
-		    String combined = sse.getCode() + ":" + e.getMessage();
-		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
-		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE,
-			    String.valueOf(sse.getCode()));
-		    if (sse.hasHttpResponseCode()) {
-			response.sendError(sse.getHttpResponseCode(), combined);
-		    } else {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, combined);
-		    }
-		} else {
-		    response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, e.getMessage());
-		    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-		}
-		LOGGER.error("Exception thrown during REST processing.", e);
-	    }
-	} catch (IOException ioe) {
-	    LOGGER.error("Error handling system exception.", ioe);
-	} catch (Throwable t) {
-	    LOGGER.error("Error handling system exception.", t);
-	}
-    }
-
-    /**
      * Handles uncaught runtime exceptions such as null pointers.
      * 
      * @param e
@@ -230,38 +185,6 @@ public class RestController {
 	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
 	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
 	response.sendError(responseCode, errorCode.getMessage());
-    }
-
-    /**
-     * Handles uncaught runtime exceptions such as null pointers.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void jwtExpiredException(JwtExpiredException e, HttpServletResponse response) {
-	try {
-	    response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
-    }
-
-    /**
-     * Handles exceptions generated if {@link Secured} annotations are not
-     * satisfied.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleAccessDenied(AccessDeniedException e, HttpServletResponse response) {
-	try {
-	    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-	    LOGGER.error("Access denied.", e);
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
     }
 
     /**
