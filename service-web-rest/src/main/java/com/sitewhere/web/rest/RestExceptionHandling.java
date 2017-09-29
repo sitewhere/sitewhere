@@ -73,4 +73,15 @@ public class RestExceptionHandling extends ResponseEntityExceptionHandler {
 		: HttpStatus.BAD_REQUEST;
 	return handleExceptionInternal(e, combined, headers, responseCode, request);
     }
+
+    /**
+     * Handles uncaught runtime exceptions such as null pointers.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler(value = { RuntimeException.class })
+    protected ResponseEntity<Object> handleRuntimeException(RuntimeException e, WebRequest request) {
+	return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
 }

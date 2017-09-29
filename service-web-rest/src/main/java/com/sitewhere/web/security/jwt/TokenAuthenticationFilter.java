@@ -17,8 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.microservice.security.InvalidJwtException;
-import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.microservice.security.SitewhereGrantedAuthority;
 import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -64,32 +62,23 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	String jwt = getJwtFromHeader(request);
 	if (jwt != null) {
-	    LOGGER.info("Found JWT header: " + jwt);
-	    try {
-		// Get username from token and load user.
-		String username = getTokenUtils().getUsernameFromToken(jwt);
-		LOGGER.info("Decoded username: " + username);
-		List<IGrantedAuthority> auths = getTokenUtils().getGrantedAuthoritiesFromToken(jwt);
-		List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
-		for (IGrantedAuthority auth : auths) {
-		    springAuths.add(new SitewhereGrantedAuthority(auth));
-		}
-
-		// Create authentication
-		JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
-		Authentication authenticated = getAuthenticationManager().authenticate(token);
-		SecurityContextHolder.getContext().setAuthentication(authenticated);
-		LOGGER.info("Added authentication to context.");
-		chain.doFilter(request, response);
-	    } catch (JwtExpiredException e) {
-		LOGGER.error("Expired JWT.", e);
-		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT has expired.");
-	    } catch (InvalidJwtException e) {
-		LOGGER.error("Invalid JWT: " + jwt, e);
-		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT was invalid.");
+	    // Get username from token and load user.
+	    String username = getTokenUtils().getUsernameFromToken(jwt);
+	    LOGGER.debug("Decoded username: " + username);
+	    List<IGrantedAuthority> auths = getTokenUtils().getGrantedAuthoritiesFromToken(jwt);
+	    List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
+	    for (IGrantedAuthority auth : auths) {
+		springAuths.add(new SitewhereGrantedAuthority(auth));
 	    }
+
+	    // Create authentication
+	    JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
+	    Authentication authenticated = getAuthenticationManager().authenticate(token);
+	    SecurityContextHolder.getContext().setAuthentication(authenticated);
+	    LOGGER.debug("Added authentication to context.");
+	    chain.doFilter(request, response);
 	} else {
-	    LOGGER.info("No JWT found in header.");
+	    LOGGER.debug("No JWT found in header.");
 	    chain.doFilter(request, response);
 	}
     }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.model.client.JwtClientInterceptor;
 import com.sitewhere.microservice.security.annotations.GrpcSecured;
 import com.sitewhere.microservice.spi.IMicroservice;
@@ -124,7 +125,8 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	    SiteWhereAuthority[] roles = secured.value();
 	    for (SiteWhereAuthority role : roles) {
 		if (!auths.contains(role.getName())) {
-		    throw new SiteWhereException("Not authenticated for '" + role + "' authority.");
+		    throw new SiteWhereException("User '" + username + "' not authenticated for '" + role
+			    + "' authority.\n\n" + MarshalUtils.marshalJsonAsPrettyString(auths));
 		} else {
 		    LOGGER.info("SECURITY CHECK PASSED FOR " + role);
 		}

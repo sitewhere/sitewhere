@@ -85,7 +85,7 @@ public class SystemUser implements ISystemUser {
 	for (SiteWhereAuthority auth : SiteWhereAuthority.values()) {
 	    if (!auth.isGroup()) {
 		GrantedAuthority ga = new GrantedAuthority();
-		ga.setAuthority(auth.getRoleName());
+		ga.setAuthority(auth.getName());
 		ga.setDescription(auth.getDescription());
 		ga.setParent(auth.getParent());
 		matches.add(ga);

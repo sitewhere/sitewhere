@@ -37,18 +37,16 @@ public class GrpcUtils {
      * @param method
      * @param t
      * @return
-     * @throws SiteWhereException
      */
-    public static SiteWhereException handleClientMethodException(MethodDescriptor<?, ?> method, Throwable t)
-	    throws SiteWhereException {
+    public static SiteWhereException handleClientMethodException(MethodDescriptor<?, ?> method, Throwable t) {
 	if (t instanceof StatusRuntimeException) {
 	    StatusRuntimeException sre = (StatusRuntimeException) t;
 	    switch (sre.getStatus().getCode()) {
 	    case PERMISSION_DENIED: {
-		throw new NotAuthorizedException("Not authorized for operation.", sre);
+		return new NotAuthorizedException("Not authorized for operation.", sre);
 	    }
 	    case UNAUTHENTICATED: {
-		throw new UnauthenticatedException("No credentials passed for authentication.", sre);
+		return new UnauthenticatedException("No credentials passed for authentication.", sre);
 	    }
 	    default: {
 	    }

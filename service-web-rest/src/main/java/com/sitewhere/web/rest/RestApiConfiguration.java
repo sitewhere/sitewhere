@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.web.rest.controllers.Assets;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -35,8 +34,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
-@ComponentScan(basePackageClasses = { Assets.class })
-public class RestMvcConfiguration extends WebMvcConfigurerAdapter {
+@ComponentScan
+public class RestApiConfiguration extends WebMvcConfigurerAdapter {
 
     /** URL prefix for matching REST API calls */
     public static final String REST_API_MATCHER = "/api/*";

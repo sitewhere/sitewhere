@@ -18,7 +18,7 @@ import com.sitewhere.web.filters.JsonpFilter;
 import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
-import com.sitewhere.web.rest.RestMvcConfiguration;
+import com.sitewhere.web.rest.RestApiConfiguration;
 import com.sitewhere.web.security.WebRestSecurity;
 import com.sitewhere.web.swagger.SwaggerConfiguration;
 import com.sitewhere.web.vue.VueConfiguration;
@@ -56,10 +56,10 @@ public class WebRestConfiguration {
     public ServletRegistrationBean sitewhereRestInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-	applicationContext.register(RestMvcConfiguration.class);
+	applicationContext.register(RestApiConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
 	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
-		RestMvcConfiguration.REST_API_MATCHER);
+		RestApiConfiguration.REST_API_MATCHER);
 	registration.setName("sitewhereRestInterface");
 	registration.setLoadOnStartup(1);
 	return registration;
@@ -105,7 +105,7 @@ public class WebRestConfiguration {
 	MethodOverrideFilter filter = new MethodOverrideFilter();
 	FilterRegistrationBean registration = new FilterRegistrationBean();
 	registration.setFilter(filter);
-	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
@@ -114,7 +114,7 @@ public class WebRestConfiguration {
 	ResponseTimerFilter filter = new ResponseTimerFilter();
 	FilterRegistrationBean registration = new FilterRegistrationBean();
 	registration.setFilter(filter);
-	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
@@ -123,7 +123,7 @@ public class WebRestConfiguration {
 	NoCacheFilter filter = new NoCacheFilter();
 	FilterRegistrationBean registration = new FilterRegistrationBean();
 	registration.setFilter(filter);
-	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
@@ -132,7 +132,7 @@ public class WebRestConfiguration {
 	JsonpFilter filter = new JsonpFilter();
 	FilterRegistrationBean registration = new FilterRegistrationBean();
 	registration.setFilter(filter);
-	registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
+	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 }

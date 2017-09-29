@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
@@ -214,16 +216,24 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     /**
      * Initialize user/tenant model from scripts included in instance template.
+     * Note: The scripts execute in the context of the system superuser so that
+     * the initial users/tenants can be populated.
      * 
      * @throws SiteWhereException
      */
     protected void initializeModelFromInstanceTemplate() throws SiteWhereException {
-	IInstanceTemplate template = getChosenInstanceTemplate();
-	getLogger().info("Initializing instance from template '" + template.getName() + "'.");
-	String templatePath = getInstanceZkPath() + "/" + template.getId();
-	if (template.getInitializers() != null) {
-	    List<String> umScripts = template.getInitializers().getUserManagement();
-	    initializeUserModelFromInstanceTemplateScripts(templatePath, umScripts);
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+	    IInstanceTemplate template = getChosenInstanceTemplate();
+	    getLogger().info("Initializing instance from template '" + template.getName() + "'.");
+	    String templatePath = getInstanceZkPath() + "/" + template.getId();
+	    if (template.getInitializers() != null) {
+		List<String> umScripts = template.getInitializers().getUserManagement();
+		initializeUserModelFromInstanceTemplateScripts(templatePath, umScripts);
+	    }
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
     }
 

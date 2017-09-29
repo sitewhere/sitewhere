@@ -121,23 +121,6 @@ public class RestController {
     }
 
     /**
-     * Handles uncaught runtime exceptions such as null pointers.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleRuntimeException(RuntimeException e, HttpServletResponse response) {
-	LOGGER.error("Unhandled runtime exception.", e);
-	try {
-	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	    LOGGER.error("Unhandled runtime exception.", e);
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
-    }
-
-    /**
      * Handles exception thrown when a tenant operation is requested on an
      * unavailable tenant.
      * 
