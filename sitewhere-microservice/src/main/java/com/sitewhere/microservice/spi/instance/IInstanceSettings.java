@@ -1,5 +1,10 @@
 package com.sitewhere.microservice.spi.instance;
 
+/**
+ * Common settings used in a SiteWhere instance.
+ * 
+ * @author Derek
+ */
 public interface IInstanceSettings {
 
     /**
@@ -29,6 +34,13 @@ public interface IInstanceSettings {
      * @return
      */
     public int getZookeeperPort();
+
+    /**
+     * Get Kafka bootstrap servers configuration string.
+     * 
+     * @return
+     */
+    public String getKafkaBootstrapServers();
 
     /**
      * Get root filesystem path where microservice resources may be stored.

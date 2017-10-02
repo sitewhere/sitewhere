@@ -27,6 +27,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.zookeeper.port:2181}")
     private int zookeeperPort;
 
+    /** Kafka bootstrap services configuration for microservices */
+    @Value("${sitewhere.kafka.bootstrap.servers:kafka:9092}")
+    private String kafkaBootstrapServers;
+
     /** File system root for storing SiteWhere data for microservices */
     @Value("${sitewhere.filesystem.storage.root:/var/sitewhere}")
     private String fileSystemStorageRoot;
@@ -89,6 +93,21 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setZookeeperPort(int zookeeperPort) {
 	this.zookeeperPort = zookeeperPort;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * getKafkaBootstrapServers()
+     */
+    @Override
+    public String getKafkaBootstrapServers() {
+	return kafkaBootstrapServers;
+    }
+
+    public void setKafkaBootstrapServers(String kafkaBootstrapServers) {
+	this.kafkaBootstrapServers = kafkaBootstrapServers;
     }
 
     /*
