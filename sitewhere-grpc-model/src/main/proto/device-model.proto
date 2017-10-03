@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "DeviceModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// #############################
+// ### DEVICE SPECIFICATIONS ###
+// #############################
+
+// Device container policy.
+enum GDeviceContainerPolicy {
+	STANDALONE = 0;
+	COMPOSITE = 1;
+}
+
+// Slot within a unit.
+message GDeviceSlot {
+	string name = 1;
+	string path = 2;
+}
+
+// Unit within a schema.
+message GDeviceUnit {
+	string name = 1;
+	string path = 2;
+	repeated GDeviceUnit units = 3;
+	repeated GDeviceSlot slots = 4;
+}
+
+// Device element schema.
+message GDeviceElementSchema {
+	repeated GDeviceUnit units = 1;
+	repeated GDeviceSlot slots = 2;
+}
+
+// Request for creating a device specification.
+message GDeviceSpecificationCreateRequest {
+	string token = 1;
+	string name = 2;
+	string assetModuleId = 3;
+	string assetId = 4;
+	GDeviceContainerPolicy containerPolicy = 5;
+	GDeviceElementSchema deviceElementSchema = 6;
+	map<string, string> metadata = 7;
+}
+
+// Criteria for searching device specifications.
+message GDeviceSpecificationSearchCriteria {
+	bool includeDeleted = 1;
+}
+
+// Device specification.
+message GDeviceSpecification {
+	string token = 1;
+	string name = 2;
+	string assetModuleId = 3;
+	string assetId = 4;
+	GDeviceContainerPolicy containerPolicy = 5;
+	GDeviceElementSchema deviceElementSchema = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// #######################
+// ### DEVICE COMMANDS ###
+// #######################
+
+// Device command parameter type.
+enum GParameterType {
+    DOUBLE = 0;
+    FLOAT = 1;
+    INT32 = 2;
+    INT64 = 3;
+    UINT32 = 4;
+    UINT64 = 5;
+    SINT32 = 6;
+    SINT64 = 7;
+    FIXED32 = 8;
+    FIXED64 = 9;
+    SFIXED32 = 10;
+    SFIXED64 = 11;
+    BOOL = 12;
+    STRING = 13;
+    BYTES = 14;
+}
+
+// Device command parameter.
+message GCommandParameter {
+	string name = 1;
+	GParameterType type = 2;
+	bool required = 3;
+}
+
+// Request for creating a device command.
+message GDeviceCommandCreateRequest {
+	string token = 1;
+	string namespace = 2;
+	string name = 3;
+	string description = 4;
+	repeated GCommandParameter parameters = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching device commands.
+message GDeviceCommandSearchCriteria {
+	string token = 1;
+	bool includeDeleted = 2;
+}
+
+// Device command.
+message GDeviceCommand {
+	string token = 1;
+	string specificationToken = 2;
+	string namespace = 3;
+	string name = 4;
+	string description = 5;
+	repeated GCommandParameter parameters = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}

@@ -11,6 +11,10 @@ import "tenant-model.proto";
 // Tenant management APIs.
 service TenantManagement {
 
+	// ###############
+	// ### TENANTS ###
+	// ###############
+
 	// Create a new tenant.
 	rpc CreateTenant (GCreateTenantRequest) returns (GCreateTenantResponse) {}
 
@@ -29,6 +33,10 @@ service TenantManagement {
 	// Delete an existing tenant.
 	rpc DeleteTenant (GDeleteTenantRequest) returns (GDeleteTenantResponse) {}
 }
+
+// ###############
+// ### TENANTS ###
+// ###############
 	
 // Request for creating a tenant.
 message GCreateTenantRequest {

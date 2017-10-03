@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "DeviceServices";
+
+import "device-model.proto";
+
+// Device management APIs.
+service DeviceManagement {
+
+	// #############################
+	// ### DEVICE SPECIFICATIONS ###
+	// #############################
+	
+	// Create a new device specification.
+	rpc CreateDeviceSpecification (GCreateDeviceSpecificationRequest) returns (GCreateDeviceSpecificationResponse) {}
+
+	// Get device specification by unique token.
+	rpc GetDeviceSpecificationByToken (GGetDeviceSpecificationByTokenRequest) returns (GGetDeviceSpecificationByTokenResponse) {}
+
+	// Update an existing device specification.
+	rpc UpdateDeviceSpecification (GUpdateDeviceSpecificationRequest) returns (GUpdateDeviceSpecificationResponse) {}
+
+	// List device specifications that meet criteria.
+	rpc ListDeviceSpecifications (GListDeviceSpecificationsRequest) returns (GListDeviceSpecificationsResponse) {}
+
+	// Delete an existing device specification.
+	rpc DeleteDeviceSpecification (GDeleteDeviceSpecificationRequest) returns (GDeleteDeviceSpecificationResponse) {}
+
+	// #######################
+	// ### DEVICE COMMANDS ###
+	// #######################
+	
+	// Create a new device command.
+	rpc CreateDeviceCommand (GCreateDeviceCommandRequest) returns (GCreateDeviceCommandResponse) {}
+	
+	// Get device command by unique token.
+	rpc GetDeviceCommandByToken (GGetDeviceCommandByTokenRequest) returns (GGetDeviceCommandByTokenResponse) {}
+	
+	// Update an existing device command.
+	rpc UpdateDeviceCommand (GGetDeviceCommandByTokenRequest) returns (GGetDeviceCommandByTokenResponse) {}
+
+	// List device commands that meet criteria.
+	rpc ListDeviceCommands (GListDeviceCommandsRequest) returns (GListDeviceCommandsResponse) {}
+
+	// Delete an existing device command.
+	rpc DeleteDeviceCommand (GDeleteDeviceCommandRequest) returns (GDeleteDeviceCommandResponse) {}
+}
+
+// #############################
+// ### DEVICE SPECIFICATIONS ###
+// #############################
+	
+// Request for creating a device specification.
+message GCreateDeviceSpecificationRequest {
+	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 1;
+}
+
+// Response from creating a device specification.
+message GCreateDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for getting a device specification by token.
+message GGetDeviceSpecificationByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a device specification by token.
+message GGetDeviceSpecificationByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for updating an existing device specification.
+message GUpdateDeviceSpecificationRequest {
+	string token = 1;
+	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 2;
+}
+	
+// Response for updating an existing device specification.
+message GUpdateDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for listing device specifications that meet criteria.
+message GListDeviceSpecificationsRequest {
+	com.sitewhere.grpc.model.GDeviceSpecificationSearchCriteria criteria = 1;
+}
+	
+// Response for listing device specifications that meet criteria.
+message GListDeviceSpecificationsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for deleting a device specification.
+message GDeleteDeviceSpecificationRequest {
+	string token = 1;
+}
+	
+// Response for deleting a device specification.
+message GDeleteDeviceSpecificationResponse {
+	repeated com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+
+// #######################
+// ### DEVICE COMMANDS ###
+// #######################
+	
+// Request for creating a device specification.
+message GCreateDeviceCommandRequest {
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 1;
+}
+
+// Response from creating a device specification.
+message GCreateDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+
+// Request for getting a device command by token.
+message GGetDeviceCommandByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a device command by token.
+message GGetDeviceCommandByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+	
+// Request for updating an existing device command.
+message GUpdateDeviceCommandRequest {
+	string token = 1;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
+}
+	
+// Response for updating an existing device command.
+message GUpdateDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+	
+// Request for listing device commands that meet criteria.
+message GListDeviceCommandsRequest {
+	com.sitewhere.grpc.model.GDeviceCommandSearchCriteria criteria = 1;
+}
+	
+// Response for listing device commands that meet criteria.
+message GListDeviceCommandsResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+	
+// Request for deleting a device command.
+message GDeleteDeviceCommandRequest {
+	string token = 1;
+}
+	
+// Response for deleting a device command.
+message GDeleteDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}

@@ -7,6 +7,10 @@ option java_outer_classname = "UserModel";
 import "sitewhere-common.proto";
 import "google/protobuf/timestamp.proto";
 
+// #############
+// ### USERS ###
+// #############
+
 // User account status
 enum GUserAccountStatus {
 	ACTIVE = 0;
@@ -42,6 +46,10 @@ message GUser {
 	map<string, string> metadata = 8;
 	GEntityInformation entityInformation = 9;
 }
+
+// ###########################
+// ### GRANTED AUTHORITIES ###
+// ###########################
 
 // Request for creating a granted authority.
 message GGrantedAuthorityCreateRequest {

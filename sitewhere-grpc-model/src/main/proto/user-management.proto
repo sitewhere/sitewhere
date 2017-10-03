@@ -11,6 +11,10 @@ import "user-model.proto";
 // User management APIs.
 service UserManagement {
 
+	// #############
+	// ### USERS ###
+	// #############
+
 	// Create a new user.
 	rpc CreateUser (GCreateUserRequest) returns (GCreateUserResponse) {}
 
@@ -31,6 +35,10 @@ service UserManagement {
 
 	// Delete an existing user.
 	rpc DeleteUser (GDeleteUserRequest) returns (GDeleteUserResponse) {}
+
+	// ###########################
+	// ### GRANTED AUTHORITIES ###
+	// ###########################
 
 	// Create a granted authority.
 	rpc CreateGrantedAuthority (GCreateGrantedAuthorityRequest) returns (GCreateGrantedAuthorityResponse) {}
@@ -56,6 +64,10 @@ service UserManagement {
 	// Remove granted authorities for a user.
 	rpc RemoveGrantedAuthoritiesForUser (GRemoveGrantedAuthoritiesRequest) returns (GRemoveGrantedAuthoritiesResponse) {}
 }
+
+// #############
+// ### USERS ###
+// #############
 	
 // Request for creating a user.
 message GCreateUserRequest {
@@ -133,6 +145,10 @@ message GDeleteUserRequest {
 message GDeleteUserResponse {
 	com.sitewhere.grpc.model.GUser user = 1;
 }
+
+// ###########################
+// ### GRANTED AUTHORITIES ###
+// ###########################
 
 // Request for creating a granted authority.
 message GCreateGrantedAuthorityRequest {

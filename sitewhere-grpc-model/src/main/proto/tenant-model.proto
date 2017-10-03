@@ -6,6 +6,10 @@ option java_outer_classname = "TenantModel";
 
 import "sitewhere-common.proto";
 
+// ###############
+// ### TENANTS ###
+// ###############
+
 // Information for creating a tenant.
 message GTenantCreateRequest {
 	string id = 1;
