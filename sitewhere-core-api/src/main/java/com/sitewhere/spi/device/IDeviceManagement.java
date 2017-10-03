@@ -233,15 +233,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException;
 
     /**
-     * Gets the current assignment for a device. Null if none.
-     * 
-     * @param device
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException;
-
-    /**
      * List devices that meet the given criteria.
      * 
      * @param includeDeleted
@@ -300,6 +291,15 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException;
+
+    /**
+     * Gets the current assignment for a device. Null if none.
+     * 
+     * @param device
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException;
 
     /**
      * Delete a device assignment. Depending on 'force' flag the assignment will

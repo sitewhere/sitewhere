@@ -47,14 +47,14 @@ service DeviceManagement {
 	rpc ListDeviceCommands (GListDeviceCommandsRequest) returns (GListDeviceCommandsResponse) {}
 
 	// Delete an existing device command.
-	rpc DeleteDeviceCommand (GDeleteDeviceCommandRequest) returns (GDeleteDeviceCommandResponse) {}
+	rpc DeleteDeviceCommand (GDeleteDeviceStatusRequest) returns (GDeleteDeviceCommandResponse) {}
 
 	// #######################
 	// ### DEVICE STATUSES ###
 	// #######################
 	
 	// Create a new device status.
-	rpc CraeteDeviceStatus (GCreateDeviceStatusRequest) returns (GCreateDeviceStatusResponse) {}
+	rpc CreateDeviceStatus (GCreateDeviceStatusRequest) returns (GCreateDeviceStatusResponse) {}
 	
 	// Get device status by unique code.
 	rpc GetDeviceStatusByCode (GGetDeviceStatusByCodeRequest) returns (GGetDeviceStatusByCodeResponse) {}
@@ -64,6 +64,34 @@ service DeviceManagement {
 
 	// List device statuses that meet criteria.
 	rpc ListDeviceStatuses (GListDeviceStatusesRequest) returns (GListDeviceStatusesResponse) {}
+
+	// Delete an existing device status.
+	rpc DeleteDeviceStatus (GDeleteDeviceCommandRequest) returns (GDeleteDeviceStatusResponse) {}
+
+	// ###############
+	// ### DEVICES ###
+	// ###############
+	
+	// Create a new device.
+	rpc CreateDevice (GCreateDeviceRequest) returns (GCreateDeviceResponse) {}
+	
+	// Get a device by unique hardware id.
+	rpc GetDeviceByHardwareId (GGetDeviceByaHardwareIdRequest) returns (GGetDeviceByaHardwareIdResponse) {}
+	
+	// Update an existing device.
+	rpc UpdateDevice (GUpdateDeviceRequest) returns (GUpdateDeviceResponse) {}
+
+	// List devices that meet criteria.
+	rpc ListDevices (GListDevicesRequest) returns (GListDevicesResponse) {}
+
+	// Create a device element mapping.
+	rpc CreateDeviceElementMapping (GCreateDeviceElementMappingRequest) returns (GCreateDeviceElementMappingResponse) {}
+
+	// Delete a device element mapping.
+	rpc DeleteDeviceElementMapping (GDeleteDeviceElementMappingRequest) returns (GDeleteDeviceElementMappingResponse) {}
+
+	// Delete an existing device.
+	rpc DeleteDevice (GDeleteDeviceRequest) returns (GDeleteDeviceResponse) {}
 }
 
 // #############################
@@ -108,7 +136,7 @@ message GListDeviceSpecificationsRequest {
 	
 // Response for listing device specifications that meet criteria.
 message GListDeviceSpecificationsResponse {
-	repeated com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+	com.sitewhere.grpc.model.GDeviceSpecificationSearchResults results = 1;
 }
 	
 // Request for deleting a device specification.
@@ -239,4 +267,81 @@ message GDeleteDeviceStatusRequest {
 // Response for deleting a device status.
 message GDeleteDeviceStatusResponse {
 	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+
+// ###############
+// ### DEVICES ###
+// ###############
+	
+// Request for creating a device.
+message GCreateDeviceRequest {
+	com.sitewhere.grpc.model.GDeviceCreateRequest request = 1;
+}
+
+// Response from creating a device.
+message GCreateDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for getting a device by hardware id.
+message GGetDeviceByaHardwareIdRequest {
+	string hardwareId = 1;
+}
+	
+// Response for getting a device by hardware id.
+message GGetDeviceByaHardwareIdResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for updating an existing device.
+message GUpdateDeviceRequest {
+	string hardwareId = 1;
+	com.sitewhere.grpc.model.GDeviceCreateRequest request = 2;
+}
+	
+// Response for updating an existing device.
+message GUpdateDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for listing devices that meet criteria.
+message GListDevicesRequest {
+	com.sitewhere.grpc.model.GDeviceSearchCriteria criteria = 1;
+}
+	
+// Response for listing devices that meet criteria.
+message GListDevicesResponse {
+	com.sitewhere.grpc.model.GDeviceSearchResults results = 1;
+}
+	
+// Request for creating a device element mapping.
+message GCreateDeviceElementMappingRequest {
+	string hardwareId = 1;
+	com.sitewhere.grpc.model.GDeviceElementMapping mapping = 2;
+}
+	
+// Response for creating a device element mapping.
+message GCreateDeviceElementMappingResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for creating a device element mapping.
+message GDeleteDeviceElementMappingRequest {
+	string hardwareId = 1;
+	string path = 2;
+}
+	
+// Response for creating a device element mapping.
+message GDeleteDeviceElementMappingResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for deleting a device.
+message GDeleteDeviceRequest {
+	string hardwareId = 1;
+}
+	
+// Response for deleting a device.
+message GDeleteDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
 }

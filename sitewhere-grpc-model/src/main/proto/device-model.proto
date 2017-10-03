@@ -53,6 +53,17 @@ message GDeviceSpecificationSearchCriteria {
 	bool includeDeleted = 1;
 }
 
+// Results for device specification search.
+message GDeviceSpecificationSearchResults {
+	int64 count = 1;
+	repeated GDeviceSpecification specifications = 2;
+}
+
+// Reference to a device specification by token.
+message GDeviceSpecificationReference {
+	string token = 1;
+}
+
 // Device specification.
 message GDeviceSpecification {
 	string token = 1;
@@ -153,4 +164,64 @@ message GDeviceStatus {
 	string borderColor = 6;
 	string icon = 7;
 	map<string, string> metadata = 8;
+}
+
+// ###############
+// ### DEVICES ###
+// ###############
+
+// Device element mapping.
+message GDeviceElementMapping {
+	string schemaPath = 1;
+	string hardwareId = 2;
+}
+
+// Request for creating a device.
+message GDeviceCreateRequest {
+	string hardwareId = 1;
+	string siteToken = 2;
+	string specificationToken = 3;
+	string parentHardwareId = 4;
+	repeated GDeviceElementMapping deviceElementMappings = 5;
+	string comments = 6;
+	string status = 7;
+	map<string, string> metadata = 8;
+}
+
+// Criteria for searching devices.
+message GDeviceSearchCriteria {
+	GDeviceSpecificationReference specification = 1;
+	GSiteReference site = 2;
+	bool excludeAssigned = 3;
+	google.protobuf.Timestamp createdAfter = 4;
+	google.protobuf.Timestamp createdBefore = 5;
+}
+
+// Results for device search.
+message GDeviceSearchResults {
+	int64 count = 1;
+	repeated GDevice devices = 2;
+}
+
+// Device.
+message GDevice {
+	string hardwareId = 1;
+	string siteToken = 2;
+	string specificationToken = 3;
+	string assignmentToken = 4;
+	string parentHardwareId = 5;
+	repeated GDeviceElementMapping deviceElementMappings = 6;
+	string comments = 7;
+	string status = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
+}
+
+// #############
+// ### SITES ###
+// #############
+
+// Reference to a site by token.
+message GSiteReference {
+	string token = 1;
 }
