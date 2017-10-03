@@ -10,8 +10,8 @@ package com.sitewhere.spi.device.request;
 import java.util.Date;
 import java.util.Map;
 
-import com.sitewhere.spi.device.batch.BatchOperationStatus;
-import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.batch.BatchOperationStatus;
+import com.sitewhere.spi.batch.IBatchOperation;
 
 /**
  * Defines fields that can be updated on an {@link IBatchOperation}.

@@ -8,7 +8,7 @@
 package com.sitewhere.batch;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**

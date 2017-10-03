@@ -2,6 +2,9 @@ description = 'SiteWhere Batch Operations Microservice'
 
 dependencies {
 	compile project(':sitewhere-core')
+	compile project(':sitewhere-mongodb')
+	compile project(':sitewhere-hbase')
+	compile project(':sitewhere-microservice')
 }
 
 apply plugin: 'org.springframework.boot'

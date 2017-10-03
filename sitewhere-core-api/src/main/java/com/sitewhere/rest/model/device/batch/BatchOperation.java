@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.BatchOperationStatus;
-import com.sitewhere.spi.device.batch.IBatchOperation;
-import com.sitewhere.spi.device.batch.OperationType;
+import com.sitewhere.spi.batch.BatchOperationStatus;
+import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.OperationType;
 
 /**
  * Model object for a batch operation.

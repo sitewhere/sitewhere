@@ -17,6 +17,7 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -280,6 +281,17 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
     @Override
     public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException {
 	return server.getAssetManagement(tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getBatchManagement(com.
+     * sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public IBatchManagement getBatchManagement(ITenant tenant) throws SiteWhereException {
+	return server.getBatchManagement(tenant);
     }
 
     /*

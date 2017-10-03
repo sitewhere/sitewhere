@@ -122,3 +122,35 @@ message GDeviceCommand {
 	map<string, string> metadata = 7;
 	GEntityInformation entityInformation = 8;
 }
+
+// #######################
+// ### DEVICE STATUSES ###
+// #######################
+
+// Request for creating a device status.
+message GDeviceStatusCreateRequest {
+	string code = 1;
+	string name = 2;
+	string backgroundColor = 3;
+	string foregroundColor = 4;
+	string borderColor = 5;
+	string icon = 6;
+	map<string, string> metadata = 7;
+}
+
+// Criteria for searching device statuses.
+message GDeviceStatusSearchCriteria {
+	string code = 1;
+}
+
+// Device status.
+message GDeviceStatus {
+	string code = 1;
+	string specificationToken = 2;
+	string name = 3;
+	string backgroundColor = 4;
+	string foregroundColor = 5;
+	string borderColor = 6;
+	string icon = 7;
+	map<string, string> metadata = 8;
+}

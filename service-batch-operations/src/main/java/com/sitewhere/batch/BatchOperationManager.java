@@ -26,12 +26,12 @@ import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.batch.BatchOperationStatus;
+import com.sitewhere.spi.batch.ElementProcessingStatus;
+import com.sitewhere.spi.batch.IBatchElement;
+import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.batch.BatchOperationStatus;
-import com.sitewhere.spi.device.batch.ElementProcessingStatus;
-import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -161,12 +161,12 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.Processing);
 		request.setProcessingStartedDate(new Date());
-		SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchOperation(operation.getToken(),
+		SiteWhere.getServer().getBatchManagement(getTenant()).updateBatchOperation(operation.getToken(),
 			request);
 
 		// Process all batch elements.
 		IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
-		ISearchResults<IBatchElement> matches = SiteWhere.getServer().getDeviceManagement(getTenant())
+		ISearchResults<IBatchElement> matches = SiteWhere.getServer().getBatchManagement(getTenant())
 			.listBatchElements(operation.getToken(), criteria);
 		BatchProcessingResults result = processBatchElements(operation, matches.getResults());
 
@@ -177,7 +177,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 		if (result.getErrorCount() > 0) {
 		    request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
 		}
-		SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchOperation(operation.getToken(),
+		SiteWhere.getServer().getBatchManagement(getTenant()).updateBatchOperation(operation.getToken(),
 			request);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Error processing batch operation.", e);
@@ -226,7 +226,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 		// Indicate element is being processed.
 		BatchElementUpdateRequest request = new BatchElementUpdateRequest();
 		request.setProcessingStatus(ElementProcessingStatus.Processing);
-		SiteWhere.getServer().getDeviceManagement(getTenant())
+		SiteWhere.getServer().getBatchManagement(getTenant())
 			.updateBatchElement(element.getBatchOperationToken(), element.getIndex(), request);
 
 		request = new BatchElementUpdateRequest();
@@ -249,7 +249,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 		    LOGGER.error("Error processing batch invocation element.", t);
 		    request.setProcessingStatus(ElementProcessingStatus.Failed);
 		} finally {
-		    IBatchElement updated = SiteWhere.getServer().getDeviceManagement(getTenant())
+		    IBatchElement updated = SiteWhere.getServer().getBatchManagement(getTenant())
 			    .updateBatchElement(element.getBatchOperationToken(), element.getIndex(), request);
 		    results.process(updated);
 		}

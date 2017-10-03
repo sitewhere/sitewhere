@@ -48,6 +48,22 @@ service DeviceManagement {
 
 	// Delete an existing device command.
 	rpc DeleteDeviceCommand (GDeleteDeviceCommandRequest) returns (GDeleteDeviceCommandResponse) {}
+
+	// #######################
+	// ### DEVICE STATUSES ###
+	// #######################
+	
+	// Create a new device status.
+	rpc CraeteDeviceStatus (GCreateDeviceStatusRequest) returns (GCreateDeviceStatusResponse) {}
+	
+	// Get device status by unique code.
+	rpc GetDeviceStatusByCode (GGetDeviceStatusByCodeRequest) returns (GGetDeviceStatusByCodeResponse) {}
+	
+	// Update an existing device status.
+	rpc UpdateDeviceStatus (GUpdateDeviceStatusRequest) returns (GUpdateDeviceStatusResponse) {}
+
+	// List device statuses that meet criteria.
+	rpc ListDeviceStatuses (GListDeviceStatusesRequest) returns (GListDeviceStatusesResponse) {}
 }
 
 // #############################
@@ -111,7 +127,8 @@ message GDeleteDeviceSpecificationResponse {
 	
 // Request for creating a device specification.
 message GCreateDeviceCommandRequest {
-	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 1;
+	string specificationToken = 1;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
 }
 
 // Response from creating a device specification.
@@ -121,7 +138,8 @@ message GCreateDeviceCommandResponse {
 
 // Request for getting a device command by token.
 message GGetDeviceCommandByTokenRequest {
-	string token = 1;
+	string specificationToken = 1;
+	string token = 2;
 }
 	
 // Response for getting a device command by token.
@@ -131,8 +149,9 @@ message GGetDeviceCommandByTokenResponse {
 	
 // Request for updating an existing device command.
 message GUpdateDeviceCommandRequest {
-	string token = 1;
-	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
+	string specificationToken = 1;
+	string token = 2;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 3;
 }
 	
 // Response for updating an existing device command.
@@ -142,7 +161,8 @@ message GUpdateDeviceCommandResponse {
 	
 // Request for listing device commands that meet criteria.
 message GListDeviceCommandsRequest {
-	com.sitewhere.grpc.model.GDeviceCommandSearchCriteria criteria = 1;
+	string specificationToken = 1;
+	com.sitewhere.grpc.model.GDeviceCommandSearchCriteria criteria = 2;
 }
 	
 // Response for listing device commands that meet criteria.
@@ -152,10 +172,71 @@ message GListDeviceCommandsResponse {
 	
 // Request for deleting a device command.
 message GDeleteDeviceCommandRequest {
-	string token = 1;
+	string specificationToken = 1;
+	string token = 2;
 }
 	
 // Response for deleting a device command.
 message GDeleteDeviceCommandResponse {
 	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+
+// #######################
+// ### DEVICE STATUSES ###
+// #######################
+	
+// Request for creating a device status.
+message GCreateDeviceStatusRequest {
+	string specificationToken = 1;
+	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 2;
+}
+
+// Response from creating a device status.
+message GCreateDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+
+// Request for getting a device status by code.
+message GGetDeviceStatusByCodeRequest {
+	string specificationToken = 1;
+	string code = 2;
+}
+	
+// Response for getting a device status by code.
+message GGetDeviceStatusByCodeResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for updating an existing device status.
+message GUpdateDeviceStatusRequest {
+	string specificationToken = 1;
+	string code = 2;
+	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 3;
+}
+	
+// Response for updating an existing device status.
+message GUpdateDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for listing device statuses that meet criteria.
+message GListDeviceStatusesRequest {
+	string specificationToken = 1;
+	com.sitewhere.grpc.model.GDeviceStatusSearchCriteria criteria = 2;
+}
+	
+// Response for listing device statuses that meet criteria.
+message GListDeviceStatusesResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for deleting a device status.
+message GDeleteDeviceStatusRequest {
+	string specificationToken = 1;
+	string code = 2;
+}
+	
+// Response for deleting a device status.
+message GDeleteDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
 }

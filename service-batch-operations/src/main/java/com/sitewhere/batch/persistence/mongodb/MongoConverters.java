@@ -5,23 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.persistence.mongodb;
+package com.sitewhere.batch.persistence.mongodb;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.device.IDeviceStatus;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.group.IDeviceGroup;
-import com.sitewhere.spi.device.group.IDeviceGroupElement;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.batch.IBatchElement;
+import com.sitewhere.spi.batch.IBatchOperation;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -35,17 +27,9 @@ public class MongoConverters implements IMongoConverterLookup {
 
     /** Create a list of converters for various types */
     static {
-	// Converters for device management.
-	CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
-	CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
-	CONVERTERS.put(IDeviceStatus.class, new MongoDeviceStatus());
-	CONVERTERS.put(IDevice.class, new MongoDevice());
-	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
-	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
-	CONVERTERS.put(ISite.class, new MongoSite());
-	CONVERTERS.put(IZone.class, new MongoZone());
-	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
-	CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
+	// Converters for batch management.
+	CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
+	CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
     }
 
     /*

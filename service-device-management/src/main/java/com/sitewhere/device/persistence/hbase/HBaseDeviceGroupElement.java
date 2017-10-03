@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
+import com.sitewhere.hbase.common.DeleteRecord;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;

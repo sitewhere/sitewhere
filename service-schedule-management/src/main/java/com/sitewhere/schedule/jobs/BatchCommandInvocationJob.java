@@ -71,7 +71,7 @@ public class BatchCommandInvocationJob implements Job {
 	    invoke.setParameterValues(criteria.getParameterValues());
 	    invoke.setHardwareIds(hardwareIds);
 
-	    SiteWhere.getServer().getDeviceManagement(tenant).createBatchCommandInvocation(invoke);
+	    SiteWhere.getServer().getBatchManagement(tenant).createBatchCommandInvocation(invoke);
 
 	    LOGGER.info("Executed batch command invocation job.");
 	} catch (SiteWhereException e) {

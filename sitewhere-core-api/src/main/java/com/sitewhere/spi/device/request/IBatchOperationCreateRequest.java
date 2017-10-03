@@ -10,8 +10,8 @@ package com.sitewhere.spi.device.request;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.device.batch.IBatchOperation;
-import com.sitewhere.spi.device.batch.OperationType;
+import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.OperationType;
 
 /**
  * Provides information needex to create an {@link IBatchOperation}.

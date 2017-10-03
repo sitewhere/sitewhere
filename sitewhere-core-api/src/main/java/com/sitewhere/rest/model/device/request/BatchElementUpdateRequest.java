@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 
 /**

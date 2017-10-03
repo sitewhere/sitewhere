@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.device.batch.OperationType;
+import com.sitewhere.spi.batch.OperationType;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 
 /**

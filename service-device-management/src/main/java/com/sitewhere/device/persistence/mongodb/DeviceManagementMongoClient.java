@@ -11,7 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Mongo client for interacting with device managment object model.
+ * Mongo client for interacting with device management object model.
  * 
  * @author Derek
  */
@@ -52,12 +52,6 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
 
     /** Injected name used for device stream data collection */
     private String streamDataCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME;
-
-    /** Injected name used for batch operations collection */
-    private String batchOperationsCollectionName = IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
-
-    /** Injected name used for batch operation elements collection */
-    private String batchOperationElementsCollectionName = IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
 
     public DeviceManagementMongoClient(MongoConfiguration configuration) {
 	super(configuration);
@@ -181,26 +175,6 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getBatchOperationsCollection (com.sitewhere.spi.user.ITenant)
-     */
-    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getBatchOperationsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getBatchOperationElementsCollection (com.sitewhere.spi.user.ITenant)
-     */
-    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
@@ -294,21 +268,5 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
 
     public void setStreamDataCollectionName(String streamDataCollectionName) {
 	this.streamDataCollectionName = streamDataCollectionName;
-    }
-
-    public String getBatchOperationsCollectionName() {
-	return batchOperationsCollectionName;
-    }
-
-    public void setBatchOperationsCollectionName(String batchOperationsCollectionName) {
-	this.batchOperationsCollectionName = batchOperationsCollectionName;
-    }
-
-    public String getBatchOperationElementsCollectionName() {
-	return batchOperationElementsCollectionName;
-    }
-
-    public void setBatchOperationElementsCollectionName(String batchOperationElementsCollectionName) {
-	this.batchOperationElementsCollectionName = batchOperationElementsCollectionName;
     }
 }

@@ -8,7 +8,7 @@
 package com.sitewhere.rest.model.search.device;
 
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**

@@ -21,16 +21,10 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -45,7 +39,6 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
-import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -388,51 +381,6 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     @Override
     public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
 	return delegate.deleteDeviceGroup(token, force);
-    }
-
-    @Override
-    public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
-	return delegate.createBatchOperation(request);
-    }
-
-    @Override
-    public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
-	    throws SiteWhereException {
-	return delegate.updateBatchOperation(token, request);
-    }
-
-    @Override
-    public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-	return delegate.getBatchOperation(token);
-    }
-
-    @Override
-    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.listBatchOperations(includeDeleted, criteria);
-    }
-
-    @Override
-    public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteBatchOperation(token, force);
-    }
-
-    @Override
-    public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.listBatchElements(batchToken, criteria);
-    }
-
-    @Override
-    public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
-	    throws SiteWhereException {
-	return delegate.updateBatchElement(operationToken, index, request);
-    }
-
-    @Override
-    public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
-	    throws SiteWhereException {
-	return delegate.createBatchCommandInvocation(request);
     }
 
     public IDeviceManagement getDelegate() {

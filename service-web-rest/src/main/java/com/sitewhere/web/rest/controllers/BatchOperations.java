@@ -33,13 +33,15 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.batch.IBatchElement;
+import com.sitewhere.spi.batch.IBatchManagement;
+import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
@@ -70,8 +72,7 @@ public class BatchOperations extends RestController {
     public IBatchOperation getBatchOperationByToken(
 	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IBatchOperation batch = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getBatchOperation(batchToken);
+	IBatchOperation batch = getBatchManagement(getTenant(servletRequest)).getBatchOperation(batchToken);
 	if (batch == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 	}
@@ -88,7 +89,7 @@ public class BatchOperations extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IBatchOperation> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+	ISearchResults<IBatchOperation> results = getBatchManagement(getTenant(servletRequest))
 		.listBatchOperations(includeDeleted, criteria);
 	List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
 	for (IBatchOperation op : results.getResults()) {
@@ -107,7 +108,7 @@ public class BatchOperations extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
-	ISearchResults<IBatchElement> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+	ISearchResults<IBatchElement> results = getBatchManagement(getTenant(servletRequest))
 		.listBatchElements(operationToken, criteria);
 	return results;
     }
@@ -118,8 +119,7 @@ public class BatchOperations extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createBatchCommandInvocation(request);
+	IBatchOperation result = getBatchManagement(getTenant(servletRequest)).createBatchCommandInvocation(request);
 	return BatchOperation.copy(result);
     }
 
@@ -148,8 +148,7 @@ public class BatchOperations extends RestController {
 	invoke.setParameterValues(request.getParameterValues());
 	invoke.setHardwareIds(hardwareIds);
 
-	IBatchOperation result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createBatchCommandInvocation(invoke);
+	IBatchOperation result = getBatchManagement(getTenant(servletRequest)).createBatchCommandInvocation(invoke);
 	return BatchOperation.copy(result);
     }
 
@@ -195,5 +194,9 @@ public class BatchOperations extends RestController {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
 	return command;
+    }
+
+    protected IBatchManagement getBatchManagement(ITenant tenant) {
+	return null;
     }
 }

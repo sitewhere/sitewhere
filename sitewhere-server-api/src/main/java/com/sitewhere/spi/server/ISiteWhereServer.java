@@ -16,6 +16,7 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -199,6 +200,15 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException;
+
+    /**
+     * Get batch management implementation for the given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public IBatchManagement getBatchManagement(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get schedule management implementation for the given tenant.
