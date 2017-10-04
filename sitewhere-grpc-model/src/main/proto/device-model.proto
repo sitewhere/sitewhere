@@ -11,12 +11,6 @@ import "google/protobuf/timestamp.proto";
 // ### DEVICE SPECIFICATIONS ###
 // #############################
 
-// Device container policy.
-enum GDeviceContainerPolicy {
-	CONTAINER_STANDALONE = 0;
-	CONTAINER_COMPOSITE = 1;
-}
-
 // Slot within a unit.
 message GDeviceSlot {
 	string name = 1;
@@ -80,25 +74,6 @@ message GDeviceSpecification {
 // #######################
 // ### DEVICE COMMANDS ###
 // #######################
-
-// Device command parameter type.
-enum GParameterType {
-    PARAMETER_DOUBLE = 0;
-    PARAMETER_FLOAT = 1;
-    PARAMETER_INT32 = 2;
-    PARAMETER_INT64 = 3;
-    PARAMETER_UINT32 = 4;
-    PARAMETER_UINT64 = 5;
-    PARAMETER_SINT32 = 6;
-    PARAMETER_SINT64 = 7;
-    PARAMETER_FIXED32 = 8;
-    PARAMETER_FIXED64 = 9;
-    PARAMETER_SFIXED32 = 10;
-    PARAMETER_SFIXED64 = 11;
-    PARAMETER_BOOL = 12;
-    PARAMETER_STRING = 13;
-    PARAMETER_BYTES = 14;
-}
 
 // Device command parameter.
 message GCommandParameter {
@@ -223,12 +198,6 @@ message GDevice {
 // ### DEVICE GROUPS ###
 // #####################
 
-// Device group element type.
-enum GDeviceGroupElementType {
-	ELEMENT_TYPE_DEVICE = 0;
-	ELEMENT_TYPE_GROUP = 1;
-}
-
 // Request data for creating a device group element.
 message GDeviceGroupElementCreateRequest {
 	GDeviceGroupElementType type = 1;
@@ -297,19 +266,6 @@ message GDeviceGroup {
 // ##########################
 // ### DEVICE ASSIGNMENTS ###
 // ##########################
-
-// Device assignment type.
-enum GDeviceAssignmentType {
-	ASSN_TYPE_UNASSOCIATED = 0;
-	ASSN_TYPE_ASSOCIATED = 1;
-}
-
-// Device assignment status.
-enum GDeviceAssignmentStatus {
-	ASSN_STATUS_ACTIVE = 0;
-	ASSN_STATUS_MISSING = 1;
-	ASSN_STATUS_RELEASED = 2;
-}
 
 // Request data for creating a device assignment.
 message GDeviceAssignmentCreateRequest {

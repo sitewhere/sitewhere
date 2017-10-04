@@ -309,7 +309,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 
 	    // Invoke the command.
 	    IDeviceCommandInvocation invocation = SiteWhere.getServer().getDeviceEventManagement(getTenant())
-		    .addDeviceCommandInvocation(assignment.getToken(), command, request);
+		    .addDeviceCommandInvocation(assignment.getToken(), request);
 	    metadata = new HashMap<String, String>();
 	    metadata.put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID, invocation.getId());
 	    updated.setMetadata(metadata);

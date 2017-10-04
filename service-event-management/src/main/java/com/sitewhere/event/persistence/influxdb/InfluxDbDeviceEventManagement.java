@@ -34,7 +34,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -381,20 +380,6 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (java. util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	List<IDeviceLocation> locations = new ArrayList<IDeviceLocation>();
-	return new SearchResults<IDeviceLocation>(locations);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
      * .lang. String,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
@@ -490,17 +475,16 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation (java.lang.String,
-     * com.sitewhere.spi.device.command.IDeviceCommand,
+     * addDeviceCommandInvocation(java.lang.String,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
-		command, request);
+		request);
 	ci.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);

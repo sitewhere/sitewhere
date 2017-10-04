@@ -7,12 +7,9 @@
  */
 package com.sitewhere.event;
 
-import java.util.List;
-
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -232,19 +229,6 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (java.util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return delegate.listDeviceLocations(assignmentTokens, criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
      * .lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
@@ -326,14 +310,13 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandInvocation(java.lang.String,
-     * com.sitewhere.spi.device.command.IDeviceCommand,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	return delegate.addDeviceCommandInvocation(assignmentToken, command, request);
+	return delegate.addDeviceCommandInvocation(assignmentToken, request);
     }
 
     /*

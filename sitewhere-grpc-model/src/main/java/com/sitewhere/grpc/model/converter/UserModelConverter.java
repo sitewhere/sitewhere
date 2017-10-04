@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.grpc.model.CommonModel.GGrantedAuthorityReference;
+import com.sitewhere.grpc.model.CommonModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthority;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityCreateRequest;
 import com.sitewhere.grpc.model.UserModel.GUser;
-import com.sitewhere.grpc.model.UserModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
 import com.sitewhere.grpc.model.UserModel.GUserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthority;

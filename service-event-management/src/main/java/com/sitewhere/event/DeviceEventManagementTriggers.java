@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -139,16 +138,15 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.device.DeviceEventManagementDecorator#
-     * addDeviceCommandInvocation( java.lang.String,
-     * com.sitewhere.spi.device.command.IDeviceCommand,
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#
+     * addDeviceCommandInvocation(java.lang.String,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
+	IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, request);
 	if (isReadyForOutboundProcessing()) {
 	    getEventProcessing().getOutboundProcessingStrategy().onCommandInvocation(result);
 	}

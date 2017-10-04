@@ -37,7 +37,6 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.ICommandParameter;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandStatus;
@@ -223,22 +222,18 @@ public class DeviceEventManagementPersistence extends Persistence {
      * {@link IDeviceCommandInvocationCreateRequest}.
      * 
      * @param assignment
-     * @param command
      * @param request
      * @return
      * @throws SiteWhereException
      */
     public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
-	    IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	requireNotNull(request.getInitiator());
 	requireNotNull(request.getTarget());
 
-	for (ICommandParameter parameter : command.getParameters()) {
-	    checkData(parameter, request.getParameterValues());
-	}
 	DeviceCommandInvocation ci = new DeviceCommandInvocation();
 	deviceEventCreateLogic(request, assignment, ci);
-	ci.setCommandToken(command.getToken());
+	ci.setCommandToken(request.getCommandToken());
 	ci.setInitiator(request.getInitiator());
 	ci.setInitiatorId(request.getInitiatorId());
 	ci.setTarget(request.getTarget());
@@ -259,7 +254,8 @@ public class DeviceEventManagementPersistence extends Persistence {
      * @param values
      * @throws SiteWhereException
      */
-    private static void checkData(ICommandParameter parameter, Map<String, String> values) throws SiteWhereException {
+    protected static void checkParameter(ICommandParameter parameter, Map<String, String> values)
+	    throws SiteWhereException {
 
 	String value = values.get(parameter.getName());
 	boolean parameterValueIsNull = (value == null);

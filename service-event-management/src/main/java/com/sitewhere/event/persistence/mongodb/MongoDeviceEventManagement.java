@@ -41,7 +41,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -391,26 +390,6 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (java. util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public SearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
-	Document query = new Document();
-	query.put(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, new BasicDBObject("$in", assignmentTokens));
-	query.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
-	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
-	return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria, LOOKUP);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
      * .lang. String,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
@@ -541,17 +520,16 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation (java.lang.String,
-     * com.sitewhere.spi.device.command.IDeviceCommand,
+     * addDeviceCommandInvocation(java.lang.String,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
-		command, request);
+		request);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenant());
 	Document ciObject = MongoDeviceCommandInvocation.toDocument(ci);

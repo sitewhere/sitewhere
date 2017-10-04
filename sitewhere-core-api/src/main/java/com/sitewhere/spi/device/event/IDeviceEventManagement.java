@@ -7,11 +7,8 @@
  */
 package com.sitewhere.spi.device.event;
 
-import java.util.List;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -154,17 +151,6 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device locations for the given tokens within the given time range.
-     * 
-     * @param assignmentTokens
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
      * Add alert for a given device assignment.
      * 
      * @param assignmentToken
@@ -237,12 +223,11 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
      * Add a device command invocation event for the given assignment.
      * 
      * @param assignmentToken
-     * @param command
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
     /**

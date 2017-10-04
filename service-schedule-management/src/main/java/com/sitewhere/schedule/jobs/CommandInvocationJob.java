@@ -22,8 +22,6 @@ import org.quartz.SchedulerException;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -68,9 +66,7 @@ public class CommandInvocationJob implements Job {
 	try {
 	    ITenant tenant = SiteWhere.getServer().getTenantManagement()
 		    .getTenantById(context.getScheduler().getSchedulerName());
-	    IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(tenant);
 	    IDeviceEventManagement events = SiteWhere.getServer().getDeviceEventManagement(tenant);
-	    IDeviceCommand command = devices.getDeviceCommandByToken(getCommandToken());
 	    DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
 	    create.setCommandToken(getCommandToken());
 	    create.setParameterValues(getParameters());
@@ -79,7 +75,7 @@ public class CommandInvocationJob implements Job {
 	    create.setTarget(CommandTarget.Assignment);
 	    create.setTargetId(getAssignmentToken());
 	    create.setEventDate(new Date());
-	    events.addDeviceCommandInvocation(assignmentToken, command, create);
+	    events.addDeviceCommandInvocation(assignmentToken, create);
 	    LOGGER.info("Executed command invocation job.");
 	} catch (SiteWhereException e) {
 	    throw new JobExecutionException("Unable to create command invocation.", e);

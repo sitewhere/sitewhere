@@ -93,7 +93,7 @@ public class DeviceActions implements IDeviceActions {
 	create.setTarget(CommandTarget.Assignment);
 	create.setTargetId(assignment.getToken());
 	create.setEventDate(new Date());
-	getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
+	getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), create);
     }
 
     public IDeviceManagement getDeviceManagement() {

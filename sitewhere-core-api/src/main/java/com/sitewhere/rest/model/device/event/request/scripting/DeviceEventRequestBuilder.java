@@ -77,16 +77,15 @@ public class DeviceEventRequestBuilder {
     }
 
     public AssignmentScope forSameAssignmentAs(DeviceEventSupport support) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(),
-		support.data().getDeviceAssignmentToken());
+	return new AssignmentScope(getEventManagement(), support.data().getDeviceAssignmentToken());
     }
 
     public AssignmentScope forSameAssignmentAs(IDeviceEvent event) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(), event.getDeviceAssignmentToken());
+	return new AssignmentScope(getEventManagement(), event.getDeviceAssignmentToken());
     }
 
     public AssignmentScope forAssignment(String assignmentToken) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(), assignmentToken);
+	return new AssignmentScope(getEventManagement(), assignmentToken);
     }
 
     public IDeviceManagement getDeviceManagement() {
@@ -107,18 +106,13 @@ public class DeviceEventRequestBuilder {
 
     public static class AssignmentScope {
 
-	/** Device management interface */
-	private IDeviceManagement deviceManagement;
-
 	/** Event management interface */
 	private IDeviceEventManagement events;
 
 	/** Assignment token */
 	private String assignmentToken;
 
-	public AssignmentScope(IDeviceManagement deviceManagement, IDeviceEventManagement events,
-		String assignmentToken) {
-	    this.deviceManagement = deviceManagement;
+	public AssignmentScope(IDeviceEventManagement events, String assignmentToken) {
 	    this.events = events;
 	    this.assignmentToken = assignmentToken;
 	}
@@ -143,8 +137,7 @@ public class DeviceEventRequestBuilder {
 
 	public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    IDeviceCommand command = deviceManagement.getDeviceCommandByToken(request.getCommandToken());
-	    events.addDeviceCommandInvocation(getAssignmentToken(), command, request);
+	    events.addDeviceCommandInvocation(getAssignmentToken(), request);
 	    return this;
 	}
 

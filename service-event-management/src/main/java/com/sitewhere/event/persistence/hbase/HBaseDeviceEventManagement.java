@@ -7,8 +7,6 @@
  */
 package com.sitewhere.event.persistence.hbase;
 
-import java.util.List;
-
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +25,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -294,19 +291,6 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (java. util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public SearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented yet for HBase device management.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
      * .lang. String,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
@@ -391,16 +375,15 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation (java.lang.String,
-     * com.sitewhere.spi.device.command.IDeviceCommand,
+     * addDeviceCommandInvocation(java.lang.String,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-	return HBaseDeviceEvent.createDeviceCommandInvocation(context, assignment, command, request);
+	return HBaseDeviceEvent.createDeviceCommandInvocation(context, assignment, request);
     }
 
     /*

@@ -47,7 +47,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -383,8 +382,7 @@ public class HBaseDeviceEvent {
      * @throws SiteWhereException
      */
     public static IDeviceCommandInvocation createDeviceCommandInvocation(IHBaseContext context,
-	    IDeviceAssignment assignment, IDeviceCommand command, IDeviceCommandInvocationCreateRequest request)
-	    throws SiteWhereException {
+	    IDeviceAssignment assignment, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	long time = getEventTime(request);
 	byte[] rowkey = getEventRowKey(context, assignment, time);
 	byte[] qualifier = getQualifier(EventRecordType.CommandInvocation, time,
@@ -392,7 +390,7 @@ public class HBaseDeviceEvent {
 
 	// Create a command invocation and marshal to JSON.
 	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
-		command, request);
+		request);
 	String id = getEncodedEventId(rowkey, qualifier);
 	ci.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandInvocation(ci);

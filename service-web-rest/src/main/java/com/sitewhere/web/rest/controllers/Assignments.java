@@ -664,9 +664,8 @@ public class Assignments extends RestController {
     public DeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
 	IDeviceCommandInvocation result = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		.addDeviceCommandInvocation(token, command, request);
+		.addDeviceCommandInvocation(token, request);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
 		getTenant(servletRequest));
 	return helper.convert(result);

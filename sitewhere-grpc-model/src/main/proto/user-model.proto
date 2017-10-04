@@ -11,13 +11,6 @@ import "google/protobuf/timestamp.proto";
 // ### USERS ###
 // #############
 
-// User account status
-enum GUserAccountStatus {
-	USER_STATUS_ACTIVE = 0;
-	USER_STATUS_EXPIRED = 1;
-	USER_STATUS_LOCKED = 2;
-}
-
 // Request for creating a user.
 message GUserCreateRequest {
 	string username = 1;
