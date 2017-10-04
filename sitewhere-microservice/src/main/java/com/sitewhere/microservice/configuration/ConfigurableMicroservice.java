@@ -1,9 +1,17 @@
 package com.sitewhere.microservice.configuration;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.SiteWhere;
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.spi.configuration.ConfigurationState;
 import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
@@ -29,8 +37,15 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 public abstract class ConfigurableMicroservice extends Microservice
 	implements IConfigurableMicroservice, IConfigurationListener {
 
+    /** Relative path to instance global configuration file */
+    private static final String INSTANCE_GLOBAL_CONFIGURATION_PATH = "/instance-global.xml";
+
     /** Max wait time for configuration in seconds */
     private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
+
+    /** Injected Spring context for microservice */
+    @Autowired
+    private ApplicationContext microserviceContext;
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -47,6 +62,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Get map of global contexts by path */
     private Map<String, ApplicationContext> globalContexts;
 
+    /** Executor for loading/parsing configuration updates */
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new ConfigurationLoaderThreadFactory());
+
     /*
      * (non-Javadoc)
      * 
@@ -57,6 +75,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     public void onConfigurationCacheInitialized() {
 	getLogger().info("Configuration cache initialized.");
 	setConfigurationCacheReady(true);
+
+	// Load and parse configuration in separate thread.
+	executor.execute(new ConfigurationLoader());
     }
 
     /*
@@ -111,6 +132,30 @@ public abstract class ConfigurableMicroservice extends Microservice
 	    throw new SiteWhereException("Configuration cache not initialized.");
 	}
 	return getConfigurationMonitor().getConfigurationDataFor(path);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceGlobalConfigurationPath()
+     */
+    @Override
+    public String getInstanceGlobalConfigurationPath() {
+	return getInstanceConfigurationPath() + INSTANCE_GLOBAL_CONFIGURATION_PATH;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceGlobalConfigurationData()
+     */
+    @Override
+    public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException {
+	return getConfigurationMonitor().getConfigurationDataFor(getInstanceGlobalConfigurationPath());
     }
 
     /*
@@ -294,7 +339,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	return configurationMonitor;
     }
 
-    public void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
+    protected void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
 	this.configurationMonitor = configurationMonitor;
     }
 
@@ -310,7 +355,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	return configurationState;
     }
 
-    public void setConfigurationState(ConfigurationState configurationState) {
+    protected void setConfigurationState(ConfigurationState configurationState) {
 	this.configurationState = configurationState;
     }
 
@@ -326,7 +371,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	return configurationCacheReady;
     }
 
-    public void setConfigurationCacheReady(boolean configurationCacheReady) {
+    protected void setConfigurationCacheReady(boolean configurationCacheReady) {
 	this.configurationCacheReady = configurationCacheReady;
     }
 
@@ -342,7 +387,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	return instanceGlobalContext;
     }
 
-    public void setInstanceGlobalContext(ApplicationContext instanceGlobalContext) {
+    protected void setInstanceGlobalContext(ApplicationContext instanceGlobalContext) {
 	this.instanceGlobalContext = instanceGlobalContext;
     }
 
@@ -358,7 +403,75 @@ public abstract class ConfigurableMicroservice extends Microservice
 	return globalContexts;
     }
 
-    public void setGlobalContexts(Map<String, ApplicationContext> globalContexts) {
+    protected void setGlobalContexts(Map<String, ApplicationContext> globalContexts) {
 	this.globalContexts = globalContexts;
+    }
+
+    protected ApplicationContext getMicroserviceContext() {
+	return microserviceContext;
+    }
+
+    protected void setMicroserviceContext(ApplicationContext microserviceContext) {
+	this.microserviceContext = microserviceContext;
+    }
+
+    /**
+     * Allow configurations to be loaded and parsed in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class ConfigurationLoader implements Runnable {
+
+	@Override
+	public void run() {
+	    try {
+		setConfigurationState(ConfigurationState.Loading);
+		byte[] global = getInstanceGlobalConfigurationData();
+		if (global == null) {
+		    throw new SiteWhereException("Global instance configuration file not found.");
+		}
+		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, SiteWhere.getVersion(),
+			getMicroserviceContext());
+
+		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
+		for (String path : getConfigurationPaths()) {
+		    String fullPath = getInstanceConfigurationPath() + "/" + path;
+		    getLogger().info("Loading configuration at path: " + fullPath);
+		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
+		    if (data != null) {
+			ApplicationContext subcontext = ConfigurationUtils.buildSubcontext(data, SiteWhere.getVersion(),
+				globalContext);
+			contexts.put(path, subcontext);
+		    } else {
+			throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
+		    }
+		}
+
+		// Store contexts for later use.
+		setInstanceGlobalContext(globalContext);
+		setGlobalContexts(contexts);
+
+		// Allow components depending on configuration to proceed.
+		initializeFromSpringContexts(globalContext, contexts);
+		setConfigurationState(ConfigurationState.Succeeded);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to load configuration data.", e);
+		setConfigurationState(ConfigurationState.Failed);
+	    } catch (Throwable e) {
+		getLogger().error("Unhandled exception while loading configuration data.", e);
+		setConfigurationState(ConfigurationState.Failed);
+	    }
+	}
+    }
+
+    /** Used for naming tenant operation threads */
+    private class ConfigurationLoaderThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Configuration Loader " + counter.incrementAndGet());
+	}
     }
 }

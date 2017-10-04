@@ -53,7 +53,7 @@ import io.grpc.stub.StreamObserver;
  */
 public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase {
 
-    /** Uesr management persistence */
+    /** User management persistence */
     private IUserManagement userMangagement;
 
     public UserManagementImpl(IUserManagement userMangagement) {
