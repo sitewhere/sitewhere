@@ -353,11 +353,11 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(com
-     * .sitewhere .spi.device.IDevice)
+     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * java.lang.String)
      */
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-	String token = HBaseDevice.getCurrentAssignmentId(context, device.getHardwareId());
+    public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException {
+	String token = HBaseDevice.getCurrentAssignmentId(context, hardwareId);
 	if (token == null) {
 	    return null;
 	}
@@ -442,27 +442,6 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
      */
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
 	return HBaseDeviceAssignment.deleteDeviceAssignment(context, token, force);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceForAssignment(com.
-     * sitewhere .spi.device.IDeviceAssignment)
-     */
-    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return HBaseDevice.getDeviceByHardwareId(context, assignment.getDeviceHardwareId());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSiteForAssignment(com.
-     * sitewhere.spi .device.IDeviceAssignment)
-     */
-    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return HBaseSite.getSiteByToken(context, assignment.getSiteToken());
     }
 
     /*

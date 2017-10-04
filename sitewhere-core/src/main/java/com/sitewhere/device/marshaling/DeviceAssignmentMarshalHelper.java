@@ -75,9 +75,9 @@ public class DeviceAssignmentMarshalHelper {
 	result.setAssetModuleId(source.getAssetModuleId());
 	result.setAssetId(source.getAssetId());
 	MetadataProviderEntity.copy(source, result);
-//	if (source.getState() != null) { TODO: Fix state management
-//	    result.setState(DeviceAssignmentState.copy(source.getState()));
-//	}
+	// if (source.getState() != null) { TODO: Fix state management
+	// result.setState(DeviceAssignmentState.copy(source.getState()));
+	// }
 	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
 	    IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 
@@ -100,12 +100,12 @@ public class DeviceAssignmentMarshalHelper {
 	}
 	result.setSiteToken(source.getSiteToken());
 	if (isIncludeSite()) {
-	    ISite site = getDeviceManagement().getSiteForAssignment(source);
+	    ISite site = getDeviceManagement().getSiteByToken(source.getSiteToken());
 	    result.setSite(Site.copy(site));
 	}
 	result.setDeviceHardwareId(source.getDeviceHardwareId());
 	if (isIncludeDevice()) {
-	    IDevice device = getDeviceManagement().getDeviceForAssignment(source);
+	    IDevice device = getDeviceManagement().getDeviceByHardwareId(source.getDeviceHardwareId());
 	    if (device != null) {
 		result.setDevice(getDeviceHelper().convert(device, manager));
 	    } else {

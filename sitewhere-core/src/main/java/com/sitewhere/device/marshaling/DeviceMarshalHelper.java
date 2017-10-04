@@ -120,7 +120,8 @@ public class DeviceMarshalHelper {
 	if (source.getAssignmentToken() != null) {
 	    if (includeAssignment) {
 		try {
-		    IDeviceAssignment assignment = getDeviceManagement(tenant).getCurrentDeviceAssignment(source);
+		    IDeviceAssignment assignment = getDeviceManagement(tenant)
+			    .getDeviceAssignmentByToken(source.getAssignmentToken());
 		    if (assignment == null) {
 			throw new SiteWhereException("Device contains an invalid assignment reference.");
 		    }

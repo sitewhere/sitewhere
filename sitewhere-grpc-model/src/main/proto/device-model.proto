@@ -13,8 +13,8 @@ import "google/protobuf/timestamp.proto";
 
 // Device container policy.
 enum GDeviceContainerPolicy {
-	STANDALONE = 0;
-	COMPOSITE = 1;
+	CONTAINER_STANDALONE = 0;
+	CONTAINER_COMPOSITE = 1;
 }
 
 // Slot within a unit.
@@ -51,6 +51,7 @@ message GDeviceSpecificationCreateRequest {
 // Criteria for searching device specifications.
 message GDeviceSpecificationSearchCriteria {
 	bool includeDeleted = 1;
+	GPaging paging = 2;
 }
 
 // Results for device specification search.
@@ -82,21 +83,21 @@ message GDeviceSpecification {
 
 // Device command parameter type.
 enum GParameterType {
-    DOUBLE = 0;
-    FLOAT = 1;
-    INT32 = 2;
-    INT64 = 3;
-    UINT32 = 4;
-    UINT64 = 5;
-    SINT32 = 6;
-    SINT64 = 7;
-    FIXED32 = 8;
-    FIXED64 = 9;
-    SFIXED32 = 10;
-    SFIXED64 = 11;
-    BOOL = 12;
-    STRING = 13;
-    BYTES = 14;
+    PARAMETER_DOUBLE = 0;
+    PARAMETER_FLOAT = 1;
+    PARAMETER_INT32 = 2;
+    PARAMETER_INT64 = 3;
+    PARAMETER_UINT32 = 4;
+    PARAMETER_UINT64 = 5;
+    PARAMETER_SINT32 = 6;
+    PARAMETER_SINT64 = 7;
+    PARAMETER_FIXED32 = 8;
+    PARAMETER_FIXED64 = 9;
+    PARAMETER_SFIXED32 = 10;
+    PARAMETER_SFIXED64 = 11;
+    PARAMETER_BOOL = 12;
+    PARAMETER_STRING = 13;
+    PARAMETER_BYTES = 14;
 }
 
 // Device command parameter.
@@ -192,9 +193,10 @@ message GDeviceCreateRequest {
 message GDeviceSearchCriteria {
 	GDeviceSpecificationReference specification = 1;
 	GSiteReference site = 2;
-	bool excludeAssigned = 3;
+	GOptionalBoolean excludeAssigned = 3;
 	google.protobuf.Timestamp createdAfter = 4;
 	google.protobuf.Timestamp createdBefore = 5;
+	GPaging paging = 6;
 }
 
 // Results for device search.
@@ -217,11 +219,221 @@ message GDevice {
 	GEntityInformation entityInformation = 11;
 }
 
+// #####################
+// ### DEVICE GROUPS ###
+// #####################
+
+// Request data for creating a device group.
+message GDeviceGroupCreateRequest {
+	string token = 1;
+	string name = 2;
+	string description = 3;
+	repeated string roles = 4;
+	map<string, string> metadata = 5;
+}
+
+// Criteria for searching device groups.
+message GDeviceGroupSearchCriteria {
+	bool includeDeleted = 1;
+	GPaging paging = 2;
+}
+
+// Criteria for searching device groups.
+message GDeviceGroupsWithRoleSearchCriteria {
+	bool includeDeleted = 1;
+	string role = 2;
+	GPaging paging = 3;
+}
+
+// Results for device group search.
+message GDeviceGroupSearchResults {
+	int64 count = 1;
+	repeated GDeviceGroup deviceGroups = 2;
+}
+
+// Device group.
+message GDeviceGroup {
+	string token = 1;
+	string name = 2;
+	string description = 3;
+	repeated string roles = 4;
+	map<string, string> metadata = 5;
+	GEntityInformation entityInformation = 6;
+}
+
+// ##########################
+// ### DEVICE ASSIGNMENTS ###
+// ##########################
+
+// Device assignment type.
+enum GDeviceAssignmentType {
+	ASSN_TYPE_UNASSOCIATED = 0;
+	ASSN_TYPE_ASSOCIATED = 1;
+}
+
+// Device assignment status.
+enum GDeviceAssignmentStatus {
+	ASSN_STATUS_ACTIVE = 0;
+	ASSN_STATUS_MISSING = 1;
+	ASSN_STATUS_RELEASED = 2;
+}
+
+// Request data for creating a device assignment.
+message GDeviceAssignmentCreateRequest {
+	string token = 1;
+	string deviceHardwareId = 2;
+	GDeviceAssignmentType assignmentType = 3;
+	string assetModuleId = 4;
+	string assetId = 5;
+	map<string, string> metadata = 10;
+}
+
+// Criteria for searching device assignments.
+message GDeviceAssignmentSearchCriteria {
+	GDeviceAssignmentStatus status = 1;
+	GPaging paging = 2;
+}
+
+// Criteria for searching assets linked to assignent.
+message GAssetsForAssignmentSearchCriteria {
+	GSiteReference site = 1;
+	GDeviceAssignmentStatus status = 2;
+	GPaging paging = 3;
+}
+
+// Results for device assignment search.
+message GDeviceAssignmentSearchResults {
+	int64 count = 1;
+	repeated GDeviceAssignment assignments = 2;
+}
+
+// Criteria for device assignment history.
+message GDeviceAssignmentHistoryCriteria {
+	GPaging paging = 1;
+}
+
+// Device assignment.
+message GDeviceAssignment {
+	string token = 1;
+	string deviceHardwareId = 2;
+	string siteToken = 3;
+	GDeviceAssignmentType assignmentType = 4;
+	GDeviceAssignmentStatus status = 5;
+	string assetModuleId = 6;
+	string assetId = 7;
+	google.protobuf.Timestamp activeDate = 8;
+	google.protobuf.Timestamp releasedDate = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
+}
+
+// ######################
+// ### DEVICE STREAMS ###
+// ######################
+
+// Request data for creating a device stream.
+message GDeviceStreamCreateRequest {
+	string streamId = 1;
+	string contentType = 2;
+	map<string, string> metadata = 3;
+}
+
+// Criteria for searching device streams.
+message GDeviceStreamSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for device stream search.
+message GDeviceStreamSearchResults {
+	int64 count = 1;
+	repeated GDeviceStream streams = 2;
+}
+
+// Device stream.
+message GDeviceStream {
+	string streamId = 1;
+	string contentType = 2;
+	string assignmentToken = 3;
+	map<string, string> metadata = 4;
+	GEntityInformation entityInformation = 5;
+}
+
 // #############
 // ### SITES ###
 // #############
 
-// Reference to a site by token.
-message GSiteReference {
+// Map data associated with a site.
+message GSiteMapData {
+	string type = 1;
+	map<string, string> metadata = 2;
+}
+
+// Request data for creating a site.
+message GSiteCreateRequest {
 	string token = 1;
+	string name = 2;
+	string description = 3;
+	string imageUrl = 4;
+	GSiteMapData mapData = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching sites.
+message GSiteSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for site search.
+message GSiteSearchResults {
+	int64 count = 1;
+	repeated GSite sites = 2;
+}
+
+// Site.
+message GSite {
+	string token = 1;
+	string name = 2;
+	string description = 3;
+	string imageUrl = 4;
+	GSiteMapData mapData = 5;
+	map<string, string> metadata = 6;
+	GEntityInformation entityInformation = 7;
+}
+
+// #############
+// ### ZONES ###
+// #############
+
+// Request data for creating a zone.
+message GZoneCreateRequest {
+	string name = 1;
+	repeated GLocation coordinates = 2;
+	string borderColor = 3;
+	string fillColor = 4;
+	double opacity = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching zones.
+message GZoneSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for zone search.
+message GZoneSearchResults {
+	int64 count = 1;
+	repeated GZone zones = 2;
+}
+
+// Zone.
+message GZone {
+	string token = 1;
+	string siteToken = 2;
+	string name = 3;
+	repeated GLocation coordinates = 4;
+	string borderColor = 5;
+	string fillColor = 6;
+	double opacity = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }

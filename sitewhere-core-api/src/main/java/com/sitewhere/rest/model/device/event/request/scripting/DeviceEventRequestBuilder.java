@@ -58,7 +58,7 @@ public class DeviceEventRequestBuilder {
 	    if (targetAssignment == null) {
 		throw new SiteWhereException("Target assignment not found: " + target);
 	    }
-	    IDevice targetDevice = deviceManagement.getDeviceForAssignment(targetAssignment);
+	    IDevice targetDevice = deviceManagement.getDeviceByHardwareId(targetAssignment.getDeviceHardwareId());
 	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getSpecificationToken(),
 		    false);
 	    IDeviceCommand match = null;

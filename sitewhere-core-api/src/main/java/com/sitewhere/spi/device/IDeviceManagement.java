@@ -295,11 +295,11 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     /**
      * Gets the current assignment for a device. Null if none.
      * 
-     * @param device
+     * @param hardwareId
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException;
+    public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException;
 
     /**
      * Delete a device assignment. Depending on 'force' flag the assignment will
@@ -311,24 +311,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException;
-
-    /**
-     * Get the device associated with an assignment.
-     * 
-     * @param assignment
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException;
-
-    /**
-     * Get the site associated with an assignment.
-     * 
-     * @param assignment
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException;
 
     /**
      * Update metadata associated with a device assignment.
@@ -438,16 +420,13 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public ISite createSite(ISiteCreateRequest request) throws SiteWhereException;
 
     /**
-     * Delete a site based on unique site token. If 'force' is specified, the
-     * database object will be deleted, otherwise the deleted flag will be set
-     * to true.
+     * Get a site by unique token.
      * 
-     * @param siteToken
-     * @param force
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException;
+    public ISite getSiteByToken(String token) throws SiteWhereException;
 
     /**
      * Update information for a site.
@@ -460,15 +439,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a site by unique token.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISite getSiteByToken(String token) throws SiteWhereException;
-
-    /**
      * Get a list of all sites.
      * 
      * @param criteria
@@ -476,6 +446,18 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public ISearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Delete a site based on unique site token. If 'force' is specified, the
+     * database object will be deleted, otherwise the deleted flag will be set
+     * to true.
+     * 
+     * @param siteToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException;
 
     /**
      * Create a new zone.
@@ -488,6 +470,15 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException;
 
     /**
+     * Get a zone by its unique token.
+     * 
+     * @param zoneToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public IZone getZone(String zoneToken) throws SiteWhereException;
+
+    /**
      * Update an existing zone.
      * 
      * @param token
@@ -496,15 +487,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException;
-
-    /**
-     * Get a zone by its unique token.
-     * 
-     * @param zoneToken
-     * @return
-     * @throws SiteWhereException
-     */
-    public IZone getZone(String zoneToken) throws SiteWhereException;
 
     /**
      * Get a list of all zones associated with a Site.
@@ -536,6 +518,15 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException;
 
     /**
+     * Get a device network by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException;
+
+    /**
      * Update an existing device group.
      * 
      * @param token
@@ -544,15 +535,6 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException;
-
-    /**
-     * Get a device network by unique token.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException;
 
     /**
      * List device groups.

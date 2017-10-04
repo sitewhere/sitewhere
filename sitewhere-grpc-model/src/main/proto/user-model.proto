@@ -13,9 +13,9 @@ import "google/protobuf/timestamp.proto";
 
 // User account status
 enum GUserAccountStatus {
-	ACTIVE = 0;
-	EXPIRED = 1;
-	LOCKED = 2;
+	USER_STATUS_ACTIVE = 0;
+	USER_STATUS_EXPIRED = 1;
+	USER_STATUS_LOCKED = 2;
 }
 
 // Request for creating a user.

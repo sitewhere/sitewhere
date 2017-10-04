@@ -289,7 +289,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 
 	    // Find the current assignment information for the device.
 	    IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
-		    .getCurrentDeviceAssignment(device);
+		    .getDeviceAssignmentByToken(device.getAssignmentToken());
 	    if (assignment == null) {
 		LOGGER.info("Device is not currently assigned. Skipping command invocation.");
 		return ElementProcessingStatus.Failed;

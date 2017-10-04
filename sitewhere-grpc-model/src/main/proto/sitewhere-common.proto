@@ -6,6 +6,16 @@ option java_outer_classname = "CommonModel";
 
 import "google/protobuf/timestamp.proto";
 
+// Optional double value.
+message GOptionalDouble {
+	double value = 1;
+}
+
+// Optional boolean value.
+message GOptionalBoolean {
+	bool value = 1;
+}
+
 // Common entity information.
 message GEntityInformation {
 	google.protobuf.Timestamp createdDate = 1;
@@ -36,7 +46,19 @@ message GTenantReference {
 	string id = 1;
 }
 
+// Reference to a site by token.
+message GSiteReference {
+	string token = 1;
+}
+
 // Text used for search.
 message GSearchText {
 	string search = 1;
+}
+
+// Location information.
+message GLocation {
+	GOptionalDouble latitude = 1;
+	GOptionalDouble longitude = 2;
+	GOptionalDouble elevation = 3;
 }

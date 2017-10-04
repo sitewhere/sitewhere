@@ -626,11 +626,15 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment
-     * (com.sitewhere.spi.device .IDevice)
+     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * java.lang.String)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
+    public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException {
+	IDevice device = getDeviceByHardwareId(hardwareId);
+	if (device == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	}
 	if (device.getAssignmentToken() == null) {
 	    return null;
 	}
@@ -706,7 +710,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
 	Document existing = assertDevice(hardwareId);
 	Device device = MongoDevice.fromDocument(existing);
-	IDeviceAssignment assignment = getCurrentDeviceAssignment(device);
+	IDeviceAssignment assignment = getDeviceAssignmentByToken(device.getAssignmentToken());
 	if (assignment != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
@@ -809,29 +813,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	    MongoPersistence.update(assignments, query, existing);
 	    return MongoDeviceAssignment.fromDocument(existing);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceForAssignment(com
-     * .sitewhere.spi.device .IDeviceAssignment)
-     */
-    @Override
-    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return getDeviceByHardwareId(assignment.getDeviceHardwareId());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSiteForAssignment(com.
-     * sitewhere .spi.device. IDeviceAssignment)
-     */
-    @Override
-    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return getSiteByToken(assignment.getSiteToken());
     }
 
     /*

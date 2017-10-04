@@ -39,11 +39,11 @@ public class UserModelConverter {
      */
     public static AccountStatus asApiAccountStatus(GUserAccountStatus grpc) throws SiteWhereException {
 	switch (grpc) {
-	case ACTIVE:
+	case USER_STATUS_ACTIVE:
 	    return AccountStatus.Active;
-	case EXPIRED:
+	case USER_STATUS_EXPIRED:
 	    return AccountStatus.Expired;
-	case LOCKED:
+	case USER_STATUS_LOCKED:
 	    return AccountStatus.Locked;
 	case UNRECOGNIZED:
 	    throw new SiteWhereException("Unknown account status: " + grpc.name());
@@ -61,11 +61,11 @@ public class UserModelConverter {
     public static GUserAccountStatus asGrpcAccountStatus(AccountStatus api) throws SiteWhereException {
 	switch (api) {
 	case Active:
-	    return GUserAccountStatus.ACTIVE;
+	    return GUserAccountStatus.USER_STATUS_ACTIVE;
 	case Expired:
-	    return GUserAccountStatus.EXPIRED;
+	    return GUserAccountStatus.USER_STATUS_EXPIRED;
 	case Locked:
-	    return GUserAccountStatus.LOCKED;
+	    return GUserAccountStatus.USER_STATUS_LOCKED;
 	}
 	throw new SiteWhereException("Unknown account status: " + api.name());
     }

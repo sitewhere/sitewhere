@@ -180,8 +180,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-	return delegate.getCurrentDeviceAssignment(device);
+    public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException {
+	return delegate.getCurrentDeviceAssignment(hardwareId);
     }
 
     @Override
@@ -219,16 +219,6 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     @Override
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
 	return delegate.deleteDeviceAssignment(token, force);
-    }
-
-    @Override
-    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return delegate.getDeviceForAssignment(assignment);
-    }
-
-    @Override
-    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return delegate.getSiteForAssignment(assignment);
     }
 
     @Override

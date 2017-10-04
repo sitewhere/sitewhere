@@ -194,7 +194,7 @@ public class Devices extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
 	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getCurrentDeviceAssignment(device);
+		.getDeviceAssignmentByToken(device.getAssignmentToken());
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.INFO,
 		    HttpServletResponse.SC_NOT_FOUND);

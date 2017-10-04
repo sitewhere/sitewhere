@@ -142,7 +142,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 	// These should be cached, so no performance hit.
 	IDeviceAssignment assignment = getDeviceManagement()
 		.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-	IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+	IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
 
 	// Create Groovy binding with handles to everything.
 	Binding binding = new Binding();

@@ -75,7 +75,7 @@ public class DeviceActions implements IDeviceActions {
 	if (assignment == null) {
 	    throw new SiteWhereException("Command not executed. Assignment not found: " + assignmentToken);
 	}
-	IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+	IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getSpecificationToken(), false);
 	IDeviceCommand match = null;
 	for (IDeviceCommand command : commands) {
