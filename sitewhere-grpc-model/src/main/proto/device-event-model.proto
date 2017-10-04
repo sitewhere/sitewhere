@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "DeviceEventModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// #####################
+// ### DEVICE EVENTS ###
+// #####################
+
+// Base fields for creating a device event.
+message GDeviceEventCreateRequest {
+	GOptionalString alternateId = 1;
+	google.protobuf.Timestamp eventDate = 2;
+	GOptionalBoolean updateState = 3;
+	map<string, string> metadata = 4;
+}
+
+// Request data for creating device measurements.
+message GDeviceMeasurementsCreateRequest {
+	map<string, double> measurements = 1;
+	GDeviceEventCreateRequest event = 2;
+}
+
+// Alert source.
+enum GAlertSource {
+	ALERT_SOURCE_DEVICE = 0;
+	ALERT_SOURCE_SYSTEM = 1;
+}
+
+// Alert level.
+enum GAlertLevel {
+	ALERT_LEVEL_INFO = 0;
+	ALERT_LEVEL_WARNING = 1;
+	ALERT_LEVEL_ERROR = 2;
+	ALERT_LEVEL_CRITICAL = 3;
+}
+
+// Request data for creating device alert.
+message GDeviceAlertCreateRequest {
+	GAlertSource source = 1;
+	GAlertLevel level = 2;
+	string type = 3;
+	string alertMessage = 4;
+	GDeviceEventCreateRequest event = 5;
+}
+
+// Request data for creating device location.
+message GDeviceLocationCreateRequest {
+	GOptionalDouble latitude = 1;
+	GOptionalDouble longitude = 2;
+	GOptionalDouble elevation = 3;
+	GDeviceEventCreateRequest event = 4;
+}

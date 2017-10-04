@@ -50,7 +50,7 @@ message GDeviceSpecificationCreateRequest {
 
 // Criteria for searching device specifications.
 message GDeviceSpecificationSearchCriteria {
-	bool includeDeleted = 1;
+	GOptionalBoolean includeDeleted = 1;
 	GPaging paging = 2;
 }
 
@@ -119,8 +119,8 @@ message GDeviceCommandCreateRequest {
 
 // Criteria for searching device commands.
 message GDeviceCommandSearchCriteria {
-	string token = 1;
-	bool includeDeleted = 2;
+	GOptionalString token = 1;
+	GOptionalBoolean includeDeleted = 2;
 }
 
 // Device command.
@@ -152,7 +152,7 @@ message GDeviceStatusCreateRequest {
 
 // Criteria for searching device statuses.
 message GDeviceStatusSearchCriteria {
-	string code = 1;
+	GOptionalString code = 1;
 }
 
 // Device status.

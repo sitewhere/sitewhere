@@ -16,6 +16,11 @@ message GOptionalBoolean {
 	bool value = 1;
 }
 
+// Optional string value.
+message GOptionalString {
+	string value = 1;
+}
+
 // Common entity information.
 message GEntityInformation {
 	google.protobuf.Timestamp createdDate = 1;
