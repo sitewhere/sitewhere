@@ -1,6 +1,6 @@
 package com.sitewhere.device.spi.microservice;
 
-import com.sitewhere.microservice.spi.IMultitenantMicroservice;
+import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides device management functionality.

@@ -15,9 +15,8 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.Microservice#initialize(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
+     * initialize(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
