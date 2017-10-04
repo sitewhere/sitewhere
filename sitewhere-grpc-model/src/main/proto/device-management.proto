@@ -115,6 +115,15 @@ service DeviceManagement {
 	// Delete an existing device group.
 	rpc DeleteDeviceGroup (GDeleteDeviceGroupRequest) returns (GDeleteDeviceGroupResponse) {}
 
+	// Add elements to an existing device group.
+	rpc AddDeviceGroupElements (GAddDeviceGroupElementsRequest) returns (GAddDeviceGroupElementsResponse) {}
+
+	// Remove elements from an existing device group.
+	rpc RemoveDeviceGroupElements (GRemoveDeviceGroupElementsRequest) returns (GRemoveDeviceGroupElementsResponse) {}
+
+	// List elements from an existing device group.
+	rpc ListDeviceGroupElements (GListDeviceGroupElementsRequest) returns (GListDeviceGroupElementsResponse) {}
+
 	// ##########################
 	// ### DEVICE ASSIGNMENTS ###
 	// ##########################
@@ -772,4 +781,38 @@ message GDeleteDeviceGroupRequest {
 // Response for deleting a device group.
 message GDeleteDeviceGroupResponse {
 	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+	
+// Request for adding device group elements.
+message GAddDeviceGroupElementsRequest {
+	string groupToken = 1;
+	repeated com.sitewhere.grpc.model.GDeviceGroupElementCreateRequest requests = 2;
+	bool ignoreDuplicates = 3;
+}
+	
+// Response for adding device group elements.
+message GAddDeviceGroupElementsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceGroupElement elements = 1;
+}
+	
+// Request for removing device group elements.
+message GRemoveDeviceGroupElementsRequest {
+	string groupToken = 1;
+	repeated com.sitewhere.grpc.model.GDeviceGroupElementCreateRequest requests = 2;
+}
+	
+// Response for removing device group elements.
+message GRemoveDeviceGroupElementsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceGroupElement elements = 1;
+}
+	
+// Request for listing device group elements.
+message GListDeviceGroupElementsRequest {
+	string groupToken = 1;
+	com.sitewhere.grpc.model.GDeviceGroupElementsSearchCriteria criteria = 2;
+}
+	
+// Response for listing device group elements.
+message GListDeviceGroupElementsResponse {
+	com.sitewhere.grpc.model.GDeviceGroupElementsSearchResults results = 1;
 }

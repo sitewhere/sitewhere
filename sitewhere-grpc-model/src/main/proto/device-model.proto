@@ -223,6 +223,19 @@ message GDevice {
 // ### DEVICE GROUPS ###
 // #####################
 
+// Device group element type.
+enum GDeviceGroupElementType {
+	ELEMENT_TYPE_DEVICE = 0;
+	ELEMENT_TYPE_GROUP = 1;
+}
+
+// Request data for creating a device group element.
+message GDeviceGroupElementCreateRequest {
+	GDeviceGroupElementType type = 1;
+	string elementId = 2;
+	repeated string roles = 3;
+}
+
 // Request data for creating a device group.
 message GDeviceGroupCreateRequest {
 	string token = 1;
@@ -230,6 +243,17 @@ message GDeviceGroupCreateRequest {
 	string description = 3;
 	repeated string roles = 4;
 	map<string, string> metadata = 5;
+}
+
+// Criteria for searching device group elements.
+message GDeviceGroupElementsSearchCriteria {
+	GPaging paging = 2;
+}
+
+// Results for device group elements search.
+message GDeviceGroupElementsSearchResults {
+	int64 count = 1;
+	repeated GDeviceGroupElement elements = 2;
 }
 
 // Criteria for searching device groups.
@@ -249,6 +273,15 @@ message GDeviceGroupsWithRoleSearchCriteria {
 message GDeviceGroupSearchResults {
 	int64 count = 1;
 	repeated GDeviceGroup deviceGroups = 2;
+}
+
+// Device group element.
+message GDeviceGroupElement {
+	string groupToken = 1;
+	int64 index = 2; 
+	GDeviceGroupElementType type = 3;
+	string elementId = 4;
+	repeated string roles = 5;
 }
 
 // Device group.
