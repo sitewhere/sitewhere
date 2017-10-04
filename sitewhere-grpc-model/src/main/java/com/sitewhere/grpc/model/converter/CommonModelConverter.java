@@ -5,8 +5,10 @@ import java.util.Date;
 import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
+import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
@@ -46,6 +48,17 @@ public class CommonModelConverter {
 	long millis = grpc.getSeconds() * 1000;
 	millis += (grpc.getNanos() / 1000);
 	return new Date(millis);
+    }
+
+    /**
+     * Convert GRPC paging block into generic search criteria.
+     * 
+     * @param paging
+     * @return
+     * @throws SiteWhereException
+     */
+    public static SearchCriteria asApiSearchCriteria(GPaging paging) throws SiteWhereException {
+	return new SearchCriteria(paging.getPageNumber(), paging.getPageSize());
     }
 
     /**

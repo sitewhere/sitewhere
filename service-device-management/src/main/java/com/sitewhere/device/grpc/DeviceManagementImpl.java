@@ -1,7 +1,14 @@
 package com.sitewhere.device.grpc;
 
+import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationSearchResults;
+import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
+import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 
 import io.grpc.stub.StreamObserver;
 
@@ -19,39 +26,141 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	this.deviceManagement = deviceManagement;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceSpecification(com.sitewhere.grpc.service.
+     * GCreateDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceSpecification(GCreateDeviceSpecificationRequest request,
 	    StreamObserver<GCreateDeviceSpecificationResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceSpecification(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_SPECIFICATION);
+	    IDeviceSpecificationCreateRequest apiRequest = DeviceModelConverter
+		    .asApiDeviceSpecificationCreateRequest(request.getRequest());
+	    IDeviceSpecification apiResult = getDeviceManagement().createDeviceSpecification(apiRequest);
+	    GCreateDeviceSpecificationResponse.Builder response = GCreateDeviceSpecificationResponse.newBuilder();
+	    response.setSpecification(DeviceModelConverter.asGrpcDeviceSpecification(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_SPECIFICATION, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceSpecificationByToken(com.sitewhere.grpc.service.
+     * GGetDeviceSpecificationByTokenRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceSpecificationByToken(GGetDeviceSpecificationByTokenRequest request,
 	    StreamObserver<GGetDeviceSpecificationByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceSpecificationByToken(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_SPECIFICATION_BY_TOKEN);
+	    IDeviceSpecification apiResult = getDeviceManagement().getDeviceSpecificationByToken(request.getToken());
+	    GGetDeviceSpecificationByTokenResponse.Builder response = GGetDeviceSpecificationByTokenResponse
+		    .newBuilder();
+	    if (apiResult != null) {
+		response.setSpecification(DeviceModelConverter.asGrpcDeviceSpecification(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_SPECIFICATION_BY_TOKEN, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceSpecification(com.sitewhere.grpc.service.
+     * GUpdateDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceSpecification(GUpdateDeviceSpecificationRequest request,
 	    StreamObserver<GUpdateDeviceSpecificationResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceSpecification(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_SPECIFICATION);
+	    IDeviceSpecificationCreateRequest apiRequest = DeviceModelConverter
+		    .asApiDeviceSpecificationCreateRequest(request.getRequest());
+	    IDeviceSpecification apiResult = getDeviceManagement().updateDeviceSpecification(request.getToken(),
+		    apiRequest);
+	    GUpdateDeviceSpecificationResponse.Builder response = GUpdateDeviceSpecificationResponse.newBuilder();
+	    response.setSpecification(DeviceModelConverter.asGrpcDeviceSpecification(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_SPECIFICATION, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceSpecifications(com.sitewhere.grpc.service.
+     * GListDeviceSpecificationsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceSpecifications(GListDeviceSpecificationsRequest request,
 	    StreamObserver<GListDeviceSpecificationsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceSpecifications(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_SPECIFICATIONS);
+	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
+		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+	    ISearchResults<IDeviceSpecification> apiResult = getDeviceManagement().listDeviceSpecifications(
+		    includeDeleted, CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListDeviceSpecificationsResponse.Builder response = GListDeviceSpecificationsResponse.newBuilder();
+	    GDeviceSpecificationSearchResults.Builder results = GDeviceSpecificationSearchResults.newBuilder();
+	    for (IDeviceSpecification apiSpecification : apiResult.getResults()) {
+		results.addSpecifications(DeviceModelConverter.asGrpcDeviceSpecification(apiSpecification));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_SPECIFICATIONS, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceSpecification(com.sitewhere.grpc.service.
+     * GDeleteDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceSpecification(GDeleteDeviceSpecificationRequest request,
 	    StreamObserver<GDeleteDeviceSpecificationResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceSpecification(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_SPECIFICATION);
+	    IDeviceSpecification apiResult = getDeviceManagement().deleteDeviceSpecification(request.getToken(),
+		    request.getForce());
+	    GDeleteDeviceSpecificationResponse.Builder response = GDeleteDeviceSpecificationResponse.newBuilder();
+	    response.setSpecification(DeviceModelConverter.asGrpcDeviceSpecification(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_SPECIFICATION, e);
+	    responseObserver.onError(e);
+	}
     }
 
     @Override

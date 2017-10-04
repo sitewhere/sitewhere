@@ -259,11 +259,12 @@ message GListDeviceSpecificationsResponse {
 // Request for deleting a device specification.
 message GDeleteDeviceSpecificationRequest {
 	string token = 1;
+	bool force = 2;
 }
 	
 // Response for deleting a device specification.
 message GDeleteDeviceSpecificationResponse {
-	repeated com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
 }
 
 // #######################
