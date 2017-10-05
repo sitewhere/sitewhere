@@ -374,7 +374,7 @@ message GListDeviceStatusesRequest {
 	
 // Response for listing device statuses that meet criteria.
 message GListDeviceStatusesResponse {
-	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+	repeated com.sitewhere.grpc.model.GDeviceStatus status = 1;
 }
 	
 // Request for deleting a device status.

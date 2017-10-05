@@ -17,13 +17,6 @@ public interface IDeviceStatusCreateRequest extends IMetadataProvider {
     public String getCode();
 
     /**
-     * Get token for the parent specification.
-     * 
-     * @return
-     */
-    public String getSpecificationToken();
-
-    /**
      * Name displayed in user interface.
      * 
      * @return

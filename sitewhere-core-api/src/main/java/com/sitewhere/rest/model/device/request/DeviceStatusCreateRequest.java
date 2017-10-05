@@ -16,9 +16,6 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
     /** Status code */
     private String code;
 
-    /** Specification token */
-    private String specificationToken;
-
     /** Display name */
     private String name;
 
@@ -46,20 +43,6 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
 
     public void setCode(String code) {
 	this.code = code;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
-     * getSpecificationToken()
-     */
-    public String getSpecificationToken() {
-	return specificationToken;
-    }
-
-    public void setSpecificationToken(String specificationToken) {
-	this.specificationToken = specificationToken;
     }
 
     /*

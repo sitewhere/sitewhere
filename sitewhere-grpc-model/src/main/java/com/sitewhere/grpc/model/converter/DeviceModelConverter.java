@@ -12,8 +12,11 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceElementSchema;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSlot;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecification;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStatus;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
@@ -21,9 +24,11 @@ import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
@@ -32,6 +37,7 @@ import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 
 /**
  * Convert device entities between SiteWhere API model and GRPC model.
@@ -539,6 +545,90 @@ public class DeviceModelConverter {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device status create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStatusCreateRequest asApiDeviceStatusCreateRequest(GDeviceStatusCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceStatusCreateRequest api = new DeviceStatusCreateRequest();
+	api.setCode(grpc.getCode());
+	api.setName(grpc.getName());
+	api.setBackgroundColor(grpc.getBackgroundColor());
+	api.setForegroundColor(grpc.getForegroundColor());
+	api.setBorderColor(grpc.getBorderColor());
+	api.setIcon(grpc.getIcon());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert device status create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStatusCreateRequest asGrpcDeviceStatusCreateRequest(IDeviceStatusCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceStatusCreateRequest.Builder grpc = GDeviceStatusCreateRequest.newBuilder();
+	grpc.setCode(api.getCode());
+	grpc.setName(api.getName());
+	grpc.setBackgroundColor(api.getBackgroundColor());
+	grpc.setForegroundColor(api.getForegroundColor());
+	grpc.setBorderColor(api.getBorderColor());
+	grpc.setIcon(api.getIcon());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert device status from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStatus asApiDeviceStatus(GDeviceStatus grpc) throws SiteWhereException {
+	DeviceStatus api = new DeviceStatus();
+	api.setCode(grpc.getCode());
+	api.setName(grpc.getName());
+	api.setSpecificationToken(grpc.getSpecificationToken());
+	api.setBackgroundColor(grpc.getBackgroundColor());
+	api.setForegroundColor(grpc.getForegroundColor());
+	api.setBorderColor(grpc.getBorderColor());
+	api.setIcon(grpc.getIcon());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert device status from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStatus asGrpcDeviceStatus(IDeviceStatus api) throws SiteWhereException {
+	GDeviceStatus.Builder grpc = GDeviceStatus.newBuilder();
+	grpc.setCode(api.getCode());
+	grpc.setName(api.getName());
+	grpc.setSpecificationToken(api.getSpecificationToken());
+	grpc.setBackgroundColor(api.getBackgroundColor());
+	grpc.setForegroundColor(api.getForegroundColor());
+	grpc.setBorderColor(api.getBorderColor());
+	grpc.setIcon(api.getIcon());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
 	return grpc.build();
     }
 }
