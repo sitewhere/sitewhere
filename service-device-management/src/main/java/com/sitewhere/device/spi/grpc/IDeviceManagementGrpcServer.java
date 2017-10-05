@@ -1,11 +1,11 @@
 package com.sitewhere.device.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * Binds to a port and listens for user management GRPC requests.
+ * Binds to a port and listens for device management GRPC requests.
  * 
  * @author Derek
  */
-public interface IDeviceManagementGrpcServer extends ILifecycleComponent {
+public interface IDeviceManagementGrpcServer extends ITenantLifecycleComponent {
 }

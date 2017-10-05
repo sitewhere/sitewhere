@@ -4,6 +4,7 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-hbase')
+	compile project(':sitewhere-microservice')
 	
 	// InfluxDB dependencies.
     compile group: 'org.influxdb', name: 'influxdb-java', version:'2.3'

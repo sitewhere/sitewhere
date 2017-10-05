@@ -21,6 +21,10 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public abstract class TenantLifecycleComponent extends LifecycleComponent implements ITenantLifecycleComponent {
 
+    public TenantLifecycleComponent() {
+	super(LifecycleComponentType.Other);
+    }
+
     public TenantLifecycleComponent(LifecycleComponentType type) {
 	super(type);
     }

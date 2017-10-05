@@ -139,7 +139,8 @@ service DeviceEventManagement {
 	
 // Request for adding a batch of device events.
 message GAddDeviceEventBatchRequest {
-	com.sitewhere.grpc.model.GDeviceEventBatchCreateRequest request = 1;
+	string assignmentToken = 1;
+	com.sitewhere.grpc.model.GDeviceEventBatchCreateRequest request = 2;
 }
 
 // Response for adding a batch of device events.
