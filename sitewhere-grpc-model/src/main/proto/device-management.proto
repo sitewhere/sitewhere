@@ -780,6 +780,7 @@ message GListDeviceGroupsWithRoleResponse {
 // Request for deleting a device group.
 message GDeleteDeviceGroupRequest {
 	string token = 1;
+	bool force = 2;
 }
 	
 // Response for deleting a device group.

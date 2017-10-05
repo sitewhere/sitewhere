@@ -228,13 +228,13 @@ message GDeviceGroupElementsSearchResults {
 
 // Criteria for searching device groups.
 message GDeviceGroupSearchCriteria {
-	bool includeDeleted = 1;
+	GOptionalBoolean includeDeleted = 1;
 	GPaging paging = 2;
 }
 
 // Criteria for searching device groups.
 message GDeviceGroupsWithRoleSearchCriteria {
-	bool includeDeleted = 1;
+	GOptionalBoolean includeDeleted = 1;
 	string role = 2;
 	GPaging paging = 3;
 }

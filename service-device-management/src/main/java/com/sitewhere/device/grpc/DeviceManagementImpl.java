@@ -2,6 +2,8 @@ package com.sitewhere.device.grpc;
 
 import java.util.List;
 
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationSearchResults;
 import com.sitewhere.grpc.model.GrpcUtils;
@@ -14,8 +16,12 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
@@ -616,67 +622,260 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceGroup(com.sitewhere.grpc.service.GCreateDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceGroup(GCreateDeviceGroupRequest request,
 	    StreamObserver<GCreateDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceGroup(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP);
+	    IDeviceGroupCreateRequest apiRequest = DeviceModelConverter
+		    .asApiDeviceGroupCreateRequest(request.getRequest());
+	    IDeviceGroup apiResult = getDeviceManagement().createDeviceGroup(apiRequest);
+	    GCreateDeviceGroupResponse.Builder response = GCreateDeviceGroupResponse.newBuilder();
+	    response.setGroup(DeviceModelConverter.asGrpcDeviceGroup(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceGroupByToken(com.sitewhere.grpc.service.
+     * GGetDeviceGroupByTokenRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceGroupByToken(GGetDeviceGroupByTokenRequest request,
 	    StreamObserver<GGetDeviceGroupByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceGroupByToken(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN);
+	    IDeviceGroup apiResult = getDeviceManagement().getDeviceGroup(request.getToken());
+	    GGetDeviceGroupByTokenResponse.Builder response = GGetDeviceGroupByTokenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setGroup(DeviceModelConverter.asGrpcDeviceGroup(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceGroup(com.sitewhere.grpc.service.GUpdateDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceGroup(GUpdateDeviceGroupRequest request,
 	    StreamObserver<GUpdateDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceGroup(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP);
+	    IDeviceGroupCreateRequest apiRequest = DeviceModelConverter
+		    .asApiDeviceGroupCreateRequest(request.getRequest());
+	    IDeviceGroup apiResult = getDeviceManagement().updateDeviceGroup(request.getToken(), apiRequest);
+	    GUpdateDeviceGroupResponse.Builder response = GUpdateDeviceGroupResponse.newBuilder();
+	    response.setGroup(DeviceModelConverter.asGrpcDeviceGroup(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroups(com.sitewhere.grpc.service.GListDeviceGroupsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroups(GListDeviceGroupsRequest request,
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroups(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
+	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
+		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroups(includeDeleted,
+		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListDeviceGroupsResponse.Builder response = GListDeviceGroupsResponse.newBuilder();
+	    GDeviceGroupSearchResults.Builder results = GDeviceGroupSearchResults.newBuilder();
+	    for (IDeviceGroup apiGroup : apiResult.getResults()) {
+		results.addDeviceGroups(DeviceModelConverter.asGrpcDeviceGroup(apiGroup));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroupsWithRole(com.sitewhere.grpc.service.
+     * GListDeviceGroupsWithRoleRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroupsWithRole(GListDeviceGroupsWithRoleRequest request,
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroupsWithRole(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
+	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
+		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroupsWithRole(
+		    request.getCriteria().getRole(), includeDeleted,
+		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListDeviceGroupsWithRoleResponse.Builder response = GListDeviceGroupsWithRoleResponse.newBuilder();
+	    GDeviceGroupSearchResults.Builder results = GDeviceGroupSearchResults.newBuilder();
+	    for (IDeviceGroup apiGroup : apiResult.getResults()) {
+		results.addDeviceGroups(DeviceModelConverter.asGrpcDeviceGroup(apiGroup));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceGroup(com.sitewhere.grpc.service.GDeleteDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceGroup(GDeleteDeviceGroupRequest request,
 	    StreamObserver<GDeleteDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceGroup(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP);
+	    IDeviceGroup apiResult = getDeviceManagement().deleteDeviceGroup(request.getToken(), request.getForce());
+	    GDeleteDeviceGroupResponse.Builder response = GDeleteDeviceGroupResponse.newBuilder();
+	    response.setGroup(DeviceModelConverter.asGrpcDeviceGroup(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * addDeviceGroupElements(com.sitewhere.grpc.service.
+     * GAddDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void addDeviceGroupElements(GAddDeviceGroupElementsRequest request,
 	    StreamObserver<GAddDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.addDeviceGroupElements(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS);
+	    List<IDeviceGroupElementCreateRequest> apiRequest = DeviceModelConverter
+		    .asApiDeviceGroupElementCreateRequests(request.getRequestsList());
+	    List<IDeviceGroupElement> apiResult = getDeviceManagement().addDeviceGroupElements(request.getGroupToken(),
+		    apiRequest, request.getIgnoreDuplicates());
+	    GAddDeviceGroupElementsResponse.Builder response = GAddDeviceGroupElementsResponse.newBuilder();
+	    for (IDeviceGroupElement apiElement : apiResult) {
+		response.addElements(DeviceModelConverter.asGrpcDeviceGroupElement(apiElement));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * removeDeviceGroupElements(com.sitewhere.grpc.service.
+     * GRemoveDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void removeDeviceGroupElements(GRemoveDeviceGroupElementsRequest request,
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.removeDeviceGroupElements(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS);
+	    List<IDeviceGroupElementCreateRequest> apiRequest = DeviceModelConverter
+		    .asApiDeviceGroupElementCreateRequests(request.getRequestsList());
+	    List<IDeviceGroupElement> apiResult = getDeviceManagement()
+		    .removeDeviceGroupElements(request.getGroupToken(), apiRequest);
+	    GRemoveDeviceGroupElementsResponse.Builder response = GRemoveDeviceGroupElementsResponse.newBuilder();
+	    for (IDeviceGroupElement apiElement : apiResult) {
+		response.addElements(DeviceModelConverter.asGrpcDeviceGroupElement(apiElement));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, e);
+	    responseObserver.onError(e);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroupElements(com.sitewhere.grpc.service.
+     * GListDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroupElements(GListDeviceGroupElementsRequest request,
 	    StreamObserver<GListDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroupElements(request, responseObserver);
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS);
+	    ISearchResults<IDeviceGroupElement> apiResult = getDeviceManagement().listDeviceGroupElements(
+		    request.getGroupToken(),
+		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListDeviceGroupElementsResponse.Builder response = GListDeviceGroupElementsResponse.newBuilder();
+	    GDeviceGroupElementsSearchResults.Builder results = GDeviceGroupElementsSearchResults.newBuilder();
+	    for (IDeviceGroupElement apiElement : apiResult.getResults()) {
+		results.addElements(DeviceModelConverter.asGrpcDeviceGroupElement(apiElement));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, e);
+	    responseObserver.onError(e);
+	}
     }
 
     @Override

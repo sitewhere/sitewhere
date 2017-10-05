@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
+import com.sitewhere.grpc.model.CommonModel.GDeviceGroupElementType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
 import com.sitewhere.grpc.model.CommonModel.GSiteReference;
@@ -15,6 +16,10 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceCommandCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceElementMapping;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceElementSchema;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroup;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElement;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSlot;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecification;
@@ -32,8 +37,12 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
@@ -49,8 +58,13 @@ import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
+import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -840,6 +854,212 @@ public class DeviceModelConverter {
 	if (api.isExcludeAssigned()) {
 	    grpc.setExcludeAssigned(GOptionalBoolean.newBuilder().setValue(true));
 	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device group create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceGroupCreateRequest asApiDeviceGroupCreateRequest(GDeviceGroupCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceGroupCreateRequest api = new DeviceGroupCreateRequest();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setRoles(grpc.getRolesList());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert a device group group request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupCreateRequest asGrpcDeviceGroupCreateRequest(IDeviceGroupCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceGroupCreateRequest.Builder grpc = GDeviceGroupCreateRequest.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.addAllRoles(api.getRoles());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device group from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceGroup asApiDeviceGroup(GDeviceGroup grpc) throws SiteWhereException {
+	DeviceGroup api = new DeviceGroup();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setRoles(grpc.getRolesList());
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert a device group from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroup asGrpcDeviceGroup(IDeviceGroup api) throws SiteWhereException {
+	GDeviceGroup.Builder grpc = GDeviceGroup.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.addAllRoles(api.getRoles());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device group element type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GroupElementType asApiDeviceGroupElementType(GDeviceGroupElementType grpc) throws SiteWhereException {
+	switch (grpc) {
+	case ELEMENT_TYPE_DEVICE:
+	    return GroupElementType.Device;
+	case ELEMENT_TYPE_GROUP:
+	    return GroupElementType.Group;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown device group element type: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert a device group element type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupElementType asGrpcDeviceGroupElementType(GroupElementType api) throws SiteWhereException {
+	switch (api) {
+	case Device:
+	    return GDeviceGroupElementType.ELEMENT_TYPE_DEVICE;
+	case Group:
+	    return GDeviceGroupElementType.ELEMENT_TYPE_GROUP;
+	}
+	throw new SiteWhereException("Unknown device group element type: " + api.name());
+    }
+
+    /**
+     * Convert a device group element create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceGroupElementCreateRequest asApiDeviceGroupElementCreateRequest(
+	    GDeviceGroupElementCreateRequest grpc) throws SiteWhereException {
+	DeviceGroupElementCreateRequest api = new DeviceGroupElementCreateRequest();
+	api.setType(DeviceModelConverter.asApiDeviceGroupElementType(grpc.getType()));
+	api.setElementId(grpc.getElementId());
+	api.setRoles(grpc.getRolesList());
+	return api;
+    }
+
+    /**
+     * Convert a list of device group element create requests from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IDeviceGroupElementCreateRequest> asApiDeviceGroupElementCreateRequests(
+	    List<GDeviceGroupElementCreateRequest> grpcs) throws SiteWhereException {
+	List<IDeviceGroupElementCreateRequest> api = new ArrayList<IDeviceGroupElementCreateRequest>();
+	for (GDeviceGroupElementCreateRequest grpc : grpcs) {
+	    api.add(DeviceModelConverter.asApiDeviceGroupElementCreateRequest(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert a device group element create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupElementCreateRequest asGrpcDeviceGroupElementCreateRequest(
+	    IDeviceGroupElementCreateRequest api) throws SiteWhereException {
+	GDeviceGroupElementCreateRequest.Builder grpc = GDeviceGroupElementCreateRequest.newBuilder();
+	grpc.setType(DeviceModelConverter.asGrpcDeviceGroupElementType(api.getType()));
+	grpc.setElementId(api.getElementId());
+	grpc.addAllRoles(api.getRoles());
+	return grpc.build();
+    }
+
+    /**
+     * Convert a list of device group element create requests from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceGroupElementCreateRequest> asGrpcDeviceGroupElementCreateRequests(
+	    List<IDeviceGroupElementCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceGroupElementCreateRequest> grpcs = new ArrayList<GDeviceGroupElementCreateRequest>();
+	for (IDeviceGroupElementCreateRequest api : apis) {
+	    grpcs.add(DeviceModelConverter.asGrpcDeviceGroupElementCreateRequest(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert a device group element from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceGroupElement asApiDeviceGroupElement(GDeviceGroupElement grpc) throws SiteWhereException {
+	DeviceGroupElement api = new DeviceGroupElement();
+	api.setType(DeviceModelConverter.asApiDeviceGroupElementType(grpc.getType()));
+	api.setElementId(grpc.getElementId());
+	api.setRoles(grpc.getRolesList());
+	return api;
+    }
+
+    /**
+     * Convert a device group element from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupElement asGrpcDeviceGroupElement(IDeviceGroupElement api) throws SiteWhereException {
+	GDeviceGroupElement.Builder grpc = GDeviceGroupElement.newBuilder();
+	grpc.setType(DeviceModelConverter.asGrpcDeviceGroupElementType(api.getType()));
+	grpc.setElementId(api.getElementId());
+	grpc.addAllRoles(api.getRoles());
 	return grpc.build();
     }
 }
