@@ -299,8 +299,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-	return delegate.createZone(site, request);
+    public IZone createZone(String siteToken, IZoneCreateRequest request) throws SiteWhereException {
+	return delegate.createZone(siteToken, request);
     }
 
     @Override

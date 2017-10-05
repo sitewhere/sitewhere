@@ -632,12 +632,12 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createZone(com.sitewhere.spi.
-     * device. ISite, com.sitewhere.spi.device.request.IZoneCreateRequest)
+     * com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
+     * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-	return HBaseZone.createZone(context, site, request);
+    public IZone createZone(String siteToken, IZoneCreateRequest request) throws SiteWhereException {
+	return HBaseZone.createZone(context, siteToken, request);
     }
 
     /*

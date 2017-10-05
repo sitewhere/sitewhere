@@ -57,7 +57,7 @@ public class DeviceManagementRequestBuilder {
     }
 
     public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().createZone(site, builder.build());
+	return getDeviceManagement().createZone(site.getToken(), builder.build());
     }
 
     public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name, String assetModuleId,

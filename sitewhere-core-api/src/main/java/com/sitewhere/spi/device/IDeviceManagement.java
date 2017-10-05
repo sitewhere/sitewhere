@@ -462,12 +462,12 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     /**
      * Create a new zone.
      * 
-     * @param site
+     * @param siteToken
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException;
+    public IZone createZone(String siteToken, IZoneCreateRequest request) throws SiteWhereException;
 
     /**
      * Get a zone by its unique token.

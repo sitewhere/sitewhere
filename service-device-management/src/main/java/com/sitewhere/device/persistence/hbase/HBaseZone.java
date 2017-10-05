@@ -25,7 +25,6 @@ import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -50,9 +49,9 @@ public class HBaseZone {
      * @return
      * @throws SiteWhereException
      */
-    public static IZone createZone(IHBaseContext context, ISite site, IZoneCreateRequest request)
+    public static IZone createZone(IHBaseContext context, String siteToken, IZoneCreateRequest request)
 	    throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
 	if (siteId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
@@ -64,7 +63,7 @@ public class HBaseZone {
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site.getToken(), uuid);
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, siteToken, uuid);
 
 	byte[] payload = context.getPayloadMarshaler().encodeZone(zone);
 

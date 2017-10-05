@@ -1125,12 +1125,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createZone(com.sitewhere.spi.
-     * device. ISite, com.sitewhere.spi.device.request.IZoneCreateRequest)
+     * com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
+     * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site.getToken(), UUID.randomUUID().toString());
+    public IZone createZone(String siteToken, IZoneCreateRequest request) throws SiteWhereException {
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, siteToken, UUID.randomUUID().toString());
 
 	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenant());
 	Document created = MongoZone.toDocument(zone);

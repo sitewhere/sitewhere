@@ -662,6 +662,7 @@ message GListSitesResponse {
 // Request for deleting a site.
 message GDeleteSiteRequest {
 	string token = 1;
+	bool force = 2;
 }
 	
 // Response for deleting a site.
@@ -675,7 +676,8 @@ message GDeleteSiteResponse {
 
 // Request for creating a zone.
 message GCreateZoneRequest {
-	com.sitewhere.grpc.model.GZoneCreateRequest request = 1;
+	string siteToken = 1;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
 }
 
 // Response from creating a zone.
@@ -685,7 +687,8 @@ message GCreateZoneResponse {
 	
 // Request for getting a zone by token.
 message GGetZoneByTokenRequest {
-	string token = 1;
+	string siteToken = 1;
+	string token = 2;
 }
 	
 // Response for getting a zone by token.
@@ -695,8 +698,9 @@ message GGetZoneByTokenResponse {
 	
 // Request for updating an existing zone.
 message GUpdateZoneRequest {
-	string token = 1;
-	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
+	string siteToken = 1;
+	string token = 2;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 3;
 }
 	
 // Response for updating an existing zone.
@@ -706,7 +710,8 @@ message GUpdateZoneResponse {
 	
 // Request for listing zones that meet criteria.
 message GListZonesRequest {
-	com.sitewhere.grpc.model.GZoneSearchCriteria criteria = 1;
+	string siteToken = 1;
+	com.sitewhere.grpc.model.GZoneSearchCriteria criteria = 2;
 }
 	
 // Response for listing zones that meet criteria.
@@ -716,7 +721,9 @@ message GListZonesResponse {
 	
 // Request for deleting a zone.
 message GDeleteZoneRequest {
-	string token = 1;
+	string siteToken = 1;
+	string token = 2;
+	bool force = 3;
 }
 	
 // Response for deleting a zone.

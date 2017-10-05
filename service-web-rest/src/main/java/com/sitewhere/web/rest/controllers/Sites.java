@@ -504,11 +504,8 @@ public class Sites extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(siteToken);
-	if (site == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	}
-	IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createZone(site, request);
+	IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createZone(siteToken,
+		request);
 	return Zone.copy(zone);
     }
 

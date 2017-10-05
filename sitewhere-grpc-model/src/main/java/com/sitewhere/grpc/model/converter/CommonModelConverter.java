@@ -1,15 +1,21 @@
 package com.sitewhere.grpc.model.converter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
+import com.sitewhere.grpc.model.CommonModel.GLocation;
+import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -49,6 +55,72 @@ public class CommonModelConverter {
 	long millis = grpc.getSeconds() * 1000;
 	millis += (grpc.getNanos() / 1000);
 	return new Date(millis);
+    }
+
+    /**
+     * Convert location from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Location asApiLocation(GLocation grpc) throws SiteWhereException {
+	Location api = new Location();
+	api.setLatitude(grpc.hasLatitude() ? grpc.getLatitude().getValue() : 0.0);
+	api.setLongitude(grpc.hasLongitude() ? grpc.getLongitude().getValue() : 0.0);
+	api.setElevation(grpc.hasElevation() ? grpc.getElevation().getValue() : 0.0);
+	return api;
+    }
+
+    /**
+     * Convert locations from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<Location> asApiLocations(List<GLocation> grpcs) throws SiteWhereException {
+	List<Location> api = new ArrayList<Location>();
+	for (GLocation grpc : grpcs) {
+	    api.add(CommonModelConverter.asApiLocation(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert location from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GLocation asGrpcLocation(ILocation api) throws SiteWhereException {
+	GLocation.Builder grpc = GLocation.newBuilder();
+	if (api.getLatitude() != null) {
+	    grpc.setLatitude(GOptionalDouble.newBuilder().setValue(api.getLatitude()).build());
+	}
+	if (api.getLongitude() != null) {
+	    grpc.setLongitude(GOptionalDouble.newBuilder().setValue(api.getLongitude()).build());
+	}
+	if (api.getElevation() != null) {
+	    grpc.setElevation(GOptionalDouble.newBuilder().setValue(api.getElevation()).build());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert locations from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GLocation> asGrpcLocations(List<ILocation> apis) throws SiteWhereException {
+	List<GLocation> grpcs = new ArrayList<GLocation>();
+	for (ILocation api : apis) {
+	    grpcs.add(CommonModelConverter.asGrpcLocation(api));
+	}
+	return grpcs;
     }
 
     /**

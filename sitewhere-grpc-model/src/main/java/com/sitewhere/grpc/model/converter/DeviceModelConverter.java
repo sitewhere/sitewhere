@@ -37,11 +37,19 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStream;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
+import com.sitewhere.grpc.model.DeviceModel.GSite;
+import com.sitewhere.grpc.model.DeviceModel.GSiteCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GSiteMapData;
+import com.sitewhere.grpc.model.DeviceModel.GZone;
+import com.sitewhere.grpc.model.DeviceModel.GZoneCreateRequest;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.DeviceStatus;
+import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
@@ -57,6 +65,8 @@ import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.request.SiteCreateRequest;
+import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
@@ -70,6 +80,9 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.ISiteMapData;
+import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
@@ -87,6 +100,8 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
+import com.sitewhere.spi.device.request.ISiteCreateRequest;
+import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
@@ -1385,6 +1400,192 @@ public class DeviceModelConverter {
 	GDeviceStream.Builder grpc = GDeviceStream.newBuilder();
 	grpc.setStreamId(api.getStreamId());
 	grpc.setContentType(api.getContentType());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert site map data from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static SiteMapData asApiSiteMapData(GSiteMapData grpc) throws SiteWhereException {
+	SiteMapData api = new SiteMapData();
+	api.setType(grpc.getType());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert site map data from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GSiteMapData asGrpcSiteMapDate(ISiteMapData api) throws SiteWhereException {
+	GSiteMapData.Builder grpc = GSiteMapData.newBuilder();
+	grpc.setType(api.getType());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert site create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static SiteCreateRequest asApiSiteCreateRequest(GSiteCreateRequest grpc) throws SiteWhereException {
+	SiteCreateRequest api = new SiteCreateRequest();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setImageUrl(grpc.getImageUrl());
+	api.setMap(DeviceModelConverter.asApiSiteMapData(grpc.getMapData()));
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert site create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GSiteCreateRequest asGrpcSiteCreateRequest(ISiteCreateRequest api) throws SiteWhereException {
+	GSiteCreateRequest.Builder grpc = GSiteCreateRequest.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setImageUrl(api.getImageUrl());
+	grpc.setMapData(DeviceModelConverter.asGrpcSiteMapDate(api.getMap()));
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert site from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Site asApiSite(GSite grpc) throws SiteWhereException {
+	Site api = new Site();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setImageUrl(grpc.getImageUrl());
+	api.setMap(DeviceModelConverter.asApiSiteMapData(grpc.getMapData()));
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert site from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GSite asGrpcSite(ISite api) throws SiteWhereException {
+	GSite.Builder grpc = GSite.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setImageUrl(api.getImageUrl());
+	grpc.setMapData(DeviceModelConverter.asGrpcSiteMapDate(api.getMap()));
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert zone create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ZoneCreateRequest asApiZoneCreateRequest(GZoneCreateRequest grpc) throws SiteWhereException {
+	ZoneCreateRequest api = new ZoneCreateRequest();
+	api.setName(grpc.getName());
+	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setFillColor(grpc.getFillColor());
+	api.setBorderColor(grpc.getBorderColor());
+	api.setOpacity(grpc.getOpacity());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert zone create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GZoneCreateRequest asGrpcZoneCreateRequest(IZoneCreateRequest api) throws SiteWhereException {
+	GZoneCreateRequest.Builder grpc = GZoneCreateRequest.newBuilder();
+	grpc.setName(api.getName());
+	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.setFillColor(api.getFillColor());
+	grpc.setBorderColor(api.getBorderColor());
+	grpc.setOpacity(api.getOpacity());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert zone from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Zone asApiZone(GZone grpc) throws SiteWhereException {
+	Zone api = new Zone();
+	api.setName(grpc.getName());
+	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setFillColor(grpc.getFillColor());
+	api.setBorderColor(grpc.getBorderColor());
+	api.setOpacity(grpc.getOpacity());
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert zone from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GZone asGrpcZone(IZone api) throws SiteWhereException {
+	GZone.Builder grpc = GZone.newBuilder();
+	grpc.setName(api.getName());
+	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.setFillColor(api.getFillColor());
+	grpc.setBorderColor(api.getBorderColor());
+	grpc.setOpacity(api.getOpacity());
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
