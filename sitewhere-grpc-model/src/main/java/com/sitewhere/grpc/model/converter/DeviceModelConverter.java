@@ -34,6 +34,8 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationReference;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatus;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStream;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -54,6 +56,8 @@ import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
@@ -72,6 +76,7 @@ import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
@@ -82,6 +87,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1315,6 +1321,74 @@ public class DeviceModelConverter {
 	if (api.getSiteToken() != null) {
 	    grpc.setSite(GSiteReference.newBuilder().setToken(api.getSiteToken()).build());
 	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device stream create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStreamCreateRequest asApiDeviceStreamCreateRequest(GDeviceStreamCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceStreamCreateRequest api = new DeviceStreamCreateRequest();
+	api.setStreamId(grpc.getStreamId());
+	api.setContentType(grpc.getContentType());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert a device stream create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStreamCreateRequest asGrpcDeviceStreamCreateRequest(IDeviceStreamCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceStreamCreateRequest.Builder grpc = GDeviceStreamCreateRequest.newBuilder();
+	grpc.setStreamId(api.getStreamId());
+	grpc.setContentType(api.getContentType());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device stream from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStream asApiDeviceStream(GDeviceStream grpc) throws SiteWhereException {
+	DeviceStream api = new DeviceStream();
+	api.setStreamId(grpc.getStreamId());
+	api.setContentType(grpc.getContentType());
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert a device stream from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStream asGrpcDeviceStream(IDeviceStream api) throws SiteWhereException {
+	GDeviceStream.Builder grpc = GDeviceStream.newBuilder();
+	grpc.setStreamId(api.getStreamId());
+	grpc.setContentType(api.getContentType());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
 }

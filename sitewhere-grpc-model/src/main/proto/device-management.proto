@@ -583,7 +583,8 @@ message GGetDeviceAssignmentsForAssetResponse {
 	
 // Request for creating a device stream.
 message GCreateDeviceStreamRequest {
-	com.sitewhere.grpc.model.GDeviceStreamCreateRequest request = 1;
+	string assignmentToken = 1;
+	com.sitewhere.grpc.model.GDeviceStreamCreateRequest request = 2;
 }
 
 // Response from creating a device stream.
