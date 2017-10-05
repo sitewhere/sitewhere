@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
+import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentType;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GDeviceGroupElementType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
+import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
 import com.sitewhere.grpc.model.CommonModel.GSiteReference;
+import com.sitewhere.grpc.model.DeviceModel.GAssetsForAssignmentSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GCommandParameter;
 import com.sitewhere.grpc.model.DeviceModel.GDevice;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignment;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCommand;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCommandCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCreateRequest;
@@ -29,6 +36,7 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceStatus;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.DeviceStatus;
@@ -39,16 +47,22 @@ import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
+import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
+import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -61,12 +75,15 @@ import com.sitewhere.spi.device.element.IDeviceUnit;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -1060,6 +1077,244 @@ public class DeviceModelConverter {
 	grpc.setType(DeviceModelConverter.asGrpcDeviceGroupElementType(api.getType()));
 	grpc.setElementId(api.getElementId());
 	grpc.addAllRoles(api.getRoles());
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device assignment type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignmentType asApiDeviceAssignmentType(GDeviceAssignmentType grpc) throws SiteWhereException {
+	switch (grpc) {
+	case ASSN_TYPE_ASSOCIATED:
+	    return DeviceAssignmentType.Associated;
+	case ASSN_TYPE_UNASSOCIATED:
+	    return DeviceAssignmentType.Unassociated;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown device assignment type: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert a device assignment type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentType asGrpcDeviceAssignmentType(DeviceAssignmentType api) throws SiteWhereException {
+	switch (api) {
+	case Associated:
+	    return GDeviceAssignmentType.ASSN_TYPE_ASSOCIATED;
+	case Unassociated:
+	    return GDeviceAssignmentType.ASSN_TYPE_UNASSOCIATED;
+	}
+	throw new SiteWhereException("Unknown device assignment type: " + api.name());
+    }
+
+    /**
+     * Convert device assignment status from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignmentStatus asApiDeviceAssignmentStatus(GDeviceAssignmentStatus grpc)
+	    throws SiteWhereException {
+	switch (grpc) {
+	case ASSN_STATUS_ACTIVE:
+	    return DeviceAssignmentStatus.Active;
+	case ASSN_STATUS_MISSING:
+	    return DeviceAssignmentStatus.Missing;
+	case ASSN_STATUS_RELEASED:
+	    return DeviceAssignmentStatus.Released;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown device assignment status: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert device assignment status from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentStatus asGrpcDeviceAssignmentStatus(DeviceAssignmentStatus api)
+	    throws SiteWhereException {
+	switch (api) {
+	case Active:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_ACTIVE;
+	case Missing:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_MISSING;
+	case Released:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_RELEASED;
+	}
+	throw new SiteWhereException("Unknown device assignment status: " + api.name());
+    }
+
+    /**
+     * Convert a device assignment create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignmentCreateRequest asApiDeviceAssignmentCreateRequest(GDeviceAssignmentCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
+	api.setToken(grpc.getToken());
+	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
+	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
+	api.setAssetModuleId(grpc.getAssetModuleId());
+	api.setAssetId(grpc.getAssetId());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert a device assignment create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentCreateRequest asGrpcDeviceAssignmentCreateRequest(IDeviceAssignmentCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceAssignmentCreateRequest.Builder grpc = GDeviceAssignmentCreateRequest.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
+	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
+	grpc.setAssetModuleId(api.getAssetModuleId());
+	grpc.setAssetId(api.getAssetId());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert a device assignment from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignment asApiDeviceAssignment(GDeviceAssignment grpc) throws SiteWhereException {
+	DeviceAssignment api = new DeviceAssignment();
+	api.setToken(grpc.getToken());
+	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
+	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
+	api.setAssetModuleId(grpc.getAssetModuleId());
+	api.setAssetId(grpc.getAssetId());
+	if (grpc.hasActiveDate()) {
+	    api.setActiveDate(CommonModelConverter.asDate(grpc.getActiveDate()));
+	}
+	if (grpc.hasReleasedDate()) {
+	    api.setReleasedDate(CommonModelConverter.asDate(grpc.getReleasedDate()));
+	}
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert a device assignment from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignment asGrpcDeviceAssignment(IDeviceAssignment api) throws SiteWhereException {
+	GDeviceAssignment.Builder grpc = GDeviceAssignment.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
+	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
+	grpc.setAssetModuleId(api.getAssetModuleId());
+	grpc.setAssetId(api.getAssetId());
+	if (api.getActiveDate() != null) {
+	    grpc.setActiveDate(CommonModelConverter.asGrpcTimestamp(api.getActiveDate()));
+	}
+	if (api.getReleasedDate() != null) {
+	    grpc.setReleasedDate(CommonModelConverter.asGrpcTimestamp(api.getReleasedDate()));
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device assignment search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AssignmentSearchCriteria asApiAssignmentSearchCriteria(GDeviceAssignmentSearchCriteria grpc)
+	    throws SiteWhereException {
+	int pageNumber = grpc.hasPaging() ? grpc.getPaging().getPageNumber() : 1;
+	int pageSize = grpc.hasPaging() ? grpc.getPaging().getPageSize() : 0;
+	AssignmentSearchCriteria api = new AssignmentSearchCriteria(pageNumber, pageSize);
+	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	return api;
+    }
+
+    /**
+     * Convert device assignment search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentSearchCriteria asGrpcAssignmentSearchCriteria(IAssignmentSearchCriteria api)
+	    throws SiteWhereException {
+	GDeviceAssignmentSearchCriteria.Builder grpc = GDeviceAssignmentSearchCriteria.newBuilder();
+	grpc.setPaging(GPaging.newBuilder().setPageNumber(api.getPageNumber()).setPageSize(api.getPageSize()).build());
+	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	return grpc.build();
+    }
+
+    /**
+     * Convert assignments for asset search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AssignmentsForAssetSearchCriteria asApiAssignmentsForAssetSearchCriteria(
+	    GAssetsForAssignmentSearchCriteria grpc) throws SiteWhereException {
+	int pageNumber = grpc.hasPaging() ? grpc.getPaging().getPageNumber() : 1;
+	int pageSize = grpc.hasPaging() ? grpc.getPaging().getPageSize() : 0;
+	AssignmentsForAssetSearchCriteria api = new AssignmentsForAssetSearchCriteria(pageNumber, pageSize);
+	api.setSiteToken(grpc.hasSite() ? grpc.getSite().getToken() : null);
+	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	return api;
+    }
+
+    /**
+     * Convert assignments for asset search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAssetsForAssignmentSearchCriteria asGrpcAssignmentsForAssetSearchCriteria(
+	    IAssignmentsForAssetSearchCriteria api) throws SiteWhereException {
+	GAssetsForAssignmentSearchCriteria.Builder grpc = GAssetsForAssignmentSearchCriteria.newBuilder();
+	grpc.setPaging(GPaging.newBuilder().setPageNumber(api.getPageNumber()).setPageSize(api.getPageSize()).build());
+	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	if (api.getSiteToken() != null) {
+	    grpc.setSite(GSiteReference.newBuilder().setToken(api.getSiteToken()).build());
+	}
 	return grpc.build();
     }
 }

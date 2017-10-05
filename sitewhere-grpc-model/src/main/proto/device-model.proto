@@ -275,7 +275,7 @@ message GDeviceAssignmentCreateRequest {
 	GDeviceAssignmentType assignmentType = 3;
 	string assetModuleId = 4;
 	string assetId = 5;
-	map<string, string> metadata = 10;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching device assignments.

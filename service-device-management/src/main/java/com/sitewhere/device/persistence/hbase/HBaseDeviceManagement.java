@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.hbase;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +25,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -449,9 +449,9 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
      * 
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata
-     * (java. lang.String, com.sitewhere.spi.common.IMetadataProvider)
+     * (java.lang.String, java.util.Map)
      */
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException {
 	return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(context, token, metadata);
     }

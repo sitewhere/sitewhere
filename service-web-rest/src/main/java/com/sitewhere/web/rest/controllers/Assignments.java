@@ -207,7 +207,7 @@ public class Assignments extends RestController {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody MetadataProvider metadata, HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.updateDeviceAssignmentMetadata(token, metadata);
+		.updateDeviceAssignmentMetadata(token, metadata.getMetadata());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);

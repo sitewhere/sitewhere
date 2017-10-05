@@ -10,6 +10,7 @@ package com.sitewhere.device.persistence.mongodb;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +27,6 @@ import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -42,7 +42,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -821,14 +820,16 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
      * 
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata
-     * (java.lang.String, com.sitewhere.spi.device.IMetadataProvider)
+     * (java.lang.String, java.util.Map)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException {
 	Document match = assertDeviceAssignment(token);
-	MongoMetadataProvider.toDocument(metadata, match);
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
+	for (String key : metadata.keySet()) {
+	    assignment.addOrReplaceMetadata(key, metadata.get(key));
+	}
 	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());

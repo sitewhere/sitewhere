@@ -8,10 +8,10 @@
 package com.sitewhere.device;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -222,7 +222,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException {
 	return delegate.updateDeviceAssignmentMetadata(token, metadata);
     }

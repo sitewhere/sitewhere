@@ -503,6 +503,7 @@ message GGetCurrentAssignmentForDeviceResponse {
 // Request for deleting a device assignment.
 message GDeleteDeviceAssignmentRequest {
 	string token = 1;
+	bool force = 2;
 }
 	
 // Response for deleting a device assignment.

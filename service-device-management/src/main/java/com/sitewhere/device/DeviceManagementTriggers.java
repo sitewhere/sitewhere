@@ -7,9 +7,10 @@
  */
 package com.sitewhere.device;
 
+import java.util.Map;
+
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -58,11 +59,10 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.device.DeviceManagementDecorator#
-     * updateDeviceAssignmentMetadata(java. lang.String,
-     * com.sitewhere.spi.common.IMetadataProvider)
+     * updateDeviceAssignmentMetadata(java.lang.String, java.util.Map)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException {
 	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(token, metadata);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,

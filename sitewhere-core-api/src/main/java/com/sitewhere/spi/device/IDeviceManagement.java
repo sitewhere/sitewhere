@@ -8,9 +8,9 @@
 package com.sitewhere.spi.device;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -320,7 +320,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException;
 
     /**
