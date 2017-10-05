@@ -458,6 +458,7 @@ message GDeleteDeviceElementMappingResponse {
 // Request for deleting a device.
 message GDeleteDeviceRequest {
 	string hardwareId = 1;
+	bool force = 2;
 }
 	
 // Response for deleting a device.

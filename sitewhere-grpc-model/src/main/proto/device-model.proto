@@ -166,12 +166,13 @@ message GDeviceCreateRequest {
 
 // Criteria for searching devices.
 message GDeviceSearchCriteria {
-	GDeviceSpecificationReference specification = 1;
-	GSiteReference site = 2;
-	GOptionalBoolean excludeAssigned = 3;
-	google.protobuf.Timestamp createdAfter = 4;
-	google.protobuf.Timestamp createdBefore = 5;
-	GPaging paging = 6;
+	GOptionalBoolean includeDeleted = 1;
+	GDeviceSpecificationReference specification = 2;
+	GSiteReference site = 3;
+	GOptionalBoolean excludeAssigned = 4;
+	google.protobuf.Timestamp createdAfter = 5;
+	google.protobuf.Timestamp createdBefore = 6;
+	GPaging paging = 7;
 }
 
 // Results for device search.

@@ -11,6 +11,7 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
  * Convert between SiteWhere API model and GRPC model.
@@ -59,6 +60,20 @@ public class CommonModelConverter {
      */
     public static SearchCriteria asApiSearchCriteria(GPaging paging) throws SiteWhereException {
 	return new SearchCriteria(paging.getPageNumber(), paging.getPageSize());
+    }
+
+    /**
+     * Convert paging information from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GPaging asGrpcPaging(ISearchCriteria api) throws SiteWhereException {
+	GPaging.Builder grpc = GPaging.newBuilder();
+	grpc.setPageNumber(api.getPageNumber());
+	grpc.setPageSize(api.getPageSize());
+	return grpc.build();
     }
 
     /**
