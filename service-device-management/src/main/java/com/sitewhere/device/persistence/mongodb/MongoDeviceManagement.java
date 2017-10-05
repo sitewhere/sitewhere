@@ -301,19 +301,20 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(com.
-     * sitewhere.spi .device.IDeviceSpecification,
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
      */
     @Override
-    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+    public IDeviceCommand createDeviceCommand(String specificationToken, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
 	// Note: This allows duplicates if duplicate was marked deleted.
-	List<IDeviceCommand> existing = listDeviceCommands(spec.getToken(), false);
+	List<IDeviceCommand> existing = listDeviceCommands(specificationToken, false);
 
 	// Use common logic so all backend implementations work the same.
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
+	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(specificationToken, request, uuid,
+		existing);
 
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 	Document created = MongoDeviceCommand.toDocument(command);

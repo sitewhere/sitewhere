@@ -106,12 +106,12 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
      * Creates a device command associated with an existing device
      * specification.
      * 
-     * @param spec
+     * @param specificationToken
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+    public IDeviceCommand createDeviceCommand(String specificationToken, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException;
 
     /**

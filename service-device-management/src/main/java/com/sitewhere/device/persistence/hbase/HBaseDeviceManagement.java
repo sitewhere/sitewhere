@@ -195,14 +195,14 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(com.
-     * sitewhere.spi .device.IDeviceSpecification,
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
      */
     @Override
-    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+    public IDeviceCommand createDeviceCommand(String specificationToken, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
-	return HBaseDeviceCommand.createDeviceCommand(context, spec, request);
+	return HBaseDeviceCommand.createDeviceCommand(context, specificationToken, request);
     }
 
     /*

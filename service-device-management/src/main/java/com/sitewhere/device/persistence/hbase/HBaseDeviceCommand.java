@@ -30,7 +30,6 @@ import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -52,17 +51,18 @@ public class HBaseDeviceCommand {
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceCommand createDeviceCommand(IHBaseContext context, IDeviceSpecification spec,
+    public static IDeviceCommand createDeviceCommand(IHBaseContext context, String specificationToken,
 	    IDeviceCommandCreateRequest request) throws SiteWhereException {
-	Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(spec.getToken());
+	Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(specificationToken);
 	if (specId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 	}
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 
 	// Use common logic so all backend implementations work the same.
-	List<IDeviceCommand> existing = listDeviceCommands(context, spec.getToken(), false);
-	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
+	List<IDeviceCommand> existing = listDeviceCommands(context, specificationToken, false);
+	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(specificationToken, request, uuid,
+		existing);
 
 	// Create unique row for new device.
 	Long nextId = HBaseDeviceSpecification.allocateNextCommandId(context, specId);

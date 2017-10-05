@@ -272,9 +272,8 @@ public class DeviceSpecifications extends RestController {
     public IDeviceCommand createDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceSpecification spec = assertDeviceSpecificationByToken(token, servletRequest);
 	IDeviceCommand result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createDeviceCommand(spec, request);
+		.createDeviceCommand(token, request);
 	return result;
     }
 

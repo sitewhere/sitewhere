@@ -111,9 +111,9 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+    public IDeviceCommand createDeviceCommand(String specificationToken, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createDeviceCommand(spec, request);
+	return delegate.createDeviceCommand(specificationToken, request);
     }
 
     @Override

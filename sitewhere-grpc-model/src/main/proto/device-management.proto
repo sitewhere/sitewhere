@@ -42,13 +42,13 @@ service DeviceManagement {
 	rpc GetDeviceCommandByToken (GGetDeviceCommandByTokenRequest) returns (GGetDeviceCommandByTokenResponse) {}
 	
 	// Update an existing device command.
-	rpc UpdateDeviceCommand (GGetDeviceCommandByTokenRequest) returns (GGetDeviceCommandByTokenResponse) {}
+	rpc UpdateDeviceCommand (GUpdateDeviceCommandRequest) returns (GUpdateDeviceCommandResponse) {}
 
 	// List device commands that meet criteria.
 	rpc ListDeviceCommands (GListDeviceCommandsRequest) returns (GListDeviceCommandsResponse) {}
 
 	// Delete an existing device command.
-	rpc DeleteDeviceCommand (GDeleteDeviceStatusRequest) returns (GDeleteDeviceCommandResponse) {}
+	rpc DeleteDeviceCommand (GDeleteDeviceCommandRequest) returns (GDeleteDeviceCommandResponse) {}
 
 	// #######################
 	// ### DEVICE STATUSES ###
@@ -67,7 +67,7 @@ service DeviceManagement {
 	rpc ListDeviceStatuses (GListDeviceStatusesRequest) returns (GListDeviceStatusesResponse) {}
 
 	// Delete an existing device status.
-	rpc DeleteDeviceStatus (GDeleteDeviceCommandRequest) returns (GDeleteDeviceStatusResponse) {}
+	rpc DeleteDeviceStatus (GDeleteDeviceStatusRequest) returns (GDeleteDeviceStatusResponse) {}
 
 	// ###############
 	// ### DEVICES ###
@@ -320,6 +320,7 @@ message GListDeviceCommandsResponse {
 message GDeleteDeviceCommandRequest {
 	string specificationToken = 1;
 	string token = 2;
+	bool force = 3;
 }
 	
 // Response for deleting a device command.

@@ -75,7 +75,7 @@ public class DeviceManagementRequestBuilder {
 
     public IDeviceCommand persist(IDeviceSpecification specification, DeviceCommandCreateRequest.Builder builder)
 	    throws SiteWhereException {
-	return getDeviceManagement().createDeviceCommand(specification, builder.build());
+	return getDeviceManagement().createDeviceCommand(specification.getToken(), builder.build());
     }
 
     public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken, String hardwareId) {

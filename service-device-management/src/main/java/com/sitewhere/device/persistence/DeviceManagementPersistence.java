@@ -168,7 +168,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec, IDeviceCommandCreateRequest request,
+    public static DeviceCommand deviceCommandCreateLogic(String specificationToken, IDeviceCommandCreateRequest request,
 	    String token, List<IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
 
@@ -180,7 +180,7 @@ public class DeviceManagementPersistence extends Persistence {
 	require(request.getName());
 	command.setName(request.getName());
 
-	command.setSpecificationToken(spec.getToken());
+	command.setSpecificationToken(specificationToken);
 	command.setNamespace(request.getNamespace());
 	command.setDescription(request.getDescription());
 	command.getParameters().addAll(request.getParameters());
