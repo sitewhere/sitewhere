@@ -8,7 +8,7 @@ import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingS
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
 
 /**
- * Channel that allows for communication with a remote tenant mangement GRPC
+ * Channel that allows for communication with a remote tenant management GRPC
  * server.
  * 
  * @author Derek

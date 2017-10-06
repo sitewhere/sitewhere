@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.IApiChannel;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 
 import io.grpc.ConnectivityState;
 
@@ -16,7 +16,7 @@ import io.grpc.ConnectivityState;
  *
  * @param <T>
  */
-public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends LifecycleComponent implements IApiChannel {
+public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLifecycleComponent implements IApiChannel {
 
     /** Interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;

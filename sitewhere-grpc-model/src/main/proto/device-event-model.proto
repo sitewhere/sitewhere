@@ -79,8 +79,8 @@ message GDeviceCommandInvocationCreateRequest {
 // Request data for a device command response.
 message GDeviceCommandResponseCreateRequest {
 	string originatingEventId = 1;
-	string responseEventId = 2;
-	string response = 3;
+	GOptionalString responseEventId = 2;
+	GOptionalString response = 3;
 	GDeviceEventCreateRequest event = 4;
 }
 
@@ -167,8 +167,8 @@ message GDeviceCommandInvocation {
 // Command response event.
 message GDeviceCommandResponse {
 	string originatingEventId = 1;
-	string responseEventId = 2;
-	string response = 3;
+	GOptionalString responseEventId = 2;
+	GOptionalString response = 3;
 	GDeviceEvent event = 4;
 }
 

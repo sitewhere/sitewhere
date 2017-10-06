@@ -4,14 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.protobuf.ByteString;
+import com.sitewhere.grpc.model.CommonModel.GDeviceCommandInitiator;
+import com.sitewhere.grpc.model.CommonModel.GDeviceCommandStatus;
+import com.sitewhere.grpc.model.CommonModel.GDeviceCommandTarget;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
+import com.sitewhere.grpc.model.CommonModel.GStateChangeCategory;
+import com.sitewhere.grpc.model.CommonModel.GStateChangeType;
 import com.sitewhere.grpc.model.DeviceEventModel.GAlertLevel;
 import com.sitewhere.grpc.model.DeviceEventModel.GAlertSource;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocation;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponse;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchResponse;
@@ -20,34 +29,53 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurements;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChange;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamData;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.CommandInitiator;
+import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.state.StateChangeCategory;
+import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
  * Convert device event entities between SiteWhere API model and GRPC model.
@@ -742,6 +770,634 @@ public class EventModelConverter {
 	List<GDeviceStreamData> grpcs = new ArrayList<GDeviceStreamData>();
 	for (IDeviceStreamData api : apis) {
 	    grpcs.add(EventModelConverter.asGrpcDeviceStreamData(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert command initiator from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CommandInitiator asApiCommandInitiator(GDeviceCommandInitiator grpc) throws SiteWhereException {
+	switch (grpc) {
+	case CMD_INITIATOR_BATCH_OPERATION:
+	    return CommandInitiator.BatchOperation;
+	case CMD_INITIATOR_REST:
+	    return CommandInitiator.REST;
+	case CMD_INITIATOR_SCHEDULER:
+	    return CommandInitiator.Scheduler;
+	case CMD_INITIATOR_SCRIPT:
+	    return CommandInitiator.Script;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown command initiator: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert command initiator from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandInitiator asGrpcCommandInitiator(CommandInitiator api) throws SiteWhereException {
+	switch (api) {
+	case BatchOperation:
+	    return GDeviceCommandInitiator.CMD_INITIATOR_BATCH_OPERATION;
+	case REST:
+	    return GDeviceCommandInitiator.CMD_INITIATOR_REST;
+	case Scheduler:
+	    return GDeviceCommandInitiator.CMD_INITIATOR_SCHEDULER;
+	case Script:
+	    return GDeviceCommandInitiator.CMD_INITIATOR_SCRIPT;
+	}
+	throw new SiteWhereException("Unknown command initiator: " + api.name());
+    }
+
+    /**
+     * Convert command target from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CommandTarget asApiCommandTarget(GDeviceCommandTarget grpc) throws SiteWhereException {
+	switch (grpc) {
+	case CMD_TARGET_ASSIGNMENT:
+	    return CommandTarget.Assignment;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown command target: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert command target from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandTarget asGrpcCommandTarget(CommandTarget api) throws SiteWhereException {
+	switch (api) {
+	case Assignment:
+	    return GDeviceCommandTarget.CMD_TARGET_ASSIGNMENT;
+	}
+	throw new SiteWhereException("Unknown command target: " + api.name());
+    }
+
+    /**
+     * Convert command status from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CommandStatus asApiCommandStatus(GDeviceCommandStatus grpc) throws SiteWhereException {
+	switch (grpc) {
+	case CMD_STATUS_PENDING:
+	    return CommandStatus.Pending;
+	case CMD_STATUS_PROCESSING:
+	    return CommandStatus.Processing;
+	case CMD_STATUS_RESPONDED:
+	    return CommandStatus.Responded;
+	case CMD_STATUS_SENT:
+	    return CommandStatus.Sent;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown command status: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert command status from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandStatus asGrpcCommandStatus(CommandStatus api) throws SiteWhereException {
+	switch (api) {
+	case Pending:
+	    return GDeviceCommandStatus.CMD_STATUS_PENDING;
+	case Processing:
+	    return GDeviceCommandStatus.CMD_STATUS_PROCESSING;
+	case Responded:
+	    return GDeviceCommandStatus.CMD_STATUS_RESPONDED;
+	case Sent:
+	    return GDeviceCommandStatus.CMD_STATUS_SENT;
+	}
+	throw new SiteWhereException("Unknown command status: " + api.name());
+    }
+
+    /**
+     * Convert device command invocation create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandInvocationCreateRequest asApiDeviceCommandInvocationCreateRequest(
+	    GDeviceCommandInvocationCreateRequest grpc) throws SiteWhereException {
+	DeviceCommandInvocationCreateRequest api = new DeviceCommandInvocationCreateRequest();
+	api.setInitiator(EventModelConverter.asApiCommandInitiator(grpc.getInitiator()));
+	api.setInitiatorId(grpc.getInitiatorId());
+	api.setTarget(EventModelConverter.asApiCommandTarget(grpc.getTarget()));
+	api.setTargetId(grpc.getTargetId());
+	api.setCommandToken(grpc.getCommandToken());
+	api.setParameterValues(grpc.getParameterValuesMap());
+	api.setStatus(EventModelConverter.asApiCommandStatus(grpc.getStatus()));
+	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device command invocation create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandInvocationCreateRequest asGrpcDeviceCommandInvocationCreateRequest(
+	    IDeviceCommandInvocationCreateRequest api) throws SiteWhereException {
+	GDeviceCommandInvocationCreateRequest.Builder grpc = GDeviceCommandInvocationCreateRequest.newBuilder();
+	grpc.setInitiator(EventModelConverter.asGrpcCommandInitiator(api.getInitiator()));
+	grpc.setInitiatorId(api.getInitiatorId());
+	grpc.setTarget(EventModelConverter.asGrpcCommandTarget(api.getTarget()));
+	grpc.setTargetId(api.getTargetId());
+	grpc.setCommandToken(api.getCommandToken());
+	grpc.putAllParameterValues(api.getParameterValues());
+	grpc.setStatus(EventModelConverter.asGrpcCommandStatus(api.getStatus()));
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device command invocation create requests from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceCommandInvocationCreateRequest> asApiDeviceCommandInvocationCreateRequests(
+	    List<GDeviceCommandInvocationCreateRequest> grpcs) throws SiteWhereException {
+	List<DeviceCommandInvocationCreateRequest> api = new ArrayList<DeviceCommandInvocationCreateRequest>();
+	for (GDeviceCommandInvocationCreateRequest grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceCommandInvocationCreateRequest(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device command invocation create requests from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceCommandInvocationCreateRequest> asGrpcDeviceCommandInvocationCreateRequests(
+	    List<IDeviceCommandInvocationCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceCommandInvocationCreateRequest> grpcs = new ArrayList<GDeviceCommandInvocationCreateRequest>();
+	for (IDeviceCommandInvocationCreateRequest api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceCommandInvocationCreateRequest(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert command invocation from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandInvocation asApiDeviceCommandInvocation(GDeviceCommandInvocation grpc)
+	    throws SiteWhereException {
+	DeviceCommandInvocation api = new DeviceCommandInvocation();
+	api.setInitiator(EventModelConverter.asApiCommandInitiator(grpc.getInitiator()));
+	api.setInitiatorId(grpc.getInitiatorId());
+	api.setTarget(EventModelConverter.asApiCommandTarget(grpc.getTarget()));
+	api.setTargetId(grpc.getTargetId());
+	api.setCommandToken(grpc.getCommandToken());
+	api.setParameterValues(grpc.getParameterValuesMap());
+	api.setStatus(EventModelConverter.asApiCommandStatus(grpc.getStatus()));
+	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert command invocation from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandInvocation asGrpcDeviceCommandInvocation(IDeviceCommandInvocation api)
+	    throws SiteWhereException {
+	GDeviceCommandInvocation.Builder grpc = GDeviceCommandInvocation.newBuilder();
+	grpc.setInitiator(EventModelConverter.asGrpcCommandInitiator(api.getInitiator()));
+	grpc.setInitiatorId(api.getInitiatorId());
+	grpc.setTarget(EventModelConverter.asGrpcCommandTarget(api.getTarget()));
+	grpc.setTargetId(api.getTargetId());
+	grpc.setCommandToken(api.getCommandToken());
+	grpc.putAllParameterValues(api.getParameterValues());
+	grpc.setStatus(EventModelConverter.asGrpcCommandStatus(api.getStatus()));
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device command invocation from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceCommandInvocation> asApiDeviceCommandInvocation(List<GDeviceCommandInvocation> grpcs)
+	    throws SiteWhereException {
+	List<DeviceCommandInvocation> api = new ArrayList<DeviceCommandInvocation>();
+	for (GDeviceCommandInvocation grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceCommandInvocation(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device command invocation from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceCommandInvocation> asGrpcDeviceCommandInvocation(List<IDeviceCommandInvocation> apis)
+	    throws SiteWhereException {
+	List<GDeviceCommandInvocation> grpcs = new ArrayList<GDeviceCommandInvocation>();
+	for (IDeviceCommandInvocation api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceCommandInvocation(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert device command response create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandResponseCreateRequest asApiDeviceCommandResponseCreateRequest(
+	    GDeviceCommandResponseCreateRequest grpc) throws SiteWhereException {
+	DeviceCommandResponseCreateRequest api = new DeviceCommandResponseCreateRequest();
+	api.setOriginatingEventId(grpc.getOriginatingEventId());
+	api.setResponseEventId(grpc.hasResponseEventId() ? grpc.getResponseEventId().getValue() : null);
+	api.setResponse(grpc.hasResponse() ? grpc.getResponse().getValue() : null);
+	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device command response create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandResponseCreateRequest asGrpcDeviceCommandResponseCreateRequest(
+	    IDeviceCommandResponseCreateRequest api) throws SiteWhereException {
+	GDeviceCommandResponseCreateRequest.Builder grpc = GDeviceCommandResponseCreateRequest.newBuilder();
+	grpc.setOriginatingEventId(api.getOriginatingEventId());
+	if (api.getResponseEventId() != null) {
+	    grpc.setResponseEventId(GOptionalString.newBuilder().setValue(api.getResponseEventId()).build());
+	}
+	if (api.getResponse() != null) {
+	    grpc.setResponse(GOptionalString.newBuilder().setValue(api.getResponse()).build());
+	}
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device command response create requests from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceCommandResponseCreateRequest> asApiDeviceCommandResponseCreateRequests(
+	    List<GDeviceCommandResponseCreateRequest> grpcs) throws SiteWhereException {
+	List<DeviceCommandResponseCreateRequest> api = new ArrayList<DeviceCommandResponseCreateRequest>();
+	for (GDeviceCommandResponseCreateRequest grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceCommandResponseCreateRequest(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device command response create requests from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceCommandResponseCreateRequest> asGrpcDeviceCommandResponseCreateRequests(
+	    List<IDeviceCommandResponseCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceCommandResponseCreateRequest> grpcs = new ArrayList<GDeviceCommandResponseCreateRequest>();
+	for (IDeviceCommandResponseCreateRequest api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceCommandResponseCreateRequest(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert device command response from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceCommandResponse asApiDeviceCommandResponse(GDeviceCommandResponse grpc)
+	    throws SiteWhereException {
+	DeviceCommandResponse api = new DeviceCommandResponse();
+	api.setOriginatingEventId(grpc.getOriginatingEventId());
+	api.setResponseEventId(grpc.hasResponseEventId() ? grpc.getResponseEventId().getValue() : null);
+	api.setResponse(grpc.hasResponse() ? grpc.getResponse().getValue() : null);
+	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device command response from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceCommandResponse asGrpcDeviceCommandResponse(IDeviceCommandResponse api)
+	    throws SiteWhereException {
+	GDeviceCommandResponse.Builder grpc = GDeviceCommandResponse.newBuilder();
+	grpc.setOriginatingEventId(api.getOriginatingEventId());
+	if (api.getResponseEventId() != null) {
+	    grpc.setResponseEventId(GOptionalString.newBuilder().setValue(api.getResponseEventId()).build());
+	}
+	if (api.getResponse() != null) {
+	    grpc.setResponse(GOptionalString.newBuilder().setValue(api.getResponse()).build());
+	}
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device command response from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceCommandResponse> asApiDeviceCommandResponses(List<GDeviceCommandResponse> grpcs)
+	    throws SiteWhereException {
+	List<DeviceCommandResponse> api = new ArrayList<DeviceCommandResponse>();
+	for (GDeviceCommandResponse grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceCommandResponse(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device command response from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceCommandResponse> asGrpcDeviceCommandResponses(List<IDeviceCommandResponse> apis)
+	    throws SiteWhereException {
+	List<GDeviceCommandResponse> grpcs = new ArrayList<GDeviceCommandResponse>();
+	for (IDeviceCommandResponse api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceCommandResponse(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert state change category from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static StateChangeCategory asApiStateChangeCategory(GStateChangeCategory grpc) throws SiteWhereException {
+	switch (grpc) {
+	case STATE_CHANGE_CAT_ASSIGNMENT:
+	    return StateChangeCategory.Assignment;
+	case STATE_CHANGE_CAT_PRESENCE:
+	    return StateChangeCategory.Presence;
+	case STATE_CHANGE_CAT_REGISTRATION:
+	    return StateChangeCategory.Registration;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown state change category: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert state change category from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GStateChangeCategory asGrpcStateChangeCategory(StateChangeCategory api) throws SiteWhereException {
+	switch (api) {
+	case Assignment:
+	    return GStateChangeCategory.STATE_CHANGE_CAT_ASSIGNMENT;
+	case Presence:
+	    return GStateChangeCategory.STATE_CHANGE_CAT_PRESENCE;
+	case Registration:
+	    return GStateChangeCategory.STATE_CHANGE_CAT_REGISTRATION;
+	}
+	throw new SiteWhereException("Unknown state change category: " + api.name());
+    }
+
+    /**
+     * Convert state change type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static StateChangeType asApiStateChangeType(GStateChangeType grpc) throws SiteWhereException {
+	switch (grpc) {
+	case STATE_CHANGE_TYPE_ASSIGNMENT_CREATED:
+	    return StateChangeType.Assignment_Created;
+	case STATE_CHANGE_TYPE_ASSIGNMENT_RELEASED:
+	    return StateChangeType.Assignment_Released;
+	case STATE_CHANGE_TYPE_ASSIGNMENT_UPDATED:
+	    return StateChangeType.Assignment_Updated;
+	case STATE_CHANGE_TYPE_PRESENCE_UPDATED:
+	    return StateChangeType.Presence_Updated;
+	case STATE_CHANGE_TYPE_REGISTRATION_REQUESTED:
+	    return StateChangeType.Registration_Requested;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown state change type: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert state change type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GStateChangeType asGrpcStateChangeType(StateChangeType api) throws SiteWhereException {
+	switch (api) {
+	case Assignment_Created:
+	    return GStateChangeType.STATE_CHANGE_TYPE_ASSIGNMENT_CREATED;
+	case Assignment_Released:
+	    return GStateChangeType.STATE_CHANGE_TYPE_ASSIGNMENT_RELEASED;
+	case Assignment_Updated:
+	    return GStateChangeType.STATE_CHANGE_TYPE_ASSIGNMENT_UPDATED;
+	case Presence_Updated:
+	    return GStateChangeType.STATE_CHANGE_TYPE_PRESENCE_UPDATED;
+	case Registration_Requested:
+	    return GStateChangeType.STATE_CHANGE_TYPE_REGISTRATION_REQUESTED;
+	}
+	throw new SiteWhereException("Unknown state change type: " + api.name());
+    }
+
+    /**
+     * Convert device state change create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStateChangeCreateRequest asApiDeviceStateChangeCreateRequest(
+	    GDeviceStateChangeCreateRequest grpc) throws SiteWhereException {
+	DeviceStateChangeCreateRequest api = new DeviceStateChangeCreateRequest(
+		EventModelConverter.asApiStateChangeCategory(grpc.getCategory()),
+		EventModelConverter.asApiStateChangeType(grpc.getType()), grpc.getPreviousState(), grpc.getNewState());
+	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device state change create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStateChangeCreateRequest asGrpcDeviceStateChangeCreateRequest(
+	    IDeviceStateChangeCreateRequest api) throws SiteWhereException {
+	GDeviceStateChangeCreateRequest.Builder grpc = GDeviceStateChangeCreateRequest.newBuilder();
+	grpc.setCategory(EventModelConverter.asGrpcStateChangeCategory(api.getCategory()));
+	grpc.setType(EventModelConverter.asGrpcStateChangeType(api.getType()));
+	grpc.setPreviousState(api.getPreviousState());
+	grpc.setNewState(api.getNewState());
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device state change create requests from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceStateChangeCreateRequest> asApiDeviceStateChangeCreateRequests(
+	    List<GDeviceStateChangeCreateRequest> grpcs) throws SiteWhereException {
+	List<DeviceStateChangeCreateRequest> api = new ArrayList<DeviceStateChangeCreateRequest>();
+	for (GDeviceStateChangeCreateRequest grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceStateChangeCreateRequest(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device state change create requests from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceStateChangeCreateRequest> asGrpcDeviceStateChangeCreateRequests(
+	    List<IDeviceStateChangeCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceStateChangeCreateRequest> grpcs = new ArrayList<GDeviceStateChangeCreateRequest>();
+	for (IDeviceStateChangeCreateRequest api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceStateChangeCreateRequest(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert device state change from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStateChange asApiDeviceStateChange(GDeviceStateChange grpc) throws SiteWhereException {
+	DeviceStateChange api = new DeviceStateChange();
+	api.setCategory(EventModelConverter.asApiStateChangeCategory(grpc.getCategory()));
+	api.setType(EventModelConverter.asApiStateChangeType(grpc.getType()));
+	api.setPreviousState(grpc.getPreviousState());
+	api.setNewState(grpc.getNewState());
+	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device state change from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStateChange asGrpcDeviceStateChange(IDeviceStateChange api) throws SiteWhereException {
+	GDeviceStateChange.Builder grpc = GDeviceStateChange.newBuilder();
+	grpc.setCategory(EventModelConverter.asGrpcStateChangeCategory(api.getCategory()));
+	grpc.setType(EventModelConverter.asGrpcStateChangeType(api.getType()));
+	grpc.setPreviousState(api.getPreviousState());
+	grpc.setNewState(api.getNewState());
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device state changes from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceStateChange> asApiDeviceStateChanges(List<GDeviceStateChange> grpcs)
+	    throws SiteWhereException {
+	List<DeviceStateChange> api = new ArrayList<DeviceStateChange>();
+	for (GDeviceStateChange grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceStateChange(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device state changes from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceStateChange> asGrpcDeviceStateChanges(List<IDeviceStateChange> apis)
+	    throws SiteWhereException {
+	List<GDeviceStateChange> grpcs = new ArrayList<GDeviceStateChange>();
+	for (IDeviceStateChange api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceStateChange(api));
 	}
 	return grpcs;
     }
