@@ -3,11 +3,13 @@ package com.sitewhere.grpc.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.DeviceEventModel.GAlertLevel;
 import com.sitewhere.grpc.model.DeviceEventModel.GAlertSource;
+import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEvent;
@@ -18,15 +20,19 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurements;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamData;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -36,10 +42,12 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 
 /**
  * Convert device event entities between SiteWhere API model and GRPC model.
@@ -61,6 +69,20 @@ public class EventModelConverter {
 	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
 	api.setUpdateState(grpc.hasUpdateState() ? grpc.getUpdateState().getValue() : false);
 	api.setMetadata(grpc.getMetadataMap());
+    }
+
+    /**
+     * Convert generic device event create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceEventCreateRequest asApiDeviceEventCreateRequest(GDeviceEventCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceEventCreateRequest api = new DeviceEventCreateRequest();
+	EventModelConverter.copyApiDeviceEventCreateRequest(grpc, api);
+	return api;
     }
 
     /**
@@ -595,6 +617,136 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device stream data create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStreamDataCreateRequest asApiDeviceStreamDataCreateRequest(GDeviceStreamDataCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceStreamDataCreateRequest api = new DeviceStreamDataCreateRequest();
+	api.setStreamId(grpc.getStreamId());
+	api.setSequenceNumber(grpc.getSequenceNumber());
+	api.setData(grpc.getData().toByteArray());
+	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device stream data create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStreamDataCreateRequest asGrpcDeviceStreamDataCreateRequest(IDeviceStreamDataCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceStreamDataCreateRequest.Builder grpc = GDeviceStreamDataCreateRequest.newBuilder();
+	grpc.setStreamId(api.getStreamId());
+	grpc.setSequenceNumber(api.getSequenceNumber());
+	grpc.setData(ByteString.copyFrom(api.getData()));
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device stream data create requests from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceStreamDataCreateRequest> asApiDeviceStreamDataCreateRequests(
+	    List<GDeviceStreamDataCreateRequest> grpcs) throws SiteWhereException {
+	List<DeviceStreamDataCreateRequest> api = new ArrayList<DeviceStreamDataCreateRequest>();
+	for (GDeviceStreamDataCreateRequest grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceStreamDataCreateRequest(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device stream data create requests from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceStreamDataCreateRequest> asGrpcDeviceStreamDataCreateRequests(
+	    List<IDeviceStreamDataCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceStreamDataCreateRequest> grpcs = new ArrayList<GDeviceStreamDataCreateRequest>();
+	for (IDeviceStreamDataCreateRequest api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceStreamDataCreateRequest(api));
+	}
+	return grpcs;
+    }
+
+    /**
+     * Convert device stream data from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStreamData asApiDeviceStreamData(GDeviceStreamData grpc) throws SiteWhereException {
+	DeviceStreamData api = new DeviceStreamData();
+	api.setStreamId(grpc.getStreamId());
+	api.setSequenceNumber(grpc.getSequenceNumber());
+	api.setData(grpc.getData().toByteArray());
+	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
+	return api;
+    }
+
+    /**
+     * Convert device stream data create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStreamData asGrpcDeviceStreamData(IDeviceStreamData api) throws SiteWhereException {
+	GDeviceStreamData.Builder grpc = GDeviceStreamData.newBuilder();
+	grpc.setStreamId(api.getStreamId());
+	grpc.setSequenceNumber(api.getSequenceNumber());
+	grpc.setData(ByteString.copyFrom(api.getData()));
+	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device stream data from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceStreamData> asApiDeviceStreamData(List<GDeviceStreamData> grpcs)
+	    throws SiteWhereException {
+	List<DeviceStreamData> api = new ArrayList<DeviceStreamData>();
+	for (GDeviceStreamData grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceStreamData(grpc));
+	}
+	return api;
+    }
+
+    /**
+     * Convert device stream data from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceStreamData> asGrpcDeviceStreamData(List<IDeviceStreamData> apis)
+	    throws SiteWhereException {
+	List<GDeviceStreamData> grpcs = new ArrayList<GDeviceStreamData>();
+	for (IDeviceStreamData api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceStreamData(api));
+	}
+	return grpcs;
+    }
+
+    /**
      * Convert device event batch from GRPC to API.
      * 
      * @param grpc
@@ -641,6 +793,32 @@ public class EventModelConverter {
 	grpc.addAllMeasurements(EventModelConverter.asGrpcDeviceMeasurements(api.getCreatedMeasurements()));
 	grpc.addAllAlerts(EventModelConverter.asGrpcDeviceAlerts(api.getCreatedAlerts()));
 	grpc.addAllLocations(EventModelConverter.asGrpcDeviceLocations(api.getCreatedLocations()));
+	return grpc.build();
+    }
+
+    /**
+     * Convert generic event from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAnyDeviceEvent asGenericDeviceEvent(IDeviceEvent api) throws SiteWhereException {
+	GAnyDeviceEvent.Builder grpc = GAnyDeviceEvent.newBuilder();
+	switch (api.getEventType()) {
+	case Measurements:
+	    grpc.setMeasurements(EventModelConverter.asGrpcDeviceMeasurements((IDeviceMeasurements) api));
+	    break;
+	case Alert:
+	    grpc.setAlert(EventModelConverter.asGrpcDeviceAlert((IDeviceAlert) api));
+	    break;
+	case Location:
+	    grpc.setLocation(EventModelConverter.asGrpcDeviceLocation((IDeviceLocation) api));
+	    break;
+	default:
+	    throw new SiteWhereException("Unable to convert event to GRPC. " + api.getClass().getName());
+	}
+
 	return grpc.build();
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
+import com.sitewhere.grpc.model.CommonModel.GDateRangeSearchCriteria;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
 import com.sitewhere.grpc.model.CommonModel.GLocation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
@@ -13,6 +14,7 @@ import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
@@ -132,6 +134,19 @@ public class CommonModelConverter {
      */
     public static SearchCriteria asApiSearchCriteria(GPaging paging) throws SiteWhereException {
 	return new SearchCriteria(paging.getPageNumber(), paging.getPageSize());
+    }
+
+    /**
+     * Convert date range search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DateRangeSearchCriteria asDateRangeSearchCriteria(GDateRangeSearchCriteria grpc)
+	    throws SiteWhereException {
+	return new DateRangeSearchCriteria(grpc.getPageNumber(), grpc.getPageSize(),
+		CommonModelConverter.asDate(grpc.getStartDate()), CommonModelConverter.asDate(grpc.getEndDate()));
     }
 
     /**

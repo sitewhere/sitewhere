@@ -86,9 +86,6 @@ service DeviceEventManagement {
 	
 	// List stream data for an assignment.
 	rpc ListStreamDataForAssignment (GListStreamDataForAssignmentRequest) returns (GListStreamDataForAssignmentResponse) {}
-	
-	// List stream data for a site.
-	rpc ListStreamDataForSite (GListStreamDataForSiteRequest) returns (GListStreamDataForSiteResponse) {}
 
 	// ###########################
 	// ### COMMAND INVOCATIONS ###
@@ -184,7 +181,8 @@ message GListDeviceEventsResponse {
 	
 // Request for updating a device event.
 message GUpdateDeviceEventRequest {
-	com.sitewhere.grpc.model.GDeviceEventCreateRequest event = 1;
+	string id = 1;
+	com.sitewhere.grpc.model.GDeviceEventCreateRequest event = 2;
 }
 	
 // Response for updating a device event.
@@ -332,21 +330,11 @@ message GGetStreamDataForAssignmentResponse {
 // Request for list of stream data for an assignment.
 message GListStreamDataForAssignmentRequest {
 	string assignmentToken = 1;
-	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+	string streamId = 2;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
 }
 // Response for list of stream data for an assignment.
 message GListStreamDataForAssignmentResponse {
-	com.sitewhere.grpc.model.GDeviceStreamDataSearchResults results = 1;
-}
-	
-// Request for list of stream data for a site.
-message GListStreamDataForSiteRequest {
-	string siteToken = 1;
-	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
-}
-	
-// Response for list of stream data for a site.
-message GListStreamDataForSiteResponse {
 	com.sitewhere.grpc.model.GDeviceStreamDataSearchResults results = 1;
 }
 
