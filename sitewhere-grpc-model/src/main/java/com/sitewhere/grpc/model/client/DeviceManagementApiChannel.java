@@ -10,26 +10,66 @@ import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
+import com.sitewhere.grpc.service.GCreateDeviceAssignmentRequest;
+import com.sitewhere.grpc.service.GCreateDeviceAssignmentResponse;
 import com.sitewhere.grpc.service.GCreateDeviceCommandRequest;
 import com.sitewhere.grpc.service.GCreateDeviceCommandResponse;
+import com.sitewhere.grpc.service.GCreateDeviceElementMappingRequest;
+import com.sitewhere.grpc.service.GCreateDeviceElementMappingResponse;
+import com.sitewhere.grpc.service.GCreateDeviceRequest;
+import com.sitewhere.grpc.service.GCreateDeviceResponse;
 import com.sitewhere.grpc.service.GCreateDeviceSpecificationRequest;
 import com.sitewhere.grpc.service.GCreateDeviceSpecificationResponse;
+import com.sitewhere.grpc.service.GCreateDeviceStatusRequest;
+import com.sitewhere.grpc.service.GCreateDeviceStatusResponse;
+import com.sitewhere.grpc.service.GDeleteDeviceAssignmentRequest;
+import com.sitewhere.grpc.service.GDeleteDeviceAssignmentResponse;
 import com.sitewhere.grpc.service.GDeleteDeviceCommandRequest;
 import com.sitewhere.grpc.service.GDeleteDeviceCommandResponse;
+import com.sitewhere.grpc.service.GDeleteDeviceElementMappingRequest;
+import com.sitewhere.grpc.service.GDeleteDeviceElementMappingResponse;
+import com.sitewhere.grpc.service.GDeleteDeviceRequest;
+import com.sitewhere.grpc.service.GDeleteDeviceResponse;
 import com.sitewhere.grpc.service.GDeleteDeviceSpecificationRequest;
 import com.sitewhere.grpc.service.GDeleteDeviceSpecificationResponse;
+import com.sitewhere.grpc.service.GDeleteDeviceStatusRequest;
+import com.sitewhere.grpc.service.GDeleteDeviceStatusResponse;
+import com.sitewhere.grpc.service.GEndDeviceAssignmentRequest;
+import com.sitewhere.grpc.service.GEndDeviceAssignmentResponse;
+import com.sitewhere.grpc.service.GGetCurrentAssignmentForDeviceRequest;
+import com.sitewhere.grpc.service.GGetCurrentAssignmentForDeviceResponse;
+import com.sitewhere.grpc.service.GGetDeviceAssignmentByTokenRequest;
+import com.sitewhere.grpc.service.GGetDeviceAssignmentByTokenResponse;
+import com.sitewhere.grpc.service.GGetDeviceAssignmentHistoryRequest;
+import com.sitewhere.grpc.service.GGetDeviceAssignmentHistoryResponse;
+import com.sitewhere.grpc.service.GGetDeviceByaHardwareIdRequest;
+import com.sitewhere.grpc.service.GGetDeviceByaHardwareIdResponse;
 import com.sitewhere.grpc.service.GGetDeviceCommandByTokenRequest;
 import com.sitewhere.grpc.service.GGetDeviceCommandByTokenResponse;
 import com.sitewhere.grpc.service.GGetDeviceSpecificationByTokenRequest;
 import com.sitewhere.grpc.service.GGetDeviceSpecificationByTokenResponse;
+import com.sitewhere.grpc.service.GGetDeviceStatusByCodeRequest;
+import com.sitewhere.grpc.service.GGetDeviceStatusByCodeResponse;
 import com.sitewhere.grpc.service.GListDeviceCommandsRequest;
 import com.sitewhere.grpc.service.GListDeviceCommandsResponse;
 import com.sitewhere.grpc.service.GListDeviceSpecificationsRequest;
 import com.sitewhere.grpc.service.GListDeviceSpecificationsResponse;
+import com.sitewhere.grpc.service.GListDeviceStatusesRequest;
+import com.sitewhere.grpc.service.GListDeviceStatusesResponse;
+import com.sitewhere.grpc.service.GListDevicesRequest;
+import com.sitewhere.grpc.service.GListDevicesResponse;
+import com.sitewhere.grpc.service.GUpdateDeviceAssignmentMetadataRequest;
+import com.sitewhere.grpc.service.GUpdateDeviceAssignmentMetadataResponse;
+import com.sitewhere.grpc.service.GUpdateDeviceAssignmentStatusRequest;
+import com.sitewhere.grpc.service.GUpdateDeviceAssignmentStatusResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceCommandRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceCommandResponse;
+import com.sitewhere.grpc.service.GUpdateDeviceRequest;
+import com.sitewhere.grpc.service.GUpdateDeviceResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceSpecificationRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceSpecificationResponse;
+import com.sitewhere.grpc.service.GUpdateDeviceStatusRequest;
+import com.sitewhere.grpc.service.GUpdateDeviceStatusResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
@@ -329,131 +369,497 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
     @Override
     public IDeviceStatus createDeviceStatus(String specToken, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS);
+	    GCreateDeviceStatusRequest.Builder grequest = GCreateDeviceStatusRequest.newBuilder();
+	    grequest.setSpecificationToken(specToken);
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceStatusCreateRequest(request));
+	    GCreateDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createDeviceStatus(grequest.build());
+	    IDeviceStatus response = (gresponse.hasStatus())
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * lang.String, java.lang.String)
+     */
     @Override
     public IDeviceStatus getDeviceStatusByCode(String specToken, String code) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE);
+	    GGetDeviceStatusByCodeRequest.Builder grequest = GGetDeviceStatusByCodeRequest.newBuilder();
+	    grequest.setSpecificationToken(specToken);
+	    grequest.setCode(code);
+	    GGetDeviceStatusByCodeResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDeviceStatusByCode(grequest.build());
+	    IDeviceStatus response = (gresponse.hasStatus())
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * String, java.lang.String,
+     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
     @Override
     public IDeviceStatus updateDeviceStatus(String specToken, String code, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS);
+	    GUpdateDeviceStatusRequest.Builder grequest = GUpdateDeviceStatusRequest.newBuilder();
+	    grequest.setSpecificationToken(specToken);
+	    grequest.setCode(code);
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceStatusCreateRequest(request));
+	    GUpdateDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateDeviceStatus(grequest.build());
+	    IDeviceStatus response = (gresponse.hasStatus())
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * String)
+     */
     @Override
     public List<IDeviceStatus> listDeviceStatuses(String specToken) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES);
+	    GListDeviceStatusesRequest.Builder grequest = GListDeviceStatusesRequest.newBuilder();
+	    grequest.setSpecificationToken(specToken);
+	    grequest.setCriteria(DeviceModelConverter.asApiDeviceStatusSearchCriteria(null));
+	    GListDeviceStatusesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listDeviceStatuses(grequest.build());
+	    List<IDeviceStatus> results = DeviceModelConverter
+		    .asApiDeviceStatusSearchResults(gresponse.getStatusList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * String, java.lang.String)
+     */
     @Override
     public IDeviceStatus deleteDeviceStatus(String specToken, String code) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS);
+	    GDeleteDeviceStatusRequest.Builder grequest = GDeleteDeviceStatusRequest.newBuilder();
+	    grequest.setSpecificationToken(specToken);
+	    grequest.setCode(code);
+	    GDeleteDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteDeviceStatus(grequest.build());
+	    IDeviceStatus response = (gresponse.hasStatus())
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDevice(com.sitewhere.spi
+     * .device.request.IDeviceCreateRequest)
+     */
     @Override
     public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE);
+	    GCreateDeviceRequest.Builder grequest = GCreateDeviceRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCreateRequest(device));
+	    GCreateDeviceResponse gresponse = getGrpcChannel().getBlockingStub().createDevice(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
+     * lang.String)
+     */
     @Override
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID);
+	    GGetDeviceByaHardwareIdRequest.Builder grequest = GGetDeviceByaHardwareIdRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    GGetDeviceByaHardwareIdResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDeviceByHardwareId(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDevice(java.lang.String,
+     * com.sitewhere.spi.device.request.IDeviceCreateRequest)
+     */
     @Override
     public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE);
+	    GUpdateDeviceRequest.Builder grequest = GUpdateDeviceRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCreateRequest(request));
+	    GUpdateDeviceResponse gresponse = getGrpcChannel().getBlockingStub().updateDevice(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
+     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     */
     @Override
     public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICES);
+	    GListDevicesRequest.Builder grequest = GListDevicesRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asApiDeviceSearchCriteria(criteria));
+	    GListDevicesResponse gresponse = getGrpcChannel().getBlockingStub().listDevices(grequest.build());
+	    ISearchResults<IDevice> results = DeviceModelConverter.asApiDeviceSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICES, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
+     * java.lang.String, com.sitewhere.spi.device.IDeviceElementMapping)
+     */
     @Override
     public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING);
+	    GCreateDeviceElementMappingRequest.Builder grequest = GCreateDeviceElementMappingRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    grequest.setMapping(DeviceModelConverter.asGrpcDeviceElementMapping(mapping));
+	    GCreateDeviceElementMappingResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createDeviceElementMapping(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
+     * java.lang.String, java.lang.String)
+     */
     @Override
     public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING);
+	    GDeleteDeviceElementMappingRequest.Builder grequest = GDeleteDeviceElementMappingRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    grequest.setPath(path);
+	    GDeleteDeviceElementMappingResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteDeviceElementMapping(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.lang.String,
+     * boolean)
+     */
     @Override
     public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE);
+	    GDeleteDeviceRequest.Builder grequest = GDeleteDeviceRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    grequest.setForce(force);
+	    GDeleteDeviceResponse gresponse = getGrpcChannel().getBlockingStub().deleteDevice(grequest.build());
+	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
+     * sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
+     */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT);
+	    GCreateDeviceAssignmentRequest.Builder grequest = GCreateDeviceAssignmentRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAssignmentCreateRequest(request));
+	    GCreateDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createDeviceAssignment(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(
+     * java.lang.String)
+     */
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN);
+	    GGetDeviceAssignmentByTokenRequest.Builder grequest = GGetDeviceAssignmentByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetDeviceAssignmentByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDeviceAssignmentByToken(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * java.lang.String)
+     */
     @Override
     public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE);
+	    GGetCurrentAssignmentForDeviceRequest.Builder grequest = GGetCurrentAssignmentForDeviceRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    GGetCurrentAssignmentForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getCurrentAssignmentForDevice(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE,
+		    t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
+     * lang.String, boolean)
+     */
     @Override
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT);
+	    GDeleteDeviceAssignmentRequest.Builder grequest = GDeleteDeviceAssignmentRequest.newBuilder();
+	    grequest.setToken(token);
+	    grequest.setForce(force);
+	    GDeleteDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteDeviceAssignment(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata
+     * (java.lang.String, java.util.Map)
+     */
     @Override
     public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA);
+	    GUpdateDeviceAssignmentMetadataRequest.Builder grequest = GUpdateDeviceAssignmentMetadataRequest
+		    .newBuilder();
+	    grequest.setToken(token);
+	    grequest.putAllMetadata(metadata);
+	    GUpdateDeviceAssignmentMetadataResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateDeviceAssignmentMetadata(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA,
+		    t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(
+     * java.lang.String, com.sitewhere.spi.device.DeviceAssignmentStatus)
+     */
     @Override
     public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS);
+	    GUpdateDeviceAssignmentStatusRequest.Builder grequest = GUpdateDeviceAssignmentStatusRequest.newBuilder();
+	    grequest.setToken(token);
+	    grequest.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(status));
+	    GUpdateDeviceAssignmentStatusResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateDeviceAssignmentStatus(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.lang.
+     * String)
+     */
     @Override
     public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT);
+	    GEndDeviceAssignmentRequest.Builder grequest = GEndDeviceAssignmentRequest.newBuilder();
+	    grequest.setToken(token);
+	    GEndDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .endDeviceAssignment(grequest.build());
+	    IDeviceAssignment response = (gresponse.hasAssignment())
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, t);
+	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
+     * java.lang.String, com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY);
+	    GGetDeviceAssignmentHistoryRequest.Builder grequest = GGetDeviceAssignmentHistoryRequest.newBuilder();
+	    grequest.setHardwareId(hardwareId);
+	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceAssignmentHistoryCriteria(criteria));
+	    GGetDeviceAssignmentHistoryResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDeviceAssignmentHistory(grequest.build());
+	    ISearchResults<IDeviceAssignment> response = DeviceModelConverter
+		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, t);
+	}
     }
 
     @Override
