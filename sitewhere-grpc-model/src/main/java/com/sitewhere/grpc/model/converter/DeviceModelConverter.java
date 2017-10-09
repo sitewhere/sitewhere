@@ -31,6 +31,11 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceGroup;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElement;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupsWithRoleSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSlot;
@@ -44,12 +49,18 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStream;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
 import com.sitewhere.grpc.model.DeviceModel.GSite;
 import com.sitewhere.grpc.model.DeviceModel.GSiteCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GSiteMapData;
+import com.sitewhere.grpc.model.DeviceModel.GSiteSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GSiteSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZone;
 import com.sitewhere.grpc.model.DeviceModel.GZoneCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GZoneSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -1093,6 +1104,52 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert device group search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupSearchCriteria asApiDeviceGroupSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
+	GDeviceGroupSearchCriteria.Builder gcriteria = GDeviceGroupSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert device groups with role search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupsWithRoleSearchCriteria asApiDeviceGroupsWithRoleSearchCriteria(String role,
+	    boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
+	GDeviceGroupsWithRoleSearchCriteria.Builder gcriteria = GDeviceGroupsWithRoleSearchCriteria.newBuilder();
+	gcriteria.setRole(role);
+	gcriteria.setIncludeDeleted(includeDeleted ? GOptionalBoolean.newBuilder().setValue(true).build() : null);
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert device group search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceGroup> asApiDeviceGroupSearchResults(GDeviceGroupSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceGroup> results = new ArrayList<IDeviceGroup>();
+	for (GDeviceGroup grpc : response.getDeviceGroupsList()) {
+	    results.add(DeviceModelConverter.asApiDeviceGroup(grpc));
+	}
+	return new SearchResults<IDeviceGroup>(results, response.getCount());
+    }
+
+    /**
      * Convert a device group from GRPC to API.
      * 
      * @param grpc
@@ -1231,6 +1288,36 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert device group element search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceGroupElementsSearchCriteria asApiDeviceGroupElementSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
+	GDeviceGroupElementsSearchCriteria.Builder gcriteria = GDeviceGroupElementsSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert device group element search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceGroupElement> asApiDeviceGroupElementsSearchResults(
+	    GDeviceGroupElementsSearchResults response) throws SiteWhereException {
+	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
+	for (GDeviceGroupElement grpc : response.getElementsList()) {
+	    results.add(DeviceModelConverter.asApiDeviceGroupElement(grpc));
+	}
+	return new SearchResults<IDeviceGroupElement>(results, response.getCount());
+    }
+
+    /**
      * Convert a device group element from GRPC to API.
      * 
      * @param grpc
@@ -1242,6 +1329,22 @@ public class DeviceModelConverter {
 	api.setType(DeviceModelConverter.asApiDeviceGroupElementType(grpc.getType()));
 	api.setElementId(grpc.getElementId());
 	api.setRoles(grpc.getRolesList());
+	return api;
+    }
+
+    /**
+     * Convert a device group element list from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IDeviceGroupElement> asApiDeviceGroupElements(List<GDeviceGroupElement> grpcs)
+	    throws SiteWhereException {
+	List<IDeviceGroupElement> api = new ArrayList<IDeviceGroupElement>();
+	for (GDeviceGroupElement grpc : grpcs) {
+	    api.add(DeviceModelConverter.asApiDeviceGroupElement(grpc));
+	}
 	return api;
     }
 
@@ -1277,6 +1380,43 @@ public class DeviceModelConverter {
 	    throw new SiteWhereException("Unknown device assignment type: " + grpc.name());
 	}
 	return null;
+    }
+
+    /**
+     * Convert device assignment search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
+	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
+	GDeviceAssignmentSearchCriteria.Builder gcriteria = GDeviceAssignmentSearchCriteria.newBuilder();
+	if (criteria.getStatus() != null) {
+	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(criteria.getStatus()));
+	}
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert device assignments for asset search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAssetsForAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
+	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
+	GAssetsForAssignmentSearchCriteria.Builder gcriteria = GAssetsForAssignmentSearchCriteria.newBuilder();
+	if (criteria.getSiteToken() != null) {
+	    gcriteria.setSite(GSiteReference.newBuilder().setToken(criteria.getSiteToken()).build());
+	}
+	if (criteria.getStatus() != null) {
+	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(criteria.getStatus()));
+	}
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
     }
 
     /**
@@ -1563,6 +1703,36 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert device stream search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStreamSearchCriteria asApiDeviceStreamSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
+	GDeviceStreamSearchCriteria.Builder gcriteria = GDeviceStreamSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert device stream search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceStream> asApiDeviceStreamSearchResults(GDeviceStreamSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceStream> results = new ArrayList<IDeviceStream>();
+	for (GDeviceStream grpc : response.getStreamsList()) {
+	    results.add(DeviceModelConverter.asApiDeviceStream(grpc));
+	}
+	return new SearchResults<IDeviceStream>(results, response.getCount());
+    }
+
+    /**
      * Convert a device stream from GRPC to API.
      * 
      * @param grpc
@@ -1665,6 +1835,34 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert site search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GSiteSearchCriteria asApiSiteSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
+	GSiteSearchCriteria.Builder gcriteria = GSiteSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert site search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<ISite> asApiSiteSearchResults(GSiteSearchResults response) throws SiteWhereException {
+	List<ISite> results = new ArrayList<ISite>();
+	for (GSite grpc : response.getSitesList()) {
+	    results.add(DeviceModelConverter.asApiSite(grpc));
+	}
+	return new SearchResults<ISite>(results, response.getCount());
+    }
+
+    /**
      * Convert site from GRPC to API.
      * 
      * @param grpc
@@ -1740,6 +1938,34 @@ public class DeviceModelConverter {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
 	return grpc.build();
+    }
+
+    /**
+     * Convert zone search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GZoneSearchCriteria asApiZoneSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
+	GZoneSearchCriteria.Builder gcriteria = GZoneSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert zone search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IZone> asApiZoneSearchResults(GZoneSearchResults response) throws SiteWhereException {
+	List<IZone> results = new ArrayList<IZone>();
+	for (GZone grpc : response.getZonesList()) {
+	    results.add(DeviceModelConverter.asApiZone(grpc));
+	}
+	return new SearchResults<IZone>(results, response.getCount());
     }
 
     /**
