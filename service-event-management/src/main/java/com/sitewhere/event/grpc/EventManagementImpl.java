@@ -139,7 +139,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventById(request.getId());
 	    GGetDeviceEventByIdResponse.Builder response = GGetDeviceEventByIdResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setEvent(EventModelConverter.asGenericDeviceEvent(apiResult));
+		response.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -165,7 +165,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventById(request.getAlternateId());
 	    GGetDeviceEventByAlternateIdResponse.Builder response = GGetDeviceEventByAlternateIdResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setEvent(EventModelConverter.asGenericDeviceEvent(apiResult));
+		response.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -193,7 +193,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    GListDeviceEventsResponse.Builder response = GListDeviceEventsResponse.newBuilder();
 	    GDeviceEventSearchResults.Builder results = GDeviceEventSearchResults.newBuilder();
 	    for (IDeviceEvent api : apiResult.getResults()) {
-		results.addEvents(EventModelConverter.asGenericDeviceEvent(api));
+		results.addEvents(EventModelConverter.asGrpcGenericDeviceEvent(api));
 	    }
 	    results.setCount(apiResult.getNumResults());
 	    response.setResults(results.build());
@@ -221,7 +221,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 		    EventModelConverter.asApiDeviceEventCreateRequest(request.getEvent()));
 	    GUpdateDeviceEventResponse.Builder response = GUpdateDeviceEventResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setEvent(EventModelConverter.asGenericDeviceEvent(apiResult));
+		response.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();

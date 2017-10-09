@@ -38,6 +38,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
+import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
@@ -1437,6 +1438,22 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device event batch response from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceEventBatchResponse asApiDeviceEventBatchResponse(GDeviceEventBatchResponse grpc)
+	    throws SiteWhereException {
+	DeviceEventBatchResponse api = new DeviceEventBatchResponse();
+	api.setCreatedAlerts(EventModelConverter.asApiDeviceAlerts(grpc.getAlertsList()));
+	api.setCreatedLocations(EventModelConverter.asApiDeviceLocations(grpc.getLocationsList()));
+	api.setCreatedMeasurements(EventModelConverter.asApiDeviceMeasurements(grpc.getMeasurementsList()));
+	return api;
+    }
+
+    /**
      * Convert device event batch response from API to GRPC.
      * 
      * @param api
@@ -1453,13 +1470,50 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert generic event from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IDeviceEvent asApiGenericDeviceEvent(GAnyDeviceEvent grpc) throws SiteWhereException {
+	switch (grpc.getEventCase()) {
+	case ALERT: {
+	    return EventModelConverter.asApiDeviceAlert(grpc.getAlert());
+	}
+	case LOCATION: {
+	    return EventModelConverter.asApiDeviceLocation(grpc.getLocation());
+	}
+	case MEASUREMENTS: {
+	    return EventModelConverter.asApiDeviceMeasurements(grpc.getMeasurements());
+	}
+	case STREAMDATA: {
+	    return EventModelConverter.asApiDeviceStreamData(grpc.getStreamData());
+	}
+	case COMMANDINVOCATION: {
+	    return EventModelConverter.asApiDeviceCommandInvocation(grpc.getCommandInvocation());
+	}
+	case COMMANDRESPONSE: {
+	    return EventModelConverter.asApiDeviceCommandResponse(grpc.getCommandResponse());
+	}
+	case STATECHANGE: {
+	    return EventModelConverter.asApiDeviceStateChange(grpc.getStateChange());
+	}
+	case EVENT_NOT_SET: {
+	    break;
+	}
+	}
+	throw new SiteWhereException("Unable to convert event to API. " + grpc.getEventCase().toString());
+    }
+
+    /**
      * Convert generic event from API to GRPC.
      * 
      * @param api
      * @return
      * @throws SiteWhereException
      */
-    public static GAnyDeviceEvent asGenericDeviceEvent(IDeviceEvent api) throws SiteWhereException {
+    public static GAnyDeviceEvent asGrpcGenericDeviceEvent(IDeviceEvent api) throws SiteWhereException {
 	GAnyDeviceEvent.Builder grpc = GAnyDeviceEvent.newBuilder();
 	switch (api.getEventType()) {
 	case Measurements:
@@ -1471,6 +1525,23 @@ public class EventModelConverter {
 	case Location:
 	    grpc.setLocation(EventModelConverter.asGrpcDeviceLocation((IDeviceLocation) api));
 	    break;
+	case StreamData: {
+	    grpc.setStreamData(EventModelConverter.asGrpcDeviceStreamData((IDeviceStreamData) api));
+	    break;
+	}
+	case CommandInvocation: {
+	    grpc.setCommandInvocation(
+		    EventModelConverter.asGrpcDeviceCommandInvocation((IDeviceCommandInvocation) api));
+	    break;
+	}
+	case CommandResponse: {
+	    grpc.setCommandResponse(EventModelConverter.asGrpcDeviceCommandResponse((IDeviceCommandResponse) api));
+	    break;
+	}
+	case StateChange: {
+	    grpc.setStateChange(EventModelConverter.asGrpcDeviceStateChange((IDeviceStateChange) api));
+	    break;
+	}
 	default:
 	    throw new SiteWhereException("Unable to convert event to GRPC. " + api.getClass().getName());
 	}

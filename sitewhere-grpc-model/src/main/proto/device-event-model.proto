@@ -189,6 +189,9 @@ message GAnyDeviceEvent {
 		GDeviceAlert alert = 2;
 		GDeviceLocation location = 3;
 		GDeviceStreamData streamData = 4;
+		GDeviceCommandInvocation commandInvocation = 5;
+		GDeviceCommandResponse commandResponse = 6;
+		GDeviceStateChange stateChange = 7;
 	}
 }
 

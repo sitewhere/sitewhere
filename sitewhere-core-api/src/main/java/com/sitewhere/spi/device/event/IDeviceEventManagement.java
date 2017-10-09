@@ -8,7 +8,6 @@
 package com.sitewhere.spi.device.event;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -27,22 +26,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  */
 public interface IDeviceEventManagement extends ITenantLifecycleComponent {
-
-    /**
-     * Set the device management implementation.
-     * 
-     * @param deviceManagement
-     * @throws SiteWhereException
-     */
-    public void setDeviceManagement(IDeviceManagement deviceManagement) throws SiteWhereException;
-
-    /**
-     * Get the device management implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceManagement getDeviceManagement() throws SiteWhereException;
 
     /**
      * Add a batch of events for the given assignment.

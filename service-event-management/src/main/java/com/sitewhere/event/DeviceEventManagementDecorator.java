@@ -9,7 +9,6 @@ package com.sitewhere.event;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -71,30 +70,6 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     @Override
     public ITenant getTenant() {
 	return delegate.getTenant();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement
-     * (com.sitewhere .spi.device.IDeviceManagement)
-     */
-    @Override
-    public void setDeviceManagement(IDeviceManagement deviceManagement) throws SiteWhereException {
-	delegate.setDeviceManagement(deviceManagement);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
-     * ()
-     */
-    @Override
-    public IDeviceManagement getDeviceManagement() throws SiteWhereException {
-	return delegate.getDeviceManagement();
     }
 
     /*
