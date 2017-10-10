@@ -17,4 +17,13 @@ public interface IMicroserviceProducer extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public String getTargetTopicName() throws SiteWhereException;
+
+    /**
+     * Send a message to the topic.
+     * 
+     * @param key
+     * @param message
+     * @throws SiteWhereException
+     */
+    public void send(String key, byte[] message) throws SiteWhereException;
 }

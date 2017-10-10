@@ -8,6 +8,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -24,6 +25,7 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
@@ -100,8 +102,25 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
 	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
-	this.tenantManagement = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
+	this.tenantManagement = initializeTenantManagement(context);
 	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
+    }
+
+    /**
+     * Initialize tenant management implementation from context bean and wrap it
+     * with triggers to broadcast model updates via Kafka.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenantManagement initializeTenantManagement(ApplicationContext context) throws SiteWhereException {
+	try {
+	    ITenantManagement bean = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
+	    return new TenantManagementKafkaTriggers(bean, getTenantModelProducer());
+	} catch (NoSuchBeanDefinitionException e) {
+	    throw new SiteWhereException("Tenant management bean not found.", e);
+	}
     }
 
     /*

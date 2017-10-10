@@ -4,10 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
+import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.microservice.kafka.MicroserviceProducer;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
 /**
@@ -28,6 +31,51 @@ public class TenantModelProducer extends MicroserviceProducer implements ITenant
     /** Injected reference to Kafka topic naming */
     @Autowired
     private IKafkaTopicNaming kafkaTopicNaming;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantAdded(com.
+     * sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantAdded(ITenant tenant) throws SiteWhereException {
+	byte[] message = KafkaModelConverter
+		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED, tenant);
+	send(tenant.getId(), message);
+	LOGGER.info("Sent Kafka tenant model update for added tenant.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantUpdated(com.
+     * sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
+	byte[] message = KafkaModelConverter
+		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_UPDATED, tenant);
+	send(tenant.getId(), message);
+	LOGGER.info("Sent Kafka tenant model update for updated tenant.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantDeleted(com.
+     * sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
+	byte[] message = KafkaModelConverter
+		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_DELETED, tenant);
+	send(tenant.getId(), message);
+	LOGGER.info("Sent Kafka tenant model update for deleted tenant.");
+    }
 
     /*
      * (non-Javadoc)

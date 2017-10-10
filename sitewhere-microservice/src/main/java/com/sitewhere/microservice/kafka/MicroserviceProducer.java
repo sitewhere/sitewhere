@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -57,6 +58,19 @@ public abstract class MicroserviceProducer extends LifecycleComponent implements
 	if (getProducer() != null) {
 	    getProducer().close();
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.kafka.IMicroserviceProducer#send(java.lang
+     * .String, byte[])
+     */
+    @Override
+    public void send(String key, byte[] message) throws SiteWhereException {
+	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
+	getProducer().send(record);
     }
 
     /**
