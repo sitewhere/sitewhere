@@ -11,7 +11,7 @@ dependencies {
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.user.microservice.UserManagementApplication'
+    mainClass = 'com.sitewhere.user.UserManagementApplication'
 }
 
 // Create a Dockerfile.

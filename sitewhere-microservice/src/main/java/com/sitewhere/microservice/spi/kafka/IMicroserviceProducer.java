@@ -8,15 +8,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IKafkaOutbound extends ILifecycleComponent {
-
-    /**
-     * Get application id used in configuration.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getApplicationId() throws SiteWhereException;
+public interface IMicroserviceProducer extends ILifecycleComponent {
 
     /**
      * Get name of Kafka topic which will receive the messages.

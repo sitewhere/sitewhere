@@ -9,7 +9,7 @@ dependencies {
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.device.microservice.DeviceManagementApplication'
+    mainClass = 'com.sitewhere.device.DeviceManagementApplication'
 }
 
 // Create a Dockerfile.

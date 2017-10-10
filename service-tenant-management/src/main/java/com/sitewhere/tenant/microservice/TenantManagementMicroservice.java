@@ -8,6 +8,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
@@ -25,6 +26,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
+import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
 /**
@@ -60,6 +62,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     /** Tenant management persistence API */
     private ITenantManagement tenantManagement;
+
+    /** Reflects tenant model updates to Kafka topic */
+    @Autowired
+    private ITenantModelProducer tenantModelProducer;
 
     /*
      * (non-Javadoc)
@@ -121,6 +127,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC server", "Unable to initialize tenant management GRPC server", true));
 
+	// Initialize tenant model producer.
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
+		"Unable to initialize tenant model producer", true));
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -149,7 +159,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
 	// Start GRPC server.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
-		"Tenant management GRPC manager", "Unable to start tenant management GRPC manager.", true));
+		"Tenant management GRPC server", "Unable to start tenant management GRPC server.", true));
+
+	// Start tenant model producer.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
+		"Unable to start tenant model producer.", true));
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -166,6 +180,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop tenant model producer.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer"));
 
 	// Stop GRPC manager.
 	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer(),
@@ -277,6 +294,21 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     public void setTenantManagement(ITenantManagement tenantManagement) {
 	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getTenantModelProducer()
+     */
+    @Override
+    public ITenantModelProducer getTenantModelProducer() {
+	return tenantModelProducer;
+    }
+
+    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
+	this.tenantModelProducer = tenantModelProducer;
     }
 
     /*

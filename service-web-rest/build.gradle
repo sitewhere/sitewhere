@@ -4,7 +4,7 @@ apply plugin: 'war'
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.web.microservice.WebRestApplication'
+    mainClass = 'com.sitewhere.web.WebRestApplication'
 }
 
 // Prevents Logback conflict.

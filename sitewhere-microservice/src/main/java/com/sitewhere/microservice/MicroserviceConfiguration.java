@@ -4,10 +4,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.instance.InstanceSettings;
+import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.security.SystemUser;
 import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
+import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
@@ -23,6 +25,11 @@ public class MicroserviceConfiguration {
     @Bean
     public IZookeeperManager zookeeperManager() {
 	return new ZookeeperManager();
+    }
+
+    @Bean
+    IKafkaTopicNaming kafkaTopicNaming() {
+	return new KafkaTopicNaming();
     }
 
     @Bean

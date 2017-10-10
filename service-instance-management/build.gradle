@@ -8,7 +8,7 @@ dependencies {
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.instance.microservice.InstanceManagementApplication'
+    mainClass = 'com.sitewhere.instance.InstanceManagementApplication'
 }
 
 // Create a Dockerfile.

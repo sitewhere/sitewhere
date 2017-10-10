@@ -1,29 +1,33 @@
 package com.sitewhere.tenant.kafka;
 
-import com.sitewhere.microservice.kafka.KafkaOutbound;
-import com.sitewhere.microservice.spi.kafka.KafkaTopicNames;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.sitewhere.microservice.kafka.MicroserviceProducer;
+import com.sitewhere.microservice.spi.instance.IInstanceSettings;
+import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
 /**
- * Component that produces Kafka messages
+ * Component that produces tenant model update message on a well-known Kafka
+ * topic.
  * 
  * @author Derek
  */
-public class TenantModelProducer extends KafkaOutbound {
+public class TenantModelProducer extends MicroserviceProducer implements ITenantModelProducer {
 
-    /** Application id */
-    private static final String APPLICATION_ID = "tenant-model-producer";
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.kafka.IKafkaProducer#getApplicationId()
-     */
-    @Override
-    public String getApplicationId() throws SiteWhereException {
-	return APPLICATION_ID;
-    }
+    /** Injected reference to instance settings */
+    @Autowired
+    private IInstanceSettings instanceSettings;
+
+    /** Injected reference to Kafka topic naming */
+    @Autowired
+    private IKafkaTopicNaming kafkaTopicNaming;
 
     /*
      * (non-Javadoc)
@@ -33,6 +37,40 @@ public class TenantModelProducer extends KafkaOutbound {
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return KafkaTopicNames.getGlobalModelUpdatesTopicName();
+	return getKafkaTopicNaming().getTenantUpdatesTopic();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.kafka.MicroserviceProducer#getInstanceSettings
+     * ()
+     */
+    @Override
+    public IInstanceSettings getInstanceSettings() {
+	return instanceSettings;
+    }
+
+    public void setInstanceSettings(IInstanceSettings instanceSettings) {
+	this.instanceSettings = instanceSettings;
+    }
+
+    public IKafkaTopicNaming getKafkaTopicNaming() {
+	return kafkaTopicNaming;
+    }
+
+    public void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
+	this.kafkaTopicNaming = kafkaTopicNaming;
     }
 }

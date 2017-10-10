@@ -1,4 +1,4 @@
-package com.sitewhere.device.microservice;
+package com.sitewhere.device;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

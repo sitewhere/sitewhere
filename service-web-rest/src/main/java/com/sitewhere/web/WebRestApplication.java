@@ -1,4 +1,4 @@
-package com.sitewhere.web.microservice;
+package com.sitewhere.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

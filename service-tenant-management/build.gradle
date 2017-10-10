@@ -9,7 +9,7 @@ dependencies {
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.tenant.microservice.TenantManagementApplication'
+    mainClass = 'com.sitewhere.tenant.TenantManagementApplication'
 }
 
 // Create a Dockerfile.
