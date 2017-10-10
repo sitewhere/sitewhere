@@ -47,7 +47,6 @@ import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
@@ -113,9 +112,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Interface to device communication subsystem implementation */
     private IDeviceCommunication deviceCommunication;
-
-    /** Interface to event processing subsystem implementation */
-    private IEventProcessing eventProcessing;
 
     /** Interface for the asset module manager */
     private IAssetModuleManager assetModuleManager;
@@ -185,9 +181,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	    // Register discoverable beans.
 	    initializeDiscoverableBeans(monitor);
-
-	    // Initialize event processing subsystem.
-	    setEventProcessing(initializeEventProcessingSubsystem());
 
 	    // Initialize device communication subsystem.
 	    setDeviceCommunication(initializeDeviceCommunicationSubsystem());
@@ -353,19 +346,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Verify and initialize event processing subsystem implementation.
-     * 
-     * @throws SiteWhereException
-     */
-    protected IEventProcessing initializeEventProcessingSubsystem() throws SiteWhereException {
-	try {
-	    return (IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
-	} catch (NoSuchBeanDefinitionException e) {
-	    throw new SiteWhereException("No event processing subsystem implementation configured.");
-	}
-    }
-
-    /**
      * Start base tenant services.
      * 
      * @param start
@@ -497,10 +477,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(),
 		"Started search provider manager", "Search provider manager startup failed.", true));
 
-	// Start event processing subsystem.
-	start.addStep(new StartComponentLifecycleStep(this, getEventProcessing(), "Started event processing subsystem",
-		"Event processing subsystem startup failed.", true));
-
 	// Start device communication subsystem.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
 		"Started device communication subsystem", "Device communication subsystem startup failed.", true));
@@ -595,7 +571,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Disable device communications.
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication(),
 		"Stopped device communication subsystem"));
-	stop.addStep(new StopComponentLifecycleStep(this, getEventProcessing(), "Stopped event processing subsystem"));
 
 	// Stop search provider manager.
 	stop.addStep(
@@ -947,19 +922,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
 	this.deviceCommunication = deviceCommunication;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEventProcessing()
-     */
-    public IEventProcessing getEventProcessing() {
-	return eventProcessing;
-    }
-
-    public void setEventProcessing(IEventProcessing eventProcessing) {
-	this.eventProcessing = eventProcessing;
     }
 
     /*

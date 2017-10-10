@@ -22,17 +22,6 @@ import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IDeviceEventDeduplicator;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -57,9 +46,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /** Device event deduplicator (optional) */
     private IDeviceEventDeduplicator deviceEventDeduplicator;
 
-    /** Inbound event processing strategy */
-    private IInboundProcessingStrategy inboundProcessingStrategy;
-
     /** List of {@link IInboundEventReceiver} that supply this processor */
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
@@ -79,10 +65,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	getLifecycleComponents().clear();
 
 	LOGGER.debug("Starting event source '" + getSourceId() + "'.");
-	if (getInboundProcessingStrategy() == null) {
-	    setInboundProcessingStrategy(
-		    SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy());
-	}
 	if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 	    throw new SiteWhereException("No inbound event receivers registered for event source.");
 	}
@@ -203,42 +185,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
      * @param decoded
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unchecked")
     protected void handleDecodedRequest(IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
-	if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-	    getInboundProcessingStrategy()
-		    .processRegistration((IDecodedDeviceRequest<IDeviceRegistrationRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceCommandResponse((IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceMeasurements((IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceLocation((IDecodedDeviceRequest<IDeviceLocationCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceAlert((IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceStateChange((IDecodedDeviceRequest<IDeviceStateChangeCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceStream((IDecodedDeviceRequest<IDeviceStreamCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processDeviceStreamData((IDecodedDeviceRequest<IDeviceStreamDataCreateRequest>) decoded);
-	} else if (decoded.getRequest() instanceof ISendDeviceStreamDataRequest) {
-	    getInboundProcessingStrategy()
-		    .processSendDeviceStreamData((IDecodedDeviceRequest<ISendDeviceStreamDataRequest>) decoded);
-	} else if (decoded.getRequest() instanceof IDeviceMappingCreateRequest) {
-	    getInboundProcessingStrategy()
-		    .processCreateDeviceMapping((IDecodedDeviceRequest<IDeviceMappingCreateRequest>) decoded);
-	} else {
-	    LOGGER.error(
-		    "Decoded device event request could not be routed: " + decoded.getRequest().getClass().getName());
-	}
+	// This goes to Kafka.
     }
 
     /**
@@ -309,22 +257,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
     public IDeviceEventDeduplicator getDeviceEventDeduplicator() {
 	return deviceEventDeduplicator;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * setInboundProcessingStrategy
-     * (com.sitewhere.spi.device.communication.IInboundProcessingStrategy)
-     */
-    @Override
-    public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
-	this.inboundProcessingStrategy = inboundProcessingStrategy;
-    }
-
-    public IInboundProcessingStrategy getInboundProcessingStrategy() {
-	return inboundProcessingStrategy;
     }
 
     /*

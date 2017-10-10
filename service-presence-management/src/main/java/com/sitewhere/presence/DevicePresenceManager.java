@@ -25,7 +25,6 @@ import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -68,10 +67,6 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
     /** Device management implementation */
     private IDeviceManagement devices;
 
-    /** Inbound processing strategy for tenant */
-    @SuppressWarnings("unused")
-    private IInboundProcessingStrategy inbound;
-
     public DevicePresenceManager() {
 	super(LifecycleComponentType.DevicePresenceManager);
     }
@@ -85,7 +80,6 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.devices = SiteWhere.getServer().getDeviceManagement(getTenant());
-	this.inbound = SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy();
 
 	this.executor = Executors.newSingleThreadExecutor();
 	executor.execute(new PresenceChecker());

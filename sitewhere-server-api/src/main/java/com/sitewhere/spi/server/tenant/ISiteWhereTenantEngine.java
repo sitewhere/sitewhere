@@ -16,7 +16,6 @@ import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
@@ -81,13 +80,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public IDeviceCommunication getDeviceCommunication();
-
-    /**
-     * Get the event processing subsystem implementation.
-     * 
-     * @return
-     */
-    public IEventProcessing getEventProcessing();
 
     /**
      * Get the asset modules manager instance.

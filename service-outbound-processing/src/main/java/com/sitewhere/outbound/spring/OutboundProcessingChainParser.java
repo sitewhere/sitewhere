@@ -19,7 +19,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.event.processor.filter.FilterOperation;
 import com.sitewhere.device.event.processor.filter.SiteFilter;
 import com.sitewhere.device.event.processor.filter.SpecificationFilter;
@@ -68,7 +67,7 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      * @return
      */
     public AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	BeanDefinitionBuilder chain = getBuilderFor(DefaultOutboundEventProcessorChain.class);
+	BeanDefinitionBuilder chain = getBuilderFor(String.class);
 	List<Element> dsChildren = DomUtils.getChildElements(element);
 	List<Object> processors = new ManagedList<Object>();
 	for (Element child : dsChildren) {
