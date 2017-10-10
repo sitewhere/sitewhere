@@ -171,7 +171,8 @@ message GGetDeviceEventByAlternateIdResponse {
 	
 // Request for finding device events that meet criteria.
 message GListDeviceEventsRequest {
-	com.sitewhere.grpc.model.GDeviceEventSearchCriteria criteria = 1;
+	string assignmentToken = 1;
+	com.sitewhere.grpc.model.GDeviceEventSearchCriteria criteria = 2;
 }
 	
 // Response for finding device events that meet criteria.

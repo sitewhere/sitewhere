@@ -197,7 +197,6 @@ message GAnyDeviceEvent {
 
 // Criteria for searching device events.
 message GDeviceEventSearchCriteria {
-	string assignmentToken = 1;
 	GDateRangeSearchCriteria criteria = 2;
 }
 

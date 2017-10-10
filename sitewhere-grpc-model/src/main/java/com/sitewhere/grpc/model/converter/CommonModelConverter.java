@@ -19,6 +19,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
@@ -147,6 +148,27 @@ public class CommonModelConverter {
 	    throws SiteWhereException {
 	return new DateRangeSearchCriteria(grpc.getPageNumber(), grpc.getPageSize(),
 		CommonModelConverter.asDate(grpc.getStartDate()), CommonModelConverter.asDate(grpc.getEndDate()));
+    }
+
+    /**
+     * Convert date range search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDateRangeSearchCriteria asGrpcDateRangeSearchCriteria(IDateRangeSearchCriteria api)
+	    throws SiteWhereException {
+	GDateRangeSearchCriteria.Builder grpc = GDateRangeSearchCriteria.newBuilder();
+	grpc.setPageNumber(api.getPageNumber());
+	grpc.setPageSize(api.getPageSize());
+	if (api.getStartDate() != null) {
+	    grpc.setStartDate(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
+	}
+	if (api.getEndDate() != null) {
+	    grpc.setEndDate(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
+	}
+	return grpc.build();
     }
 
     /**

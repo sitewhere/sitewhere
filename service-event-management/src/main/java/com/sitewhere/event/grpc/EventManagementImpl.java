@@ -188,7 +188,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS);
 	    ISearchResults<IDeviceEvent> apiResult = getDeviceEventManagement().listDeviceEvents(
-		    request.getCriteria().getAssignmentToken(),
+		    request.getAssignmentToken(),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria().getCriteria()));
 	    GListDeviceEventsResponse.Builder response = GListDeviceEventsResponse.newBuilder();
 	    GDeviceEventSearchResults.Builder results = GDeviceEventSearchResults.newBuilder();

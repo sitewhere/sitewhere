@@ -17,22 +17,31 @@ import com.sitewhere.grpc.model.DeviceEventModel.GAlertSource;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponse;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchResponse;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchCriteria;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurements;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChange;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamData;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataSearchResults;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -51,6 +60,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -77,6 +87,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Convert device event entities between SiteWhere API model and GRPC model.
@@ -136,6 +148,20 @@ public class EventModelConverter {
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert device event search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceEventSearchCriteria asGrpcDeviceEventSearchCriteria(IDateRangeSearchCriteria api)
+	    throws SiteWhereException {
+	GDeviceEventSearchCriteria.Builder grpc = GDeviceEventSearchCriteria.newBuilder();
+	grpc.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(api));
 	return grpc.build();
     }
 
@@ -231,6 +257,22 @@ public class EventModelConverter {
 	    grpcs.add(EventModelConverter.asGrpcDeviceMeasurementsCreateRequest(api));
 	}
 	return grpcs;
+    }
+
+    /**
+     * Convert device event results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceMeasurements> asApiDeviceMeasurementsSearchResults(
+	    GDeviceMeasurementsSearchResults response) throws SiteWhereException {
+	List<IDeviceMeasurements> results = new ArrayList<IDeviceMeasurements>();
+	for (GDeviceMeasurements grpc : response.getMeasurementsList()) {
+	    results.add(EventModelConverter.asApiDeviceMeasurements(grpc));
+	}
+	return new SearchResults<IDeviceMeasurements>(results, response.getCount());
     }
 
     /**
@@ -442,6 +484,22 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device alert results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceAlert> asApiDeviceAlertSearchResults(GDeviceAlertSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceAlert> results = new ArrayList<IDeviceAlert>();
+	for (GDeviceAlert grpc : response.getAlertsList()) {
+	    results.add(EventModelConverter.asApiDeviceAlert(grpc));
+	}
+	return new SearchResults<IDeviceAlert>(results, response.getCount());
+    }
+
+    /**
      * Convert device alert from GRPC to API.
      * 
      * @param grpc
@@ -578,6 +636,22 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device location results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceLocation> asApiDeviceLocationSearchResults(
+	    GDeviceLocationSearchResults response) throws SiteWhereException {
+	List<IDeviceLocation> results = new ArrayList<IDeviceLocation>();
+	for (GDeviceLocation grpc : response.getLocationsList()) {
+	    results.add(EventModelConverter.asApiDeviceLocation(grpc));
+	}
+	return new SearchResults<IDeviceLocation>(results, response.getCount());
+    }
+
+    /**
      * Convert device location from GRPC to API.
      * 
      * @param grpc
@@ -709,6 +783,22 @@ public class EventModelConverter {
 	    grpcs.add(EventModelConverter.asGrpcDeviceStreamDataCreateRequest(api));
 	}
 	return grpcs;
+    }
+
+    /**
+     * Convert device stream data results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceStreamData> asApiDeviceStreamDataSearchResults(
+	    GDeviceStreamDataSearchResults response) throws SiteWhereException {
+	List<IDeviceStreamData> results = new ArrayList<IDeviceStreamData>();
+	for (GDeviceStreamData grpc : response.getStreamDataList()) {
+	    results.add(EventModelConverter.asApiDeviceStreamData(grpc));
+	}
+	return new SearchResults<IDeviceStreamData>(results, response.getCount());
     }
 
     /**
@@ -970,6 +1060,22 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device command invocation results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceCommandInvocation> asApiDeviceCommandInvocationSearchResults(
+	    GDeviceCommandInvocationSearchResults response) throws SiteWhereException {
+	List<IDeviceCommandInvocation> results = new ArrayList<IDeviceCommandInvocation>();
+	for (GDeviceCommandInvocation grpc : response.getInvocationsList()) {
+	    results.add(EventModelConverter.asApiDeviceCommandInvocation(grpc));
+	}
+	return new SearchResults<IDeviceCommandInvocation>(results, response.getCount());
+    }
+
+    /**
      * Convert command invocation from GRPC to API.
      * 
      * @param grpc
@@ -1111,6 +1217,22 @@ public class EventModelConverter {
 	    grpcs.add(EventModelConverter.asGrpcDeviceCommandResponseCreateRequest(api));
 	}
 	return grpcs;
+    }
+
+    /**
+     * Convert device command response results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceCommandResponse> asApiDeviceCommandResponseSearchResults(
+	    GDeviceCommandResponseSearchResults response) throws SiteWhereException {
+	List<IDeviceCommandResponse> results = new ArrayList<IDeviceCommandResponse>();
+	for (GDeviceCommandResponse grpc : response.getResponsesList()) {
+	    results.add(EventModelConverter.asApiDeviceCommandResponse(grpc));
+	}
+	return new SearchResults<IDeviceCommandResponse>(results, response.getCount());
     }
 
     /**
@@ -1338,6 +1460,22 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert device state change results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceStateChange> asApiDeviceStateChangeSearchResults(
+	    GDeviceStateChangeSearchResults response) throws SiteWhereException {
+	List<IDeviceStateChange> results = new ArrayList<IDeviceStateChange>();
+	for (GDeviceStateChange grpc : response.getStateChangesList()) {
+	    results.add(EventModelConverter.asApiDeviceStateChange(grpc));
+	}
+	return new SearchResults<IDeviceStateChange>(results, response.getCount());
+    }
+
+    /**
      * Convert device state change from GRPC to API.
      * 
      * @param grpc
@@ -1504,6 +1642,22 @@ public class EventModelConverter {
 	}
 	}
 	throw new SiteWhereException("Unable to convert event to API. " + grpc.getEventCase().toString());
+    }
+
+    /**
+     * Convert device event results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceEvent> asApiDeviceEventSearchResults(GDeviceEventSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
+	for (GAnyDeviceEvent grpc : response.getEventsList()) {
+	    results.add(EventModelConverter.asApiGenericDeviceEvent(grpc));
+	}
+	return new SearchResults<IDeviceEvent>(results, response.getCount());
     }
 
     /**
