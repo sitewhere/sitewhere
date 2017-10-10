@@ -139,6 +139,14 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     }
 
     /**
+     * Create tenant engines based on subfolders in Zk configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void createTenantEngines() throws SiteWhereException {
+    }
+
+    /**
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {

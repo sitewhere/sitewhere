@@ -5,8 +5,13 @@ import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
+/**
+ * Spring bean configuration for microservice.
+ * 
+ * @author Derek
+ */
 @Configuration
-public class UserManagmentMicroserviceConfiguration {
+public class UserManagementMicroserviceConfiguration {
 
     @Bean
     public IUserManagementMicroservice userManagementMicroservice() {

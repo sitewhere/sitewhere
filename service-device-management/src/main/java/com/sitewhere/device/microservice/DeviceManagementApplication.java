@@ -1,22 +1,22 @@
-package com.sitewhere.user.microservice;
+package com.sitewhere.device.microservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
- * Spring Boot application for user management microservice.
+ * Spring Boot application for device management microservice.
  * 
  * @author Derek
  */
 @ComponentScan
-public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
+public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 
     @Autowired
-    private IUserManagementMicroservice microservice;
+    private IDeviceManagementMicroservice microservice;
 
     /*
      * (non-Javadoc)
@@ -25,7 +25,7 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IUserManagementMicroservice getMicroservice() {
+    public IDeviceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 
@@ -35,6 +35,6 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
      * @param args
      */
     public static void main(String[] args) {
-	SpringApplication.run(UserManagementApplication.class, args);
+	SpringApplication.run(DeviceManagementApplication.class, args);
     }
 }
