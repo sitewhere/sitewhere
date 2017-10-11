@@ -28,6 +28,7 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
+import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
@@ -68,6 +69,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /** Reflects tenant model updates to Kafka topic */
     @Autowired
     private ITenantModelProducer tenantModelProducer;
+
+    /** Watches tenant model updates and bootstraps new tenants */
+    @Autowired
+    private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
 
     /*
      * (non-Javadoc)
@@ -150,6 +155,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
 		"Unable to initialize tenant model producer", true));
 
+	// Initialize tenant bootstrap model consumer.
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
+		"Tenant bootstrap model consumer", "Unable to initialize tenant bootstrap model consumer", true));
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -184,6 +193,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	start.addStep(new StartComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
 		"Unable to start tenant model producer.", true));
 
+	// Start tenant bootstrap model consumer.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
+		"Tenant bootstrap model consumer", "Unable to start tenant bootstrap model consumer.", true));
+
 	// Execute initialization steps.
 	start.execute(monitor);
     }
@@ -199,6 +212,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop tenant bootstrap model consumer.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
+		"Tenant bootstrap model consumer"));
 
 	// Stop tenant model producer.
 	stop.addStep(new StopComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer"));
@@ -328,6 +345,21 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
 	this.tenantModelProducer = tenantModelProducer;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getTenantBootstrapModelConsumer()
+     */
+    @Override
+    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer() {
+	return tenantBootstrapModelConsumer;
+    }
+
+    public void setTenantBootstrapModelConsumer(ITenantBootstrapModelConsumer tenantBootstrapModelConsumer) {
+	this.tenantBootstrapModelConsumer = tenantBootstrapModelConsumer;
     }
 
     /*

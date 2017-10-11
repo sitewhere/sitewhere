@@ -80,6 +80,24 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException;
 
     /**
+     * Subpath of instance configuration that contains tenant configuration
+     * data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantsConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for tenant configuration.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException;
+
+    /**
      * Initializes microservice components based on Spring contexts that were
      * loaded.
      * 

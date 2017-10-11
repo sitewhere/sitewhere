@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.spi.SiteWhereException;
@@ -43,6 +44,21 @@ public class KafkaModelConverter {
 		    LOGGER.error(e);
 		}
 	    }
+	}
+    }
+
+    /**
+     * Parse message that reflects a tenant model update.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GTenantModelUpdate parseTenantModelUpdateMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GTenantModelUpdate.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse tenant update message.", e);
 	}
     }
 }

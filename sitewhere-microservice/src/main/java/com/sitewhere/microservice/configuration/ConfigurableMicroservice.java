@@ -40,6 +40,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path to instance global configuration file */
     private static final String INSTANCE_GLOBAL_CONFIGURATION_PATH = "/instance-global.xml";
 
+    /** Relative path to tenant configuration data */
+    private static final String INSTANCE_TENANT_CONFIGURATION_PATH = "/tenants";
+
     /** Max wait time for configuration in seconds */
     private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
 
@@ -156,6 +159,30 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException {
 	return getConfigurationMonitor().getConfigurationDataFor(getInstanceGlobalConfigurationPath());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceTenantsConfigurationPath()
+     */
+    @Override
+    public String getInstanceTenantsConfigurationPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_TENANT_CONFIGURATION_PATH;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceTenantConfigurationPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException {
+	return getInstanceTenantsConfigurationPath() + "/" + tenantId;
     }
 
     /*

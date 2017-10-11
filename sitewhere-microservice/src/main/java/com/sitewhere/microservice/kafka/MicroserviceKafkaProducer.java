@@ -8,8 +8,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
-import com.sitewhere.microservice.spi.kafka.IMicroserviceProducer;
+import com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -20,17 +19,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class MicroserviceProducer extends LifecycleComponent implements IMicroserviceProducer {
+public abstract class MicroserviceKafkaProducer extends LifecycleComponent implements IMicroserviceKafkaProducer {
 
     /** Producer */
     private KafkaProducer<String, byte[]> producer;
-
-    /**
-     * Get instance settings (Injected in subclass).
-     * 
-     * @return
-     */
-    public abstract IInstanceSettings getInstanceSettings();
 
     /*
      * (non-Javadoc)
@@ -74,7 +66,7 @@ public abstract class MicroserviceProducer extends LifecycleComponent implements
     }
 
     /**
-     * Build configuration settings used by Kafka streams.
+     * Build configuration settings used by producer.
      * 
      * @return
      * @throws SiteWhereException

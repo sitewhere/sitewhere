@@ -8,6 +8,13 @@ package com.sitewhere.microservice.spi.kafka;
 public interface IKafkaTopicNaming {
 
     /**
+     * Get prefix that uniquely identifies SiteWhere instance.
+     * 
+     * @return
+     */
+    public String getInstancePrefix();
+
+    /**
      * Get topic name for tracking tenant model updates.
      * 
      * @return

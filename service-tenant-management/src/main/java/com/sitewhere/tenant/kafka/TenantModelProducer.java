@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.microservice.kafka.MicroserviceProducer;
+import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.SiteWhereException;
@@ -19,7 +19,7 @@ import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
  * 
  * @author Derek
  */
-public class TenantModelProducer extends MicroserviceProducer implements ITenantModelProducer {
+public class TenantModelProducer extends MicroserviceKafkaProducer implements ITenantModelProducer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

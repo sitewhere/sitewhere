@@ -36,7 +36,19 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
      * @return
      */
     protected String getGlobalPrefix() {
-	return BASE_NAME + SEPARATOR + getInstanceSettings().getInstanceId() + SEPARATOR + GLOBAL_INDICATOR + SEPARATOR;
+	return getInstancePrefix() + SEPARATOR + GLOBAL_INDICATOR + SEPARATOR;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#getInstancePrefix(
+     * )
+     */
+    @Override
+    public String getInstancePrefix() {
+	return BASE_NAME + SEPARATOR + getInstanceSettings().getInstanceId();
     }
 
     /*

@@ -1,6 +1,6 @@
 package com.sitewhere.tenant.spi.kafka;
 
-import com.sitewhere.microservice.spi.kafka.IMicroserviceProducer;
+import com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -10,7 +10,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public interface ITenantModelProducer extends IMicroserviceProducer {
+public interface ITenantModelProducer extends IMicroserviceKafkaProducer {
 
     /**
      * Produce message indicating tenant was added.

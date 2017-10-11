@@ -3,6 +3,7 @@ package com.sitewhere.tenant.spi.microservice;
 import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
+import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
 /**
@@ -32,4 +33,12 @@ public interface ITenantManagementMicroservice extends IGlobalMicroservice {
      * @return
      */
     public ITenantModelProducer getTenantModelProducer();
+
+    /**
+     * Get Kafka consumer that listens for tenant model updates and bootstraps
+     * newly added tenants.
+     * 
+     * @return
+     */
+    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer();
 }
