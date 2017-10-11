@@ -1,6 +1,9 @@
 package com.sitewhere.microservice.multitenant;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+
+import org.apache.curator.framework.CuratorFramework;
 
 import com.google.common.collect.MapMaker;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
@@ -61,6 +64,9 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 
 	// Wait for microservice to be configured.
 	waitForConfigurationReady();
+
+	// Initialize tenant engines.
+	initializeTenantEngines(monitor);
 
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
@@ -139,11 +145,134 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     }
 
     /**
-     * Create tenant engines based on subfolders in Zk configuration.
+     * Initialize tenant engines by inspecting the list of tenant
+     * configurations, loading tenant information, then creating a tenant engine
+     * for each.
      * 
+     * @param monitor
+     * @return
      * @throws SiteWhereException
      */
-    protected void createTenantEngines() throws SiteWhereException {
+    protected void initializeTenantEngines(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	CuratorFramework curator = getZookeeperManager().getCurator();
+	try {
+	    if (curator.checkExists().forPath(getInstanceTenantsConfigurationPath()) != null) {
+		List<String> tenants = curator.getChildren().forPath(getInstanceTenantsConfigurationPath());
+		for (String tenant : tenants) {
+		    getLogger().info("Would be loading tenant: " + tenant);
+		}
+	    } else {
+		getLogger().warn("No tenants currently configured.");
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to create tenant engines.", e);
+	}
+    }
+
+    /**
+     * If configuration path is within tenants configuration path, extract just
+     * the tenant-specific part of the path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    protected String[] asTenantPathInfo(String path) throws SiteWhereException {
+	String tenantsRoot = getInstanceTenantsConfigurationPath() + "/";
+	if (path.startsWith(tenantsRoot)) {
+	    String tenantPath = path.substring(tenantsRoot.length());
+	    if (tenantPath.length() > 1) {
+		int firstSlash = tenantPath.indexOf('/');
+		if (firstSlash != -1) {
+		    String[] result = new String[2];
+		    result[0] = tenantPath.substring(0, firstSlash);
+		    result[1] = tenantPath.substring(firstSlash + 1);
+		    return result;
+		}
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Get the tenant engine responsible for handling configuration for the
+     * given path.
+     * 
+     * @param pathInfo
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IMicroserviceTenantEngine getTenantEngineForPathInfo(String[] pathInfo) throws SiteWhereException {
+	if (pathInfo != null) {
+	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo[0]);
+	    if (engine != null) {
+		return engine;
+	    }
+	}
+	return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationAdded(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		String[] pathInfo = asTenantPathInfo(path);
+		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+		if (engine != null) {
+		    engine.onConfigurationAdded(pathInfo[1], data);
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error processing configuration addition.", e);
+	    }
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationUpdated(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		String[] pathInfo = asTenantPathInfo(path);
+		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+		if (engine != null) {
+		    engine.onConfigurationUpdated(pathInfo[1], data);
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error processing configuration update.", e);
+	    }
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationDeleted(java.lang.String)
+     */
+    @Override
+    public void onConfigurationDeleted(String path) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		String[] pathInfo = asTenantPathInfo(path);
+		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+		if (engine != null) {
+		    engine.onConfigurationDeleted(pathInfo[1]);
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error processing configuration delete.", e);
+	    }
+	}
     }
 
     /**

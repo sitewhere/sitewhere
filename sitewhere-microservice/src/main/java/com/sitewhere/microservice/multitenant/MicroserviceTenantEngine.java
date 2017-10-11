@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -19,8 +20,81 @@ public class MicroserviceTenantEngine extends TenantLifecycleComponent implement
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public MicroserviceTenantEngine(ITenant tenant) {
+    /** Parent microservice */
+    private IMultitenantMicroservice microservice;
+
+    public MicroserviceTenantEngine(IMultitenantMicroservice microservice, ITenant tenant) {
+	this.microservice = microservice;
 	setTenant(tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationCacheInitialized()
+     */
+    @Override
+    public void onConfigurationCacheInitialized() {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationAdded(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(String path, byte[] data) {
+	getLogger().info("Tenant engine configuration path added: " + path);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationUpdated(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(String path, byte[] data) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationDeleted(java.lang.String)
+     */
+    @Override
+    public void onConfigurationDeleted(String path) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getTenantConfigurationPath()
+     */
+    @Override
+    public String getTenantConfigurationPath() throws SiteWhereException {
+	return getMicroservice().getInstanceTenantConfigurationPath(getTenant().getId());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getMicroservice()
+     */
+    @Override
+    public IMultitenantMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IMultitenantMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     /*

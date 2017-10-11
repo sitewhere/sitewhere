@@ -40,7 +40,7 @@ public class ZkUtils {
 	    if (file.isDirectory()) {
 		try {
 		    curator.create().forPath(subFile);
-		    LOGGER.info("Created folder for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
+		    LOGGER.debug("Created folder for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
 		} catch (Exception e) {
 		    throw new SiteWhereException(
 			    "Unable to copy folder '" + file.getAbsolutePath() + "' into '" + subFile + "'.", e);
@@ -53,7 +53,7 @@ public class ZkUtils {
 		    byte[] data = IOUtils.toByteArray(input);
 		    try {
 			curator.create().forPath(subFile, data);
-			LOGGER.info("Created file for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
+			LOGGER.debug("Created file for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
 		    } catch (Exception e) {
 			throw new SiteWhereException(
 				"Unable to copy file '" + file.getAbsolutePath() + "' into '" + subFile + "'.", e);

@@ -43,6 +43,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path to tenant configuration data */
     private static final String INSTANCE_TENANT_CONFIGURATION_PATH = "/tenants";
 
+    /** Relative path to tenant bootstrapped indicator data */
+    private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
+
     /** Max wait time for configuration in seconds */
     private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
 
@@ -92,7 +95,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
 	if (isConfigurationCacheReady()) {
-	    getLogger().info("Configuration added for '" + path + "'.");
+	    getLogger().debug("Configuration added for '" + path + "'.");
 	}
     }
 
@@ -105,7 +108,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
 	if (isConfigurationCacheReady()) {
-	    getLogger().info("Configuration updated for '" + path + "'.");
+	    getLogger().debug("Configuration updated for '" + path + "'.");
 	}
     }
 
@@ -118,7 +121,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void onConfigurationDeleted(String path) {
 	if (isConfigurationCacheReady()) {
-	    getLogger().info("Configuration deleted for '" + path + "'.");
+	    getLogger().debug("Configuration deleted for '" + path + "'.");
 	}
     }
 
@@ -183,6 +186,18 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException {
 	return getInstanceTenantsConfigurationPath() + "/" + tenantId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getInstanceTenantBootstrappedIndicatorPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException {
+	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR;
     }
 
     /*

@@ -2,6 +2,10 @@ package com.sitewhere.microservice.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -30,6 +34,9 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Number of threads dedicated to handling configuration changes */
+    private static final int CONFIGURATION_UPDATE_THREAD_COUNT = 3;
+
     /** Curator */
     private IZookeeperManager zkManager;
 
@@ -41,6 +48,9 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 
     /** List of configuration listeners */
     private List<IConfigurationListener> listeners = new ArrayList<IConfigurationListener>();
+
+    /** Executor */
+    private ExecutorService executor;
 
     public ConfigurationMonitor(IZookeeperManager zkManager, String configurationPath) {
 	this.zkManager = zkManager;
@@ -67,6 +77,8 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	executor = Executors.newFixedThreadPool(CONFIGURATION_UPDATE_THREAD_COUNT,
+		new ConfigurationUpdateThreadFactory());
 	try {
 	    getTreeCache().getListenable().addListener(new TreeCacheListener() {
 
@@ -121,6 +133,9 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getTreeCache().close();
+	if (executor != null) {
+	    executor.shutdown();
+	}
     }
 
     /*
@@ -150,9 +165,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * @param event
      */
     protected void onNodeAdded(TreeCacheEvent event) {
-	for (IConfigurationListener listener : getListeners()) {
-	    listener.onConfigurationAdded(event.getData().getPath(), event.getData().getData());
-	}
+	executor.execute(new ConfigurationAdded(event));
     }
 
     /**
@@ -161,9 +174,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * @param event
      */
     protected void onNodeUpdated(TreeCacheEvent event) {
-	for (IConfigurationListener listener : getListeners()) {
-	    listener.onConfigurationUpdated(event.getData().getPath(), event.getData().getData());
-	}
+	executor.execute(new ConfigurationUpdated(event));
     }
 
     /**
@@ -172,8 +183,80 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * @param event
      */
     protected void onNodeDeleted(TreeCacheEvent event) {
-	for (IConfigurationListener listener : getListeners()) {
-	    listener.onConfigurationDeleted(event.getData().getPath());
+	executor.execute(new ConfigurationDeleted(event));
+    }
+
+    /**
+     * Notifies of added configuration files in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class ConfigurationAdded implements Runnable {
+
+	private TreeCacheEvent event;
+
+	public ConfigurationAdded(TreeCacheEvent event) {
+	    this.event = event;
+	}
+
+	@Override
+	public void run() {
+	    for (IConfigurationListener listener : getListeners()) {
+		listener.onConfigurationAdded(event.getData().getPath(), event.getData().getData());
+	    }
+	}
+    }
+
+    /**
+     * Notifies of updated configuration files in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class ConfigurationUpdated implements Runnable {
+
+	private TreeCacheEvent event;
+
+	public ConfigurationUpdated(TreeCacheEvent event) {
+	    this.event = event;
+	}
+
+	@Override
+	public void run() {
+	    for (IConfigurationListener listener : getListeners()) {
+		listener.onConfigurationUpdated(event.getData().getPath(), event.getData().getData());
+	    }
+	}
+    }
+
+    /**
+     * Notifies of deleted configuration files in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class ConfigurationDeleted implements Runnable {
+
+	private TreeCacheEvent event;
+
+	public ConfigurationDeleted(TreeCacheEvent event) {
+	    this.event = event;
+	}
+
+	@Override
+	public void run() {
+	    for (IConfigurationListener listener : getListeners()) {
+		listener.onConfigurationDeleted(event.getData().getPath());
+	    }
+	}
+    }
+
+    /** Used for naming configuration update threads */
+    private class ConfigurationUpdateThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Configuration Update " + counter.incrementAndGet());
 	}
     }
 

@@ -98,6 +98,16 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException;
 
     /**
+     * Get path to Zk node that indicates a tenant has been bootstrapped with
+     * template data.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException;
+
+    /**
      * Initializes microservice components based on Spring contexts that were
      * loaded.
      * 
