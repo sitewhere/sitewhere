@@ -2,10 +2,7 @@ package com.sitewhere.tenant.microservice;
 
 import java.io.File;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -14,16 +11,13 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
-import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
@@ -31,6 +25,7 @@ import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
+import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
 
 /**
  * Microservice that provides tenant management functionality.
@@ -54,17 +49,15 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /** Root folder for instance templates */
     private static final String TEMPLATES_ROOT = "/templates";
 
-    /** Relative path for storing tenant templates */
-    private static final String TEMPLATES_PATH = "/templates";
-
-    /** Relative path for template population lock */
-    private static final String TEMPLATE_POPULATION_LOCK_PATH = "/locks/templates";
-
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
     /** Tenant management persistence API */
     private ITenantManagement tenantManagement;
+
+    /** Tenant template manager */
+    @Autowired
+    private ITenantTemplateManager tenantTemplateManager;
 
     /** Reflects tenant model updates to Kafka topic */
     @Autowired
@@ -147,6 +140,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
 		"Unable to initialize tenant management persistence", true));
 
+	// Initialize tenant template manager.
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager",
+		"Unable to initialize tenant template manager", true));
+
 	// Initialize tenant management GRPC server.
 	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC server", "Unable to initialize tenant management GRPC server", true));
@@ -175,15 +172,16 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Verify or create Zk node for instance information.
-	start.addStep(populateTemplatesIfNotPresent());
-
 	// Start discoverable lifecycle components.
 	start.addStep(startDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Start tenant mangement persistence.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
 		"Unable to start tenant management persistence.", true));
+
+	// Start tenant template manager.
+	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager",
+		"Unable to start tenant template manager.", true));
 
 	// Start GRPC server.
 	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
@@ -224,6 +222,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer(),
 		"Tenant management GRPC manager"));
 
+	// Stop tenant template manager.
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager"));
+
 	// Stop tenant management persistence.
 	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
 
@@ -234,72 +235,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	stop.execute(monitor);
     }
 
-    /**
-     * Run template population logic in a monitorable step.
+    /*
+     * (non-Javadoc)
      * 
-     * @return
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getTenantTemplatesRoot()
      */
-    public ILifecycleStep populateTemplatesIfNotPresent() {
-	return new SimpleLifecycleStep("Populate tenant templates.") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		templatePopulationLogic();
-	    }
-	};
-    }
-
-    /**
-     * Populate the list of tenant templates. NOTE: This uses Zk locking to make
-     * sure that only one instance of tenant management populates the tenant
-     * templates.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void templatePopulationLogic() throws SiteWhereException {
-	CuratorFramework curator = getZookeeperManager().getCurator();
-	InterProcessSemaphoreMutex lock = new InterProcessSemaphoreMutex(curator,
-		getInstanceZkPath() + TEMPLATE_POPULATION_LOCK_PATH);
-	try {
-	    // Acquire the lock.
-	    if (lock.acquire(5, TimeUnit.SECONDS)) {
-		LOGGER.info("Acquired lock for populating tenant templates.");
-		if (curator.checkExists().forPath(getInstanceZkPath() + TEMPLATES_PATH) == null) {
-		    LOGGER.info("Templates not present in Zk. Adding node and importing templates.");
-		    curator.create().forPath(getInstanceZkPath() + TEMPLATES_PATH);
-		    LOGGER.info("Created templates node in Zk.");
-
-		    copyTemplatesToZk();
-		} else {
-		    LOGGER.info("Templates already present in Zk.");
-		}
-	    } else {
-		LOGGER.error("Failed to acquire lock for populating tenant templates.");
-	    }
-	} catch (Exception e) {
-	    LOGGER.error("Exception while attempting to populate tenant templates.", e);
-	} finally {
-	    try {
-		lock.release();
-		LOGGER.info("Released lock for populating tenant templates.");
-	    } catch (Exception e) {
-		LOGGER.error("Failed to release template population lock.", e);
-	    }
-	}
-    }
-
-    /**
-     * Copy templates from the filesystem into Zk.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void copyTemplatesToZk() throws SiteWhereException {
+    @Override
+    public File getTenantTemplatesRoot() throws SiteWhereException {
 	File templates = new File(TEMPLATES_ROOT);
 	if (!templates.exists()) {
 	    throw new SiteWhereException("Templates folder not found in Docker image.");
 	}
-	ZkUtils.copyFolderRecursivelytoZk(getZookeeperManager().getCurator(), getInstanceZkPath() + "/templates",
-		templates, templates);
+	return templates;
     }
 
     /*
@@ -330,6 +278,21 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     public void setTenantManagement(ITenantManagement tenantManagement) {
 	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getTenantTemplateManager()
+     */
+    @Override
+    public ITenantTemplateManager getTenantTemplateManager() {
+	return tenantTemplateManager;
+    }
+
+    public void setTenantTemplateManager(ITenantTemplateManager tenantTemplateManager) {
+	this.tenantTemplateManager = tenantTemplateManager;
     }
 
     /*
