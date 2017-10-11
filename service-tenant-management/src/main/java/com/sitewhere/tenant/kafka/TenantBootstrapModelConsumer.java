@@ -237,6 +237,8 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	    if (existing == null) {
 		LOGGER.info("Zk node for tenant '" + getTenant().getId() + "' configuration not found. Creating...");
 		curator.create().forPath(tenantPath);
+		getMicroservice().getTenantTemplateManager().copyTemplateContentsToZk(getTenant().getTenantTemplateId(),
+			curator, tenantPath);
 		LOGGER.info("Created tenant configuration Zk node.");
 	    } else {
 		LOGGER.info("Found Zk node for tenant '" + getTenant().getId() + "'.");
