@@ -57,6 +57,7 @@ public class MicroserviceTenantEngine extends TenantLifecycleComponent implement
      */
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
+	getLogger().info("Tenant engine configuration path updated: " + path);
     }
 
     /*
@@ -67,6 +68,7 @@ public class MicroserviceTenantEngine extends TenantLifecycleComponent implement
      */
     @Override
     public void onConfigurationDeleted(String path) {
+	getLogger().info("Tenant engine configuration path deleted: " + path);
     }
 
     /*

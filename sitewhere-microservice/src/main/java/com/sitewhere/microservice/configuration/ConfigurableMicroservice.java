@@ -506,7 +506,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	}
     }
 
-    /** Used for naming tenant operation threads */
+    /** Used for naming configuration loader threads */
     private class ConfigurationLoaderThreadFactory implements ThreadFactory {
 
 	/** Counts threads */
