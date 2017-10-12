@@ -14,7 +14,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
@@ -44,7 +43,6 @@ import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 import com.sitewhere.user.persistence.UserManagementPersistence;
-import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
  * User management implementation that uses MongoDB for persistence.
@@ -60,9 +58,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /** Injected with global SiteWhere Mongo client */
     private IUserManagementMongoClient mongoClient;
 
-    @Autowired
-    private IUserManagementMicroservice microservice;
-
     public MongoUserManagement() {
 	super(LifecycleComponentType.DataStore);
     }
@@ -77,7 +72,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	/** Ensure that expected indexes exist */
 	ensureIndexes();
-	getLogger().info("USER MANAGAMENT MICROSERVICE:: " + microservice);
     }
 
     /*

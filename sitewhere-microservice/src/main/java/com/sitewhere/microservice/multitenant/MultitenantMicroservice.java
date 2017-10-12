@@ -92,9 +92,6 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 	// Wait for microservice to be configured.
 	waitForConfigurationReady();
 
-	// Initialize tenant engines.
-	initializeTenantEngines(monitor);
-
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
     }
@@ -119,6 +116,9 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 
 	// Execute startup steps.
 	start.execute(monitor);
+
+	// Initialize tenant engines.
+	initializeTenantEngines(monitor);
 
 	// Call logic for starting microservice subclass.
 	microserviceStart(monitor);
@@ -194,7 +194,7 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 			try {
 			    queueTenantEngineInitialization(tenantId);
 			} catch (SiteWhereException e) {
-			    getLogger().error("Unable to add tenant engine for id '" + tenantId + ".", e);
+			    getLogger().error("Unable to add tenant engine for id '" + tenantId + "'.", e);
 			}
 		    }
 		}
@@ -221,14 +221,19 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 		return;
 	    }
 
-	    // Use system user to look up tenant by id.
 	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	    try {
+		// Use system user to look up tenant by id.
 		SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+
+		// Make sure API is available, then look up tenant.
+		getTenantManagementApiChannel().waitForApiAvailable();
 		ITenant tenant = getTenantManagementApiChannel().getTenantById(tenantId);
 		if (tenant == null) {
 		    throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
 		}
+
+		// Indicate engine is pending, then queue for processing.
 		getPendingEnginesByTenantId().put(tenantId, tenant);
 		if (!getEnginesToCreate().offer(tenant)) {
 		    getLogger().error("No room on tenant initialization queue.");
