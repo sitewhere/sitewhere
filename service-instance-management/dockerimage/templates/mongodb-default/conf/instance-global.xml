@@ -14,7 +14,7 @@
 	<!-- Instance global configuration -->
 	<ig:instance-global>
 
-		<!-- MongoDB configuration managment -->
+		<!-- MongoDB global configuration management -->
 		<ig:mongodb-configuration>
 
 			<!-- Default configuration for MongoDB data access -->

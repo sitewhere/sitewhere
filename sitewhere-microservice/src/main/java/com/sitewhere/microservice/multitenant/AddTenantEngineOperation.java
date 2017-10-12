@@ -49,7 +49,7 @@ public class AddTenantEngineOperation implements Callable<IMicroserviceTenantEng
     public IMicroserviceTenantEngine call() throws Exception {
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
-	    IMicroserviceTenantEngine created = new MicroserviceTenantEngine(getMicroservice(), getTenant());
+	    IMicroserviceTenantEngine created = getMicroservice().createTenantEngine(getTenant());
 	    getMicroservice().getTenantEnginesByTenantId().put(getTenant().getId(), created);
 
 	    // Configuration files must be present before initialization.

@@ -40,8 +40,8 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path to instance global configuration file */
     private static final String INSTANCE_GLOBAL_CONFIGURATION_PATH = "/instance-global.xml";
 
-    /** Relative path to tenant configuration data */
-    private static final String INSTANCE_TENANT_CONFIGURATION_PATH = "/tenants";
+    /** Relative path to configuration data for tenants */
+    private static final String INSTANCE_TENANTS_CONFIGURATION_PATH = "/tenants";
 
     /** Relative path to tenant bootstrapped indicator data */
     private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
@@ -173,7 +173,7 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public String getInstanceTenantsConfigurationPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_TENANT_CONFIGURATION_PATH;
+	return getInstanceConfigurationPath() + INSTANCE_TENANTS_CONFIGURATION_PATH;
     }
 
     /*

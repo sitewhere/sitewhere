@@ -1,6 +1,7 @@
 package com.sitewhere.microservice.multitenant;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -37,6 +39,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public abstract class MultitenantMicroservice extends ConfigurableMicroservice implements IMultitenantMicroservice {
+
+    /** Suffix appended to module identifier to locate module configuration */
+    public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
@@ -325,6 +330,67 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 		getLogger().error("Error processing configuration delete.", e);
 	    }
 	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * getConfigurationPaths()
+     */
+    @Override
+    public String[] getConfigurationPaths() throws SiteWhereException {
+	return new String[0];
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * initializeFromSpringContexts(org.springframework.context.
+     * ApplicationContext, java.util.Map)
+     */
+    @Override
+    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
+	    throws SiteWhereException {
     }
 
     /**

@@ -24,33 +24,66 @@
 	<!-- Top-level global elements -->
 	<xsd:complexType name="instanceGlobalType">
 		<xsd:all>
-			<xsd:element name="mongodb-configuration" type="mongoConfigurationType"
-				minOccurs="0" />
+			<xsd:element ref="abstract-datastore-configuration">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provides global datastore configuration.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for datastore configurations to allow substitutionGroups -->
+	<xsd:element name="abstract-datastore-configuration"
+		abstract="true" type="abstractDatastoreConfigurationType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for datastore configuration
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common datastore configuration information -->
+	<xsd:complexType name="abstractDatastoreConfigurationType">
+	</xsd:complexType>
+
 	<!-- Mongo configuration elements -->
+	<!-- Default user model initializer -->
+	<xsd:element name="mongodb-configuration" type="mongoConfigurationType"
+		substitutionGroup="abstract-datastore-configuration">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides global datastore configuration using MongoDB for persistence.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="mongoConfigurationType">
-		<xsd:sequence>
-			<xsd:element name="default-mongodb-configuration"
-				type="defaultMongoDatastoreConfigurationType" minOccurs="1">
-				<xsd:annotation>
-					<xsd:documentation>
-						Default configuration data for MongoDB
-						datastores.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="alternate-mongodb-configuration"
-				type="alternateMongoDatastoreConfigurationType" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
-						Alternate configuration data for MongoDB
-						datastores.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreConfigurationType">
+				<xsd:sequence>
+					<xsd:element name="default-mongodb-configuration"
+						type="defaultMongoDatastoreConfigurationType" minOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>
+								Default configuration data for MongoDB
+								datastores.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="alternate-mongodb-configuration"
+						type="alternateMongoDatastoreConfigurationType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Alternate configuration data for MongoDB
+								datastores.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Default MongoDB datastore configuration -->

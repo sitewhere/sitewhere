@@ -1,15 +1,13 @@
 package com.sitewhere.device.microservice;
 
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Microservice that provides device management functionality.
@@ -24,6 +22,9 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice implem
     /** Microservice name */
     private static final String NAME = "Device Management";
 
+    /** Identifies module resources such as configuration file */
+    private static final String MODULE_IDENTIFIER = "device-management";
+
     /*
      * (non-Javadoc)
      * 
@@ -37,62 +38,23 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getConfigurationPaths()
+     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
+     * getModuleIdentifier()
      */
     @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return new String[0];
+    public String getModuleIdentifier() throws SiteWhereException {
+	return MODULE_IDENTIFIER;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * initializeFromSpringContexts(org.springframework.context.
-     * ApplicationContext, java.util.Map)
+     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
+     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public IMicroserviceTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
+	return new DeviceManagementTenantEngine(this, tenant);
     }
 
     /*
