@@ -7,7 +7,6 @@
  */
 package com.sitewhere.core;
 
-import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,12 +15,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 
-import com.google.bitcoin.core.Base58;
 import com.sitewhere.spi.SiteWhereException;
 
 public class DataUtils {
@@ -114,18 +111,5 @@ public class DataUtils {
 	chars[2] = hexArray[v >>> 4];
 	chars[3] = hexArray[v & 0x0F];
 	return new String(chars);
-    }
-
-    /**
-     * Generates a short 22-character Base 64 encoded version of a UUID.
-     * 
-     * @return
-     */
-    public static String generateShortUUID() {
-	UUID uuid = UUID.randomUUID();
-	ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-	bb.putLong(uuid.getMostSignificantBits());
-	bb.putLong(uuid.getLeastSignificantBits());
-	return Base58.encode(bb.array());
     }
 }

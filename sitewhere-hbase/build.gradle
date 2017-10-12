@@ -13,4 +13,5 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'commons-codec', name: 'commons-codec'
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
 }
