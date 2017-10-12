@@ -7,14 +7,12 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.w3c.dom.Document;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -37,7 +34,6 @@ import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.command.CommandResult;
@@ -45,14 +41,12 @@ import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.monitoring.IProgressMessage;
-import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.SiteWhere;
-import com.sitewhere.web.configuration.ConfigurationContentParser;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.configuration.model.ElementRole;
@@ -196,10 +190,6 @@ public class Tenants extends RestController {
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantId);
 	checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
-	IResource configuration = TenantUtils.getActiveTenantConfiguration(tenantId);
-	if (configuration != null) {
-	    return new String(configuration.getContent());
-	}
 	throw new SiteWhereException("Tenant configuration resource not found.");
     }
 
@@ -218,10 +208,6 @@ public class Tenants extends RestController {
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantId);
 	checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
-	IResource configuration = TenantUtils.getActiveTenantConfiguration(tenantId);
-	if (configuration != null) {
-	    return ConfigurationContentParser.parse(configuration.getContent());
-	}
 	throw new SiteWhereException("Tenant configuration resource not found.");
     }
 
@@ -238,24 +224,7 @@ public class Tenants extends RestController {
     public ElementContent stageTenantEngineConfiguration(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	try {
-	    ITenant tenant = assureTenant(tenantId);
-	    checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
-	    ServletInputStream inData = servletRequest.getInputStream();
-	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
-	    int data;
-	    while ((data = inData.read()) != -1) {
-		byteData.write(data);
-	    }
-	    byteData.close();
-	    ElementContent content = MarshalUtils.unmarshalJson(byteData.toByteArray(), ElementContent.class);
-	    Document document = ConfigurationContentParser.buildXml(content);
-	    String xml = ConfigurationContentParser.format(document);
-	    TenantUtils.stageTenantConfiguration(tenantId, xml);
-	    return content;
-	} catch (IOException e) {
-	    throw new SiteWhereException("Error staging tenant configuration.", e);
-	}
+	return null;
     }
 
     /**

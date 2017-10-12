@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
-import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -30,20 +28,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  */
 public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILifecycleHierarchyRoot {
-
-    /**
-     * Get resolver for global configuration elements.
-     * 
-     * @return
-     */
-    public IGlobalConfigurationResolver getGlobalConfigurationResolver();
-
-    /**
-     * Get resolver for tenant configuration elements.
-     * 
-     * @return
-     */
-    public ITenantConfigurationResolver getTenantConfigurationResolver();
 
     /**
      * Get the device management implementation.
@@ -101,22 +85,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public ITenantRuntimeState getEngineState();
-
-    /**
-     * Get state information that is persisted across engine restarts.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public ITenantPersistentState getPersistentState() throws SiteWhereException;
-
-    /**
-     * Persist the engine state.
-     * 
-     * @param state
-     * @throws SiteWhereException
-     */
-    public void persistState(ITenantPersistentState state) throws SiteWhereException;
 
     /**
      * Issue a command to the tenant engine.

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -27,15 +26,11 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;
-import com.sitewhere.rest.model.server.SiteWhereServerState;
-import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -44,20 +39,17 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
-import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.batch.IBatchManagement;
-import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.ISearchResults;
@@ -72,7 +64,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -111,9 +102,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
     /** Runtime resource manager implementation */
     protected IResourceManager runtimeResourceManager;
-
-    /** Allows Spring configuration to be resolved */
-    protected IGlobalConfigurationResolver configurationResolver;
 
     /** Interface to user management implementation */
     protected IUserManagement userManagement;
@@ -258,15 +246,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     @Override
     public IResourceManager getRuntimeResourceManager() {
 	return runtimeResourceManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
-     */
-    public IGlobalConfigurationResolver getConfigurationResolver() {
-	return configurationResolver;
     }
 
     /*
@@ -598,12 +577,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Initialize bootstrap resource manager.
-	initializeBootstrapResourceManager();
 	LOGGER.info("Bootstrap resources loading from: " + getBootstrapResourceManager().getClass().getCanonicalName());
 	getBootstrapResourceManager().start(monitor);
-
-	// Initialize persistent state.
-	initializeServerState();
 
 	// Initialize discoverable beans.
 	initializeDiscoverableBeans(monitor);
@@ -612,7 +587,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	initializeManagementImplementations();
 
 	// Initialize runtime resource manager.
-	initializeRuntimeResourceManager();
 	LOGGER.info("Runtime resources loading from: " + getRuntimeResourceManager().getClass().getCanonicalName());
 	getRuntimeResourceManager().start(monitor);
 
@@ -648,24 +622,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     protected void addBannerMessages(List<String> messages) {
 	messages.add("");
-    }
-
-    /**
-     * Initialize the server state information.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeServerState() throws SiteWhereException {
-	IResource stateResource = getConfigurationResolver().resolveServerState(getVersion());
-	SiteWhereServerState state = null;
-	if (stateResource == null) {
-	    state = new SiteWhereServerState();
-	    state.setNodeId(UUID.randomUUID().toString());
-	    getConfigurationResolver().storeServerState(version, MarshalUtils.marshalJson(state));
-	} else {
-	    state = MarshalUtils.unmarshalJson(stateResource.getContent(), SiteWhereServerState.class);
-	}
-	this.serverState = state;
     }
 
     /**
@@ -712,27 +668,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("No user management implementation configured.");
 	}
-    }
-
-    /**
-     * Initialize bootstrap resource manager.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeBootstrapResourceManager() throws SiteWhereException {
-	this.bootstrapResourceManager = new SiteWhereHomeResourceManager();
-	this.configurationResolver = new ResourceManagerGlobalConfigurationResolver(bootstrapResourceManager);
-    }
-
-    /**
-     * Initialize runtime resource manager and swap configuration resolver to
-     * use it.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeRuntimeResourceManager() throws SiteWhereException {
-	this.runtimeResourceManager = new SiteWhereHomeResourceManager();
-	this.configurationResolver = new ResourceManagerGlobalConfigurationResolver(runtimeResourceManager);
     }
 
     /*
@@ -886,7 +821,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @throws SiteWhereException
      */
     protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
+	ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT);
 	initializeNestedComponent(engine,
 		new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initializing tenant engine '" + tenant.getName() + "'")),
@@ -922,30 +857,18 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start tenant engines.
 		for (ISiteWhereTenantEngine engine : getTenantEnginesById().values()) {
 
-		    // Find state or create initial state as needed.
-		    ITenantPersistentState state = engine.getPersistentState();
-		    if (state == null) {
-			TenantPersistentState newState = new TenantPersistentState();
-			newState.setDesiredState(LifecycleStatus.Started);
-			newState.setLastKnownState(LifecycleStatus.Starting);
-			engine.persistState(newState);
-			state = newState;
-		    }
-
 		    // Do not start if desired state is 'Stopped'.
-		    if (state.getDesiredState() != LifecycleStatus.Stopped) {
-			tenantOperations.execute(new Runnable() {
+		    tenantOperations.execute(new Runnable() {
 
-			    @Override
-			    public void run() {
-				try {
-				    startTenantEngine(engine);
-				} catch (SiteWhereException e) {
-				    LOGGER.error("Tenant engine startup failed.", e);
-				}
+			@Override
+			public void run() {
+			    try {
+				startTenantEngine(engine);
+			    } catch (SiteWhereException e) {
+				LOGGER.error("Tenant engine startup failed.", e);
 			    }
-			});
-		    }
+			}
+		    });
 		}
 		tenantOperations.shutdown();
 		try {
@@ -1193,9 +1116,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * @return
      * @throws SiteWhereException
      */
-    protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent,
-	    IGlobalConfigurationResolver resolver) throws SiteWhereException {
-	return new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
+    protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent)
+	    throws SiteWhereException {
+	return new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
     }
 
     /**

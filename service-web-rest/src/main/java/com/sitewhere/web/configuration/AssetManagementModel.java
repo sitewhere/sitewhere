@@ -25,10 +25,6 @@ public class AssetManagementModel extends ConfigurationModel {
     public AssetManagementModel() {
 	addElement(createAssetManagement());
 	addElement(createWso2IdentityAssetModuleElement());
-	addElement(createXmlDeviceAssetModuleElement());
-	addElement(createXmlHardwareAssetModuleElement());
-	addElement(createXmlPersonAssetModuleElement());
-	addElement(createXmlLocationAssetModuleElement());
     }
 
     /**
@@ -93,73 +89,5 @@ public class AssetManagementModel extends ConfigurationModel {
 		.description("Name shown for module in user interface.").build()));
 	builder.attribute((new AttributeNode.Builder("Filename", "filename", AttributeType.String)
 		.description("Name of XML file found in the configuration assets folder.").build()));
-    }
-
-    /**
-     * Create element configuration for XML device asset module.
-     * 
-     * @return
-     */
-    protected ElementNode createXmlDeviceAssetModuleElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("XML Device Asset Module",
-		IAssetManagementParser.Elements.FilesystemDeviceAssetModule.getLocalName(), "tablet",
-		ElementRole.AssetManagment_AssetModule);
-
-	builder.description("List of device assets stored in XML format on the local filesystem.");
-	addCommonAssetModuleAttributes(builder);
-	addCommonFilesystemAssetModuleAttributes(builder);
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for XML hardware asset module.
-     * 
-     * @return
-     */
-    protected ElementNode createXmlHardwareAssetModuleElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("XML Hardware Asset Module",
-		IAssetManagementParser.Elements.FilesystemHardwareAssetModule.getLocalName(), "laptop",
-		ElementRole.AssetManagment_AssetModule);
-
-	builder.description("List of hardware assets stored in XML format on the local filesystem.");
-	addCommonAssetModuleAttributes(builder);
-	addCommonFilesystemAssetModuleAttributes(builder);
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for XML person asset module.
-     * 
-     * @return
-     */
-    protected ElementNode createXmlPersonAssetModuleElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("XML Person Asset Module",
-		IAssetManagementParser.Elements.FilesystemPersonAssetModule.getLocalName(), "users",
-		ElementRole.AssetManagment_AssetModule);
-
-	builder.description("List of person assets stored in XML format on the local filesystem.");
-	addCommonAssetModuleAttributes(builder);
-	addCommonFilesystemAssetModuleAttributes(builder);
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for XML location asset module.
-     * 
-     * @return
-     */
-    protected ElementNode createXmlLocationAssetModuleElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("XML Location Asset Module",
-		IAssetManagementParser.Elements.FilesystemLocationAssetModule.getLocalName(), "map-pin",
-		ElementRole.AssetManagment_AssetModule);
-
-	builder.description("List of location assets stored in XML format on the local filesystem.");
-	addCommonAssetModuleAttributes(builder);
-	addCommonFilesystemAssetModuleAttributes(builder);
-
-	return builder.build();
     }
 }

@@ -21,12 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
-import com.sitewhere.rest.model.resource.request.ResourceCreateRequest;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
-import com.sitewhere.rest.model.server.TenantPersistentState;
 import com.sitewhere.rest.model.server.TenantRuntimeState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -41,19 +36,11 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IDefaultResourcePaths;
-import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
-import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.resource.IMultiResourceCreateResponse;
-import com.sitewhere.spi.resource.IResource;
-import com.sitewhere.spi.resource.ResourceCreateMode;
-import com.sitewhere.spi.resource.ResourceType;
-import com.sitewhere.spi.resource.request.IResourceCreateRequest;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantEngineComponent;
@@ -66,7 +53,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.server.tenant.ITenantPersistentState;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -82,12 +68,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Spring context for tenant */
     private ApplicationContext tenantContext;
-
-    /** Supports global configuration management */
-    private IGlobalConfigurationResolver globalConfigurationResolver;
-
-    /** Supports tenant configuration management */
-    private ITenantConfigurationResolver tenantConfigurationResolver;
 
     /** Components registered to participate in SiteWhere server lifecycle */
     private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
@@ -122,38 +102,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Threads used to issue engine commands */
     private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
-    public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent, IGlobalConfigurationResolver global) {
+    public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent) {
 	super(LifecycleComponentType.TenantEngine);
 	setTenant(tenant);
-	this.globalConfigurationResolver = global;
-	this.tenantConfigurationResolver = new ResourceManagerTenantConfigurationResolver(tenant,
-		SiteWhere.getServer().getVersion(), global);
-    }
-
-    /**
-     * Update persistent state values.
-     * 
-     * @param desired
-     * @param current
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenantPersistentState updatePersistentState(LifecycleStatus desired, LifecycleStatus current)
-	    throws SiteWhereException {
-	ITenantPersistentState persisted = getPersistentState();
-	if (persisted == null) {
-	    TenantPersistentState initial = new TenantPersistentState();
-	    initial.setDesiredState(LifecycleStatus.Started);
-	    initial.setLastKnownState(LifecycleStatus.Stopped);
-	    persisted = initial;
-	}
-	TenantPersistentState updated = TenantPersistentState.copy(persisted);
-	if (desired != null) {
-	    updated.setDesiredState(desired);
-	}
-	updated.setLastKnownState(getLifecycleStatus());
-	persistState(updated);
-	return updated;
     }
 
     /*
@@ -176,9 +127,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     public void initialize(ILifecycleProgressMonitor monitor) {
 	try {
-	    // Initialize the tenant Spring context.
-	    initializeSpringContext();
-
 	    // Register discoverable beans.
 	    initializeDiscoverableBeans(monitor);
 
@@ -229,33 +177,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Execute all operations.
 	start.execute(monitor);
-    }
-
-    /**
-     * Loads the tenant configuration file. If a new configuration is staged, it
-     * is transitioned into the active configuration. If no configuration is
-     * found for a tenant, a new one is created from the tenant template.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeSpringContext() throws SiteWhereException {
-	// Handle staged configuration if available.
-	LOGGER.info("Checking for staged tenant configuration.");
-	IResource config = getTenantConfigurationResolver().getStagedTenantConfiguration();
-	if (config != null) {
-	    LOGGER.info(
-		    "Staged tenant configuration found for '" + getTenant().getName() + "'. Transitioning to active.");
-	    getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration();
-	} else {
-	    LOGGER.info("No staged tenant configuration found.");
-	}
-
-	// Load the active configuration and copy the default if necessary.
-	LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
-	config = getTenantConfigurationResolver().getActiveTenantConfiguration();
-	if (config == null) {
-	    throw new SiteWhereException("Tenant configuration not found. Aborting initialization.");
-	}
     }
 
     /**
@@ -400,23 +321,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStart(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void lifecycleStart(ILifecycleProgressMonitor monitor) {
-	super.lifecycleStart(monitor);
-	try {
-	    updatePersistentState(null, getLifecycleStatus());
-	} catch (SiteWhereException e) {
-	    LOGGER.warn("Unable to update tenant persistent state.");
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#canStart()
      */
     @Override
@@ -462,7 +366,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	});
 
 	// Execute operation and report progress.
-	updatePersistentState(LifecycleStatus.Started, getLifecycleStatus());
 	start.execute(monitor);
     }
 
@@ -480,23 +383,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	// Start device communication subsystem.
 	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
 		"Started device communication subsystem", "Device communication subsystem startup failed.", true));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStop(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleConstraints)
-     */
-    @Override
-    public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
-	super.lifecycleStop(monitor, constraints);
-	try {
-	    updatePersistentState(null, getLifecycleStatus());
-	} catch (SiteWhereException e) {
-	    LOGGER.warn("Unable to update tenant persistent state.");
-	}
     }
 
     /*
@@ -548,9 +434,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void stop(ILifecycleProgressMonitor monitor, boolean persist) throws SiteWhereException {
-	LifecycleStatus desired = (persist) ? LifecycleStatus.Stopped : null;
-	updatePersistentState(desired, getLifecycleStatus());
-
 	// Organizes steps for stopping tenant.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stopped tenant '" + getTenant().getName() + "'");
 
@@ -669,58 +552,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#getPersistentState
-     * ()
-     */
-    @Override
-    public ITenantPersistentState getPersistentState() throws SiteWhereException {
-	IResource resource = getTenantConfigurationResolver()
-		.getResourceForPath(IDefaultResourcePaths.TENANT_STATE_RESOURCE_NAME);
-	if (resource == null) {
-	    return null;
-	}
-	try {
-	    return MarshalUtils.unmarshalJson(resource.getContent(), TenantPersistentState.class);
-	} catch (Throwable t) {
-	    LOGGER.warn("Unable to unmarshal persistent state. Assuming Stopped->Started transition.");
-	    TenantPersistentState state = new TenantPersistentState();
-	    state.setDesiredState(LifecycleStatus.Started);
-	    state.setLastKnownState(LifecycleStatus.Stopped);
-	    return state;
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#persistState(com.
-     * sitewhere.spi.server.tenant.ITenantPersistentState)
-     */
-    @Override
-    public void persistState(ITenantPersistentState state) throws SiteWhereException {
-	TenantPersistentState persist = TenantPersistentState.copy(state);
-	byte[] content = MarshalUtils.marshalJson(persist);
-
-	ResourceCreateRequest request = new ResourceCreateRequest();
-	request.setContent(content);
-	request.setPath(IDefaultResourcePaths.TENANT_STATE_RESOURCE_NAME);
-	request.setResourceType(ResourceType.ConfigurationFile);
-	List<IResourceCreateRequest> resources = new ArrayList<IResourceCreateRequest>();
-	resources.add(request);
-
-	IMultiResourceCreateResponse response = SiteWhere.getServer().getRuntimeResourceManager()
-		.createTenantResources(getTenant().getId(), resources, ResourceCreateMode.OVERWRITE);
-	if (response.getErrors().size() > 0) {
-	    throw new SiteWhereException(
-		    "Unable to persist tenant state. " + response.getErrors().get(0).getReason().toString());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEngineState()
      */
     @Override
@@ -730,7 +561,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	if (getLifecycleStatus() == LifecycleStatus.Started) {
 	    state.setComponentHierarchyState(getComponentHierarchyState());
 	}
-	state.setStaged(getTenantConfigurationResolver().hasStagedConfiguration());
 	return state;
     }
 
@@ -824,34 +654,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     @Override
     public String getComponentName() {
 	return getClass().getSimpleName() + " '" + getTenant().getName() + "' (" + getTenant().getId() + ")";
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
-     * getGlobalConfigurationResolver()
-     */
-    public IGlobalConfigurationResolver getGlobalConfigurationResolver() {
-	return globalConfigurationResolver;
-    }
-
-    public void setConfigurationResolver(IGlobalConfigurationResolver configurationResolver) {
-	this.globalConfigurationResolver = configurationResolver;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
-     * getTenantConfigurationResolver()
-     */
-    public ITenantConfigurationResolver getTenantConfigurationResolver() {
-	return tenantConfigurationResolver;
-    }
-
-    public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
-	this.tenantConfigurationResolver = tenantConfigurationResolver;
     }
 
     /*

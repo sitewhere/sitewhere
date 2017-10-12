@@ -18,7 +18,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.rest.model.resource.MultiResourceCreateResponse;
 import com.sitewhere.rest.model.resource.Resource;
 import com.sitewhere.rest.model.resource.ResourceCreateError;
@@ -46,14 +45,6 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Filename for active tenant configuration file */
-    private static final String TENANT_CONFIG_FILENAME = ResourceManagerTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE
-	    + "." + ResourceManagerTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE;
-
-    /** Filename for staged tenant configuration file */
-    private static final String TENANT_STAGED_FILENAME = ResourceManagerTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE
-	    + "." + ResourceManagerTenantConfigurationResolver.TENANT_SUFFIX_STAGED;
 
     /** Root folder */
     private File rootFolder;
@@ -152,10 +143,6 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
     protected ResourceType findResourceType(File file) {
 	String filename = file.getName();
 	if (filename.equals(IDefaultResourcePaths.GLOBAL_CONFIG_FILE_NAME)) {
-	    return ResourceType.ConfigurationFile;
-	} else if (filename.equals(TENANT_CONFIG_FILENAME)) {
-	    return ResourceType.ConfigurationFile;
-	} else if (filename.equals(TENANT_STAGED_FILENAME)) {
 	    return ResourceType.ConfigurationFile;
 	} else if (filename.endsWith(".groovy")) {
 	    return ResourceType.GroovyScript;

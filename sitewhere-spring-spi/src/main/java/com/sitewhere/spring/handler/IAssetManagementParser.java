@@ -18,19 +18,7 @@ public interface IAssetManagementParser {
 	AssetModuleReference("asset-module"),
 
 	/** Asset module that pulls data from WSO2 Identity Server */
-	Wso2IdentityAssetModule("wso2-identity-asset-module"),
-
-	/** Configures a filesystem device asset module */
-	FilesystemDeviceAssetModule("filesystem-device-asset-module"),
-
-	/** Configures a filesystem hardware asset module */
-	FilesystemHardwareAssetModule("filesystem-hardware-asset-module"),
-
-	/** Configures a filesystem person asset module */
-	FilesystemPersonAssetModule("filesystem-person-asset-module"),
-
-	/** Configures a filesystem location asset module */
-	FilesystemLocationAssetModule("filesystem-location-asset-module");
+	Wso2IdentityAssetModule("wso2-identity-asset-module");
 
 	/** Event code */
 	private String localName;

@@ -17,7 +17,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.batch.IBatchManagement;
-import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -105,13 +104,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @return
      */
     public IResourceManager getRuntimeResourceManager();
-
-    /**
-     * Get class that can be used to location the Spring configuration context.
-     * 
-     * @return
-     */
-    public IGlobalConfigurationResolver getConfigurationResolver();
 
     /**
      * Get a tenant based on its authentication token.

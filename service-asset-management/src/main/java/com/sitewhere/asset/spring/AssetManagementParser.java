@@ -20,10 +20,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.asset.modules.AssetModuleManager;
-import com.sitewhere.asset.modules.filesystem.FileSystemDeviceAssetModule;
-import com.sitewhere.asset.modules.filesystem.FileSystemHardwareAssetModule;
-import com.sitewhere.asset.modules.filesystem.FileSystemLocationAssetModule;
-import com.sitewhere.asset.modules.filesystem.FileSystemPersonAssetModule;
 import com.sitewhere.asset.modules.wso2.scim.Wso2ScimAssetModule;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.spring.handler.IAssetManagementParser.Elements;
@@ -59,22 +55,6 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 	    }
 	    case Wso2IdentityAssetModule: {
 		modules.add(parseWso2IdentityAssetModule(child, context));
-		break;
-	    }
-	    case FilesystemDeviceAssetModule: {
-		modules.add(parseFilesystemDeviceAssetModule(child, context));
-		break;
-	    }
-	    case FilesystemHardwareAssetModule: {
-		modules.add(parseFilesystemHardwareAssetModule(child, context));
-		break;
-	    }
-	    case FilesystemPersonAssetModule: {
-		modules.add(parseFilesystemPersonAssetModule(child, context));
-		break;
-	    }
-	    case FilesystemLocationAssetModule: {
-		modules.add(parseFilesystemLocationAssetModule(child, context));
 		break;
 	    }
 	    }
@@ -135,58 +115,6 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 	    module.addPropertyValue("ignoreBadCertificate", ignoreBadCertificate.getValue());
 	}
 
-	return module.getBeanDefinition();
-    }
-
-    /**
-     * Parse a fileystem device asset module configuration.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseFilesystemDeviceAssetModule(Element element, ParserContext context) {
-	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemDeviceAssetModule.class);
-	setCommonFilesystemAssetModuleProperties(module, element);
-	return module.getBeanDefinition();
-    }
-
-    /**
-     * Parse a fileystem hardware asset module configuration.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseFilesystemHardwareAssetModule(Element element, ParserContext context) {
-	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemHardwareAssetModule.class);
-	setCommonFilesystemAssetModuleProperties(module, element);
-	return module.getBeanDefinition();
-    }
-
-    /**
-     * Parse a fileystem person asset module configuration.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseFilesystemPersonAssetModule(Element element, ParserContext context) {
-	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemPersonAssetModule.class);
-	setCommonFilesystemAssetModuleProperties(module, element);
-	return module.getBeanDefinition();
-    }
-
-    /**
-     * Parse a fileystem location asset module configuration.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseFilesystemLocationAssetModule(Element element, ParserContext context) {
-	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(FileSystemLocationAssetModule.class);
-	setCommonFilesystemAssetModuleProperties(module, element);
 	return module.getBeanDefinition();
     }
 
