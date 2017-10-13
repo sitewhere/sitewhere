@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -44,7 +45,6 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 

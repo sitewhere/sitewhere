@@ -33,8 +33,8 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -61,8 +61,7 @@ public class ExternalSearch extends RestController {
     @ApiOperation(value = "List available search providers")
     @Secured({ SiteWhereRoles.REST })
     public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
-	List<ISearchProvider> providers = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		.getSearchProviders();
+	List<ISearchProvider> providers = getSearchProviderManager().getSearchProviders();
 	List<SearchProvider> retval = new ArrayList<SearchProvider>();
 	for (ISearchProvider provider : providers) {
 	    retval.add(SearchProvider.copy(provider));
@@ -87,8 +86,7 @@ public class ExternalSearch extends RestController {
     public List<IDeviceEvent> searchDeviceEvents(
 	    @ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		.getSearchProvider(providerId);
+	ISearchProvider provider = getSearchProviderManager().getSearchProvider(providerId);
 	if (provider == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -115,8 +113,7 @@ public class ExternalSearch extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public JsonNode rawSearch(@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    @RequestBody String query, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISearchProvider provider = SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest))
-		.getSearchProvider(providerId);
+	ISearchProvider provider = getSearchProviderManager().getSearchProvider(providerId);
 	if (provider == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -125,5 +122,9 @@ public class ExternalSearch extends RestController {
 	    throw new SiteWhereException("Search provider does not provide event search capability.");
 	}
 	return ((IDeviceEventSearchProvider) provider).executeQueryWithRawResponse(query);
+    }
+
+    private ISearchProviderManager getSearchProviderManager() {
+	return null;
     }
 }

@@ -17,10 +17,9 @@ import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.web.SiteWhere;
 
 /**
  * Used to build a {@link DeviceCommandInvocationSummary}.
@@ -41,7 +40,8 @@ public class DeviceInvocationSummaryBuilder {
      * @throws SiteWhereException
      */
     public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
-	    List<IDeviceCommandResponse> responses, ITenant tenant) throws SiteWhereException {
+	    List<IDeviceCommandResponse> responses, IDeviceEventManagement deviceEventManagement)
+	    throws SiteWhereException {
 	DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
 	summary.setName(invocation.getCommand().getName());
 	summary.setNamespace(invocation.getCommand().getNamespace());
@@ -58,8 +58,7 @@ public class DeviceInvocationSummaryBuilder {
 	    DeviceCommandInvocationSummary.Response rsp = new DeviceCommandInvocationSummary.Response();
 	    rsp.setDate(response.getEventDate());
 	    if (response.getResponseEventId() != null) {
-		IDeviceEvent event = SiteWhere.getServer().getDeviceEventManagement(tenant)
-			.getDeviceEventById(response.getResponseEventId());
+		IDeviceEvent event = deviceEventManagement.getDeviceEventById(response.getResponseEventId());
 		rsp.setDescription(getDeviceEventDescription(event));
 	    } else if (response.getResponse() != null) {
 		rsp.setDescription("Ack (\"" + response.getResponse() + "\")");

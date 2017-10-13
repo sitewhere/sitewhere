@@ -16,8 +16,8 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceSpecification} model
@@ -30,8 +30,8 @@ public class DeviceSpecificationMarshalHelper {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
+    /** Device Management */
+    private IDeviceManagement deviceManagement;
 
     /**
      * Indicates whether device specification asset information is to be
@@ -39,8 +39,8 @@ public class DeviceSpecificationMarshalHelper {
      */
     private boolean includeAsset = true;
 
-    public DeviceSpecificationMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceSpecificationMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -86,11 +86,11 @@ public class DeviceSpecificationMarshalHelper {
 	return this;
     }
 
-    public ITenant getTenant() {
-	return tenant;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

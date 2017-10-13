@@ -43,6 +43,7 @@ import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -52,9 +53,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -88,17 +87,15 @@ public class DeviceSpecifications extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification createDeviceSpecification(@RequestBody DeviceSpecificationCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IAsset asset = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
-		.getAssetById(request.getAssetModuleId(), request.getAssetId());
+	IAsset asset = getAssetModuleManager().getAssetById(request.getAssetModuleId(), request.getAssetId());
 	if (asset == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
-	IDeviceSpecification result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createDeviceSpecification(request);
-	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
+	IDeviceSpecification result = getDeviceManagement().createDeviceSpecification(request);
+	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -116,9 +113,9 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceSpecification result = assertDeviceSpecificationByToken(token, servletRequest);
-	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
+	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -135,7 +132,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest,
 	    HttpServletResponse response) throws SiteWhereException {
 	IDeviceSpecification specification = assertDeviceSpecificationByToken(token, servletRequest);
-	String proto = SpecificationProtoBuilder.getProtoForSpecification(specification, getTenant(servletRequest));
+	String proto = SpecificationProtoBuilder.getProtoForSpecification(specification, getDeviceManagement());
 	response.setContentType("text/plain");
 	return proto;
     }
@@ -154,7 +151,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest,
 	    HttpServletResponse response) throws SiteWhereException {
 	IDeviceSpecification specification = assertDeviceSpecificationByToken(token, servletRequest);
-	String proto = SpecificationProtoBuilder.getProtoForSpecification(specification, getTenant(servletRequest));
+	String proto = SpecificationProtoBuilder.getProtoForSpecification(specification, getDeviceManagement());
 
 	final HttpHeaders headers = new HttpHeaders();
 	headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -178,11 +175,10 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceSpecification result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.updateDeviceSpecification(token, request);
-	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
+	IDeviceSpecification result = getDeviceManagement().updateDeviceSpecification(token, request);
+	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -206,14 +202,13 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceSpecification> results = SiteWhere.getServer()
-		.getDeviceManagement(getTenant(servletRequest)).listDeviceSpecifications(includeDeleted, criteria);
-	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
+	ISearchResults<IDeviceSpecification> results = getDeviceManagement().listDeviceSpecifications(includeDeleted,
+		criteria);
+	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	List<IDeviceSpecification> specsConv = new ArrayList<IDeviceSpecification>();
 	for (IDeviceSpecification device : results.getResults()) {
-	    specsConv.add(
-		    helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    specsConv.add(helper.convert(device, getAssetModuleManager()));
 	}
 	Collections.sort(specsConv, new Comparator<IDeviceSpecification>() {
 	    public int compare(IDeviceSpecification o1, IDeviceSpecification o2) {
@@ -239,8 +234,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ITenant tenant = getTenant(servletRequest);
-	IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(tenant);
+	IDeviceManagement devices = getDeviceManagement();
 
 	// Do not allow delete if specification is being used
 	// (SITEWHERE-267)
@@ -254,9 +248,9 @@ public class DeviceSpecifications extends RestController {
 	}
 
 	IDeviceSpecification result = devices.deleteDeviceSpecification(token, force);
-	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(tenant);
+	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(tenant));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -272,8 +266,7 @@ public class DeviceSpecifications extends RestController {
     public IDeviceCommand createDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceCommand result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createDeviceCommand(token, request);
+	IDeviceCommand result = getDeviceManagement().createDeviceCommand(token, request);
 	return result;
     }
 
@@ -285,8 +278,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	List<IDeviceCommand> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.listDeviceCommands(token, includeDeleted);
+	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(token, includeDeleted);
 	Collections.sort(results, new Comparator<IDeviceCommand>() {
 	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 		if (o1.getName().equals(o2.getName())) {
@@ -314,8 +306,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	List<IDeviceCommand> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.listDeviceCommands(token, includeDeleted);
+	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(token, includeDeleted);
 	Collections.sort(results, new Comparator<IDeviceCommand>() {
 	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 		if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {
@@ -360,7 +351,7 @@ public class DeviceSpecifications extends RestController {
     public IDeviceStatus createDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDeviceStatus(token, request);
+	return getDeviceManagement().createDeviceStatus(token, request);
     }
 
     /**
@@ -379,7 +370,7 @@ public class DeviceSpecifications extends RestController {
     public IDeviceStatus getDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStatusByCode(token, code);
+	return getDeviceManagement().getDeviceStatusByCode(token, code);
     }
 
     /**
@@ -399,8 +390,7 @@ public class DeviceSpecifications extends RestController {
 	    @ApiParam(value = "Code", required = true) @PathVariable String code,
 	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceStatus(token, code,
-		request);
+	return getDeviceManagement().updateDeviceStatus(token, code, request);
     }
 
     @RequestMapping(value = "/{token}/statuses", method = RequestMethod.GET)
@@ -410,8 +400,7 @@ public class DeviceSpecifications extends RestController {
     public List<IDeviceStatus> listDeviceStatuses(
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	List<IDeviceStatus> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.listDeviceStatuses(token);
+	List<IDeviceStatus> results = getDeviceManagement().listDeviceStatuses(token);
 	Collections.sort(results, new Comparator<IDeviceStatus>() {
 	    public int compare(IDeviceStatus o1, IDeviceStatus o2) {
 		return o1.getName().compareTo(o2.getName());
@@ -436,7 +425,7 @@ public class DeviceSpecifications extends RestController {
     public IDeviceStatus deleteDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceStatus(token, code);
+	return getDeviceManagement().deleteDeviceStatus(token, code);
     }
 
     /**
@@ -450,12 +439,19 @@ public class DeviceSpecifications extends RestController {
      */
     protected IDeviceSpecification assertDeviceSpecificationByToken(String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceSpecification result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceSpecificationByToken(token);
+	IDeviceSpecification result = getDeviceManagement().getDeviceSpecificationByToken(token);
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
 	return result;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IAssetModuleManager getAssetModuleManager() {
+	return null;
     }
 }

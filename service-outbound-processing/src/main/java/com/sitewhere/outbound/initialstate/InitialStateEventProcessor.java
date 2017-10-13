@@ -161,7 +161,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	    throw new SiteWhereException("Assignment not found.");
 	}
 
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(false);

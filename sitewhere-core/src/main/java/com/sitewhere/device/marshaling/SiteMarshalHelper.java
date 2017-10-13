@@ -15,6 +15,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -35,8 +36,11 @@ public class SiteMarshalHelper {
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
+    /** Device management */
+    private IDeviceManagement deviceManagement;
+
+    /** Asset module manager */
+    private IAssetModuleManager assetModuleManager;
 
     /** Indicates whether assignments for site should be included */
     private boolean includeAssignements = false;
@@ -47,10 +51,11 @@ public class SiteMarshalHelper {
     /** Device assignment marshal helper */
     private DeviceAssignmentMarshalHelper assignmentHelper;
 
-    public SiteMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public SiteMarshalHelper(IDeviceManagement deviceManagement, IAssetModuleManager assetModuleManager) {
+	this.deviceManagement = deviceManagement;
+	this.assetModuleManager = assetModuleManager;
 
-	this.assignmentHelper = new DeviceAssignmentMarshalHelper(tenant);
+	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement);
 	assignmentHelper.setIncludeDevice(true);
 	assignmentHelper.setIncludeAsset(true);
 	assignmentHelper.setIncludeSite(false);
@@ -68,17 +73,16 @@ public class SiteMarshalHelper {
 	if (isIncludeAssignements()) {
 	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
 	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement(getTenant())
+	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement()
 		    .getDeviceAssignmentsForSite(site.getToken(), criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {
-		assignments.add(assignmentHelper.convert(match, SiteWhere.getServer().getAssetModuleManager(tenant)));
+		assignments.add(assignmentHelper.convert(match, getAssetModuleManager()));
 	    }
 	    site.setDeviceAssignments(assignments);
 	}
 	if (isIncludeZones()) {
-	    ISearchResults<IZone> matches = getDeviceManagement(getTenant()).listZones(source.getToken(),
-		    SearchCriteria.ALL);
+	    ISearchResults<IZone> matches = getDeviceManagement().listZones(source.getToken(), SearchCriteria.ALL);
 	    List<Zone> zones = new ArrayList<Zone>();
 	    List<IZone> reordered = matches.getResults();
 	    Collections.sort(reordered, new Comparator<IZone>() {
@@ -107,12 +111,20 @@ public class SiteMarshalHelper {
 	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
-    public ITenant getTenant() {
-	return tenant;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
+
+    public IAssetModuleManager getAssetModuleManager() {
+	return assetModuleManager;
+    }
+
+    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
+	this.assetModuleManager = assetModuleManager;
     }
 
     public boolean isIncludeAssignements() {

@@ -10,7 +10,6 @@ package com.sitewhere.device.marshaling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -25,7 +24,6 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows DeviceAssignment model objects to be
@@ -38,9 +36,6 @@ public class DeviceAssignmentMarshalHelper {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
-
     /** Indicates whether device asset information is to be included */
     private boolean includeAsset = true;
 
@@ -50,11 +45,14 @@ public class DeviceAssignmentMarshalHelper {
     /** Indicates whether to include site information */
     private boolean includeSite = false;
 
+    /** Device management */
+    private IDeviceManagement deviceManagement;
+
     /** Used to control marshaling of devices */
     private DeviceMarshalHelper deviceHelper;
 
-    public DeviceAssignmentMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceAssignmentMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -116,23 +114,13 @@ public class DeviceAssignmentMarshalHelper {
     }
 
     /**
-     * Get the device management implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
-    }
-
-    /**
      * Get the helper for marshaling device information.
      * 
      * @return
      */
     protected DeviceMarshalHelper getDeviceHelper() {
 	if (deviceHelper == null) {
-	    deviceHelper = new DeviceMarshalHelper(tenant);
+	    deviceHelper = new DeviceMarshalHelper(getDeviceManagement());
 	    deviceHelper.setIncludeAsset(false);
 	    deviceHelper.setIncludeAssignment(false);
 	    deviceHelper.setIncludeSpecification(false);
@@ -165,5 +153,13 @@ public class DeviceAssignmentMarshalHelper {
     public DeviceAssignmentMarshalHelper setIncludeSite(boolean includeSite) {
 	this.includeSite = includeSite;
 	return this;
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

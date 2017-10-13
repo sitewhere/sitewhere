@@ -47,8 +47,14 @@ public class ScheduledJobMarshalHelper {
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
+    /** Device management */
+    private IDeviceManagement deviceManagement;
+
+    /** Schedule management */
+    private IScheduleManagement scheduleManagement;
+
+    /** Asset module manager */
+    private IAssetModuleManager assetModuleManager;
 
     /** Indicates whether to include context information */
     private boolean includeContextInfo = false;
@@ -59,15 +65,20 @@ public class ScheduledJobMarshalHelper {
     /** Used for marshaling device specification info */
     private DeviceSpecificationMarshalHelper specificationHelper;
 
-    public ScheduledJobMarshalHelper(ITenant tenant) {
-	this(tenant, false);
+    public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
+	    IAssetModuleManager assetModuleManager) {
+	this(scheduleManagement, deviceManagement, assetModuleManager, false);
     }
 
-    public ScheduledJobMarshalHelper(ITenant tenant, boolean includeContextInfo) {
-	this.tenant = tenant;
+    public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
+	    IAssetModuleManager assetModuleManager, boolean includeContextInfo) {
+	this.scheduleManagement = scheduleManagement;
+	this.deviceManagement = deviceManagement;
+	this.assetModuleManager = assetModuleManager;
 	this.includeContextInfo = includeContextInfo;
-	this.assignmentHelper = new DeviceAssignmentMarshalHelper(tenant).setIncludeDevice(true).setIncludeAsset(false);
-	this.specificationHelper = new DeviceSpecificationMarshalHelper(tenant).setIncludeAsset(false);
+	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement).setIncludeDevice(true)
+		.setIncludeAsset(false);
+	this.specificationHelper = new DeviceSpecificationMarshalHelper(deviceManagement).setIncludeAsset(false);
     }
 
     /**
@@ -89,7 +100,7 @@ public class ScheduledJobMarshalHelper {
 
 	if (isIncludeContextInfo()) {
 	    job.setContext(new HashMap<String, Object>());
-	    ISchedule schedule = getScheduleManagement(tenant).getScheduleByToken(job.getScheduleToken());
+	    ISchedule schedule = getScheduleManagement().getScheduleByToken(job.getScheduleToken());
 	    if (schedule != null) {
 		job.getContext().put("schedule", schedule);
 	    }
@@ -121,14 +132,13 @@ public class ScheduledJobMarshalHelper {
 	String assnToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN);
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 	if (assnToken != null) {
-	    IDeviceAssignment assignment = getDeviceManagement(getTenant()).getDeviceAssignmentByToken(assnToken);
+	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
 	    if (assignment != null) {
-		job.getContext().put("assignment",
-			getAssignmentHelper().convert(assignment, getAssetModuleManager(getTenant())));
+		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetModuleManager()));
 	    }
 	}
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement(getTenant()).getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -160,19 +170,18 @@ public class ScheduledJobMarshalHelper {
     protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
 	String specToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN);
 	if (specToken != null) {
-	    IDeviceSpecification specification = getDeviceManagement(getTenant())
-		    .getDeviceSpecificationByToken(specToken);
+	    IDeviceSpecification specification = getDeviceManagement().getDeviceSpecificationByToken(specToken);
 	    if (specification != null) {
 		job.getContext().put("specification",
-			getSpecificationHelper().convert(specification, getAssetModuleManager(getTenant())));
+			getSpecificationHelper().convert(specification, getAssetModuleManager()));
 	    }
 	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
-	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(getTenant()), "..");
+	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
 	    job.getContext().put("criteriaHtml", html);
 	}
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement(getTenant()).getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -245,12 +254,28 @@ public class ScheduledJobMarshalHelper {
 	return specificationHelper;
     }
 
-    public ITenant getTenant() {
-	return tenant;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
+
+    public IScheduleManagement getScheduleManagement() {
+	return scheduleManagement;
+    }
+
+    public void setScheduleManagement(IScheduleManagement scheduleManagement) {
+	this.scheduleManagement = scheduleManagement;
+    }
+
+    public IAssetModuleManager getAssetModuleManager() {
+	return assetModuleManager;
+    }
+
+    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
+	this.assetModuleManager = assetModuleManager;
     }
 
     public boolean isIncludeContextInfo() {

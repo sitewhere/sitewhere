@@ -34,8 +34,8 @@ public class DeviceCommandInvocationMarshalHelper {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
+    /** Device Management */
+    private IDeviceManagement deviceManagement;
 
     /** Indicates whether to include command information */
     private boolean includeCommand = false;
@@ -43,12 +43,12 @@ public class DeviceCommandInvocationMarshalHelper {
     /** Cache to prevent repeated command lookups */
     private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
 
-    public DeviceCommandInvocationMarshalHelper(ITenant tenant) {
-	this(tenant, false);
+    public DeviceCommandInvocationMarshalHelper(IDeviceManagement deviceManagement) {
+	this(deviceManagement, false);
     }
 
-    public DeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
-	this.tenant = tenant;
+    public DeviceCommandInvocationMarshalHelper(IDeviceManagement deviceManagement, boolean includeCommand) {
+	this.deviceManagement = deviceManagement;
 	this.includeCommand = includeCommand;
     }
 
@@ -78,7 +78,7 @@ public class DeviceCommandInvocationMarshalHelper {
 	    }
 	    DeviceCommand command = commandsByToken.get(source.getCommandToken());
 	    if (command == null) {
-		IDeviceCommand found = getDeviceManagement(tenant).getDeviceCommandByToken(source.getCommandToken());
+		IDeviceCommand found = getDeviceManagement().getDeviceCommandByToken(source.getCommandToken());
 		if (found == null) {
 		    LOGGER.warn("Device invocation references a non-existent command token.");
 		    return result;
@@ -104,5 +104,13 @@ public class DeviceCommandInvocationMarshalHelper {
 
     public void setIncludeCommand(boolean includeCommand) {
 	this.includeCommand = includeCommand;
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

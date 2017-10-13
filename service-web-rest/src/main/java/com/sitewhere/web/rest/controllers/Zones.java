@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -55,7 +55,7 @@ public class Zones extends RestController {
     public Zone getZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone found = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getZone(zoneToken);
+	IZone found = getDeviceManagement().getZone(zoneToken);
 	return Zone.copy(found);
     }
 
@@ -73,8 +73,7 @@ public class Zones extends RestController {
     public Zone updateZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateZone(zoneToken,
-		request);
+	IZone zone = getDeviceManagement().updateZone(zoneToken, request);
 	return Zone.copy(zone);
     }
 
@@ -93,8 +92,11 @@ public class Zones extends RestController {
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone deleted = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteZone(zoneToken,
-		force);
+	IZone deleted = getDeviceManagement().deleteZone(zoneToken, force);
 	return Zone.copy(deleted);
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
     }
 }

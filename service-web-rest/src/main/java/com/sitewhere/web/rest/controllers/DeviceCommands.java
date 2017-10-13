@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -66,7 +66,7 @@ public class DeviceCommands extends RestController {
     public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(token, request);
+	return getDeviceManagement().updateDeviceCommand(token, request);
     }
 
     /**
@@ -100,7 +100,7 @@ public class DeviceCommands extends RestController {
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(token, force);
+	return getDeviceManagement().deleteDeviceCommand(token, force);
     }
 
     /**
@@ -113,12 +113,15 @@ public class DeviceCommands extends RestController {
      */
     protected IDeviceCommand assertDeviceCommandByToken(String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceCommand result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceCommandByToken(token);
+	IDeviceCommand result = getDeviceManagement().getDeviceCommandByToken(token);
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
 	return result;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
     }
 }

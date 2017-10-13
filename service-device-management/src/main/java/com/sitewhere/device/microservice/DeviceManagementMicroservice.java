@@ -3,10 +3,18 @@ package com.sitewhere.device.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
+import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -25,6 +33,9 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /** Identifies module resources such as configuration file */
     private static final String MODULE_IDENTIFIER = "device-management";
+
+    /** Provides server for device management GRPC requests */
+    private IDeviceManagementGrpcServer deviceManagementGrpcServer;
 
     /*
      * (non-Javadoc)
@@ -61,10 +72,81 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create device management GRPC server.
+	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
+
+	// Create step that will start components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize device management GRPC server.
+	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcServer(),
+		"Device management GRPC server", "Unable to initialize device management GRPC server", true));
+
+	// Execute initialization steps.
+	init.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start device management GRPC server.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcServer(),
+		"Device management GRPC server", "Unable to initialize device management GRPC server", true));
+
+	// Execute startup steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop device management GRPC server.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getDeviceManagementGrpcServer(), "Device management GRPC server"));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IDeviceManagementGrpcServer getDeviceManagementGrpcServer() {
+	return deviceManagementGrpcServer;
+    }
+
+    public void setDeviceManagementGrpcServer(IDeviceManagementGrpcServer deviceManagementGrpcServer) {
+	this.deviceManagementGrpcServer = deviceManagementGrpcServer;
     }
 }

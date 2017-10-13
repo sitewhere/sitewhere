@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -52,20 +51,6 @@ public class System extends RestController {
     @ApiOperation(value = "Get version information")
     @Secured({ SiteWhereRoles.REST })
     public IVersion getVersion() throws SiteWhereException {
-	return SiteWhere.getServer().getVersion();
-    }
-
-    /**
-     * Get runtime information about the server.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/runtime", method = RequestMethod.GET)
-    @ResponseBody
-    @ApiOperation(value = "Get server runtime information")
-    @Secured({ SiteWhereRoles.REST })
-    public ISiteWhereServerRuntime getServerRuntimeInformation() throws SiteWhereException {
-	return SiteWhere.getServer().getServerRuntimeInformation(true);
+	return SiteWhere.getVersion();
     }
 }

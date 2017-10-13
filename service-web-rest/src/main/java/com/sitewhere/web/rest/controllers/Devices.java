@@ -47,9 +47,13 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
@@ -61,7 +65,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -95,11 +98,11 @@ public class Devices extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDevice createDevice(@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDevice(request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	IDevice result = getDeviceManagement().createDevice(request);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -121,13 +124,13 @@ public class Devices extends RestController {
 	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice result = assertDeviceByHardwareId(hardwareId, servletRequest);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeAssignment(includeAssignment);
 	helper.setIncludeSite(includeSite);
 	helper.setIncludeNested(includeNested);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -146,12 +149,11 @@ public class Devices extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDevice(hardwareId,
-		request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	IDevice result = getDeviceManagement().updateDevice(hardwareId, request);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -167,12 +169,11 @@ public class Devices extends RestController {
     public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDevice(hardwareId,
-		force);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	IDevice result = getDeviceManagement().deleteDevice(hardwareId, force);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
-	return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(result, getAssetModuleManager());
     }
 
     /**
@@ -193,17 +194,16 @@ public class Devices extends RestController {
 	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
-	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceAssignmentByToken(device.getAssignmentToken());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.INFO,
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeSite(includeSite);
-	return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(assignment, getAssetModuleManager());
     }
 
     /**
@@ -226,16 +226,15 @@ public class Devices extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceAssignment> history = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceAssignmentHistory(hardwareId, criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+	ISearchResults<IDeviceAssignment> history = getDeviceManagement().getDeviceAssignmentHistory(hardwareId,
+		criteria);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeSite(includeSite);
 	List<IDeviceAssignment> converted = new ArrayList<IDeviceAssignment>();
 	for (IDeviceAssignment assignment : history.getResults()) {
-	    converted.add(
-		    helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    converted.add(helper.convert(assignment, getAssetModuleManager()));
 	}
 	return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
     }
@@ -253,12 +252,11 @@ public class Devices extends RestController {
     public IDevice addDeviceElementMapping(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceElementMapping request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice updated = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createDeviceElementMapping(hardwareId, request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	IDevice updated = getDeviceManagement().createDeviceElementMapping(hardwareId, request);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(updated, getAssetModuleManager());
     }
 
     @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
@@ -269,12 +267,11 @@ public class Devices extends RestController {
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice updated = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.deleteDeviceElementMapping(hardwareId, path);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(hardwareId, path);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
+	return helper.convert(updated, getAssetModuleManager());
     }
 
     /**
@@ -294,8 +291,7 @@ public class Devices extends RestController {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDevice device = assertDeviceWithoutUserValidation(hardwareId, servletRequest);
 	IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-	ISymbolGeneratorManager symbols = SiteWhere.getServer().getDeviceCommunication(getTenant(servletRequest, false))
-		.getSymbolGeneratorManager();
+	ISymbolGeneratorManager symbols = getDeviceCommunication().getSymbolGeneratorManager();
 	ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
 	if (generator != null) {
 	    byte[] image = generator.getDeviceSymbol(device, provider);
@@ -332,16 +328,14 @@ public class Devices extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize,
 		startDate, endDate);
-	ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.listDevices(includeDeleted, criteria);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	ISearchResults<IDevice> results = getDeviceManagement().listDevices(includeDeleted, criteria);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
-	    devicesConv.add(
-		    helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
 	}
 	return new SearchResults<IDevice>(devicesConv, results.getNumResults());
     }
@@ -365,16 +359,14 @@ public class Devices extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(token, site, excludeAssigned, page, pageSize,
 		startDate, endDate);
-	ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.listDevices(includeDeleted, criteria);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	ISearchResults<IDevice> results = getDeviceManagement().listDevices(includeDeleted, criteria);
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
-	    devicesConv.add(
-		    helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
 	}
 	return new SearchResults<IDevice>(devicesConv, results.getNumResults());
     }
@@ -398,15 +390,14 @@ public class Devices extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize,
 		startDate, endDate);
-	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getTenant(servletRequest));
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(
-		    helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
 	}
 	return new SearchResults<IDevice>(devicesConv, matches.size());
     }
@@ -431,15 +422,14 @@ public class Devices extends RestController {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize,
 		startDate, endDate);
 	Collection<IDevice> matches = DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria,
-		getTenant(servletRequest));
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
+		getDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(
-		    helper.convert(device, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
 	}
 	return new SearchResults<IDevice>(devicesConv, matches.size());
     }
@@ -481,8 +471,7 @@ public class Devices extends RestController {
 	    }
 	}
 
-	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		.addDeviceEventBatch(device.getAssignmentToken(), batch);
+	return getDeviceEventManagement().addDeviceEventBatch(device.getAssignmentToken(), batch);
     }
 
     /**
@@ -495,8 +484,7 @@ public class Devices extends RestController {
      */
     protected IDevice assertDeviceByHardwareId(String hardwareId, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceByHardwareId(hardwareId);
+	IDevice result = getDeviceManagement().getDeviceByHardwareId(hardwareId);
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -516,12 +504,27 @@ public class Devices extends RestController {
      */
     protected IDevice assertDeviceWithoutUserValidation(String hardwareId, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDevice result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest, false))
-		.getDeviceByHardwareId(hardwareId);
+	IDevice result = getDeviceManagement().getDeviceByHardwareId(hardwareId);
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
 	return result;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return null;
+    }
+
+    private IAssetModuleManager getAssetModuleManager() {
+	return null;
+    }
+
+    private IDeviceCommunication getDeviceCommunication() {
+	return null;
     }
 }

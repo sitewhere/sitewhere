@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.IUser;
 
 /**
  * Main class for accessing core SiteWhere functionality.
@@ -28,6 +29,10 @@ public class SiteWhere {
     private static IVersion VERSION = new Version();
 
     public static ISiteWhereServer getServer() {
+	return null;
+    }
+
+    public static IUser getCurrentlyLoggedInUser() {
 	return null;
     }
 

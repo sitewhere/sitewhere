@@ -28,7 +28,6 @@ import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -62,7 +61,7 @@ public class Schedules extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return getScheduleManagement(servletRequest).createSchedule(request);
+	return getScheduleManagement().createSchedule(request);
     }
 
     /**
@@ -79,7 +78,7 @@ public class Schedules extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement(servletRequest).getScheduleByToken(token);
+	return getScheduleManagement().getScheduleByToken(token);
     }
 
     /**
@@ -98,7 +97,7 @@ public class Schedules extends RestController {
     public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return getScheduleManagement(servletRequest).updateSchedule(token, request);
+	return getScheduleManagement().updateSchedule(token, request);
     }
 
     /**
@@ -119,7 +118,7 @@ public class Schedules extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return getScheduleManagement(servletRequest).listSchedules(criteria);
+	return getScheduleManagement().listSchedules(criteria);
     }
 
     /**
@@ -138,17 +137,10 @@ public class Schedules extends RestController {
     public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement(servletRequest).deleteSchedule(token, force);
+	return getScheduleManagement().deleteSchedule(token, force);
     }
 
-    /**
-     * Get the schedule management implementation for the current tenant.
-     * 
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
+    protected IScheduleManagement getScheduleManagement() {
+	return null;
     }
 }

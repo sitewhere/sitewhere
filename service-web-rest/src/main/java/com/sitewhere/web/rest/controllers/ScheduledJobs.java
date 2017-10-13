@@ -28,11 +28,12 @@ import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
 
@@ -69,7 +70,7 @@ public class ScheduledJobs extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob createScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement(servletRequest).createScheduledJob(request);
+	return getScheduleManagement().createScheduledJob(request);
     }
 
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
@@ -78,7 +79,7 @@ public class ScheduledJobs extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement(servletRequest).getScheduledJobByToken(token);
+	return getScheduleManagement().getScheduledJobByToken(token);
     }
 
     /**
@@ -97,7 +98,7 @@ public class ScheduledJobs extends RestController {
     public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return getScheduleManagement(servletRequest).updateScheduledJob(token, request);
+	return getScheduleManagement().updateScheduledJob(token, request);
     }
 
     /**
@@ -120,12 +121,13 @@ public class ScheduledJobs extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IScheduledJob> results = getScheduleManagement(servletRequest).listScheduledJobs(criteria);
+	ISearchResults<IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
 	if (!includeContext) {
 	    return results;
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
-	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
+	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
+		    getDeviceManagement(), getAssetModuleManager(), true);
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
@@ -149,17 +151,18 @@ public class ScheduledJobs extends RestController {
     public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement(servletRequest).deleteScheduledJob(token, force);
+	return getScheduleManagement().deleteScheduledJob(token, force);
     }
 
-    /**
-     * Get the schedule management implementation for the current tenant.
-     * 
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IScheduleManagement getScheduleManagement(HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest));
+    protected IScheduleManagement getScheduleManagement() {
+	return null;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IAssetModuleManager getAssetModuleManager() {
+	return null;
     }
 }

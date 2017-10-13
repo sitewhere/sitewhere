@@ -32,6 +32,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -41,7 +42,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -75,8 +75,7 @@ public class DeviceGroups extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceGroup result = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.createDeviceGroup(request);
+	IDeviceGroup result = getDeviceManagement().createDeviceGroup(request);
 	return DeviceGroup.copy(result);
     }
 
@@ -94,8 +93,7 @@ public class DeviceGroups extends RestController {
     public IDeviceGroup getDeviceGroupByToken(
 	    @ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.getDeviceGroup(groupToken);
+	IDeviceGroup group = getDeviceManagement().getDeviceGroup(groupToken);
 	if (group == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 	}
@@ -118,8 +116,7 @@ public class DeviceGroups extends RestController {
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody DeviceGroupCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.updateDeviceGroup(groupToken, request);
+	IDeviceGroup group = getDeviceManagement().updateDeviceGroup(groupToken, request);
 	return DeviceGroup.copy(group);
     }
 
@@ -139,8 +136,7 @@ public class DeviceGroups extends RestController {
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceGroup group = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.deleteDeviceGroup(groupToken, force);
+	IDeviceGroup group = getDeviceManagement().deleteDeviceGroup(groupToken, force);
 	return DeviceGroup.copy(group);
     }
 
@@ -167,11 +163,9 @@ public class DeviceGroups extends RestController {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceGroup> results;
 	if (role == null) {
-	    results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .listDeviceGroups(includeDeleted, criteria);
+	    results = getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
 	} else {
-	    results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .listDeviceGroupsWithRole(role, includeDeleted, criteria);
+	    results = getDeviceManagement().listDeviceGroupsWithRole(role, includeDeleted, criteria);
 	}
 	List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
 	for (IDeviceGroup group : results.getResults()) {
@@ -199,14 +193,14 @@ public class DeviceGroups extends RestController {
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getTenant(servletRequest))
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(includeDetails);
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceGroupElement> results = SiteWhere.getServer()
-		.getDeviceManagement(getTenant(servletRequest)).listDeviceGroupElements(groupToken, criteria);
+	ISearchResults<IDeviceGroupElement> results = getDeviceManagement().listDeviceGroupElements(groupToken,
+		criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
-	    elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    elmConv.add(helper.convert(elm, getAssetModuleManager()));
 	}
 	return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
     }
@@ -228,9 +222,9 @@ public class DeviceGroups extends RestController {
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
+	IDeviceManagement devices = getDeviceManagement();
 
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getTenant(servletRequest))
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
 	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 
@@ -240,7 +234,7 @@ public class DeviceGroups extends RestController {
 	List<IDeviceGroupElement> results = devices.addDeviceGroupElements(groupToken, elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    converted.add(helper.convert(elm, getAssetModuleManager()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -316,15 +310,22 @@ public class DeviceGroups extends RestController {
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getTenant(servletRequest))
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
 	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
-	List<IDeviceGroupElement> results = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		.removeDeviceGroupElements(groupToken, elements);
+	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(groupToken, elements);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+	    converted.add(helper.convert(elm, getAssetModuleManager()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IAssetModuleManager getAssetModuleManager() {
+	return null;
     }
 }

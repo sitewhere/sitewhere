@@ -25,6 +25,7 @@ import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -63,7 +64,7 @@ public class BatchCommandInvocationJob implements Job {
 		    .getTenantById(context.getScheduler().getSchedulerName());
 
 	    // Resolve hardware ids for devices matching criteria.
-	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, tenant);
+	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, getDeviceManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
@@ -79,5 +80,9 @@ public class BatchCommandInvocationJob implements Job {
 	} catch (SchedulerException e) {
 	    throw new JobExecutionException("Unable to get scheduler name.", e);
 	}
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
     }
 }

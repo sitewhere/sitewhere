@@ -38,7 +38,7 @@ public class DeviceMarshalHelper {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Tenant */
-    private ITenant tenant;
+    private IDeviceManagement deviceManagement;
 
     /** Indicates whether device spec asset information is to be included */
     private boolean includeAsset = true;
@@ -66,8 +66,8 @@ public class DeviceMarshalHelper {
     /** Helper for marshaling nested devices */
     private DeviceMarshalHelper nestedHelper;
 
-    public DeviceMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -90,7 +90,7 @@ public class DeviceMarshalHelper {
 	for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
 	    DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
 	    if (isIncludeNested()) {
-		IDevice device = getDeviceManagement(tenant).getDeviceByHardwareId(mapping.getHardwareId());
+		IDevice device = getDeviceManagement().getDeviceByHardwareId(mapping.getHardwareId());
 		cnvMapping.setDevice(getNestedHelper().convert(device, manager));
 	    }
 	    result.getDeviceElementMappings().add(cnvMapping);
@@ -98,7 +98,7 @@ public class DeviceMarshalHelper {
 
 	// Look up specification information.
 	if (source.getSpecificationToken() != null) {
-	    IDeviceSpecification spec = getDeviceManagement(tenant)
+	    IDeviceSpecification spec = getDeviceManagement()
 		    .getDeviceSpecificationByToken(source.getSpecificationToken());
 	    if (spec == null) {
 		throw new SiteWhereException("Device references non-existent specification.");
@@ -120,7 +120,7 @@ public class DeviceMarshalHelper {
 	if (source.getAssignmentToken() != null) {
 	    if (includeAssignment) {
 		try {
-		    IDeviceAssignment assignment = getDeviceManagement(tenant)
+		    IDeviceAssignment assignment = getDeviceManagement()
 			    .getDeviceAssignmentByToken(source.getAssignmentToken());
 		    if (assignment == null) {
 			throw new SiteWhereException("Device contains an invalid assignment reference.");
@@ -135,7 +135,7 @@ public class DeviceMarshalHelper {
 	}
 	if (source.getSiteToken() != null) {
 	    if (includeSite) {
-		ISite site = getDeviceManagement(tenant).getSiteByToken(source.getSiteToken());
+		ISite site = getDeviceManagement().getSiteByToken(source.getSiteToken());
 		if (site == null) {
 		    throw new SiteWhereException("Device contains an invalid site reference.");
 		}
@@ -165,7 +165,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceSpecificationMarshalHelper getSpecificationHelper() {
 	if (specificationHelper == null) {
-	    specificationHelper = new DeviceSpecificationMarshalHelper(tenant);
+	    specificationHelper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	    specificationHelper.setIncludeAsset(isIncludeAsset());
 	}
 	return specificationHelper;
@@ -178,7 +178,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
 	if (assignmentHelper == null) {
-	    assignmentHelper = new DeviceAssignmentMarshalHelper(tenant);
+	    assignmentHelper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	    assignmentHelper.setIncludeAsset(false);
 	    assignmentHelper.setIncludeDevice(false);
 	    assignmentHelper.setIncludeSite(false);
@@ -193,7 +193,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceMarshalHelper getNestedHelper() {
 	if (nestedHelper == null) {
-	    nestedHelper = new DeviceMarshalHelper(tenant);
+	    nestedHelper = new DeviceMarshalHelper(getDeviceManagement());
 	}
 	return nestedHelper;
     }
@@ -239,5 +239,13 @@ public class DeviceMarshalHelper {
 
     public void setIncludeNested(boolean includeNested) {
 	this.includeNested = includeNested;
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

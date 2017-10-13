@@ -72,7 +72,7 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
 	// Required for filters.
 	super.start(monitor);
 
-	this.invocationHelper = new DeviceCommandInvocationMarshalHelper(getTenant(), true);
+	this.invocationHelper = new DeviceCommandInvocationMarshalHelper(null, true);
 	this.measurementsTopic = getHazelcastConfiguration().getHazelcastInstance()
 		.getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
 	this.locationsTopic = getHazelcastConfiguration().getHazelcastInstance()

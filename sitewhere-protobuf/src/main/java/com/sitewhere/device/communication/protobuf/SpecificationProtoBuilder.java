@@ -12,10 +12,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Builds the Google Protocol Buffer '.proto' file for a specification.
@@ -34,11 +34,10 @@ public class SpecificationProtoBuilder {
      * @return
      * @throws SiteWhereException
      */
-    public static String getProtoForSpecification(IDeviceSpecification specification, ITenant tenant)
-	    throws SiteWhereException {
+    public static String getProtoForSpecification(IDeviceSpecification specification,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	StringBuffer buffer = new StringBuffer();
-	List<IDeviceCommand> commands = SiteWhere.getServer().getDeviceManagement(tenant)
-		.listDeviceCommands(specification.getToken(), false);
+	List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(specification.getToken(), false);
 	generateProto(specification, commands, buffer);
 	return buffer.toString();
     }

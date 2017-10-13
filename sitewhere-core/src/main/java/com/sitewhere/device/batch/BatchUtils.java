@@ -11,17 +11,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.group.DeviceGroupUtils;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Utility methods for batch operations.
@@ -37,8 +36,8 @@ public class BatchUtils {
      * @return
      * @throws SiteWhereException
      */
-    public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria, ITenant tenant)
-	    throws SiteWhereException {
+    public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	if (criteria.getSpecificationToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 	}
@@ -60,11 +59,12 @@ public class BatchUtils {
 
 	Collection<IDevice> matches;
 	if (hasGroup) {
-	    matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, tenant);
+	    matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, deviceManagement);
 	} else if (hasGroupsWithRole) {
-	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch, tenant);
+	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
+		    deviceManagement);
 	} else {
-	    matches = SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, deviceSearch).getResults();
+	    matches = deviceManagement.listDevices(false, deviceSearch).getResults();
 	}
 	List<String> hardwareIds = new ArrayList<String>();
 	for (IDevice match : matches) {

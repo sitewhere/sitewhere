@@ -23,12 +23,8 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.SiteWhere;
 
 /**
  * Base class for common REST controller functionality.
@@ -39,72 +35,6 @@ public class RestController {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /**
-     * Get a tenant based on the authentication token passed. Assume that the
-     * current user should be validated for access to the given tenant.
-     * 
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
-	return getTenant(request, true);
-    }
-
-    /**
-     * Get a tenant based on the authentication token passed.
-     * 
-     * @param request
-     * @param checkAuthUser
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenant getTenant(HttpServletRequest request, boolean checkAuthUser) throws SiteWhereException {
-	String token = getTenantAuthToken(request);
-	ITenant match = SiteWhere.getServer().getTenantByAuthToken(token);
-	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
-	}
-	ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
-	if (engine == null) {
-	    LOGGER.error("No tenant engine for tenant: " + match.getName());
-	    throw new TenantNotAvailableException();
-	}
-	if (engine.getEngineState().getLifecycleStatus() == LifecycleStatus.InitializationError) {
-	    LOGGER.error("Engine not initialized for tenant: " + match.getName());
-	    throw new TenantNotAvailableException();
-	}
-
-	if (checkAuthUser) {
-	    String username = SiteWhere.getCurrentlyLoggedInUser().getUsername();
-	    if (match.getAuthorizedUserIds().contains(username)) {
-		return match;
-	    }
-	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
-	} else {
-	    return match;
-	}
-    }
-
-    /**
-     * Get tenant authentication token from the servlet request.
-     * 
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    protected String getTenantAuthToken(HttpServletRequest request) throws SiteWhereException {
-	String token = request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
-	if (token == null) {
-	    token = request.getParameter(ISiteWhereWebConstants.REQUEST_TENANT_TOKEN);
-	    if (token == null) {
-		throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
-			HttpServletResponse.SC_UNAUTHORIZED);
-	    }
-	}
-	return token;
-    }
 
     /**
      * Send message back to called indicating successful add.

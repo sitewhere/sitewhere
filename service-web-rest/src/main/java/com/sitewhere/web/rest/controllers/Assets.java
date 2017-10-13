@@ -39,17 +39,19 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -87,8 +89,7 @@ public class Assets extends RestController {
     public AssetModule getAssetModule(
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return AssetModule
-		.copy(SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getModule(assetModuleId));
+	return AssetModule.copy(getAssetModuleManager().getModule(assetModuleId));
     }
 
     /**
@@ -109,8 +110,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    @ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	List<? extends IAsset> found = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
-		.search(assetModuleId, criteria);
+	List<? extends IAsset> found = getAssetModuleManager().search(assetModuleId, criteria);
 	SearchResults<? extends IAsset> results = new SearchResults(found);
 	return results;
     }
@@ -131,8 +131,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getAssetById(assetModuleId,
-		assetId);
+	return getAssetModuleManager().getAssetById(assetModuleId, assetId);
     }
 
     /**
@@ -164,8 +163,7 @@ public class Assets extends RestController {
 	    criteria.setStatus(decodedStatus);
 	    criteria.setSiteToken(siteToken);
 
-	    return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-		    .getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
+	    return getDeviceManagement().getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
 	} catch (IllegalArgumentException e) {
 	    throw new SiteWhereException("Invalid device assignment status: " + status);
 	}
@@ -187,8 +185,7 @@ public class Assets extends RestController {
 	try {
 	    AssetType type = (assetType == null) ? null : AssetType.valueOf(assetType);
 	    List<AssetModule> converted = new ArrayList<AssetModule>();
-	    List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
-		    .listModules();
+	    List<IAssetModule<?>> modules = getAssetModuleManager().listModules();
 	    for (IAssetModule<?> module : modules) {
 		if ((type == null) || (type == module.getAssetType())) {
 		    converted.add(AssetModule.copy(module));
@@ -213,7 +210,7 @@ public class Assets extends RestController {
     public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Refreshing asset modules"));
-	SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules(monitor);
+	getAssetModuleManager().refreshModules(monitor);
     }
 
     /**
@@ -229,7 +226,7 @@ public class Assets extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createAssetCategory(request);
+	return getAssetManagement().createAssetCategory(request);
     }
 
     /**
@@ -248,8 +245,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @RequestBody AssetCategoryCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateAssetCategory(categoryId,
-		request);
+	return getAssetManagement().updateAssetCategory(categoryId, request);
     }
 
     /**
@@ -266,7 +262,7 @@ public class Assets extends RestController {
     public IAssetCategory getAssetCategoryById(
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAssetCategory(categoryId);
+	return getAssetManagement().getAssetCategory(categoryId);
     }
 
     /**
@@ -283,7 +279,7 @@ public class Assets extends RestController {
     public IAssetCategory deleteAssetCategory(
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAssetCategory(categoryId);
+	return getAssetManagement().deleteAssetCategory(categoryId);
     }
 
     /**
@@ -303,7 +299,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssetCategories(criteria);
+	return getAssetManagement().listAssetCategories(criteria);
     }
 
     /**
@@ -323,8 +319,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createPersonAsset(categoryId,
-		request);
+	return getAssetManagement().createPersonAsset(categoryId, request);
     }
 
     /**
@@ -345,8 +340,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    @RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updatePersonAsset(categoryId,
-		assetId, request);
+	return getAssetManagement().updatePersonAsset(categoryId, assetId, request);
     }
 
     /**
@@ -366,8 +360,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createHardwareAsset(categoryId,
-		request);
+	return getAssetManagement().createHardwareAsset(categoryId, request);
     }
 
     /**
@@ -388,8 +381,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    @RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateHardwareAsset(categoryId,
-		assetId, request);
+	return getAssetManagement().updateHardwareAsset(categoryId, assetId, request);
     }
 
     /**
@@ -409,8 +401,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createLocationAsset(categoryId,
-		request);
+	return getAssetManagement().createLocationAsset(categoryId, request);
     }
 
     /**
@@ -431,8 +422,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    @RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateLocationAsset(categoryId,
-		assetId, request);
+	return getAssetManagement().updateLocationAsset(categoryId, assetId, request);
     }
 
     /**
@@ -451,7 +441,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAsset(categoryId, assetId);
+	return getAssetManagement().getAsset(categoryId, assetId);
     }
 
     /**
@@ -470,7 +460,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAsset(categoryId, assetId);
+	return getAssetManagement().deleteAsset(categoryId, assetId);
     }
 
     /**
@@ -492,6 +482,18 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssets(categoryId, criteria);
+	return getAssetManagement().listAssets(categoryId, criteria);
+    }
+
+    private IAssetModuleManager getAssetModuleManager() {
+	return null;
+    }
+
+    private IAssetManagement getAssetManagement() {
+	return null;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return null;
     }
 }

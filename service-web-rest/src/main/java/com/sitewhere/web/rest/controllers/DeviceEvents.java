@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.SiteWhere;
 import com.sitewhere.web.rest.RestController;
 
 import io.swagger.annotations.Api;
@@ -58,7 +58,7 @@ public class DeviceEvents extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(eventId);
+	return getDeviceEventManagement().getDeviceEventById(eventId);
     }
 
     /**
@@ -77,8 +77,7 @@ public class DeviceEvents extends RestController {
     public IDeviceEvent updateEvent(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    @RequestBody DeviceEventCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).updateDeviceEvent(eventId,
-		request);
+	return getDeviceEventManagement().updateDeviceEvent(eventId, request);
     }
 
     /**
@@ -94,7 +93,10 @@ public class DeviceEvents extends RestController {
     public IDeviceEvent getEventByAlternateId(
 	    @ApiParam(value = "Alternate id", required = true) @PathVariable String alternateId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		.getDeviceEventByAlternateId(alternateId);
+	return getDeviceEventManagement().getDeviceEventByAlternateId(alternateId);
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return null;
     }
 }
