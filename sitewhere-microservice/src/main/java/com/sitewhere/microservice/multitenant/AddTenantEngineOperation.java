@@ -21,7 +21,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class AddTenantEngineOperation implements Callable<IMicroserviceTenantEngine> {
+public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
+	implements Callable<IMicroserviceTenantEngine> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -30,12 +31,12 @@ public class AddTenantEngineOperation implements Callable<IMicroserviceTenantEng
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 5 * 1000;
 
     /** Parent microservice */
-    private MultitenantMicroservice microservice;
+    private MultitenantMicroservice<T> microservice;
 
     /** Tenant information */
     private ITenant tenant;
 
-    public AddTenantEngineOperation(MultitenantMicroservice microservice, ITenant tenant) {
+    public AddTenantEngineOperation(MultitenantMicroservice<T> microservice, ITenant tenant) {
 	this.microservice = microservice;
 	this.tenant = tenant;
     }
@@ -49,7 +50,7 @@ public class AddTenantEngineOperation implements Callable<IMicroserviceTenantEng
     public IMicroserviceTenantEngine call() throws Exception {
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
-	    IMicroserviceTenantEngine created = getMicroservice().createTenantEngine(getTenant());
+	    T created = getMicroservice().createTenantEngine(getTenant());
 	    getMicroservice().getTenantEnginesByTenantId().put(getTenant().getId(), created);
 
 	    // Configuration files must be present before initialization.
@@ -97,11 +98,11 @@ public class AddTenantEngineOperation implements Callable<IMicroserviceTenantEng
 	}
     }
 
-    public MultitenantMicroservice getMicroservice() {
+    public MultitenantMicroservice<T> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(MultitenantMicroservice microservice) {
+    public void setMicroservice(MultitenantMicroservice<T> microservice) {
 	this.microservice = microservice;
     }
 

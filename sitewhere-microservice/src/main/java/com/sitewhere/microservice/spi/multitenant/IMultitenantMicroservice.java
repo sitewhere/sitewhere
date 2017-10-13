@@ -9,7 +9,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public interface IMultitenantMicroservice extends IConfigurableMicroservice {
+public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> extends IConfigurableMicroservice {
 
     /**
      * Gets unique identifier for module within the tenant configuration. This
@@ -29,7 +29,7 @@ public interface IMultitenantMicroservice extends IConfigurableMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public IMicroserviceTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException;
+    public T createTenantEngine(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get tenant engine corresponding to the given id.
@@ -38,5 +38,5 @@ public interface IMultitenantMicroservice extends IConfigurableMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public IMicroserviceTenantEngine getTenantEngineByTenantId(String id) throws SiteWhereException;
+    public T getTenantEngineByTenantId(String id) throws SiteWhereException;
 }

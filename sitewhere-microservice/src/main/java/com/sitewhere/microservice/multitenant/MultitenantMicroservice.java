@@ -38,7 +38,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public abstract class MultitenantMicroservice extends ConfigurableMicroservice implements IMultitenantMicroservice {
+public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngine> extends ConfigurableMicroservice
+	implements IMultitenantMicroservice<T> {
 
     /** Suffix appended to module identifier to locate module configuration */
     public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
@@ -53,8 +54,7 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     private ITenantManagementApiChannel tenantManagementApiChannel;
 
     /** Map of tenant engines indexed by tenant id */
-    private ConcurrentMap<String, IMicroserviceTenantEngine> tenantEnginesByTenantId = new MapMaker()
-	    .concurrencyLevel(4).makeMap();
+    private ConcurrentMap<String, T> tenantEnginesByTenantId = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenants waiting for an engine to be created */
     private ConcurrentMap<String, ITenant> pendingEnginesByTenantId = new MapMaker().concurrencyLevel(4).makeMap();
@@ -184,7 +184,7 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
      * getTenantEngineByTenantId(java.lang.String)
      */
     @Override
-    public IMicroserviceTenantEngine getTenantEngineByTenantId(String id) throws SiteWhereException {
+    public T getTenantEngineByTenantId(String id) throws SiteWhereException {
 	return getTenantEnginesByTenantId().get(id);
     }
 
@@ -417,11 +417,11 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
-    public ConcurrentMap<String, IMicroserviceTenantEngine> getTenantEnginesByTenantId() {
+    public ConcurrentMap<String, T> getTenantEnginesByTenantId() {
 	return tenantEnginesByTenantId;
     }
 
-    public void setTenantEnginesByTenantId(ConcurrentMap<String, IMicroserviceTenantEngine> tenantEnginesByTenantId) {
+    public void setTenantEnginesByTenantId(ConcurrentMap<String, T> tenantEnginesByTenantId) {
 	this.tenantEnginesByTenantId = tenantEnginesByTenantId;
     }
 
@@ -463,7 +463,7 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 		    ITenant tenant = getEnginesToCreate().take();
 		    if (getTenantEngineByTenantId(tenant.getId()) == null) {
 			getTenantOperations()
-				.submit(new AddTenantEngineOperation(MultitenantMicroservice.this, tenant));
+				.submit(new AddTenantEngineOperation<T>(MultitenantMicroservice.this, tenant));
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception processing tenant engine backlog.", e);

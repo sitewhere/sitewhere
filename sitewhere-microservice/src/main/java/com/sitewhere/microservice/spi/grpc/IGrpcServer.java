@@ -11,7 +11,7 @@ import io.grpc.BindableService;
  * 
  * @author Derek
  */
-public interface IManagedGrpcServer extends ILifecycleComponent {
+public interface IGrpcServer extends ILifecycleComponent {
 
     /**
      * Get the parent {@link IMicroservice}.

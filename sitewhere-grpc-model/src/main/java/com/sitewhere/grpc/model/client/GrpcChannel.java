@@ -19,22 +19,22 @@ import io.grpc.ManagedChannelBuilder;
 public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IGrpcChannel<B, A> {
 
     /** Remote host */
-    private String hostname;
+    protected String hostname;
 
     /** Remote port */
-    private int port;
+    protected int port;
 
     /** GRPC managed channe */
-    private ManagedChannel channel;
+    protected ManagedChannel channel;
 
     /** Blocking stub */
-    private B blockingStub;
+    protected B blockingStub;
 
     /** Asynchronous stub */
-    private A asyncStub;
+    protected A asyncStub;
 
     /** Client interceptor for adding JWT from Spring Security context */
-    private JwtClientInterceptor jwt = new JwtClientInterceptor();
+    protected JwtClientInterceptor jwt = new JwtClientInterceptor();
 
     public GrpcChannel(String hostname, int port) {
 	this.hostname = hostname;

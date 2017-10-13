@@ -7,5 +7,5 @@ import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface IDeviceManagementMicroservice extends IMultitenantMicroservice {
+public interface IDeviceManagementMicroservice extends IMultitenantMicroservice<IDeviceManagementTenantEngine> {
 }

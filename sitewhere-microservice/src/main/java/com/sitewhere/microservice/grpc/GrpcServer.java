@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.grpc.IManagedGrpcServer;
+import com.sitewhere.microservice.spi.grpc.IGrpcServer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -20,31 +20,31 @@ import io.grpc.ServerBuilder;
  * 
  * @author Derek
  */
-public class ManagedGrpcServer extends TenantLifecycleComponent implements IManagedGrpcServer {
+public class GrpcServer extends TenantLifecycleComponent implements IGrpcServer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    protected static Logger LOGGER = LogManager.getLogger();
 
     /** Port for GRPC server */
-    private int port;
+    protected int port;
 
     /** Wrapped GRPC server */
-    private Server server;
+    protected Server server;
 
     /** Parent microservice */
-    private IMicroservice microservice;
+    protected IMicroservice microservice;
 
     /** Service implementation */
-    private BindableService serviceImplementation;
+    protected BindableService serviceImplementation;
 
     /** Interceptor for JWT authentication */
-    private JwtServerInterceptor jwt;
+    protected JwtServerInterceptor jwt;
 
-    public ManagedGrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
+    public GrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
 	this(microservice, serviceImplementation, microservice.getInstanceSettings().getGrpcPort());
     }
 
-    public ManagedGrpcServer(IMicroservice microservice, BindableService serviceImplementation, int port) {
+    public GrpcServer(IMicroservice microservice, BindableService serviceImplementation, int port) {
 	this.microservice = microservice;
 	this.serviceImplementation = serviceImplementation;
 	this.port = port;

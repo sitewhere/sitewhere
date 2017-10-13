@@ -26,12 +26,12 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Parent microservice */
-    private IMultitenantMicroservice microservice;
+    private IMultitenantMicroservice<?> microservice;
 
     /** Module context information */
     private ApplicationContext moduleContext;
 
-    public MicroserviceTenantEngine(IMultitenantMicroservice microservice, ITenant tenant) {
+    public MicroserviceTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	this.microservice = microservice;
 	setTenant(tenant);
     }
@@ -177,11 +177,11 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      * getMicroservice()
      */
     @Override
-    public IMultitenantMicroservice getMicroservice() {
+    public IMultitenantMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IMultitenantMicroservice microservice) {
+    public void setMicroservice(IMultitenantMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

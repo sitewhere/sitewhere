@@ -20,7 +20,7 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
      * 
      * @return
      */
-    public IMultitenantMicroservice getMicroservice();
+    public IMultitenantMicroservice<?> getMicroservice();
 
     /**
      * Get Zk configuration path for tenant.

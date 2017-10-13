@@ -13,7 +13,8 @@ import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementStub;
  * 
  * @author Derek
  */
-public class DeviceManagementGrpcChannel extends GrpcChannel<DeviceManagementBlockingStub, DeviceManagementStub> {
+public class DeviceManagementGrpcChannel
+	extends MultitenantGrpcChannel<DeviceManagementBlockingStub, DeviceManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

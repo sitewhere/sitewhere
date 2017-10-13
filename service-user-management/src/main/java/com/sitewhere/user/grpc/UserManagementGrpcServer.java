@@ -1,6 +1,6 @@
 package com.sitewhere.user.grpc;
 
-import com.sitewhere.microservice.grpc.ManagedGrpcServer;
+import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
@@ -10,7 +10,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  * 
  * @author Derek
  */
-public class UserManagementGrpcServer extends ManagedGrpcServer implements IUserManagementGrpcServer {
+public class UserManagementGrpcServer extends GrpcServer implements IUserManagementGrpcServer {
 
     public UserManagementGrpcServer(IMicroservice microservice, IUserManagement userManagement) {
 	super(microservice, new UserManagementImpl(userManagement));

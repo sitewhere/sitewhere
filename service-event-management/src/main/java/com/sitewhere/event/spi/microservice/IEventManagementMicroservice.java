@@ -7,5 +7,5 @@ import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface IEventManagementMicroservice extends IMultitenantMicroservice {
+public interface IEventManagementMicroservice extends IMultitenantMicroservice<IEventManagementTenantEngine> {
 }

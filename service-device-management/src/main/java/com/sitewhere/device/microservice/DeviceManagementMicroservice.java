@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
+import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -14,7 +14,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DeviceManagementMicroservice extends MultitenantMicroservice implements IDeviceManagementMicroservice {
+public class DeviceManagementMicroservice extends MultitenantMicroservice<IDeviceManagementTenantEngine>
+	implements IDeviceManagementMicroservice {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -53,7 +54,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice implem
      * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public IMicroserviceTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
+    public IDeviceManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new DeviceManagementTenantEngine(this, tenant);
     }
 

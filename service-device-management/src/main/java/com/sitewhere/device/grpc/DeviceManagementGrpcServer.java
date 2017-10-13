@@ -1,18 +1,17 @@
 package com.sitewhere.device.grpc;
 
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
-import com.sitewhere.microservice.grpc.ManagedGrpcServer;
-import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
+import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 
 /**
  * Hosts a GRPC server that handles device management requests.
  * 
  * @author Derek
  */
-public class DeviceManagementGrpcServer extends ManagedGrpcServer implements IDeviceManagementGrpcServer {
+public class DeviceManagementGrpcServer extends MultitenantGrpcServer implements IDeviceManagementGrpcServer {
 
-    public DeviceManagementGrpcServer(IMicroservice microservice, IDeviceManagement deviceManagement) {
-	super(microservice, new DeviceManagementImpl(deviceManagement));
+    public DeviceManagementGrpcServer(IDeviceManagementMicroservice microservice) {
+	super(microservice, new DeviceManagementRouter(microservice));
     }
 }

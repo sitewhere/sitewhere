@@ -1,7 +1,8 @@
 package com.sitewhere.device.microservice;
 
-import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
-import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
+import com.sitewhere.device.grpc.DeviceManagementImpl;
+import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
+import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
@@ -17,15 +18,16 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DeviceManagementTenantEngine extends MicroserviceTenantEngine {
-
-    /** Responds to device management GRPC requests */
-    private IDeviceManagementGrpcServer deviceManagementGrpcServer;
+public class DeviceManagementTenantEngine extends MicroserviceTenantEngine implements IDeviceManagementTenantEngine {
 
     /** Device management persistence API */
     private IDeviceManagement deviceManagement;
 
-    public DeviceManagementTenantEngine(IMultitenantMicroservice microservice, ITenant tenant) {
+    /** Responds to device management GRPC requests */
+    private DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl;
+
+    public DeviceManagementTenantEngine(IMultitenantMicroservice<IDeviceManagementTenantEngine> microservice,
+	    ITenant tenant) {
 	super(microservice, tenant);
     }
 
@@ -41,7 +43,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine {
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.deviceManagement = (IDeviceManagement) getModuleContext()
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(getMicroservice(), getDeviceManagement());
+	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
     }
 
     /*
@@ -66,19 +68,19 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine {
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
-    public IDeviceManagementGrpcServer getDeviceManagementGrpcServer() {
-	return deviceManagementGrpcServer;
-    }
-
-    public void setDeviceManagementGrpcServer(IDeviceManagementGrpcServer deviceManagementGrpcServer) {
-	this.deviceManagementGrpcServer = deviceManagementGrpcServer;
-    }
-
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
     }
 
     public void setDeviceManagement(IDeviceManagement deviceManagement) {
 	this.deviceManagement = deviceManagement;
+    }
+
+    public DeviceManagementGrpc.DeviceManagementImplBase getDeviceManagementImpl() {
+	return deviceManagementImpl;
+    }
+
+    public void setDeviceManagementImpl(DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl) {
+	this.deviceManagementImpl = deviceManagementImpl;
     }
 }
