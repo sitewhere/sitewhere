@@ -36,7 +36,7 @@ public class InstanceSettings implements IInstanceSettings {
     private String fileSystemStorageRoot;
 
     /** GRPC port info for microservices */
-    @Value("${sitewhere.grpc.port:2181}")
+    @Value("${sitewhere.grpc.port:9000}")
     private int grpcPort;
 
     /*
