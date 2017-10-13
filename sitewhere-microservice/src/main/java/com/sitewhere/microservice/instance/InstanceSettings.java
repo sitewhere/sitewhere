@@ -35,6 +35,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.filesystem.storage.root:/var/sitewhere}")
     private String fileSystemStorageRoot;
 
+    /** GRPC port info for microservices */
+    @Value("${sitewhere.grpc.port:2181}")
+    private int grpcPort;
+
     /*
      * (non-Javadoc)
      * 
@@ -123,5 +127,20 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setFileSystemStorageRoot(String fileSystemStorageRoot) {
 	this.fileSystemStorageRoot = fileSystemStorageRoot;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getGrpcPort()
+     */
+    @Override
+    public int getGrpcPort() {
+	return grpcPort;
+    }
+
+    public void setGrpcPort(int grpcPort) {
+	this.grpcPort = grpcPort;
     }
 }

@@ -42,12 +42,12 @@ public class JwtServerInterceptor implements ServerInterceptor {
     private IMicroservice microservice;
 
     /** Service implementation */
-    private BindableService implementation;
+    private Class<? extends BindableService> implementation;
 
     /** Map of implementation methods indexed by full name from descriptor */
     private Map<String, Method> methodsByFullName = new HashMap<String, Method>();
 
-    public JwtServerInterceptor(IMicroservice microservice, BindableService implementation) {
+    public JwtServerInterceptor(IMicroservice microservice, Class<? extends BindableService> implementation) {
 	this.microservice = microservice;
 	this.implementation = implementation;
     }
@@ -150,7 +150,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
 
 	    // Lowercase first letter.
 	    String realName = camelName.substring(0, 1).toLowerCase() + camelName.substring(1);
-	    Method[] methods = getImplementation().getClass().getDeclaredMethods();
+	    Method[] methods = getImplementation().getDeclaredMethods();
 	    for (Method method : methods) {
 		if (method.getName().equals(realName)) {
 		    getMethodsByFullName().put(fullName, method);
@@ -158,7 +158,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
 		}
 	    }
 	    throw new SiteWhereException(
-		    "Unable to locate method '" + realName + "' on " + getImplementation().getClass().getName() + ".");
+		    "Unable to locate method '" + realName + "' on " + getImplementation().getName() + ".");
 	} else {
 	    return match;
 	}
@@ -172,11 +172,11 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	this.microservice = microservice;
     }
 
-    public BindableService getImplementation() {
+    public Class<? extends BindableService> getImplementation() {
 	return implementation;
     }
 
-    public void setImplementation(BindableService implementation) {
+    public void setImplementation(Class<? extends BindableService> implementation) {
 	this.implementation = implementation;
     }
 

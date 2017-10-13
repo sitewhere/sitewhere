@@ -46,10 +46,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
 
-    public WebRestMicroservice() {
-	createGrpcComponents();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -118,6 +114,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create GRPC components.
+	createGrpcComponents();
+
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -137,7 +136,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void createGrpcComponents() {
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
-		MicroserviceEnvironment.DEFAULT_GRPC_PORT);
+		getInstanceSettings().getGrpcPort());
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
     }
 

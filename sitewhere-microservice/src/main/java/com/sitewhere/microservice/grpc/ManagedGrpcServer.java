@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.grpc.IManagedGrpcServer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -42,27 +41,14 @@ public class ManagedGrpcServer extends TenantLifecycleComponent implements IMana
     private JwtServerInterceptor jwt;
 
     public ManagedGrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
-	this(microservice, serviceImplementation, getDefaultPortOrOverride());
+	this(microservice, serviceImplementation, microservice.getInstanceSettings().getGrpcPort());
     }
 
     public ManagedGrpcServer(IMicroservice microservice, BindableService serviceImplementation, int port) {
 	this.microservice = microservice;
 	this.serviceImplementation = serviceImplementation;
 	this.port = port;
-	this.jwt = new JwtServerInterceptor(microservice, serviceImplementation);
-    }
-
-    /**
-     * Check environment variable for SiteWhere instance id.
-     */
-    protected static int getDefaultPortOrOverride() {
-	String envPortOverride = System.getenv().get(MicroserviceEnvironment.ENV_GRPC_PORT_OVERRIDE);
-	if (envPortOverride != null) {
-	    LOGGER.info("GRPC port overridden using " + MicroserviceEnvironment.ENV_GRPC_PORT_OVERRIDE + ": "
-		    + envPortOverride);
-	    return Integer.parseInt(envPortOverride);
-	}
-	return MicroserviceEnvironment.DEFAULT_GRPC_PORT;
+	this.jwt = new JwtServerInterceptor(microservice, serviceImplementation.getClass());
     }
 
     /*

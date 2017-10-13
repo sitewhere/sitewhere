@@ -71,10 +71,6 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
 
-    public InstanceManagementMicroservice() {
-	createGrpcComponents();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -85,16 +81,31 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	return NAME;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.Microservice#initialize(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Create GRPC components.
+	createGrpcComponents();
+    }
+
     /**
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
-		MicroserviceEnvironment.DEFAULT_GRPC_PORT);
+		getInstanceSettings().getGrpcPort());
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
 
 	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, MicroserviceEnvironment.DEFAULT_GRPC_PORT);
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 

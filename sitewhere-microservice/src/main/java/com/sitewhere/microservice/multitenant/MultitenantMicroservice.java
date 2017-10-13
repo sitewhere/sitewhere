@@ -65,10 +65,6 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     /** Executor for tenant operations */
     private ExecutorService tenantOperations;
 
-    public MultitenantMicroservice() {
-	createGrpcComponents();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -78,6 +74,9 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+
+	// Create GRPC components.
+	createGrpcComponents();
 
 	// Handles threading for tenant operations.
 	this.tenantOperations = Executors.newFixedThreadPool(MAX_CONCURRENT_TENANT_OPERATIONS,
@@ -99,6 +98,15 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
 
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
+    }
+
+    /**
+     * Create components that interact via GRPC.
+     */
+    protected void createGrpcComponents() {
+	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 
     /*
@@ -391,15 +399,6 @@ public abstract class MultitenantMicroservice extends ConfigurableMicroservice i
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
-    }
-
-    /**
-     * Create components that interact via GRPC.
-     */
-    protected void createGrpcComponents() {
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, MicroserviceEnvironment.DEFAULT_GRPC_PORT);
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 
     public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {

@@ -48,4 +48,11 @@ public interface IInstanceSettings {
      * @return
      */
     public String getFileSystemStorageRoot();
+
+    /**
+     * Get port to which GRPC server is bound.
+     * 
+     * @return
+     */
+    public int getGrpcPort();
 }
