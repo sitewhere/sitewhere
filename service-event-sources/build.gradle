@@ -31,3 +31,9 @@ dependencies {
 test {
     exclude '**/*'
 }
+
+
+license {
+	exclude "**/azure/**"
+}
+
