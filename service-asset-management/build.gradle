@@ -13,6 +13,10 @@ dependencies {
     compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-extras', version:'3.4.0'
 }
 
+license {
+	exclude "**/modules/wso2/**"
+}
+
 apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.asset.AssetManagementApplication'

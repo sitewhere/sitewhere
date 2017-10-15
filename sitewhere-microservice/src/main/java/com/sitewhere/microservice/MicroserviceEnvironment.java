@@ -12,4 +12,7 @@ public class MicroserviceEnvironment {
 
     /** Default Docker hostname for tenant management microservice */
     public static final String HOST_TENANT_MANAGEMENT = "tenant-management";
+
+    /** Default Docker hostname for device management microservice */
+    public static final String HOST_DEVICE_MANAGEMENT = "device-management";
 }

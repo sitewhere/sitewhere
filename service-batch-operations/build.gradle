@@ -7,6 +7,9 @@ dependencies {
 	compile project(':sitewhere-microservice')
 }
 
+license {
+}
+
 apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.batch.BatchOperationsApplication'

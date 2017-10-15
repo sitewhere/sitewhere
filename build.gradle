@@ -12,6 +12,7 @@ buildscript {
 		classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
 		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
 		classpath 'com.bmuschko:gradle-docker-plugin:3.0.3'
+		classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
 	}
 }
 
@@ -48,6 +49,12 @@ allprojects {
 
 subprojects {
 	apply plugin: 'eclipse'
+	
+	apply plugin: "com.github.hierynomus.license"
+	license {
+		header rootProject.file('HEADER')
+    	include "**/*.java"
+	}
 	
     // Use Spring dependency management.
  	apply plugin: 'io.spring.dependency-management'

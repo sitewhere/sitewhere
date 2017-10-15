@@ -17,13 +17,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.microservice.security.SitewhereGrantedAuthority;
 import com.sitewhere.microservice.security.TokenManagement;
+import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.user.IGrantedAuthority;
 
 /**
- * Filter that pulls JWT from authentication header and pushes it into Spring
- * {@link SecurityContextHolder}.
+ * Filter that pulls JWT and tenant token from authentication header and pushes
+ * it into Spring {@link SecurityContextHolder}.
  * 
  * @author Derek
  */
@@ -61,19 +63,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    throws IOException, ServletException {
 
 	String jwt = getJwtFromHeader(request);
+	String tenant = getTenantTokenFromHeader(request);
 	if (jwt != null) {
 	    // Get username from token and load user.
 	    String username = getTokenUtils().getUsernameFromToken(jwt);
-	    LOGGER.debug("Decoded username: " + username);
+	    LOGGER.debug("JWT decoded for username: " + username);
 	    List<IGrantedAuthority> auths = getTokenUtils().getGrantedAuthoritiesFromToken(jwt);
 	    List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
 	    for (IGrantedAuthority auth : auths) {
 		springAuths.add(new SitewhereGrantedAuthority(auth));
 	    }
 
-	    // Create authentication
+	    // Create authentication object based on JWT and tenant token.
 	    JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
 	    Authentication authenticated = getAuthenticationManager().authenticate(token);
+	    if (authenticated instanceof ITenantAwareAuthentication) {
+		((ITenantAwareAuthentication) authenticated).setTenantToken(tenant);
+		LOGGER.info("Added tenant token to authentication: " + tenant);
+	    }
 	    SecurityContextHolder.getContext().setAuthentication(authenticated);
 	    LOGGER.debug("Added authentication to context.");
 	    chain.doFilter(request, response);
@@ -96,6 +103,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    return authHeader.substring(7);
 	}
 	return null;
+    }
+
+    /**
+     * Get tenant token from request header.
+     * 
+     * @param request
+     * @return
+     */
+    protected String getTenantTokenFromHeader(HttpServletRequest request) {
+	return request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
     }
 
     public TokenManagement getTokenUtils() {

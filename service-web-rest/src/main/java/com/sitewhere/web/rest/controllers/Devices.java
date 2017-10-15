@@ -513,7 +513,7 @@ public class Devices extends RestController {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {

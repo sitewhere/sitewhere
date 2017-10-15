@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -25,6 +26,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.user.SiteWhereAuthority;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Base class for common REST controller functionality.
@@ -36,18 +38,16 @@ public class RestController {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    @Autowired
+    private IWebRestMicroservice microservice;
+
     /**
-     * Send message back to called indicating successful add.
+     * Get handle to microservice.
      * 
-     * @param response
+     * @return
      */
-    protected void handleSuccessfulAdd(HttpServletResponse response) {
-	response.setStatus(HttpServletResponse.SC_CREATED);
-	try {
-	    response.flushBuffer();
-	} catch (IOException e) {
-	    // Ignore failed flush.
-	}
+    public IWebRestMicroservice getMicroservice() {
+	return microservice;
     }
 
     /**

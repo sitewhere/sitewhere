@@ -6,9 +6,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
+import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
@@ -45,6 +48,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
+
+    /** Device management GRPC channel */
+    private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
+
+    /** Device management API channel */
+    private IDeviceManagementApiChannel deviceManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -127,6 +136,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(),
 		"User management GRPC channel", "Unable to initialize user management GRPC channel", true));
 
+	// Initialize device management GRPC channel.
+	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
+		"Device management GRPC channel", "Unable to initialize device management GRPC channel", true));
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -135,9 +148,15 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
+	// User management.
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
 		getInstanceSettings().getGrpcPort());
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
+
+	// Device management.
+	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(
+		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
     }
 
     /*
@@ -159,6 +178,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
 		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
 
+	// Start device mangement GRPC channel.
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
+		"Device management GRPC channel", "Unable to start device management GRPC channel.", true));
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -179,26 +202,15 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getUserManagementGrpcChannel(), "User management GRPC channel"));
 
+	// Stop device mangement GRPC channel.
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
+		"Device management GRPC channel"));
+
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getUserManagementGrpcChannel()
-     */
-    @Override
-    public UserManagementGrpcChannel getUserManagementGrpcChannel() {
-	return userManagementGrpcChannel;
-    }
-
-    public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
-	this.userManagementGrpcChannel = userManagementGrpcChannel;
     }
 
     /*
@@ -219,6 +231,21 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getDeviceManagementApiChannel()
+     */
+    @Override
+    public IDeviceManagementApiChannel getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
+    }
+
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
@@ -228,5 +255,21 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     protected ApplicationContext getWebRestApplicationContext() {
 	return getGlobalContexts().get(WEB_REST_CONFIGURATION);
+    }
+
+    public UserManagementGrpcChannel getUserManagementGrpcChannel() {
+	return userManagementGrpcChannel;
+    }
+
+    public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
+	this.userManagementGrpcChannel = userManagementGrpcChannel;
+    }
+
+    public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {
+	return deviceManagementGrpcChannel;
+    }
+
+    public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
+	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
     }
 }
