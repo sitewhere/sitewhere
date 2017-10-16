@@ -13,3 +13,7 @@ dependencies {
 test {
     exclude '**/*'
 }
+
+license {
+	exclude "**/protobuf/proto/**"
+}
