@@ -41,7 +41,7 @@ service AssetManagement {
 	rpc UpdateHardwareAsset (GUpdateHardwareAssetRequest) returns (GUpdateHardwareAssetResponse) {}
 
 	// Create a new person asset.
-	rpc CreatePersonAsset (GCreatePersonAssetRequest) returns (GCreateAssetCategoryResponse) {}
+	rpc CreatePersonAsset (GCreatePersonAssetRequest) returns (GCreatePersonAssetResponse) {}
 
 	// Update an existing person asset.
 	rpc UpdatePersonAsset (GUpdatePersonAssetRequest) returns (GUpdatePersonAssetResponse) {}
@@ -215,7 +215,8 @@ message GDeleteAssetResponse {
 
 // Request for listing assets by critieria.
 message GListAssetsRequest {
-	com.sitewhere.grpc.model.GAssetSearchCriteria criteria = 1; 
+	string categoryId = 1;
+	com.sitewhere.grpc.model.GAssetSearchCriteria criteria = 2; 
 }
 
 // Response for listing assets by critieria.

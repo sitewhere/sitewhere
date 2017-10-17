@@ -103,7 +103,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant management GRPC channel */
+    /** Device event management GRPC channel */
     private DeviceEventManagementGrpcChannel grpcChannel;
 
     public DeviceEventManagementApiChannel(DeviceEventManagementGrpcChannel grpcChannel) {
