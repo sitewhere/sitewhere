@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "AssetModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// ########################
+// ### ASSET CATEGORIES ###
+// ########################
+
+// Asset category create request.
+message GAssetCategoryCreateRequest {
+	string id = 1;
+	string name = 2;
+	GAssetType assetType = 3;
+}
+
+// Criteria for asset category search.
+message GAssetCategorySearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for asset category search.
+message GAssetCategorySearchResults {
+	int64 count = 1;
+	repeated GAssetCategory categories = 2;
+}
+
+// Asset category.
+message GAssetCategory {
+	string id = 1;
+	string name = 2;
+	GAssetType assetType = 3;
+}
+
+// ##############
+// ### ASSETS ###
+// ##############
+
+// Common asset creation fields.
+message GAssetCreateRequest {
+	string id = 1;
+	string name = 2;
+	string imageUrl = 3;
+	map<string, string> properties = 4;
+}
+
+// Hardware asset create request.
+message GHardwareAssetCreateRequest {
+	string sku = 1;
+	string description = 2;
+	GAssetCreateRequest asset = 3;
+}
+
+// Hardware asset create request.
+message GPersonAssetCreateRequest {
+	string userName = 1;
+	string emailAddress = 2;
+	repeated string roles = 3;
+	GAssetCreateRequest asset = 4;
+}
+
+// Location asset create request.
+message GLocationAssetCreateRequest {
+	GOptionalDouble latitude = 1;
+	GOptionalDouble longitude = 2;
+	GOptionalDouble elevation = 3;
+	GAssetCreateRequest asset = 4;
+}
+
+// Common asset fields.
+message GAsset {
+	string id = 1;
+	string name = 2;
+	GAssetType assetType = 3;
+	string assetCategoryId = 4;
+	string imageUrl = 5;
+	map<string, string> properties = 6;
+}
+
+// Hardware asset.
+message GHardwareAsset {
+	string sku = 1;
+	string description = 2;
+	GAsset asset = 3;
+}
+
+// Person asset.
+message GPersonAsset {
+	string userName = 1;
+	string emailAddress = 2;
+	repeated string roles = 3;
+	GAsset asset = 4;
+}
+
+// Location asset.
+message GLocationAsset {
+	GOptionalDouble latitude = 1;
+	GOptionalDouble longitude = 2;
+	GOptionalDouble elevation = 3;
+	GAsset asset = 4;
+}
+
+// Criteria for searching assets.
+message GAssetSearchCriteria {
+	string categoryId = 1;
+	GPaging paging = 2;
+}
+
+// Results for asset search.
+message GAssetSearchResults {
+	int64 count = 1;
+	repeated GAnyAsset assets = 2;
+}
+
+// Message that can contain any type of asset.
+message GAnyAsset {
+	oneof asset {
+		GHardwareAsset hardware = 1;
+		GPersonAsset person = 2;
+		GLocationAsset location = 3;
+	}
+}
