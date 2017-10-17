@@ -8,15 +8,15 @@
 package com.sitewhere.microservice.spi.spring;
 
 /**
- * Spring bean names for asset management configuration components.
+ * Spring bean names for event management configuration components.
  * 
  * @author Derek
  */
-public class AssetManagementBeans {
+public class EventManagementBeans {
 
-    /** Bean id for device mangement MongoDB client */
+    /** Bean id for event mangement MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
-    /** Bean id for asset management in server configuration */
-    public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
+    /** Bean id for event management in server configuration */
+    public static final String BEAN_EVENT_MANAGEMENT = "eventManagement";
 }
