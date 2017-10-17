@@ -493,6 +493,35 @@ public class AssetModelConverter {
     }
 
     /**
+     * Convert generic asset from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAnyAsset asGrpcGenericAsset(IAsset api) throws SiteWhereException {
+	GAnyAsset.Builder grpc = GAnyAsset.newBuilder();
+	switch (api.getType()) {
+	case Device:
+	    grpc.setHardware(AssetModelConverter.asGrpcHardwareAsset((IHardwareAsset) api));
+	    break;
+	case Hardware:
+	    grpc.setHardware(AssetModelConverter.asGrpcHardwareAsset((IHardwareAsset) api));
+	    break;
+	case Location:
+	    grpc.setLocation(AssetModelConverter.asGrpcLocationAsset((ILocationAsset) api));
+	    break;
+	case Person:
+	    grpc.setPerson(AssetModelConverter.asGrpcPersonAsset((IPersonAsset) api));
+	    break;
+	default:
+	    throw new SiteWhereException("Unable to convert asset to GRPC. " + api.getClass().getName());
+	}
+
+	return grpc.build();
+    }
+
+    /**
      * Convert asset search results from GRPC to API.
      * 
      * @param response

@@ -10,10 +10,18 @@ package com.sitewhere.asset.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
+import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -32,6 +40,9 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 
     /** Identifies module resources such as configuration file */
     private static final String MODULE_IDENTIFIER = "asset-management";
+
+    /** Provides server for asset management GRPC requests */
+    private IAssetManagementGrpcServer assetManagementGrpcServer;
 
     /*
      * (non-Javadoc)
@@ -62,7 +73,70 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
      */
     @Override
     public IAssetManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return null;
+	return new AssetManagementTenantEngine(this, tenant);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create asset management GRPC server.
+	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
+
+	// Create step that will start components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize device management GRPC server.
+	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagementGrpcServer(),
+		"Asset management GRPC server", "Unable to initialize asset management GRPC server", true));
+
+	// Execute initialization steps.
+	init.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start asset management GRPC server.
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcServer(),
+		"Asset management GRPC server", "Unable to initialize asset management GRPC server", true));
+
+	// Execute startup steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop asset management GRPC server.
+	stop.addStep(
+		new StopComponentLifecycleStep(this, getAssetManagementGrpcServer(), "Asset management GRPC server"));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
@@ -73,5 +147,13 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IAssetManagementGrpcServer getAssetManagementGrpcServer() {
+	return assetManagementGrpcServer;
+    }
+
+    public void setAssetManagementGrpcServer(IAssetManagementGrpcServer assetManagementGrpcServer) {
+	this.assetManagementGrpcServer = assetManagementGrpcServer;
     }
 }

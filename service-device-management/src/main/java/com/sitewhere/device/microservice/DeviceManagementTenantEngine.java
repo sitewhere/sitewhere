@@ -75,6 +75,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
+     * getDeviceManagement()
+     */
+    @Override
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
     }
@@ -83,6 +90,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	this.deviceManagement = deviceManagement;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
+     * getDeviceManagementImpl()
+     */
+    @Override
     public DeviceManagementGrpc.DeviceManagementImplBase getDeviceManagementImpl() {
 	return deviceManagementImpl;
     }

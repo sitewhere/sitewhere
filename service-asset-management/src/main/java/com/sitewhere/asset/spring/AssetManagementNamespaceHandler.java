@@ -5,16 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.spring;
+package com.sitewhere.asset.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Registers parsers for elements in the device management configuration schema.
+ * Registers parsers for elements in the asset management configuration schema.
  * 
  * @author Derek
  */
-public class DeviceManagementNamespaceHandler extends NamespaceHandlerSupport {
+public class AssetManagementNamespaceHandler extends NamespaceHandlerSupport {
 
     /*
      * (non-Javadoc)
@@ -23,6 +23,6 @@ public class DeviceManagementNamespaceHandler extends NamespaceHandlerSupport {
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser("device-management", new DeviceManagementParser());
+	registerBeanDefinitionParser("asset-management", new AssetManagementParser());
     }
 }
