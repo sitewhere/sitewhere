@@ -7,7 +7,9 @@
  */
 package com.sitewhere.event.spi.microservice;
 
+import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
@@ -16,4 +18,19 @@ import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get associated event management implementation.
+     * 
+     * @return
+     */
+    public IDeviceEventManagement getEventManagement();
+
+    /**
+     * Get implementation class that wraps event management with GRPC
+     * conversions.
+     * 
+     * @return
+     */
+    public DeviceEventManagementGrpc.DeviceEventManagementImplBase getEventManagementImpl();
 }
