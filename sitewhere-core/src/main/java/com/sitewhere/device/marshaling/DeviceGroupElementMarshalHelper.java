@@ -14,7 +14,7 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -57,8 +57,7 @@ public class DeviceGroupElementMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceGroupElement convert(IDeviceGroupElement source, IAssetModuleManager manager)
-	    throws SiteWhereException {
+    public DeviceGroupElement convert(IDeviceGroupElement source, IAssetResolver assets) throws SiteWhereException {
 	DeviceGroupElement result = new DeviceGroupElement();
 	result.setGroupToken(source.getGroupToken());
 	result.setIndex(source.getIndex());
@@ -70,7 +69,7 @@ public class DeviceGroupElementMarshalHelper {
 	    case Device: {
 		IDevice device = deviceManagement.getDeviceByHardwareId(source.getElementId());
 		if (device != null) {
-		    Device inflated = deviceHelper.convert(device, manager);
+		    Device inflated = deviceHelper.convert(device, assets);
 		    result.setDevice(inflated);
 		} else {
 		    LOGGER.warn("Group references invalid device: " + source.getElementId());

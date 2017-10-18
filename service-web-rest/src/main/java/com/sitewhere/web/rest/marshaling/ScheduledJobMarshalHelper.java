@@ -24,7 +24,7 @@ import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -53,8 +53,8 @@ public class ScheduledJobMarshalHelper {
     /** Schedule management */
     private IScheduleManagement scheduleManagement;
 
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
+    /** Asset resolver */
+    private IAssetResolver assetResolver;
 
     /** Indicates whether to include context information */
     private boolean includeContextInfo = false;
@@ -66,15 +66,15 @@ public class ScheduledJobMarshalHelper {
     private DeviceSpecificationMarshalHelper specificationHelper;
 
     public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
-	    IAssetModuleManager assetModuleManager) {
-	this(scheduleManagement, deviceManagement, assetModuleManager, false);
+	    IAssetResolver assetResolver) {
+	this(scheduleManagement, deviceManagement, assetResolver, false);
     }
 
     public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
-	    IAssetModuleManager assetModuleManager, boolean includeContextInfo) {
+	    IAssetResolver assetResolver, boolean includeContextInfo) {
 	this.scheduleManagement = scheduleManagement;
 	this.deviceManagement = deviceManagement;
-	this.assetModuleManager = assetModuleManager;
+	this.assetResolver = assetResolver;
 	this.includeContextInfo = includeContextInfo;
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement).setIncludeDevice(true)
 		.setIncludeAsset(false);
@@ -134,7 +134,7 @@ public class ScheduledJobMarshalHelper {
 	if (assnToken != null) {
 	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
 	    if (assignment != null) {
-		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetModuleManager()));
+		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetResolver()));
 	    }
 	}
 	if (commandToken != null) {
@@ -173,7 +173,7 @@ public class ScheduledJobMarshalHelper {
 	    IDeviceSpecification specification = getDeviceManagement().getDeviceSpecificationByToken(specToken);
 	    if (specification != null) {
 		job.getContext().put("specification",
-			getSpecificationHelper().convert(specification, getAssetModuleManager()));
+			getSpecificationHelper().convert(specification, getAssetResolver()));
 	    }
 	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
 	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
@@ -226,17 +226,6 @@ public class ScheduledJobMarshalHelper {
     }
 
     /**
-     * Get the asset module manager implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getAssetModuleManager(tenant);
-    }
-
-    /**
      * Get helper class for marshaling device assignment information.
      * 
      * @return
@@ -270,12 +259,12 @@ public class ScheduledJobMarshalHelper {
 	this.scheduleManagement = scheduleManagement;
     }
 
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
     }
 
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     public boolean isIncludeContextInfo() {

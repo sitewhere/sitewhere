@@ -19,7 +19,7 @@ import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequest
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
@@ -53,15 +53,15 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.
-     * sitewhere.spi.device.IDeviceManagement,
+     * com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(
+     * com.sitewhere.spi.device.IDeviceManagement,
      * com.sitewhere.spi.device.event.IDeviceEventManagement,
      * com.sitewhere.spi.asset.IAssetManagement,
-     * com.sitewhere.spi.asset.IAssetModuleManager)
+     * com.sitewhere.spi.asset.IAssetResolver)
      */
     @Override
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) throws SiteWhereException {
+	    IAssetManagement assetManagement, IAssetResolver assetResolver) throws SiteWhereException {
 	// Skip if not enabled.
 	if (!isEnabled()) {
 	    return;
@@ -74,7 +74,7 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
 	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
 		new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 	binding.setVariable(IGroovyVariables.VAR_ASSET_MANAGEMENT_BUILDER,
-		new AssetManagementRequestBuilder(assetManagement, assetModuleManager));
+		new AssetManagementRequestBuilder(assetResolver));
 
 	try {
 	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);

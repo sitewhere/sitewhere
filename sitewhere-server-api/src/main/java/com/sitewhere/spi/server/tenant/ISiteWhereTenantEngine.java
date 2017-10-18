@@ -9,7 +9,6 @@ package com.sitewhere.spi.server.tenant;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -64,13 +63,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public IDeviceCommunication getDeviceCommunication();
-
-    /**
-     * Get the asset modules manager instance.
-     * 
-     * @return
-     */
-    public IAssetModuleManager getAssetModuleManager();
 
     /**
      * Get the search provider manager implementation.

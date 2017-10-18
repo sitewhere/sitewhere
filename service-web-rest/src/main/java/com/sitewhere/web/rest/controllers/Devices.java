@@ -47,7 +47,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -102,7 +102,7 @@ public class Devices extends RestController {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -130,7 +130,7 @@ public class Devices extends RestController {
 	helper.setIncludeAssignment(includeAssignment);
 	helper.setIncludeSite(includeSite);
 	helper.setIncludeNested(includeNested);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -153,7 +153,7 @@ public class Devices extends RestController {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -173,7 +173,7 @@ public class Devices extends RestController {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -203,7 +203,7 @@ public class Devices extends RestController {
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeSite(includeSite);
-	return helper.convert(assignment, getAssetModuleManager());
+	return helper.convert(assignment, getAssetResolver());
     }
 
     /**
@@ -234,7 +234,7 @@ public class Devices extends RestController {
 	helper.setIncludeSite(includeSite);
 	List<IDeviceAssignment> converted = new ArrayList<IDeviceAssignment>();
 	for (IDeviceAssignment assignment : history.getResults()) {
-	    converted.add(helper.convert(assignment, getAssetModuleManager()));
+	    converted.add(helper.convert(assignment, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
     }
@@ -256,7 +256,7 @@ public class Devices extends RestController {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(updated, getAssetModuleManager());
+	return helper.convert(updated, getAssetResolver());
     }
 
     @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
@@ -271,7 +271,7 @@ public class Devices extends RestController {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
-	return helper.convert(updated, getAssetModuleManager());
+	return helper.convert(updated, getAssetResolver());
     }
 
     /**
@@ -335,7 +335,7 @@ public class Devices extends RestController {
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
-	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
+	    devicesConv.add(helper.convert(device, getAssetResolver()));
 	}
 	return new SearchResults<IDevice>(devicesConv, results.getNumResults());
     }
@@ -366,7 +366,7 @@ public class Devices extends RestController {
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
-	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
+	    devicesConv.add(helper.convert(device, getAssetResolver()));
 	}
 	return new SearchResults<IDevice>(devicesConv, results.getNumResults());
     }
@@ -397,7 +397,7 @@ public class Devices extends RestController {
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
+	    devicesConv.add(helper.convert(device, getAssetResolver()));
 	}
 	return new SearchResults<IDevice>(devicesConv, matches.size());
     }
@@ -429,7 +429,7 @@ public class Devices extends RestController {
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(helper.convert(device, getAssetModuleManager()));
+	    devicesConv.add(helper.convert(device, getAssetResolver()));
 	}
 	return new SearchResults<IDevice>(devicesConv, matches.size());
     }
@@ -520,7 +520,7 @@ public class Devices extends RestController {
 	return null;
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 

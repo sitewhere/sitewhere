@@ -43,7 +43,6 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -453,18 +452,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException {
 	ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
 	return engine.getDeviceCommunication();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager(com.
-     * sitewhere.spi .user.ITenant)
-     */
-    @Override
-    public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException {
-	ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-	return engine.getAssetModuleManager();
     }
 
     /*

@@ -15,6 +15,10 @@
 
 		<!-- Use default MongoDB configuration -->
 		<sw:default-mongodb-datastore />
+		
+		<!-- Configure asset modules -->
+		<am:asset-modules>
+		</am:asset-modules>
 
 	</am:asset-management>
 

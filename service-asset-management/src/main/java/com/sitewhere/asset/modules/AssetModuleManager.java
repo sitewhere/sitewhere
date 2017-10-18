@@ -18,14 +18,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.asset.modules.datastore.DatastoreAssetModuleManager;
+import com.sitewhere.asset.spi.modules.IAssetModule;
+import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModule;
-import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

@@ -40,12 +40,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.asset.modules.AssetMatcher;
+import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
-import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

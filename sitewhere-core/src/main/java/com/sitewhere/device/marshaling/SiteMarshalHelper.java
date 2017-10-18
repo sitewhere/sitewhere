@@ -22,7 +22,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -46,8 +46,8 @@ public class SiteMarshalHelper {
     /** Device management */
     private IDeviceManagement deviceManagement;
 
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
+    /** Asset resolver */
+    private IAssetResolver assetResolver;
 
     /** Indicates whether assignments for site should be included */
     private boolean includeAssignements = false;
@@ -58,9 +58,9 @@ public class SiteMarshalHelper {
     /** Device assignment marshal helper */
     private DeviceAssignmentMarshalHelper assignmentHelper;
 
-    public SiteMarshalHelper(IDeviceManagement deviceManagement, IAssetModuleManager assetModuleManager) {
+    public SiteMarshalHelper(IDeviceManagement deviceManagement, IAssetResolver assetResolver) {
 	this.deviceManagement = deviceManagement;
-	this.assetModuleManager = assetModuleManager;
+	this.assetResolver = assetResolver;
 
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement);
 	assignmentHelper.setIncludeDevice(true);
@@ -84,7 +84,7 @@ public class SiteMarshalHelper {
 		    .getDeviceAssignmentsForSite(site.getToken(), criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {
-		assignments.add(assignmentHelper.convert(match, getAssetModuleManager()));
+		assignments.add(assignmentHelper.convert(match, getAssetResolver()));
 	    }
 	    site.setDeviceAssignments(assignments);
 	}
@@ -126,12 +126,12 @@ public class SiteMarshalHelper {
 	this.deviceManagement = deviceManagement;
     }
 
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
     }
 
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     public boolean isIncludeAssignements() {

@@ -15,7 +15,7 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 
@@ -51,13 +51,14 @@ public class DeviceSpecificationMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification convert(IDeviceSpecification source, IAssetModuleManager manager)
+    public DeviceSpecification convert(IDeviceSpecification source, IAssetResolver assetResolver)
 	    throws SiteWhereException {
 	DeviceSpecification spec = new DeviceSpecification();
 	MetadataProviderEntity.copy(source, spec);
 	spec.setToken(source.getToken());
 	spec.setName(source.getName());
-	HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+	HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
+		.getAssetById(source.getAssetModuleId(), source.getAssetId());
 
 	// Handle case where referenced asset is not found.
 	if (asset == null) {

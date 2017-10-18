@@ -9,20 +9,21 @@ package com.sitewhere.asset.spring;
 
 import java.util.List;
 
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.asset.modules.AssetModuleManager;
-import com.sitewhere.asset.modules.wso2.scim.Wso2ScimAssetModule;
+import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
+import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
+import com.sitewhere.microservice.spi.spring.AssetManagementBeans;
+import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
 import com.sitewhere.server.SiteWhereServerBeans;
-import com.sitewhere.spring.handler.IAssetManagementParser.Elements;
+import com.sitewhere.spring.parser.IAssetManagementParser.Elements;
 
 /**
  * Parses configuration data for the SiteWhere asset management section.
@@ -49,12 +50,12 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown asset management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case AssetModuleReference: {
-		modules.add(parseAssetModuleReference(child, context));
+	    case DefaultMongoDatastore: {
+		parseDefaultMongoDatastore(child, context);
 		break;
 	    }
-	    case Wso2IdentityAssetModule: {
-		modules.add(parseWso2IdentityAssetModule(child, context));
+	    case AssetModules: {
+		(new AssetModulesParser()).parseInternal(child, context);
 		break;
 	    }
 	    }
@@ -66,76 +67,24 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse an asset module reference.
+     * Parse the default MongoDB datastore element.
      * 
      * @param element
      * @param context
-     * @return
      */
-    protected RuntimeBeanReference parseAssetModuleReference(Element element, ParserContext context) {
-	Attr ref = element.getAttributeNode("ref");
-	if (ref != null) {
-	    return new RuntimeBeanReference(ref.getValue());
-	}
-	throw new RuntimeException("Asset module reference does not have ref defined.");
-    }
+    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
+	// Build MongoDB client using default global configuration.
+	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
+	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
-    /**
-     * Parse a fileystem device asset module configuration.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseWso2IdentityAssetModule(Element element, ParserContext context) {
-	BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(Wso2ScimAssetModule.class);
+	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		client.getBeanDefinition());
 
-	Attr moduleId = element.getAttributeNode("moduleId");
-	if (moduleId != null) {
-	    module.addPropertyValue("moduleId", moduleId.getValue());
-	}
+	// Build device mangement implementation.
+	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
+	management.addPropertyReference("mongoClient", AssetManagementBeans.BEAN_MONGODB_CLIENT);
 
-	Attr scimUsersUrl = element.getAttributeNode("scimUsersUrl");
-	if (scimUsersUrl != null) {
-	    module.addPropertyValue("scimUsersUrl", scimUsersUrl.getValue());
-	}
-
-	Attr username = element.getAttributeNode("username");
-	if (username != null) {
-	    module.addPropertyValue("username", username.getValue());
-	}
-
-	Attr password = element.getAttributeNode("password");
-	if (password != null) {
-	    module.addPropertyValue("password", password.getValue());
-	}
-
-	Attr ignoreBadCertificate = element.getAttributeNode("ignoreBadCertificate");
-	if (ignoreBadCertificate != null) {
-	    module.addPropertyValue("ignoreBadCertificate", ignoreBadCertificate.getValue());
-	}
-
-	return module.getBeanDefinition();
-    }
-
-    /**
-     * Sets properties common to all filesystem asset module types.
-     * 
-     * @param module
-     * @param element
-     */
-    protected void setCommonFilesystemAssetModuleProperties(BeanDefinitionBuilder module, Element element) {
-	Attr moduleId = element.getAttributeNode("moduleId");
-	if (moduleId != null) {
-	    module.addPropertyValue("moduleId", moduleId.getValue());
-	}
-	Attr moduleName = element.getAttributeNode("moduleName");
-	if (moduleName != null) {
-	    module.addPropertyValue("moduleName", moduleName.getValue());
-	}
-	Attr filename = element.getAttributeNode("filename");
-	if (filename != null) {
-	    module.addPropertyValue("filename", filename.getValue());
-	}
+	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_ASSET_MANAGEMENT,
+		management.getBeanDefinition());
     }
 }

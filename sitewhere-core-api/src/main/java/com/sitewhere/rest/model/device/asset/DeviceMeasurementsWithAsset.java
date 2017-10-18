@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
@@ -30,9 +30,9 @@ public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements
     /** Serial version UID */
     private static final long serialVersionUID = -732056996257170342L;
 
-    public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetModuleManager assets)
+    public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetResolver assetResolver)
 	    throws SiteWhereException {
-	super(wrapped, assets);
+	super(wrapped, assetResolver);
     }
 
     /*

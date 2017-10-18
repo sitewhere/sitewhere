@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.IAssetManagementParser;
 import com.sitewhere.spring.handler.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
@@ -56,8 +55,9 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createWso2IdentityAssetModuleElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
-		IAssetManagementParser.Elements.Wso2IdentityAssetModule.getLocalName(), "users",
-		ElementRole.AssetManagment_AssetModule);
+		com.sitewhere.spring.parser.IAssetManagementParser.IAssetModulesParser.Elements.Wso2IdentityAssetModule
+			.getLocalName(),
+		"users", ElementRole.AssetManagment_AssetModule);
 
 	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
 		+ "to provide a list of person assets.");

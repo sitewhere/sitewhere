@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
@@ -40,8 +38,8 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModule;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetModuleDescriptor;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -86,10 +84,10 @@ public class Assets extends RestController {
     @ResponseBody
     @ApiOperation(value = "Get an asset module by unique id")
     @Secured({ SiteWhereRoles.REST })
-    public AssetModule getAssetModule(
+    public IAssetModuleDescriptor getAssetModule(
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return AssetModule.copy(getAssetModuleManager().getModule(assetModuleId));
+	return getAssetResolver().getAssetModuleManagement().getAssetModuleDescriptor(assetModuleId);
     }
 
     /**
@@ -110,7 +108,8 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    @ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	List<? extends IAsset> found = getAssetModuleManager().search(assetModuleId, criteria);
+	List<? extends IAsset> found = getAssetResolver().getAssetModuleManagement().searchAssetModule(assetModuleId,
+		criteria);
 	SearchResults<? extends IAsset> results = new SearchResults(found);
 	return results;
     }
@@ -131,7 +130,7 @@ public class Assets extends RestController {
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetModuleManager().getAssetById(assetModuleId, assetId);
+	return getAssetResolver().getAssetModuleManagement().getAssetById(assetModuleId, assetId);
     }
 
     /**
@@ -179,19 +178,12 @@ public class Assets extends RestController {
     @ResponseBody
     @ApiOperation(value = "List asset modules that match criteria")
     @Secured({ SiteWhereRoles.REST })
-    public List<AssetModule> listAssetModules(
+    public List<IAssetModuleDescriptor> listAssetModules(
 	    @ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	try {
 	    AssetType type = (assetType == null) ? null : AssetType.valueOf(assetType);
-	    List<AssetModule> converted = new ArrayList<AssetModule>();
-	    List<IAssetModule<?>> modules = getAssetModuleManager().listModules();
-	    for (IAssetModule<?> module : modules) {
-		if ((type == null) || (type == module.getAssetType())) {
-		    converted.add(AssetModule.copy(module));
-		}
-	    }
-	    return converted;
+	    return getAssetResolver().getAssetModuleManagement().listAssetModuleDescriptors(type);
 	} catch (IllegalArgumentException e) {
 	    throw new SiteWhereSystemException(ErrorCode.UnknownAssetType, ErrorLevel.ERROR);
 	}
@@ -210,7 +202,7 @@ public class Assets extends RestController {
     public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Refreshing asset modules"));
-	getAssetModuleManager().refreshModules(monitor);
+	getAssetResolver().getAssetModuleManagement().refreshModules(monitor);
     }
 
     /**
@@ -485,7 +477,7 @@ public class Assets extends RestController {
 	return getAssetManagement().listAssets(categoryId, criteria);
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 

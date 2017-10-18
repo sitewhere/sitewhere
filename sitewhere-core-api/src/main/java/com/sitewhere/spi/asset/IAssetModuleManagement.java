@@ -1,0 +1,60 @@
+package com.sitewhere.spi.asset;
+
+import java.util.List;
+
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+/**
+ * Asset management interface for interacting with asset modules.
+ * 
+ * @author Derek
+ */
+public interface IAssetModuleManagement {
+
+    /**
+     * Get list of asset module descriptors.
+     * 
+     * @param type
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IAssetModuleDescriptor> listAssetModuleDescriptors(AssetType type) throws SiteWhereException;
+
+    /**
+     * Get descriptor for asset module given its unique id.
+     * 
+     * @param moduleId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAssetModuleDescriptor getAssetModuleDescriptor(String moduleId) throws SiteWhereException;
+
+    /**
+     * Search asset module for assets matching criteria.
+     * 
+     * @param moduleId
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IAsset> searchAssetModule(String moduleId, String criteria) throws SiteWhereException;
+
+    /**
+     * Refresh all managed modules.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Get unqiue asset within the context of an asset module.
+     * 
+     * @param moduleId
+     * @param assetId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAsset getAssetById(String moduleId, String assetId) throws SiteWhereException;
+}

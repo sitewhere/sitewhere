@@ -43,7 +43,7 @@ import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -87,7 +87,8 @@ public class DeviceSpecifications extends RestController {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification createDeviceSpecification(@RequestBody DeviceSpecificationCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IAsset asset = getAssetModuleManager().getAssetById(request.getAssetModuleId(), request.getAssetId());
+	IAsset asset = getAssetResolver().getAssetModuleManagement().getAssetById(request.getAssetModuleId(),
+		request.getAssetId());
 	if (asset == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -95,7 +96,7 @@ public class DeviceSpecifications extends RestController {
 	IDeviceSpecification result = getDeviceManagement().createDeviceSpecification(request);
 	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -115,7 +116,7 @@ public class DeviceSpecifications extends RestController {
 	IDeviceSpecification result = assertDeviceSpecificationByToken(token, servletRequest);
 	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -178,7 +179,7 @@ public class DeviceSpecifications extends RestController {
 	IDeviceSpecification result = getDeviceManagement().updateDeviceSpecification(token, request);
 	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -208,7 +209,7 @@ public class DeviceSpecifications extends RestController {
 	helper.setIncludeAsset(includeAsset);
 	List<IDeviceSpecification> specsConv = new ArrayList<IDeviceSpecification>();
 	for (IDeviceSpecification device : results.getResults()) {
-	    specsConv.add(helper.convert(device, getAssetModuleManager()));
+	    specsConv.add(helper.convert(device, getAssetResolver()));
 	}
 	Collections.sort(specsConv, new Comparator<IDeviceSpecification>() {
 	    public int compare(IDeviceSpecification o1, IDeviceSpecification o2) {
@@ -250,7 +251,7 @@ public class DeviceSpecifications extends RestController {
 	IDeviceSpecification result = devices.deleteDeviceSpecification(token, force);
 	DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -451,7 +452,7 @@ public class DeviceSpecifications extends RestController {
 	return null;
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 }

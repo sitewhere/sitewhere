@@ -32,7 +32,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -200,7 +200,7 @@ public class DeviceGroups extends RestController {
 		criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
-	    elmConv.add(helper.convert(elm, getAssetModuleManager()));
+	    elmConv.add(helper.convert(elm, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
     }
@@ -234,7 +234,7 @@ public class DeviceGroups extends RestController {
 	List<IDeviceGroupElement> results = devices.addDeviceGroupElements(groupToken, elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetModuleManager()));
+	    converted.add(helper.convert(elm, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -316,7 +316,7 @@ public class DeviceGroups extends RestController {
 	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(groupToken, elements);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetModuleManager()));
+	    converted.add(helper.convert(elm, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -325,7 +325,7 @@ public class DeviceGroups extends RestController {
 	return null;
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 }

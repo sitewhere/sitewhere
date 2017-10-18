@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.asset;
 
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
 /**
@@ -23,9 +23,9 @@ public class DeviceCommandResponseWithAsset extends DeviceEventWithAsset impleme
     /** Serial version UID */
     private static final long serialVersionUID = 6946071189269318157L;
 
-    public DeviceCommandResponseWithAsset(IDeviceCommandResponse wrapped, IAssetModuleManager assets)
+    public DeviceCommandResponseWithAsset(IDeviceCommandResponse wrapped, IAssetResolver assetResolver)
 	    throws SiteWhereException {
-	super(wrapped, assets);
+	super(wrapped, assetResolver);
     }
 
     /*

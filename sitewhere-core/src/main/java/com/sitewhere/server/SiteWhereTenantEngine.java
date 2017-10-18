@@ -34,7 +34,6 @@ import com.sitewhere.server.tenant.TenantEngineCommand;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -92,9 +91,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     /** Interface to device communication subsystem implementation */
     private IDeviceCommunication deviceCommunication;
-
-    /** Interface for the asset module manager */
-    private IAssetModuleManager assetModuleManager;
 
     /** Interface for the search provider manager */
     private ISearchProviderManager searchProviderManager;
@@ -170,10 +166,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	// Start tenant management API implementations.
 	startManagementImplementations(start);
-
-	// Start asset module manager (after potentially bootstrapping assets).
-	start.addStep(new StartComponentLifecycleStep(this, getAssetModuleManager(), "Started asset module manager",
-		"Asset module manager startup failed.", true));
 
 	// Execute all operations.
 	start.execute(monitor);
@@ -520,9 +512,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement(),
 		"Stopped device management implementation"));
 
-	// Stop asset module manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getAssetModuleManager(), "Stopped asset module manager"));
-
 	// Stop asset management.
 	stop.addStep(
 		new StopComponentLifecycleStep(this, getAssetManagement(), "Stopped asset management implementation"));
@@ -724,20 +713,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
 	this.deviceCommunication = deviceCommunication;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getAssetModuleManager()
-     */
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
     }
 
     /*

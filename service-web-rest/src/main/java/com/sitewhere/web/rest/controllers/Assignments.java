@@ -67,7 +67,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -147,7 +147,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(created, getAssetModuleManager());
+	return helper.convert(created, getAssetResolver());
     }
 
     /**
@@ -169,7 +169,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(assignment, getAssetModuleManager());
+	return helper.convert(assignment, getAssetResolver());
     }
 
     /**
@@ -192,7 +192,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(assignment, getAssetModuleManager());
+	return helper.convert(assignment, getAssetResolver());
     }
 
     /**
@@ -213,7 +213,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(result, getAssetModuleManager());
+	return helper.convert(result, getAssetResolver());
     }
 
     /**
@@ -840,7 +840,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(updated, getAssetModuleManager());
+	return helper.convert(updated, getAssetResolver());
     }
 
     /**
@@ -863,7 +863,7 @@ public class Assignments extends RestController {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
-	return helper.convert(updated, getAssetModuleManager());
+	return helper.convert(updated, getAssetResolver());
     }
 
     /**
@@ -931,7 +931,7 @@ public class Assignments extends RestController {
 	return null;
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 

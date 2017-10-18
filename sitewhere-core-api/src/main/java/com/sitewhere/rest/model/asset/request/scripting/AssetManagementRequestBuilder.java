@@ -18,7 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -30,15 +30,11 @@ import com.sitewhere.spi.asset.IPersonAsset;
  */
 public class AssetManagementRequestBuilder {
 
-    /** Asset management implementation */
-    private IAssetManagement assetManagement;
+    /** Asset resolver implementation */
+    private IAssetResolver assetResolver;
 
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
-
-    public AssetManagementRequestBuilder(IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) {
-	this.assetManagement = assetManagement;
-	this.assetModuleManager = assetModuleManager;
+    public AssetManagementRequestBuilder(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     public AssetCategoryCreateRequest.Builder newAssetCategory(String id, String name) {
@@ -79,19 +75,15 @@ public class AssetManagementRequestBuilder {
 	return getAssetManagement().listAssets(moduleId, SearchCriteria.ALL).getResults();
     }
 
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
+    }
+
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
+    }
+
     public IAssetManagement getAssetManagement() {
-	return assetManagement;
-    }
-
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
+	return getAssetResolver().getAssetManagement();
     }
 }

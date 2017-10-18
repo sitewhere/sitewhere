@@ -17,7 +17,7 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -78,7 +78,7 @@ public class DeviceMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
+    public Device convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
 	Device result = new Device();
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteToken(source.getSiteToken());
@@ -91,7 +91,7 @@ public class DeviceMarshalHelper {
 	    DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
 	    if (isIncludeNested()) {
 		IDevice device = getDeviceManagement().getDeviceByHardwareId(mapping.getHardwareId());
-		cnvMapping.setDevice(getNestedHelper().convert(device, manager));
+		cnvMapping.setDevice(getNestedHelper().convert(device, assetResolver));
 	    }
 	    result.getDeviceElementMappings().add(cnvMapping);
 	}
@@ -104,10 +104,11 @@ public class DeviceMarshalHelper {
 		throw new SiteWhereException("Device references non-existent specification.");
 	    }
 	    if (includeSpecification) {
-		result.setSpecification(getSpecificationHelper().convert(spec, manager));
+		result.setSpecification(getSpecificationHelper().convert(spec, assetResolver));
 	    } else {
 		result.setSpecificationToken(source.getSpecificationToken());
-		HardwareAsset asset = (HardwareAsset) manager.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
+		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
+			.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
 		if (asset != null) {
 		    result.setAssetId(asset.getId());
 		    result.setAssetName(asset.getName());
@@ -125,7 +126,7 @@ public class DeviceMarshalHelper {
 		    if (assignment == null) {
 			throw new SiteWhereException("Device contains an invalid assignment reference.");
 		    }
-		    result.setAssignment(getAssignmentHelper().convert(assignment, manager));
+		    result.setAssignment(getAssignmentHelper().convert(assignment, assetResolver));
 		} catch (SiteWhereException e) {
 		    LOGGER.warn("Device has token for non-existent assignment.");
 		}

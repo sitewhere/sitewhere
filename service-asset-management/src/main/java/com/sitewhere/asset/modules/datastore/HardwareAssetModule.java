@@ -9,10 +9,10 @@ package com.sitewhere.asset.modules.datastore;
 
 import java.util.List;
 
+import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IHardwareAsset;
 
 /**

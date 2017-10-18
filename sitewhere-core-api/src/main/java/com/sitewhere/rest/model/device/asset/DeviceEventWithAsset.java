@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.asset.IDeviceEventWithAsset;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -40,10 +40,11 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     /** Associated asset */
     protected IAsset asset;
 
-    public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetModuleManager assets) throws SiteWhereException {
+    public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetResolver assetResolver) throws SiteWhereException {
 	this.wrapped = wrapped;
 	if (wrapped.getAssignmentType() == DeviceAssignmentType.Associated) {
-	    this.asset = assets.getAssetById(wrapped.getAssetModuleId(), wrapped.getAssetId());
+	    this.asset = assetResolver.getAssetModuleManagement().getAssetById(wrapped.getAssetModuleId(),
+		    wrapped.getAssetId());
 	}
     }
 

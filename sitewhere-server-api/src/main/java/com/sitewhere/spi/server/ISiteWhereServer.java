@@ -15,7 +15,6 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -218,15 +217,6 @@ public interface ISiteWhereServer extends ILifecycleComponent, ILifecycleHierarc
      * @throws SiteWhereException
      */
     public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
-
-    /**
-     * Get asset module manager for tenant.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException;
 
     /**
      * Get search provider manager for tenant.

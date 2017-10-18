@@ -165,8 +165,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	helper.setIncludeAsset(false);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(false);
-	DeviceAssignment converted = helper.convert(assignment,
-		SiteWhere.getServer().getAssetModuleManager(getTenant()));
+	DeviceAssignment converted = helper.convert(assignment, null);
 
 	createBucket(converted.getToken(),
 		converted.getAssetName() + " (" + converted.getDevice().getAssetName() + ")");

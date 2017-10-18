@@ -46,7 +46,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -179,7 +179,7 @@ public class Sites extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<ISite> matches = getDeviceManagement().listSites(criteria);
-	SiteMarshalHelper helper = new SiteMarshalHelper(getDeviceManagement(), getAssetModuleManager());
+	SiteMarshalHelper helper = new SiteMarshalHelper(getDeviceManagement(), getAssetResolver());
 	helper.setIncludeZones(includeZones);
 	helper.setIncludeAssignements(includeAssignments);
 
@@ -215,9 +215,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceMeasurements result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
     }
@@ -247,9 +246,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, assets));
+	    wrapped.add(new DeviceLocationWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
     }
@@ -278,9 +276,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, assets));
+	    wrapped.add(new DeviceAlertWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
     }
@@ -310,9 +307,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
     }
@@ -342,9 +338,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
     }
@@ -374,9 +369,8 @@ public class Sites extends RestController {
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
-	IAssetModuleManager assets = getAssetModuleManager();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, assets));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetResolver()));
 	}
 	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
@@ -414,7 +408,7 @@ public class Sites extends RestController {
 	helper.setIncludeSite(includeSite);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getAssetModuleManager()));
+	    converted.add(helper.convert(assignment, getAssetResolver()));
 	}
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
@@ -530,7 +524,7 @@ public class Sites extends RestController {
 	return null;
     }
 
-    private IAssetModuleManager getAssetModuleManager() {
+    private IAssetResolver getAssetResolver() {
 	return null;
     }
 }

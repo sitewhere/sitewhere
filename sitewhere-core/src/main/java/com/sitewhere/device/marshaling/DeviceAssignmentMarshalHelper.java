@@ -18,7 +18,7 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -63,7 +63,7 @@ public class DeviceAssignmentMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceAssignment convert(IDeviceAssignment source, IAssetModuleManager manager) throws SiteWhereException {
+    public DeviceAssignment convert(IDeviceAssignment source, IAssetResolver assetResolver) throws SiteWhereException {
 	DeviceAssignment result = new DeviceAssignment();
 	result.setToken(source.getToken());
 	result.setActiveDate(source.getActiveDate());
@@ -77,7 +77,8 @@ public class DeviceAssignmentMarshalHelper {
 	// result.setState(DeviceAssignmentState.copy(source.getState()));
 	// }
 	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-	    IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+	    IAsset asset = assetResolver.getAssetModuleManagement().getAssetById(source.getAssetModuleId(),
+		    source.getAssetId());
 
 	    // Handle case where referenced asset is not found.
 	    if (asset == null) {
@@ -105,7 +106,7 @@ public class DeviceAssignmentMarshalHelper {
 	if (isIncludeDevice()) {
 	    IDevice device = getDeviceManagement().getDeviceByHardwareId(source.getDeviceHardwareId());
 	    if (device != null) {
-		result.setDevice(getDeviceHelper().convert(device, manager));
+		result.setDevice(getDeviceHelper().convert(device, assetResolver));
 	    } else {
 		LOGGER.error("Assignment references invalid hardware id.");
 	    }
