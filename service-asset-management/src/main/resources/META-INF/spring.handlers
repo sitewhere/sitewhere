@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/asset-management=com.sitewhere.device.spring.AssetManagementNamespaceHandler
+http\://www.sitewhere.com/schema/sitewhere/microservice/asset-management=com.sitewhere.asset.spring.AssetManagementNamespaceHandler

@@ -9,5 +9,5 @@
            \/_____/\/_/\/__/\/____/ '\/__//__/  \/_/\/_/\/____/ \/_/ \/____/
                                                                      
                    The Open Platform for the Internet of Things (TM)
-                            Tenant Management Microservice
-            
+                             Event Management Microservice
+ 
