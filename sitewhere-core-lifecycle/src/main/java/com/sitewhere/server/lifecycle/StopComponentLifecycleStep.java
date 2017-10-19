@@ -20,7 +20,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 public class StopComponentLifecycleStep extends ComponentOperationLifecycleStep {
 
     public StopComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name) {
-	super(owner, component, name);
+	super(owner, component);
     }
 
     /*

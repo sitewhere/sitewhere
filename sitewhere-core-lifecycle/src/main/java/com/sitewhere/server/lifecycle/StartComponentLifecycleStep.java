@@ -20,15 +20,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  */
 public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep {
 
-    /** Error message if failed */
-    private String errorMessage;
-
     /** Indicates of required for parent component to function */
     private boolean require;
 
-    public StartComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name,
-	    String errorMessage, boolean require) {
-	super(owner, component, name);
+    public StartComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	super(owner, component);
     }
 
     /*
@@ -42,23 +38,15 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
 	    try {
-		getOwner().startNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+		getOwner().startNestedComponent(getComponent(), monitor, "Unable to start " + getName(), isRequire());
 	    } catch (SiteWhereException t) {
 		throw t;
 	    } catch (Throwable t) {
-		throw new SiteWhereException(getErrorMessage(), t);
+		throw new SiteWhereException("Unable to start " + getName(), t);
 	    }
 	} else {
 	    throw new SiteWhereException("Attempting to start component '" + getName() + "' but component is null.");
 	}
-    }
-
-    public String getErrorMessage() {
-	return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-	this.errorMessage = errorMessage;
     }
 
     public boolean isRequire() {

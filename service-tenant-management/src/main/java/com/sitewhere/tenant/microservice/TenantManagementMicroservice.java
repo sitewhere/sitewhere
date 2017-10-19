@@ -144,24 +144,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Initialize tenant management implementation.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
-		"Unable to initialize tenant management persistence", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), true));
 
 	// Initialize tenant template manager.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager",
-		"Unable to initialize tenant template manager", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantTemplateManager(), true));
 
 	// Initialize tenant management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(),
-		"Tenant management GRPC server", "Unable to initialize tenant management GRPC server", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(), true));
 
 	// Initialize tenant model producer.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
-		"Unable to initialize tenant model producer", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantModelProducer(), true));
 
 	// Initialize tenant bootstrap model consumer.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
-		"Tenant bootstrap model consumer", "Unable to initialize tenant bootstrap model consumer", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantBootstrapModelConsumer(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -177,30 +172,25 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     @Override
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start discoverable lifecycle components.
 	start.addStep(startDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Start tenant mangement persistence.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence",
-		"Unable to start tenant management persistence.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), true));
 
 	// Start tenant template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager",
-		"Unable to start tenant template manager.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(), true));
 
 	// Start GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(),
-		"Tenant management GRPC server", "Unable to start tenant management GRPC server.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(), true));
 
 	// Start tenant model producer.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer",
-		"Unable to start tenant model producer.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantModelProducer(), true));
 
 	// Start tenant bootstrap model consumer.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
-		"Tenant bootstrap model consumer", "Unable to start tenant bootstrap model consumer.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantBootstrapModelConsumer(), true));
 
 	// Execute initialization steps.
 	start.execute(monitor);

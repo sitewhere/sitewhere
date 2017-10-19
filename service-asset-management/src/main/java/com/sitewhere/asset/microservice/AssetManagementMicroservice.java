@@ -92,8 +92,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagementGrpcServer(),
-		"Asset management GRPC server", "Unable to initialize asset management GRPC server", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagementGrpcServer(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -112,8 +111,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start asset management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcServer(),
-		"Asset management GRPC server", "Unable to initialize asset management GRPC server", true));
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcServer(), true));
 
 	// Execute startup steps.
 	start.execute(monitor);

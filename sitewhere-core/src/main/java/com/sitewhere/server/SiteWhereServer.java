@@ -725,8 +725,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Start all lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    base.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
-		    component.getComponentName() + " startup failed.", true));
+	    base.addStep(new StartComponentLifecycleStep(this, component, true));
 	}
 
 	start.addStep(base);
@@ -743,12 +742,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	ICompositeLifecycleStep mgmt = new CompositeLifecycleStep("Started Management Implementations");
 
 	// Start user management.
-	mgmt.addStep(new StartComponentLifecycleStep(this, getUserManagement(),
-		"Started user management implementation", "User management startup failed.", true));
+	mgmt.addStep(new StartComponentLifecycleStep(this, getUserManagement(), true));
 
 	// Start tenant management.
-	mgmt.addStep(new StartComponentLifecycleStep(this, getTenantManagement(),
-		"Started tenant management implementation", "Tenant management startup failed", true));
+	mgmt.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), true));
 
 	start.addStep(mgmt);
     }

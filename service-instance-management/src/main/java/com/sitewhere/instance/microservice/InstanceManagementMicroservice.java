@@ -125,24 +125,19 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	start.addStep(verifyOrCreateInstanceNode());
 
 	// Start instance template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getInstanceTemplateManager(), "Instance Template Manager",
-		"Unable to start instance template manager", true));
+	start.addStep(new StartComponentLifecycleStep(this, getInstanceTemplateManager(), true));
 
 	// Initialize user management GRPC channel.
-	start.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(),
-		"User management GRPC channel", "Unable to initialize user management GRPC channel", true));
+	start.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
 
 	// Start user mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
-		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
 
 	// Initialize tenant management GRPC channel.
-	start.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant management GRPC channel", "Unable to initialize tenant management GRPC channel", true));
+	start.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
 
 	// Start tenant mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant management GRPC channel", "Unable to start tenant management GRPC channel.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
 
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());

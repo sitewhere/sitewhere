@@ -140,12 +140,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Initialize user management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(),
-		"User management GRPC channel", "Unable to initialize user management GRPC channel", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
 
 	// Initialize device management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
-		"Device management GRPC channel", "Unable to initialize device management GRPC channel", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcChannel(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -182,12 +180,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Start user mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(),
-		"User management GRPC channel", "Unable to start user management GRPC channel.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
 
 	// Start device mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
-		"Device management GRPC channel", "Unable to start device management GRPC channel.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcChannel(), true));
 
 	// Execute startup steps.
 	start.execute(monitor);

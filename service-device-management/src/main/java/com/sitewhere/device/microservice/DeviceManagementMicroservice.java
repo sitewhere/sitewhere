@@ -92,8 +92,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcServer(),
-		"Device management GRPC server", "Unable to initialize device management GRPC server", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcServer(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -112,8 +111,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcServer(),
-		"Device management GRPC server", "Unable to initialize device management GRPC server", true));
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcServer(), true));
 
 	// Execute startup steps.
 	start.execute(monitor);

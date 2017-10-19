@@ -18,19 +18,15 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  */
 public abstract class ComponentOperationLifecycleStep implements ILifecycleStep {
 
-    /** Step name */
-    private String name;
-
     /** Owner lifecycle component */
     private ILifecycleComponent owner;
 
     /** Nested lifecycle component */
     private ILifecycleComponent component;
 
-    public ComponentOperationLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name) {
+    public ComponentOperationLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component) {
 	this.owner = owner;
 	this.component = component;
-	this.name = name;
     }
 
     /*
@@ -40,7 +36,7 @@ public abstract class ComponentOperationLifecycleStep implements ILifecycleStep 
      */
     @Override
     public String getName() {
-	return name;
+	return getComponent().getComponentName();
     }
 
     /*

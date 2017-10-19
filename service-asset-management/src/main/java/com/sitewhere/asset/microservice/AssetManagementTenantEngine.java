@@ -14,8 +14,11 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.microservice.spi.spring.AssetManagementBeans;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -47,9 +50,19 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create managment interfaces.
 	this.assetManagement = (IAssetManagement) getModuleContext()
 		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
 	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement());
+
+	// Create step that will start components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize asset management persistence.
+	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagement(), true));
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -61,6 +74,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	throw new SiteWhereException("SHIT BROKE!!!");
     }
 
     /*

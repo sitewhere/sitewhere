@@ -32,6 +32,12 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Suffix appended to module identifier to locate module configuration */
+    public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
+
+    /** Suffix appended to module identifier to indicate data is bootstrapped */
+    public static final String MODULE_BOOTSTRAPPED_SUFFIX = ".bootstrapped";
+
     /** Parent microservice */
     private IMultitenantMicroservice<?> microservice;
 
@@ -52,6 +58,9 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	loadModuleConfiguration();
+
+	// Allow subclass to execute initialization logic.
+	tenantInitialize(monitor);
     }
 
     /**
@@ -84,6 +93,8 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Allow subclass to execute startup logic.
+	tenantStart(monitor);
     }
 
     /*
@@ -173,7 +184,20 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     @Override
     public String getModuleConfigurationPath() throws SiteWhereException {
 	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
-		+ MultitenantMicroservice.MODULE_CONFIGURATION_SUFFIX;
+		+ MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getModuleBootstrappedPath()
+     */
+    @Override
+    public String getModuleBootstrappedPath() throws SiteWhereException {
+	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
+		+ MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_SUFFIX;
     }
 
     /*

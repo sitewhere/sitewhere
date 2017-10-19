@@ -18,16 +18,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class InitializeComponentLifecycleStep extends ComponentOperationLifecycleStep {
 
-    /** Error message if failed */
-    private String errorMessage;
-
     /** Indicates of required for parent component to function */
     private boolean require;
 
-    public InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, String name,
-	    String errorMessage, boolean require) {
-	super(owner, component, name);
-	this.errorMessage = errorMessage;
+    public InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	super(owner, component);
 	this.require = require;
     }
 
@@ -42,24 +37,17 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
 	    try {
-		getOwner().initializeNestedComponent(getComponent(), monitor, getErrorMessage(), isRequire());
+		getOwner().initializeNestedComponent(getComponent(), monitor, "Unable to initialize " + getName(),
+			isRequire());
 	    } catch (SiteWhereException t) {
 		throw t;
 	    } catch (Throwable t) {
-		throw new SiteWhereException(getErrorMessage(), t);
+		throw new SiteWhereException("Unable to initialize " + getName(), t);
 	    }
 	} else {
 	    throw new SiteWhereException(
 		    "Attempting to initialize component '" + getName() + "' but component is null.");
 	}
-    }
-
-    public String getErrorMessage() {
-	return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-	this.errorMessage = errorMessage;
     }
 
     public boolean isRequire() {

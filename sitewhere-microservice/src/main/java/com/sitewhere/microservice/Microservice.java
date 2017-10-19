@@ -62,8 +62,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize Zookeeper configuration management.
-	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperManager(), "Zookeeper Manager",
-		"Unable to initialize Zookeeper Manager", true));
+	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperManager(), true));
 
 	// Execute initialization steps.
 	initialize.execute(monitor);

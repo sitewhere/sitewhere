@@ -53,6 +53,14 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
     public String getModuleConfigurationPath() throws SiteWhereException;
 
     /**
+     * Get Zk configuration path for module bootstrapped indicator.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getModuleBootstrappedPath() throws SiteWhereException;
+
+    /**
      * Executes tenant initialization code. Called after Spring context has been
      * loaded.
      * 

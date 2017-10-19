@@ -105,12 +105,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	init.addStep(initializeDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Initialize user management implementation.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagement(), "User management persistence",
-		"Unable to initialize user management persistence", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagement(), true));
 
 	// Initialize user management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcServer(),
-		"User management GRPC server", "Unable to initialize user management GRPC server", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcServer(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -132,12 +130,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	start.addStep(startDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Start user mangement persistence.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagement(), "User management persistence",
-		"Unable to start user management persistence.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getUserManagement(), true));
 
 	// Start GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcServer(),
-		"User management GRPC server", "Unable to start user management GRPC server.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcServer(), true));
 
 	// Execute initialization steps.
 	start.execute(monitor);

@@ -5,14 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.multitenant;
+package com.sitewhere.microservice.multitenant.operations;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -24,11 +27,13 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Operation that adds a new tenant engine to an
- * {@link IMultitenantMicroservice}.
+ * {@link IMultitenantMicroservice} and initializes it.
  * 
  * @author Derek
+ *
+ * @param <T>
  */
-public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
+public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine>
 	implements Callable<IMicroserviceTenantEngine> {
 
     /** Static logger instance */
@@ -43,9 +48,14 @@ public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
     /** Tenant information */
     private ITenant tenant;
 
-    public AddTenantEngineOperation(MultitenantMicroservice<T> microservice, ITenant tenant) {
+    /** Completable future that tracks progress */
+    private CompletableFuture<T> completableFuture;
+
+    public InitializeTenantEngineOperation(MultitenantMicroservice<T> microservice, ITenant tenant,
+	    CompletableFuture<T> completableFuture) {
 	this.microservice = microservice;
 	this.tenant = tenant;
+	this.completableFuture = completableFuture;
     }
 
     /*
@@ -54,7 +64,7 @@ public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
      * @see java.util.concurrent.Callable#call()
      */
     @Override
-    public IMicroserviceTenantEngine call() throws Exception {
+    public T call() throws Exception {
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
 	    T created = getMicroservice().createTenantEngine(getTenant());
@@ -75,7 +85,11 @@ public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
 	    }
 	    LOGGER.info("Tenant engine for '" + getTenant().getName() + "' initialized in "
 		    + (System.currentTimeMillis() - start) + "ms.");
+	    getCompletableFuture().complete(created);
 	    return created;
+	} catch (Throwable t) {
+	    getCompletableFuture().completeExceptionally(t);
+	    return null;
 	} finally {
 	    // Make sure that tenant is cleared from the pending map.
 	    getMicroservice().getPendingEnginesByTenantId().remove(getTenant().getId());
@@ -119,5 +133,20 @@ public class AddTenantEngineOperation<T extends IMicroserviceTenantEngine>
 
     public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
+    }
+
+    public CompletableFuture<T> getCompletableFuture() {
+	return completableFuture;
+    }
+
+    public void setCompletableFuture(CompletableFuture<T> completableFuture) {
+	this.completableFuture = completableFuture;
+    }
+
+    public static <T extends IMicroserviceTenantEngine> CompletableFuture<T> createCompletableFuture(
+	    MultitenantMicroservice<T> microservice, ITenant tenant, ExecutorService executor) {
+	CompletableFuture<T> completableFuture = new CompletableFuture<T>();
+	executor.submit(new InitializeTenantEngineOperation<T>(microservice, tenant, completableFuture));
+	return completableFuture;
     }
 }

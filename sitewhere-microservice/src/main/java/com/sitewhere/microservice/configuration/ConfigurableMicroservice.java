@@ -225,12 +225,10 @@ public abstract class ConfigurableMicroservice extends Microservice
 
 	// Create and initialize configuration monitor.
 	createConfigurationMonitor();
-	initialize.addStep(new InitializeComponentLifecycleStep(this, getConfigurationMonitor(),
-		"Configuration Monitor", "Unable to initialize configuration monitor", true));
+	initialize.addStep(new InitializeComponentLifecycleStep(this, getConfigurationMonitor(), true));
 
 	// Start configuration monitor.
-	initialize.addStep(new StartComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor",
-		"Unable to start configuration monitor", true));
+	initialize.addStep(new StartComponentLifecycleStep(this, getConfigurationMonitor(), true));
 
 	// Execute initialization steps.
 	initialize.execute(monitor);

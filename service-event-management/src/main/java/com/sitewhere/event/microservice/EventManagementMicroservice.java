@@ -92,8 +92,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize event management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagementGrpcServer(),
-		"Event management GRPC server", "Unable to initialize event management GRPC server", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagementGrpcServer(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -112,8 +111,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start event management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcServer(),
-		"Event management GRPC server", "Unable to initialize event management GRPC server", true));
+	start.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcServer(), true));
 
 	// Execute startup steps.
 	start.execute(monitor);

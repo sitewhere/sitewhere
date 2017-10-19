@@ -267,8 +267,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    start.addStep(new StartComponentLifecycleStep(this, component, "Started " + component.getComponentName(),
-		    component.getComponentName() + " startup failed.", true));
+	    start.addStep(new StartComponentLifecycleStep(this, component, true));
 	}
     }
 
@@ -280,20 +279,16 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start asset management.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), "Started asset management",
-		"Asset management startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), true));
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), "Started device management",
-		"Device management startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), true));
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(),
-		"Started device event management", "Device event management startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(), true));
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), "Started schedule management",
-		"Schedule management startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), true));
     }
 
     /**
@@ -369,12 +364,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start search provider manager.
-	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(),
-		"Started search provider manager", "Search provider manager startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(), true));
 
 	// Start device communication subsystem.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(),
-		"Started device communication subsystem", "Device communication subsystem startup failed.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(), true));
     }
 
     /*

@@ -29,6 +29,8 @@ import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
+import com.sitewhere.microservice.multitenant.operations.InitializeTenantEngineOperation;
+import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperation;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -47,9 +49,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngine> extends ConfigurableMicroservice
 	implements IMultitenantMicroservice<T> {
-
-    /** Suffix appended to module identifier to locate module configuration */
-    public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
@@ -88,14 +87,13 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Handles threading for tenant operations.
 	this.tenantOperations = Executors.newFixedThreadPool(MAX_CONCURRENT_TENANT_OPERATIONS,
 		new TenantOperationsThreadFactory());
-	tenantOperations.execute(new TenantEngineBacklog());
+	tenantOperations.execute(new TenantEngineStarter());
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize tenant management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant management GRPC channel", "Unable to initialize tenant management GRPC channel", true));
+	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -131,8 +129,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start tenant mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant management GRPC channel", "Unable to start tenant management GRPC channel.", true));
+	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -457,11 +454,11 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     }
 
     /**
-     * Processes a backlog of tenants waiting for tenant engines to be started.
+     * Processes the list of tenants waiting for tenant engines to be started.
      * 
      * @author Derek
      */
-    private class TenantEngineBacklog implements Runnable {
+    private class TenantEngineStarter implements Runnable {
 
 	@Override
 	public void run() {
@@ -469,16 +466,22 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		try {
 		    ITenant tenant = getEnginesToCreate().take();
 		    if (getTenantEngineByTenantId(tenant.getId()) == null) {
-			getTenantOperations()
-				.submit(new AddTenantEngineOperation<T>(MultitenantMicroservice.this, tenant));
+			InitializeTenantEngineOperation
+				.createCompletableFuture(MultitenantMicroservice.this, tenant, getTenantOperations())
+				.thenApply(engine -> StartTenantEngineOperation.createCompletableFuture(engine,
+					getTenantOperations()))
+				.exceptionally(t -> {
+				    getLogger().error("Unable to bootstrap tenant engine.", t);
+				    return null;
+				});
 		    }
 		} catch (SiteWhereException e) {
-		    getLogger().warn("Exception processing tenant engine backlog.", e);
+		    getLogger().warn("Exception processing tenant engine.", e);
 		} catch (InterruptedException e) {
-		    getLogger().warn("Tenant engine backlog thread exiting.");
+		    getLogger().warn("Tenant engine starter thread exiting.");
 		    return;
 		} catch (Throwable e) {
-		    getLogger().warn("Unhandled exception processing tenant engine backlog.", e);
+		    getLogger().warn("Unhandled exception processing tenant engine.", e);
 		}
 	    }
 	}
