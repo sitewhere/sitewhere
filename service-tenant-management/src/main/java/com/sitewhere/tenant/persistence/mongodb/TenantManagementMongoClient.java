@@ -56,7 +56,7 @@ public class TenantManagementMongoClient extends BaseMongoClient implements ITen
      * com.sitewhere.mongodb.IGlobalManagementMongoClient#getTenantsCollection()
      */
     @Override
-    public MongoCollection<Document> getTenantsCollection() {
+    public MongoCollection<Document> getTenantsCollection() throws SiteWhereException {
 	return getGlobalDatabase().getCollection(getTenantsCollectionName());
     }
 

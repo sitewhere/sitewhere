@@ -10,6 +10,7 @@ package com.sitewhere.asset.spi.microservice;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetResolver;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to asset
@@ -18,6 +19,13 @@ import com.sitewhere.spi.asset.IAssetManagement;
  * @author Derek
  */
 public interface IAssetManagementTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get asset resolver.
+     * 
+     * @return
+     */
+    public IAssetResolver getAssetResolver();
 
     /**
      * Get associated asset management implementation.

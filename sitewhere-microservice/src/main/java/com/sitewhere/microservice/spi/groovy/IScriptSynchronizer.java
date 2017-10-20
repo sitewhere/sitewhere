@@ -36,26 +36,26 @@ public interface IScriptSynchronizer {
     public String getZkScriptRootPath() throws SiteWhereException;
 
     /**
-     * Add script from the given Zookeeper path.
+     * Add script from the given relative path.
      * 
      * @param zkPath
      * @throws SiteWhereException
      */
-    public void add(String zkPath) throws SiteWhereException;
+    public void add(String relativePath) throws SiteWhereException;
 
     /**
-     * Update script from the given Zookeeper path.
+     * Update script from the given relative path.
      * 
      * @param zkPath
      * @throws SiteWhereException
      */
-    public void update(String zkPath) throws SiteWhereException;
+    public void update(String relativePath) throws SiteWhereException;
 
     /**
-     * Delete script corresponding to the given Zookeeper path.
+     * Delete script corresponding to the given relative path.
      * 
      * @param zkPath
      * @throws SiteWhereException
      */
-    public void delete(String zkPath) throws SiteWhereException;
+    public void delete(String relativePath) throws SiteWhereException;
 }

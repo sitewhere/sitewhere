@@ -5,11 +5,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.tenant.templates;
+package com.sitewhere.microservice.multitenant;
 
 import java.util.List;
 
-import com.sitewhere.tenant.spi.templates.ITenantTemplate;
+import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 
 /**
  * Model object for an {@link ITenantTemplate}.

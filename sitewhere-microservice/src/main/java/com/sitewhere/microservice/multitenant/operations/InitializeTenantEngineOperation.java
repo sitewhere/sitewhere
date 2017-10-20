@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice.multitenant.operations;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -34,7 +33,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <T>
  */
 public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine>
-	implements Callable<IMicroserviceTenantEngine> {
+	extends CompletableTenantOperation<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -48,14 +47,11 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
     /** Tenant information */
     private ITenant tenant;
 
-    /** Completable future that tracks progress */
-    private CompletableFuture<T> completableFuture;
-
     public InitializeTenantEngineOperation(MultitenantMicroservice<T> microservice, ITenant tenant,
 	    CompletableFuture<T> completableFuture) {
+	super(completableFuture);
 	this.microservice = microservice;
 	this.tenant = tenant;
-	this.completableFuture = completableFuture;
     }
 
     /*
@@ -133,14 +129,6 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 
     public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
-    }
-
-    public CompletableFuture<T> getCompletableFuture() {
-	return completableFuture;
-    }
-
-    public void setCompletableFuture(CompletableFuture<T> completableFuture) {
-	this.completableFuture = completableFuture;
     }
 
     public static <T extends IMicroserviceTenantEngine> CompletableFuture<T> createCompletableFuture(

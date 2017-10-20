@@ -272,7 +272,10 @@ public abstract class BaseMongoClient extends TenantLifecycleComponent
      * 
      * @return
      */
-    public MongoClient getMongoClient() {
+    public MongoClient getMongoClient() throws SiteWhereException {
+	if (client == null) {
+	    throw new SiteWhereException("Client is null. Mongo client was not properly initialized.");
+	}
 	return client;
     }
 
@@ -296,8 +299,8 @@ public abstract class BaseMongoClient extends TenantLifecycleComponent
      * @param tenantId
      * @return
      */
-    public MongoDatabase getTenantDatabase(String tenantId) {
-	return client.getDatabase("tenant-" + tenantId);
+    public MongoDatabase getTenantDatabase(String tenantId) throws SiteWhereException {
+	return getMongoClient().getDatabase("tenant-" + tenantId);
     }
 
     /**
@@ -305,8 +308,8 @@ public abstract class BaseMongoClient extends TenantLifecycleComponent
      * 
      * @return
      */
-    public MongoDatabase getGlobalDatabase() {
-	return client.getDatabase(getConfiguration().getDatabaseName());
+    public MongoDatabase getGlobalDatabase() throws SiteWhereException {
+	return getMongoClient().getDatabase(getConfiguration().getDatabaseName());
     }
 
     public MongoConfiguration getConfiguration() {

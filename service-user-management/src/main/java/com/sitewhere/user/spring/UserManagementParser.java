@@ -42,7 +42,7 @@ public class UserManagementParser extends AbstractBeanDefinitionParser {
 	for (Element child : dsChildren) {
 	    Elements type = Elements.getByLocalName(child.getLocalName());
 	    if (type == null) {
-		throw new RuntimeException("Unknown tenant management element: " + child.getLocalName());
+		throw new RuntimeException("Unknown user management element: " + child.getLocalName());
 	    }
 	    switch (type) {
 	    case DefaultMongoDatastore: {
@@ -68,7 +68,7 @@ public class UserManagementParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());
 
-	// Build tenant mangement implementation.
+	// Build tenant management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
 	management.addPropertyReference("mongoClient", UserManagementBeans.BEAN_MONGODB_CLIENT);
 

@@ -7,17 +7,26 @@
  */
 package com.sitewhere.asset.microservice;
 
+import java.util.List;
+
 import com.sitewhere.asset.grpc.AssetManagementImpl;
+import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
+import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.microservice.spi.spring.AssetManagementBeans;
+import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -29,6 +38,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class AssetManagementTenantEngine extends MicroserviceTenantEngine implements IAssetManagementTenantEngine {
+
+    /** Asset resolver */
+    private IAssetResolver assetResolver;
 
     /** Asset management persistence API */
     private IAssetManagement assetManagement;
@@ -50,13 +62,17 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create managment interfaces.
+	// Create management interfaces.
 	this.assetManagement = (IAssetManagement) getModuleContext()
 		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
 	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement());
+	this.assetResolver = new AssetResolver(getAssetManagement(), null);
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize discoverable lifecycle components.
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
 
 	// Initialize asset management persistence.
 	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagement(), true));
@@ -74,7 +90,30 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	throw new SiteWhereException("SHIT BROKE!!!");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant.
+     * ITenantTemplate,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	List<String> scripts = template.getInitializers().getAssetManagement();
+	for (String script : scripts) {
+	    getTenantScriptSynchronizer().add(script);
+	}
+
+	GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model.")));
+	for (String script : scripts) {
+	    GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
+	    initializer.initialize(getAssetResolver());
+	}
     }
 
     /*
@@ -86,6 +125,21 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
+     * getAssetResolver()
+     */
+    @Override
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
+    }
+
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     /*

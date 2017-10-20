@@ -48,8 +48,8 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
      * String)
      */
     @Override
-    public void add(String zkPath) throws SiteWhereException {
-	copy(zkPath);
+    public void add(String relativePath) throws SiteWhereException {
+	copy(getZkScriptRootPath() + "/" + relativePath);
     }
 
     /*
@@ -60,8 +60,8 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
      * lang.String)
      */
     @Override
-    public void update(String zkPath) throws SiteWhereException {
-	copy(zkPath);
+    public void update(String relativePath) throws SiteWhereException {
+	copy(getZkScriptRootPath() + "/" + relativePath);
     }
 
     /*
@@ -72,12 +72,12 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
      * lang.String)
      */
     @Override
-    public void delete(String zkPath) throws SiteWhereException {
-	File existing = getFileFor(zkPath);
+    public void delete(String relativePath) throws SiteWhereException {
+	File existing = getFileFor(getZkScriptRootPath() + "/" + relativePath);
 	if (existing.exists()) {
 	    try {
 		Files.delete(existing.toPath());
-		LOGGER.info("Deleted script at path '" + zkPath + "'.");
+		LOGGER.info("Deleted script at path '" + existing.getAbsolutePath() + "'.");
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to delete script from filesystem.", e);
 	    }

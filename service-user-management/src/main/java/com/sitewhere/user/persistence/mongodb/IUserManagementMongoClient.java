@@ -10,6 +10,7 @@ package com.sitewhere.user.persistence.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client that provides user management collections.
@@ -28,13 +29,15 @@ public interface IUserManagementMongoClient {
      * Get the collection for users.
      * 
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getUsersCollection();
+    public MongoCollection<Document> getUsersCollection() throws SiteWhereException;
 
     /**
      * Get the collection for authorities.
      * 
      * @return
+     * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAuthoritiesCollection();
+    public MongoCollection<Document> getAuthoritiesCollection() throws SiteWhereException;
 }

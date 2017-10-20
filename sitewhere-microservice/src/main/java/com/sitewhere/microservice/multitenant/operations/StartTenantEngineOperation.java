@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice.multitenant.operations;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -27,8 +26,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  *
  * @param <T>
  */
-public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine>
-	implements Callable<IMicroserviceTenantEngine> {
+public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantOperation<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -36,12 +34,9 @@ public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine>
     /** Tenant engine being started */
     private T tenantEngine;
 
-    /** Completable future that tracks progress */
-    private CompletableFuture<T> completableFuture;
-
     public StartTenantEngineOperation(T tenantEngine, CompletableFuture<T> completableFuture) {
+	super(completableFuture);
 	this.tenantEngine = tenantEngine;
-	this.completableFuture = completableFuture;
     }
 
     /*
@@ -50,7 +45,7 @@ public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine>
      * @see java.util.concurrent.Callable#call()
      */
     @Override
-    public IMicroserviceTenantEngine call() throws Exception {
+    public T call() throws Exception {
 	try {
 	    // Start tenant engine.
 	    LOGGER.info("Starting tenant engine for '" + getTenantEngine().getTenant().getName() + "'.");
@@ -77,14 +72,6 @@ public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine>
 
     public void setTenantEngine(T tenantEngine) {
 	this.tenantEngine = tenantEngine;
-    }
-
-    public CompletableFuture<T> getCompletableFuture() {
-	return completableFuture;
-    }
-
-    public void setCompletableFuture(CompletableFuture<T> completableFuture) {
-	this.completableFuture = completableFuture;
     }
 
     public static <T extends IMicroserviceTenantEngine> CompletableFuture<T> createCompletableFuture(T tenantEngine,

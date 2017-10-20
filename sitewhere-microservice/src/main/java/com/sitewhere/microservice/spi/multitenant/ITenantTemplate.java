@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.tenant.spi.templates;
+package com.sitewhere.microservice.spi.multitenant;
 
 import java.util.List;
 

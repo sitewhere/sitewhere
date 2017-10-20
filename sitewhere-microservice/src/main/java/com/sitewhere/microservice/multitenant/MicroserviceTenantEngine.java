@@ -13,9 +13,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
+import com.sitewhere.microservice.groovy.TenantEngineScriptSynchronizer;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
+import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -32,14 +35,23 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Suffix appended to module identifier for lock path */
+    public static final String MODULE_LOCK_SUFFIX = ".lock";
+
     /** Suffix appended to module identifier to locate module configuration */
     public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
 
     /** Suffix appended to module identifier to indicate data is bootstrapped */
-    public static final String MODULE_BOOTSTRAPPED_SUFFIX = ".bootstrapped";
+    public static final String MODULE_BOOTSTRAPPED_SUFFIX = ".boot";
+
+    /** Tenant template path (relative to configuration root) */
+    public static final String TENANT_TEMPLATE_PATH = "/template.json";
 
     /** Parent microservice */
     private IMultitenantMicroservice<?> microservice;
+
+    /** Tenant script synchronizer */
+    private TenantEngineScriptSynchronizer tenantScriptSynchronizer;
 
     /** Module context information */
     private ApplicationContext moduleContext;
@@ -47,6 +59,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     public MicroserviceTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	this.microservice = microservice;
 	setTenant(tenant);
+	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
     }
 
     /*
@@ -167,11 +180,43 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      * 
      * @see
      * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getTenantTemplate()
+     */
+    @Override
+    public ITenantTemplate getTenantTemplate() throws SiteWhereException {
+	String templatePath = getTenantConfigurationPath() + TENANT_TEMPLATE_PATH;
+	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
+	try {
+	    byte[] data = curator.getData().forPath(templatePath);
+	    return MarshalUtils.unmarshalJson(data, TenantTemplate.class);
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getTenantConfigurationPath()
      */
     @Override
     public String getTenantConfigurationPath() throws SiteWhereException {
 	return getMicroservice().getInstanceTenantConfigurationPath(getTenant().getId());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getModuleLockPath()
+     */
+    @Override
+    public String getModuleLockPath() throws SiteWhereException {
+	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
+		+ MicroserviceTenantEngine.MODULE_LOCK_SUFFIX;
     }
 
     /*
@@ -214,6 +259,22 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
 
     public void setMicroservice(IMultitenantMicroservice<?> microservice) {
 	this.microservice = microservice;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * getTenantScriptSynchronizer()
+     */
+    @Override
+    public TenantEngineScriptSynchronizer getTenantScriptSynchronizer() {
+	return tenantScriptSynchronizer;
+    }
+
+    public void setTenantScriptSynchronizer(TenantEngineScriptSynchronizer tenantScriptSynchronizer) {
+	this.tenantScriptSynchronizer = tenantScriptSynchronizer;
     }
 
     /*

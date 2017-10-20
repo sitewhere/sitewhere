@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.curator.framework.CuratorFramework;
 
+import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 

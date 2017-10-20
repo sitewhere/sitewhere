@@ -14,6 +14,7 @@ import org.bson.Document;
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.mongodb.MongoConfiguration;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client for interacting with user management object model.
@@ -42,7 +43,7 @@ public class UserManagementMongoClient extends BaseMongoClient implements IUserM
      * com.sitewhere.mongodb.IGlobalManagementMongoClient#getUsersCollection()
      */
     @Override
-    public MongoCollection<Document> getUsersCollection() {
+    public MongoCollection<Document> getUsersCollection() throws SiteWhereException {
 	return getGlobalDatabase().getCollection(getUsersCollectionName());
     }
 
@@ -53,7 +54,7 @@ public class UserManagementMongoClient extends BaseMongoClient implements IUserM
      * getAuthoritiesCollection()
      */
     @Override
-    public MongoCollection<Document> getAuthoritiesCollection() {
+    public MongoCollection<Document> getAuthoritiesCollection() throws SiteWhereException {
 	return getGlobalDatabase().getCollection(getAuthoritiesCollectionName());
     }
 

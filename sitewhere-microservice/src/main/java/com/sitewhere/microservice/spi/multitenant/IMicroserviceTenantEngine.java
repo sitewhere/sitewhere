@@ -10,6 +10,7 @@ package com.sitewhere.microservice.spi.multitenant;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
+import com.sitewhere.microservice.spi.groovy.IScriptSynchronizer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
@@ -30,6 +31,21 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
     public IMultitenantMicroservice<?> getMicroservice();
 
     /**
+     * Get tenant template.
+     * 
+     * @return
+     */
+    public ITenantTemplate getTenantTemplate() throws SiteWhereException;
+
+    /**
+     * Get script synchronizer for copying/locating scripts.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScriptSynchronizer getTenantScriptSynchronizer() throws SiteWhereException;
+
+    /**
      * Get Zk configuration path for tenant.
      * 
      * @return
@@ -43,6 +59,14 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
      * @return
      */
     public ApplicationContext getModuleContext();
+
+    /**
+     * Get path used for locking operations at the module level.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getModuleLockPath() throws SiteWhereException;
 
     /**
      * Get Zk configuration path for module configuration.
@@ -76,6 +100,15 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
      * @throws SiteWhereException
      */
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Bootstrap a tenant with data provided in tenant template.
+     * 
+     * @param template
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Executes tenant shutdown code.

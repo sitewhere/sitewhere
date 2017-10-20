@@ -38,6 +38,11 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
     /** Relative path to Groovy script */
     private String scriptPath;
 
+    public GroovyUserModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+	this.groovyConfiguration = groovyConfiguration;
+	this.scriptPath = scriptPath;
+    }
+
     /*
      * (non-Javadoc)
      * 

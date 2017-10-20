@@ -39,6 +39,11 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
     /** Relative path to Groovy script */
     private String scriptPath;
 
+    public GroovyTenantModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+	this.groovyConfiguration = groovyConfiguration;
+	this.scriptPath = scriptPath;
+    }
+
     /*
      * (non-Javadoc)
      * 

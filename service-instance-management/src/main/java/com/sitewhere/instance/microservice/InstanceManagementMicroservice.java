@@ -287,7 +287,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	    throws SiteWhereException {
 	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
 	for (String script : scripts) {
-	    synchronizer.add(getInstanceZkPath() + "/" + script);
+	    synchronizer.add(script);
 	}
 
 	// Wait for user management APIs to become available.
@@ -297,9 +297,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model.")));
 	for (String script : scripts) {
-	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer();
-	    initializer.setGroovyConfiguration(groovy);
-	    initializer.setScriptPath(script);
+	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
 	    initializer.initialize(getUserManagementApiChannel());
 	}
     }
@@ -316,7 +314,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	    throws SiteWhereException {
 	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
 	for (String script : scripts) {
-	    synchronizer.add(getInstanceZkPath() + "/" + script);
+	    synchronizer.add(script);
 	}
 
 	// Wait for tenant management APIs to become available.
@@ -326,9 +324,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model.")));
 	for (String script : scripts) {
-	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer();
-	    initializer.setGroovyConfiguration(groovy);
-	    initializer.setScriptPath(script);
+	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
 	    initializer.initialize(getTenantManagementApiChannel());
 	}
     }

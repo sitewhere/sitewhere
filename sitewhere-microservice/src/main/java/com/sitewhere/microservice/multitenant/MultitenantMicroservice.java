@@ -29,6 +29,7 @@ import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
+import com.sitewhere.microservice.multitenant.operations.BootstrapTenantEngineOperation;
 import com.sitewhere.microservice.multitenant.operations.InitializeTenantEngineOperation;
 import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperation;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
@@ -468,7 +469,9 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		    if (getTenantEngineByTenantId(tenant.getId()) == null) {
 			InitializeTenantEngineOperation
 				.createCompletableFuture(MultitenantMicroservice.this, tenant, getTenantOperations())
-				.thenApply(engine -> StartTenantEngineOperation.createCompletableFuture(engine,
+				.thenCompose(engine -> StartTenantEngineOperation.createCompletableFuture(engine,
+					getTenantOperations()))
+				.thenCompose(engine -> BootstrapTenantEngineOperation.createCompletableFuture(engine,
 					getTenantOperations()))
 				.exceptionally(t -> {
 				    getLogger().error("Unable to bootstrap tenant engine.", t);

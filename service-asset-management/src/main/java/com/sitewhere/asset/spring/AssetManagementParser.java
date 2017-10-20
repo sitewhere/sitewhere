@@ -80,7 +80,7 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());
 
-	// Build device mangement implementation.
+	// Build asset management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
 	management.addPropertyReference("mongoClient", AssetManagementBeans.BEAN_MONGODB_CLIENT);
 

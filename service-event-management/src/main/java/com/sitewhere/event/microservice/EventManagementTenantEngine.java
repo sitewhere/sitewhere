@@ -13,6 +13,7 @@ import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
+import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.microservice.spi.spring.EventManagementBeans;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -62,6 +63,19 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant.
+     * ITenantTemplate,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
