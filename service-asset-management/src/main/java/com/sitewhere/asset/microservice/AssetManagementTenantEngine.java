@@ -68,7 +68,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement());
 	this.assetResolver = new AssetResolver(getAssetManagement(), null);
 
-	// Create step that will start components.
+	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.

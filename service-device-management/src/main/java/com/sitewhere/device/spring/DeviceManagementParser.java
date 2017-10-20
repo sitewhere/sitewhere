@@ -42,7 +42,7 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 	for (Element child : dsChildren) {
 	    Elements type = Elements.getByLocalName(child.getLocalName());
 	    if (type == null) {
-		throw new RuntimeException("Unknown tenant management element: " + child.getLocalName());
+		throw new RuntimeException("Unknown device management element: " + child.getLocalName());
 	    }
 	    switch (type) {
 	    case DefaultMongoDatastore: {

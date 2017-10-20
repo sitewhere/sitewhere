@@ -18,7 +18,6 @@ import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventReques
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
@@ -61,7 +60,7 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
      */
     @Override
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetManagement assetManagement, IAssetResolver assetResolver) throws SiteWhereException {
+	    IAssetResolver assetResolver) throws SiteWhereException {
 	// Skip if not enabled.
 	if (!isEnabled()) {
 	    return;
