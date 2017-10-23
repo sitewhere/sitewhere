@@ -11,7 +11,6 @@ import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.device.AssignmentStateManager;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.hbase.DeviceIdManager;
 import com.sitewhere.hbase.HBaseContext;
@@ -25,6 +24,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -44,6 +44,7 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -75,9 +76,6 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 
     /** Allows puts to be buffered for device events */
     private DeviceEventBuffer buffer;
-
-    /** Assignment state manager */
-    private AssignmentStateManager assignmentStateManager;
 
     /** Device id manager */
     private DeviceIdManager deviceIdManager;
@@ -111,11 +109,6 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	buffer = new DeviceEventBuffer(context);
 	buffer.start();
 	context.setDeviceEventBuffer(buffer);
-
-	// Create assignment state manager and start it.
-	assignmentStateManager = new AssignmentStateManager(getDeviceManagement());
-	startNestedComponent(assignmentStateManager, monitor, true);
-	context.setAssignmentStateManager(assignmentStateManager);
     }
 
     /*
@@ -129,11 +122,6 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (buffer != null) {
 	    buffer.stop();
-	}
-
-	// Stop the assignment state manager.
-	if (assignmentStateManager != null) {
-	    assignmentStateManager.lifecycleStop(monitor);
 	}
     }
 
@@ -162,12 +150,13 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceEventBatch
-     * (java. lang.String, com.sitewhere.spi.device.event.IDeviceEventBatch)
+     * (com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.event.IDeviceEventBatch)
      */
     @Override
-    public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
+    public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceAssignment assignment, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignment, batch, this);
     }
 
     /*
@@ -198,25 +187,25 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
-     * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceEvents(context, assignmentToken, criteria);
+    public ISearchResults<IDeviceEvent> listDeviceEvents(IDeviceAssignment assignment,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceEvent.listDeviceEvents(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceMeasurements(java .lang.String,
+     * addDeviceMeasurements(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+    public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.createDeviceMeasurements(context, assignment, measurements);
     }
 
@@ -224,26 +213,26 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurements(java .lang.String,
+     * listDeviceMeasurements(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurements(String token, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceMeasurements(context, token, criteria);
+    public SearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceEvent.listDeviceMeasurements(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForSite (java.lang.String,
+     * listDeviceMeasurementsForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
+    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceMeasurementsForSite(context, siteToken, criteria);
+	return HBaseDeviceEvent.listDeviceMeasurementsForSite(context, site, criteria);
     }
 
     /*
@@ -251,13 +240,12 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
-     * java.lang .String,
+     * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
     @Override
-    public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
+    public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.createDeviceLocation(context, assignment, request);
     }
 
@@ -266,39 +254,39 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (java. lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * (com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceLocations(context, assignmentToken, criteria);
+    public SearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceEvent.listDeviceLocations(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForSite (java.lang.String,
+     * listDeviceLocationsForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceLocationsForSite(context, siteToken, criteria);
+    public SearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
+	    throws SiteWhereException {
+	return HBaseDeviceEvent.listDeviceLocationsForSite(context, site, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java
-     * .lang. String,
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(com.
+     * sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
      */
     @Override
-    public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
+    public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.createDeviceAlert(context, assignment, request);
     }
 
@@ -307,25 +295,26 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
-     * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken, IDateRangeSearchCriteria criteria)
+    public SearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceAlerts(context, assignmentToken, criteria);
+	return HBaseDeviceEvent.listDeviceAlerts(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceAlertsForSite(java .lang.String,
+     * listDeviceAlertsForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken, IDateRangeSearchCriteria criteria)
+    public SearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceAlertsForSite(context, siteToken, criteria);
+	return HBaseDeviceEvent.listDeviceAlertsForSite(context, site, criteria);
     }
 
     /*
@@ -333,13 +322,13 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData
-     * (java. lang.String,
+     * (com.sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.device.streaming.IDeviceStream,
      * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
      */
     @Override
-    public IDeviceStreamData addDeviceStreamData(String assignmentToken, IDeviceStreamDataCreateRequest request)
-	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+    public IDeviceStreamData addDeviceStreamData(IDeviceAssignment assignment, IDeviceStream stream,
+	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 	return HBaseDeviceStreamData.createDeviceStreamData(context, assignment, request);
     }
 
@@ -348,12 +337,11 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData
-     * (java. lang.String, java.lang.String, long)
+     * (com.sitewhere.spi.device.IDeviceAssignment, java.lang.String, long)
      */
     @Override
-    public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+    public IDeviceStreamData getDeviceStreamData(IDeviceAssignment assignment, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceStreamData.getDeviceStreamData(context, assignment, streamId, sequenceNumber);
     }
 
@@ -361,13 +349,12 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamData(java .lang.String, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * listDeviceStreamData(com.sitewhere.spi.device.IDeviceAssignment,
+     * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
+    public ISearchResults<IDeviceStreamData> listDeviceStreamData(IDeviceAssignment assignment, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.listDeviceStreamData(context, assignment, streamId, criteria);
     }
 
@@ -375,14 +362,13 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation(java.lang.String,
+     * addDeviceCommandInvocation(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandInvocationCreateRequest)
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.createDeviceCommandInvocation(context, assignment, request);
     }
 
@@ -390,26 +376,26 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocations (java.lang.String,
+     * listDeviceCommandInvocations(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandInvocations(context, assignmentToken, criteria);
+	return HBaseDeviceEvent.listDeviceCommandInvocations(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForSite(java.lang.String,
+     * listDeviceCommandInvocationsForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandInvocationsForSite(context, siteToken, criteria);
+	return HBaseDeviceEvent.listDeviceCommandInvocationsForSite(context, site, criteria);
     }
 
     /*
@@ -428,14 +414,13 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponse( java.lang.String,
+     * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.
      * IDeviceCommandResponseCreateRequest)
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
+    public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 	return HBaseDeviceEvent.createDeviceCommandResponse(context, assignment, request);
     }
 
@@ -443,39 +428,38 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponses (java.lang.String,
+     * listDeviceCommandResponses(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandResponses(context, assignmentToken, criteria);
+	return HBaseDeviceEvent.listDeviceCommandResponses(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForSite (java.lang.String,
+     * listDeviceCommandResponsesForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandResponsesForSite(context, siteToken, criteria);
+	return HBaseDeviceEvent.listDeviceCommandResponsesForSite(context, site, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceStateChange(java .lang.String,
+     * addDeviceStateChange(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(String assignmentToken, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+    public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 	return HBaseDeviceEvent.createDeviceStateChange(context, assignment, request);
     }
 
@@ -483,26 +467,26 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChanges(java .lang.String,
+     * listDeviceStateChanges(com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceStateChanges(context, assignmentToken, criteria);
+	return HBaseDeviceEvent.listDeviceStateChanges(context, assignment, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForSite (java.lang.String,
+     * listDeviceStateChangesForSite(com.sitewhere.spi.device.ISite,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceStateChangesForSite(context, siteToken, criteria);
+	return HBaseDeviceEvent.listDeviceStateChangesForSite(context, site, criteria);
     }
 
     /*

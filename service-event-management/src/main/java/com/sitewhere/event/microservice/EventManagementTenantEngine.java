@@ -15,8 +15,11 @@ import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.microservice.spi.spring.EventManagementBeans;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -52,6 +55,18 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.eventManagement = (IDeviceEventManagement) getModuleContext()
 		.getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
 	this.eventManagementImpl = new EventManagementImpl(getEventManagement());
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize discoverable lifecycle components.
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+
+	// Initialize event management persistence.
+	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagement(), true));
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*

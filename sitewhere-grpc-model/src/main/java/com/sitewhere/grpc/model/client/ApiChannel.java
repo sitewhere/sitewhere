@@ -53,6 +53,12 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
      */
     @Override
     public void waitForApiAvailable(long duration, TimeUnit unit) throws ApiNotAvailableException {
+	if (getGrpcChannel() == null) {
+	    throw new ApiNotAvailableException("GRPC channel not found. Unable to access API.");
+	}
+	if (getGrpcChannel().getChannel() == null) {
+	    throw new ApiNotAvailableException("GRPC channel not initialized. Unable to access API.");
+	}
 	long deadline = System.currentTimeMillis() + unit.toMillis(duration);
 	while ((System.currentTimeMillis() - deadline) < 0) {
 	    try {

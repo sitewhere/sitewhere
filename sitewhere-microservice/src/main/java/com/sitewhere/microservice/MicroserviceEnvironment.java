@@ -23,6 +23,9 @@ public class MicroserviceEnvironment {
     /** Default Docker hostname for device management microservice */
     public static final String HOST_DEVICE_MANAGEMENT = "device-management";
 
+    /** Default Docker hostname for event management microservice */
+    public static final String HOST_EVENT_MANAGEMENT = "event-management";
+
     /** Default Docker hostname for asset management microservice */
     public static final String HOST_ASSET_MANAGEMENT = "asset-management";
 }

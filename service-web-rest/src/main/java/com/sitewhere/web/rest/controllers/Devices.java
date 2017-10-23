@@ -453,6 +453,7 @@ public class Devices extends RestController {
 	if (device.getAssignmentToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
+	IDeviceAssignment assignment = assertDeviceAssignment(device.getAssignmentToken());
 
 	// Set event dates if not set by client.
 	for (IDeviceLocationCreateRequest locReq : batch.getLocations()) {
@@ -471,7 +472,7 @@ public class Devices extends RestController {
 	    }
 	}
 
-	return getDeviceEventManagement().addDeviceEventBatch(device.getAssignmentToken(), batch);
+	return getDeviceEventManagement().addDeviceEventBatch(assignment, batch);
     }
 
     /**
@@ -508,6 +509,21 @@ public class Devices extends RestController {
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
+	}
+	return result;
+    }
+
+    /**
+     * Gets a device assignment by token and throws an exception if not found.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
+	IDeviceAssignment result = getDeviceManagement().getDeviceAssignmentByToken(token);
+	if (result == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
 	return result;
     }

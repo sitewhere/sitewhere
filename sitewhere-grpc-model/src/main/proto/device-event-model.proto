@@ -109,7 +109,7 @@ enum GDeviceEventType {
 // Common device event information.
 message GDeviceEvent {
 	string id = 1;
-	string alternateId = 2;
+	GOptionalString alternateId = 2;
 	GDeviceEventType eventType = 3;
 	string siteToken = 4;
 	string assignmentToken = 5;

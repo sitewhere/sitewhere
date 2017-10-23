@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.scripting;
 
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -20,10 +21,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 public class DeviceEventSupport {
 
+    /** Device assignment */
+    private IDeviceAssignment deviceAssignment;
+
     /** Wrapped event */
     private IDeviceEvent event;
 
-    public DeviceEventSupport(IDeviceEvent event) {
+    public DeviceEventSupport(IDeviceAssignment deviceAssignment, IDeviceEvent event) {
+	this.deviceAssignment = deviceAssignment;
 	this.event = event;
     }
 
@@ -109,6 +114,14 @@ public class DeviceEventSupport {
      */
     public boolean isAlertOfType(String type) {
 	return (isAlert() && ((IDeviceAlert) event).getType().equals(type));
+    }
+
+    public IDeviceAssignment getDeviceAssignment() {
+	return deviceAssignment;
+    }
+
+    public void setDeviceAssignment(IDeviceAssignment deviceAssignment) {
+	this.deviceAssignment = deviceAssignment;
     }
 
     public IDeviceEvent data() {

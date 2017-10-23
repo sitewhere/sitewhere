@@ -77,15 +77,17 @@ public class DeviceEventRequestBuilder {
     }
 
     public AssignmentScope forSameAssignmentAs(DeviceEventSupport support) {
-	return new AssignmentScope(getEventManagement(), support.data().getDeviceAssignmentToken());
+	return new AssignmentScope(getEventManagement(), support.getDeviceAssignment());
     }
 
-    public AssignmentScope forSameAssignmentAs(IDeviceEvent event) {
-	return new AssignmentScope(getEventManagement(), event.getDeviceAssignmentToken());
+    public AssignmentScope forSameAssignmentAs(IDeviceEvent event) throws SiteWhereException {
+	return new AssignmentScope(getEventManagement(),
+		getDeviceManagement().getDeviceAssignmentByToken(event.getDeviceAssignmentToken()));
     }
 
-    public AssignmentScope forAssignment(String assignmentToken) {
-	return new AssignmentScope(getEventManagement(), assignmentToken);
+    public AssignmentScope forAssignment(String assignmentToken) throws SiteWhereException {
+	return new AssignmentScope(getEventManagement(),
+		getDeviceManagement().getDeviceAssignmentByToken(assignmentToken));
     }
 
     public IDeviceManagement getDeviceManagement() {
@@ -109,44 +111,44 @@ public class DeviceEventRequestBuilder {
 	/** Event management interface */
 	private IDeviceEventManagement events;
 
-	/** Assignment token */
-	private String assignmentToken;
+	/** Device assignment */
+	private IDeviceAssignment deviceAssignment;
 
-	public AssignmentScope(IDeviceEventManagement events, String assignmentToken) {
+	public AssignmentScope(IDeviceEventManagement events, IDeviceAssignment deviceAssignment) {
 	    this.events = events;
-	    this.assignmentToken = assignmentToken;
+	    this.deviceAssignment = deviceAssignment;
 	}
 
 	public AssignmentScope persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceLocationCreateRequest request = builder.build();
-	    events.addDeviceLocation(getAssignmentToken(), request);
+	    events.addDeviceLocation(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceMeasurementsCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceMeasurementsCreateRequest request = builder.build();
-	    events.addDeviceMeasurements(getAssignmentToken(), request);
+	    events.addDeviceMeasurements(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceAlertCreateRequest request = builder.build();
-	    events.addDeviceAlert(getAssignmentToken(), request);
+	    events.addDeviceAlert(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    events.addDeviceCommandInvocation(getAssignmentToken(), request);
+	    events.addDeviceCommandInvocation(getDeviceAssignment(), request);
 	    return this;
 	}
 
-	public String getAssignmentToken() {
-	    return assignmentToken;
+	public IDeviceAssignment getDeviceAssignment() {
+	    return deviceAssignment;
 	}
 
-	public void setAssignmentToken(String assignmentToken) {
-	    this.assignmentToken = assignmentToken;
+	public void setDeviceAssignment(IDeviceAssignment deviceAssignment) {
+	    this.deviceAssignment = deviceAssignment;
 	}
     }
 }

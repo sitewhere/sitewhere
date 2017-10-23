@@ -46,10 +46,7 @@ import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.event.DeviceAlert;
-import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
-import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
@@ -241,7 +238,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceEvents(token, criteria);
+	return getDeviceEventManagement().listDeviceEvents(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -265,7 +262,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceMeasurements(token, criteria);
+	return getDeviceEventManagement().listDeviceMeasurements(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -315,8 +312,8 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement().listDeviceMeasurements(token,
-		criteria);
+	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement()
+		.listDeviceMeasurements(assertDeviceAssignment(token), criteria);
 	ChartBuilder builder = new ChartBuilder();
 	return builder.process(measurements.getResults(), measurementIds);
     }
@@ -337,7 +334,8 @@ public class Assignments extends RestController {
     public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceMeasurements result = getDeviceEventManagement().addDeviceMeasurements(token, input);
+	IDeviceMeasurements result = getDeviceEventManagement().addDeviceMeasurements(assertDeviceAssignment(token),
+		input);
 	return DeviceMeasurements.copy(result);
     }
 
@@ -362,7 +360,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceLocations(token, criteria);
+	return getDeviceEventManagement().listDeviceLocations(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -410,11 +408,10 @@ public class Assignments extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create location event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
+    public IDeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceLocation result = getDeviceEventManagement().addDeviceLocation(token, input);
-	return DeviceLocation.copy(result);
+	return getDeviceEventManagement().addDeviceLocation(assertDeviceAssignment(token), input);
     }
 
     /**
@@ -438,7 +435,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceAlerts(token, criteria);
+	return getDeviceEventManagement().listDeviceAlerts(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -454,11 +451,10 @@ public class Assignments extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create alert event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
+    public IDeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceAlert result = getDeviceEventManagement().addDeviceAlert(token, input);
-	return DeviceAlert.copy(result);
+	return getDeviceEventManagement().addDeviceAlert(assertDeviceAssignment(token), input);
     }
 
     /**
@@ -544,6 +540,8 @@ public class Assignments extends RestController {
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceStream stream = assertDeviceStream(token, streamId);
 	try {
 	    ServletInputStream inData = servletRequest.getInputStream();
 	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
@@ -558,7 +556,7 @@ public class Assignments extends RestController {
 	    request.setEventDate(new Date());
 	    request.setUpdateState(false);
 	    request.setData(payload);
-	    getDeviceEventManagement().addDeviceStreamData(token, request);
+	    getDeviceEventManagement().addDeviceStreamData(assignment, stream, request);
 	    svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 	} catch (SiteWhereSystemException e) {
 	    if (e.getCode() == ErrorCode.InvalidStreamId) {
@@ -590,7 +588,8 @@ public class Assignments extends RestController {
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	IDeviceStreamData chunk = getDeviceEventManagement().getDeviceStreamData(token, streamId, sequenceNumber);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceStreamData chunk = getDeviceEventManagement().getDeviceStreamData(assignment, streamId, sequenceNumber);
 	if (chunk == null) {
 	    svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 	    return;
@@ -609,15 +608,12 @@ public class Assignments extends RestController {
     public void listDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	IDeviceStream stream = getDeviceManagement().getDeviceStream(token, streamId);
-	if (stream == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceStream stream = assertDeviceStream(token, streamId);
 	svtResponse.setContentType(stream.getContentType());
 
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
-	ISearchResults<IDeviceStreamData> data = getDeviceEventManagement().listDeviceStreamData(token, streamId,
+	ISearchResults<IDeviceStreamData> data = getDeviceEventManagement().listDeviceStreamData(assignment, streamId,
 		criteria);
 
 	// Sort results by sequence number.
@@ -649,10 +645,11 @@ public class Assignments extends RestController {
     @ResponseBody
     @ApiOperation(value = "Create command invocation event for assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
+    public IDeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommandInvocation result = getDeviceEventManagement().addDeviceCommandInvocation(token, request);
+	IDeviceCommandInvocation result = getDeviceEventManagement()
+		.addDeviceCommandInvocation(assertDeviceAssignment(token), request);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }
@@ -694,7 +691,7 @@ public class Assignments extends RestController {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
-		.listDeviceCommandInvocations(token, criteria);
+		.listDeviceCommandInvocations(assertDeviceAssignment(token), criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
 	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
@@ -719,7 +716,8 @@ public class Assignments extends RestController {
     public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceStateChange result = getDeviceEventManagement().addDeviceStateChange(token, input);
+	IDeviceStateChange result = getDeviceEventManagement().addDeviceStateChange(assertDeviceAssignment(token),
+		input);
 	return DeviceStateChange.copy(result);
     }
 
@@ -744,7 +742,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceStateChanges(token, criteria);
+	return getDeviceEventManagement().listDeviceStateChanges(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -762,7 +760,8 @@ public class Assignments extends RestController {
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommandResponse result = getDeviceEventManagement().addDeviceCommandResponse(token, input);
+	IDeviceCommandResponse result = getDeviceEventManagement()
+		.addDeviceCommandResponse(assertDeviceAssignment(token), input);
 	return DeviceCommandResponse.copy(result);
     }
 
@@ -787,7 +786,7 @@ public class Assignments extends RestController {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceCommandResponses(token, criteria);
+	return getDeviceEventManagement().listDeviceCommandResponses(assertDeviceAssignment(token), criteria);
     }
 
     /**
@@ -917,6 +916,36 @@ public class Assignments extends RestController {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
 	return command;
+    }
+
+    /**
+     * Assert that a device assignment exists and throw an exception if not.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
+	if (assignment == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+	}
+	return assignment;
+    }
+
+    /**
+     * Assert that a device stream exists and throw an exception if not.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceStream assertDeviceStream(String assignmentToken, String id) throws SiteWhereException {
+	IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentToken, id);
+	if (stream == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
+	}
+	return stream;
     }
 
     private IDeviceManagement getDeviceManagement() {

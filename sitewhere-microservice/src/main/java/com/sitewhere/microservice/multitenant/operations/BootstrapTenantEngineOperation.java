@@ -72,8 +72,9 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
 	    getCompletableFuture().complete(getTenantEngine());
 	    return getTenantEngine();
 	} catch (Throwable t) {
+	    LOGGER.error("Unable to bootstrap tenant engine for '" + getTenantEngine().getTenant().getName() + "'.", t);
 	    getCompletableFuture().completeExceptionally(t);
-	    return null;
+	    throw t;
 	}
     }
 

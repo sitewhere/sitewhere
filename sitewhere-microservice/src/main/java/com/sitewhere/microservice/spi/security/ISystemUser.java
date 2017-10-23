@@ -10,6 +10,7 @@ package com.sitewhere.microservice.spi.security;
 import org.springframework.security.core.Authentication;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Support access to a global "superuser" for authorizing calls between
@@ -26,4 +27,13 @@ public interface ISystemUser {
      * @throws SiteWhereException
      */
     public Authentication getAuthentication() throws SiteWhereException;
+
+    /**
+     * Get authentication for superuser in context of a given tenant.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    public Authentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException;
 }

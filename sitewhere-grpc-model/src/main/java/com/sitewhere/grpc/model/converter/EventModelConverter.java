@@ -180,7 +180,7 @@ public class EventModelConverter {
      * @throws SiteWhereException
      */
     public static void copyApiDeviceEvent(GDeviceEvent grpc, DeviceEvent api) throws SiteWhereException {
-	api.setAlternateId(grpc.getAlternateId());
+	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
 	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
 	api.setMetadata(grpc.getMetadataMap());
     }
@@ -194,7 +194,9 @@ public class EventModelConverter {
      */
     public static GDeviceEvent createGrpcDeviceEvent(IDeviceEvent api) throws SiteWhereException {
 	GDeviceEvent.Builder grpc = GDeviceEvent.newBuilder();
-	grpc.setAlternateId(api.getAlternateId());
+	if (api.getAlternateId() != null) {
+	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
+	}
 	if (api.getEventDate() != null) {
 	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));
 	}

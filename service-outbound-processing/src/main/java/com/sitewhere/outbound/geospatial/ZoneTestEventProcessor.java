@@ -17,10 +17,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.geospatial.ZoneContainment;
@@ -83,14 +84,15 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 	    ZoneContainment containment = (poly.contains(GeoUtils.createPointForLocation(location)))
 		    ? ZoneContainment.Inside : ZoneContainment.Outside;
 	    if (test.getCondition() == containment) {
+		IDeviceAssignment assignment = getDeviceManagement()
+			.getDeviceAssignmentByToken(location.getDeviceAssignmentToken());
 		DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 		alert.setType(test.getAlertType());
 		alert.setLevel(test.getAlertLevel());
 		alert.setMessage(test.getAlertMessage());
 		alert.setUpdateState(false);
 		alert.setEventDate(new Date());
-		SiteWhere.getServer().getDeviceEventManagement(getTenant())
-			.addDeviceAlert(location.getDeviceAssignmentToken(), alert);
+		getDeviceEventManagement().addDeviceAlert(assignment, alert);
 	    }
 	}
     }
@@ -107,13 +109,17 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 	if (poly != null) {
 	    return poly;
 	}
-	IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant()).getZone(token);
+	IZone zone = getDeviceManagement().getZone(token);
 	if (zone != null) {
 	    poly = GeoUtils.createPolygonForZone(zone);
 	    zoneMap.put(token, poly);
 	    return poly;
 	}
 	throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": " + token);
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return null;
     }
 
     public List<ZoneTest> getZoneTests() {

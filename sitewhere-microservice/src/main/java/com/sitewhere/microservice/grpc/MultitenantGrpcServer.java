@@ -46,7 +46,7 @@ public class MultitenantGrpcServer extends GrpcServer {
 	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
 	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(tenant).build();
 	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
+	    throw new SiteWhereException("Unable to initialize GRPC server.", e);
 	}
     }
 }

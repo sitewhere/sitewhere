@@ -20,6 +20,7 @@ import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -46,7 +47,7 @@ public class SystemUser implements ISystemUser {
     private List<IGrantedAuthority> auths = SystemUser.getNonGroupAuthorities();
 
     /** Last authentication result */
-    private Authentication last = null;
+    private SitewhereAuthentication last = null;
 
     /** Last time JWT was generated */
     private long lastGenerated = 0;
@@ -58,7 +59,7 @@ public class SystemUser implements ISystemUser {
      * com.sitewhere.microservice.spi.security.ISystemUser#getAuthentication()
      */
     @Override
-    public Authentication getAuthentication() throws SiteWhereException {
+    public SitewhereAuthentication getAuthentication() throws SiteWhereException {
 	if ((System.currentTimeMillis() - lastGenerated) > (RENEW_INTERVAL_SEC * 1000)) {
 	    String jwt = tokenManagement.generateToken(user);
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
@@ -66,6 +67,19 @@ public class SystemUser implements ISystemUser {
 	    this.lastGenerated = System.currentTimeMillis();
 	}
 	return this.last;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.security.ISystemUser#
+     * getAuthenticationForTenant(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public Authentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException {
+	SitewhereAuthentication auth = getAuthentication();
+	auth.setTenantToken(tenant.getId());
+	return auth;
     }
 
     /**

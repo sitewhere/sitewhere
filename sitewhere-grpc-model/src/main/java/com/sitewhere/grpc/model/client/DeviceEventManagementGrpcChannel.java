@@ -21,7 +21,7 @@ import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagemen
  * @author Derek
  */
 public class DeviceEventManagementGrpcChannel
-	extends GrpcChannel<DeviceEventManagementBlockingStub, DeviceEventManagementStub> {
+	extends MultitenantGrpcChannel<DeviceEventManagementBlockingStub, DeviceEventManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

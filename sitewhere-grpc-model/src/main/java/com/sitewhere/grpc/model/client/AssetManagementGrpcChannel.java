@@ -20,7 +20,8 @@ import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementStub;
  * 
  * @author Derek
  */
-public class AssetManagementGrpcChannel extends GrpcChannel<AssetManagementBlockingStub, AssetManagementStub> {
+public class AssetManagementGrpcChannel
+	extends MultitenantGrpcChannel<AssetManagementBlockingStub, AssetManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

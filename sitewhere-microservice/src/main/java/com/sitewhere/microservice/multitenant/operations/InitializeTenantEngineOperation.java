@@ -84,8 +84,9 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	    getCompletableFuture().complete(created);
 	    return created;
 	} catch (Throwable t) {
+	    LOGGER.error("Unable to initialize tenant engine for '" + getTenant().getName() + "'.", t);
 	    getCompletableFuture().completeExceptionally(t);
-	    return null;
+	    throw t;
 	} finally {
 	    // Make sure that tenant is cleared from the pending map.
 	    getMicroservice().getPendingEnginesByTenantId().remove(getTenant().getId());

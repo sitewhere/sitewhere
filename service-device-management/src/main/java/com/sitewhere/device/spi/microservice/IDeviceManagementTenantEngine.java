@@ -8,7 +8,9 @@
 package com.sitewhere.device.spi.microservice;
 
 import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
+import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.asset.IAssetResolver;
@@ -36,6 +38,20 @@ public interface IDeviceManagementTenantEngine extends IMicroserviceTenantEngine
      * @return
      */
     public DeviceManagementGrpc.DeviceManagementImplBase getDeviceManagementImpl();
+
+    /**
+     * Get device event mangement GRPC channel.
+     * 
+     * @return
+     */
+    public DeviceEventManagementGrpcChannel getEventManagementGrpcChannel();
+
+    /**
+     * Get device event management API channel.
+     * 
+     * @return
+     */
+    public IDeviceEventManagementApiChannel getEventManagementApiChannel();
 
     /**
      * Get asset management GRPC channel.

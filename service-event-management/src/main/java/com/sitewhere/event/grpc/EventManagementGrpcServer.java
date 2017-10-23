@@ -9,14 +9,14 @@ package com.sitewhere.event.grpc;
 
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
-import com.sitewhere.microservice.grpc.GrpcServer;
+import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 
 /**
  * Hosts a GRPC server that handles device event management requests.
  * 
  * @author Derek
  */
-public class EventManagementGrpcServer extends GrpcServer implements IEventManagementGrpcServer {
+public class EventManagementGrpcServer extends MultitenantGrpcServer implements IEventManagementGrpcServer {
 
     public EventManagementGrpcServer(IEventManagementMicroservice microservice) {
 	super(microservice, new EventManagementRouter(microservice));

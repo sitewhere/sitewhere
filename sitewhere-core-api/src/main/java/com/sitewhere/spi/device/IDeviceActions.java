@@ -21,24 +21,24 @@ public interface IDeviceActions {
     /**
      * Create a new location for the given assignment.
      * 
-     * @param assignmentToken
+     * @param assignment
      * @param latitude
      * @param longitude
      * @param elevation
      * @param updateState
      * @throws SiteWhereException
      */
-    public void createLocation(String assignmentToken, double latitude, double longitude, double elevation,
+    public void createLocation(IDeviceAssignment assignment, double latitude, double longitude, double elevation,
 	    boolean updateState) throws SiteWhereException;
 
     /**
      * Send command to a device.
      * 
-     * @param assignmentToken
+     * @param assignment
      * @param command
      * @param parameters
      * @throws SiteWhereException
      */
-    public void sendCommand(String assignmentToken, String command, Map<String, String> parameters)
+    public void sendCommand(IDeviceAssignment assignment, String command, Map<String, String> parameters)
 	    throws SiteWhereException;
 }

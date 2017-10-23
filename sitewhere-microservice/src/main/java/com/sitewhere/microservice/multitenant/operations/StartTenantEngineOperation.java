@@ -61,8 +61,9 @@ public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine> ext
 	    getCompletableFuture().complete(getTenantEngine());
 	    return getTenantEngine();
 	} catch (Throwable t) {
+	    LOGGER.error("Unable to start tenant engine for '" + getTenantEngine().getTenant().getName() + "'.", t);
 	    getCompletableFuture().completeExceptionally(t);
-	    return null;
+	    throw t;
 	}
     }
 

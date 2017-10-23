@@ -1,6 +1,0 @@
-description = 'SiteWhere GRPC Library'
-
-dependencies {
-	compile project(':sitewhere-core')
-	compile project(':sitewhere-grpc-model')
-}

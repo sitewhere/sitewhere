@@ -209,9 +209,10 @@ public class Sites extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	ISite site = assertSite(siteToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement()
-		.listDeviceMeasurementsForSite(siteToken, criteria);
+	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForSite(site,
+		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
@@ -240,9 +241,9 @@ public class Sites extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	ISite site = assertSite(siteToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForSite(siteToken,
-		criteria);
+	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForSite(site, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
@@ -272,7 +273,8 @@ public class Sites extends RestController {
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForSite(siteToken, criteria);
+	ISite site = getDeviceManagement().getSiteByToken(siteToken);
+	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForSite(site, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
@@ -301,9 +303,10 @@ public class Sites extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	ISite site = assertSite(siteToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForSite(siteToken, criteria);
+		.listDeviceCommandInvocationsForSite(site, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
@@ -332,9 +335,10 @@ public class Sites extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	ISite site = assertSite(siteToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
-		.listDeviceCommandResponsesForSite(siteToken, criteria);
+		.listDeviceCommandResponsesForSite(site, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
@@ -363,8 +367,9 @@ public class Sites extends RestController {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	ISite site = assertSite(siteToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForSite(siteToken,
+	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForSite(site,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -514,6 +519,21 @@ public class Sites extends RestController {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	return getDeviceManagement().listZones(siteToken, criteria);
+    }
+
+    /**
+     * Get site associated with token or throw an exception if invalid.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ISite assertSite(String token) throws SiteWhereException {
+	ISite site = getDeviceManagement().getSiteByToken(token);
+	if (site == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	}
+	return site;
     }
 
     private IDeviceManagement getDeviceManagement() {

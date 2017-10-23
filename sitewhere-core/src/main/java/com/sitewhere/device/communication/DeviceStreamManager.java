@@ -85,7 +85,7 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
     public void handleDeviceStreamDataRequest(String hardwareId, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStreamData(assignment.getToken(), request);
+	SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceStreamData(assignment, null, request);
     }
 
     /*
@@ -100,7 +100,7 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 	IDeviceStreamData data = SiteWhere.getServer().getDeviceEventManagement(getTenant())
-		.getDeviceStreamData(assignment.getToken(), request.getStreamId(), request.getSequenceNumber());
+		.getDeviceStreamData(assignment, request.getStreamId(), request.getSequenceNumber());
 	SendDeviceStreamDataCommand command = new SendDeviceStreamDataCommand();
 	command.setStreamId(request.getStreamId());
 	command.setSequenceNumber(request.getSequenceNumber());
