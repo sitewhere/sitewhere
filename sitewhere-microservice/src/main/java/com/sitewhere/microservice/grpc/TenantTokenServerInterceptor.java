@@ -54,7 +54,7 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
 	    ServerCallHandler<ReqT, RespT> next) {
 	if (headers.containsKey(TenantTokenClientInterceptor.TENANT_TOKEN_KEY)) {
 	    String tenant = headers.get(TenantTokenClientInterceptor.TENANT_TOKEN_KEY);
-	    LOGGER.info("Received tenant token key: " + tenant);
+	    LOGGER.debug("Received tenant token key: " + tenant);
 	    Context ctx = Context.current().withValue(TENANT_TOKEN_KEY, tenant);
 	    return Contexts.interceptCall(ctx, call, headers, next);
 	} else {

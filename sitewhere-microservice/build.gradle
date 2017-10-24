@@ -16,7 +16,4 @@ dependencies {
     
     // JWT
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
-    
-    // Geolocation classes made available to scripts.
-	compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
 }

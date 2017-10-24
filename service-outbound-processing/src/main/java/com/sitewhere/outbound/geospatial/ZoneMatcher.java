@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geospatial.IZoneMatcher;
