@@ -8,8 +8,6 @@
 package com.sitewhere.microservice.multitenant;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
@@ -31,9 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent implements IMicroserviceTenantEngine {
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Suffix appended to module identifier for lock path */
     public static final String MODULE_LOCK_SUFFIX = ".lock";
@@ -150,7 +145,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
-	getLogger().info("Tenant engine configuration path added: " + path);
+	getLogger().debug("Tenant engine configuration path added: " + path);
     }
 
     /*
@@ -161,7 +156,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
-	getLogger().info("Tenant engine configuration path updated: " + path);
+	getLogger().debug("Tenant engine configuration path updated: " + path);
     }
 
     /*
@@ -172,7 +167,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public void onConfigurationDeleted(String path) {
-	getLogger().info("Tenant engine configuration path deleted: " + path);
+	getLogger().debug("Tenant engine configuration path deleted: " + path);
     }
 
     /*
@@ -291,15 +286,5 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
 
     public void setModuleContext(ApplicationContext moduleContext) {
 	this.moduleContext = moduleContext;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Logger getLogger() {
-	return LOGGER;
     }
 }

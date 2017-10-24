@@ -54,6 +54,9 @@ public class JwtServerInterceptor implements ServerInterceptor {
     /** Map of implementation methods indexed by full name from descriptor */
     private Map<String, Method> methodsByFullName = new HashMap<String, Method>();
 
+    /** Hashmap of JWT to decoded claims */
+    private Map<String, Claims> jwtToClaims = new HashMap<String, Claims>();
+
     public JwtServerInterceptor(IMicroservice microservice, Class<? extends BindableService> implementation) {
 	this.microservice = microservice;
 	this.implementation = implementation;
@@ -71,7 +74,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	if (headers.containsKey(JwtClientInterceptor.JWT_KEY)) {
 	    String jwt = headers.get(JwtClientInterceptor.JWT_KEY);
 	    try {
-		Claims claims = getMicroservice().getTokenManagement().getClaimsForToken(jwt);
+		Claims claims = getClaimsForJwt(jwt);
 		String username = getMicroservice().getTokenManagement().getUsernameFromClaims(claims);
 		List<IGrantedAuthority> gauths = getMicroservice().getTokenManagement()
 			.getGrantedAuthoritiesFromClaims(claims);
@@ -88,6 +91,23 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	    return new ServerCall.Listener<ReqT>() {
 	    };
 	}
+    }
+
+    /**
+     * Get cached claims for JWT.
+     * 
+     * @param jwt
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Claims getClaimsForJwt(String jwt) throws SiteWhereException {
+	// TODO: Swap to expiring cache and put limits on number of cached JWTs.
+	Claims claims = jwtToClaims.get(jwt);
+	if (claims == null) {
+	    claims = getMicroservice().getTokenManagement().getClaimsForToken(jwt);
+	    jwtToClaims.put(jwt, claims);
+	}
+	return claims;
     }
 
     /**

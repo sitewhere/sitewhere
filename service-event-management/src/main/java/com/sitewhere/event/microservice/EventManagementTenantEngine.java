@@ -7,6 +7,9 @@
  */
 package com.sitewhere.event.microservice;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -30,6 +33,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class EventManagementTenantEngine extends MicroserviceTenantEngine implements IEventManagementTenantEngine {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Event management persistence API */
     private IDeviceEventManagement eventManagement;
@@ -132,5 +138,15 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
     public void setEventManagementImpl(DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl) {
 	this.eventManagementImpl = eventManagementImpl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }

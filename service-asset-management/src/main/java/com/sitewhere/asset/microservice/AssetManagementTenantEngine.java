@@ -9,6 +9,9 @@ package com.sitewhere.asset.microservice;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.asset.grpc.AssetManagementImpl;
 import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
@@ -38,6 +41,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class AssetManagementTenantEngine extends MicroserviceTenantEngine implements IAssetManagementTenantEngine {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Asset resolver */
     private IAssetResolver assetResolver;
@@ -170,5 +176,15 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
     public void setAssetManagementImpl(AssetManagementGrpc.AssetManagementImplBase assetManagementImpl) {
 	this.assetManagementImpl = assetManagementImpl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }

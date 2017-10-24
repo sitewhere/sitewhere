@@ -9,6 +9,8 @@ package com.sitewhere.device.microservice;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -49,6 +51,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class DeviceManagementTenantEngine extends MicroserviceTenantEngine implements IDeviceManagementTenantEngine {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Device management persistence API */
     private IDeviceManagement deviceManagement;
@@ -293,5 +298,15 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
     public void setAssetResolver(IAssetResolver assetResolver) {
 	this.assetResolver = assetResolver;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }
