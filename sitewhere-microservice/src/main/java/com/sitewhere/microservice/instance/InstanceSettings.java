@@ -46,6 +46,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.grpc.port:9000}")
     private int grpcPort;
 
+    /** Tracer server information */
+    @Value("${sitewhere.tracer.server:zipkin:9411}")
+    private String tracerServer;
+
     /*
      * (non-Javadoc)
      * 
@@ -149,5 +153,21 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setGrpcPort(int grpcPort) {
 	this.grpcPort = grpcPort;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getTracerServer
+     * ()
+     */
+    @Override
+    public String getTracerServer() {
+	return tracerServer;
+    }
+
+    public void setTracerServer(String tracerServer) {
+	this.tracerServer = tracerServer;
     }
 }

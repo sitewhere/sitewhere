@@ -44,8 +44,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** Microservice name */
     private static final String NAME = "Web/REST";
 
+    /** Microservice identifier */
+    private static final String IDENTIFIER = "web-rest";
+
     /** Web/REST configuration file name */
-    private static final String WEB_REST_CONFIGURATION = "web-rest.xml";
+    private static final String WEB_REST_CONFIGURATION = IDENTIFIER + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { WEB_REST_CONFIGURATION };
@@ -70,6 +73,16 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     */
+    @Override
+    public String getIdentifier() {
+	return IDENTIFIER;
     }
 
     /*

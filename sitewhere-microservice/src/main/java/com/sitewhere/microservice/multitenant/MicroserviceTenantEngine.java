@@ -210,7 +210,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public String getModuleLockPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
+	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
 		+ MicroserviceTenantEngine.MODULE_LOCK_SUFFIX;
     }
 
@@ -223,7 +223,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public String getModuleConfigurationPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
+	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
 		+ MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
     }
 
@@ -236,7 +236,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
      */
     @Override
     public String getModuleBootstrappedPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getModuleIdentifier()
+	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
 		+ MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_SUFFIX;
     }
 

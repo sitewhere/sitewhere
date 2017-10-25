@@ -47,8 +47,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /** Microservice name */
     private static final String NAME = "Tenant Management";
 
+    /** Microservice identifier */
+    private static final String IDENTIFIER = "tenant-management";
+
     /** Tenant management configuration file name */
-    private static final String TENANT_MANAGEMENT_CONFIGURATION = "tenant-management.xml";
+    private static final String TENANT_MANAGEMENT_CONFIGURATION = IDENTIFIER + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { TENANT_MANAGEMENT_CONFIGURATION };
@@ -82,6 +85,16 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     */
+    @Override
+    public String getIdentifier() {
+	return IDENTIFIER;
     }
 
     /*

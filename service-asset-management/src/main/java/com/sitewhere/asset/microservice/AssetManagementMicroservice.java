@@ -57,11 +57,10 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
-     * getModuleIdentifier()
+     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
      */
     @Override
-    public String getModuleIdentifier() throws SiteWhereException {
+    public String getIdentifier() {
 	return MODULE_IDENTIFIER;
     }
 

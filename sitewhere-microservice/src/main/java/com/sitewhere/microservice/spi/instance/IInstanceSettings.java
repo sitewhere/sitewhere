@@ -62,4 +62,11 @@ public interface IInstanceSettings {
      * @return
      */
     public int getGrpcPort();
+
+    /**
+     * Get server information for tracer collector.
+     * 
+     * @return
+     */
+    public String getTracerServer();
 }

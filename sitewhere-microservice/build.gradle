@@ -18,5 +18,6 @@ dependencies {
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
     
     // Tracing support
-    compile group: 'io.opentracing.contrib', name: 'opentracing-spring-web-autoconfigure', version:'0.1.0-RC1'
+    compile group: 'io.opentracing.brave', name: 'brave-opentracing', version:'0.22.1'
+    compile group: 'io.zipkin.reporter2', name: 'zipkin-sender-okhttp3', version:'2.1.3'
 }

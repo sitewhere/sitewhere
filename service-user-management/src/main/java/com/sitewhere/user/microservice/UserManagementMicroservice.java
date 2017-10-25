@@ -40,8 +40,11 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     /** Microservice name */
     private static final String NAME = "User Management";
 
+    /** Microservice identifier */
+    private static final String IDENTIFIER = "user-management";
+
     /** User management configuration file name */
-    private static final String USER_MANAGEMENT_CONFIGURATION = "user-management.xml";
+    private static final String USER_MANAGEMENT_CONFIGURATION = IDENTIFIER + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { USER_MANAGEMENT_CONFIGURATION };
@@ -60,6 +63,16 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     */
+    @Override
+    public String getIdentifier() {
+	return IDENTIFIER;
     }
 
     /*

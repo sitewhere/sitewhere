@@ -56,6 +56,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Microservice name */
     private static final String NAME = "Instance Management";
 
+    /** Microservice identifier */
+    private static final String IDENTIFIER = "user-management";
+
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
@@ -79,6 +82,16 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     @Override
     public String getName() {
 	return NAME;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     */
+    @Override
+    public String getIdentifier() {
+	return IDENTIFIER;
     }
 
     /*
