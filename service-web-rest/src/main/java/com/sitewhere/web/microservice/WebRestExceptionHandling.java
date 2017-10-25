@@ -1,12 +1,11 @@
-/*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
- */
-package com.sitewhere.web.rest;
+package com.sitewhere.web.microservice;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +19,54 @@ import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ResourceExistsException;
+import com.sitewhere.spi.tenant.TenantNotAvailableException;
 
 /**
- * Common exception handling for REST responses.
+ * Common handler for exceptions generated while processing REST requests.
  * 
  * @author Derek
  */
 @ControllerAdvice
-public class RestExceptionHandling extends ResponseEntityExceptionHandler {
+public class WebRestExceptionHandling extends ResponseEntityExceptionHandler {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * Handles exception thrown when a tenant operation is requested on an
+     * unavailable tenant.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler(value = { TenantNotAvailableException.class })
+    protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
+	LOGGER.error("Operation invoked on unavailable tenant.", e);
+	try {
+	    response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The requested tenant is not available.");
+	} catch (IOException e1) {
+	    LOGGER.error(e1);
+	}
+    }
+
+    /**
+     * Handles exceptions where a new resource is to be created, but an existing
+     * resource exists with the given key.
+     * 
+     * @param e
+     * @param response
+     */
+    @ExceptionHandler(value = { ResourceExistsException.class })
+    protected void handleResourceExists(ResourceExistsException e, HttpServletResponse response) {
+	try {
+	    sendErrorResponse(e, e.getCode(), HttpServletResponse.SC_CONFLICT, response);
+	    LOGGER.error("Resource with same key already exists.", e);
+	} catch (IOException e1) {
+	    e1.printStackTrace();
+	}
+    }
 
     /**
      * Handle unauthorized requests.
@@ -48,7 +87,7 @@ public class RestExceptionHandling extends ResponseEntityExceptionHandler {
      * @param response
      */
     @ExceptionHandler(value = { UnauthenticatedException.class })
-    protected ResponseEntity<Object> handleUnauthenticated(NotAuthorizedException e, WebRequest request) {
+    protected ResponseEntity<Object> handleUnauthenticated(UnauthenticatedException e, WebRequest request) {
 	return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
@@ -59,7 +98,7 @@ public class RestExceptionHandling extends ResponseEntityExceptionHandler {
      * @param response
      */
     @ExceptionHandler(value = { JwtExpiredException.class })
-    protected ResponseEntity<Object> handleJwtExpired(NotAuthorizedException e, WebRequest request) {
+    protected ResponseEntity<Object> handleJwtExpired(JwtExpiredException e, WebRequest request) {
 	return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
@@ -89,6 +128,23 @@ public class RestExceptionHandling extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(value = { RuntimeException.class })
     protected ResponseEntity<Object> handleRuntimeException(RuntimeException e, WebRequest request) {
+	LOGGER.error("Showing internal server error due to unhandled runtime exception.", e);
 	return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    /**
+     * Send error response including SiteWhere headers.
+     * 
+     * @param e
+     * @param errorCode
+     * @param responseCode
+     * @param response
+     * @throws IOException
+     */
+    protected void sendErrorResponse(Exception e, ErrorCode errorCode, int responseCode, HttpServletResponse response)
+	    throws IOException {
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
+	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
+	response.sendError(responseCode, errorCode.getMessage());
     }
 }

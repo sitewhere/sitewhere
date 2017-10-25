@@ -7,24 +7,15 @@
  */
 package com.sitewhere.web.rest;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.error.ResourceExistsException;
-import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
@@ -34,9 +25,6 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * @author Derek Adams
  */
 public class RestControllerBase {
-
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
 
     @Autowired
     private IWebRestMicroservice microservice;
@@ -48,72 +36,6 @@ public class RestControllerBase {
      */
     public IWebRestMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Handles exception thrown when a tenant operation is requested on an
-     * unavailable tenant.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
-	LOGGER.error("Operation invoked on unavailable tenant.", e);
-	try {
-	    response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "The requested tenant is not available.");
-	} catch (IOException e1) {
-	    LOGGER.error(e1);
-	}
-    }
-
-    /**
-     * Handles exceptions where a new resource is to be created, but an existing
-     * resource exists with the given key.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleResourceExists(ResourceExistsException e, HttpServletResponse response) {
-	try {
-	    sendErrorResponse(e, e.getCode(), HttpServletResponse.SC_CONFLICT, response);
-	    LOGGER.error("Resource with same key already exists.", e);
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
-    }
-
-    /**
-     * Send error response including SiteWhere headers.
-     * 
-     * @param e
-     * @param errorCode
-     * @param responseCode
-     * @param response
-     * @throws IOException
-     */
-    protected void sendErrorResponse(Exception e, ErrorCode errorCode, int responseCode, HttpServletResponse response)
-	    throws IOException {
-	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR, errorCode.getMessage());
-	response.setHeader(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, String.valueOf(errorCode.getCode()));
-	response.sendError(responseCode, errorCode.getMessage());
-    }
-
-    /**
-     * Handles situations where user does not pass exprected content for a POST.
-     * 
-     * @param e
-     * @param response
-     */
-    @ExceptionHandler
-    protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
-	try {
-	    LOGGER.error("Error handling REST request..", e);
-	    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No body content passed for POST request.");
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
     }
 
     /**
