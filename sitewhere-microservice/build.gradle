@@ -16,4 +16,7 @@ dependencies {
     
     // JWT
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
+    
+    // Tracing support
+    compile group: 'io.opentracing.contrib', name: 'opentracing-spring-web-autoconfigure', version:'0.1.0-RC1'
 }
