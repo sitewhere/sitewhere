@@ -13,9 +13,6 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -68,20 +65,6 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
     /** Assignment end date */
     private Date releasedDate;
-
-    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
-
-    /** Device being assigned */
-    private Device device;
-
-    /** Associated person asset */
-    private PersonAsset associatedPerson;
-
-    /** Associated hardware asset */
-    private HardwareAsset associatedHardware;
-
-    /** Associated location asset */
-    private LocationAsset associatedLocation;
 
     /*
      * (non-Javadoc)
@@ -232,37 +215,5 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
     public void setReleasedDate(Date releasedDate) {
 	this.releasedDate = releasedDate;
-    }
-
-    public Device getDevice() {
-	return device;
-    }
-
-    public void setDevice(Device device) {
-	this.device = device;
-    }
-
-    public PersonAsset getAssociatedPerson() {
-	return associatedPerson;
-    }
-
-    public void setAssociatedPerson(PersonAsset associatedPerson) {
-	this.associatedPerson = associatedPerson;
-    }
-
-    public HardwareAsset getAssociatedHardware() {
-	return associatedHardware;
-    }
-
-    public void setAssociatedHardware(HardwareAsset associatedHardware) {
-	this.associatedHardware = associatedHardware;
-    }
-
-    public LocationAsset getAssociatedLocation() {
-	return associatedLocation;
-    }
-
-    public void setAssociatedLocation(LocationAsset associatedLocation) {
-	this.associatedLocation = associatedLocation;
     }
 }

@@ -26,6 +26,7 @@ import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -165,7 +166,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	helper.setIncludeAsset(false);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(false);
-	DeviceAssignment converted = helper.convert(assignment, null);
+	MarshaledDeviceAssignment converted = helper.convert(assignment, null);
 
 	createBucket(converted.getToken(),
 		converted.getAssetName() + " (" + converted.getDevice().getAssetName() + ")");

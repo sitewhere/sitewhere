@@ -53,26 +53,6 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     /** Token for current assignment */
     private String assignmentToken;
 
-    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
-
-    /** Device specification */
-    private DeviceSpecification specification;
-
-    /** Current device assignment */
-    private DeviceAssignment assignment;
-
-    /** Current site deployment */
-    private Site site;
-
-    /** Asset id from device specification (only for marshaling) */
-    private String assetId;
-
-    /** Asset name from device specification (only for marshaling) */
-    private String assetName;
-
-    /** Asset image url from device specification (only for marshaling) */
-    private String assetImageUrl;
-
     /*
      * (non-Javadoc)
      * 
@@ -176,53 +156,5 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
 
     public void setAssignmentToken(String assignmentToken) {
 	this.assignmentToken = assignmentToken;
-    }
-
-    public DeviceSpecification getSpecification() {
-	return specification;
-    }
-
-    public void setSpecification(DeviceSpecification specification) {
-	this.specification = specification;
-    }
-
-    public DeviceAssignment getAssignment() {
-	return assignment;
-    }
-
-    public void setAssignment(DeviceAssignment assignment) {
-	this.assignment = assignment;
-    }
-
-    public Site getSite() {
-	return site;
-    }
-
-    public void setSite(Site site) {
-	this.site = site;
-    }
-
-    public String getAssetId() {
-	return assetId;
-    }
-
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
-    }
-
-    public String getAssetName() {
-	return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-	this.assetName = assetName;
-    }
-
-    public String getAssetImageUrl() {
-	return assetImageUrl;
-    }
-
-    public void setAssetImageUrl(String assetImageUrl) {
-	this.assetImageUrl = assetImageUrl;
     }
 }

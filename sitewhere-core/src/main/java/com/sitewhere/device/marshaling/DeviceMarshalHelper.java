@@ -16,6 +16,7 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
@@ -78,8 +79,8 @@ public class DeviceMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public Device convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
-	Device result = new Device();
+    public MarshaledDevice convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
+	MarshaledDevice result = new MarshaledDevice();
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteToken(source.getSiteToken());
 	result.setParentHardwareId(source.getParentHardwareId());
