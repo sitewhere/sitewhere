@@ -32,6 +32,9 @@ dependencies {
 	
 	// Quartz.
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
+	
+	// Tracing support for Spring web components.
+    compile group: 'io.opentracing.contrib', name: 'opentracing-spring-web', version:'0.0.10'
 }
 
 // Create a Dockerfile.

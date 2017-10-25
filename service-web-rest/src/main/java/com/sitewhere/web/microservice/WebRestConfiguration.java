@@ -9,6 +9,7 @@ package com.sitewhere.web.microservice;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.webresources.StandardRoot;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -30,7 +31,10 @@ import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestApiConfiguration;
 import com.sitewhere.web.rest.RestApiSwaggerConfiguration;
 import com.sitewhere.web.security.RestSecurity;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 import com.sitewhere.web.vue.VueConfiguration;
+
+import io.opentracing.contrib.web.servlet.filter.TracingFilter;
 
 /**
  * Configures web server and related artifacts.
@@ -40,6 +44,10 @@ import com.sitewhere.web.vue.VueConfiguration;
 @Configuration
 @Import(RestSecurity.class)
 public class WebRestConfiguration {
+
+    @Autowired
+    private IWebRestMicroservice microservice;
+
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 	return new PropertySourcesPlaceholderConfigurer();
@@ -136,6 +144,15 @@ public class WebRestConfiguration {
     }
 
     @Bean
+    public FilterRegistrationBean tracingFilter() {
+	TracingFilter tracingFilter = new TracingFilter(getMicroservice().getTracer());
+	FilterRegistrationBean registration = new FilterRegistrationBean(tracingFilter);
+	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
+	registration.setOrder(Integer.MIN_VALUE);
+	return registration;
+    }
+
+    @Bean
     public FilterRegistrationBean methodOverrideFilter() {
 	MethodOverrideFilter filter = new MethodOverrideFilter();
 	FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -169,5 +186,13 @@ public class WebRestConfiguration {
 	registration.setFilter(filter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
+    }
+
+    public IWebRestMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IWebRestMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

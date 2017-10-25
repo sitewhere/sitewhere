@@ -9,15 +9,19 @@ package com.sitewhere.web.rest;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.web.rest.controllers.Assets;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
+import io.opentracing.contrib.spring.web.interceptor.TracingHandlerInterceptor;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -51,6 +55,9 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     /** Contact email for API questions */
     private static final String API_LICENSE_URL = "https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
 
+    @Autowired
+    private IWebRestMicroservice microservice;
+
     @Bean
     public Docket sitewhereApi() {
 	AuthorizationScope[] scopes = new AuthorizationScope[0];
@@ -79,5 +86,26 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
 	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
 		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
 		.version(SiteWhere.getVersion().getVersionIdentifier()).build();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
+     * #addInterceptors(org.springframework.web.servlet.config.annotation.
+     * InterceptorRegistry)
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+	registry.addInterceptor(new TracingHandlerInterceptor(getMicroservice().getTracer()));
+    }
+
+    public IWebRestMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IWebRestMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

@@ -21,12 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
-import brave.Tracing;
-import brave.opentracing.BraveTracer;
 import io.opentracing.Tracer;
-import zipkin2.Span;
-import zipkin2.reporter.AsyncReporter;
-import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
  * Common base class for all SiteWhere microservices.
@@ -58,6 +53,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     private ISystemUser systemUser;
 
     /** Tracer implementation */
+    @Autowired
     private Tracer tracer;
 
     /*
@@ -68,9 +64,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Intitialize the tracer implementation.
-	initializeTracer();
-
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -125,17 +118,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	} catch (Exception e) {
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
 	}
-    }
-
-    /**
-     * Initialize the {@link Tracer} implementation.
-     */
-    protected void initializeTracer() {
-	OkHttpSender okHttpSender = OkHttpSender
-		.create("http://" + getInstanceSettings().getTracerServer() + "/api/v2/spans");
-	AsyncReporter<Span> reporter = AsyncReporter.builder(okHttpSender).build();
-	Tracing braveTracer = Tracing.newBuilder().localServiceName(getIdentifier()).spanReporter(reporter).build();
-	this.tracer = BraveTracer.create(braveTracer);
     }
 
     /*
