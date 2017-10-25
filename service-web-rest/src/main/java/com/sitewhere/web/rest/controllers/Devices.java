@@ -23,14 +23,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
 import com.sitewhere.device.group.DeviceGroupUtils;
@@ -65,7 +64,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,11 +75,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/devices")
 @Api(value = "devices")
-public class Devices extends RestController {
+public class Devices extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -93,7 +92,6 @@ public class Devices extends RestController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new device")
     @Secured({ SiteWhereRoles.REST })
     public IDevice createDevice(@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
@@ -112,7 +110,6 @@ public class Devices extends RestController {
      * @return
      */
     @RequestMapping(value = "/{hardwareId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get device by unique hardware id")
     @Secured({ SiteWhereRoles.REST })
     public IDevice getDeviceByHardwareId(
@@ -144,7 +141,6 @@ public class Devices extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{hardwareId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing device")
     @Secured({ SiteWhereRoles.REST })
     public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
@@ -163,7 +159,6 @@ public class Devices extends RestController {
      * @return
      */
     @RequestMapping(value = "/{hardwareId}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete device based on unique hardware id")
     @Secured({ SiteWhereRoles.REST })
     public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
@@ -184,7 +179,6 @@ public class Devices extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{hardwareId}/assignment", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get current assignment for device")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceAssignment getDeviceCurrentAssignment(
@@ -214,7 +208,6 @@ public class Devices extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{hardwareId}/assignments", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List assignment history for device")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
@@ -246,7 +239,6 @@ public class Devices extends RestController {
      * @return
      */
     @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new device element mapping")
     @Secured({ SiteWhereRoles.REST })
     public IDevice addDeviceElementMapping(
@@ -260,7 +252,6 @@ public class Devices extends RestController {
     }
 
     @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete existing device element mapping")
     @Secured({ SiteWhereRoles.REST })
     public IDevice deleteDeviceElementMapping(
@@ -284,7 +275,6 @@ public class Devices extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{hardwareId}/symbol", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get default symbol for device")
     public ResponseEntity<byte[]> getDeviceDefaultSymbol(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
@@ -311,7 +301,6 @@ public class Devices extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List devices that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDevice> listDevices(
@@ -342,7 +331,6 @@ public class Devices extends RestController {
 
     @Deprecated
     @RequestMapping(value = "/specification/{token}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List devices using a given specification")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDevice> listDevicesForSpecification(
@@ -372,7 +360,6 @@ public class Devices extends RestController {
     }
 
     @RequestMapping(value = "/group/{groupToken}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List devices in device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDevice> listDevicesForGroup(
@@ -403,7 +390,6 @@ public class Devices extends RestController {
     }
 
     @RequestMapping(value = "/grouprole/{role}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List devices in device groups with role")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDevice> listDevicesForGroupsWithRole(
@@ -443,7 +429,6 @@ public class Devices extends RestController {
      * @return
      */
     @RequestMapping(value = "/{hardwareId}/batch", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Add multiple events for device")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEventBatchResponse addDeviceEventBatch(

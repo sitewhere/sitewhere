@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.swagger;
+package com.sitewhere.web.auth;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -14,10 +14,10 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Configuration
-public class SwaggerConfiguration extends WebMvcConfigurationSupport {
+public class RestAuthSwaggerConfiguration extends WebMvcConfigurationSupport {
 
-    /** URL prefix for matching Swagger calls */
-    public static final String SWAGGER_MATCHER = "/swagger/*";
+    /** URL prefix for matching authentication Swagger calls */
+    public static final String SWAGGER_MATCHER = "/auth/*";
 
     /*
      * (non-Javadoc)
@@ -53,6 +53,6 @@ public class SwaggerConfiguration extends WebMvcConfigurationSupport {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-	registry.addViewController("/").setViewName("forward:/swagger/index.html");
+	registry.addViewController("/").setViewName("forward:/swagger/auth-index.html");
     }
 }

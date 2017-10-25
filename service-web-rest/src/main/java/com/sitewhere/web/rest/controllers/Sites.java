@@ -18,14 +18,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.SiteMarshalHelper;
@@ -63,7 +62,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -74,11 +73,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/sites")
 @Api(value = "sites")
-public class Sites extends RestController {
+public class Sites extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -92,7 +91,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new site")
     @Secured({ SiteWhereRoles.REST })
     public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
@@ -109,7 +107,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get site by unique token")
     @Secured({ SiteWhereRoles.REST })
     public Site getSiteByToken(
@@ -131,7 +128,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update existing site")
     @Secured({ SiteWhereRoles.REST })
     public Site updateSite(
@@ -150,7 +146,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete site by unique token")
     @Secured({ SiteWhereRoles.REST })
     public Site deleteSiteByToken(
@@ -168,7 +163,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List sites matching criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<ISite> listSites(
@@ -199,7 +193,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List measurements for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
@@ -231,7 +224,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List locations for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
@@ -262,7 +254,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List alerts for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
@@ -293,7 +284,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List command invocations for a site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
@@ -325,7 +315,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List command responses for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
@@ -357,7 +346,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List state changes associated with a site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
@@ -388,7 +376,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device assignments for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsForSite(
@@ -419,7 +406,6 @@ public class Sites extends RestController {
     }
 
     @RequestMapping(value = "/{siteToken}/assignments/lastinteraction", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device assignments for site with qualifying last interaction date")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
@@ -459,7 +445,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/assignments/missing", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device assignments marked as missing")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
@@ -493,7 +478,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new zone for site")
     @Secured({ SiteWhereRoles.REST })
     public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
@@ -509,7 +493,6 @@ public class Sites extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List zones for site")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IZone> listZonesForSite(

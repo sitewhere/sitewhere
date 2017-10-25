@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
@@ -43,7 +42,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,18 +53,17 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/batch")
 @Api(value = "batch")
-public class BatchOperations extends RestController {
+public class BatchOperations extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     @RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get batch operation by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IBatchOperation getBatchOperationByToken(
@@ -79,7 +77,6 @@ public class BatchOperations extends RestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List batch operations")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IBatchOperation> listBatchOperations(
@@ -97,7 +94,6 @@ public class BatchOperations extends RestController {
     }
 
     @RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List batch operation elements")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IBatchElement> listBatchOperationElements(
@@ -111,7 +107,6 @@ public class BatchOperations extends RestController {
     }
 
     @RequestMapping(value = "/command", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new batch command invocation")
     @Secured({ SiteWhereRoles.REST })
     public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
@@ -130,7 +125,6 @@ public class BatchOperations extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
     public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
@@ -160,7 +154,6 @@ public class BatchOperations extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/command/criteria/schedules/{scheduleToken}", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Schedule batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,

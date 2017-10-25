@@ -30,14 +30,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
@@ -92,7 +91,7 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -103,11 +102,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/assignments")
 @Api(value = "assignments")
-public class Assignments extends RestController {
+public class Assignments extends RestControllerBase {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -119,7 +118,6 @@ public class Assignments extends RestController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
@@ -155,7 +153,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get device assignment by token")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment getDeviceAssignment(
@@ -177,7 +174,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment deleteDeviceAssignment(
@@ -199,7 +195,6 @@ public class Assignments extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}/metadata", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update device assignment metadata")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment updateDeviceAssignmentMetadata(
@@ -225,7 +220,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/events", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List events for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceEvent> listEvents(
@@ -249,7 +243,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/measurements", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List measurement events for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceMeasurements> listMeasurements(
@@ -298,7 +291,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/measurements/series", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List assignment measurements as chart series")
     @Secured({ SiteWhereRoles.REST })
     public List<IChartSeries<Double>> listMeasurementsAsChartSeries(
@@ -328,7 +320,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create measurements event for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
@@ -347,7 +338,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/locations", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List location events for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceLocation> listLocations(
@@ -371,7 +361,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/locations/latest/push", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Push most recent location to current state")
     @Secured({ SiteWhereRoles.REST })
     public void pushLatestLocationToState(
@@ -405,7 +394,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/locations", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create location event for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
@@ -422,7 +410,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/alerts", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List alert events for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAlert> listAlerts(
@@ -448,7 +435,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/alerts", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create alert event for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
@@ -466,7 +452,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/streams", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create data stream for a device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
@@ -477,7 +462,6 @@ public class Assignments extends RestController {
     }
 
     @RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List data streams for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStream> listDeviceStreams(
@@ -507,7 +491,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     @ApiOperation(value = "Get device assignment data stream by id")
     @Secured({ SiteWhereRoles.REST })
     public DeviceStream getDeviceStream(
@@ -533,7 +516,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Add data to device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
     public void addDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -581,7 +563,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/streams/{streamId:.+}/data/{sequenceNumber}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get data from device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
     public void getDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -602,7 +583,6 @@ public class Assignments extends RestController {
     }
 
     @RequestMapping(value = "/{token}/streams/{streamId:.+}/data", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get all data from device assignment data stream")
     @Secured({ SiteWhereRoles.REST })
     public void listDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -642,7 +622,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/invocations", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create command invocation event for assignment")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
@@ -655,7 +634,6 @@ public class Assignments extends RestController {
     }
 
     @RequestMapping(value = "/{token}/invocations/schedules/{scheduleToken}", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Schedule command invocation")
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob scheduleCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
@@ -676,7 +654,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/invocations", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List command invocation events for assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandInvocation> listCommandInvocations(
@@ -710,7 +687,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/statechanges", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create an state change event for a device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
@@ -729,7 +705,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/statechanges", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List state change events for a device assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStateChange> listStateChanges(
@@ -754,7 +729,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/responses", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create command response event for assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
@@ -773,7 +747,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/responses", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List command response events for assignment")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandResponse> listCommandResponses(
@@ -799,7 +772,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/symbol", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get default symbol for assignment")
     public ResponseEntity<byte[]> getDeviceAssignmentSymbol(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -827,7 +799,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/end", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Release an active device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment endDeviceAssignment(
@@ -850,7 +821,6 @@ public class Assignments extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/missing", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Mark device assignment as missing")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment missingDeviceAssignment(

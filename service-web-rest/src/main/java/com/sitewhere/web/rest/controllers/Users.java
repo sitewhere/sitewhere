@@ -17,14 +17,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -45,7 +44,7 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.swagger.annotations.Api;
@@ -57,11 +56,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/users")
 @Api(value = "users")
-public class Users extends RestController {
+public class Users extends RestControllerBase {
 
     /** Injected reference to microservice */
     @Autowired
@@ -79,7 +78,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new user")
     public User createUser(@RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
@@ -103,7 +101,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update existing user.")
     public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    @RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
@@ -121,7 +118,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get user by username")
     public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -143,7 +139,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete user by username")
     public User deleteUserByUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
@@ -162,7 +157,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get authorities for user")
     public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
@@ -183,7 +177,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List users matching criteria")
     public ISearchResults<IUser> listUsers(
 	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -208,7 +201,6 @@ public class Users extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List authorized tenants for user")
     public List<ITenant> getTenantsForUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,

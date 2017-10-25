@@ -12,20 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,11 +35,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/events")
 @Api(value = "events")
-public class DeviceEvents extends RestController {
+public class DeviceEvents extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -53,7 +52,6 @@ public class DeviceEvents extends RestController {
      * @return
      */
     @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get event by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
@@ -71,7 +69,6 @@ public class DeviceEvents extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{eventId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update event by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEvent updateEvent(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
@@ -87,7 +84,6 @@ public class DeviceEvents extends RestController {
      * @return
      */
     @RequestMapping(value = "/alternate/{alternateId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get event by alternate (external) id")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEvent getEventByAlternateId(

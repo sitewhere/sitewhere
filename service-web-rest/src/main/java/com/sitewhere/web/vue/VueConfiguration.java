@@ -13,6 +13,11 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+/**
+ * Configures Vue application for administering SiteWhere.
+ * 
+ * @author Derek
+ */
 @Configuration
 public class VueConfiguration extends WebMvcConfigurationSupport {
 

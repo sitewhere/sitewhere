@@ -21,23 +21,27 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.sitewhere.microservice.spi.security.ISystemUser;
-import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.web.security.basic.AuthenticateOnlyFilter;
+import com.sitewhere.web.security.basic.LimitedBasicAuthFilter;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
- * Configures Spring Security for web/REST.
+ * Configures Spring Security for REST services.
  * 
  * @author Derek
  */
 @Configuration
 @EnableWebSecurity
-public class WebRestSecurity extends WebSecurityConfigurerAdapter {
+public class RestSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
     protected IWebRestMicroservice webRestMicroservice;
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+	return super.authenticationManagerBean();
+    }
 
     /*
      * (non-Javadoc)
@@ -51,12 +55,6 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
 	auth.authenticationProvider(sitewhereAuthenticationProvider());
     }
 
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-	return super.authenticationManagerBean();
-    }
-
     /**
      * Build {@link AuthenticationProvider} for basic authentication.
      * 
@@ -64,9 +62,7 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected SiteWhereAuthenticationProvider sitewhereAuthenticationProvider() {
-	ISystemUser systemUser = getWebRestMicroservice().getSystemUser();
-	IUserManagement userManagement = getWebRestMicroservice().getUserManagementApiChannel();
-	return new SiteWhereAuthenticationProvider(systemUser, userManagement);
+	return new SiteWhereAuthenticationProvider(getWebRestMicroservice());
     }
 
     /**
@@ -81,13 +77,13 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * Only applies basic auth to the authentication URL.
+     * Basic authentication filter that only applies to the authentication URL.
      * 
      * @return
      */
     @Bean
-    protected AuthenticateOnlyFilter authenticationOnlyFilter() throws Exception {
-	return new AuthenticateOnlyFilter(authenticationManagerBean());
+    protected LimitedBasicAuthFilter limitedBasicAuthFilter() throws Exception {
+	return new LimitedBasicAuthFilter(authenticationManagerBean());
     }
 
     /*
@@ -100,11 +96,17 @@ public class WebRestSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 	http.csrf().disable();
 	http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 	http.antMatcher("/api/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/api/**/symbol").permitAll().antMatchers(HttpMethod.GET, "/api/v2/**")
 		.permitAll().antMatchers(HttpMethod.GET, "/api/**").authenticated();
-	http.addFilterBefore(authenticationOnlyFilter(), UsernamePasswordAuthenticationFilter.class);
+
+	http.antMatcher("/authapi/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/authapi/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/authapi/v2/**").permitAll().antMatchers(HttpMethod.GET, "/authapi/**")
+		.authenticated();
+
 	http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+	http.addFilterBefore(limitedBasicAuthFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     public IWebRestMicroservice getWebRestMicroservice() {

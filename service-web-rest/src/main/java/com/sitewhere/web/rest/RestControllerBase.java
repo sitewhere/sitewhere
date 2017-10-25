@@ -33,7 +33,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * 
  * @author Derek Adams
  */
-public class RestController {
+public class RestControllerBase {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

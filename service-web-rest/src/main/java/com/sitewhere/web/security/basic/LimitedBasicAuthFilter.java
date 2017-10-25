@@ -26,20 +26,20 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * 
  * @author Derek
  */
-public class AuthenticateOnlyFilter extends BasicAuthenticationFilter {
+public class LimitedBasicAuthFilter extends BasicAuthenticationFilter {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** URL that provides authentication */
-    private static final String AUTHENTICATION_PATH = "/authentication/jwt";
+    private static final String AUTHENTICATION_PATH = "/authapi/jwt";
 
-    public AuthenticateOnlyFilter(AuthenticationManager authenticationManager) {
+    public LimitedBasicAuthFilter(AuthenticationManager authenticationManager) {
 	super(authenticationManager);
     }
 
-    public AuthenticateOnlyFilter(AuthenticationManager authenticationManager,
+    public LimitedBasicAuthFilter(AuthenticationManager authenticationManager,
 	    AuthenticationEntryPoint authenticationEntryPoint) {
 	super(authenticationManager, authenticationEntryPoint);
     }
@@ -55,7 +55,8 @@ public class AuthenticateOnlyFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 	    throws IOException, ServletException {
-	if (!AUTHENTICATION_PATH.equals(request.getPathInfo())) {
+	String matching = request.getServletPath() + request.getPathInfo();
+	if (!AUTHENTICATION_PATH.equals(matching)) {
 	    chain.doFilter(request, response);
 	} else {
 	    super.doFilterInternal(request, response, chain);

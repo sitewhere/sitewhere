@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -42,7 +41,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,11 +52,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/devicegroups")
 @Api(value = "devicegroups")
-public class DeviceGroups extends RestController {
+public class DeviceGroups extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -70,7 +69,6 @@ public class DeviceGroups extends RestController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new device group")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request,
@@ -87,7 +85,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{groupToken}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get a device group by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup getDeviceGroupByToken(
@@ -109,7 +106,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{groupToken}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing device group")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup updateDeviceGroup(
@@ -129,7 +125,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{groupToken}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete device group by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup deleteDeviceGroup(
@@ -151,7 +146,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device groups that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroup> listDeviceGroups(
@@ -184,7 +178,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List elements in a device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
@@ -215,7 +208,6 @@ public class DeviceGroups extends RestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Add elements to device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
@@ -277,7 +269,6 @@ public class DeviceGroups extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{groupToken}/elements/{type}/{elementId}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete elements from device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElement(
@@ -303,7 +294,6 @@ public class DeviceGroups extends RestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete elements from device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(

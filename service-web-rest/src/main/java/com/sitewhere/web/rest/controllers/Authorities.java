@@ -15,16 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -38,10 +36,9 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyNode;
-import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,15 +49,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/authorities")
 @Api(value = "authorities")
-public class Authorities extends RestController {
-
-    /** Injected reference to microservice */
-    @Autowired
-    IWebRestMicroservice webRestMicroservice;
+public class Authorities extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -74,7 +67,6 @@ public class Authorities extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new authority")
     public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -91,7 +83,6 @@ public class Authorities extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get authority by id")
     public GrantedAuthority getAuthorityByName(
 	    @ApiParam(value = "Authority name", required = true) @PathVariable String name,
@@ -112,7 +103,6 @@ public class Authorities extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List authorities that match criteria")
     public SearchResults<GrantedAuthority> listAuthorities(
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
@@ -134,7 +124,6 @@ public class Authorities extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get authorities hierarchy")
     @Secured({ SiteWhereRoles.REST })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy(HttpServletRequest servletRequest,
@@ -152,6 +141,6 @@ public class Authorities extends RestController {
      * @throws SiteWhereException
      */
     protected IUserManagement getUserManagement() throws SiteWhereException {
-	return webRestMicroservice.getUserManagementApiChannel();
+	return getMicroservice().getUserManagementApiChannel();
     }
 }

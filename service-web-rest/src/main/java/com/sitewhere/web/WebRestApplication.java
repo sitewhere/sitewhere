@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.web.microservice.WebRestMicroservice;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -19,7 +20,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * 
  * @author Derek
  */
-@ComponentScan
+@ComponentScan(basePackageClasses = { WebRestMicroservice.class })
 public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice> {
 
     @Autowired

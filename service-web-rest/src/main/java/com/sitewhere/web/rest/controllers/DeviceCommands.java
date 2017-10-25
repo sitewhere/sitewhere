@@ -13,14 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,7 +29,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,11 +40,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/commands")
 @Api(value = "commands")
-public class DeviceCommands extends RestController {
+public class DeviceCommands extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -60,7 +59,6 @@ public class DeviceCommands extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing device command")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -76,7 +74,6 @@ public class DeviceCommands extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get device command by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand getDeviceCommandByToken(
@@ -94,7 +91,6 @@ public class DeviceCommands extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete device command by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,

@@ -16,13 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.rest.model.search.external.SearchProvider;
@@ -35,7 +34,7 @@ import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,18 +45,17 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/search")
 @Api(value = "search")
-public class ExternalSearch extends RestController {
+public class ExternalSearch extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List available search providers")
     @Secured({ SiteWhereRoles.REST })
     public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
@@ -80,7 +78,6 @@ public class ExternalSearch extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{providerId}/events", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Search for events in provider")
     @Secured({ SiteWhereRoles.REST })
     public List<IDeviceEvent> searchDeviceEvents(
@@ -108,7 +105,6 @@ public class ExternalSearch extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{providerId}/raw", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Execute search and return raw results")
     @Secured({ SiteWhereRoles.REST })
     public JsonNode rawSearch(@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,

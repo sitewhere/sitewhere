@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
@@ -50,7 +50,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -61,11 +61,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/assets")
 @Api(value = "assets")
-public class Assets extends RestController {
+public class Assets extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -81,7 +81,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/modules/{assetModuleId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get an asset module by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAssetModuleDescriptor getAssetModule(
@@ -100,7 +99,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/modules/{assetModuleId}/assets", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Search for assets in an asset module")
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Secured({ SiteWhereRoles.REST })
@@ -123,7 +121,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get an asset by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAsset getAssetById(
@@ -145,7 +142,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}/assignments", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List assignments associated with an asset")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
@@ -196,7 +192,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Refresh the list of asset modules")
     @Secured({ SiteWhereRoles.REST })
     public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
@@ -213,7 +208,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new asset category")
     @Secured({ SiteWhereRoles.REST })
     public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request,
@@ -230,7 +224,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing asset category")
     @Secured({ SiteWhereRoles.REST })
     public IAssetCategory updateAssetCategory(
@@ -248,7 +241,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get an asset category by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAssetCategory getAssetCategoryById(
@@ -265,7 +257,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete an existing asset category")
     @Secured({ SiteWhereRoles.REST })
     public IAssetCategory deleteAssetCategory(
@@ -283,7 +274,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List asset categories that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAssetCategory> listAssetCategories(
@@ -304,7 +294,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/persons", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new person asset in category")
     @Secured({ SiteWhereRoles.REST })
     public IPersonAsset createPersonAsset(
@@ -324,7 +313,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/persons/{assetId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing person asset in category")
     @Secured({ SiteWhereRoles.REST })
     public IPersonAsset updatePersonAsset(
@@ -345,7 +333,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/hardware", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new hardware asset in category")
     @Secured({ SiteWhereRoles.REST })
     public IHardwareAsset createHardwareAsset(
@@ -386,7 +373,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/locations", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create a new location asset in category")
     @Secured({ SiteWhereRoles.REST })
     public ILocationAsset createLocationAsset(
@@ -406,7 +392,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/locations/{assetId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing location asset in category")
     @Secured({ SiteWhereRoles.REST })
     public ILocationAsset updateLocationAsset(
@@ -426,7 +411,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get a category asset by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAsset getCategoryAsset(
@@ -445,7 +429,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete an existing category asset")
     @Secured({ SiteWhereRoles.REST })
     public IAsset deleteCategoryAsset(
@@ -465,7 +448,6 @@ public class Assets extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/categories/{categoryId}/assets", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List category assets that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAsset> listCategoryAssets(

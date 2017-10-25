@@ -22,14 +22,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.communication.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
@@ -54,7 +53,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,11 +64,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/specifications")
 @Api(value = "specifications")
-public class DeviceSpecifications extends RestController {
+public class DeviceSpecifications extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -82,7 +81,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new device specification")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification createDeviceSpecification(@RequestBody DeviceSpecificationCreateRequest request,
@@ -106,7 +104,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get specification by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification getDeviceSpecificationByToken(
@@ -126,7 +123,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}/proto", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get specification GPB by unique token")
     @Secured({ SiteWhereRoles.REST })
     public String getDeviceSpecificationProtoByToken(
@@ -145,7 +141,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}/spec.proto", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get specification GPB file by unique token")
     @Secured({ SiteWhereRoles.REST })
     public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
@@ -169,7 +164,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update existing device specification")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification updateDeviceSpecification(
@@ -193,7 +187,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List specifications that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceSpecification> listDeviceSpecifications(
@@ -228,7 +221,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete existing device specification")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification deleteDeviceSpecification(
@@ -261,7 +253,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create device command for specification.")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand createDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -272,7 +263,6 @@ public class DeviceSpecifications extends RestController {
     }
 
     @RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device commands for specification")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommand> listDeviceCommands(
@@ -300,7 +290,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device commands by namespace")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
@@ -346,7 +335,6 @@ public class DeviceSpecifications extends RestController {
      * @return
      */
     @RequestMapping(value = "/{token}/statuses", method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create device status for specification.")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceStatus createDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -365,7 +353,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get device status by unique code")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceStatus getDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -384,7 +371,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update existing device status entry")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceStatus updateDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -395,7 +381,6 @@ public class DeviceSpecifications extends RestController {
     }
 
     @RequestMapping(value = "/{token}/statuses", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List device statuses for specification")
     @Secured({ SiteWhereRoles.REST })
     public List<IDeviceStatus> listDeviceStatuses(
@@ -420,7 +405,6 @@ public class DeviceSpecifications extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Update existing device status entry")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceStatus deleteDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,

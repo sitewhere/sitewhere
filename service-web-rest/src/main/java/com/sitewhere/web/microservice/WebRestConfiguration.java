@@ -21,13 +21,15 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitewhere.web.RedirectServlet;
+import com.sitewhere.web.auth.RestAuthConfiguration;
+import com.sitewhere.web.auth.RestAuthSwaggerConfiguration;
 import com.sitewhere.web.filters.JsonpFilter;
 import com.sitewhere.web.filters.MethodOverrideFilter;
 import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestApiConfiguration;
-import com.sitewhere.web.security.WebRestSecurity;
-import com.sitewhere.web.swagger.SwaggerConfiguration;
+import com.sitewhere.web.rest.RestApiSwaggerConfiguration;
+import com.sitewhere.web.security.RestSecurity;
 import com.sitewhere.web.vue.VueConfiguration;
 
 /**
@@ -36,7 +38,7 @@ import com.sitewhere.web.vue.VueConfiguration;
  * @author Derek
  */
 @Configuration
-@Import({ WebRestSecurity.class })
+@Import(RestSecurity.class)
 public class WebRestConfiguration {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
@@ -60,6 +62,32 @@ public class WebRestConfiguration {
     }
 
     @Bean
+    public ServletRegistrationBean sitewhereAuthInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(RestAuthConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		RestAuthConfiguration.REST_AUTH_MATCHER);
+	registration.setName("sitewhereAuthInterface");
+	registration.setLoadOnStartup(1);
+	return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean sitewhereAuthSwagger() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(RestAuthSwaggerConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		RestAuthSwaggerConfiguration.SWAGGER_MATCHER);
+	registration.setName("sitewhereAuthSwagger");
+	registration.setLoadOnStartup(3);
+	return registration;
+    }
+
+    @Bean
     public ServletRegistrationBean sitewhereRestInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
@@ -73,6 +101,19 @@ public class WebRestConfiguration {
     }
 
     @Bean
+    public ServletRegistrationBean sitewhereRestSwagger() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(RestApiSwaggerConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		RestApiSwaggerConfiguration.SWAGGER_MATCHER);
+	registration.setName("sitewhereRestSwagger");
+	registration.setLoadOnStartup(3);
+	return registration;
+    }
+
+    @Bean
     public ServletRegistrationBean sitewhereVueAdminInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
@@ -82,19 +123,6 @@ public class WebRestConfiguration {
 		VueConfiguration.VUE_ADMIN_MATCHER);
 	registration.setName("vueAdminInterface");
 	registration.setLoadOnStartup(2);
-	return registration;
-    }
-
-    @Bean
-    public ServletRegistrationBean sitewhereSwaggerInterface() {
-	DispatcherServlet dispatcherServlet = new DispatcherServlet();
-	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-	applicationContext.register(SwaggerConfiguration.class);
-	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
-		SwaggerConfiguration.SWAGGER_MATCHER);
-	registration.setName("swaggerInterface");
-	registration.setLoadOnStartup(3);
 	return registration;
     }
 

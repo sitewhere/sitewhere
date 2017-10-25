@@ -21,12 +21,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.microservice.security.SitewhereAuthentication;
 import com.sitewhere.microservice.security.SitewhereUserDetails;
-import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Spring authentication provider using SiteWhere user management APIs.
@@ -36,18 +36,13 @@ import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
 public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** System superuser */
-    private ISystemUser systemUser;
+    /** Web rest microservice */
+    private IWebRestMicroservice webRestMicroservice;
 
-    /** User management implementation */
-    private IUserManagement userManagement;
-
-    public SiteWhereAuthenticationProvider(ISystemUser systemUser, IUserManagement userManagement) {
-	this.systemUser = systemUser;
-	this.userManagement = userManagement;
+    public SiteWhereAuthenticationProvider(IWebRestMicroservice webRestMicroservice) {
+	this.webRestMicroservice = webRestMicroservice;
     }
 
     /*
@@ -85,11 +80,16 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getWebRestMicroservice().getSystemUser().getAuthentication());
 	    IUser user = validateUserManagement().authenticate(username, password, false);
-	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
+	    IUserManagement userManagement = validateUserManagement();
+	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(user.getUsername());
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 	    return new SitewhereAuthentication(details, password);
+	} catch (Throwable e) {
+	    LOGGER.error("Authentication exception.", e);
+	    throw e;
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
@@ -110,9 +110,11 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-	    IUser user = validateUserManagement().getUserByUsername(username);
-	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getWebRestMicroservice().getSystemUser().getAuthentication());
+	    IUserManagement userManagement = validateUserManagement();
+	    IUser user = userManagement.getUserByUsername(username);
+	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(username);
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 	    return new SitewhereAuthentication(details, password);
 	} finally {
@@ -141,25 +143,18 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getUserManagement() == null) {
-	    throw new AuthenticationServiceException("User management not available. Check logs for details.");
+	if (getWebRestMicroservice().getUserManagementApiChannel() == null) {
+	    throw new AuthenticationServiceException(
+		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getUserManagement();
+	return getWebRestMicroservice().getUserManagementApiChannel();
     }
 
-    public ISystemUser getSystemUser() {
-	return systemUser;
+    public IWebRestMicroservice getWebRestMicroservice() {
+	return webRestMicroservice;
     }
 
-    public void setSystemUser(ISystemUser systemUser) {
-	this.systemUser = systemUser;
-    }
-
-    public IUserManagement getUserManagement() {
-	return userManagement;
-    }
-
-    public void setUserManagement(IUserManagement userManagement) {
-	this.userManagement = userManagement;
+    public void setWebRestMicroservice(IWebRestMicroservice webRestMicroservice) {
+	this.webRestMicroservice = webRestMicroservice;
     }
 }

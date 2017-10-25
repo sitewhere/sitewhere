@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -30,7 +29,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 
 import io.swagger.annotations.Api;
@@ -42,11 +41,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/invocations")
 @Api(value = "invocations")
-public class CommandInvocations extends RestController {
+public class CommandInvocations extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -60,7 +59,6 @@ public class CommandInvocations extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get command invocation by unique id.")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommandInvocation getDeviceCommandInvocation(
@@ -82,7 +80,6 @@ public class CommandInvocations extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{id}/summary", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get command invocation summary")
     @Secured({ SiteWhereRoles.REST })
     public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
@@ -109,7 +106,6 @@ public class CommandInvocations extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{id}/responses", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List responses for command invocation")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(

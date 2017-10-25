@@ -16,14 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -39,7 +38,7 @@ import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.model.ElementRole;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,11 +49,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/tenants")
 @Api(value = "tenants")
-public class Tenants extends RestController {
+public class Tenants extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -68,7 +67,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new tenant")
     public ITenant createTenant(@RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
@@ -85,7 +83,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing tenant.")
     public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
@@ -103,7 +100,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get tenant by unique id")
     public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
@@ -120,7 +116,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get tenant by authentication token")
     public ITenant getTenantByAuthToken(
 	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken,
@@ -141,7 +136,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List tenants that match criteria")
     public ISearchResults<ITenant> listTenants(
 	    @ApiParam(value = "Text search (partial id or name)", required = false) @RequestParam(required = false) String textSearch,
@@ -186,7 +180,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete existing tenant")
     public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -206,7 +199,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/device/{hardwareId}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List tenants that contain a device")
     public List<ITenant> listTenantsForDevice(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
@@ -237,7 +229,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/configuration/model", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get hierarchical model for tenant configuration")
     public TenantConfigurationModel getTenantConfigurationModel(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
@@ -254,7 +245,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/configuration/roles", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get role information for tenant configuration")
     public Map<String, ElementRole> getTenantConfigurationRoles(HttpServletRequest servletRequest,
 	    HttpServletResponse servletResponse) throws SiteWhereException {
@@ -275,7 +265,6 @@ public class Tenants extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List templates available for creating tenants")
     public List<String> listTenantTemplateNames(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
 	    throws SiteWhereException {

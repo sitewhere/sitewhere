@@ -12,14 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -28,7 +27,7 @@ import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.rest.RestController;
+import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,11 +38,11 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@Controller
+@RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
 @RequestMapping(value = "/schedules")
 @Api(value = "schedules")
-public class Schedules extends RestController {
+public class Schedules extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -56,7 +55,6 @@ public class Schedules extends RestController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation(value = "Create new schedule")
     @Secured({ SiteWhereRoles.REST })
     public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
@@ -73,7 +71,6 @@ public class Schedules extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "Get schedule by token")
     @Secured({ SiteWhereRoles.REST })
     public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -91,7 +88,6 @@ public class Schedules extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-    @ResponseBody
     @ApiOperation(value = "Update an existing schedule")
     @Secured({ SiteWhereRoles.REST })
     public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
@@ -110,7 +106,6 @@ public class Schedules extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @ApiOperation(value = "List schedules matching criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<ISchedule> listSchedules(
@@ -131,7 +126,6 @@ public class Schedules extends RestController {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ResponseBody
     @ApiOperation(value = "Delete a schedule")
     @Secured({ SiteWhereRoles.REST })
     public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,

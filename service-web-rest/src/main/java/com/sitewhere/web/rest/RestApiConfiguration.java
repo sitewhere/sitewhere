@@ -13,17 +13,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.web.rest.controllers.Assets;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.BasicAuth;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
@@ -34,7 +33,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
-@ComponentScan
+@ComponentScan(basePackageClasses = { Assets.class })
 public class RestApiConfiguration extends WebMvcConfigurerAdapter {
 
     /** URL prefix for matching REST API calls */
@@ -56,18 +55,15 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     public Docket sitewhereApi() {
 	AuthorizationScope[] scopes = new AuthorizationScope[0];
 	SecurityReference apiKeyRef = SecurityReference.builder().reference("apiKey").scopes(scopes).build();
-	SecurityReference basicAuthRef = SecurityReference.builder().reference("basicAuth").scopes(scopes).build();
 
 	ArrayList<SecurityReference> reference = new ArrayList<SecurityReference>();
 	reference.add(apiKeyRef);
-	reference.add(basicAuthRef);
 
 	ArrayList<SecurityContext> securityContexts = new ArrayList<SecurityContext>();
 	securityContexts.add(SecurityContext.builder().securityReferences(reference).build());
 
 	ArrayList<SecurityScheme> auth = new ArrayList<SecurityScheme>();
 	auth.add(apiKey());
-	auth.add(basicAuth());
 
 	return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).securitySchemes(auth)
 		.securityContexts(securityContexts).select().paths(PathSelectors.any()).build();
@@ -79,20 +75,9 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public BasicAuth basicAuth() {
-	return new BasicAuth("basicAuth");
-    }
-
-    @Bean
     public ApiInfo apiInfo() {
 	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
-		.termsOfServiceUrl("http://springfox.io").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
+		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
 		.version(SiteWhere.getVersion().getVersionIdentifier()).build();
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-	registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
