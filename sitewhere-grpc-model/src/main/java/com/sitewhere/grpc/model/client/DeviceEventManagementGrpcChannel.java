@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementBlockingStub;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementStub;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote device event management
@@ -26,8 +27,8 @@ public class DeviceEventManagementGrpcChannel
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceEventManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public DeviceEventManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
     }
 
     /*

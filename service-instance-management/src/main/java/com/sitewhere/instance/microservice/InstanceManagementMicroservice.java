@@ -113,11 +113,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementGrpcChannel = new UserManagementGrpcChannel(MicroserviceEnvironment.HOST_USER_MANAGEMENT,
-		getInstanceSettings().getGrpcPort());
+	this.userManagementGrpcChannel = new UserManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_USER_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
 
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
+	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingStub;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote tenant management GRPC
@@ -25,8 +26,8 @@ public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlo
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public TenantManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public TenantManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
     }
 
     /*

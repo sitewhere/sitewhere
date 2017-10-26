@@ -9,6 +9,7 @@ package com.sitewhere.grpc.model.client;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannelBuilder;
 
@@ -26,8 +27,8 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> {
     /** Client interceptor for adding tenant token */
     private TenantTokenClientInterceptor tenant = new TenantTokenClientInterceptor();
 
-    public MultitenantGrpcChannel(String hostname, int port) {
-	super(hostname, port);
+    public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
+	super(tracerProvider, hostname, port);
     }
 
     /*

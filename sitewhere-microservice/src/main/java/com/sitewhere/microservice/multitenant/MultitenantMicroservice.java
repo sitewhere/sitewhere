@@ -110,7 +110,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(
+	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }

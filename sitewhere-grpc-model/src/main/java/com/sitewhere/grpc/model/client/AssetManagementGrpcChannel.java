@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementBlockingStub;
 import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementStub;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote asset management GRPC
@@ -26,8 +27,8 @@ public class AssetManagementGrpcChannel
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public AssetManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public AssetManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
     }
 
     /*

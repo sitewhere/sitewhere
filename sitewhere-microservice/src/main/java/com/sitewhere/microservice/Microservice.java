@@ -143,8 +143,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#
      * getInstanceBootstrappedMarker()
      */
@@ -154,8 +152,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#getZookeeperManager()
      */
     @Override
@@ -168,8 +164,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#getTokenManagement()
      */
     @Override
@@ -182,8 +176,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#getSystemUser()
      */
     @Override
@@ -196,8 +188,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceSettings()
      */
     @Override
@@ -210,9 +200,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getTracer()
+     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
      */
     @Override
     public Tracer getTracer() {

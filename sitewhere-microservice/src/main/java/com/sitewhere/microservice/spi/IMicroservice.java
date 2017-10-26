@@ -13,15 +13,14 @@ import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-
-import io.opentracing.Tracer;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Functionality common to all SiteWhere microservices.
  * 
  * @author Derek
  */
-public interface IMicroservice extends ILifecycleComponent {
+public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
 
     /**
      * Get name shown for microservice.
@@ -43,13 +42,6 @@ public interface IMicroservice extends ILifecycleComponent {
      * @return
      */
     public IInstanceSettings getInstanceSettings();
-
-    /**
-     * Get tracer implementation.
-     * 
-     * @return
-     */
-    public Tracer getTracer();
 
     /**
      * Get token management interface.

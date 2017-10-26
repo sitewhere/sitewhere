@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementBlockingStub;
 import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementStub;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote device management GRPC
@@ -26,8 +27,8 @@ public class DeviceManagementGrpcChannel
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public DeviceManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
     }
 
     /*

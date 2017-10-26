@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementBlockingStub;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementStub;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote user mangement GRPC
@@ -25,8 +26,8 @@ public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockin
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public UserManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public UserManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
     }
 
     /*

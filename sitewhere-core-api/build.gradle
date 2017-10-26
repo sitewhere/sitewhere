@@ -10,4 +10,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	
+	// Opentracing APIs.
+    compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'
 }

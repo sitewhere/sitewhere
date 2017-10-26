@@ -9,7 +9,12 @@ dependencies {
 	compile group: 'io.grpc', name: 'grpc-stub', version: "${rootProject.ext['grpc.version']}"
 	compile group: 'io.grpc', name: 'grpc-protobuf', version: "${rootProject.ext['grpc.version']}"
 	
+	// Spring security components.
     compile group: 'org.springframework.security', name: 'spring-security-core'
+}
+
+license {
+	exclude "**/grpc/model/tracing/**"
 }
 
 protobuf {

@@ -97,13 +97,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
 
 	// Event management microservice connectivity.
-	this.eventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(
+	this.eventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(getMicroservice(),
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getMicroservice().getInstanceSettings().getGrpcPort());
 	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(getEventManagementGrpcChannel());
 
 	// Asset management microservice connectivity.
-	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(MicroserviceEnvironment.HOST_ASSET_MANAGEMENT,
-		getMicroservice().getInstanceSettings().getGrpcPort());
+	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(getMicroservice(),
+		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getMicroservice().getInstanceSettings().getGrpcPort());
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), null);
 

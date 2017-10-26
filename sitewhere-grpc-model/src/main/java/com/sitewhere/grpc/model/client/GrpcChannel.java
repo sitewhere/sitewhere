@@ -8,9 +8,11 @@
 package com.sitewhere.grpc.model.client;
 
 import com.sitewhere.grpc.model.spi.IGrpcChannel;
+import com.sitewhere.grpc.model.tracing.ClientTracingInterceptor;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -24,6 +26,9 @@ import io.grpc.ManagedChannelBuilder;
  * @param <A>
  */
 public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IGrpcChannel<B, A> {
+
+    /** Tracer provider */
+    protected ITracerProvider tracerProvider;
 
     /** Remote host */
     protected String hostname;
@@ -41,16 +46,21 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     protected A asyncStub;
 
     /** Client interceptor for adding JWT from Spring Security context */
-    protected JwtClientInterceptor jwt = new JwtClientInterceptor();
+    protected JwtClientInterceptor jwt;
 
-    public GrpcChannel(String hostname, int port) {
+    /** Client interceptor for GRPC tracing */
+    protected ClientTracingInterceptor trace;
+
+    public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
+	this.tracerProvider = tracerProvider;
 	this.hostname = hostname;
 	this.port = port;
+
+	this.jwt = new JwtClientInterceptor();
+	this.trace = new ClientTracingInterceptor(tracerProvider.getTracer());
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
      * .server.lifecycle.ILifecycleProgressMonitor)
@@ -58,14 +68,12 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).intercept(jwt)
-		.build();
+		.intercept(trace).build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
@@ -78,10 +86,9 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.model.spi.IGrpcChannel#getChannel()
      */
+    @Override
     public ManagedChannel getChannel() {
 	return channel;
     }
@@ -91,10 +98,9 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.model.spi.IGrpcChannel#getBlockingStub()
      */
+    @Override
     public B getBlockingStub() {
 	return blockingStub;
     }
@@ -104,10 +110,9 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.model.spi.IGrpcChannel#getAsyncStub()
      */
+    @Override
     public A getAsyncStub() {
 	return asyncStub;
     }
@@ -117,20 +122,24 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.spi.IGrpcChannel#getBlockingStub()
+     * @see com.sitewhere.grpc.model.spi.IGrpcChannel#createBlockingStub()
      */
     @Override
     public abstract B createBlockingStub();
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.spi.IGrpcChannel#getAsyncStub()
+     * @see com.sitewhere.grpc.model.spi.IGrpcChannel#createAsyncStub()
      */
     @Override
     public abstract A createAsyncStub();
+
+    public ITracerProvider getTracerProvider() {
+	return tracerProvider;
+    }
+
+    public void setTracerProvider(ITracerProvider tracerProvider) {
+	this.tracerProvider = tracerProvider;
+    }
 
     public String getHostname() {
 	return hostname;

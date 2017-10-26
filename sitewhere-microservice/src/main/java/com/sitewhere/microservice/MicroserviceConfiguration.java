@@ -9,7 +9,6 @@ package com.sitewhere.microservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.microservice.kafka.KafkaTopicNaming;
@@ -22,15 +21,12 @@ import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
+import com.uber.jaeger.Configuration;
+import com.uber.jaeger.samplers.ProbabilisticSampler;
 
-import brave.Tracing;
-import brave.opentracing.BraveTracer;
 import io.opentracing.Tracer;
-import zipkin.Span;
-import zipkin.reporter.AsyncReporter;
-import zipkin.reporter.okhttp3.OkHttpSender;
 
-@Configuration
+@org.springframework.context.annotation.Configuration
 public class MicroserviceConfiguration {
 
     @Bean
@@ -61,11 +57,8 @@ public class MicroserviceConfiguration {
     @Bean
     @Autowired
     public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice microservice) {
-	OkHttpSender okHttpSender = OkHttpSender
-		.create("http://" + instanceSettings.getTracerServer() + "/api/v1/spans");
-	AsyncReporter<Span> reporter = AsyncReporter.builder(okHttpSender).build();
-	Tracing braveTracer = Tracing.newBuilder().localServiceName(microservice.getIdentifier()).reporter(reporter)
-		.build();
-	return BraveTracer.create(braveTracer);
+	return new Configuration(microservice.getIdentifier(),
+		new Configuration.SamplerConfiguration(ProbabilisticSampler.TYPE, 1),
+		new Configuration.ReporterConfiguration()).getTracer();
     }
 }
