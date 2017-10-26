@@ -41,7 +41,7 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).intercept(jwt)
-		.intercept(tenant).build();
+		.intercept(tenant).intercept(trace).build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
     }
