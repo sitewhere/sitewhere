@@ -59,6 +59,7 @@ public class MicroserviceConfiguration {
     public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice microservice) {
 	return new Configuration(microservice.getIdentifier(),
 		new Configuration.SamplerConfiguration(ProbabilisticSampler.TYPE, 1),
-		new Configuration.ReporterConfiguration()).getTracer();
+		new Configuration.ReporterConfiguration(null, instanceSettings.getTracerServer(), null, null, null))
+			.getTracer();
     }
 }

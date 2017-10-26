@@ -47,7 +47,7 @@ public class InstanceSettings implements IInstanceSettings {
     private int grpcPort;
 
     /** Tracer server information */
-    @Value("${sitewhere.tracer.server:zipkin:9411}")
+    @Value("${sitewhere.tracer.server:jaeger}")
     private String tracerServer;
 
     /*
