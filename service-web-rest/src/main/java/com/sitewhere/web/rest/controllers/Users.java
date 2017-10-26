@@ -25,10 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
-import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
@@ -37,7 +35,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -45,6 +42,7 @@ import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.rest.RestControllerBase;
+import com.sitewhere.web.security.LoginManager;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.swagger.annotations.Api;
@@ -206,17 +204,20 @@ public class Users extends RestControllerBase {
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);
-	if (includeRuntimeInfo) {
-	    for (ITenant tenant : results) {
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
-		if (engine != null) {
-		    ((Tenant) tenant).setEngineState(engine.getEngineState());
-		}
-	    }
-	}
-	return results;
+	// checkForAdminOrEditSelf(servletRequest, servletResponse, username);
+	// List<ITenant> results =
+	// SiteWhere.getServer().getAuthorizedTenants(username, false);
+	// if (includeRuntimeInfo) {
+	// for (ITenant tenant : results) {
+	// ISiteWhereTenantEngine engine =
+	// SiteWhere.getServer().getTenantEngine(tenant.getId());
+	// if (engine != null) {
+	// ((Tenant) tenant).setEngineState(engine.getEngineState());
+	// }
+	// }
+	// }
+	// return results;
+	return null;
     }
 
     /**
@@ -232,7 +233,7 @@ public class Users extends RestControllerBase {
 	    String username) throws SiteWhereException {
 	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
 	if (!checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminUsers, false)) {
-	    IUser loggedIn = SiteWhere.getCurrentlyLoggedInUser();
+	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
 		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
 			HttpServletResponse.SC_FORBIDDEN);

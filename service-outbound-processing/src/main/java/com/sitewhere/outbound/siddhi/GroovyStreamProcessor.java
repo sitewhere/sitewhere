@@ -14,8 +14,6 @@ import org.wso2.siddhi.core.stream.output.StreamCallback;
 
 import com.sitewhere.device.DeviceActions;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.outbound.SiteWhere;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.tenant.ITenantAware;
@@ -68,24 +66,20 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
     public void receive(Event[] events) {
 	LOGGER.debug("About to process '" + getScriptPath() + "' with " + events.length + " events.");
 	for (Event event : events) {
+	    IDeviceManagement dm = getDeviceManagement(getTenant());
+	    IDeviceEventManagement dem = getDeviceEventManagement(getTenant());
+	    DeviceActions actions = new DeviceActions(dm, dem);
+	    Binding binding = new Binding();
+	    binding.setVariable(VAR_EVENT, event);
+	    binding.setVariable(VAR_DEVICE_MANAGEMENT, dm);
+	    binding.setVariable(VAR_ACTIONS, actions);
+	    binding.setVariable(VAR_LOGGER, LOGGER);
 	    try {
-		IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
-		IDeviceEventManagement dem = SiteWhere.getServer().getDeviceEventManagement(getTenant());
-		DeviceActions actions = new DeviceActions(dm, dem);
-		Binding binding = new Binding();
-		binding.setVariable(VAR_EVENT, event);
-		binding.setVariable(VAR_DEVICE_MANAGEMENT, dm);
-		binding.setVariable(VAR_ACTIONS, actions);
-		binding.setVariable(VAR_LOGGER, LOGGER);
-		try {
-		    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-		} catch (ResourceException e) {
-		    LOGGER.error("Unable to access Groovy decoder script.", e);
-		} catch (ScriptException e) {
-		    LOGGER.error("Unable to run Groovy decoder script.", e);
-		}
-	    } catch (SiteWhereException e) {
-		LOGGER.error("Unable to process event.", e);
+		getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    } catch (ResourceException e) {
+		LOGGER.error("Unable to access Groovy decoder script.", e);
+	    } catch (ScriptException e) {
+		LOGGER.error("Unable to run Groovy decoder script.", e);
 	    }
 	}
     }
@@ -124,5 +118,13 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 
     public void setScriptPath(String scriptPath) {
 	this.scriptPath = scriptPath;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
+	return null;
     }
 }

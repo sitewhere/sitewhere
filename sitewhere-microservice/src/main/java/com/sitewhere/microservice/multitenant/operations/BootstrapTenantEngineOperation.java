@@ -86,7 +86,7 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
      */
     protected void bootstrapTenantEngine(CuratorFramework curator) throws SiteWhereException {
 	ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Bootstrap tenant engine."));
+		new LifecycleProgressContext(1, "Bootstrap tenant engine."), getTenantEngine().getMicroservice());
 	String tenantName = getTenantEngine().getTenant().getName();
 	long start = System.currentTimeMillis();
 

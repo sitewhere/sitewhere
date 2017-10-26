@@ -10,7 +10,6 @@ package com.sitewhere.device.event.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -26,6 +25,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
 import com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Extends {@link OutboundEventProcessor} with filtering functionality.
@@ -52,8 +52,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
-	this.eventManagement = SiteWhere.getServer().getDeviceEventManagement(getTenant());
+	this.deviceManagement = getDeviceManagement(getTenant());
+	this.eventManagement = getDeviceEventManagement(getTenant());
 
 	getLifecycleComponents().clear();
 	for (IDeviceEventFilter filter : filters) {
@@ -280,5 +280,13 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 
     public void setEventManagement(IDeviceEventManagement eventManagement) {
 	this.eventManagement = eventManagement;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
+	return null;
     }
 }

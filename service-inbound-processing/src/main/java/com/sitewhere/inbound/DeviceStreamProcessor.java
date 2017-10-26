@@ -11,9 +11,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Handles requests related to device streams.
@@ -35,8 +37,7 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
     @Override
     public void onDeviceStreamCreateRequest(String hardwareId, String originator, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
-	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
-		.handleDeviceStreamRequest(hardwareId, request);
+	getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamRequest(hardwareId, request);
     }
 
     /*
@@ -50,8 +51,7 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
     @Override
     public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
-		.handleDeviceStreamDataRequest(hardwareId, request);
+	getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamDataRequest(hardwareId, request);
     }
 
     /*
@@ -64,8 +64,8 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
     @Override
     public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
 	    ISendDeviceStreamDataRequest request) throws SiteWhereException {
-	SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager()
-		.handleSendDeviceStreamDataRequest(hardwareId, request);
+	getDeviceCommunication(getTenant()).getDeviceStreamManager().handleSendDeviceStreamDataRequest(hardwareId,
+		request);
     }
 
     /*
@@ -76,5 +76,9 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    private IDeviceCommunication getDeviceCommunication(ITenant tenant) {
+	return null;
     }
 }

@@ -13,10 +13,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.sources.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Concrete implementation of {@link ICompositeDeviceEventDecoder} for binary
@@ -46,7 +46,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
     public IDeviceContext<byte[]> buildContext(IMessageMetadata<byte[]> metadata) throws SiteWhereException {
 	BinaryDeviceContext context = new BinaryDeviceContext();
 
-	IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(getTenant());
+	IDeviceManagement devices = getDeviceManagement(getTenant());
 	context.setDevice(devices.getDeviceByHardwareId(metadata.getHardwareId()));
 	if (context.getDevice() == null) {
 	    throw new SiteWhereException(
@@ -96,5 +96,9 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

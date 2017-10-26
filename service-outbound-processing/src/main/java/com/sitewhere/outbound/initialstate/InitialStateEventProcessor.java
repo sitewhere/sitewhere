@@ -24,17 +24,18 @@ import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implmentation of {@link IOutboundEventProcessor} that sends events to the
@@ -156,8 +157,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	if (cached != null) {
 	    return cached;
 	}
-	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
-		.getDeviceAssignmentByToken(assignmentToken);
+	IDeviceAssignment assignment = getDeviceManagement(getTenant()).getDeviceAssignmentByToken(assignmentToken);
 	if (assignment == null) {
 	    throw new SiteWhereException("Assignment not found.");
 	}
@@ -255,5 +255,9 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 
     public void setStreamingAccessKey(String streamingAccessKey) {
 	this.streamingAccessKey = streamingAccessKey;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

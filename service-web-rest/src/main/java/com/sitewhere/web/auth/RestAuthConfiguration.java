@@ -9,14 +9,15 @@ package com.sitewhere.web.auth;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.web.auth.controllers.JwtService;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -51,6 +52,9 @@ public class RestAuthConfiguration extends WebMvcConfigurerAdapter {
     /** Contact email for API questions */
     private static final String API_LICENSE_URL = "https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
 
+    @Autowired
+    private IWebRestMicroservice microservice;
+
     @Bean
     public Docket sitewhereAuth() {
 	AuthorizationScope[] scopes = new AuthorizationScope[0];
@@ -78,6 +82,6 @@ public class RestAuthConfiguration extends WebMvcConfigurerAdapter {
     public ApiInfo apiInfo() {
 	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
 		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
-		.version(SiteWhere.getVersion().getVersionIdentifier()).build();
+		.version(microservice.getVersion().getVersionIdentifier()).build();
     }
 }

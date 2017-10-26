@@ -61,8 +61,8 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
-	refreshDatastoreModules(
-		new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Refreshing datastore asset modules")));
+	refreshDatastoreModules(new LifecycleProgressMonitor(
+		new LifecycleProgressContext(1, "Refreshing datastore asset modules"), monitor));
 
 	for (IAssetModule<?> module : dsModulesById.values()) {
 	    startNestedComponent(module, monitor, true);

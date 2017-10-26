@@ -196,7 +196,7 @@ public class Assets extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Refreshing asset modules"));
+		new LifecycleProgressContext(1, "Refreshing asset modules"), getMicroservice());
 	getAssetResolver().getAssetModuleManagement().refreshModules(monitor);
     }
 

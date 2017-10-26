@@ -19,14 +19,15 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Creates a batch command invocation as the result of a Quartz schedule.
@@ -60,8 +61,7 @@ public class BatchCommandInvocationJob implements Job {
 	    throw new JobExecutionException("Command token not provided.");
 	}
 	try {
-	    ITenant tenant = SiteWhere.getServer().getTenantManagement()
-		    .getTenantById(context.getScheduler().getSchedulerName());
+	    ITenant tenant = getTenantManagement().getTenantById(context.getScheduler().getSchedulerName());
 
 	    // Resolve hardware ids for devices matching criteria.
 	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, getDeviceManagement());
@@ -72,7 +72,7 @@ public class BatchCommandInvocationJob implements Job {
 	    invoke.setParameterValues(criteria.getParameterValues());
 	    invoke.setHardwareIds(hardwareIds);
 
-	    SiteWhere.getServer().getBatchManagement(tenant).createBatchCommandInvocation(invoke);
+	    getBatchManagement(tenant).createBatchCommandInvocation(invoke);
 
 	    LOGGER.info("Executed batch command invocation job.");
 	} catch (SiteWhereException e) {
@@ -83,6 +83,14 @@ public class BatchCommandInvocationJob implements Job {
     }
 
     private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private ITenantManagement getTenantManagement() {
+	return null;
+    }
+
+    private IBatchManagement getBatchManagement(ITenant tenant) {
 	return null;
     }
 }

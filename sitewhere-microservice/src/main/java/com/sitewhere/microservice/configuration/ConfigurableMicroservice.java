@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.spi.configuration.ConfigurationState;
@@ -477,7 +476,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 		if (global == null) {
 		    throw new SiteWhereException("Global instance configuration file not found.");
 		}
-		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, SiteWhere.getVersion(),
+		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, getVersion(),
 			getMicroserviceContext());
 
 		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
@@ -486,7 +485,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 		    getLogger().info("Loading configuration at path: " + fullPath);
 		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
 		    if (data != null) {
-			ApplicationContext subcontext = ConfigurationUtils.buildSubcontext(data, SiteWhere.getVersion(),
+			ApplicationContext subcontext = ConfigurationUtils.buildSubcontext(data, getVersion(),
 				globalContext);
 			contexts.put(path, subcontext);
 		    } else {

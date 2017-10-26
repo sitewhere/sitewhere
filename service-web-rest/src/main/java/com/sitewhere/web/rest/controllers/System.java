@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
@@ -49,6 +48,6 @@ public class System extends RestControllerBase {
     @ApiOperation(value = "Get version information")
     @Secured({ SiteWhereRoles.REST })
     public IVersion getVersion() throws SiteWhereException {
-	return SiteWhere.getVersion();
+	return getMicroservice().getVersion();
     }
 }

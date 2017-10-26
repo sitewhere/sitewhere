@@ -44,12 +44,6 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Cached device management implementation */
-    private IDeviceManagement deviceManagement;
-
-    /** Cached device event management implementation */
-    private IDeviceEventManagement deviceEventManagement;
-
     /*
      * (non-Javadoc)
      * 
@@ -162,7 +156,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 	assnCreate.setDeviceHardwareId(hardwareId);
 	assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
-	return SiteWhere.getServer().getDeviceManagement(getTenant()).createDeviceAssignment(assnCreate);
+	return getDeviceManagement().createDeviceAssignment(assnCreate);
     }
 
     /**
@@ -195,31 +189,11 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	return LOGGER;
     }
 
-    /**
-     * Cache the device management implementation rather than looking it up each
-     * time.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
-	if (deviceManagement == null) {
-	    deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
-	}
-	return deviceManagement;
+    private IDeviceManagement getDeviceManagement() {
+	return null;
     }
 
-    /**
-     * Cache the device event management implementation rather than looking it
-     * up each time.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceEventManagement getDeviceEventManagement() throws SiteWhereException {
-	if (deviceEventManagement == null) {
-	    deviceEventManagement = SiteWhere.getServer().getDeviceEventManagement(getTenant());
-	}
-	return deviceEventManagement;
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return null;
     }
 }

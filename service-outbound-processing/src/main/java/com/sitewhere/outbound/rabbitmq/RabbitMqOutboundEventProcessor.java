@@ -18,7 +18,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -34,6 +33,7 @@ import com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProces
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
 import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Extension of {@link FilteredOutboundEventProcessor} that sends messages to
@@ -219,7 +219,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
+	IDeviceManagement dm = getDeviceManagement(getTenant());
 	IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
 	IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	if (getMulticaster() != null) {
@@ -305,5 +305,9 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 
     public void setTopic(String topic) {
 	this.topic = topic;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

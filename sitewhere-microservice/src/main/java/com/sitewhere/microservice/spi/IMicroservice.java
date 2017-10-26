@@ -13,6 +13,7 @@ import com.sitewhere.microservice.spi.security.ISystemUser;
 import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -28,6 +29,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public String getName();
+
+    /**
+     * Get version information.
+     * 
+     * @return
+     */
+    public IVersion getVersion();
 
     /**
      * Get unique microservice identifier.

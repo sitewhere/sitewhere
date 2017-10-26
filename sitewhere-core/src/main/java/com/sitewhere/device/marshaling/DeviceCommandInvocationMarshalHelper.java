@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
@@ -21,7 +20,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceCommandInvocation} model
@@ -92,10 +90,6 @@ public class DeviceCommandInvocationMarshalHelper {
 	    }
 	}
 	return result;
-    }
-
-    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
     public boolean isIncludeCommand() {

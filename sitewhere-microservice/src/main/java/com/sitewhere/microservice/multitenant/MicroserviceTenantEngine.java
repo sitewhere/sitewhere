@@ -10,7 +10,6 @@ package com.sitewhere.microservice.multitenant;
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.TenantEngineScriptSynchronizer;
@@ -84,7 +83,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
 			+ "' does not exist for '" + getTenant().getName() + "'.");
 	    }
 	    byte[] data = curator.getData().forPath(getModuleConfigurationPath());
-	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, SiteWhere.getVersion(),
+	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getVersion(),
 		    getMicroservice().getInstanceGlobalContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
 	} catch (Exception e) {

@@ -19,6 +19,9 @@ import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleProgressUtils;
+import com.sitewhere.spi.tracing.ITracerProvider;
+
+import io.opentracing.Tracer;
 
 /**
  * Default implementation of {@link ILifecycleProgressMonitor}.
@@ -30,10 +33,14 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Tracer provider */
+    private ITracerProvider tracerProvider;
+
     /** Stack for nested progress tracking */
     private Deque<ILifecycleProgressContext> contextStack = new ArrayDeque<ILifecycleProgressContext>();
 
-    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext) {
+    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext, ITracerProvider tracerProvider) {
+	this.tracerProvider = tracerProvider;
 	contextStack.push(initialContext);
 	try {
 	    LifecycleProgressUtils.startProgressOperation(this, initialContext.getTaskName());
@@ -124,5 +131,21 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
 
     public void setContextStack(Deque<ILifecycleProgressContext> contextStack) {
 	this.contextStack = contextStack;
+    }
+
+    /*
+     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
+     */
+    @Override
+    public Tracer getTracer() {
+	return getTracerProvider().getTracer();
+    }
+
+    public ITracerProvider getTracerProvider() {
+	return tracerProvider;
+    }
+
+    public void setTracerProvider(ITracerProvider tracerProvider) {
+	this.tracerProvider = tracerProvider;
     }
 }

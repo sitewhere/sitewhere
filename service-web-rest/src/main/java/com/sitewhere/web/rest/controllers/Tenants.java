@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,6 +38,7 @@ import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestControllerBase;
+import com.sitewhere.web.security.LoginManager;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -157,7 +157,7 @@ public class Tenants extends RestControllerBase {
 
 	// Only return auth tenants if user has 'admin own tenant'.
 	else if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
-	    IUser loggedIn = SiteWhere.getCurrentlyLoggedInUser();
+	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
 	    if (loggedIn != null) {
 		TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 		criteria.setTextSearch(textSearch);

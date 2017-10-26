@@ -17,7 +17,6 @@ import java.net.URLConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.resource.IResource;
 
 /**
@@ -175,11 +174,13 @@ public class ResourceUrlConnection extends URLConnection {
      * @throws IOException
      */
     protected void handleGlobalResource(String[] parts) throws IOException {
-	String path = buildPathFromParts(parts, 1);
-	this.resource = SiteWhere.getServer().getRuntimeResourceManager().getGlobalResource(path);
-	if (resource == null) {
-	    throw new IOException("Unable to find global resource for path: " + path);
-	}
+	// String path = buildPathFromParts(parts, 1);
+	// this.resource =
+	// SiteWhere.getServer().getRuntimeResourceManager().getGlobalResource(path);
+	// if (resource == null) {
+	// throw new IOException("Unable to find global resource for path: " +
+	// path);
+	// }
     }
 
     /**
@@ -189,12 +190,15 @@ public class ResourceUrlConnection extends URLConnection {
      * @throws IOException
      */
     protected void handleTenantResource(String[] parts) throws IOException {
-	String tenantId = parts[1];
-	String path = buildPathFromParts(parts, 2);
-	this.resource = SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(tenantId, path);
-	if (resource == null) {
-	    throw new IOException("Unable to find tenant resource for path: " + path);
-	}
+	// String tenantId = parts[1];
+	// String path = buildPathFromParts(parts, 2);
+	// this.resource =
+	// SiteWhere.getServer().getRuntimeResourceManager().getTenantResource(tenantId,
+	// path);
+	// if (resource == null) {
+	// throw new IOException("Unable to find tenant resource for path: " +
+	// path);
+	// }
     }
 
     /**

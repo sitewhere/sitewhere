@@ -9,6 +9,7 @@ package com.sitewhere.microservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sitewhere.Version;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
@@ -20,6 +21,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.system.IVersion;
 
 import io.opentracing.Tracer;
 
@@ -55,6 +57,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Tracer implementation */
     @Autowired
     private Tracer tracer;
+
+    /** Version information */
+    private IVersion version = new Version();
 
     /*
      * (non-Javadoc)
@@ -209,5 +214,17 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setTracer(Tracer tracer) {
 	this.tracer = tracer;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.spi.IMicroservice#getVersion()
+     */
+    @Override
+    public IVersion getVersion() {
+	return version;
+    }
+
+    public void setVersion(IVersion version) {
+	this.version = version;
     }
 }

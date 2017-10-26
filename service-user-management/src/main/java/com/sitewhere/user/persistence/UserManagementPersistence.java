@@ -24,7 +24,6 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
-import com.sitewhere.user.SiteWhere;
 
 /**
  * Persistence logic for user management components.
@@ -111,7 +110,7 @@ public class UserManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void userDeleteLogic(String username) throws SiteWhereException {
-	ITenantManagement management = SiteWhere.getServer().getTenantManagement();
+	ITenantManagement management = getTenantManagement();
 	ISearchResults<ITenant> tenants = management.listTenants(new TenantSearchCriteria(1, 0));
 	for (ITenant tenant : tenants.getResults()) {
 	    if (tenant.getAuthorizedUserIds().contains(username)) {
@@ -153,5 +152,9 @@ public class UserManagementPersistence extends Persistence {
      */
     public static String encodePassword(String plaintext) {
 	return passwordEncoder.encodePassword(plaintext, null);
+    }
+
+    private static ITenantManagement getTenantManagement() {
+	return null;
     }
 }

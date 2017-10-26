@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.sitewhere.server.SiteWhereServer;
-import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
 
 /**
@@ -72,14 +70,5 @@ public class Version implements IVersion {
      */
     public String getBuildTimestamp() {
 	return properties.getProperty("build.timestamp");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.system.IVersion#getServerClass()
-     */
-    public Class<? extends ISiteWhereServer> getServerClass() {
-	return SiteWhereServer.class;
     }
 }

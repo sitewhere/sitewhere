@@ -7,7 +7,9 @@
  */
 package com.sitewhere.asset.spi.microservice;
 
+import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.asset.IAssetManagement;
 
 /**
  * Microservice that provides asset management functionality.
@@ -15,4 +17,18 @@ import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IAssetManagementMicroservice extends IMultitenantMicroservice<IAssetManagementTenantEngine> {
+
+    /**
+     * Get asset management implementation.
+     * 
+     * @return
+     */
+    public IAssetManagement getAssetManagement();
+
+    /**
+     * Get asset module manager implementation.
+     * 
+     * @return
+     */
+    public IAssetModuleManager getAssetModuleManager();
 }

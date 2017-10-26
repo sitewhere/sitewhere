@@ -21,9 +21,9 @@ import org.eclipse.californium.core.server.MessageDeliverer;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
-import com.sitewhere.sources.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.tenant.ITenant;
@@ -111,7 +111,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	} else {
 	    String hardwareId = paths.remove(0);
 	    try {
-		IDevice device = SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId);
+		IDevice device = getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId);
 		if (device != null) {
 		    handlePerDeviceRequest(tenant, device, paths, exchange);
 		} else {
@@ -309,5 +309,9 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 
     public void setEventReceiver(IInboundEventReceiver<byte[]> eventReceiver) {
 	this.eventReceiver = eventReceiver;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

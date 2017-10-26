@@ -13,16 +13,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IMessageMetadata;
 import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IMessageMetadataExtractor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -63,8 +64,7 @@ public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();
-	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT,
-		    SiteWhere.getServer().getDeviceManagement(getTenant()));
+	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT, getDeviceManagement(getTenant()));
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
@@ -127,5 +127,9 @@ public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
 
     public void setScriptPath(String scriptPath) {
 	this.scriptPath = scriptPath;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

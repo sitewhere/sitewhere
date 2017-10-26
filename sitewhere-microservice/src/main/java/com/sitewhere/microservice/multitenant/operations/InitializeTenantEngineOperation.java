@@ -73,7 +73,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	    // Initialize new engine.
 	    LOGGER.info("Intializing tenant engine for '" + getTenant().getName() + "'.");
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Initialize tenant engine."));
+		    new LifecycleProgressContext(1, "Initialize tenant engine."), getMicroservice());
 	    long start = System.currentTimeMillis();
 	    created.lifecycleInitialize(monitor);
 	    if (created.getLifecycleStatus() == LifecycleStatus.InitializationError) {

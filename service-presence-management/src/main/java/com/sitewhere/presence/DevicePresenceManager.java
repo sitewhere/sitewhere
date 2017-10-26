@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Monitors assignment state to detect device presence information.
@@ -79,7 +80,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.devices = SiteWhere.getServer().getDeviceManagement(getTenant());
+	this.devices = getDeviceManagement(getTenant());
 
 	this.executor = Executors.newSingleThreadExecutor();
 	executor.execute(new PresenceChecker());
@@ -223,5 +224,9 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 
     public void setPresenceMissingInterval(String presenceMissingInterval) {
 	this.presenceMissingInterval = presenceMissingInterval;
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

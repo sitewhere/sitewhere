@@ -15,10 +15,8 @@ import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
-import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.tenant.SiteWhere;
 
 /**
  * Persistence logic for tenant management components.
@@ -120,12 +118,13 @@ public class TenantManagementPersistenceLogic extends Persistence {
     public static void tenantListLogic(List<ITenant> results, ITenantSearchCriteria criteria)
 	    throws SiteWhereException {
 	if (criteria.isIncludeRuntimeInfo()) {
-	    for (ITenant tenant : results) {
-		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
-		if (engine != null) {
-		    ((Tenant) tenant).setEngineState(engine.getEngineState());
-		}
-	    }
+	    // for (ITenant tenant : results) {
+	    // ISiteWhereTenantEngine engine =
+	    // SiteWhere.getServer().getTenantEngine(tenant.getId());
+	    // if (engine != null) {
+	    // ((Tenant) tenant).setEngineState(engine.getEngineState());
+	    // }
+	    // }
 	}
     }
 }

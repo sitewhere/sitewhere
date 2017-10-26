@@ -27,12 +27,12 @@ import org.wso2.carbon.databridge.commons.exception.MalformedStreamDefinitionExc
 import org.wso2.carbon.databridge.commons.exception.TransportException;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.system.IVersion;
 
 /**
  * Sends SiteWhere events to an external WSO2 CEP instance.
@@ -239,8 +239,7 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
      * @throws MalformedStreamDefinitionException
      */
     protected StreamDefinition createMeasurementsStreamDefinition() throws MalformedStreamDefinitionException {
-	StreamDefinition definition = new StreamDefinition(MEAUREMENTS_STREAM_ID,
-		SiteWhere.getServer().getVersion().getVersionIdentifier());
+	StreamDefinition definition = new StreamDefinition(MEAUREMENTS_STREAM_ID, getVersion().getVersionIdentifier());
 	definition.setNickName("SiteWhere Measurements");
 	definition.setDescription("SiteWhere Measurements");
 	List<Attribute> attributes = new ArrayList<Attribute>();
@@ -263,8 +262,7 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
      * @throws MalformedStreamDefinitionException
      */
     protected StreamDefinition createLocationsStreamDefinition() throws MalformedStreamDefinitionException {
-	StreamDefinition definition = new StreamDefinition(LOCATIONS_STREAM_ID,
-		SiteWhere.getServer().getVersion().getVersionIdentifier());
+	StreamDefinition definition = new StreamDefinition(LOCATIONS_STREAM_ID, getVersion().getVersionIdentifier());
 	definition.setNickName("SiteWhere Locations");
 	definition.setDescription("SiteWhere Locations");
 	List<Attribute> attributes = new ArrayList<Attribute>();
@@ -288,8 +286,7 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
      * @throws MalformedStreamDefinitionException
      */
     protected StreamDefinition createAlertsStreamDefinition() throws MalformedStreamDefinitionException {
-	StreamDefinition definition = new StreamDefinition(ALERTS_STREAM_ID,
-		SiteWhere.getServer().getVersion().getVersionIdentifier());
+	StreamDefinition definition = new StreamDefinition(ALERTS_STREAM_ID, getVersion().getVersionIdentifier());
 	definition.setNickName("SiteWhere Alerts");
 	definition.setDescription("SiteWhere Alerts");
 	List<Attribute> attributes = new ArrayList<Attribute>();
@@ -363,5 +360,9 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 
     public void setPublisher(DataPublisher publisher) {
 	this.publisher = publisher;
+    }
+
+    public IVersion getVersion() {
+	return null;
     }
 }

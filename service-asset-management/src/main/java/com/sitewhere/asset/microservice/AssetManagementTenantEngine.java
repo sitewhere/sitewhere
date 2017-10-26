@@ -115,7 +115,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	}
 
 	GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model.")));
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model."),
+		getMicroservice()));
 	for (String script : scripts) {
 	    GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
 	    initializer.initialize(getAssetResolver());

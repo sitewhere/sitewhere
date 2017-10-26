@@ -15,7 +15,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
@@ -29,7 +28,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link Site} model objects to be
@@ -105,17 +103,6 @@ public class SiteMarshalHelper {
 	    site.setZones(zones);
 	}
 	return site;
-    }
-
-    /**
-     * Get device management implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
     public IDeviceManagement getDeviceManagement() {

@@ -11,13 +11,14 @@ import java.util.Deque;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.monitoring.IProgressReporter;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Allows progress to be monitored on long-running lifecycle tasks.
  * 
  * @author Derek
  */
-public interface ILifecycleProgressMonitor extends IProgressReporter {
+public interface ILifecycleProgressMonitor extends IProgressReporter, ITracerProvider {
 
     /**
      * Get current list of nested contexts.

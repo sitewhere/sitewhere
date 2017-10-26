@@ -13,14 +13,15 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.ICommandTargetResolver;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Uses information in an {@link IDeviceCommandInvocation} to determine a list
@@ -47,7 +48,7 @@ public class DefaultCommandTargetResolver extends TenantLifecycleComponent imple
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	LOGGER.debug("Resolving target for invocation.");
-	IDeviceAssignment assignment = SiteWhere.getServer().getDeviceManagement(getTenant())
+	IDeviceAssignment assignment = getDeviceManagement(getTenant())
 		.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);
@@ -83,5 +84,9 @@ public class DefaultCommandTargetResolver extends TenantLifecycleComponent imple
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

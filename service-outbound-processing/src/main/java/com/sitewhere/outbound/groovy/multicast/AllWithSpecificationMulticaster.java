@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -97,7 +96,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
     public List<T> calculateRoutes(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	List<T> routes = new ArrayList<T>();
-	IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
+	IDeviceManagement dm = getDeviceManagement(getTenant());
 	for (IDevice targetDevice : matches) {
 	    if (getScriptPath() != null) {
 		IDeviceAssignment targetAssignment = dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
@@ -182,8 +181,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 		    ITenant tenant = AllWithSpecificationMulticaster.this.getTenant();
 		    String token = AllWithSpecificationMulticaster.this.getSpecificationToken();
 		    DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, null, false, 1, 0, null, null);
-		    ISearchResults<IDevice> results = SiteWhere.getServer().getDeviceManagement(tenant)
-			    .listDevices(false, criteria);
+		    ISearchResults<IDevice> results = getDeviceManagement(tenant).listDevices(false, criteria);
 		    matches = results.getResults();
 		    LOGGER.debug("Found " + matches.size() + " matches for routing.");
 		} catch (SiteWhereException e) {
@@ -197,5 +195,9 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 		}
 	    }
 	}
+    }
+
+    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

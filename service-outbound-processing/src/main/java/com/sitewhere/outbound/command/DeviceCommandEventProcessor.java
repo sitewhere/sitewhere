@@ -16,10 +16,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
-import com.sitewhere.outbound.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Event processor that hands off {@link IDeviceCommandInvocation} events after
@@ -107,7 +108,7 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	public void run() {
 	    try {
 		LOGGER.debug("Command processor thread processing command invocation.");
-		SiteWhere.getServer().getDeviceCommunication(getTenant()).deliverCommand(command);
+		getDeviceCommunication(getTenant()).deliverCommand(command);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Exception thrown in command processing operation.", e);
 	    } catch (Throwable e) {
@@ -133,5 +134,9 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 
     public void setNumThreads(int numThreads) {
 	this.numThreads = numThreads;
+    }
+
+    private IDeviceCommunication getDeviceCommunication(ITenant tenant) {
+	return null;
     }
 }

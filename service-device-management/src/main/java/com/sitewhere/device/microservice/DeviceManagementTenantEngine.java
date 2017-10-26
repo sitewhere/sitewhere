@@ -174,7 +174,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	    SecurityContextHolder.getContext()
 		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
 	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model.")));
+	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
+		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
 		initializer.initialize(getDeviceManagement(), getEventManagementApiChannel(), getAssetResolver());

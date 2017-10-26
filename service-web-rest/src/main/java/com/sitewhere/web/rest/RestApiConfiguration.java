@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.web.rest.controllers.Assets;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
@@ -85,7 +84,7 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     public ApiInfo apiInfo() {
 	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
 		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
-		.version(SiteWhere.getVersion().getVersionIdentifier()).build();
+		.version(microservice.getVersion().getVersionIdentifier()).build();
     }
 
     /*

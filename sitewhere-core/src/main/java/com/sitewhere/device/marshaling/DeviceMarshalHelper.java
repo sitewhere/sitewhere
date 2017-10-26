@@ -10,7 +10,6 @@ package com.sitewhere.device.marshaling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
@@ -25,7 +24,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link Device} model objects to be
@@ -147,17 +145,6 @@ public class DeviceMarshalHelper {
 	    }
 	}
 	return result;
-    }
-
-    /**
-     * Get device management implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
     /**

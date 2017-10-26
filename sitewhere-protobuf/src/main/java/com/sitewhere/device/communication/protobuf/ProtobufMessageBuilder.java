@@ -18,6 +18,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -47,7 +48,7 @@ public class ProtobufMessageBuilder {
      */
     public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 	    IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
-	IDeviceSpecification specification = SiteWhere.getServer().getDeviceManagement(tenant)
+	IDeviceSpecification specification = getDeviceManagement(tenant)
 		.getDeviceSpecificationByToken(execution.getCommand().getSpecificationToken());
 	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification, tenant);
 	LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
@@ -129,5 +130,9 @@ public class ProtobufMessageBuilder {
     protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceSpecification specification,
 	    ITenant tenant) throws SiteWhereException {
 	return ProtobufSpecificationBuilder.createFileDescriptor(specification, tenant);
+    }
+
+    private static IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }

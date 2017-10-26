@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
@@ -33,7 +32,6 @@ import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.JobConstants;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link ScheduledJob} model objects to
@@ -201,28 +199,6 @@ public class ScheduledJobMarshalHelper {
 		job.getContext().put("invocationHtml", html);
 	    }
 	}
-    }
-
-    /**
-     * Get the device management implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
-    }
-
-    /**
-     * Get the schedule management implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getScheduleManagement(tenant);
     }
 
     /**

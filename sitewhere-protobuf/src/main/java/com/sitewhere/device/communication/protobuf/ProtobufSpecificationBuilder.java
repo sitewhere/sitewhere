@@ -13,6 +13,7 @@ import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -53,8 +54,7 @@ public class ProtobufSpecificationBuilder {
      */
     public static DescriptorProtos.DescriptorProto createSpecificationMessage(IDeviceSpecification specification,
 	    ITenant tenant) throws SiteWhereException {
-	List<IDeviceCommand> commands = SiteWhere.getServer().getDeviceManagement(tenant)
-		.listDeviceCommands(specification.getToken(), false);
+	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(specification.getToken(), false);
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 	builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
 	builder.addEnumType(createCommandsEnum(commands));
@@ -211,5 +211,9 @@ public class ProtobufSpecificationBuilder {
 	default:
 	    throw new SiteWhereException("Unknown parameter type: " + param.name());
 	}
+    }
+
+    private static IDeviceManagement getDeviceManagement(ITenant tenant) {
+	return null;
     }
 }
