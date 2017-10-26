@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
 import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.microservice.spi.grpc.IGrpcServer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -47,6 +48,9 @@ public class GrpcServer extends TenantLifecycleComponent implements IGrpcServer 
     /** Interceptor for JWT authentication */
     protected JwtServerInterceptor jwt;
 
+    /** Interceptor for open tracing APIs */
+    protected ServerTracingInterceptor trace;
+
     public GrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
 	this(microservice, serviceImplementation, microservice.getInstanceSettings().getGrpcPort());
     }
@@ -55,7 +59,9 @@ public class GrpcServer extends TenantLifecycleComponent implements IGrpcServer 
 	this.microservice = microservice;
 	this.serviceImplementation = serviceImplementation;
 	this.port = port;
+
 	this.jwt = new JwtServerInterceptor(microservice, serviceImplementation.getClass());
+	this.trace = new ServerTracingInterceptor(microservice.getTracer());
     }
 
     /*
@@ -68,7 +74,7 @@ public class GrpcServer extends TenantLifecycleComponent implements IGrpcServer 
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).build();
+	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(trace).build();
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
 	}

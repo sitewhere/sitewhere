@@ -44,7 +44,8 @@ public class MultitenantGrpcServer extends GrpcServer {
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(tenant).build();
+	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(tenant)
+		    .intercept(trace).build();
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize GRPC server.", e);
 	}
