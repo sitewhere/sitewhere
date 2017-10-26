@@ -13,6 +13,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.monitoring.IProgressReporter;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
+import io.opentracing.ActiveSpan;
+
 /**
  * Allows progress to be monitored on long-running lifecycle tasks.
  * 
@@ -34,6 +36,29 @@ public interface ILifecycleProgressMonitor extends IProgressReporter, ITracerPro
      * @throws SiteWhereException
      */
     public void pushContext(ILifecycleProgressContext context) throws SiteWhereException;
+
+    /**
+     * Start a span for the current context.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ActiveSpan createTracerSpan() throws SiteWhereException;
+
+    /**
+     * Handle an error encountered while in a tracer span.
+     * 
+     * @param span
+     * @param t
+     */
+    public void handleErrorInTracerSpan(ActiveSpan span, Throwable t);
+
+    /**
+     * Finish the given tracer span.
+     * 
+     * @param span
+     */
+    public void finishTracerSpan(ActiveSpan span);
 
     /**
      * Start progress on a new operation within the current nesting context.
