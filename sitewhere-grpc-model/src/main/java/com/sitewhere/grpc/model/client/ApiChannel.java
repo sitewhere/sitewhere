@@ -61,7 +61,8 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
 
 	ActiveSpan span = null;
 	try {
-	    getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName()).startActive();
+	    span = getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName())
+		    .startActive();
 
 	    if (getGrpcChannel().getChannel() == null) {
 		ApiNotAvailableException e = new ApiNotAvailableException(
