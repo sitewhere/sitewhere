@@ -37,6 +37,7 @@ import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
+import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -136,16 +137,16 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
-	ICompositeLifecycleStep init = new CompositeLifecycleStep("Start " + getComponentName());
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start event management GRPC channel.
-	init.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcChannel(), true));
+	start.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcChannel(), true));
 
 	// Start asset management GRPC channel.
-	init.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcChannel(), true));
+	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcChannel(), true));
 
-	// Execute initialization steps.
-	init.execute(monitor);
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -194,6 +195,17 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop event management GRPC channel.
+	start.addStep(new StopComponentLifecycleStep(this, getEventManagementGrpcChannel()));
+
+	// Stop asset management GRPC channel.
+	start.addStep(new StopComponentLifecycleStep(this, getAssetManagementGrpcChannel()));
+
+	// Execute shutdown steps.
+	start.execute(monitor);
     }
 
     /*

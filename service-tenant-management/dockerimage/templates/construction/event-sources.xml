@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:es="http://www.sitewhere.com/schema/sitewhere/microservice/event-sources"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
+           http://www.sitewhere.com/schema/sitewhere/microservice/event-sources http://www.sitewhere.org/schema/sitewhere/microservice/event-sources/current/event-sources.xsd">
+
+	<!-- Event sources Configuration -->
+	<es:event-sources>
+
+		<!-- Event source for protobuf messages over MQTT -->
+		<es:mqtt-event-source sourceId="protobuf"
+			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" topic="SiteWhere/input/protobuf">
+			<es:protobuf-event-decoder />
+		</es:mqtt-event-source>
+
+		<!-- Event source for JSON device requests over MQTT -->
+		<es:mqtt-event-source sourceId="json"
+			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" topic="SiteWhere/input/json">
+			<es:json-device-request-decoder />
+		</es:mqtt-event-source>
+
+		<!-- Event source for JSON event batches over MQTT -->
+		<es:mqtt-event-source sourceId="json-batch"
+			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" topic="SiteWhere/input/jsonbatch">
+			<es:json-batch-event-decoder />
+		</es:mqtt-event-source>
+
+	</es:event-sources>
+
+</beans>

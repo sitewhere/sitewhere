@@ -129,8 +129,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device management GRPC server.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getDeviceManagementGrpcServer(), "Device management GRPC server"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcServer()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

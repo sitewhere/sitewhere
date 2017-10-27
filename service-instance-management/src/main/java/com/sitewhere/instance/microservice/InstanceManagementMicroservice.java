@@ -172,15 +172,13 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant management GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant Managment GRPC Channel"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel()));
 
 	// Stop user management GRPC channel.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getUserManagementGrpcChannel(), "User Managment GRPC Channel"));
+	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcChannel()));
 
 	// Stop instance template manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getInstanceTemplateManager(), "Instance Template Manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getInstanceTemplateManager()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

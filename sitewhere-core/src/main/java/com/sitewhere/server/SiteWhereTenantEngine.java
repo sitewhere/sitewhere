@@ -437,12 +437,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Disable device communications.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication(),
-		"Stopped device communication subsystem"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication()));
 
 	// Stop search provider manager.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getSearchProviderManager(), "Stopped search provider manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getSearchProviderManager()));
     }
 
     /*
@@ -494,20 +492,16 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void stopManagementServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop schedule management.
-	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManagement(),
-		"Stopped schedule management implementation"));
+	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManagement()));
 
 	// Stop device event management.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement(),
-		"Stopped device event management implementation"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement()));
 
 	// Stop device management.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement(),
-		"Stopped device management implementation"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement()));
 
 	// Stop asset management.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getAssetManagement(), "Stopped asset management implementation"));
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagement()));
     }
 
     /*

@@ -160,8 +160,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant management GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel(),
-		"Tenant Managment GRPC Channel"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

@@ -137,8 +137,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop asset management GRPC server.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getAssetManagementGrpcServer(), "Asset management GRPC server"));
+	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagementGrpcServer()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

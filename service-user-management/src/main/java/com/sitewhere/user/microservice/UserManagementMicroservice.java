@@ -165,11 +165,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop GRPC server.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getUserManagementGrpcServer(), "User management GRPC server"));
+	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcServer()));
 
 	// Stop user management persistence.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement(), "User management persistence"));
+	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement()));
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getUserManagementApplicationContext(), monitor));

@@ -222,21 +222,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant bootstrap model consumer.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantBootstrapModelConsumer(),
-		"Tenant bootstrap model consumer"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantBootstrapModelConsumer()));
 
 	// Stop tenant model producer.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantModelProducer(), "Tenant model producer"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantModelProducer()));
 
 	// Stop GRPC manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer(),
-		"Tenant management GRPC manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer()));
 
 	// Stop tenant template manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantTemplateManager(), "Tenant template manager"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantTemplateManager()));
 
 	// Stop tenant management persistence.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement(), "Tenant management persistence"));
+	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement()));
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor));

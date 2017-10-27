@@ -19,6 +19,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -26,8 +27,10 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventDecoder;
+import com.sitewhere.microservice.spi.spring.EventSourcesBeans;
 import com.sitewhere.sources.BinaryInboundEventSource;
 import com.sitewhere.sources.DecodedInboundEventSource;
+import com.sitewhere.sources.EventSourcesManager;
 import com.sitewhere.sources.StringInboundEventSource;
 import com.sitewhere.sources.activemq.ActiveMQClientEventReceiver;
 import com.sitewhere.sources.activemq.ActiveMQInboundEventReceiver;
@@ -57,14 +60,13 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.handler.IEventSourcesParser.BinaryDecoders;
-import com.sitewhere.spring.handler.IEventSourcesParser.BinarySocketInteractionHandlers;
-import com.sitewhere.spring.handler.IEventSourcesParser.CompositeDecoderChoiceElements;
-import com.sitewhere.spring.handler.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
-import com.sitewhere.spring.handler.IEventSourcesParser.Deduplicators;
-import com.sitewhere.spring.handler.IEventSourcesParser.Elements;
-import com.sitewhere.spring.handler.IEventSourcesParser.StringDecoders;
-import com.sitewhere.spring.handler.SiteWhereBeanListParser;
+import com.sitewhere.spring.parser.IEventSourcesParser.BinaryDecoders;
+import com.sitewhere.spring.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
+import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderChoiceElements;
+import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
+import com.sitewhere.spring.parser.IEventSourcesParser.Deduplicators;
+import com.sitewhere.spring.parser.IEventSourcesParser.Elements;
+import com.sitewhere.spring.parser.IEventSourcesParser.StringDecoders;
 
 /**
  * Parses the list of {@link IInboundEventSource} elements used in the
@@ -72,7 +74,7 @@ import com.sitewhere.spring.handler.SiteWhereBeanListParser;
  * 
  * @author Derek
  */
-public class EventSourcesParser extends SiteWhereBeanListParser {
+public class EventSourcesParser extends AbstractBeanDefinitionParser {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -83,12 +85,13 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
-     * Element, org.springframework.beans.factory.xml.ParserContext)
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
      */
-    public ManagedList<?> parse(Element element, ParserContext context) {
-	ManagedList<Object> result = new ManagedList<Object>();
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	ManagedList<Object> sources = new ManagedList<Object>();
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
 	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
@@ -108,52 +111,59 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    }
 	    switch (type) {
 	    case EventSource: {
-		result.add(parseEventSource(child, context));
+		sources.add(parseEventSource(child, context));
 		break;
 	    }
 	    case ActiveMQEventSource: {
-		result.add(parseActiveMQEventSource(child, context));
+		sources.add(parseActiveMQEventSource(child, context));
 		break;
 	    }
 	    case ActiveMQClientEventSource: {
-		result.add(parseActiveMQClientEventSource(child, context));
+		sources.add(parseActiveMQClientEventSource(child, context));
 		break;
 	    }
 	    case AzureEventHubEventSource: {
-		result.add(parseAzureEventHubEventSource(child, context));
+		sources.add(parseAzureEventHubEventSource(child, context));
 		break;
 	    }
 	    case CoapServerEventSource: {
-		result.add(parseCoapServerEventSource(child, context));
+		sources.add(parseCoapServerEventSource(child, context));
 		break;
 	    }
 	    case HazelcastQueueEventSource: {
-		result.add(parseHazelcastQueueEventSource(child, context));
+		sources.add(parseHazelcastQueueEventSource(child, context));
 		break;
 	    }
 	    case MqttEventSource: {
-		result.add(parseMqttEventSource(child, context));
+		sources.add(parseMqttEventSource(child, context));
 		break;
 	    }
 	    case PollingRestEventSource: {
-		result.add(parsePollingRestEventSource(child, context));
+		sources.add(parsePollingRestEventSource(child, context));
 		break;
 	    }
 	    case RabbitMqEventSource: {
-		result.add(parseRabbitMqEventSource(child, context));
+		sources.add(parseRabbitMqEventSource(child, context));
 		break;
 	    }
 	    case SocketEventSource: {
-		result.add(parseSocketEventSource(child, context));
+		sources.add(parseSocketEventSource(child, context));
 		break;
 	    }
 	    case WebSocketEventSource: {
-		result.add(parseWebSocketEventSource(child, context));
+		sources.add(parseWebSocketEventSource(child, context));
 		break;
 	    }
 	    }
 	}
-	return result;
+
+	// Build event sources manager and inject the list of beans.
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(EventSourcesManager.class);
+	manager.addPropertyValue("eventSources", sources);
+	context.getRegistry().registerBeanDefinition(EventSourcesBeans.BEAN_EVENT_SOURCES_MANAGER,
+		manager.getBeanDefinition());
+
+	return null;
     }
 
     /**
@@ -179,7 +189,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseMqttEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -289,7 +299,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseRabbitMqEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -366,7 +376,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseAzureEventHubEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -456,7 +466,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseActiveMQEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -542,7 +552,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseActiveMQClientEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -618,7 +628,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseSocketEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -825,7 +835,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parsePollingRestEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -861,7 +871,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition createPollingRestEventReceiver(Element element, ParserContext context) {
-	BeanDefinitionBuilder builder = getBuilderFor(PollingRestInboundEventReceiver.class);
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(PollingRestInboundEventReceiver.class);
 
 	Attr pollIntervalMs = element.getAttributeNode("pollIntervalMs");
 	if (pollIntervalMs != null) {
@@ -998,7 +1008,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition parseCoapServerEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -1035,7 +1045,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition createCoapServerEventReceiver(Element element, ParserContext context) {
-	BeanDefinitionBuilder receiver = getBuilderFor(CoapServerEventReceiver.class);
+	BeanDefinitionBuilder receiver = BeanDefinitionBuilder.rootBeanDefinition(CoapServerEventReceiver.class);
 
 	Attr hostname = element.getAttributeNode("hostname");
 	if (hostname != null) {

@@ -215,12 +215,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop user mangement GRPC channel.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getUserManagementGrpcChannel(), "User management GRPC channel"));
+	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcChannel()));
 
 	// Stop device mangement GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcChannel(),
-		"Device management GRPC channel"));
+	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcChannel()));
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));

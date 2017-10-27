@@ -129,8 +129,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop event management GRPC server.
-	stop.addStep(
-		new StopComponentLifecycleStep(this, getEventManagementGrpcServer(), "Event management GRPC server"));
+	stop.addStep(new StopComponentLifecycleStep(this, getEventManagementGrpcServer()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

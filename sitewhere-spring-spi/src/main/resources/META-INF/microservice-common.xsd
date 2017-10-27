@@ -153,4 +153,127 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
+
+	<!-- Attributes for MQTT broker connectivity -->
+	<xsd:attributeGroup name="mqtt-broker-attributes">
+		<xsd:attribute name="protocol" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT protocol (defaults to tcp).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="hostname" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker hostname.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="substitutableInt"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker port.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker username.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker password.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Defines property placeholder regular expression -->
+	<xsd:simpleType name="propertyPlaceholderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines string value restricted to a Spring
+				property placeholder.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\$\{[^\}]+\}" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableInt">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be an integer or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:int" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableBoolean">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be a boolean or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:boolean" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
 </xsd:schema>

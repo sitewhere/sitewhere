@@ -336,7 +336,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop configuration monitor.
-	stop.addStep(new StopComponentLifecycleStep(this, getConfigurationMonitor(), "Configuration Monitor"));
+	stop.addStep(new StopComponentLifecycleStep(this, getConfigurationMonitor()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
