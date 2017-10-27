@@ -11,7 +11,35 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TracerLogUtils {
+import io.opentracing.ActiveSpan;
+import io.opentracing.tag.Tags;
+
+public class TracerUtils {
+
+    /**
+     * Add tags and logs for error in span.
+     * 
+     * @param span
+     * @param t
+     */
+    public static void handleErrorInTracerSpan(ActiveSpan span, Throwable t) {
+	if (span != null) {
+	    span.setTag(Tags.ERROR.getKey(), true);
+	    span.log(TracerUtils.mapOf("error.object", t));
+	    span.log(TracerUtils.mapOf("message", t.getMessage()));
+	}
+    }
+
+    /**
+     * Finish a started tracer span.
+     * 
+     * @param span
+     */
+    public static void finishTracerSpan(ActiveSpan span) {
+	if (span != null) {
+	    span.deactivate();
+	}
+    }
 
     /**
      * Builds unmodifiable map of a single value.

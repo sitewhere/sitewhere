@@ -28,6 +28,15 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     }
 
     /*
+     * @see
+     * com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
+     */
+    @Override
+    public String getName() {
+	return "Start " + getComponent().getComponentName();
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see

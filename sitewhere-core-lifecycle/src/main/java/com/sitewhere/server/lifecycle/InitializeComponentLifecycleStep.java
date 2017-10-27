@@ -27,6 +27,15 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
     }
 
     /*
+     * @see
+     * com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
+     */
+    @Override
+    public String getName() {
+	return "Initialize " + getComponent().getComponentName();
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see

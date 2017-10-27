@@ -13,14 +13,12 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
-import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
@@ -59,7 +57,6 @@ import com.sitewhere.sources.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
-import com.sitewhere.spring.handler.IConfigurationElements;
 import com.sitewhere.spring.parser.IEventSourcesParser.BinaryDecoders;
 import com.sitewhere.spring.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
 import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderChoiceElements;
@@ -94,17 +91,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	ManagedList<Object> sources = new ManagedList<Object>();
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    nested.parse(child, context);
-		    continue;
-		} else {
-		    throw new RuntimeException(
-			    "Invalid nested element found in 'event-sources' section: " + child.toString());
-		}
-	    }
 	    Elements type = Elements.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		throw new RuntimeException("Unknown event source element: " + child.getLocalName());
@@ -704,19 +690,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder source) {
 	List<Element> children = DomUtils.getChildElements(parent);
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition factoryBean = nested.parse(child, context);
-		    String factoryName = nameGenerator.generateBeanName(factoryBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(factoryName, factoryBean);
-		    source.addPropertyReference("handlerFactory", factoryName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    BinarySocketInteractionHandlers type = BinarySocketInteractionHandlers.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		continue;
@@ -1107,19 +1080,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	List<Element> children = DomUtils.getChildElements(parent);
 	AbstractBeanDefinition decoder = null;
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition decoderBean = nested.parse(child, context);
-		    String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
-		    source.addPropertyReference("deviceEventDecoder", decoderName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    BinaryDecoders type = BinaryDecoders.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		continue;
@@ -1174,19 +1134,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	List<Element> children = DomUtils.getChildElements(parent);
 	AbstractBeanDefinition decoder = null;
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition decoderBean = nested.parse(child, context);
-		    String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
-		    source.addPropertyReference("deviceEventDecoder", decoderName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    StringDecoders type = StringDecoders.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		continue;
@@ -1466,19 +1413,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	List<Element> children = DomUtils.getChildElements(parent);
 	AbstractBeanDefinition deduplicator = null;
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition deduplicatorBean = nested.parse(child, context);
-		    String deduplicatorName = nameGenerator.generateBeanName(deduplicatorBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(deduplicatorName, deduplicatorBean);
-		    source.addPropertyReference("deviceEventDeduplicator", deduplicatorName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    Deduplicators type = Deduplicators.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		continue;

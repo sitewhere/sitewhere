@@ -19,8 +19,12 @@ import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.opentracing.ActiveSpan;
+import io.opentracing.Tracer;
 
 /**
  * Operation that bootstraps a tenant with initial data if it has not already
@@ -50,14 +54,18 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
      */
     @Override
     public T call() throws Exception {
+	ActiveSpan span = null;
+	Tracer tracer = getTenantEngine().getMicroservice().getTracer();
 	try {
 	    String tenantName = getTenantEngine().getTenant().getName();
+	    span = tracer.buildSpan("Bootstrap tenant engine '" + tenantName + "'.").startActive();
 
 	    // Lock the module and check whether tenant needs bootstrap.
 	    LOGGER.info("Getting lock for testing tenant engine bootstrap state for '" + tenantName + "'.");
 	    CuratorFramework curator = getTenantEngine().getMicroservice().getZookeeperManager().getCurator();
 	    InterProcessMutex lock = new InterProcessMutex(curator, getTenantEngine().getModuleLockPath());
 	    try {
+		span.log("Wait for lock on module...");
 		lock.acquire();
 		if (curator.checkExists().forPath(getTenantEngine().getModuleBootstrappedPath()) == null) {
 		    LOGGER.info("Tenant engine '" + tenantName + "' not bootstrapped. Bootstrapping...");
@@ -66,6 +74,7 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
 		    LOGGER.info("Tenant engine '" + tenantName + "' already bootstrapped.");
 		}
 	    } finally {
+		span.log("Released lock on module.");
 		lock.release();
 	    }
 
@@ -73,8 +82,11 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
 	    return getTenantEngine();
 	} catch (Throwable t) {
 	    LOGGER.error("Unable to bootstrap tenant engine for '" + getTenantEngine().getTenant().getName() + "'.", t);
+	    TracerUtils.handleErrorInTracerSpan(span, t);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;
+	} finally {
+	    TracerUtils.finishTracerSpan(span);
 	}
     }
 

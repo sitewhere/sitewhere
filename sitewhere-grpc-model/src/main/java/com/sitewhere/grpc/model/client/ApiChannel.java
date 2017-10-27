@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.IApiChannel;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TracerUtils;
 
 import io.grpc.ConnectivityState;
+import io.opentracing.ActiveSpan;
 
 /**
  * Base class for channels that uses SiteWhere APIs to communicate with GRPC
@@ -56,23 +58,38 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
 	if (getGrpcChannel() == null) {
 	    throw new ApiNotAvailableException("GRPC channel not found. Unable to access API.");
 	}
-	if (getGrpcChannel().getChannel() == null) {
-	    throw new ApiNotAvailableException("GRPC channel not initialized. Unable to access API.");
-	}
-	long deadline = System.currentTimeMillis() + unit.toMillis(duration);
-	while ((System.currentTimeMillis() - deadline) < 0) {
-	    try {
-		ConnectivityState state = getGrpcChannel().getChannel().getState(true);
-		if (ConnectivityState.READY != state) {
-		    getLogger().info("Waiting for GRPC service to become available. (status:" + state.name() + ")");
-		    Thread.sleep(CONNECTION_CHECK_INTERVAL);
-		} else {
-		    return;
-		}
-	    } catch (Exception e) {
-		throw new ApiNotAvailableException("Unhandled exception waiting for API to become available.", e);
+
+	ActiveSpan span = null;
+	try {
+	    getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName()).startActive();
+
+	    if (getGrpcChannel().getChannel() == null) {
+		ApiNotAvailableException e = new ApiNotAvailableException(
+			"GRPC channel not initialized. Unable to access API.");
+		TracerUtils.handleErrorInTracerSpan(span, e);
+		throw e;
 	    }
+
+	    long deadline = System.currentTimeMillis() + unit.toMillis(duration);
+	    while ((System.currentTimeMillis() - deadline) < 0) {
+		try {
+		    ConnectivityState state = getGrpcChannel().getChannel().getState(true);
+		    if (ConnectivityState.READY != state) {
+			getLogger().info("Waiting for GRPC service to become available. (status:" + state.name() + ")");
+			Thread.sleep(CONNECTION_CHECK_INTERVAL);
+		    } else {
+			return;
+		    }
+		} catch (Exception e) {
+		    TracerUtils.handleErrorInTracerSpan(span, e);
+		    throw new ApiNotAvailableException("Unhandled exception waiting for API to become available.", e);
+		}
+	    }
+	    ApiNotAvailableException e = new ApiNotAvailableException("API not available within timeout period.");
+	    TracerUtils.handleErrorInTracerSpan(span, e);
+	    throw e;
+	} finally {
+	    TracerUtils.finishTracerSpan(span);
 	}
-	throw new ApiNotAvailableException("API not available within timeout period.");
     }
 }

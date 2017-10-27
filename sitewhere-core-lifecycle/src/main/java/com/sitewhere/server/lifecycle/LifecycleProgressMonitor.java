@@ -23,7 +23,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
-import io.opentracing.tag.Tags;
 
 /**
  * Default implementation of {@link ILifecycleProgressMonitor}.
@@ -107,11 +106,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      */
     @Override
     public void handleErrorInTracerSpan(ActiveSpan span, Throwable t) {
-	if (span != null) {
-	    span.setTag(Tags.ERROR.getKey(), true);
-	    span.log(TracerLogUtils.mapOf("error.object", t));
-	    span.log(TracerLogUtils.mapOf("message", t.getMessage()));
-	}
+	TracerUtils.handleErrorInTracerSpan(span, t);
     }
 
     /*
@@ -120,9 +115,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      */
     @Override
     public void finishTracerSpan(ActiveSpan span) {
-	if (span != null) {
-	    span.deactivate();
-	}
+	TracerUtils.finishTracerSpan(span);
     }
 
     /*

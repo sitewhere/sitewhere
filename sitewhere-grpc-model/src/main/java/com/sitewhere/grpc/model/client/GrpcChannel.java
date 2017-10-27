@@ -16,6 +16,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.opentracing.Tracer;
 
 /**
  * Management wrapper for a GRPC channel.
@@ -132,6 +133,14 @@ public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IG
      */
     @Override
     public abstract A createAsyncStub();
+
+    /*
+     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
+     */
+    @Override
+    public Tracer getTracer() {
+	return getTracerProvider().getTracer();
+    }
 
     public ITracerProvider getTracerProvider() {
 	return tracerProvider;
