@@ -10,6 +10,9 @@
            http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
            http://www.sitewhere.com/schema/sitewhere/microservice/device-management http://www.sitewhere.org/schema/sitewhere/microservice/device-management/current/device-management.xsd">
 
+	<!-- Allow property placeholder substitution -->
+	<context:property-placeholder />
+
 	<!-- Device Management Configuration -->
 	<dm:device-management>
 

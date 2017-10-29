@@ -10,12 +10,15 @@
            http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
            http://www.sitewhere.com/schema/sitewhere/microservice/asset-management http://www.sitewhere.org/schema/sitewhere/microservice/asset-management/current/asset-management.xsd">
 
+	<!-- Allow property placeholder substitution -->
+	<context:property-placeholder />
+
 	<!-- Asset Management Configuration -->
 	<am:asset-management>
 
 		<!-- Use default MongoDB configuration -->
 		<sw:default-mongodb-datastore />
-		
+
 		<!-- Configure asset modules -->
 		<am:asset-modules>
 		</am:asset-modules>

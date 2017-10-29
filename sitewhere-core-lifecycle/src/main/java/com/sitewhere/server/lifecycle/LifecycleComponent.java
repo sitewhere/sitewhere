@@ -173,11 +173,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
+	    String message, boolean require) throws SiteWhereException {
 	component.lifecycleInitialize(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw new ServerStartupException(component, errorMessage);
+		throw new ServerStartupException(component, message, component.getLifecycleError());
 	    }
 	}
 	getLifecycleComponents().put(component.getComponentId(), component);
@@ -268,12 +268,12 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
      * java.lang.String, boolean)
      */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, String message,
+	    boolean require) throws SiteWhereException {
 	component.lifecycleStart(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw new ServerStartupException(component, errorMessage);
+		throw new ServerStartupException(component, message, component.getLifecycleError());
 	    }
 	}
 	getLifecycleComponents().put(component.getComponentId(), component);

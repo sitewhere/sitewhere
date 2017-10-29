@@ -10,6 +10,9 @@
            http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
            http://www.sitewhere.com/schema/sitewhere/microservice/event-management http://www.sitewhere.org/schema/sitewhere/microservice/event-management/current/event-management.xsd">
 
+	<!-- Allow property placeholder substitution -->
+	<context:property-placeholder />
+
 	<!-- Event Management Configuration -->
 	<em:event-management>
 	

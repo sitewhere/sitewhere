@@ -18,6 +18,8 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
+import io.opentracing.ActiveSpan;
+
 /**
  * Implementation of {@link ILifecycleStep} that is composed of multiple
  * lifecycle steps that are executed in order.
@@ -70,23 +72,24 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	monitor.pushContext(new LifecycleProgressContext(steps.size(), getName()));
-	StringBuffer buffer = new StringBuffer();
-	buffer.append("About to process composite lifecycle with " + steps.size() + "steps:\n");
-	for (ILifecycleStep step : steps) {
-	    buffer.append("  " + step.getName() + "\n");
-	}
-	LOGGER.debug(buffer.toString());
 	try {
 	    for (ILifecycleStep step : steps) {
 		LOGGER.debug("Starting " + step.getName());
-		monitor.startProgress(step.getName());
-		step.execute(monitor);
-		monitor.finishProgress();
+		ActiveSpan span = monitor.getTracer().activeSpan();
+		try {
+		    span.log("Starting step '" + step.getName() + "'.");
+		    monitor.startProgress(step.getName());
+		    step.execute(monitor);
+		    monitor.finishProgress();
+		} catch (SiteWhereException e) {
+		    TracerUtils.handleErrorInTracerSpan(span, e);
+		    throw e;
+		} catch (Throwable t) {
+		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifeycle step.", t);
+		    TracerUtils.handleErrorInTracerSpan(span, e);
+		    throw e;
+		}
 	    }
-	} catch (SiteWhereException e) {
-	    throw e;
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unhandled exception in composite lifeycle step.", e);
 	} finally {
 	    monitor.popContext();
 	}

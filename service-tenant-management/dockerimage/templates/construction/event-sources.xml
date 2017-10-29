@@ -10,6 +10,9 @@
            http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
            http://www.sitewhere.com/schema/sitewhere/microservice/event-sources http://www.sitewhere.org/schema/sitewhere/microservice/event-sources/current/event-sources.xsd">
 
+	<!-- Allow property placeholder substitution -->
+	<context:property-placeholder />
+
 	<!-- Event sources Configuration -->
 	<es:event-sources>
 
