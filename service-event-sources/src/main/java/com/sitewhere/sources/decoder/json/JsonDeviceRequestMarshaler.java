@@ -60,6 +60,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
      * com.fasterxml.jackson.databind.DeserializationContext)
      */
     @Override
+    @SuppressWarnings("deprecation")
     public DecodedDeviceRequest<?> deserialize(JsonParser parser, DeserializationContext context)
 	    throws IOException, JsonProcessingException {
 	JsonNode node = parser.getCodec().readTree(parser);
@@ -99,6 +100,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
      * @return
      * @throws JsonProcessingException
      */
+    @SuppressWarnings("deprecation")
     protected DecodedDeviceRequest<?> unmarshal(String hardwareId, String originator, Type type, JsonNode json)
 	    throws JsonProcessingException {
 	switch (type) {
@@ -182,6 +184,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
      * @return
      * @throws JsonProcessingException
      */
+    @SuppressWarnings("deprecation")
     protected IDeviceMeasurementsCreateRequest parseMeasurementsRequest(JsonNode json) throws JsonProcessingException {
 	try {
 	    return MAPPER.treeToValue(json, DeviceMeasurementsCreateRequest.class);
