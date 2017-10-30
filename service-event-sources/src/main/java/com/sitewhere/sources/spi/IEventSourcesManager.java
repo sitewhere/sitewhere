@@ -8,7 +8,10 @@
 package com.sitewhere.sources.spi;
 
 import java.util.List;
+import java.util.Map;
 
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -25,4 +28,28 @@ public interface IEventSourcesManager extends ITenantLifecycleComponent {
      * @return
      */
     public List<IInboundEventSource<?>> getEventSources();
+
+    /**
+     * Handle processing for a decoded event from an event source.
+     * 
+     * @param sourceId
+     * @param encoded
+     * @param metadata
+     * @param decoded
+     * @throws SiteWhereException
+     */
+    public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
+	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException;
+
+    /**
+     * Handle failed decode from an event source.
+     * 
+     * @param sourceId
+     * @param encoded
+     * @param metadata
+     * @param t
+     * @throws SiteWhereException
+     */
+    public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
+	    throws SiteWhereException;
 }

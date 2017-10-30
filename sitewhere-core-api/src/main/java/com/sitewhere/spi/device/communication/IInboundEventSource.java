@@ -49,6 +49,14 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
     public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
 
     /**
+     * Get the raw payload as a byte array.
+     * 
+     * @param payload
+     * @return
+     */
+    public byte[] getRawPayload(T payload);
+
+    /**
      * Called by {@link IInboundEventReceiver} when an encoded event is
      * received.
      * 

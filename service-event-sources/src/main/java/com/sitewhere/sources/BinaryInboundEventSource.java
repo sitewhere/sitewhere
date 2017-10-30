@@ -7,6 +7,7 @@
  */
 package com.sitewhere.sources;
 
+import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 
 /**
@@ -15,4 +16,18 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
  * @author Derek
  */
 public class BinaryInboundEventSource extends InboundEventSource<byte[]> {
+
+    public BinaryInboundEventSource(IEventSourcesManager eventSourcesManager) {
+	super(eventSourcesManager);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.communication.IInboundEventSource#getRawPayload(
+     * java.lang.Object)
+     */
+    @Override
+    public byte[] getRawPayload(byte[] payload) {
+	return payload;
+    }
 }

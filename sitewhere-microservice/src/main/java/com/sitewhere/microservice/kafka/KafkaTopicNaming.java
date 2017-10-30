@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Class for locating SiteWhere Kafka topics.
@@ -34,17 +35,14 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for tenant model updates */
     protected static final String TENANT_MODEL_UPDATES_SUFFIX = "tenant-model-updates";
 
+    /** Topic suffix for events decoded by event sources for a tenant */
+    protected static final String TENANT_TOPIC_EVENT_SOURCE_DECODED_EVENTS = "event-source-decoded";
+
+    /** Topic suffix for events failed event decodes for a tenant */
+    protected static final String TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS = "event-source-failed-decode";
+
     @Autowired
     private IInstanceSettings instanceSettings;
-
-    /**
-     * Get prefix used for global topics.
-     * 
-     * @return
-     */
-    protected String getGlobalPrefix() {
-	return getInstancePrefix() + SEPARATOR + GLOBAL_INDICATOR + SEPARATOR;
-    }
 
     /*
      * (non-Javadoc)
@@ -58,6 +56,25 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
 	return BASE_NAME + SEPARATOR + getInstanceSettings().getInstanceId();
     }
 
+    /**
+     * Get prefix used for global topics.
+     * 
+     * @return
+     */
+    protected String getGlobalPrefix() {
+	return getInstancePrefix() + SEPARATOR + GLOBAL_INDICATOR + SEPARATOR;
+    }
+
+    /**
+     * Get tenant-specific topic prefix.
+     * 
+     * @param tenant
+     * @return
+     */
+    protected String getTenantPrefix(ITenant tenant) {
+	return getInstancePrefix() + SEPARATOR + TENANT_INDICATOR + SEPARATOR + tenant.getId() + SEPARATOR;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -67,6 +84,24 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getTenantUpdatesTopic() {
 	return getGlobalPrefix() + TENANT_MODEL_UPDATES_SUFFIX;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#
+     * getEventSourceDecodedEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getEventSourceDecodedEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_EVENT_SOURCE_DECODED_EVENTS;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#
+     * getEventSourceFailedDecodedTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getEventSourceFailedDecodedTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
@@ -32,10 +33,13 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @param <T>
  */
-public class InboundEventSource<T> extends TenantLifecycleComponent implements IInboundEventSource<T> {
+public abstract class InboundEventSource<T> extends TenantLifecycleComponent implements IInboundEventSource<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    /** Manager for all event sources in a tenant */
+    private IEventSourcesManager eventSourcesManager;
 
     /** Unique id for referencing source */
     private String sourceId;
@@ -49,8 +53,9 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /** List of {@link IInboundEventReceiver} that supply this processor */
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
-    public InboundEventSource() {
+    public InboundEventSource(IEventSourcesManager eventSourcesManager) {
 	super(LifecycleComponentType.InboundEventSource);
+	this.eventSourcesManager = eventSourcesManager;
     }
 
     /*
@@ -64,7 +69,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
-	LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 	if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 	    throw new SiteWhereException("No inbound event receivers registered for event source.");
 	}
@@ -81,7 +85,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	}
 
 	startEventReceivers(monitor);
-	LOGGER.debug("Started event source '" + getSourceId() + "'.");
     }
 
     /**
@@ -155,38 +158,56 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
      * java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload,
-	    Map<String, Object> metadata) throws EventDecodeException {
-	LOGGER.debug("Device event receiver thread picked up event.");
-	List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
+    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata)
+	    throws EventDecodeException {
+	LOGGER.debug("Device event receiver picked up event.");
+	List<IDecodedDeviceRequest<?>> requests = decodePayload(encoded, metadata);
 	try {
 	    if (requests != null) {
 		for (IDecodedDeviceRequest<?> decoded : requests) {
 		    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
 			    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
 		    if (!isDuplicate) {
-			handleDecodedRequest(decoded);
+			handleDecodedRequest(encoded, metadata, decoded);
 		    } else {
 			LOGGER.info("Event not processed due to duplicate detected.");
 		    }
 		}
 	    }
-	} catch (SiteWhereException e) {
-	    onEventDecodeFailed(encodedPayload, e);
 	} catch (Throwable e) {
-	    onEventDecodeFailed(encodedPayload, e);
+	    try {
+		onEventDecodeFailed(encoded, metadata, e);
+	    } catch (SiteWhereException e1) {
+		LOGGER.error("Unable to report failed decode to event source manager.", e1);
+	    }
 	}
     }
 
     /**
-     * Handle a single decoded request by passing it to the correct method on
-     * the inbound processing strategy.
+     * Pass decoded events to the {@link IEventSourcesManager} for further
+     * processing.
      * 
+     * @param encoded
+     * @param metadata
      * @param decoded
      * @throws SiteWhereException
      */
-    protected void handleDecodedRequest(IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
-	// This goes to Kafka.
+    protected void handleDecodedRequest(T encoded, Map<String, Object> metadata, IDecodedDeviceRequest<?> decoded)
+	    throws SiteWhereException {
+	getEventSourcesManager().handleDecodedEvent(getSourceId(), getRawPayload(encoded), metadata, decoded);
+    }
+
+    /**
+     * Pass failed decoded to the {@link IEventSourcesManager} for further
+     * processing.
+     * 
+     * @param encoded
+     * @param metadata
+     * @param t
+     * @throws SiteWhereException
+     */
+    protected void onEventDecodeFailed(T encoded, Map<String, Object> metadata, Throwable t) throws SiteWhereException {
+	getEventSourcesManager().handleFailedDecode(getSourceId(), getRawPayload(encoded), metadata, t);
     }
 
     /**
@@ -200,16 +221,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	return getDeviceEventDecoder().decode(encodedPayload, metadata);
-    }
-
-    /**
-     * Handler for case where decoder throws an exception.
-     * 
-     * @param encodedEvent
-     * @param t
-     */
-    protected void onEventDecodeFailed(T encodedEvent, Throwable t) {
-	LOGGER.error("Event receiver thread unable to decode event request.", t);
     }
 
     /*
@@ -272,5 +283,13 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
     public List<IInboundEventReceiver<T>> getInboundEventReceivers() {
 	return inboundEventReceivers;
+    }
+
+    public IEventSourcesManager getEventSourcesManager() {
+	return eventSourcesManager;
+    }
+
+    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager) {
+	this.eventSourcesManager = eventSourcesManager;
     }
 }

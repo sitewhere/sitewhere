@@ -7,6 +7,8 @@
  */
 package com.sitewhere.microservice.spi.kafka;
 
+import com.sitewhere.spi.tenant.ITenant;
+
 /**
  * Provides names for Kafka topics used in SiteWhere.
  * 
@@ -27,4 +29,22 @@ public interface IKafkaTopicNaming {
      * @return
      */
     public String getTenantUpdatesTopic();
+
+    /**
+     * Get name for topic that contains events that have been decoded from
+     * inbound event sources.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getEventSourceDecodedEventsTopic(ITenant tenant);
+
+    /**
+     * Get name for topic that contains events that could not be decoded from
+     * event sources.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getEventSourceFailedDecodedTopic(ITenant tenant);
 }
