@@ -101,7 +101,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 
 		// Initialize microservice.
 		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
+			new LifecycleProgressContext(service, 1, "Initialize " + service.getName()), service);
 		service.lifecycleInitialize(initMonitor);
 		if (service.getLifecycleStatus() == LifecycleStatus.InitializationError) {
 		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
@@ -110,7 +110,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 
 		// Start microservice.
 		LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Start " + service.getName()), service);
+			new LifecycleProgressContext(service, 1, "Start " + service.getName()), service);
 		service.lifecycleStart(startMonitor);
 		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
@@ -159,7 +159,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 	    try {
 		// Stop microservice.
 		LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Stop " + service.getName()), service);
+			new LifecycleProgressContext(service, 1, "Stop " + service.getName()), service);
 		service.lifecycleStop(stopMonitor);
 		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		    throw service.getLifecycleError();
@@ -167,7 +167,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 
 		// Terminate microservice.
 		LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Terminate " + service.getName()), service);
+			new LifecycleProgressContext(service, 1, "Terminate " + service.getName()), service);
 		service.terminate(termMonitor);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Exception on microservice shutdown.", e);

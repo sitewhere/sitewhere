@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
@@ -72,7 +73,8 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	monitor.pushContext(new LifecycleProgressContext(steps.size(), getName()));
+	ILifecycleProgressContext context = monitor.getContextStack().peek();
+	monitor.pushContext(new LifecycleProgressContext(context.getMicroservice(), steps.size(), getName()));
 	try {
 	    for (ILifecycleStep step : steps) {
 		LOGGER.debug("Starting " + step.getName());

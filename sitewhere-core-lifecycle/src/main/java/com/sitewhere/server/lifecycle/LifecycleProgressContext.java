@@ -7,6 +7,7 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -29,7 +30,10 @@ public class LifecycleProgressContext implements ILifecycleProgressContext {
     /** Current operation message */
     private String currentOperationMessage;
 
-    public LifecycleProgressContext(int operationCount, String taskName) {
+    /** Microservice associated with component */
+    private IMicroservice microservice;
+
+    public LifecycleProgressContext(IMicroservice microservice, int operationCount, String taskName) {
 	this.operationCount = operationCount;
 	this.taskName = taskName;
     }
@@ -102,7 +106,21 @@ public class LifecycleProgressContext implements ILifecycleProgressContext {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext#
      * setCurrentOperationMessage(java.lang.String)
      */
+    @Override
     public void setCurrentOperationMessage(String currentOperationMessage) {
 	this.currentOperationMessage = currentOperationMessage;
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext#
+     * getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

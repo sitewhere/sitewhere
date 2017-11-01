@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
+import com.sitewhere.spi.microservice.IMicroservice;
+
 /**
  * Provides context for a monitoring a lifecycle operation.
  * 
@@ -55,4 +57,11 @@ public interface ILifecycleProgressContext {
      * @param message
      */
     public void setCurrentOperationMessage(String message);
+
+    /**
+     * Get microservice associated with component.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
 }
