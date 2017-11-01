@@ -23,7 +23,7 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     /** Indicates of required for parent component to function */
     private boolean require;
 
-    public StartComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+    protected StartComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
 	super(owner, component);
     }
 
@@ -47,14 +47,15 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
 	    try {
-		getOwner().startNestedComponent(getComponent(), monitor, "Unable to start " + getName(), isRequire());
+		getOwner().startNestedComponent(getComponent(), monitor, isRequire());
 	    } catch (SiteWhereException t) {
 		throw t;
 	    } catch (Throwable t) {
-		throw new SiteWhereException("Unable to start " + getName(), t);
+		throw new SiteWhereException("Unable to start " + getComponent().getComponentName(), t);
 	    }
 	} else {
-	    throw new SiteWhereException("Attempting to start component '" + getName() + "' but component is null.");
+	    throw new SiteWhereException(
+		    "Attempting to start component '" + getComponent().getComponentName() + "' but component is null.");
 	}
     }
 

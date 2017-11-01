@@ -15,12 +15,12 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.opentracing.ActiveSpan;

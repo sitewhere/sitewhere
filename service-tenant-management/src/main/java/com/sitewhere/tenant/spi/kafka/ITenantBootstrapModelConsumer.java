@@ -7,7 +7,7 @@
  */
 package com.sitewhere.tenant.spi.kafka;
 
-import com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Kafka consumer that reacts to updates in the tenant model.

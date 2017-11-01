@@ -8,8 +8,8 @@
 package com.sitewhere.asset.spi.microservice;
 
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides asset management functionality.

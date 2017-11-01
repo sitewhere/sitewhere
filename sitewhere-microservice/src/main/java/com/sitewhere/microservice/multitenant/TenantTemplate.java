@@ -9,7 +9,7 @@ package com.sitewhere.microservice.multitenant;
 
 import java.util.List;
 
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 
 /**
  * Model object for an {@link ITenantTemplate}.

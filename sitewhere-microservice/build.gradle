@@ -7,18 +7,8 @@ dependencies {
 	compile project(':sitewhere-spring-spi')
 	
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
-	
-    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
-    compile group: 'org.apache.kafka', name: 'kafka-streams', version: "${rootProject.ext['kafka.version']}"
-    compile (group: 'org.apache.curator', name: 'curator-recipes', version:"${rootProject.ext['curator.version']}") {
-		exclude (module: 'log4j')   
- 		exclude (module: 'slf4j-log4j12')   
-    }
     
     compile group: 'org.codehaus.groovy', name: 'groovy'
-    
-    // JWT
-    compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
     
     // Tracing support
     compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'

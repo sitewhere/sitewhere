@@ -19,9 +19,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.groovy.IScriptSynchronizer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 
 /**
  * Base class for script synchronizers.

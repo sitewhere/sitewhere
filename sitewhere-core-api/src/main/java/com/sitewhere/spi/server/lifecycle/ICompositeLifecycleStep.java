@@ -26,6 +26,32 @@ public interface ICompositeLifecycleStep extends ILifecycleStep {
     public void addStep(ILifecycleStep step);
 
     /**
+     * Add step that initializes a component.
+     * 
+     * @param owner
+     * @param component
+     * @param require
+     */
+    public void addInitializeStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require);
+
+    /**
+     * Add step that starts a component.
+     * 
+     * @param owner
+     * @param component
+     * @param require
+     */
+    public void addStartStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require);
+
+    /**
+     * Add step that stops a component.
+     * 
+     * @param owner
+     * @param component
+     */
+    public void addStopStep(ILifecycleComponent owner, ILifecycleComponent component);
+
+    /**
      * Get an ordered list of steps to be executed.
      * 
      * @return

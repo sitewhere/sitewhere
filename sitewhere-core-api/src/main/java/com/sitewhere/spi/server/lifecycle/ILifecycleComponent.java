@@ -92,12 +92,11 @@ public interface ILifecycleComponent {
      * 
      * @param component
      * @param monitor
-     * @param errorMessage
      * @param require
      * @throws SiteWhereException
      */
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException;
+	    boolean require) throws SiteWhereException;
 
     /**
      * Starts the component while keeping up with lifecycle information.
@@ -124,12 +123,11 @@ public interface ILifecycleComponent {
      * 
      * @param component
      * @param monitor
-     * @param errorMessage
      * @param require
      * @throws SiteWhereException
      */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException;
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException;
 
     /**
      * Pauses the component while keeping up with lifecycle information.

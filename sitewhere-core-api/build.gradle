@@ -7,10 +7,24 @@ configurations {
 dependencies {
 	compile ('org.springframework.boot:spring-boot-starter-log4j2')
 	
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	// Spring security components.
+    compile group: 'org.springframework.security', name: 'spring-security-core'
+	
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}"
+    compile group: 'org.apache.kafka', name: 'kafka-streams', version: "${rootProject.ext['kafka.version']}"
+    compile (group: 'org.apache.curator', name: 'curator-recipes', version:"${rootProject.ext['curator.version']}") {
+		exclude (module: 'log4j')   
+ 		exclude (module: 'slf4j-log4j12')   
+    }
 	
 	// Opentracing APIs.
     compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'
+    
+    // JSON web token support.
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
+	
+	// Jackson JSON processing.
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
 }

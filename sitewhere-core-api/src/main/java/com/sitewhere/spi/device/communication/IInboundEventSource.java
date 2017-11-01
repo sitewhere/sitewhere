@@ -28,6 +28,13 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
     public String getSourceId();
 
     /**
+     * Set event sources manager.
+     * 
+     * @param eventSourcesManager
+     */
+    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager);
+
+    /**
      * Set the device event decoder.
      * 
      * @param decoder

@@ -89,13 +89,13 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
 
     /*
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
-     * createTracerSpan()
+     * createTracerSpan(java.lang.String)
      */
     @Override
-    public ActiveSpan createTracerSpan() throws SiteWhereException {
+    public ActiveSpan createTracerSpan(String name) throws SiteWhereException {
 	ILifecycleProgressContext current = getContextStack().peek();
 	if (current != null) {
-	    return getTracer().buildSpan(current.getCurrentOperationMessage()).startActive();
+	    return getTracer().buildSpan(name).startActive();
 	}
 	throw new SiteWhereException("Unable to create span. No context found.");
     }

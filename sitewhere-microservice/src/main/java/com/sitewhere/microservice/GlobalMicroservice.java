@@ -8,8 +8,8 @@
 package com.sitewhere.microservice;
 
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
-import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;

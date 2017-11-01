@@ -40,10 +40,11 @@ public interface ILifecycleProgressMonitor extends IProgressReporter, ITracerPro
     /**
      * Start a span for the current context.
      * 
+     * @param name
      * @return
      * @throws SiteWhereException
      */
-    public ActiveSpan createTracerSpan() throws SiteWhereException;
+    public ActiveSpan createTracerSpan(String name) throws SiteWhereException;
 
     /**
      * Handle an error encountered while in a tracer span.

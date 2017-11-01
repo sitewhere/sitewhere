@@ -8,7 +8,7 @@
 package com.sitewhere.user.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
 

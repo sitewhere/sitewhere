@@ -14,12 +14,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.spi.spring.UserManagementBeans;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
@@ -118,10 +115,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	init.addStep(initializeDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Initialize user management implementation.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagement(), true));
+	init.addInitializeStep(this, getUserManagement(), true);
 
 	// Initialize user management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcServer(), true));
+	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -143,10 +140,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	start.addStep(startDiscoverableBeans(getUserManagementApplicationContext(), monitor));
 
 	// Start user mangement persistence.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagement(), true));
+	start.addStartStep(this, getUserManagement(), true);
 
 	// Start GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcServer(), true));
+	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -165,10 +162,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop GRPC server.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcServer()));
+	stop.addStopStep(this, getUserManagementGrpcServer());
 
 	// Stop user management persistence.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagement()));
+	stop.addStopStep(this, getUserManagement());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getUserManagementApplicationContext(), monitor));

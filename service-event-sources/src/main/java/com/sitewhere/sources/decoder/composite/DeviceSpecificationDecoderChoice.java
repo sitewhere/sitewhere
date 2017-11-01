@@ -78,7 +78,7 @@ public class DeviceSpecificationDecoderChoice<T> extends TenantLifecycleComponen
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	startNestedComponent(getDeviceEventDecoder(), monitor, "Event decoder startup failed.", true);
+	startNestedComponent(getDeviceEventDecoder(), monitor, true);
     }
 
     /*

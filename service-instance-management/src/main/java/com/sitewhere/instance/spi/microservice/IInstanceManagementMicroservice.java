@@ -10,7 +10,7 @@ package com.sitewhere.instance.spi.microservice;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * API for instance management microservice.

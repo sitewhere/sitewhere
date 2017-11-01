@@ -114,7 +114,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	ActiveSpan span = null;
 	try {
 	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan();
+	    span = monitor.createTracerSpan("Initialize " + getComponentName());
 
 	    // Verify that component can be initialized.
 	    if (!canInitialize()) {
@@ -164,8 +164,6 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
@@ -173,11 +171,12 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String message, boolean require) throws SiteWhereException {
+	    boolean require) throws SiteWhereException {
 	component.lifecycleInitialize(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw new ServerStartupException(component, message, component.getLifecycleError());
+		throw new ServerStartupException(component, "Error initializing '" + component.getComponentName() + "'",
+			component.getLifecycleError());
 	    }
 	}
 	getLifecycleComponents().put(component.getComponentId(), component);
@@ -195,7 +194,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	ActiveSpan span = null;
 	try {
 	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan();
+	    span = monitor.createTracerSpan("Start " + getComponentName());
 
 	    // Verify that component can be started.
 	    if (!canStart()) {
@@ -246,19 +245,6 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
-    /**
-     * Starts a nested {@link ILifecycleComponent}. Uses default message.
-     * 
-     * @param component
-     * @param monitor
-     * @param require
-     * @throws SiteWhereException
-     */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
-	    throws SiteWhereException {
-	startNestedComponent(component, monitor, getComponentName() + " failed to start.", require);
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -268,12 +254,13 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
      * java.lang.String, boolean)
      */
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, String message,
-	    boolean require) throws SiteWhereException {
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException {
 	component.lifecycleStart(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw new ServerStartupException(component, message, component.getLifecycleError());
+		throw new ServerStartupException(component, "Unable to start '" + component.getComponentName() + "'",
+			component.getLifecycleError());
 	    }
 	}
 	getLifecycleComponents().put(component.getComponentId(), component);
@@ -349,7 +336,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	ActiveSpan span = null;
 	try {
 	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan();
+	    span = monitor.createTracerSpan("Stop " + getComponentName());
 
 	    // Verify that we are allowed to stop component.
 	    if (!canStop()) {

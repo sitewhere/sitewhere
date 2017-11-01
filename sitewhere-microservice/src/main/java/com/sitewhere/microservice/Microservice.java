@@ -10,15 +10,14 @@ package com.sitewhere.microservice;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
-import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
-import com.sitewhere.microservice.spi.security.ISystemUser;
-import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.security.ISystemUser;
+import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.system.IVersion;
@@ -73,7 +72,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize Zookeeper configuration management.
-	initialize.addStep(new InitializeComponentLifecycleStep(this, getZookeeperManager(), true));
+	initialize.addInitializeStep(this, getZookeeperManager(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);

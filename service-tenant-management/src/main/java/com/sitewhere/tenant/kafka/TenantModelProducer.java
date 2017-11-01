@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
-import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 

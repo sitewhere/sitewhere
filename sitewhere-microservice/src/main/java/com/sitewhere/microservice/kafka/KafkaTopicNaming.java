@@ -9,8 +9,8 @@ package com.sitewhere.microservice.kafka;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
-import com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

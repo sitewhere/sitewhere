@@ -27,20 +27,17 @@ import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
-import com.sitewhere.microservice.spi.spring.DeviceManagementBeans;
 import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -115,13 +112,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
 
 	// Initialize device management persistence.
-	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagement(), true));
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize event management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagementGrpcChannel(), true));
+	init.addInitializeStep(this, getEventManagementGrpcChannel(), true);
 
 	// Initialize asset management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagementGrpcChannel(), true));
+	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -140,10 +137,10 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start event management GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcChannel(), true));
+	start.addStartStep(this, getEventManagementGrpcChannel(), true);
 
 	// Start asset management GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcChannel(), true));
+	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -199,10 +196,10 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop event management GRPC channel.
-	start.addStep(new StopComponentLifecycleStep(this, getEventManagementGrpcChannel()));
+	start.addStopStep(this, getEventManagementGrpcChannel());
 
 	// Stop asset management GRPC channel.
-	start.addStep(new StopComponentLifecycleStep(this, getAssetManagementGrpcChannel()));
+	start.addStopStep(this, getAssetManagementGrpcChannel());
 
 	// Execute shutdown steps.
 	start.execute(monitor);

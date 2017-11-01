@@ -25,8 +25,6 @@ import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.rest.model.server.TenantRuntimeState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
@@ -187,7 +185,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	LOGGER.info("Registering " + components.size() + " discoverable components.");
 	for (IDiscoverableTenantLifecycleComponent component : components.values()) {
 	    LOGGER.info("Registering " + component.getComponentName() + ".");
-	    initializeNestedComponent(component, monitor, "Unable to initialize discoverable component.", false);
+	    initializeNestedComponent(component, monitor, false);
 	    getRegisteredLifecycleComponents().add(component);
 	}
     }
@@ -267,7 +265,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void startBaseServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start lifecycle components.
 	for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-	    start.addStep(new StartComponentLifecycleStep(this, component, true));
+	    start.addStartStep(this, component, true);
 	}
     }
 
@@ -279,16 +277,16 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void startManagementImplementations(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start asset management.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagement(), true));
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagement(), true));
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceEventManagement(), true));
+	start.addStartStep(this, getDeviceEventManagement(), true);
 
 	// Start device management.
-	start.addStep(new StartComponentLifecycleStep(this, getScheduleManagement(), true));
+	start.addStartStep(this, getScheduleManagement(), true);
     }
 
     /**
@@ -364,10 +362,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
 	// Start search provider manager.
-	start.addStep(new StartComponentLifecycleStep(this, getSearchProviderManager(), true));
+	start.addStartStep(this, getSearchProviderManager(), true);
 
 	// Start device communication subsystem.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceCommunication(), true));
+	start.addStartStep(this, getDeviceCommunication(), true);
     }
 
     /*
@@ -437,10 +435,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Disable device communications.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceCommunication()));
+	stop.addStopStep(this, getDeviceCommunication());
 
 	// Stop search provider manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getSearchProviderManager()));
+	stop.addStopStep(this, getSearchProviderManager());
     }
 
     /*
@@ -492,16 +490,16 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      */
     protected void stopManagementServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Stop schedule management.
-	stop.addStep(new StopComponentLifecycleStep(this, getScheduleManagement()));
+	stop.addStopStep(this, getScheduleManagement());
 
 	// Stop device event management.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceEventManagement()));
+	stop.addStopStep(this, getDeviceEventManagement());
 
 	// Stop device management.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagement()));
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop asset management.
-	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagement()));
+	stop.addStopStep(this, getAssetManagement());
     }
 
     /*

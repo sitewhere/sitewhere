@@ -9,9 +9,9 @@ package com.sitewhere.microservice.groovy;
 
 import java.io.File;
 
-import com.sitewhere.microservice.spi.groovy.IScriptSynchronizer;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Implementation of {@link IScriptSynchronizer} that copies tenant-level

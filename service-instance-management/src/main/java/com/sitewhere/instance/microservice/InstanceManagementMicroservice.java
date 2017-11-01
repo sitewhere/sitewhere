@@ -32,12 +32,9 @@ import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -138,19 +135,19 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	start.addStep(verifyOrCreateInstanceNode());
 
 	// Start instance template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getInstanceTemplateManager(), true));
+	start.addStartStep(this, getInstanceTemplateManager(), true);
 
 	// Initialize user management GRPC channel.
-	start.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
+	start.addInitializeStep(this, getUserManagementGrpcChannel(), true);
 
 	// Start user mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
+	start.addStartStep(this, getUserManagementGrpcChannel(), true);
 
 	// Initialize tenant management GRPC channel.
-	start.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
+	start.addInitializeStep(this, getTenantManagementGrpcChannel(), true);
 
 	// Start tenant mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcChannel(), true));
+	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
 
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
@@ -172,13 +169,13 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant management GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcChannel()));
+	stop.addStopStep(this, getTenantManagementGrpcChannel());
 
 	// Stop user management GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcChannel()));
+	stop.addStopStep(this, getUserManagementGrpcChannel());
 
 	// Stop instance template manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getInstanceTemplateManager()));
+	stop.addStopStep(this, getInstanceTemplateManager());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

@@ -8,7 +8,7 @@
 package com.sitewhere.tenant.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 

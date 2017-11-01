@@ -18,8 +18,8 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.event.persistence.mongodb.DeviceEventManagementMongoClient;
 import com.sitewhere.event.persistence.mongodb.MongoDeviceEventManagement;
-import com.sitewhere.microservice.spi.spring.EventManagementBeans;
-import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.EventManagementBeans;
+import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 import com.sitewhere.spring.parser.IUserManagementParser.Elements;
 
 /**

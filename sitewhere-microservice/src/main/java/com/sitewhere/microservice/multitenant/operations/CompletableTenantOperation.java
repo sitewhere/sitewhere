@@ -10,7 +10,7 @@ package com.sitewhere.microservice.multitenant.operations;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Common base class for tenant operations that use {@link CompletableFuture} to

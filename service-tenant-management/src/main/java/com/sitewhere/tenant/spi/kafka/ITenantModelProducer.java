@@ -7,8 +7,8 @@
  */
 package com.sitewhere.tenant.spi.kafka;
 
-import com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

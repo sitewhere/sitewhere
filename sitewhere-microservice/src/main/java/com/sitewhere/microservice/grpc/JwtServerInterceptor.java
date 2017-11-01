@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.model.client.JwtClientInterceptor;
 import com.sitewhere.microservice.security.annotations.GrpcSecured;
-import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 

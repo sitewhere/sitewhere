@@ -150,18 +150,15 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
-	delegate.initializeNestedComponent(component, monitor, errorMessage, require);
+	    boolean require) throws SiteWhereException {
+	delegate.initializeNestedComponent(component, monitor, require);
     }
 
     /*
@@ -198,18 +195,15 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * startNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
-	delegate.startNestedComponent(component, monitor, errorMessage, require);
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException {
+	delegate.startNestedComponent(component, monitor, require);
     }
 
     /*

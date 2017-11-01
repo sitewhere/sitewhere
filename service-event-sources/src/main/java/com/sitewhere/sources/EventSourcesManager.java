@@ -14,13 +14,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
-import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
+import com.sitewhere.spi.device.communication.IEventSourcesManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.opentracing.ActiveSpan;
@@ -49,7 +49,8 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 	    try {
 		span = monitor.getTracer().buildSpan("Initialize event source").startActive();
 		span.log("Initializing '" + source.getComponentName() + "' event source.");
-		source.initialize(monitor);
+		source.setEventSourcesManager(this);
+		initializeNestedComponent(source, monitor, true);
 	    } catch (SiteWhereException e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
 		LOGGER.error("Error initializing event source.", e);
@@ -74,7 +75,7 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 	    try {
 		span = monitor.getTracer().buildSpan("Start event source").startActive();
 		span.log("Starting '" + source.getComponentName() + "' event source.");
-		source.start(monitor);
+		startNestedComponent(source, monitor, true);
 	    } catch (SiteWhereException e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
 		LOGGER.error("Error starting event source.", e);

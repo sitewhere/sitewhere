@@ -9,7 +9,7 @@ package com.sitewhere.microservice.instance;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import com.sitewhere.microservice.spi.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * SiteWhere instance settings.

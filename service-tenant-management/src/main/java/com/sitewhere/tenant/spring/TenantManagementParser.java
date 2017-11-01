@@ -16,8 +16,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
-import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
+import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spring.parser.ITenantManagementParser.Elements;
 import com.sitewhere.tenant.persistence.mongodb.MongoTenantManagement;
 import com.sitewhere.tenant.persistence.mongodb.TenantManagementMongoClient;

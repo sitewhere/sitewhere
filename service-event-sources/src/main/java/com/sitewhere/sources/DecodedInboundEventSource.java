@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
@@ -33,8 +32,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceRequest<?>> {
 
-    public DecodedInboundEventSource(IEventSourcesManager eventSourcesManager) {
-	super(eventSourcesManager);
+    public DecodedInboundEventSource() {
 	setDeviceEventDecoder(new NoOpDecoder());
     }
 

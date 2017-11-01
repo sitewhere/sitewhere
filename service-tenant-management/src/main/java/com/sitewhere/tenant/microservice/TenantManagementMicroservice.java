@@ -17,12 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.spi.spring.TenantManagementBeans;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -157,19 +154,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	init.addStep(initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Initialize tenant management implementation.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagement(), true));
+	init.addInitializeStep(this, getTenantManagement(), true);
 
 	// Initialize tenant template manager.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantTemplateManager(), true));
+	init.addInitializeStep(this, getTenantTemplateManager(), true);
 
 	// Initialize tenant management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantManagementGrpcServer(), true));
+	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
 	// Initialize tenant model producer.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantModelProducer(), true));
+	init.addInitializeStep(this, getTenantModelProducer(), true);
 
 	// Initialize tenant bootstrap model consumer.
-	init.addStep(new InitializeComponentLifecycleStep(this, getTenantBootstrapModelConsumer(), true));
+	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -191,19 +188,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	start.addStep(startDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Start tenant mangement persistence.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagement(), true));
+	start.addStartStep(this, getTenantManagement(), true);
 
 	// Start tenant template manager.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantTemplateManager(), true));
+	start.addStartStep(this, getTenantTemplateManager(), true);
 
 	// Start GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantManagementGrpcServer(), true));
+	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
 	// Start tenant model producer.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantModelProducer(), true));
+	start.addStartStep(this, getTenantModelProducer(), true);
 
 	// Start tenant bootstrap model consumer.
-	start.addStep(new StartComponentLifecycleStep(this, getTenantBootstrapModelConsumer(), true));
+	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -222,19 +219,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant bootstrap model consumer.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantBootstrapModelConsumer()));
+	stop.addStopStep(this, getTenantBootstrapModelConsumer());
 
 	// Stop tenant model producer.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantModelProducer()));
+	stop.addStopStep(this, getTenantModelProducer());
 
 	// Stop GRPC manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagementGrpcServer()));
+	stop.addStopStep(this, getTenantManagementGrpcServer());
 
 	// Stop tenant template manager.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantTemplateManager()));
+	stop.addStopStep(this, getTenantTemplateManager());
 
 	// Stop tenant management persistence.
-	stop.addStep(new StopComponentLifecycleStep(this, getTenantManagement()));
+	stop.addStopStep(this, getTenantManagement());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor));

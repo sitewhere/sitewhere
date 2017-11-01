@@ -16,9 +16,6 @@ import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -91,7 +88,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize event management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagementGrpcServer(), true));
+	init.addInitializeStep(this, getEventManagementGrpcServer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -110,7 +107,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start event management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getEventManagementGrpcServer(), true));
+	start.addStartStep(this, getEventManagementGrpcServer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -129,7 +126,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop event management GRPC server.
-	stop.addStep(new StopComponentLifecycleStep(this, getEventManagementGrpcServer()));
+	stop.addStopStep(this, getEventManagementGrpcServer());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

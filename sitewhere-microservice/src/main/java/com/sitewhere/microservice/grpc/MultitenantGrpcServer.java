@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import com.sitewhere.microservice.spi.IMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.BindableService;

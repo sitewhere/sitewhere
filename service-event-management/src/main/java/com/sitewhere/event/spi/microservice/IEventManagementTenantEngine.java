@@ -8,8 +8,8 @@
 package com.sitewhere.event.spi.microservice;
 
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device

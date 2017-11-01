@@ -30,39 +30,33 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#
      * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
      * ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
+	    boolean require) throws SiteWhereException {
 	if (component instanceof ITenantLifecycleComponent) {
 	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
-	super.initializeNestedComponent(component, monitor, errorMessage, require);
+	super.initializeNestedComponent(component, monitor, require);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
-     * java.lang.String, boolean)
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
-    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
-	    String errorMessage, boolean require) throws SiteWhereException {
+    public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
+	    throws SiteWhereException {
 	if (component instanceof ITenantLifecycleComponent) {
 	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
-	super.startNestedComponent(component, monitor, errorMessage, require);
+	super.startNestedComponent(component, monitor, require);
     }
 
     /** Tenant associated with component */

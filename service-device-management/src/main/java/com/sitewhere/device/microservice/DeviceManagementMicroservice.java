@@ -16,9 +16,6 @@ import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -91,7 +88,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcServer(), true));
+	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -110,7 +107,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcServer(), true));
+	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -129,7 +126,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device management GRPC server.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcServer()));
+	stop.addStopStep(this, getDeviceManagementGrpcServer());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

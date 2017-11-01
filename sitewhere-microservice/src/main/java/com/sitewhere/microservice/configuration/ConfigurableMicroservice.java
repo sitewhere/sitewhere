@@ -19,16 +19,13 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
-import com.sitewhere.microservice.spi.configuration.ConfigurationState;
-import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
-import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
-import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.ConfigurationState;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
+import com.sitewhere.spi.microservice.configuration.IConfigurationMonitor;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -224,10 +221,10 @@ public abstract class ConfigurableMicroservice extends Microservice
 
 	// Create and initialize configuration monitor.
 	createConfigurationMonitor();
-	initialize.addStep(new InitializeComponentLifecycleStep(this, getConfigurationMonitor(), true));
+	initialize.addInitializeStep(this, getConfigurationMonitor(), true);
 
 	// Start configuration monitor.
-	initialize.addStep(new StartComponentLifecycleStep(this, getConfigurationMonitor(), true));
+	initialize.addStartStep(this, getConfigurationMonitor(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -253,8 +250,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
 		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    initializeNestedComponent(component, monitor,
-			    "Unable to initialize " + component.getComponentName() + ".", component.isRequired());
+		    initializeNestedComponent(component, monitor, component.isRequired());
 		}
 	    }
 	};
@@ -279,8 +275,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
 		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    startNestedComponent(component, monitor, "Unable to start " + component.getComponentName() + ".",
-			    component.isRequired());
+		    startNestedComponent(component, monitor, component.isRequired());
 		}
 	    }
 	};
@@ -336,7 +331,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop configuration monitor.
-	stop.addStep(new StopComponentLifecycleStep(this, getConfigurationMonitor()));
+	stop.addStopStep(this, getConfigurationMonitor());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

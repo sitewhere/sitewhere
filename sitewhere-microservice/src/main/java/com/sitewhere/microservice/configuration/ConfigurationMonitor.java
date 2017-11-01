@@ -23,11 +23,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.microservice.spi.configuration.IConfigurationListener;
-import com.sitewhere.microservice.spi.configuration.IConfigurationMonitor;
-import com.sitewhere.microservice.spi.configuration.IZookeeperManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
+import com.sitewhere.spi.microservice.configuration.IConfigurationMonitor;
+import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

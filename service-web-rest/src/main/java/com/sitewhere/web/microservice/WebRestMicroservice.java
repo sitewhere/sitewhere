@@ -23,9 +23,6 @@ import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -153,10 +150,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Initialize user management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
+	init.addInitializeStep(this, getUserManagementGrpcChannel(), true);
 
 	// Initialize device management GRPC channel.
-	init.addStep(new InitializeComponentLifecycleStep(this, getDeviceManagementGrpcChannel(), true));
+	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -193,10 +190,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Start user mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getUserManagementGrpcChannel(), true));
+	start.addStartStep(this, getUserManagementGrpcChannel(), true);
 
 	// Start device mangement GRPC channel.
-	start.addStep(new StartComponentLifecycleStep(this, getDeviceManagementGrpcChannel(), true));
+	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -215,10 +212,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop user mangement GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getUserManagementGrpcChannel()));
+	stop.addStopStep(this, getUserManagementGrpcChannel());
 
 	// Stop device mangement GRPC channel.
-	stop.addStep(new StopComponentLifecycleStep(this, getDeviceManagementGrpcChannel()));
+	stop.addStopStep(this, getDeviceManagementGrpcChannel());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources;
 
-import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 
 /**
@@ -16,10 +15,6 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
  * @author Derek
  */
 public class BinaryInboundEventSource extends InboundEventSource<byte[]> {
-
-    public BinaryInboundEventSource(IEventSourcesManager eventSourcesManager) {
-	super(eventSourcesManager);
-    }
 
     /*
      * @see

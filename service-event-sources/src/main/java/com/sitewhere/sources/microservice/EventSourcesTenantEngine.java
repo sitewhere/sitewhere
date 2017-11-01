@@ -11,17 +11,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
-import com.sitewhere.microservice.spi.spring.EventSourcesBeans;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
-import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.IEventSourcesManager;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -61,7 +58,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize event sources manager.
-	init.addStep(new InitializeComponentLifecycleStep(this, getEventSourcesManager(), true));
+	init.addInitializeStep(this, getEventSourcesManager(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -80,7 +77,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start event sources manager.
-	start.addStep(new StartComponentLifecycleStep(this, getEventSourcesManager(), true));
+	start.addStartStep(this, getEventSourcesManager(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -112,7 +109,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop event sources manager.
-	start.addStep(new StopComponentLifecycleStep(this, getEventSourcesManager()));
+	start.addStopStep(this, getEventSourcesManager());
 
 	// Execute shutdown steps.
 	start.execute(monitor);

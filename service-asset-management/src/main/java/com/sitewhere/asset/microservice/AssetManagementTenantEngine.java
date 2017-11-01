@@ -18,18 +18,17 @@ import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
-import com.sitewhere.microservice.spi.spring.AssetManagementBeans;
 import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -81,7 +80,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
 
 	// Initialize asset management persistence.
-	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagement(), true));
+	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);

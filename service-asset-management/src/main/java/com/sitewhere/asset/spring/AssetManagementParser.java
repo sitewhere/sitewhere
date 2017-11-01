@@ -20,9 +20,9 @@ import org.w3c.dom.Element;
 import com.sitewhere.asset.modules.AssetModuleManager;
 import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
 import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
-import com.sitewhere.microservice.spi.spring.AssetManagementBeans;
-import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
+import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 import com.sitewhere.spring.parser.IAssetManagementParser.Elements;
 
 /**

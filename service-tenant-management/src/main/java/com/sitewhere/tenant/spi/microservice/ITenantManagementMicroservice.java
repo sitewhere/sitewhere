@@ -9,8 +9,8 @@ package com.sitewhere.tenant.spi.microservice;
 
 import java.io.File;
 
-import com.sitewhere.microservice.spi.IGlobalMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;

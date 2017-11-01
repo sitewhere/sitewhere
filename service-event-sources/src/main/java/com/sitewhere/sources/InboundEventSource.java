@@ -15,12 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IDeviceEventDeduplicator;
+import com.sitewhere.spi.device.communication.IEventSourcesManager;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -53,9 +53,8 @@ public abstract class InboundEventSource<T> extends TenantLifecycleComponent imp
     /** List of {@link IInboundEventReceiver} that supply this processor */
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
-    public InboundEventSource(IEventSourcesManager eventSourcesManager) {
+    public InboundEventSource() {
 	super(LifecycleComponentType.InboundEventSource);
-	this.eventSourcesManager = eventSourcesManager;
     }
 
     /*
@@ -77,11 +76,11 @@ public abstract class InboundEventSource<T> extends TenantLifecycleComponent imp
 	}
 
 	// Start device event decoder.
-	startNestedComponent(getDeviceEventDecoder(), monitor, "Event decoder startup failed.", true);
+	startNestedComponent(getDeviceEventDecoder(), monitor, true);
 
 	// Start device event deduplicator if provided.
 	if (getDeviceEventDeduplicator() != null) {
-	    startNestedComponent(getDeviceEventDeduplicator(), monitor, "Event deduplicator startup failed.", true);
+	    startNestedComponent(getDeviceEventDeduplicator(), monitor, true);
 	}
 
 	startEventReceivers(monitor);
@@ -239,6 +238,20 @@ public abstract class InboundEventSource<T> extends TenantLifecycleComponent imp
     }
 
     /*
+     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
+     * setEventSourcesManager(com.sitewhere.spi.device.communication.
+     * IEventSourcesManager)
+     */
+    @Override
+    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager) {
+	this.eventSourcesManager = eventSourcesManager;
+    }
+
+    public IEventSourcesManager getEventSourcesManager() {
+	return eventSourcesManager;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.communication.IInboundEventSource#
@@ -283,13 +296,5 @@ public abstract class InboundEventSource<T> extends TenantLifecycleComponent imp
 
     public List<IInboundEventReceiver<T>> getInboundEventReceivers() {
 	return inboundEventReceivers;
-    }
-
-    public IEventSourcesManager getEventSourcesManager() {
-	return eventSourcesManager;
-    }
-
-    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager) {
-	this.eventSourcesManager = eventSourcesManager;
     }
 }

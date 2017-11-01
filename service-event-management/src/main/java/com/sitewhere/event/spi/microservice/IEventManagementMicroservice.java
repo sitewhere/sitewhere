@@ -7,7 +7,7 @@
  */
 package com.sitewhere.event.spi.microservice;
 
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides event management functionality.

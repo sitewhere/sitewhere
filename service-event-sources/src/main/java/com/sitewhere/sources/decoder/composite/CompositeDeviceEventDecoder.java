@@ -109,10 +109,9 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComp
 	    throw new SiteWhereException("Composite decoder has no chocies configured.");
 	}
 
-	startNestedComponent(getMetadataExtractor(), monitor, "Composite decoder metadata extractor startup failed.",
-		true);
+	startNestedComponent(getMetadataExtractor(), monitor, true);
 	for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {
-	    startNestedComponent(choice, monitor, "Composite decoder delegate startup failed.", true);
+	    startNestedComponent(choice, monitor, true);
 	}
     }
 

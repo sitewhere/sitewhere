@@ -25,7 +25,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventDecoder;
-import com.sitewhere.microservice.spi.spring.EventSourcesBeans;
 import com.sitewhere.sources.BinaryInboundEventSource;
 import com.sitewhere.sources.DecodedInboundEventSource;
 import com.sitewhere.sources.EventSourcesManager;
@@ -57,6 +56,7 @@ import com.sitewhere.sources.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 import com.sitewhere.spring.parser.IEventSourcesParser.BinaryDecoders;
 import com.sitewhere.spring.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
 import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderChoiceElements;

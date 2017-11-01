@@ -18,12 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.IMicroserviceApplication;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroserviceApplication;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 import io.opentracing.ActiveSpan;

@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.client.TenantTokenClientInterceptor;
-import com.sitewhere.microservice.spi.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 import io.grpc.Context;
 import io.grpc.Contexts;

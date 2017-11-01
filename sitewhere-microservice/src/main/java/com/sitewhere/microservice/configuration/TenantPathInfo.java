@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.configuration;
 
-import com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
 /**
  * Holds path information for a file relative to the tenant configuration

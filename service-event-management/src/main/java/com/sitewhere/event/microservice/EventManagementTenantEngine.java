@@ -14,14 +14,13 @@ import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice;
-import com.sitewhere.microservice.spi.multitenant.ITenantTemplate;
-import com.sitewhere.microservice.spi.spring.EventManagementBeans;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.EventManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -69,7 +68,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
 
 	// Initialize event management persistence.
-	init.addStep(new InitializeComponentLifecycleStep(this, getEventManagement(), true));
+	init.addInitializeStep(this, getEventManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);

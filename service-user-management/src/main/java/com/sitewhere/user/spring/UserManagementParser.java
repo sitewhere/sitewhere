@@ -16,8 +16,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.microservice.spi.spring.InstanceGlobalBeans;
-import com.sitewhere.microservice.spi.spring.UserManagementBeans;
+import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.spring.parser.IUserManagementParser.Elements;
 import com.sitewhere.user.persistence.mongodb.MongoUserManagement;
 import com.sitewhere.user.persistence.mongodb.UserManagementMongoClient;

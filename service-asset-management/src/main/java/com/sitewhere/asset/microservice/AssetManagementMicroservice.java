@@ -17,9 +17,6 @@ import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.InitializeComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StartComponentLifecycleStep;
-import com.sitewhere.server.lifecycle.StopComponentLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -99,7 +96,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management GRPC server.
-	init.addStep(new InitializeComponentLifecycleStep(this, getAssetManagementGrpcServer(), true));
+	init.addInitializeStep(this, getAssetManagementGrpcServer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -118,7 +115,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start asset management GRPC server.
-	start.addStep(new StartComponentLifecycleStep(this, getAssetManagementGrpcServer(), true));
+	start.addStartStep(this, getAssetManagementGrpcServer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -137,7 +134,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop asset management GRPC server.
-	stop.addStep(new StopComponentLifecycleStep(this, getAssetManagementGrpcServer()));
+	stop.addStopStep(this, getAssetManagementGrpcServer());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

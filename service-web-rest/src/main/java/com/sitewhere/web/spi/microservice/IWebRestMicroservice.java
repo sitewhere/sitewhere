@@ -9,7 +9,7 @@ package com.sitewhere.web.spi.microservice;
 
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
-import com.sitewhere.microservice.spi.IGlobalMicroservice;
+import com.sitewhere.spi.microservice.IGlobalMicroservice;
 
 /**
  * Microservice that provides web/REST functionality.

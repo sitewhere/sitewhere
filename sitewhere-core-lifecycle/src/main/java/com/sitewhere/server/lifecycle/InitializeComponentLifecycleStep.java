@@ -21,7 +21,8 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
     /** Indicates of required for parent component to function */
     private boolean require;
 
-    public InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+    protected InitializeComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component,
+	    boolean require) {
 	super(owner, component);
 	this.require = require;
     }
@@ -46,16 +47,15 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
     public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getComponent() != null) {
 	    try {
-		getOwner().initializeNestedComponent(getComponent(), monitor, "Unable to initialize " + getName(),
-			isRequire());
+		getOwner().initializeNestedComponent(getComponent(), monitor, isRequire());
 	    } catch (SiteWhereException t) {
 		throw t;
 	    } catch (Throwable t) {
-		throw new SiteWhereException("Unable to initialize " + getName(), t);
+		throw new SiteWhereException("Unable to initialize " + getComponent().getComponentName(), t);
 	    }
 	} else {
-	    throw new SiteWhereException(
-		    "Attempting to initialize component '" + getName() + "' but component is null.");
+	    throw new SiteWhereException("Attempting to initialize component '" + getComponent().getComponentName()
+		    + "' but component is null.");
 	}
     }
 

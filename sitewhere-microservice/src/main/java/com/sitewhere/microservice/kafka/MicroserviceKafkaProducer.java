@@ -15,9 +15,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

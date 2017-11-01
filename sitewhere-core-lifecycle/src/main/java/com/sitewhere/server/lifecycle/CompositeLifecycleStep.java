@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
@@ -104,6 +105,38 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     public void addStep(ILifecycleStep step) {
 	getSteps().add(step);
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#
+     * addInitializeStep(com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent, boolean)
+     */
+    @Override
+    public void addInitializeStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	addStep(new InitializeComponentLifecycleStep(owner, component, require));
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStartStep(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent, boolean)
+     */
+    @Override
+    public void addStartStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	addStep(new StartComponentLifecycleStep(owner, component, require));
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStopStep(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent)
+     */
+    @Override
+    public void addStopStep(ILifecycleComponent owner, ILifecycleComponent component) {
+	addStep(new StopComponentLifecycleStep(owner, component));
     }
 
     /*

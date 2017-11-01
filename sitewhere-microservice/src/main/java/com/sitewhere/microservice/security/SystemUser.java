@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
-import com.sitewhere.microservice.spi.security.ISystemUser;
-import com.sitewhere.microservice.spi.security.ITokenManagement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.security.ISystemUser;
+import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;

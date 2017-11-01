@@ -9,8 +9,8 @@ package com.sitewhere.microservice.groovy;
 
 import java.io.File;
 
-import com.sitewhere.microservice.spi.IMicroservice;
-import com.sitewhere.microservice.spi.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 
 /**
  * Implementation of {@link IScriptSynchronizer} that copies instance-level
