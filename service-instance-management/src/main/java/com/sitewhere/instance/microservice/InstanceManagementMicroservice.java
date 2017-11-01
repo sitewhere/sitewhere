@@ -303,8 +303,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	getLogger().info("User management API detected as available.");
 
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
-	groovy.start(
-		new LifecycleProgressMonitor(new LifecycleProgressContext(this, 1, "Initialize user model."), this));
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
 	    initializer.initialize(getUserManagementApiChannel());
@@ -331,8 +330,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	getLogger().info("Tenant management API detected as available.");
 
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
-	groovy.start(
-		new LifecycleProgressMonitor(new LifecycleProgressContext(this, 1, "Initialize tenant model."), this));
+	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
 	for (String script : scripts) {
 	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
 	    initializer.initialize(getTenantManagementApiChannel());

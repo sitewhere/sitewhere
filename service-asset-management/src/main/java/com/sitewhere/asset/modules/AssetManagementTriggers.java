@@ -57,7 +57,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.onAssetCategoryAdded(category, new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(microservice, 1, "Add asset module for new category."), microservice));
+		    new LifecycleProgressContext(1, "Add asset module for new category."), microservice));
 	}
 	return category;
     }
@@ -76,10 +76,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	IAssetCategory category = super.updateAssetCategory(categoryId, request);
 	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
-	    manager.onAssetCategoryUpdated(category,
-		    new LifecycleProgressMonitor(
-			    new LifecycleProgressContext(microservice, 1, "Reload asset module for updated category."),
-			    getMicroservice()));
+	    manager.onAssetCategoryUpdated(category, new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Reload asset module for updated category."), getMicroservice()));
 	}
 	return category;
     }
@@ -96,10 +94,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	IAssetCategory category = super.deleteAssetCategory(categoryId);
 	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
-	    manager.onAssetCategoryRemoved(category,
-		    new LifecycleProgressMonitor(
-			    new LifecycleProgressContext(microservice, 1, "Remove asset module for deleted category."),
-			    getMicroservice()));
+	    manager.onAssetCategoryRemoved(category, new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Remove asset module for deleted category."), getMicroservice()));
 	}
 	return category;
     }
@@ -225,7 +221,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.getModule(categoryId).refresh(new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(getMicroservice(), 1, "Refresh asset module."), getMicroservice()));
+		    new LifecycleProgressContext(1, "Refresh asset module."), getMicroservice()));
 	}
     }
 

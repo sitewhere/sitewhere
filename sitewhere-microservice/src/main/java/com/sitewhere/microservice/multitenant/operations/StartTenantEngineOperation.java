@@ -50,8 +50,7 @@ public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine> ext
 	    // Start tenant engine.
 	    LOGGER.info("Starting tenant engine for '" + getTenantEngine().getTenant().getName() + "'.");
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(getTenantEngine().getMicroservice(), 1, "Start tenant engine."),
-		    getTenantEngine().getMicroservice());
+		    new LifecycleProgressContext(1, "Start tenant engine."), getTenantEngine().getMicroservice());
 	    long start = System.currentTimeMillis();
 	    getTenantEngine().lifecycleStart(monitor);
 	    if (getTenantEngine().getLifecycleStatus() == LifecycleStatus.LifecycleError) {

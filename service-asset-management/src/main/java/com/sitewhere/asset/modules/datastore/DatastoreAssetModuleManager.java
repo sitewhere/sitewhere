@@ -27,7 +27,6 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -62,10 +61,8 @@ public class DatastoreAssetModuleManager extends TenantLifecycleComponent implem
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
 
-	ILifecycleProgressContext context = monitor.getContextStack().peek();
 	refreshDatastoreModules(new LifecycleProgressMonitor(
-		new LifecycleProgressContext(context.getMicroservice(), 1, "Refreshing datastore asset modules"),
-		monitor));
+		new LifecycleProgressContext(1, "Refreshing datastore asset modules"), monitor.getMicroservice()));
 
 	for (IAssetModule<?> module : dsModulesById.values()) {
 	    startNestedComponent(module, monitor, true);

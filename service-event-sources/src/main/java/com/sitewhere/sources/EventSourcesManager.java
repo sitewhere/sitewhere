@@ -47,7 +47,7 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 	ActiveSpan span = null;
 	for (IInboundEventSource<?> source : getEventSources()) {
 	    try {
-		span = monitor.getTracer().buildSpan("Initialize event source").startActive();
+		span = monitor.getMicroservice().getTracer().buildSpan("Initialize event source").startActive();
 		span.log("Initializing '" + source.getComponentName() + "' event source.");
 		source.setEventSourcesManager(this);
 		initializeNestedComponent(source, monitor, true);
@@ -73,7 +73,7 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 	ActiveSpan span = null;
 	for (IInboundEventSource<?> source : getEventSources()) {
 	    try {
-		span = monitor.getTracer().buildSpan("Start event source").startActive();
+		span = monitor.getMicroservice().getTracer().buildSpan("Start event source").startActive();
 		span.log("Starting '" + source.getComponentName() + "' event source.");
 		startNestedComponent(source, monitor, true);
 	    } catch (SiteWhereException e) {
@@ -98,7 +98,7 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 	ActiveSpan span = null;
 	for (IInboundEventSource<?> source : getEventSources()) {
 	    try {
-		span = monitor.getTracer().buildSpan("Stop event source").startActive();
+		span = monitor.getMicroservice().getTracer().buildSpan("Stop event source").startActive();
 		span.log("Stopping '" + source.getComponentName() + "' event source.");
 		source.stop(monitor);
 	    } catch (SiteWhereException e) {

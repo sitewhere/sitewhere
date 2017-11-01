@@ -14,15 +14,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.monitoring.IProgressErrorMessage;
 import com.sitewhere.spi.monitoring.IProgressMessage;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleProgressUtils;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.opentracing.ActiveSpan;
-import io.opentracing.Tracer;
 
 /**
  * Default implementation of {@link ILifecycleProgressMonitor}.
@@ -34,14 +33,14 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tracer provider */
-    private ITracerProvider tracerProvider;
-
     /** Stack for nested progress tracking */
     private Deque<ILifecycleProgressContext> contextStack = new ArrayDeque<ILifecycleProgressContext>();
 
-    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext, ITracerProvider tracerProvider) {
-	this.tracerProvider = tracerProvider;
+    /** Microservice associated with component */
+    private IMicroservice microservice;
+
+    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext, IMicroservice microservice) {
+	this.microservice = microservice;
 	contextStack.push(initialContext);
 	try {
 	    LifecycleProgressUtils.startProgressOperation(this, initialContext.getTaskName());
@@ -95,7 +94,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     public ActiveSpan createTracerSpan(String name) throws SiteWhereException {
 	ILifecycleProgressContext current = getContextStack().peek();
 	if (current != null) {
-	    return getTracer().buildSpan(name).startActive();
+	    return getMicroservice().getTracer().buildSpan(name).startActive();
 	}
 	throw new SiteWhereException("Unable to create span. No context found.");
     }
@@ -157,6 +156,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
      * getContextStack()
      */
+    @Override
     public Deque<ILifecycleProgressContext> getContextStack() {
 	return contextStack;
     }
@@ -166,18 +166,15 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     }
 
     /*
-     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
+     * getMicroservice()
      */
     @Override
-    public Tracer getTracer() {
-	return getTracerProvider().getTracer();
+    public IMicroservice getMicroservice() {
+	return microservice;
     }
 
-    public ITracerProvider getTracerProvider() {
-	return tracerProvider;
-    }
-
-    public void setTracerProvider(ITracerProvider tracerProvider) {
-	this.tracerProvider = tracerProvider;
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

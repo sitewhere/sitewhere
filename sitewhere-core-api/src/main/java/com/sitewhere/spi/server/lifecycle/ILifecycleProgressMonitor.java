@@ -10,8 +10,8 @@ package com.sitewhere.spi.server.lifecycle;
 import java.util.Deque;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.monitoring.IProgressReporter;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.opentracing.ActiveSpan;
 
@@ -20,7 +20,7 @@ import io.opentracing.ActiveSpan;
  * 
  * @author Derek
  */
-public interface ILifecycleProgressMonitor extends IProgressReporter, ITracerProvider {
+public interface ILifecycleProgressMonitor extends IProgressReporter {
 
     /**
      * Get current list of nested contexts.
@@ -84,4 +84,11 @@ public interface ILifecycleProgressMonitor extends IProgressReporter, ITracerPro
      * @throws SiteWhereException
      */
     public ILifecycleProgressContext popContext() throws SiteWhereException;
+
+    /**
+     * Get microservice associated with component.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
 }
