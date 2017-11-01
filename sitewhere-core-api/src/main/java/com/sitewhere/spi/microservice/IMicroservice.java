@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -64,6 +65,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public ISystemUser getSystemUser();
+
+    /**
+     * Get Kafka topic naming helper.
+     * 
+     * @return
+     */
+    public IKafkaTopicNaming getKafkaTopicNaming();
 
     /**
      * Code executed after microservice has been started.

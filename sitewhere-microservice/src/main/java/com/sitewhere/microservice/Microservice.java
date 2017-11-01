@@ -16,6 +16,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -52,6 +53,10 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** System superuser */
     @Autowired
     private ISystemUser systemUser;
+
+    /** Kafka topic naming */
+    @Autowired
+    private IKafkaTopicNaming kafkaTopicNaming;
 
     /** Tracer implementation */
     @Autowired
@@ -189,6 +194,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setSystemUser(ISystemUser systemUser) {
 	this.systemUser = systemUser;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getKafkaTopicNaming()
+     */
+    @Override
+    public IKafkaTopicNaming getKafkaTopicNaming() {
+	return kafkaTopicNaming;
+    }
+
+    public void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
+	this.kafkaTopicNaming = kafkaTopicNaming;
     }
 
     /*
