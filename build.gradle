@@ -60,7 +60,7 @@ subprojects {
  	apply plugin: 'io.spring.dependency-management'
 	dependencyManagement {
 		imports {
-			mavenBom 'io.spring.platform:platform-bom:2.0.5.RELEASE'
+			mavenBom 'io.spring.platform:platform-bom:Brussels-SR5'
 		}
 	}
 
