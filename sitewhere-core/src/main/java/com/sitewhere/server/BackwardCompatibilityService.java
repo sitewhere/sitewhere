@@ -40,6 +40,7 @@ public class BackwardCompatibilityService implements IBackwardCompatibilityServi
      * @param monitor
      * @throws SiteWhereException
      */
+    @SuppressWarnings("deprecation")
     protected void migrateOldTemplateToNew(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	File home = SiteWhereHomeResourceManager.calculateConfigurationPath();
 	File oldTemplate = new File(home, "tenant-template");
