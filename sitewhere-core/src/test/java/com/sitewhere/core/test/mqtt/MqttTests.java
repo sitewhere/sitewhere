@@ -7,16 +7,19 @@
  */
 package com.sitewhere.core.test.mqtt;
 
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.FutureConnection;
-import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,22 +38,28 @@ import com.sitewhere.spi.SiteWhereException;
 public class MqttTests {
 
     /** MQTT settings */
-    private MQTT mqtt;
-
-    /** MQTT connection */
-    private FutureConnection connection;
+    private MqttAsyncClient mqttClient;
 
     @Before
     public void setup() {
 	try {
-	    MQTT mqtt = new MQTT();
-	    mqtt.setHost("localhost", 1883);
-	    connection = mqtt.futureConnection();
-	    Future<Void> future = connection.connect();
-	    future.await(3, TimeUnit.SECONDS);
-	    System.out.println("Connected to: " + mqtt.getHost());
-	} catch (URISyntaxException e) {
-	    throw new RuntimeException(e);
+	    CountDownLatch latch = new CountDownLatch(1);
+	    this.mqttClient = new MqttAsyncClient("tcp://localhost:1883", "sitewhere", new MemoryPersistence());
+	    MqttConnectOptions options = new MqttConnectOptions();
+	    options.setMaxInflight(5000);
+	    mqttClient.connect(options, new IMqttActionListener() {
+
+		@Override
+		public void onSuccess(IMqttToken asyncActionToken) {
+		    latch.countDown();
+		}
+
+		@Override
+		public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+		    throw new RuntimeException(exception);
+		}
+	    });
+	    latch.await();
 	} catch (Exception e) {
 	    throw new RuntimeException(e);
 	}
@@ -58,8 +67,12 @@ public class MqttTests {
 
     @After
     public void teardown() {
-	if (connection != null) {
-	    connection.disconnect();
+	if ((mqttClient != null) && (mqttClient.isConnected())) {
+	    try {
+		mqttClient.disconnect();
+	    } catch (MqttException e) {
+		throw new RuntimeException(e);
+	    }
 	}
     }
 
@@ -71,14 +84,14 @@ public class MqttTests {
     @Test
     public void sendLocationOverMqtt() throws SiteWhereException {
 	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("59052568-ed34-494a-b665-36126bcf873e");
+	request.setHardwareId("c23e7a22-b98d-4dcf-80db-e95e6990fe41");
 	request.setType(Type.DeviceLocation);
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setEventDate(new Date());
 	location.setLatitude(34.10469794977326);
 	location.setLongitude(-84.23966646194458);
 	location.setElevation(0.0);
-	location.setAlternateId("my_alternate_id");
+	// location.setAlternateId("my_alternate_id");
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("fromMQTT", "true");
 	location.setMetadata(metadata);
@@ -86,10 +99,8 @@ public class MqttTests {
 	request.setRequest(location);
 	try {
 	    String payload = (new ObjectMapper()).writeValueAsString(request);
-	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
+	    // System.out.println("Payload:\n\n" + payload);
+	    getMqttClient().publish("SiteWhere/input/json", payload.getBytes(), 1, false);
 	    System.out.println("Message sent successfully.");
 	} catch (JsonProcessingException e) {
 	    throw new SiteWhereException(e);
@@ -100,12 +111,34 @@ public class MqttTests {
 
     @Test
     public void sendMany() throws SiteWhereException {
-	for (int i = 0; i < 10000000; i++) {
-	    sendLocationOverMqtt();
-//	    try {
-//		Thread.sleep(1);
-//	    } catch (InterruptedException e) {
-//	    }
+	int numThreads = 10;
+	ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+	CountDownLatch latch = new CountDownLatch(numThreads);
+	for (int i = 0; i < numThreads; i++) {
+	    executor.execute(new Runnable() {
+
+		@Override
+		public void run() {
+		    for (int i = 0; i < 10000; i++) {
+			try {
+			    sendLocationOverMqtt();
+			    try {
+				Thread.sleep(20);
+			    } catch (InterruptedException e) {
+				System.err.println(e.getMessage());
+			    }
+			} catch (SiteWhereException e) {
+			    System.err.println(e.getMessage());
+			}
+		    }
+		    latch.countDown();
+		}
+	    });
+	}
+	try {
+	    latch.await();
+	} catch (InterruptedException e) {
+	    System.err.println("Interrupted.");
 	}
     }
 
@@ -135,9 +168,7 @@ public class MqttTests {
 	    String payload = mapper.writeValueAsString(json);
 
 	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
+	    getMqttClient().publish("SiteWhere/input/json", payload.getBytes(), 1, false);
 	    System.out.println("Message sent successfully.");
 	} catch (JsonProcessingException e) {
 	    throw new SiteWhereException(e);
@@ -163,9 +194,7 @@ public class MqttTests {
 	try {
 	    String payload = (new ObjectMapper()).writeValueAsString(request);
 	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
+	    getMqttClient().publish("SiteWhere/input/json", payload.getBytes(), 1, false);
 	    System.out.println("Message sent successfully.");
 	} catch (JsonProcessingException e) {
 	    throw new SiteWhereException(e);
@@ -174,19 +203,11 @@ public class MqttTests {
 	}
     }
 
-    public MQTT getMqtt() {
-	return mqtt;
+    public MqttAsyncClient getMqttClient() {
+	return mqttClient;
     }
 
-    public void setMqtt(MQTT mqtt) {
-	this.mqtt = mqtt;
-    }
-
-    public FutureConnection getConnection() {
-	return connection;
-    }
-
-    public void setConnection(FutureConnection connection) {
-	this.connection = connection;
+    public void setMqttClient(MqttAsyncClient mqttClient) {
+	this.mqttClient = mqttClient;
     }
 }

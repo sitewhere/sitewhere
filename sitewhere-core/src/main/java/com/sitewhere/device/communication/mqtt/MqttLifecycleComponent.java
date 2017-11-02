@@ -9,9 +9,7 @@ package com.sitewhere.device.communication.mqtt;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URISyntaxException;
 import java.security.KeyStore;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -19,12 +17,10 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.fusesource.hawtdispatch.Dispatch;
-import org.fusesource.hawtdispatch.DispatchQueue;
-import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.FutureConnection;
-import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -84,47 +80,17 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     /** Client id */
     private String clientId;
 
+    /** Quality of service */
+    private int qos = 0;
+
     /** Clean session flag */
     private boolean cleanSession = true;
 
-    /** Quality of service */
-    private String qos = QoS.AT_LEAST_ONCE.name();
-
     /** MQTT client */
-    private MQTT mqtt;
-
-    /** Hawtdispatch queue */
-    private DispatchQueue queue;
+    private MqttClient mqttClient;
 
     public MqttLifecycleComponent(LifecycleComponentType type) {
 	super(type);
-    }
-
-    /**
-     * Gets information about the broker.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getBrokerInfo() throws SiteWhereException {
-	return mqtt.getHost().toString();
-    }
-
-    /**
-     * Get a {@link FutureConnection} to the MQTT broker.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public FutureConnection getConnection() throws SiteWhereException {
-	FutureConnection connection = mqtt.futureConnection();
-	try {
-	    Future<Void> future = connection.connect();
-	    future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
-	    return connection;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
-	}
     }
 
     /*
@@ -136,8 +102,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.queue = Dispatch.createQueue(getComponentId());
-	this.mqtt = MqttLifecycleComponent.configure(this, queue);
+	this.mqttClient = MqttLifecycleComponent.connect(this);
     }
 
     /**
@@ -174,10 +139,10 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * Handle configuration of secure transport.
      * 
      * @param component
-     * @param mqtt
+     * @return
      * @throws SiteWhereException
      */
-    protected static void handleSecureTransport(IMqttComponent component, MQTT mqtt) throws SiteWhereException {
+    protected static SSLContext handleSecureTransport(IMqttComponent component) throws SiteWhereException {
 	LOGGER.info("MQTT client using secure protocol '" + component.getProtocol() + "'.");
 	boolean trustStoreConfigured = (component.getTrustStorePath() != null)
 		&& (component.getTrustStorePassword() != null);
@@ -202,65 +167,64 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 		sslContext.init(null, tmf != null ? tmf.getTrustManagers() : null, null);
 	    }
 
-	    mqtt.setSslContext(sslContext);
-	    LOGGER.info("Created SSL context for MQTT receiver.");
+	    LOGGER.info("Created SSL context for MQTT component.");
+	    return sslContext;
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unable to configure secure transport.", t);
 	}
     }
 
     /**
-     * Configures MQTT parameters based on component settings.
+     * Configures MQTT parameters based on component settings and connects to
+     * broker.
      * 
      * @param component
      * @return
      * @throws SiteWhereException
      */
-    public static MQTT configure(IMqttComponent component, DispatchQueue queue) throws SiteWhereException {
-	MQTT mqtt = new MQTT();
-
-	boolean usingSSL = component.getProtocol().startsWith("ssl");
-	boolean usingTLS = component.getProtocol().startsWith("tls");
-
-	// Optionally set client id.
-	if (component.getClientId() != null) {
-	    mqtt.setClientId(component.getClientId());
-	    LOGGER.info("MQTT connection will use client id '" + component.getClientId() + "'.");
-	}
-	// Set flag for clean session.
-	mqtt.setCleanSession(component.isCleanSession());
-	LOGGER.info("MQTT clean session flag being set to '" + component.isCleanSession() + "'.");
-
-	if (usingSSL || usingTLS) {
-	    handleSecureTransport(component, mqtt);
-	}
-	// Set username if provided.
-	if (!StringUtils.isEmpty(component.getUsername())) {
-	    mqtt.setUserName(component.getUsername());
-	}
-	// Set password if provided.
-	if (!StringUtils.isEmpty(component.getPassword())) {
-	    mqtt.setPassword(component.getPassword());
-	}
+    public static MqttClient connect(IMqttComponent component) throws SiteWhereException {
 	try {
-	    mqtt.setHost(component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
-	    return mqtt;
-	} catch (URISyntaxException e) {
-	    throw new SiteWhereException("Invalid hostname for MQTT server.", e);
-	}
-    }
+	    String clientId = (component.getClientId() != null) ? component.getClientId()
+		    : MqttClient.generateClientId();
+	    LOGGER.info("MQTT connection using client id '" + clientId + "'.");
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (queue != null) {
-	    queue.suspend();
+	    // Detect secure transports.
+	    boolean usingSSL = component.getProtocol().startsWith("ssl");
+	    boolean usingTLS = component.getProtocol().startsWith("tls");
+	    String protocol = (usingSSL || usingTLS) ? "ssl" : "tcp";
+	    String serverUri = protocol + "://" + component.getHostname() + ":" + component.getPort();
+
+	    MqttClient client = new MqttClient(serverUri, clientId);
+	    MqttConnectOptions options = new MqttConnectOptions();
+	    options.setAutomaticReconnect(true);
+	    options.setMaxInflight(100);
+
+	    // Set flag for clean session.
+	    options.setCleanSession(component.isCleanSession());
+	    LOGGER.info("MQTT clean session flag being set to '" + component.isCleanSession() + "'.");
+
+	    // Handle secure transports.
+	    if (usingSSL || usingTLS) {
+		SSLContext sslContext = handleSecureTransport(component);
+		options.setSocketFactory(sslContext.getSocketFactory());
+	    }
+
+	    // Set username if provided.
+	    if (!StringUtils.isEmpty(component.getUsername())) {
+		options.setUserName(component.getUsername());
+	    }
+
+	    // Set password if provided.
+	    if (!StringUtils.isEmpty(component.getPassword())) {
+		options.setPassword(component.getPassword().toCharArray());
+	    }
+
+	    client.connect(options);
+	    return client;
+	} catch (MqttSecurityException e) {
+	    throw new SiteWhereException("Security check for MQTT connection failed.", e);
+	} catch (MqttException e) {
+	    throw new SiteWhereException("Error in MQTT connection.", e);
 	}
     }
 
@@ -381,6 +345,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * @see
      * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
      */
+    @Override
     public String getKeyStorePath() {
 	return keyStorePath;
     }
@@ -395,6 +360,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
      * getKeyStorePassword()
      */
+    @Override
     public String getKeyStorePassword() {
 	return keyStorePassword;
     }
@@ -408,6 +374,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getClientId()
      */
+    @Override
     public String getClientId() {
 	return clientId;
     }
@@ -422,6 +389,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
      * @see
      * com.sitewhere.device.communication.mqtt.IMqttComponent#isCleanSession()
      */
+    @Override
     public boolean isCleanSession() {
 	return cleanSession;
     }
@@ -431,15 +399,23 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getQos()
      */
-    public String getQos() {
+    @Override
+    public int getQos() {
 	return qos;
     }
 
-    public void setQos(String qos) {
-	this.qos = qos;
+    public void setQos(String label) {
+	this.qos = QoS.getValueFor(label);
+	LOGGER.info("Using QoS of " + this.qos);
+    }
+
+    public MqttClient getMqttClient() {
+	return mqttClient;
+    }
+
+    public void setMqttClient(MqttClient mqttClient) {
+	this.mqttClient = mqttClient;
     }
 }

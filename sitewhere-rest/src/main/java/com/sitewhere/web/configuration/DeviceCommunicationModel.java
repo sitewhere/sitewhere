@@ -236,8 +236,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	builder.attribute((new AttributeNode.Builder("Use clean session", "cleanSession", AttributeType.Boolean)
 		.description("Indicates if 'clean session' flag should be set.").defaultValue("true").build()));
 	builder.attribute((new AttributeNode.Builder("Quality of service", "qos", AttributeType.String)
-		.description("Quality of service for connection").defaultValue("AT_LEAST_ONCE").choice("AT_LEAST_ONCE")
-		.choice("AT_MOST_ONCE").choice("EXACTLY_ONCE").build()));
+		.description("Quality of service for connection").defaultValue("AT_MOST_ONCE").choice("AT_MOST_ONCE")
+		.choice("AT_LEAST_ONCE").choice("EXACTLY_ONCE").build()));
     }
 
     /**

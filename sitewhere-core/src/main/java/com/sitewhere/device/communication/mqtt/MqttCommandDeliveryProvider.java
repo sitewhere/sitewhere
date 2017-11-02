@@ -9,9 +9,7 @@ package com.sitewhere.device.communication.mqtt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.fusesource.hawtdispatch.ShutdownException;
-import org.fusesource.mqtt.client.FutureConnection;
-import org.fusesource.mqtt.client.QoS;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -34,9 +32,6 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Shared MQTT connection */
-    private FutureConnection connection;
-
     public MqttCommandDeliveryProvider() {
 	super(LifecycleComponentType.CommandDeliveryProvider);
     }
@@ -51,10 +46,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-
-	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-	connection = getConnection();
-	LOGGER.info("Connected to MQTT broker.");
+	LOGGER.info("Connected to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
     }
 
     /*
@@ -76,13 +68,10 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (connection != null) {
+	if ((getMqttClient() != null) && (getMqttClient().isConnected())) {
 	    try {
-		connection.disconnect().await();
-		connection.kill().await();
-	    } catch (ShutdownException e) {
-		LOGGER.info("Dispatcher has already been shut down.");
-	    } catch (Exception e) {
+		getMqttClient().disconnect();
+	    } catch (MqttException e) {
 		LOGGER.error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
@@ -104,7 +93,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	    byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    LOGGER.debug("About to publish command message to topic: " + params.getCommandTopic());
-	    connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
+	    getMqttClient().publish(params.getCommandTopic(), encoded, getQos(), false);
 	    LOGGER.debug("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -124,7 +113,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	    MqttParameters params) throws SiteWhereException {
 	try {
 	    LOGGER.debug("About to publish system message to topic: " + params.getSystemTopic());
-	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
+	    getMqttClient().publish(params.getSystemTopic(), encoded, getQos(), false);
 	    LOGGER.debug("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);

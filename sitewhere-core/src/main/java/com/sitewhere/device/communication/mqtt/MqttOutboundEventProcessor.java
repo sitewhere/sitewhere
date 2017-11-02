@@ -8,16 +8,12 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.fusesource.hawtdispatch.Dispatch;
-import org.fusesource.hawtdispatch.DispatchQueue;
-import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.FutureConnection;
-import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
@@ -84,16 +80,10 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     private boolean cleanSession = true;
 
     /** Quality of service */
-    private String qos = QoS.AT_LEAST_ONCE.name();
+    private int qos = 0;
 
     /** MQTT client */
-    private MQTT mqtt;
-
-    /** Hawtdispatch queue */
-    private DispatchQueue queue;
-
-    /** Shared MQTT connection */
-    private FutureConnection connection;
+    private MqttClient mqttClient;
 
     /** Multicaster for events */
     private IDeviceEventMulticaster<String> multicaster;
@@ -128,17 +118,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	}
 
 	// Use common MQTT configuration setup.
-	this.queue = Dispatch.createQueue(getComponentId());
-	this.mqtt = MqttLifecycleComponent.configure(this, queue);
-
-	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-	connection = mqtt.futureConnection();
-	try {
-	    Future<Void> future = connection.connect();
-	    future.await(MqttLifecycleComponent.DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
-	}
+	this.mqttClient = MqttLifecycleComponent.connect(this);
 	LOGGER.info("Connected to MQTT broker.");
     }
 
@@ -161,16 +141,12 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	    routeBuilder.lifecycleStop(monitor);
 	}
 
-	if (connection != null) {
+	if ((getMqttClient() != null) && (getMqttClient().isConnected())) {
 	    try {
-		connection.disconnect();
-		connection.kill();
+		getMqttClient().disconnect();
 	    } catch (Exception e) {
 		LOGGER.error("Error shutting down MQTT device event receiver.", e);
 	    }
-	}
-	if (queue != null) {
-	    queue.suspend();
 	}
 	super.stop(monitor);
     }
@@ -264,8 +240,14 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @throws SiteWhereException
      */
     protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
-	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.valueOf(getQos()), false);
-	LOGGER.info("Publishing event " + event.getId() + " to route: " + topic + " with QOS " + getQos());
+	try {
+	    LOGGER.info("Publishing event " + event.getId() + " to route: " + topic + " with QOS " + getQos());
+	    getMqttClient().publish(topic, MarshalUtils.marshalJson(event), getQos(), false);
+	} catch (MqttPersistenceException e) {
+	    throw new SiteWhereException("Unable to publish event.", e);
+	} catch (MqttException e) {
+	    throw new SiteWhereException("Unable to publish event.", e);
+	}
     }
 
     /*
@@ -400,6 +382,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
      * getTrustStorePassword()
      */
+    @Override
     public String getTrustStorePassword() {
 	return trustStorePassword;
     }
@@ -414,6 +397,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see
      * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
      */
+    @Override
     public String getKeyStorePath() {
 	return keyStorePath;
     }
@@ -428,6 +412,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
      * getKeyStorePassword()
      */
+    @Override
     public String getKeyStorePassword() {
 	return keyStorePassword;
     }
@@ -441,6 +426,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getClientId()
      */
+    @Override
     public String getClientId() {
 	return clientId;
     }
@@ -455,6 +441,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @see
      * com.sitewhere.device.communication.mqtt.IMqttComponent#isCleanSession()
      */
+    @Override
     public boolean isCleanSession() {
 	return cleanSession;
     }
@@ -464,16 +451,16 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getQos()
      */
-    public String getQos() {
+    @Override
+    public int getQos() {
 	return qos;
     }
 
-    public void setQos(String qos) {
-	this.qos = qos;
+    public void setQos(String label) {
+	this.qos = QoS.getValueFor(label);
+	LOGGER.info("Using QoS of " + this.qos);
     }
 
     public String getTopic() {
@@ -482,5 +469,13 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     public void setTopic(String topic) {
 	this.topic = topic;
+    }
+
+    public MqttClient getMqttClient() {
+	return mqttClient;
+    }
+
+    public void setMqttClient(MqttClient mqttClient) {
+	this.mqttClient = mqttClient;
     }
 }

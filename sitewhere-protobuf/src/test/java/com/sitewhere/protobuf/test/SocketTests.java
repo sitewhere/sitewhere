@@ -8,14 +8,8 @@
 package com.sitewhere.protobuf.test;
 
 import java.net.Socket;
-import java.net.URISyntaxException;
 
-import org.fusesource.mqtt.client.BlockingConnection;
-import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
 import org.junit.Test;
-
-import com.sitewhere.spi.SiteWhereException;
 
 public class SocketTests {
 
@@ -108,21 +102,5 @@ public class SocketTests {
 	socket.getOutputStream().flush();
 	socket.getOutputStream().close();
 	socket.close();
-    }
-
-    @Test
-    public void doMqttTest() throws Exception {
-	MQTT mqtt = new MQTT();
-	try {
-	    mqtt.setHost("juju-azure-4w909gp487.cloudapp.net", 1883);
-	    BlockingConnection connection = mqtt.blockingConnection();
-	    connection.connect();
-	    connection.publish("SiteWhere/input/protobuf",
-		    EventsHelper.generateEncodedMeasurementsMessage("3aa3303a-6e96-4f5d-b31c-0f5361ee3d3d"),
-		    QoS.AT_MOST_ONCE, false);
-	    connection.disconnect();
-	} catch (URISyntaxException e) {
-	    throw new SiteWhereException("Invalid hostname for MQTT server.", e);
-	}
     }
 }
