@@ -235,7 +235,7 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
     public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
 	    throws SiteWhereException {
 	if (getFailedDecodeEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getDecodedEventsProducer().send(sourceId, encoded);
+	    getFailedDecodeEventsProducer().send(sourceId, encoded);
 	} else if (getLogger().isWarnEnabled()) {
 	    getLogger().warn("Producer not started. Unable to add event to topic.");
 	}
