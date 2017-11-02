@@ -44,7 +44,7 @@ public class MqttTests {
     public void setup() {
 	try {
 	    MQTT mqtt = new MQTT();
-	    mqtt.setHost("localhost", 1883);
+	    mqtt.setHost("192.168.171.129", 1883);
 	    connection = mqtt.futureConnection();
 	    Future<Void> future = connection.connect();
 	    future.await(3, TimeUnit.SECONDS);

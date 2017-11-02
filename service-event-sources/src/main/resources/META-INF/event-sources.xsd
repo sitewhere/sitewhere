@@ -16,7 +16,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
-				SiteWhere device management microservice.
+				SiteWhere event sources microservice.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>

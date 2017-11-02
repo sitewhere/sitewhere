@@ -32,6 +32,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
+@SuppressWarnings("deprecation")
 public class HazelcastConfiguration extends LifecycleComponent implements IHazelcastConfiguration {
 
     /** Static logger instance */

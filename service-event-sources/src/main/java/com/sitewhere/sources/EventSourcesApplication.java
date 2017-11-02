@@ -15,7 +15,7 @@ import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 
 /**
- * Spring Boot application for device management microservice.
+ * Spring Boot application for event sources microservice.
  * 
  * @author Derek
  */

@@ -1,0 +1,1 @@
+http\://www.sitewhere.com/schema/sitewhere/microservice/inbound-processing=com.sitewhere.inbound.spring.InboundProcessingNamespaceHandler
