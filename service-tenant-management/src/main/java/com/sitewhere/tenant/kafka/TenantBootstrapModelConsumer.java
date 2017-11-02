@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
+import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -137,7 +137,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	GTenantModelUpdate update = KafkaModelConverter.parseTenantModelUpdateMessage(message);
+	GTenantModelUpdate update = KafkaModelMarshaler.parseTenantModelUpdateMessage(message);
 
 	// If a tenant was added, bootstrap it.
 	if (update.getType() == GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED) {

@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device.event.request;
 import java.io.Serializable;
 
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 
 /**
@@ -31,6 +32,10 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest
 
     /** Chunk data */
     private byte[] data;
+
+    public DeviceStreamDataCreateRequest() {
+	setEventType(DeviceEventType.StreamData);
+    }
 
     /*
      * (non-Javadoc)

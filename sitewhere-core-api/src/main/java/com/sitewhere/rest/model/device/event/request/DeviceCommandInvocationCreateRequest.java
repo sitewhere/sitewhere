@@ -18,6 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 
 /**
@@ -53,6 +54,10 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 
     /** Current invocation status */
     private CommandStatus status;
+
+    public DeviceCommandInvocationCreateRequest() {
+	setEventType(DeviceEventType.CommandInvocation);
+    }
 
     /*
      * (non-Javadoc)

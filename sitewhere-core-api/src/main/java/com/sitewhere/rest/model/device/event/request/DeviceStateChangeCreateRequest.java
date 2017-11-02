@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
@@ -49,6 +50,7 @@ public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest
 	this.type = type;
 	this.previousState = previousState;
 	this.newState = newState;
+	setEventType(DeviceEventType.StateChange);
     }
 
     /*

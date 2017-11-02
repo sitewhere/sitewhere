@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.MeasurementsProvider;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
@@ -33,6 +34,10 @@ public class DeviceMeasurementsCreateRequest extends DeviceEventCreateRequest
 
     /** Measurements metadata */
     private MeasurementsProvider measurements = new MeasurementsProvider();
+
+    public DeviceMeasurementsCreateRequest() {
+	setEventType(DeviceEventType.Measurements);
+    }
 
     /*
      * (non-Javadoc)

@@ -94,6 +94,19 @@ message GDeviceStateChangeCreateRequest {
 	GDeviceEventCreateRequest event = 6;
 }
 
+// Message that can contain any type of event create request.
+message GAnyDeviceEventCreateRequest {
+	oneof event {
+		GDeviceMeasurementsCreateRequest measurements = 1;
+		GDeviceAlertCreateRequest alert = 2;
+		GDeviceLocationCreateRequest location = 3;
+		GDeviceStreamDataCreateRequest streamData = 4;
+		GDeviceCommandInvocationCreateRequest commandInvocation = 5;
+		GDeviceCommandResponseCreateRequest commandResponse = 6;
+		GDeviceStateChangeCreateRequest stateChange = 7;
+	}
+}
+
 // Device event type.
 enum GDeviceEventType {
 	EVENT_TYPE_MEASUREMENTS = 0;

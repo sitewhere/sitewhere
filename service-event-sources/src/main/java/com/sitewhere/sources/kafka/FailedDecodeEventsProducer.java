@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.sources;
+package com.sitewhere.sources.kafka;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,12 +17,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Kafka producer for a stream of decoded events produced by all event sources
- * for a tenant.
+ * Kafka producer for the stream of events that could not be decoded by all
+ * event sources for a tenant.
  * 
  * @author Derek
  */
-public class DecodedEventsProducer extends MicroserviceKafkaProducer {
+public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -33,7 +33,7 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
     /** Tenant */
     private ITenant tenant;
 
-    public DecodedEventsProducer(IMicroservice microservice, ITenant tenant) {
+    public FailedDecodeEventsProducer(IMicroservice microservice, ITenant tenant) {
 	this.microservice = microservice;
 	this.tenant = tenant;
     }
@@ -53,7 +53,7 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getEventSourceDecodedEventsTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getEventSourceFailedDecodedTopic(getTenant());
     }
 
     /*

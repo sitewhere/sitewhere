@@ -10,6 +10,8 @@ package com.sitewhere.spi.device.event.request;
 import java.util.Date;
 import java.util.Map;
 
+import com.sitewhere.spi.device.event.DeviceEventType;
+
 /**
  * Interface for arguments needed to create a device event.
  * 
@@ -24,6 +26,13 @@ public interface IDeviceEventCreateRequest {
      * @return
      */
     public String getAlternateId();
+
+    /**
+     * Get event type indicator.
+     * 
+     * @return
+     */
+    public DeviceEventType getEventType();
 
     /**
      * Get the date on which the event occurred.

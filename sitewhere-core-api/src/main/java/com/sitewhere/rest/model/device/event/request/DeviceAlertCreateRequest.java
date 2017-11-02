@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 
 /**
@@ -40,6 +41,10 @@ public class DeviceAlertCreateRequest extends DeviceEventCreateRequest
 
     /** Alert message */
     private String message;
+
+    public DeviceAlertCreateRequest() {
+	setEventType(DeviceEventType.Alert);
+    }
 
     /*
      * (non-Javadoc)

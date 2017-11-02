@@ -4,7 +4,9 @@ package com.sitewhere.grpc.kafka.model;
 
 option java_outer_classname = "KafkaModel";
 
+import "sitewhere-common.proto";
 import "tenant-model.proto";
+import "device-event-model.proto";
 
 // ############################
 // ### TENANT MODEL UPDATES ###
@@ -21,4 +23,16 @@ enum GTenantModelUpdateType {
 message GTenantModelUpdate {
 	GTenantModelUpdateType type = 1;
 	com.sitewhere.grpc.model.GTenant tenant = 2;
+}
+
+// ########################
+// ### EVENT PROCESSING ###
+// ########################
+
+// Inbound event payload.
+message GInboundEventPayload {
+	string sourceId = 1;
+	string hardwareId = 2;
+	com.sitewhere.grpc.model.GOptionalString originator = 3;
+	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
 }

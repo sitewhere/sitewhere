@@ -13,12 +13,17 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
+import com.sitewhere.sources.kafka.DecodedEventsProducer;
+import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IEventSourcesManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -39,6 +44,9 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 
     /** Kafka producer for decoded events form event sources */
     private DecodedEventsProducer decodedEventsProducer;
+
+    /** Kafka producer for events that could not be decoded */
+    private FailedDecodeEventsProducer failedDecodeEventsProducer;
 
     /*
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
@@ -201,7 +209,18 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
     public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
 	if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
-	    getDecodedEventsProducer().send(decoded.getHardwareId(), encoded);
+	    if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
+		// Build payload message.
+		InboundEventPayload payload = new InboundEventPayload();
+		payload.setSourceId(sourceId);
+		payload.setHardwareId(decoded.getHardwareId());
+		payload.setOriginator(decoded.getOriginator());
+		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
+
+		// Send payload to Kafka topic.
+		getDecodedEventsProducer().send(decoded.getHardwareId(),
+			KafkaModelMarshaler.buildInboundEventPayloadMessage(payload));
+	    }
 	} else if (getLogger().isWarnEnabled()) {
 	    getLogger().warn("Producer not started. Unable to add event to topic.");
 	}
@@ -215,7 +234,11 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
     @Override
     public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
 	    throws SiteWhereException {
-	// Send to Kafka.
+	if (getFailedDecodeEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
+	    getDecodedEventsProducer().send(sourceId, encoded);
+	} else if (getLogger().isWarnEnabled()) {
+	    getLogger().warn("Producer not started. Unable to add event to topic.");
+	}
     }
 
     /*
@@ -244,5 +267,13 @@ public class EventSourcesManager extends TenantLifecycleComponent implements IEv
 
     public void setDecodedEventsProducer(DecodedEventsProducer decodedEventsProducer) {
 	this.decodedEventsProducer = decodedEventsProducer;
+    }
+
+    public FailedDecodeEventsProducer getFailedDecodeEventsProducer() {
+	return failedDecodeEventsProducer;
+    }
+
+    public void setFailedDecodeEventsProducer(FailedDecodeEventsProducer failedDecodeEventsProducer) {
+	this.failedDecodeEventsProducer = failedDecodeEventsProducer;
     }
 }
