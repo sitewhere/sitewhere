@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Kafka producer for a stream of decoded events produced by all event sources
@@ -26,12 +25,8 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
-
-    public DecodedEventsProducer(IMicroservice microservice, ITenant tenant) {
+    public DecodedEventsProducer(IMicroservice microservice) {
 	super(microservice);
-	this.tenant = tenant;
     }
 
     /*
@@ -49,13 +44,5 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public ITenant getTenant() {
-	return tenant;
-    }
-
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
     }
 }

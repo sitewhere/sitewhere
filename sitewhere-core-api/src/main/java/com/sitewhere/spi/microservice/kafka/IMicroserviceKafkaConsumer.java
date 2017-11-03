@@ -9,14 +9,14 @@ package com.sitewhere.spi.microservice.kafka;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Component that consumes messages that are sent to a Kafka topic.
  * 
  * @author Derek
  */
-public interface IMicroserviceKafkaConsumer extends ILifecycleComponent {
+public interface IMicroserviceKafkaConsumer extends ITenantLifecycleComponent {
 
     /**
      * Get parent microservice.

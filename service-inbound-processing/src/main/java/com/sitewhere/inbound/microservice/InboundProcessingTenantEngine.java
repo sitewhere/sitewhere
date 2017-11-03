@@ -49,7 +49,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.decodedEventsConsumer = new DecodedEventsConsumer(getMicroservice(), getTenant());
+	this.decodedEventsConsumer = new DecodedEventsConsumer(getMicroservice());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

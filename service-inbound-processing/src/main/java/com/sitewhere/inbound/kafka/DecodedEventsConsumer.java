@@ -26,7 +26,6 @@ import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Listens on Kafka topic for decoded events, making them available for inbound
@@ -48,15 +47,11 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Number of threads processing inbound events */
     private static final int CONCURRENT_INBOUND_EVENT_PROCESSING_THREADS = 10;
 
-    /** Tenant */
-    private ITenant tenant;
-
     /** Executor */
     private ExecutorService executor;
 
-    public DecodedEventsConsumer(IMicroservice microservice, ITenant tenant) {
+    public DecodedEventsConsumer(IMicroservice microservice) {
 	super(microservice);
-	this.tenant = tenant;
     }
 
     /*
@@ -130,14 +125,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public ITenant getTenant() {
-	return tenant;
-    }
-
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
     }
 
     /**

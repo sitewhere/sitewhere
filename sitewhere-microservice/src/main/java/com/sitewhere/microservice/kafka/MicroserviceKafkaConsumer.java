@@ -23,7 +23,7 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class MicroserviceKafkaConsumer extends LifecycleComponent implements IMicroserviceKafkaConsumer {
+public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent implements IMicroserviceKafkaConsumer {
 
     /** Consumer */
     private KafkaConsumer<String, byte[]> consumer;
