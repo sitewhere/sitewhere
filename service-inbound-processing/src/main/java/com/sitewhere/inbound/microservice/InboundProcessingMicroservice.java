@@ -10,10 +10,17 @@ package com.sitewhere.inbound.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
+import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
+import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -33,6 +40,12 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 
     /** Identifies module resources such as configuration file */
     private static final String MODULE_IDENTIFIER = "inbound-processing";
+
+    /** Device management GRPC channel */
+    private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
+
+    /** Device management API channel */
+    private IDeviceManagementApiChannel deviceManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -60,12 +73,48 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     }
 
     /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
+     */
+    @Override
+    public void afterMicroserviceStarted() {
+	try {
+	    waitForApisAvailable();
+	    getLogger().info("All required APIs detected as available.");
+	} catch (ApiNotAvailableException e) {
+	    getLogger().error("Required APIs not available for web/REST.", e);
+	}
+    }
+
+    /**
+     * Wait for required APIs to become available.
+     * 
+     * @throws ApiNotAvailableException
+     */
+    protected void waitForApisAvailable() throws ApiNotAvailableException {
+	getDeviceManagementApiChannel().waitForApiAvailable();
+	getLogger().info("Device management API detected as available.");
+    }
+
+    /*
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create GRPC components.
+	createGrpcComponents();
+
+	// Composite step for initializing microservice.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize device management GRPC channel.
+	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -75,6 +124,14 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     @Override
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for starting microservice.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start device mangement GRPC channel.
+	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -84,6 +141,42 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     @Override
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for stopping microservice.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop device mangement GRPC channel.
+	stop.addStopStep(this, getDeviceManagementGrpcChannel());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
+     * createGrpcComponents()
+     */
+    @Override
+    protected void createGrpcComponents() {
+	super.createGrpcComponents();
+
+	// Device management.
+	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
+     * getDeviceManagementApiChannel()
+     */
+    @Override
+    public IDeviceManagementApiChannel getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
+    }
+
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     /*
@@ -92,5 +185,13 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {
+	return deviceManagementGrpcChannel;
+    }
+
+    public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
+	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
     }
 }

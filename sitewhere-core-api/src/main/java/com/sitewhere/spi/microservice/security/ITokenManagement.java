@@ -26,10 +26,11 @@ public interface ITokenManagement {
      * Generate a token for the given user.
      * 
      * @param user
+     * @param expirationInMinutes
      * @return
      * @throws SiteWhereException
      */
-    public String generateToken(IUser user) throws SiteWhereException;
+    public String generateToken(IUser user, int expirationInMinutes) throws SiteWhereException;
 
     /**
      * Get claims for the given token.

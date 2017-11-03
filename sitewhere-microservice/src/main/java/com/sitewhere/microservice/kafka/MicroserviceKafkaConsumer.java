@@ -95,6 +95,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent
 		getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 	config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getName());
+	config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 	return config;
     }
 

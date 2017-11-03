@@ -41,9 +41,6 @@ public class TokenManagement implements ITokenManagement {
     /** Secret used for encoding */
     private String secret = "secret";
 
-    /** Token expiration in minutes */
-    private int expirationInMinutes = 60;
-
     /** Signature algorithm */
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
@@ -54,10 +51,10 @@ public class TokenManagement implements ITokenManagement {
      * com.sitewhere.microservice.spi.security.ITokenManagement#generateToken(
      * com.sitewhere.spi.user.IUser)
      */
-    public String generateToken(IUser user) throws SiteWhereException {
+    public String generateToken(IUser user, int expirationInMinutes) throws SiteWhereException {
 	try {
 	    JwtBuilder builder = Jwts.builder().setIssuer(ISSUER).setSubject(user.getUsername()).setIssuedAt(new Date())
-		    .setExpiration(getExpirationDate()).signWith(SIGNATURE_ALGORITHM, getSecret());
+		    .setExpiration(getExpirationDate(expirationInMinutes)).signWith(SIGNATURE_ALGORITHM, getSecret());
 	    builder.claim(CLAIM_GRANTED_AUTHORITIES, user.getAuthorities());
 	    return builder.compact();
 	} catch (Throwable t) {
@@ -135,8 +132,8 @@ public class TokenManagement implements ITokenManagement {
 	return auths;
     }
 
-    public Date getExpirationDate() {
-	return new Date(System.currentTimeMillis() + (getExpirationInMinutes() * 60 * 1000));
+    public Date getExpirationDate(int expirationInMinutes) {
+	return new Date(System.currentTimeMillis() + (expirationInMinutes * 60 * 1000));
     }
 
     public String getSecret() {
@@ -145,13 +142,5 @@ public class TokenManagement implements ITokenManagement {
 
     public void setSecret(String secret) {
 	this.secret = secret;
-    }
-
-    public int getExpirationInMinutes() {
-	return expirationInMinutes;
-    }
-
-    public void setExpirationInMinutes(int expirationInMinutes) {
-	this.expirationInMinutes = expirationInMinutes;
     }
 }

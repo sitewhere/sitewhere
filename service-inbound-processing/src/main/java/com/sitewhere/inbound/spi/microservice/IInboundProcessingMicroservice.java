@@ -7,6 +7,7 @@
  */
 package com.sitewhere.inbound.spi.microservice;
 
+import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -15,4 +16,11 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IInboundProcessingMicroservice extends IMultitenantMicroservice<IInboundProcessingTenantEngine> {
+
+    /**
+     * Device management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceManagementApiChannel getDeviceManagementApiChannel();
 }

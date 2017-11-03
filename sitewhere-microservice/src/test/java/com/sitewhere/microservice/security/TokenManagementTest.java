@@ -31,7 +31,7 @@ public class TokenManagementTest {
 	User user = new User();
 	user.setUsername(USERNAME);
 	user.setAuthorities(AUTHS);
-	String token = tokens.generateToken(user);
+	String token = tokens.generateToken(user, 60);
 	String username = tokens.getUsernameFromToken(token);
 	assertEquals(username, USERNAME);
     }

@@ -34,7 +34,10 @@ import com.sitewhere.spi.user.SiteWhereAuthority;
 public class SystemUser implements ISystemUser {
 
     /** Number of seconds between renewing JWT */
-    private static final int RENEW_INTERVAL_SEC = 60;
+    private static final int RENEW_INTERVAL_SEC = 60 * 60;
+
+    /** Default to one year expiration for system users */
+    private static final int SYSTEM_USER_TOKEN_EXPIRATION_IN_MINS = 60 * 24 * 365;
 
     /** JWT token management */
     @Autowired
@@ -61,7 +64,7 @@ public class SystemUser implements ISystemUser {
     @Override
     public SitewhereAuthentication getAuthentication() throws SiteWhereException {
 	if ((System.currentTimeMillis() - lastGenerated) > (RENEW_INTERVAL_SEC * 1000)) {
-	    String jwt = tokenManagement.generateToken(user);
+	    String jwt = tokenManagement.generateToken(user, SYSTEM_USER_TOKEN_EXPIRATION_IN_MINS);
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 	    this.last = new SitewhereAuthentication(details, jwt);
 	    this.lastGenerated = System.currentTimeMillis();

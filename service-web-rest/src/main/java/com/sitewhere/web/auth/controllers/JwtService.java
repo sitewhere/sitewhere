@@ -45,6 +45,9 @@ public class JwtService extends RestControllerBase {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Number of minutes a token remains valid */
+    private static final int TOKEN_EXPIRATION_IN_MINUTES = 60;
+
     /** Injected reference to token management */
     @Autowired
     ITokenManagement tokenManagement;
@@ -68,7 +71,7 @@ public class JwtService extends RestControllerBase {
 	    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	} else {
 	    IUser user = (IUser) auth.getPrincipal();
-	    String jwt = getTokenManagement().generateToken(user);
+	    String jwt = getTokenManagement().generateToken(user, TOKEN_EXPIRATION_IN_MINUTES);
 	    return ResponseEntity.ok().header(TokenAuthenticationFilter.JWT_HEADER, jwt).build();
 	}
     }
