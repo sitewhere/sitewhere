@@ -9,14 +9,12 @@ package com.sitewhere.tenant.kafka;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
-import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
@@ -31,13 +29,9 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Injected reference to instance settings */
-    @Autowired
-    private IInstanceSettings instanceSettings;
-
-    /** Injected reference to Kafka topic naming */
-    @Autowired
-    private IKafkaTopicNaming kafkaTopicNaming;
+    public TenantModelProducer(IMicroservice microservice) {
+	super(microservice);
+    }
 
     /*
      * (non-Javadoc)
@@ -92,7 +86,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getKafkaTopicNaming().getTenantUpdatesTopic();
+	return getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic();
     }
 
     /*
@@ -103,29 +97,5 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.kafka.MicroserviceProducer#getInstanceSettings
-     * ()
-     */
-    @Override
-    public IInstanceSettings getInstanceSettings() {
-	return instanceSettings;
-    }
-
-    public void setInstanceSettings(IInstanceSettings instanceSettings) {
-	this.instanceSettings = instanceSettings;
-    }
-
-    public IKafkaTopicNaming getKafkaTopicNaming() {
-	return kafkaTopicNaming;
-    }
-
-    public void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
-	this.kafkaTopicNaming = kafkaTopicNaming;
     }
 }

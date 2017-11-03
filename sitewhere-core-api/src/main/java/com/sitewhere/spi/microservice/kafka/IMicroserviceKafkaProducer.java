@@ -8,7 +8,7 @@
 package com.sitewhere.spi.microservice.kafka;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -19,11 +19,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IMicroserviceKafkaProducer extends ILifecycleComponent {
 
     /**
-     * Get SiteWhere instance settings.
+     * Get parent microservice.
      * 
      * @return
      */
-    public IInstanceSettings getInstanceSettings();
+    public IMicroservice getMicroservice();
 
     /**
      * Get name of Kafka topic which will receive the messages.

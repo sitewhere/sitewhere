@@ -17,6 +17,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -31,6 +32,13 @@ public abstract class MicroserviceKafkaProducer extends LifecycleComponent imple
     /** Producer */
     private KafkaProducer<String, byte[]> producer;
 
+    /** Microservice */
+    private IMicroservice microservice;
+
+    public MicroserviceKafkaProducer(IMicroservice microservice) {
+	this.microservice = microservice;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -40,7 +48,8 @@ public abstract class MicroserviceKafkaProducer extends LifecycleComponent imple
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().info("Producer connecting to Kafka: " + getInstanceSettings().getKafkaBootstrapServers());
+	getLogger().info(
+		"Producer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	getLogger().info("Will be producing messages for: " + getTargetTopicName());
 	this.producer = new KafkaProducer<String, byte[]>(buildConfiguration());
     }
@@ -80,10 +89,24 @@ public abstract class MicroserviceKafkaProducer extends LifecycleComponent imple
      */
     protected Properties buildConfiguration() throws SiteWhereException {
 	Properties config = new Properties();
-	config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getInstanceSettings().getKafkaBootstrapServers());
+	config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+		getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 	config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
 	return config;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#
+     * getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     public KafkaProducer<String, byte[]> getProducer() {

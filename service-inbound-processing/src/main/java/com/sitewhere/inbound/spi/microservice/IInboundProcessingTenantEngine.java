@@ -7,6 +7,7 @@
  */
 package com.sitewhere.inbound.spi.microservice;
 
+import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get Kafka consumer that receives inbound decoded events for processing.
+     * 
+     * @return
+     */
+    public IDecodedEventsConsumer getDecodedEventsConsumer();
 }

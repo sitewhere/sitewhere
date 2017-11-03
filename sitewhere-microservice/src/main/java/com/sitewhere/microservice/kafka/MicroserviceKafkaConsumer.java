@@ -25,6 +25,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -41,6 +42,13 @@ public abstract class MicroserviceKafkaConsumer extends LifecycleComponent imple
     /** Executor service */
     private ExecutorService executor;
 
+    /** Parent microservice */
+    private IMicroservice microservice;
+
+    public MicroserviceKafkaConsumer(IMicroservice microservice) {
+	this.microservice = microservice;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -50,7 +58,8 @@ public abstract class MicroserviceKafkaConsumer extends LifecycleComponent imple
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().info("Consumer connecting to Kafka: " + getInstanceSettings().getKafkaBootstrapServers());
+	getLogger().info(
+		"Consumer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	getLogger().info("Will be consuming messages from: " + getSourceTopicName());
 	this.consumer = new KafkaConsumer<>(buildConfiguration());
 	this.executor = Executors.newSingleThreadExecutor();
@@ -82,10 +91,24 @@ public abstract class MicroserviceKafkaConsumer extends LifecycleComponent imple
 	Properties config = new Properties();
 	config.put(ConsumerConfig.CLIENT_ID_CONFIG, getConsumerId());
 	config.put(ConsumerConfig.GROUP_ID_CONFIG, getConsumerGroupId());
-	config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, getInstanceSettings().getKafkaBootstrapServers());
+	config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+		getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 	config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getName());
 	return config;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
+     * getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     public KafkaConsumer<String, byte[]> getConsumer() {

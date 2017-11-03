@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -27,24 +26,12 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Microservice */
-    private IMicroservice microservice;
-
     /** Tenant */
     private ITenant tenant;
 
     public DecodedEventsProducer(IMicroservice microservice, ITenant tenant) {
-	this.microservice = microservice;
+	super(microservice);
 	this.tenant = tenant;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#
-     * getInstanceSettings()
-     */
-    @Override
-    public IInstanceSettings getInstanceSettings() {
-	return getMicroservice().getInstanceSettings();
     }
 
     /*
@@ -62,14 +49,6 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 
     public ITenant getTenant() {

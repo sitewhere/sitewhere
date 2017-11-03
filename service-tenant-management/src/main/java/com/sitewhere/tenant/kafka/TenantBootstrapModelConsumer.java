@@ -17,7 +17,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
@@ -25,8 +24,7 @@ import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
-import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
@@ -52,20 +50,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
     /** Number of threads bootstrapping tenants before queued */
     private static final int CONCURRENT_TENANT_BOOTSTRAP_THREADS = 3;
 
-    /** Injected reference to instance settings */
-    @Autowired
-    private IInstanceSettings instanceSettings;
-
-    /** Injected reference to Kafka topic naming */
-    @Autowired
-    private IKafkaTopicNaming kafkaTopicNaming;
-
-    /** Injected reference to microservice */
-    @Autowired
-    private ITenantManagementMicroservice microservice;
-
     /** Executor */
     private ExecutorService executor;
+
+    public TenantBootstrapModelConsumer(IMicroservice microservice) {
+	super(microservice);
+    }
 
     /*
      * (non-Javadoc)
@@ -86,7 +76,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getKafkaTopicNaming().getInstancePrefix() + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getInstancePrefix() + GROUP_ID_SUFFIX;
     }
 
     /*
@@ -97,7 +87,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
      */
     @Override
     public String getSourceTopicName() throws SiteWhereException {
-	return getKafkaTopicNaming().getTenantUpdatesTopic();
+	return getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic();
     }
 
     /*
@@ -156,37 +146,6 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	return LOGGER;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#
-     * getInstanceSettings()
-     */
-    @Override
-    public IInstanceSettings getInstanceSettings() {
-	return instanceSettings;
-    }
-
-    protected void setInstanceSettings(IInstanceSettings instanceSettings) {
-	this.instanceSettings = instanceSettings;
-    }
-
-    protected IKafkaTopicNaming getKafkaTopicNaming() {
-	return kafkaTopicNaming;
-    }
-
-    protected void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
-	this.kafkaTopicNaming = kafkaTopicNaming;
-    }
-
-    public ITenantManagementMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(ITenantManagementMicroservice microservice) {
-	this.microservice = microservice;
-    }
-
     /**
      * Thread that takes care of bootstrapping a tenant based on its template.
      * 
@@ -222,10 +181,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	 * @throws Exception
 	 */
 	protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	    Stat existing = curator.checkExists().forPath(getMicroservice().getInstanceTenantsConfigurationPath());
+	    Stat existing = curator.checkExists()
+		    .forPath(((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
 	    if (existing == null) {
 		LOGGER.info("Zk node for tenant configurations not found. Creating...");
-		curator.create().forPath(getMicroservice().getInstanceTenantsConfigurationPath());
+		curator.create().forPath(
+			((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
 		LOGGER.info("Created tenant configurations Zk node.");
 	    } else {
 		LOGGER.info("Found Zk node for tenant configurations.");
@@ -239,16 +200,17 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	 * @throws Exception
 	 */
 	protected void createTenantConfigurationIfNotFound(CuratorFramework curator) throws Exception {
-	    String tenantPath = getMicroservice().getInstanceTenantConfigurationPath(getTenant().getId());
+	    String tenantPath = ((ITenantManagementMicroservice) getMicroservice())
+		    .getInstanceTenantConfigurationPath(getTenant().getId());
 	    Stat existing = curator.checkExists().forPath(tenantPath);
 	    if (existing == null) {
 		LOGGER.info("Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
 		curator.create().forPath(tenantPath);
 		LOGGER.info("Copying tenant template contents into Zk node...");
-		getMicroservice().getTenantTemplateManager().copyTemplateContentsToZk(getTenant().getTenantTemplateId(),
-			curator, tenantPath);
-		curator.create()
-			.forPath(getMicroservice().getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
+		((ITenantManagementMicroservice) getMicroservice()).getTenantTemplateManager()
+			.copyTemplateContentsToZk(getTenant().getTenantTemplateId(), curator, tenantPath);
+		curator.create().forPath(((ITenantManagementMicroservice) getMicroservice())
+			.getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
 		LOGGER.info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
 	    } else {
 		LOGGER.info("Found Zk node for tenant '" + getTenant().getName() + "'.");

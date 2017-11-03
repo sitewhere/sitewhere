@@ -25,6 +25,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
+import com.sitewhere.tenant.kafka.TenantBootstrapModelConsumer;
+import com.sitewhere.tenant.kafka.TenantModelProducer;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
@@ -67,11 +69,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     private ITenantTemplateManager tenantTemplateManager;
 
     /** Reflects tenant model updates to Kafka topic */
-    @Autowired
     private ITenantModelProducer tenantModelProducer;
 
     /** Watches tenant model updates and bootstraps new tenants */
-    @Autowired
     private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
 
     /*
@@ -116,6 +116,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
+	this.tenantModelProducer = new TenantModelProducer(this);
+	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+
 	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
 	this.tenantManagement = initializeTenantManagement(context);
 	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());

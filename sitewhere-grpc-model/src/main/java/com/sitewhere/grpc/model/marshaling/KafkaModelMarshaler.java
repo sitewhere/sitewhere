@@ -94,6 +94,21 @@ public class KafkaModelMarshaler {
 	}
     }
 
+    /**
+     * Parse message that contains an inbound event payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GInboundEventPayload parseInboundEventPayloadMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GInboundEventPayload.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse inbound event payload message.", e);
+	}
+    }
+
     protected static void closeQuietly(OutputStream output) {
 	if (output != null) {
 	    try {
