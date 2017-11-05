@@ -9,6 +9,7 @@ package com.sitewhere.spi.microservice.kafka;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -24,6 +25,14 @@ public interface IMicroserviceKafkaConsumer extends ITenantLifecycleComponent {
      * @return
      */
     public IMicroservice getMicroservice();
+
+    /**
+     * Get tenant engine associated with consumer. May be null for global
+     * consumers.
+     * 
+     * @return
+     */
+    public IMicroserviceTenantEngine getTenantEngine();
 
     /**
      * Get unique consumer id.

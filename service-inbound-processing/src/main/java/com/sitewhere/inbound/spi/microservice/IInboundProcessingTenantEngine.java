@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.processing.IEventEnrichmentProcessor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -24,4 +25,11 @@ public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngin
      * @return
      */
     public IDecodedEventsConsumer getDecodedEventsConsumer();
+
+    /**
+     * Get processing node for enriching event with device management data.
+     * 
+     * @return
+     */
+    public IEventEnrichmentProcessor getEventEnrichmentProcessor();
 }

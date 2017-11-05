@@ -54,7 +54,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
     private ExecutorService executor;
 
     public TenantBootstrapModelConsumer(IMicroservice microservice) {
-	super(microservice);
+	super(microservice, null);
     }
 
     /*

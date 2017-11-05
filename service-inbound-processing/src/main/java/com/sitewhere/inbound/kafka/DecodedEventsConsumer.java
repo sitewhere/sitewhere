@@ -21,10 +21,11 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
+import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -50,8 +51,9 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Executor */
     private ExecutorService executor;
 
-    public DecodedEventsConsumer(IMicroservice microservice) {
-	super(microservice);
+    public DecodedEventsConsumer(IInboundProcessingMicroservice microservice,
+	    IInboundProcessingTenantEngine tenantEngine) {
+	super(microservice, tenantEngine);
     }
 
     /*

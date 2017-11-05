@@ -27,6 +27,7 @@ import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -45,8 +46,12 @@ public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent
     /** Parent microservice */
     private IMicroservice microservice;
 
-    public MicroserviceKafkaConsumer(IMicroservice microservice) {
+    /** Parent tenant engine (null for global consumers) */
+    private IMicroserviceTenantEngine tenantEngine;
+
+    public MicroserviceKafkaConsumer(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine) {
 	this.microservice = microservice;
+	this.tenantEngine = tenantEngine;
     }
 
     /*
@@ -110,6 +115,15 @@ public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent
 
     public void setMicroservice(IMicroservice microservice) {
 	this.microservice = microservice;
+    }
+
+    @Override
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return tenantEngine;
+    }
+
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	this.tenantEngine = tenantEngine;
     }
 
     public KafkaConsumer<String, byte[]> getConsumer() {
