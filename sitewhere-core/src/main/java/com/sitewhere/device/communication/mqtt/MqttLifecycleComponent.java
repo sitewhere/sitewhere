@@ -21,6 +21,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -194,7 +195,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	    String protocol = (usingSSL || usingTLS) ? "ssl" : "tcp";
 	    String serverUri = protocol + "://" + component.getHostname() + ":" + component.getPort();
 
-	    MqttClient client = new MqttClient(serverUri, clientId);
+	    MqttClient client = new MqttClient(serverUri, clientId, new MemoryPersistence());
 	    MqttConnectOptions options = new MqttConnectOptions();
 	    options.setAutomaticReconnect(true);
 	    options.setMaxInflight(100);

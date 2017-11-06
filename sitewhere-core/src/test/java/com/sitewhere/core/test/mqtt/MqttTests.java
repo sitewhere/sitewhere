@@ -119,11 +119,11 @@ public class MqttTests {
 
 		@Override
 		public void run() {
-		    for (int i = 0; i < 10000; i++) {
+		    for (int i = 0; i < 100; i++) {
 			try {
 			    sendLocationOverMqtt();
 			    try {
-				Thread.sleep(20);
+				Thread.sleep(50);
 			    } catch (InterruptedException e) {
 				System.err.println(e.getMessage());
 			    }

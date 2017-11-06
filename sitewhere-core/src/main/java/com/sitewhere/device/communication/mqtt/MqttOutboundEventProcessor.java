@@ -244,9 +244,10 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	    LOGGER.info("Publishing event " + event.getId() + " to route: " + topic + " with QOS " + getQos());
 	    getMqttClient().publish(topic, MarshalUtils.marshalJson(event), getQos(), false);
 	} catch (MqttPersistenceException e) {
-	    throw new SiteWhereException("Unable to publish event.", e);
+	    throw new SiteWhereException(
+		    "Persistence exception while pusblishing event to MQTT topic. " + e.getMessage(), e);
 	} catch (MqttException e) {
-	    throw new SiteWhereException("Unable to publish event.", e);
+	    throw new SiteWhereException("MQTT exception while pusblishing event to MQTT topic. " + e.getMessage(), e);
 	}
     }
 
