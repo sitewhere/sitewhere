@@ -8,7 +8,8 @@
 package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
-import com.sitewhere.inbound.spi.processing.IEventEnrichmentProcessor;
+import com.sitewhere.inbound.spi.kafka.IUnregisteredDeviceEventsProducer;
+import com.sitewhere.inbound.spi.processing.IRegistrationVerificationProcessor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -27,9 +28,18 @@ public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngin
     public IDecodedEventsConsumer getDecodedEventsConsumer();
 
     /**
-     * Get processing node for enriching event with device management data.
+     * Get processing node which verifies that an event belongs to a registered
+     * device.
      * 
      * @return
      */
-    public IEventEnrichmentProcessor getEventEnrichmentProcessor();
+    public IRegistrationVerificationProcessor getRegistrationVerificationProcessor();
+
+    /**
+     * Get Kafka producer that sends events for unregistered devices to an
+     * out-of-band topic for later processing.
+     * 
+     * @return
+     */
+    public IUnregisteredDeviceEventsProducer getUnregisteredDeviceEventsProducer();
 }

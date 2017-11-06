@@ -65,7 +65,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLogger().info(
 		"Consumer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
-	getLogger().info("Will be consuming messages from: " + getSourceTopicName());
+	getLogger().info("Will be consuming messages from: " + getSourceTopicNames());
 	this.consumer = new KafkaConsumer<>(buildConfiguration());
 	this.executor = Executors.newSingleThreadExecutor();
 	executor.execute(new MessageConsumer());
@@ -144,18 +144,13 @@ public abstract class MicroserviceKafkaConsumer extends TenantLifecycleComponent
 	@Override
 	public void run() {
 	    try {
-		getConsumer().subscribe(Collections.singletonList(getSourceTopicName()));
+		getConsumer().subscribe(getSourceTopicNames());
 		while (true) {
 		    ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
-		    getLogger().debug("Received {} records from {}", records.count(), getSourceTopicName());
 
 		    for (TopicPartition topicPartition : records.partitions()) {
 			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
 			for (ConsumerRecord<String, byte[]> record : topicRecords) {
-			    getLogger().debug(
-				    "ConsumerId:{}-Topic:{} => Partition={}, Offset={}, EventTime:[{}] Val={}",
-				    getConsumerId(), topicPartition.topic(), record.partition(), record.offset(),
-				    record.timestamp(), record.value());
 			    received(record.key(), record.value());
 			}
 

@@ -46,5 +46,23 @@ public interface IKafkaTopicNaming {
      * @param tenant
      * @return
      */
-    public String getEventSourceFailedDecodedTopic(ITenant tenant);
+    public String getEventSourceFailedDecodeTopic(ITenant tenant);
+
+    /**
+     * Get topic for inbound events that were sent for out-of-band processing,
+     * then returned to be reprocessed.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getInboundReprocessEventsTopic(ITenant tenant);
+
+    /**
+     * Get name fro topic that contains events for devices that were not
+     * registered in the system.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getUnregisteredDeviceEventsTopic(ITenant tenant);
 }

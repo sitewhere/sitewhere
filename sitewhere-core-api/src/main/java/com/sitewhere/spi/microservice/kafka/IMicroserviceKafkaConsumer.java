@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.kafka;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -51,12 +53,12 @@ public interface IMicroserviceKafkaConsumer extends ITenantLifecycleComponent {
     public String getConsumerGroupId() throws SiteWhereException;
 
     /**
-     * Get name of Kafka topic which will provide the messages.
+     * Get name of Kafka topics which will provide the messages.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public String getSourceTopicName() throws SiteWhereException;
+    public List<String> getSourceTopicNames() throws SiteWhereException;
 
     /**
      * Received a message from the topic.

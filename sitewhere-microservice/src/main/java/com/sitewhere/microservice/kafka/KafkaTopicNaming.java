@@ -36,10 +36,16 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     protected static final String TENANT_MODEL_UPDATES_SUFFIX = "tenant-model-updates";
 
     /** Topic suffix for events decoded by event sources for a tenant */
-    protected static final String TENANT_TOPIC_EVENT_SOURCE_DECODED_EVENTS = "event-source-decoded";
+    protected static final String TENANT_TOPIC_EVENT_SOURCE_DECODED_EVENTS = "event-source-decoded-events";
 
-    /** Topic suffix for events failed event decodes for a tenant */
-    protected static final String TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS = "event-source-failed-decode";
+    /** Topic suffix for events that could not be decoded for a tenant */
+    protected static final String TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS = "event-source-failed-decode-events";
+
+    /** Topic suffix for events that should be reprocessed */
+    protected static final String TENANT_TOPIC_INBOUND_REPROCESS_EVENTS = "inbound-reprocess-events";
+
+    /** Topic suffix for tenant events sent to unregistered devices */
+    protected static final String TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS = "inbound-unregistered-device-events";
 
     @Autowired
     private IInstanceSettings instanceSettings;
@@ -96,12 +102,30 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     }
 
     /*
-     * @see com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#
-     * getEventSourceFailedDecodedTopic(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getEventSourceFailedDecodeTopic(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public String getEventSourceFailedDecodedTopic(ITenant tenant) {
+    public String getEventSourceFailedDecodeTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getInboundReprocessEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getInboundReprocessEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_REPROCESS_EVENTS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getUnregisteredDeviceEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getUnregisteredDeviceEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

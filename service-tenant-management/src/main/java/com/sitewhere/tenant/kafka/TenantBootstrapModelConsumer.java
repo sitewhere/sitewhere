@@ -7,6 +7,8 @@
  */
 package com.sitewhere.tenant.kafka;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,14 +82,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#
-     * getSourceTopicName()
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
+     * getSourceTopicNames()
      */
     @Override
-    public String getSourceTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic();
+    public List<String> getSourceTopicNames() throws SiteWhereException {
+	return Collections.singletonList(getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic());
     }
 
     /*

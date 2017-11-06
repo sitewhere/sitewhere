@@ -28,6 +28,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
+@Deprecated
 public abstract class InboundEventProcessor extends TenantLifecycleComponent implements IInboundEventProcessor {
 
     public InboundEventProcessor() {

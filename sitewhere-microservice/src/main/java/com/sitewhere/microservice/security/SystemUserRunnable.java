@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Allows code to be run in a separate thread along with thread local security
@@ -27,11 +27,11 @@ public abstract class SystemUserRunnable implements Runnable {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Parent microservice */
-    private IMicroservice microservice;
+    /** Tenant engine if tenant operation */
+    private IMicroserviceTenantEngine tenantEngine;
 
-    public SystemUserRunnable(IMicroservice microservice) {
-	this.microservice = microservice;
+    public SystemUserRunnable(IMicroserviceTenantEngine tenantEngine) {
+	this.tenantEngine = tenantEngine;
     }
 
     /**
@@ -49,7 +49,9 @@ public abstract class SystemUserRunnable implements Runnable {
     public void run() {
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
+	    Authentication system = getTenantEngine().getMicroservice().getSystemUser()
+		    .getAuthenticationForTenant(getTenantEngine().getTenant());
+	    SecurityContextHolder.getContext().setAuthentication(system);
 	    runAsSystemUser();
 	} catch (Throwable e) {
 	    LOGGER.error("Unhandled exception.", e);
@@ -58,11 +60,11 @@ public abstract class SystemUserRunnable implements Runnable {
 	}
     }
 
-    public IMicroservice getMicroservice() {
-	return microservice;
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return tenantEngine;
     }
 
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	this.tenantEngine = tenantEngine;
     }
 }

@@ -74,7 +74,7 @@ public class KafkaModelMarshaler {
     }
 
     /**
-     * Build binary message for inbound event payload.
+     * Build binary message for API inbound event payload.
      * 
      * @param api
      * @return
@@ -82,7 +82,17 @@ public class KafkaModelMarshaler {
      */
     public static byte[] buildInboundEventPayloadMessage(IInboundEventPayload api) throws SiteWhereException {
 	GInboundEventPayload grpc = KafkaModelConverter.asGrpcInboundEventPayload(api);
+	return buildInboundEventPayloadMessage(grpc);
+    }
 
+    /**
+     * Build binary message for GRPC inbound event payload.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildInboundEventPayloadMessage(GInboundEventPayload grpc) throws SiteWhereException {
 	ByteArrayOutputStream output = new ByteArrayOutputStream();
 	try {
 	    grpc.writeTo(output);

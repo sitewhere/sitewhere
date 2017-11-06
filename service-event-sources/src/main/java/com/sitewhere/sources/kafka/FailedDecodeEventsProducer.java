@@ -35,7 +35,7 @@ public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getEventSourceFailedDecodedTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getEventSourceFailedDecodeTopic(getTenant());
     }
 
     /*

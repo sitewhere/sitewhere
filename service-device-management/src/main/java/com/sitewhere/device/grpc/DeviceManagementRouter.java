@@ -100,349 +100,604 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	getTenantImplementation().updateDeviceSpecification(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceSpecifications(com.sitewhere.grpc.service.
+     * GListDeviceSpecificationsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceSpecifications(GListDeviceSpecificationsRequest request,
 	    StreamObserver<GListDeviceSpecificationsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceSpecifications(request, responseObserver);
+	getTenantImplementation().listDeviceSpecifications(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceSpecification(com.sitewhere.grpc.service.
+     * GDeleteDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceSpecification(GDeleteDeviceSpecificationRequest request,
 	    StreamObserver<GDeleteDeviceSpecificationResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceSpecification(request, responseObserver);
+	getTenantImplementation().deleteDeviceSpecification(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceCommand(com.sitewhere.grpc.service.
+     * GCreateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
 	    StreamObserver<GCreateDeviceCommandResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceCommand(request, responseObserver);
+	getTenantImplementation().createDeviceCommand(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceCommandByToken(com.sitewhere.grpc.service.
+     * GGetDeviceCommandByTokenRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceCommandByToken(GGetDeviceCommandByTokenRequest request,
 	    StreamObserver<GGetDeviceCommandByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceCommandByToken(request, responseObserver);
+	getTenantImplementation().getDeviceCommandByToken(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceCommand(com.sitewhere.grpc.service.
+     * GUpdateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceCommand(GUpdateDeviceCommandRequest request,
 	    StreamObserver<GUpdateDeviceCommandResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceCommand(request, responseObserver);
+	getTenantImplementation().updateDeviceCommand(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceCommands(com.sitewhere.grpc.service.GListDeviceCommandsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceCommands(GListDeviceCommandsRequest request,
 	    StreamObserver<GListDeviceCommandsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceCommands(request, responseObserver);
+	getTenantImplementation().listDeviceCommands(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceCommand(com.sitewhere.grpc.service.
+     * GDeleteDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceCommand(GDeleteDeviceCommandRequest request,
 	    StreamObserver<GDeleteDeviceCommandResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceCommand(request, responseObserver);
+	getTenantImplementation().deleteDeviceCommand(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceStatus(com.sitewhere.grpc.service.GCreateDeviceStatusRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceStatus(GCreateDeviceStatusRequest request,
 	    StreamObserver<GCreateDeviceStatusResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceStatus(request, responseObserver);
+	getTenantImplementation().createDeviceStatus(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceStatusByCode(com.sitewhere.grpc.service.
+     * GGetDeviceStatusByCodeRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceStatusByCode(GGetDeviceStatusByCodeRequest request,
 	    StreamObserver<GGetDeviceStatusByCodeResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceStatusByCode(request, responseObserver);
+	getTenantImplementation().getDeviceStatusByCode(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceStatus(com.sitewhere.grpc.service.GUpdateDeviceStatusRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceStatus(GUpdateDeviceStatusRequest request,
 	    StreamObserver<GUpdateDeviceStatusResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceStatus(request, responseObserver);
+	getTenantImplementation().updateDeviceStatus(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceStatuses(com.sitewhere.grpc.service.GListDeviceStatusesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceStatuses(GListDeviceStatusesRequest request,
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceStatuses(request, responseObserver);
+	getTenantImplementation().listDeviceStatuses(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceStatus(com.sitewhere.grpc.service.GDeleteDeviceStatusRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceStatus(GDeleteDeviceStatusRequest request,
 	    StreamObserver<GDeleteDeviceStatusResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceStatus(request, responseObserver);
+	getTenantImplementation().deleteDeviceStatus(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDevice(com.sitewhere.grpc.service.GCreateDeviceRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDevice(GCreateDeviceRequest request, StreamObserver<GCreateDeviceResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDevice(request, responseObserver);
+	getTenantImplementation().createDevice(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceByHardwareId(com.sitewhere.grpc.service.
+     * GGetDeviceByaHardwareIdRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceByHardwareId(GGetDeviceByaHardwareIdRequest request,
 	    StreamObserver<GGetDeviceByaHardwareIdResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceByHardwareId(request, responseObserver);
+	getTenantImplementation().getDeviceByHardwareId(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDevice(com.sitewhere.grpc.service.GUpdateDeviceRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDevice(GUpdateDeviceRequest request, StreamObserver<GUpdateDeviceResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDevice(request, responseObserver);
+	getTenantImplementation().updateDevice(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDevices(com.sitewhere.grpc.service.GListDevicesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDevices(GListDevicesRequest request, StreamObserver<GListDevicesResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDevices(request, responseObserver);
+	getTenantImplementation().listDevices(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceElementMapping(com.sitewhere.grpc.service.
+     * GCreateDeviceElementMappingRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceElementMapping(GCreateDeviceElementMappingRequest request,
 	    StreamObserver<GCreateDeviceElementMappingResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceElementMapping(request, responseObserver);
+	getTenantImplementation().createDeviceElementMapping(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceElementMapping(com.sitewhere.grpc.service.
+     * GDeleteDeviceElementMappingRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceElementMapping(GDeleteDeviceElementMappingRequest request,
 	    StreamObserver<GDeleteDeviceElementMappingResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceElementMapping(request, responseObserver);
+	getTenantImplementation().deleteDeviceElementMapping(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDevice(com.sitewhere.grpc.service.GDeleteDeviceRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDevice(GDeleteDeviceRequest request, StreamObserver<GDeleteDeviceResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDevice(request, responseObserver);
+	getTenantImplementation().deleteDevice(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceGroup(com.sitewhere.grpc.service.GCreateDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceGroup(GCreateDeviceGroupRequest request,
 	    StreamObserver<GCreateDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceGroup(request, responseObserver);
+	getTenantImplementation().createDeviceGroup(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceGroupByToken(com.sitewhere.grpc.service.
+     * GGetDeviceGroupByTokenRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceGroupByToken(GGetDeviceGroupByTokenRequest request,
 	    StreamObserver<GGetDeviceGroupByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceGroupByToken(request, responseObserver);
+	getTenantImplementation().getDeviceGroupByToken(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceGroup(com.sitewhere.grpc.service.GUpdateDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceGroup(GUpdateDeviceGroupRequest request,
 	    StreamObserver<GUpdateDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceGroup(request, responseObserver);
+	getTenantImplementation().updateDeviceGroup(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroups(com.sitewhere.grpc.service.GListDeviceGroupsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroups(GListDeviceGroupsRequest request,
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroups(request, responseObserver);
+	getTenantImplementation().listDeviceGroups(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroupsWithRole(com.sitewhere.grpc.service.
+     * GListDeviceGroupsWithRoleRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroupsWithRole(GListDeviceGroupsWithRoleRequest request,
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroupsWithRole(request, responseObserver);
+	getTenantImplementation().listDeviceGroupsWithRole(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceGroup(com.sitewhere.grpc.service.GDeleteDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceGroup(GDeleteDeviceGroupRequest request,
 	    StreamObserver<GDeleteDeviceGroupResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceGroup(request, responseObserver);
+	getTenantImplementation().deleteDeviceGroup(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * addDeviceGroupElements(com.sitewhere.grpc.service.
+     * GAddDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void addDeviceGroupElements(GAddDeviceGroupElementsRequest request,
 	    StreamObserver<GAddDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.addDeviceGroupElements(request, responseObserver);
+	getTenantImplementation().addDeviceGroupElements(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * removeDeviceGroupElements(com.sitewhere.grpc.service.
+     * GRemoveDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void removeDeviceGroupElements(GRemoveDeviceGroupElementsRequest request,
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.removeDeviceGroupElements(request, responseObserver);
+	getTenantImplementation().removeDeviceGroupElements(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceGroupElements(com.sitewhere.grpc.service.
+     * GListDeviceGroupElementsRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceGroupElements(GListDeviceGroupElementsRequest request,
 	    StreamObserver<GListDeviceGroupElementsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceGroupElements(request, responseObserver);
+	getTenantImplementation().listDeviceGroupElements(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceAssignment(com.sitewhere.grpc.service.
+     * GCreateDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceAssignment(GCreateDeviceAssignmentRequest request,
 	    StreamObserver<GCreateDeviceAssignmentResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceAssignment(request, responseObserver);
+	getTenantImplementation().createDeviceAssignment(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAssignmentByToken(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentByTokenRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceAssignmentByToken(GGetDeviceAssignmentByTokenRequest request,
 	    StreamObserver<GGetDeviceAssignmentByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceAssignmentByToken(request, responseObserver);
+	getTenantImplementation().getDeviceAssignmentByToken(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCurrentAssignmentForDevice(com.sitewhere.grpc.service.
+     * GGetCurrentAssignmentForDeviceRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getCurrentAssignmentForDevice(GGetCurrentAssignmentForDeviceRequest request,
 	    StreamObserver<GGetCurrentAssignmentForDeviceResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getCurrentAssignmentForDevice(request, responseObserver);
+	getTenantImplementation().getCurrentAssignmentForDevice(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceAssignment(com.sitewhere.grpc.service.
+     * GDeleteDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteDeviceAssignment(GDeleteDeviceAssignmentRequest request,
 	    StreamObserver<GDeleteDeviceAssignmentResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteDeviceAssignment(request, responseObserver);
+	getTenantImplementation().deleteDeviceAssignment(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceAssignmentMetadata(com.sitewhere.grpc.service.
+     * GUpdateDeviceAssignmentMetadataRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceAssignmentMetadata(GUpdateDeviceAssignmentMetadataRequest request,
 	    StreamObserver<GUpdateDeviceAssignmentMetadataResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceAssignmentMetadata(request, responseObserver);
+	getTenantImplementation().updateDeviceAssignmentMetadata(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceAssignmentStatus(com.sitewhere.grpc.service.
+     * GUpdateDeviceAssignmentStatusRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateDeviceAssignmentStatus(GUpdateDeviceAssignmentStatusRequest request,
 	    StreamObserver<GUpdateDeviceAssignmentStatusResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateDeviceAssignmentStatus(request, responseObserver);
+	getTenantImplementation().updateDeviceAssignmentStatus(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * endDeviceAssignment(com.sitewhere.grpc.service.
+     * GEndDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void endDeviceAssignment(GEndDeviceAssignmentRequest request,
 	    StreamObserver<GEndDeviceAssignmentResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.endDeviceAssignment(request, responseObserver);
+	getTenantImplementation().endDeviceAssignment(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAssignmentHistory(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentHistoryRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceAssignmentHistory(GGetDeviceAssignmentHistoryRequest request,
 	    StreamObserver<GGetDeviceAssignmentHistoryResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceAssignmentHistory(request, responseObserver);
+	getTenantImplementation().getDeviceAssignmentHistory(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAssignmentsForSite(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForSiteRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceAssignmentsForSite(GGetDeviceAssignmentsForSiteRequest request,
 	    StreamObserver<GGetDeviceAssignmentsForSiteResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceAssignmentsForSite(request, responseObserver);
+	getTenantImplementation().getDeviceAssignmentsForSite(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAssignmentsForAsset(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForAssetRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceAssignmentsForAsset(GGetDeviceAssignmentsForAssetRequest request,
 	    StreamObserver<GGetDeviceAssignmentsForAssetResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceAssignmentsForAsset(request, responseObserver);
+	getTenantImplementation().getDeviceAssignmentsForAsset(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceStream(com.sitewhere.grpc.service.GCreateDeviceStreamRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createDeviceStream(GCreateDeviceStreamRequest request,
 	    StreamObserver<GCreateDeviceStreamResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createDeviceStream(request, responseObserver);
+	getTenantImplementation().createDeviceStream(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceStreamByStreamId(com.sitewhere.grpc.service.
+     * GGetDeviceStreamByStreamIdRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getDeviceStreamByStreamId(GGetDeviceStreamByStreamIdRequest request,
 	    StreamObserver<GGetDeviceStreamByStreamIdResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getDeviceStreamByStreamId(request, responseObserver);
+	getTenantImplementation().getDeviceStreamByStreamId(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceStreams(com.sitewhere.grpc.service.GListDeviceStreamsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listDeviceStreams(GListDeviceStreamsRequest request,
 	    StreamObserver<GListDeviceStreamsResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listDeviceStreams(request, responseObserver);
+	getTenantImplementation().listDeviceStreams(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createSite(com.sitewhere.grpc.service.GCreateSiteRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createSite(GCreateSiteRequest request, StreamObserver<GCreateSiteResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createSite(request, responseObserver);
+	getTenantImplementation().createSite(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getSiteByToken(com.sitewhere.grpc.service.GGetSiteByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getSiteByToken(GGetSiteByTokenRequest request,
 	    StreamObserver<GGetSiteByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getSiteByToken(request, responseObserver);
+	getTenantImplementation().getSiteByToken(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateSite(com.sitewhere.grpc.service.GUpdateSiteRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateSite(GUpdateSiteRequest request, StreamObserver<GUpdateSiteResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateSite(request, responseObserver);
+	getTenantImplementation().updateSite(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listSites(com.sitewhere.grpc.service.GListSitesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listSites(GListSitesRequest request, StreamObserver<GListSitesResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listSites(request, responseObserver);
+	getTenantImplementation().listSites(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteSite(com.sitewhere.grpc.service.GDeleteSiteRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteSite(GDeleteSiteRequest request, StreamObserver<GDeleteSiteResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteSite(request, responseObserver);
+	getTenantImplementation().deleteSite(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createZone(com.sitewhere.grpc.service.GCreateZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.createZone(request, responseObserver);
+	getTenantImplementation().createZone(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getZoneByToken(com.sitewhere.grpc.service.GGetZoneByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void getZoneByToken(GGetZoneByTokenRequest request,
 	    StreamObserver<GGetZoneByTokenResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.getZoneByToken(request, responseObserver);
+	getTenantImplementation().getZoneByToken(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateZone(com.sitewhere.grpc.service.GUpdateZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void updateZone(GUpdateZoneRequest request, StreamObserver<GUpdateZoneResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.updateZone(request, responseObserver);
+	getTenantImplementation().updateZone(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listZones(com.sitewhere.grpc.service.GListZonesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.listZones(request, responseObserver);
+	getTenantImplementation().listZones(request, responseObserver);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteZone(com.sitewhere.grpc.service.GDeleteZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
     @Override
     public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
-	// TODO Auto-generated method stub
-	super.deleteZone(request, responseObserver);
+	getTenantImplementation().deleteZone(request, responseObserver);
     }
 
     public IDeviceManagementMicroservice getMicroservice() {

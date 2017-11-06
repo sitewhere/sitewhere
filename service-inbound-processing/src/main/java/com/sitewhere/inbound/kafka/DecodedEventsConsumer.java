@@ -7,6 +7,8 @@
  */
 package com.sitewhere.inbound.kafka;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,8 +26,10 @@ import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -76,11 +80,14 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
-     * getSourceTopicName()
+     * getSourceTopicNames()
      */
     @Override
-    public String getSourceTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getEventSourceDecodedEventsTopic(getTenant());
+    public List<String> getSourceTopicNames() throws SiteWhereException {
+	List<String> topics = new ArrayList<String>();
+	topics.add(getMicroservice().getKafkaTopicNaming().getEventSourceDecodedEventsTopic(getTenant()));
+	topics.add(getMicroservice().getKafkaTopicNaming().getInboundReprocessEventsTopic(getTenant()));
+	return topics;
     }
 
     /*
@@ -118,7 +125,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new InboundEventPayloadProcessor(message));
+	executor.execute(new InboundEventPayloadProcessor(getTenantEngine(), message));
     }
 
     /*
@@ -135,24 +142,28 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      * @author Derek
      *
      */
-    protected class InboundEventPayloadProcessor implements Runnable {
+    protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 
 	/** Encoded payload */
 	private byte[] encoded;
 
-	public InboundEventPayloadProcessor(byte[] encoded) {
+	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
+	    super(tenantEngine);
 	    this.encoded = encoded;
 	}
 
 	/*
-	 * @see java.lang.Runnable#run()
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#
+	 * runAsSystemUser()
 	 */
 	@Override
-	public void run() {
+	public void runAsSystemUser() throws SiteWhereException {
 	    try {
 		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
 		InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(grpc);
 		getLogger().info("Received payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
+		((IInboundProcessingTenantEngine) getTenantEngine()).getRegistrationVerificationProcessor()
+			.process(grpc);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to parse inbound event payload.", e);
 	    }
