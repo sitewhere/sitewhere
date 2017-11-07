@@ -6,6 +6,7 @@ option java_outer_classname = "KafkaModel";
 
 import "sitewhere-common.proto";
 import "tenant-model.proto";
+import "device-model.proto";
 import "device-event-model.proto";
 
 // ############################
@@ -35,4 +36,18 @@ message GInboundEventPayload {
 	string hardwareId = 2;
 	com.sitewhere.grpc.model.GOptionalString originator = 3;
 	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
+}
+
+// Persisted event payload.
+message GPersistedEventPayload {
+	string hardwareId = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
+}
+
+// Enriched event payload.
+message GEnrichedEventPayload {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDevice device = 2;
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 3;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 4;
 }

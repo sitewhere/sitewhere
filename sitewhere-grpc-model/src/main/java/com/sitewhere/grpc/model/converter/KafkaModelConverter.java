@@ -8,10 +8,13 @@
 package com.sitewhere.grpc.model.converter;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
+import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
+import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
 
 /**
  * Convert model objects passed on Kafka topics.
@@ -51,6 +54,36 @@ public class KafkaModelConverter {
 	    grpc.setOriginator(GOptionalString.newBuilder().setValue(api.getOriginator()));
 	}
 	grpc.setEvent(EventModelConverter.asGrpcDeviceEventCreateRequest(api.getEventCreateRequest()));
+	return grpc.build();
+    }
+
+    /**
+     * Convert persisted event payload from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static PersistedEventPayload asApiPersisedEventPayload(GPersistedEventPayload grpc)
+	    throws SiteWhereException {
+	PersistedEventPayload api = new PersistedEventPayload();
+	api.setHardwareId(grpc.getHardwareId());
+	api.setEvent(EventModelConverter.asApiGenericDeviceEvent(grpc.getEvent()));
+	return api;
+    }
+
+    /**
+     * Convert persisted event payload from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GPersistedEventPayload asGrpcPersistedEventPayload(IPersistedEventPayload api)
+	    throws SiteWhereException {
+	GPersistedEventPayload.Builder grpc = GPersistedEventPayload.newBuilder();
+	grpc.setHardwareId(api.getHardwareId());
+	grpc.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(api.getEvent()));
 	return grpc.build();
     }
 }

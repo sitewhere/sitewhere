@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
@@ -114,6 +115,40 @@ public class KafkaModelMarshaler {
     public static GInboundEventPayload parseInboundEventPayloadMessage(byte[] payload) throws SiteWhereException {
 	try {
 	    return GInboundEventPayload.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse inbound event payload message.", e);
+	}
+    }
+
+    /**
+     * Build binary message for GRPC persisted event payload.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildPersistedEventPayloadMessage(GPersistedEventPayload grpc) throws SiteWhereException {
+	ByteArrayOutputStream output = new ByteArrayOutputStream();
+	try {
+	    grpc.writeTo(output);
+	    return output.toByteArray();
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to build persisted event payload message.", e);
+	} finally {
+	    closeQuietly(output);
+	}
+    }
+
+    /**
+     * Parse message that contains an persisted event payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GPersistedEventPayload parseInboundPersistedPayloadMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GPersistedEventPayload.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse inbound event payload message.", e);
 	}

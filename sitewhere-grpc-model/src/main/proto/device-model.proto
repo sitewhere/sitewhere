@@ -186,11 +186,11 @@ message GDevice {
 	string hardwareId = 1;
 	string siteToken = 2;
 	string specificationToken = 3;
-	string assignmentToken = 4;
-	string parentHardwareId = 5;
+	GOptionalString assignmentToken = 4;
+	GOptionalString parentHardwareId = 5;
 	repeated GDeviceElementMapping deviceElementMappings = 6;
-	string comments = 7;
-	string status = 9;
+	GOptionalString comments = 7;
+	GOptionalString status = 9;
 	map<string, string> metadata = 10;
 	GEntityInformation entityInformation = 11;
 }

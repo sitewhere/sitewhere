@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
+import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -20,6 +22,17 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
  * Processing node which verifies that an incoming event belongs to a registered
@@ -67,6 +80,52 @@ public class RegistrationVerificationProcessor extends TenantLifecycleComponent
 	    handleUnassignedDevice(payload);
 	    return;
 	}
+
+	// Store device event via the management APIs.
+	storeDeviceEvent(assignment, payload);
+    }
+
+    /**
+     * Store a device event via the device event management APIs.
+     * 
+     * @param assignment
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceEvent storeDeviceEvent(IDeviceAssignment assignment, GInboundEventPayload payload)
+	    throws SiteWhereException {
+	GAnyDeviceEventCreateRequest grpc = payload.getEvent();
+	IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
+	switch (request.getEventType()) {
+	case Measurements:
+	    return getDeviceEventManagement().addDeviceMeasurements(assignment,
+		    (IDeviceMeasurementsCreateRequest) request);
+	case Alert:
+	    return getDeviceEventManagement().addDeviceAlert(assignment, (IDeviceAlertCreateRequest) request);
+	case CommandInvocation:
+	    return getDeviceEventManagement().addDeviceCommandInvocation(assignment,
+		    (IDeviceCommandInvocationCreateRequest) request);
+	case CommandResponse:
+	    return getDeviceEventManagement().addDeviceCommandResponse(assignment,
+		    (IDeviceCommandResponseCreateRequest) request);
+	case Location:
+	    return getDeviceEventManagement().addDeviceLocation(assignment, (IDeviceLocationCreateRequest) request);
+	case StateChange:
+	    return getDeviceEventManagement().addDeviceStateChange(assignment,
+		    (IDeviceStateChangeCreateRequest) request);
+	case StreamData: {
+	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;
+	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getToken(), sdreq.getStreamId());
+	    if (stream != null) {
+		return getDeviceEventManagement().addDeviceStreamData(assignment, stream, sdreq);
+	    } else {
+		throw new SiteWhereException("Stream data references invalid stream: " + sdreq.getStreamId());
+	    }
+	}
+	default:
+	    throw new SiteWhereException("Unknown event type sent for storage: " + request.getEventType().name());
+	}
     }
 
     /**
@@ -106,6 +165,16 @@ public class RegistrationVerificationProcessor extends TenantLifecycleComponent
      */
     protected IDeviceManagement getDeviceManagement() {
 	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+    }
+
+    /**
+     * Get device event management implementation.
+     * 
+     * @return
+     */
+    protected IDeviceEventManagement getDeviceEventManagement() {
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiChannel();
     }
 
     /*

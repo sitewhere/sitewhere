@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.spi.microservice;
 
+import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -33,4 +34,11 @@ public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine 
      * @return
      */
     public DeviceEventManagementGrpc.DeviceEventManagementImplBase getEventManagementImpl();
+
+    /**
+     * Get Kafka producer that sends persisted events to a topic.
+     * 
+     * @return
+     */
+    public IInboundPersistedEventsProducer getInboundPersistedEventsProducer();
 }

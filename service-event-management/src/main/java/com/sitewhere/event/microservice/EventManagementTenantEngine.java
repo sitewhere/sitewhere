@@ -11,6 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.event.grpc.EventManagementImpl;
+import com.sitewhere.event.kafka.InboundPersistedEventsProducer;
+import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
+import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -42,6 +45,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to event management GRPC requests */
     private DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl;
 
+    /** Kafka producer for pushing persisted events to a topic */
+    private IInboundPersistedEventsProducer inboundPersistedEventsProducer;
+
     public EventManagementTenantEngine(IMultitenantMicroservice<IEventManagementTenantEngine> microservice,
 	    ITenant tenant) {
 	super(microservice, tenant);
@@ -57,9 +63,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.eventManagement = (IDeviceEventManagement) getModuleContext()
-		.getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
-	this.eventManagementImpl = new EventManagementImpl(getEventManagement());
+	// Load event management implementation.
+	initializeManagementImplementations();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -70,8 +75,26 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);
 
+	// Initialize inbound persisted events producer.
+	init.addInitializeStep(this, getInboundPersistedEventsProducer(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
+    }
+
+    /**
+     * Initialize event management implementations based on configured model
+     * Spring context.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeManagementImplementations() throws SiteWhereException {
+	IDeviceEventManagement impl = (IDeviceEventManagement) getModuleContext()
+		.getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
+	this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
+
+	this.eventManagementImpl = new EventManagementImpl(getEventManagement());
+	this.inboundPersistedEventsProducer = new InboundPersistedEventsProducer(getMicroservice());
     }
 
     /*
@@ -83,6 +106,14 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start inbound persisted events producer.
+	start.addStartStep(this, getInboundPersistedEventsProducer(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -107,6 +138,14 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop inbound persisted events producer.
+	start.addStopStep(this, getInboundPersistedEventsProducer());
+
+	// Execute shutdown steps.
+	start.execute(monitor);
     }
 
     /*
@@ -137,6 +176,19 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
     public void setEventManagementImpl(DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl) {
 	this.eventManagementImpl = eventManagementImpl;
+    }
+
+    /*
+     * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
+     * getInboundPersistedEventsProducer()
+     */
+    @Override
+    public IInboundPersistedEventsProducer getInboundPersistedEventsProducer() {
+	return inboundPersistedEventsProducer;
+    }
+
+    public void setInboundPersistedEventsProducer(IInboundPersistedEventsProducer inboundPersistedEventsProducer) {
+	this.inboundPersistedEventsProducer = inboundPersistedEventsProducer;
     }
 
     /*

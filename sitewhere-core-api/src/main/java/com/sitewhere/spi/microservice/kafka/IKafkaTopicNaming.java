@@ -58,6 +58,14 @@ public interface IKafkaTopicNaming {
     public String getInboundReprocessEventsTopic(ITenant tenant);
 
     /**
+     * Get topic for events that have been persisted to an event datastore.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getInboundPersistedEventsTopic(ITenant tenant);
+
+    /**
      * Get name fro topic that contains events for devices that were not
      * registered in the system.
      * 

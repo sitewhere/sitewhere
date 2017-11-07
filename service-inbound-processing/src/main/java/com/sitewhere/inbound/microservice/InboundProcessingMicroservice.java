@@ -10,9 +10,12 @@ package com.sitewhere.inbound.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -46,6 +49,12 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 
     /** Device management API channel */
     private IDeviceManagementApiChannel deviceManagementApiChannel;
+
+    /** Device event management GRPC channel */
+    private DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel;
+
+    /** Device event management API channel */
+    private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -83,7 +92,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	    waitForApisAvailable();
 	    getLogger().info("All required APIs detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required APIs not available for web/REST.", e);
+	    getLogger().error("Required APIs not available.", e);
 	}
     }
 
@@ -95,6 +104,8 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     protected void waitForApisAvailable() throws ApiNotAvailableException {
 	getDeviceManagementApiChannel().waitForApiAvailable();
 	getLogger().info("Device management API detected as available.");
+	getDeviceEventManagementApiChannel().waitForApiAvailable();
+	getLogger().info("Device event management API detected as available.");
     }
 
     /*
@@ -113,6 +124,9 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Initialize device management GRPC channel.
 	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
 
+	// Initialize device event management GRPC channel.
+	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -129,6 +143,9 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 
 	// Start device mangement GRPC channel.
 	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
+
+	// Start device event mangement GRPC channel.
+	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -147,6 +164,9 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Stop device mangement GRPC channel.
 	stop.addStopStep(this, getDeviceManagementGrpcChannel());
 
+	// Stop device event mangement GRPC channel.
+	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -163,6 +183,12 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
+
+	// Device event management.
+	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
+		getDeviceEventManagementGrpcChannel());
     }
 
     /*
@@ -180,6 +206,20 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     }
 
     /*
+     * @see
+     * com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
+     * getDeviceEventManagementApiChannel()
+     */
+    @Override
+    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel() {
+	return deviceEventManagementApiChannel;
+    }
+
+    public void setDeviceEventManagementApiChannel(IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
+	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
+    }
+
+    /*
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
@@ -193,5 +233,13 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 
     public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
 	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
+    }
+
+    public DeviceEventManagementGrpcChannel getDeviceEventManagementGrpcChannel() {
+	return deviceEventManagementGrpcChannel;
+    }
+
+    public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
+	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
     }
 }

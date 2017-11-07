@@ -994,8 +994,10 @@ public class DeviceModelConverter {
 	api.setHardwareId(grpc.getHardwareId());
 	api.setSpecificationToken(grpc.getSpecificationToken());
 	api.setSiteToken(grpc.getSiteToken());
-	api.setStatus(grpc.getStatus());
-	api.setComments(grpc.getComments());
+	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
+	api.setAssignmentToken(grpc.hasAssignmentToken() ? grpc.getAssignmentToken().getValue() : null);
+	api.setParentHardwareId(grpc.hasParentHardwareId() ? grpc.getParentHardwareId().getValue() : null);
+	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
 	api.setDeviceElementMappings(
 		DeviceModelConverter.asApiDeviceElementMappings(grpc.getDeviceElementMappingsList()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -1013,11 +1015,20 @@ public class DeviceModelConverter {
     public static GDevice asGrpcDevice(IDevice api) throws SiteWhereException {
 	GDevice.Builder grpc = GDevice.newBuilder();
 	grpc.setHardwareId(api.getHardwareId());
-	grpc.setParentHardwareId(api.getParentHardwareId());
+	if (api.getParentHardwareId() != null) {
+	    grpc.setParentHardwareId(GOptionalString.newBuilder().setValue(api.getParentHardwareId()).build());
+	}
 	grpc.setSpecificationToken(api.getSpecificationToken());
 	grpc.setSiteToken(api.getSiteToken());
-	grpc.setStatus(api.getStatus());
-	grpc.setComments(api.getComments());
+	if (api.getStatus() != null) {
+	    grpc.setStatus(GOptionalString.newBuilder().setValue(api.getStatus()).build());
+	}
+	if (api.getAssignmentToken() != null) {
+	    grpc.setAssignmentToken(GOptionalString.newBuilder().setValue(api.getAssignmentToken()).build());
+	}
+	if (api.getComments() != null) {
+	    grpc.setComments(GOptionalString.newBuilder().setValue(api.getComments()).build());
+	}
 	grpc.addAllDeviceElementMappings(
 		DeviceModelConverter.asGrpcDeviceElementMappings(api.getDeviceElementMappings()));
 	if (api.getMetadata() != null) {
