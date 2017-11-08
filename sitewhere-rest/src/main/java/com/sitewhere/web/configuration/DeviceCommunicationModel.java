@@ -757,7 +757,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 			.description("Indicates if a site should automatically be assigned if no site token is "
 				+ "passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken", AttributeType.String)
+	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignToken", AttributeType.String)
 		.description("Site token used for registering new devices if auto-assign is enabled "
 			+ "and no site token is passed.")
 		.build()));

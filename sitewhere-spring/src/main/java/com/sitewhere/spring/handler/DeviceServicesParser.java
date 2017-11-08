@@ -90,7 +90,7 @@ public class DeviceServicesParser {
 
 	Attr autoAssignToken = element.getAttributeNode("autoAssignToken");
 	if (autoAssignToken != null) {
-	    manager.addPropertyValue("autoAssignToken", autoAssignToken.getValue());
+	    manager.addPropertyValue("autoAssignSiteToken", autoAssignToken.getValue());
 	}
 
 	return manager.getBeanDefinition();
