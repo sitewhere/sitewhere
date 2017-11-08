@@ -236,8 +236,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	builder.attribute((new AttributeNode.Builder("Use clean session", "cleanSession", AttributeType.Boolean)
 		.description("Indicates if 'clean session' flag should be set.").defaultValue("true").build()));
 	builder.attribute((new AttributeNode.Builder("Quality of service", "qos", AttributeType.String)
-		.description("Quality of service for connection").defaultValue("AT_MOST_ONCE").choice("AT_MOST_ONCE")
-		.choice("AT_LEAST_ONCE").choice("EXACTLY_ONCE").build()));
+		.description("Quality of service for connection").defaultValue("AT_LEAST_ONCE").choice("AT_LEAST_ONCE")
+		.choice("AT_MOST_ONCE").choice("EXACTLY_ONCE").build()));
     }
 
     /**
@@ -757,7 +757,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 			.description("Indicates if a site should automatically be assigned if no site token is "
 				+ "passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignToken", AttributeType.String)
+	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken", AttributeType.String)
 		.description("Site token used for registering new devices if auto-assign is enabled "
 			+ "and no site token is passed.")
 		.build()));

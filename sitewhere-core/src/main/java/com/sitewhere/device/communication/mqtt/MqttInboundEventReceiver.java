@@ -8,13 +8,19 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.fusesource.hawtdispatch.ShutdownException;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.FutureConnection;
+import org.fusesource.mqtt.client.Message;
+import org.fusesource.mqtt.client.QoS;
+import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.SiteWhereException;
@@ -44,6 +50,12 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Topic name */
     private String topic = DEFAULT_TOPIC;
 
+    /** Shared MQTT connection */
+    private FutureConnection connection;
+
+    /** Used to execute MQTT subscribe in separate thread */
+    private ExecutorService executor;
+
     public MqttInboundEventReceiver() {
 	super(LifecycleComponentType.InboundEventReceiver);
     }
@@ -58,46 +70,25 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	LOGGER.info("Receiver connected to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+
+	this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	LOGGER.info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
+	connection = getConnection();
+	LOGGER.info("Receiver connected to MQTT broker.");
 
 	// Subscribe to chosen topic.
+	Topic[] topics = { new Topic(getTopic(), QoS.valueOf(getQos())) };
 	try {
-	    getMqttClient().setCallback(new MqttCallback() {
+	    Future<byte[]> future = connection.subscribe(topics);
+	    future.await();
 
-		/*
-		 * @see
-		 * org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(
-		 * java.lang.String, org.eclipse.paho.client.mqttv3.MqttMessage)
-		 */
-		@Override
-		public void messageArrived(String topic, MqttMessage message) throws Exception {
-		    EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(
-		 * org.eclipse.paho.client.mqttv3.IMqttDeliveryToken)
-		 */
-		@Override
-		public void deliveryComplete(IMqttDeliveryToken token) {
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(
-		 * java.lang.Throwable)
-		 */
-		@Override
-		public void connectionLost(Throwable cause) {
-		    LOGGER.info("Detected lost connection.", cause);
-		}
-	    });
-	    getMqttClient().subscribe(getTopic(), getQos());
 	    LOGGER.info("Subscribed to events on MQTT topic: " + getTopic() + " with QOS " + getQos());
-	} catch (MqttException e) {
+	} catch (Exception e) {
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}
+
+	// Handle message processing in separate thread.
+	executor.execute(new MqttSubscriptionProcessor());
     }
 
     /*
@@ -121,6 +112,18 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	return getProtocol() + "://" + getHostname() + ":" + getPort() + "/" + getTopic();
     }
 
+    /** Used for naming consumer threads */
+    private class SubscribersThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
+		    + counter.incrementAndGet());
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -132,6 +135,32 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
     }
 
+    /**
+     * Pulls messages from the MQTT topic and puts them on the queue for this
+     * receiver.
+     * 
+     * @author Derek
+     */
+    private class MqttSubscriptionProcessor implements Runnable {
+
+	@Override
+	public void run() {
+	    LOGGER.info("Started MQTT subscription processing thread.");
+	    while (true) {
+		try {
+		    Future<Message> future = connection.receive();
+		    Message message = future.await();
+		    message.ack();
+		    EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
+		} catch (InterruptedException e) {
+		    break;
+		} catch (Throwable e) {
+		    LOGGER.error(e);
+		}
+	    }
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -141,10 +170,16 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if ((getMqttClient() != null) && (getMqttClient().isConnected())) {
+	if (executor != null) {
+	    executor.shutdownNow();
+	}
+	if (connection != null) {
 	    try {
-		getMqttClient().disconnect();
-	    } catch (MqttException e) {
+		connection.disconnect().await();
+		connection.kill().await();
+	    } catch (ShutdownException e) {
+		LOGGER.info("Dispatcher has already been shut down.");
+	    } catch (Exception e) {
 		LOGGER.error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}

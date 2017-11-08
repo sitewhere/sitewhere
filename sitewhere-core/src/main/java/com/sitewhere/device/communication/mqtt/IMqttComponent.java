@@ -96,5 +96,5 @@ public interface IMqttComponent {
      * 
      * @return
      */
-    public int getQos();
+    public String getQos();
 }

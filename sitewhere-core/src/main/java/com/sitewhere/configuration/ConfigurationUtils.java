@@ -7,10 +7,10 @@
  */
 package com.sitewhere.configuration;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
