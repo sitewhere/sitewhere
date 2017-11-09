@@ -63,7 +63,6 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	api.setEvent(event);
 	GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
 
-	getLogger().info("Event created via API. Forwarding as persisted event.");
 	getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getDeviceHardwareId(),
 		KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
 	return event;

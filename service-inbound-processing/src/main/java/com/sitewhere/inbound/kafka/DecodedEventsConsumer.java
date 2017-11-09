@@ -47,7 +47,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
     /** Suffix for group id */
-    private static String GROUP_ID_SUFFIX = ".decoded-event-consumers";
+    private static String GROUP_ID_SUFFIX = "decoded-event-consumers";
 
     /** Number of threads processing inbound events */
     private static final int CONCURRENT_EVENT_PROCESSING_THREADS = 10;
