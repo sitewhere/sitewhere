@@ -71,7 +71,7 @@ public class MqttTests {
     @Test
     public void sendLocationOverMqtt() throws SiteWhereException {
 	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("3cad8d84-faca-4a4e-86f3-9a900e6c21c9");
+	request.setHardwareId("6400fcad-b11b-490b-bd96-0b270be27ccf");
 	request.setType(Type.DeviceLocation);
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setEventDate(new Date());

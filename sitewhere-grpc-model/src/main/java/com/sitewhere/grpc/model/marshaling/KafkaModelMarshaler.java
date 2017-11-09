@@ -140,13 +140,13 @@ public class KafkaModelMarshaler {
     }
 
     /**
-     * Parse message that contains an persisted event payload.
+     * Parse message that contains a persisted event payload.
      * 
      * @param payload
      * @return
      * @throws SiteWhereException
      */
-    public static GPersistedEventPayload parseInboundPersistedPayloadMessage(byte[] payload) throws SiteWhereException {
+    public static GPersistedEventPayload parsePersistedEventPayloadMessage(byte[] payload) throws SiteWhereException {
 	try {
 	    return GPersistedEventPayload.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {

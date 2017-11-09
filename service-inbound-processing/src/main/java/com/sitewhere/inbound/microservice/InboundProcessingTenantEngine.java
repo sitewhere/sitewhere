@@ -11,9 +11,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.inbound.kafka.DecodedEventsConsumer;
+import com.sitewhere.inbound.kafka.PersistedEventsConsumer;
 import com.sitewhere.inbound.kafka.UnregisteredDeviceEventsProducer;
 import com.sitewhere.inbound.processing.RegistrationVerificationProcessor;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredDeviceEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -48,6 +50,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     /** Kafka producer for events sent to unregistered devices */
     private IUnregisteredDeviceEventsProducer unregisteredDeviceEventsProducer;
 
+    /** Kafka consumer for events persisted via event management APIs */
+    private IPersistedEventsConsumer persistedEventsConsumer;
+
     public InboundProcessingTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
     }
@@ -65,6 +70,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	this.decodedEventsConsumer = new DecodedEventsConsumer(ipMicroservice, this);
 	this.registrationVerificationProcessor = new RegistrationVerificationProcessor(this);
 	this.unregisteredDeviceEventsProducer = new UnregisteredDeviceEventsProducer(ipMicroservice);
+	this.persistedEventsConsumer = new PersistedEventsConsumer(ipMicroservice, this);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -77,6 +83,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
 	// Initialize unregistered device events producer.
 	init.addInitializeStep(this, getUnregisteredDeviceEventsProducer(), true);
+
+	// Initialize persisted events consumer.
+	init.addInitializeStep(this, getPersistedEventsConsumer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -100,6 +109,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
 	// Start decoded events consumer.
 	start.addStartStep(this, getDecodedEventsConsumer(), true);
+
+	// Start persisted events consumer.
+	start.addStartStep(this, getPersistedEventsConsumer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -134,6 +146,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
 	// Stop unregistered device events producer.
 	start.addStopStep(this, getUnregisteredDeviceEventsProducer());
+
+	// Stop persisted events consumer.
+	start.addStopStep(this, getPersistedEventsConsumer());
 
 	// Execute shutdown steps.
 	start.execute(monitor);
@@ -181,6 +196,20 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     public void setUnregisteredDeviceEventsProducer(
 	    IUnregisteredDeviceEventsProducer unregisteredDeviceEventsProducer) {
 	this.unregisteredDeviceEventsProducer = unregisteredDeviceEventsProducer;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
+     * getPersistedEventsConsumer()
+     */
+    @Override
+    public IPersistedEventsConsumer getPersistedEventsConsumer() {
+	return persistedEventsConsumer;
+    }
+
+    public void setPersistedEventsConsumer(IPersistedEventsConsumer persistedEventsConsumer) {
+	this.persistedEventsConsumer = persistedEventsConsumer;
     }
 
     /*

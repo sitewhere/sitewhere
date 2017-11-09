@@ -50,7 +50,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     private static String GROUP_ID_SUFFIX = ".decoded-event-consumers";
 
     /** Number of threads processing inbound events */
-    private static final int CONCURRENT_INBOUND_EVENT_PROCESSING_THREADS = 10;
+    private static final int CONCURRENT_EVENT_PROCESSING_THREADS = 10;
 
     /** Executor */
     private ExecutorService executor;
@@ -75,7 +75,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInstancePrefix() + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenant()) + GROUP_ID_SUFFIX;
     }
 
     /*
@@ -100,7 +100,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	executor = Executors.newFixedThreadPool(CONCURRENT_INBOUND_EVENT_PROCESSING_THREADS,
+	executor = Executors.newFixedThreadPool(CONCURRENT_EVENT_PROCESSING_THREADS,
 		new InboundEventProcessingThreadFactory());
     }
 
@@ -137,10 +137,10 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     }
 
     /**
-     * Processor that unmarshals a decoded
+     * Processor that unmarshals a decoded event and forwards it for
+     * registration verification.
      * 
      * @author Derek
-     *
      */
     protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 
@@ -161,7 +161,10 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	    try {
 		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
 		InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(grpc);
-		getLogger().info("Received payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
+		if (getLogger().isDebugEnabled()) {
+		    getLogger().debug(
+			    "Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
+		}
 		((IInboundProcessingTenantEngine) getTenantEngine()).getRegistrationVerificationProcessor()
 			.process(grpc);
 	    } catch (SiteWhereException e) {

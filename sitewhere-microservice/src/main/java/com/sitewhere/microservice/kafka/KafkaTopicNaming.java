@@ -65,22 +65,22 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
 	return BASE_NAME + SEPARATOR + getInstanceSettings().getInstanceId();
     }
 
-    /**
-     * Get prefix used for global topics.
-     * 
-     * @return
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getGlobalPrefix()
      */
-    protected String getGlobalPrefix() {
+    @Override
+    public String getGlobalPrefix() {
 	return getInstancePrefix() + SEPARATOR + GLOBAL_INDICATOR + SEPARATOR;
     }
 
-    /**
-     * Get tenant-specific topic prefix.
-     * 
-     * @param tenant
-     * @return
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getTenantPrefix(
+     * com.sitewhere.spi.tenant.ITenant)
      */
-    protected String getTenantPrefix(ITenant tenant) {
+    @Override
+    public String getTenantPrefix(ITenant tenant) {
 	return getInstancePrefix() + SEPARATOR + TENANT_INDICATOR + SEPARATOR + tenant.getId() + SEPARATOR;
     }
 

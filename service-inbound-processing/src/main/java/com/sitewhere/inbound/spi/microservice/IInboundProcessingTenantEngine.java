@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredDeviceEventsProducer;
 import com.sitewhere.inbound.spi.processing.IRegistrationVerificationProcessor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -42,4 +43,12 @@ public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngin
      * @return
      */
     public IUnregisteredDeviceEventsProducer getUnregisteredDeviceEventsProducer();
+
+    /**
+     * Get Kafka consumer that receives events that have been persisted via the
+     * event management APIs.
+     * 
+     * @return
+     */
+    public IPersistedEventsConsumer getPersistedEventsConsumer();
 }

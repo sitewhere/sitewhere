@@ -24,6 +24,21 @@ public interface IKafkaTopicNaming {
     public String getInstancePrefix();
 
     /**
+     * Get prefix used for global topics.
+     * 
+     * @return
+     */
+    public String getGlobalPrefix();
+
+    /**
+     * Get prefix used for tenant-specific topics.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getTenantPrefix(ITenant tenant);
+
+    /**
      * Get topic name for tracking tenant model updates.
      * 
      * @return
