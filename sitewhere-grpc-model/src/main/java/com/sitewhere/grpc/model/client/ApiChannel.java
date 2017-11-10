@@ -44,7 +44,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
      */
     @Override
     public void waitForApiAvailable() throws ApiNotAvailableException {
-	waitForApiAvailable(60, TimeUnit.SECONDS);
+	waitForApiAvailable(5, TimeUnit.MINUTES);
     }
 
     /*
