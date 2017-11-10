@@ -10,9 +10,9 @@ package com.sitewhere.web.configuration;
 import com.sitewhere.spring.handler.IEventProcessingParser;
 import com.sitewhere.spring.handler.IInboundProcessingChainParser;
 import com.sitewhere.spring.handler.IInboundProcessingStrategyParser;
-import com.sitewhere.spring.handler.IOutboundProcessingChainParser;
 import com.sitewhere.spring.handler.IOutboundProcessingStrategyParser;
 import com.sitewhere.spring.handler.ITenantConfigurationParser;
+import com.sitewhere.spring.parser.IOutboundProcessingParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
@@ -47,7 +47,6 @@ public class EventProcessingModel extends ConfigurationModel {
 	addElement(createAmazonSqsEventProcessorElement());
 	addElement(createInitialStateEventProcessorElement());
 	addElement(createDweetEventProcessorElement());
-	addElement(createWso2CepEventProcessorElement());
 	addElement(createGroovyEventProcessorElement());
 
 	// Zone test elements.
@@ -58,12 +57,6 @@ public class EventProcessingModel extends ConfigurationModel {
 	addElement(createGroovyRouteBuilderElement());
 	addElement(createMqttEventProcessorElement());
 	addElement(createRabbitMqEventProcessorElement());
-
-	// Siddhi elements.
-	addElement(createStreamDebuggerElement());
-	addElement(createGroovyStreamProcessorElement());
-	addElement(createSiddhiQueryElement());
-	addElement(createSiddhiEventProcessorElement());
 
 	// Outbound processor filters.
 	addElement(createFilterCriteriaElement());
@@ -121,9 +114,8 @@ public class EventProcessingModel extends ConfigurationModel {
 		IInboundProcessingChainParser.Elements.InboundEventProcessor.getLocalName(), "sign-in",
 		ElementRole.InboundProcessingChain_EventProcessor);
 	builder.description("Configures an inbound event processor that is declared in an external Spring bean.");
-	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String)
-		.description(
-			"Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs")
+	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
+		"Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs")
 		.build()));
 	return builder.build();
     }
@@ -217,12 +209,11 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createOutboundProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Outbound Processor Bean Reference",
-		IOutboundProcessingChainParser.Elements.OutboundEventProcessor.getLocalName(), "sign-out",
+		IOutboundProcessingParser.Elements.OutboundEventProcessor.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_EventProcessor);
 	builder.description("Configures an outbound event processor that is declared in an external Spring bean.");
-	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String)
-		.description(
-			"Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs")
+	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
+		"Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs")
 		.build()));
 	return builder.build();
     }
@@ -234,16 +225,15 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createCommandDeliveryEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Command Delivery Processor",
-		IOutboundProcessingChainParser.Elements.CommandDeliveryEventProcessor.getLocalName(), "bolt",
+		IOutboundProcessingParser.Elements.CommandDeliveryEventProcessor.getLocalName(), "bolt",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Hands off outbound device command events to the device communication subsystem. "
 		+ "If this event processor is not configured, no commands will be sent to devices.");
 	builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
-	builder.attribute(
-		(new AttributeNode.Builder("Number of processing threads", "numThreads", AttributeType.Integer)
-			.description(
-				"Sets the number of threads used to process provisioning commands. Increase for situations "
-					+ "where the load of device commands is high.")
+	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
+		AttributeType.Integer).description(
+			"Sets the number of threads used to process provisioning commands. Increase for situations "
+				+ "where the load of device commands is high.")
 			.defaultValue("5").build()));
 	return builder.build();
     }
@@ -279,70 +269,10 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createZoneTestEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Zone Test Processor",
-		IOutboundProcessingChainParser.Elements.ZoneTestEventProcessor.getLocalName(), "map-pin",
+		IOutboundProcessingParser.Elements.ZoneTestEventProcessor.getLocalName(), "map-pin",
 		ElementRole.OutboundProcessingChain_ZoneTestEventProcessor);
 	builder.description("Allows alerts to be generated if location events are inside "
 		+ "or outside of a zone based on criteria.");
-	return builder.build();
-    }
-
-    /**
-     * Create a Siddhi query element.
-     * 
-     * @return
-     */
-    protected ElementNode createStreamDebuggerElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Stream Debugger", "stream-debugger", "cogs",
-		ElementRole.OutboundProcessingChain_SiddhiCallback);
-	builder.description("Debugs Siddhi streams by printing events to the log.");
-	builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String)
-		.description("Name of stream for which a callback will be registered.").makeRequired().makeIndex()
-		.build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a Siddhi query element.
-     * 
-     * @return
-     */
-    protected ElementNode createGroovyStreamProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Groovy Stream Processor", "groovy-stream-processor",
-		"cogs", ElementRole.OutboundProcessingChain_SiddhiCallback);
-	builder.description("Processes events from a Siddhi stream using a Groovy script.");
-	builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String)
-		.description("Name of stream for which a callback will be registered.").makeRequired().makeIndex()
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to Groovy script used for processing each event.").build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a Siddhi query element.
-     * 
-     * @return
-     */
-    protected ElementNode createSiddhiQueryElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Siddhi Query", "siddhi-query", "cogs",
-		ElementRole.OutboundProcessingChain_SiddhiQuery);
-	builder.description("A Siddhi query that executes selector logic.");
-	builder.attribute((new AttributeNode.Builder("Selector", "selector", AttributeType.String)
-		.description("Selector expression that contains processing logic.").build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a Siddhi event processor.
-     * 
-     * @return
-     */
-    protected ElementNode createSiddhiEventProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Siddhi Processor",
-		IOutboundProcessingChainParser.Elements.SiddhiEventProcessor.getLocalName(), "cogs",
-		ElementRole.OutboundProcessingChain_SiddhiEventProcessor);
-	builder.description("Processes events through an embedded Siddhi instance to allow complex event "
-		+ "processing (CEP) funcitonality.");
 	return builder.build();
     }
 
@@ -353,7 +283,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyRouteBuilderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Route Builder",
-		IOutboundProcessingChainParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
+		IOutboundProcessingParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_RouteBuilder);
 	builder.description(
 		"Route builder which executes a Groovy script to choose routes where events will be delivered.");
@@ -369,7 +299,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createMqttEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Event Processor",
-		IOutboundProcessingChainParser.Elements.MqttEventProcessor.getLocalName(), "sign-out",
+		IOutboundProcessingParser.Elements.MqttEventProcessor.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_MqttEventProcessor);
 	builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
@@ -387,7 +317,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createRabbitMqEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Event Processor",
-		IOutboundProcessingChainParser.Elements.RabbitMqEventProcessor.getLocalName(), "sign-out",
+		IOutboundProcessingParser.Elements.RabbitMqEventProcessor.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_RabbitMqEventProcessor);
 	builder.description("Allows events to be forwarded to any number of RabbitMQ exchanges based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the exchange "
@@ -407,7 +337,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createHazelcastEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Processor",
-		IOutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(), "sign-out",
+		IOutboundProcessingParser.Elements.HazelcastEventProcessor.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Forwards outbound events to Hazelcast topics for processing by external consumers.");
 	return builder.build();
@@ -420,7 +350,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createSolrEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Apache Solr Processor",
-		IOutboundProcessingChainParser.Elements.SolrEventProcessor.getLocalName(), "sign-out",
+		IOutboundProcessingParser.Elements.SolrEventProcessor.getLocalName(), "sign-out",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine. This "
 		+ "event processor relies on the global Solr properties to determine the Solr instance the "
@@ -435,7 +365,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createAzureEventHubEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Azure EventHub Processor",
-		IOutboundProcessingChainParser.Elements.AzureEventHubEventProcessor.getLocalName(), "cloud",
+		IOutboundProcessingParser.Elements.AzureEventHubEventProcessor.getLocalName(), "cloud",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Forwards outbound events to a Microsoft Azure EventHub for further processing.");
 	builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String)
@@ -457,7 +387,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createAmazonSqsEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Amazon SQS Processor",
-		IOutboundProcessingChainParser.Elements.AmazonSqsEventProcessor.getLocalName(), "cloud",
+		IOutboundProcessingParser.Elements.AmazonSqsEventProcessor.getLocalName(), "cloud",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Forwards outbound events to an Amazon SQS queue for further processing.");
 	builder.attribute((new AttributeNode.Builder("Access key", "accessKey", AttributeType.String)
@@ -476,7 +406,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createInitialStateEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("InitialState Processor",
-		IOutboundProcessingChainParser.Elements.InitialStateEventProcessor.getLocalName(), "cloud",
+		IOutboundProcessingParser.Elements.InitialStateEventProcessor.getLocalName(), "cloud",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Forwards outbound events to InitialState.com for advanced visualization.");
 	builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey", AttributeType.String)
@@ -493,32 +423,11 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createDweetEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Dweet.io Processor",
-		IOutboundProcessingChainParser.Elements.DweetIoEventProcessor.getLocalName(), "cloud",
+		IOutboundProcessingParser.Elements.DweetIoEventProcessor.getLocalName(), "cloud",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description(
 		"Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
 			+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
-	return builder.build();
-    }
-
-    /**
-     * Create a WSO2 CEP event processor.
-     * 
-     * @return
-     */
-    protected ElementNode createWso2CepEventProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("WSO2 CEP Processor",
-		IOutboundProcessingChainParser.Elements.Wso2CepEventProcessor.getLocalName(), "sign-out",
-		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
-	builder.description("Forwards events to streams on an external WSO2 CEP instance for processing.");
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
-		.description("Hostname for external WSO2 CEP instance.").build()));
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port number for external WSO2 CEP instance.").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Username for external WSO2 CEP instance.").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Password for external WSO2 CEP instance.").build()));
 	return builder.build();
     }
 
@@ -529,7 +438,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Processor",
-		IOutboundProcessingChainParser.Elements.GroovyEventProcessor.getLocalName(), "cogs",
+		IOutboundProcessingParser.Elements.GroovyEventProcessor.getLocalName(), "cogs",
 		ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 	builder.description("Delegates event processing to a Groovy script which can execute "
 		+ "conditional logic, create new events, or carry out other tasks.");
@@ -559,7 +468,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createSiteFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Site Filter",
-		IOutboundProcessingChainParser.Filters.SiteFilter.getLocalName(), "filter",
+		IOutboundProcessingParser.Filters.SiteFilter.getLocalName(), "filter",
 		ElementRole.OutboundProcessingChain_OutboundFilters);
 	builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
 	builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference)
@@ -577,16 +486,15 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createSpecificationFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Filter",
-		IOutboundProcessingChainParser.Filters.SpecificationFilter.getLocalName(), "filter",
+		IOutboundProcessingParser.Filters.SpecificationFilter.getLocalName(), "filter",
 		ElementRole.OutboundProcessingChain_OutboundFilters);
 	builder.description("Allows events for devices using a given specification to be included or "
 		+ "excluded for an outbound processor.");
 	builder.attribute(
 		(new AttributeNode.Builder("Specification", "specification", AttributeType.SpecificationReference)
 			.description("Specification filter applies to.").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String)
-		.description(
-			"Indicates whether events from the specification should be included or excluded from processing.")
+	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
+		"Indicates whether events from the specification should be included or excluded from processing.")
 		.choice("include").choice("exclude").defaultValue("include").build()));
 	return builder.build();
     }
@@ -598,7 +506,7 @@ public class EventProcessingModel extends ConfigurationModel {
      */
     protected ElementNode createGroovyFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Filter",
-		IOutboundProcessingChainParser.Filters.GroovyFilter.getLocalName(), "filter",
+		IOutboundProcessingParser.Filters.GroovyFilter.getLocalName(), "filter",
 		ElementRole.OutboundProcessingChain_OutboundFilters);
 	builder.description("Allows events to be filtered based on the return value of a Groovy script. "
 		+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
@@ -639,8 +547,7 @@ public class EventProcessingModel extends ConfigurationModel {
     }
 
     /**
-     * Create element configuration for blocking queue inbound processing
-     * strategy.
+     * Create element configuration for blocking queue inbound processing strategy.
      * 
      * @return
      */
@@ -707,8 +614,7 @@ public class EventProcessingModel extends ConfigurationModel {
     }
 
     /**
-     * Create element configuration for blocking queue outbound processing
-     * strategy.
+     * Create element configuration for blocking queue outbound processing strategy.
      * 
      * @return
      */

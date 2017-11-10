@@ -8,7 +8,7 @@
 package com.sitewhere.spi.microservice.spring;
 
 /**
- * Spring bean names for device management configuration components.
+ * Spring bean names for event sources configuration components.
  * 
  * @author Derek
  */

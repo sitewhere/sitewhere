@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
-
-	<xsd:import namespace="http://www.springframework.org/schema/beans"
-		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
 
 	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
 	<xsd:element name="abstract-datastore" abstract="true"
@@ -51,7 +48,8 @@
 				<xsd:attribute name="id" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique id for alternate datastore configuration.
+							Unique id for alternate datastore
+							configuration.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -170,8 +168,7 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="substitutableInt"
-			use="optional">
+		<xsd:attribute name="port" type="substitutableInt" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker port.

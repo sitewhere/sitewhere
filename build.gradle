@@ -29,6 +29,7 @@ ext['netty.version'] = '4.1.14.Final'
 ext['groovy.version'] = '2.4.12'
 ext['mongodb.version'] = '3.4.2'
 ext['solr.version'] = '6.4.0'
+ext['siddhi.version'] = '3.1.2'
 
 apply plugin: 'distribution'
 
@@ -40,10 +41,10 @@ allprojects {
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
-        maven { url "http://dist.wso2.org/maven2/" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
         maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
     	maven { url "https://repo.spring.io/libs-milestone" }
+        maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
     }
 }
 

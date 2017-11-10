@@ -9,10 +9,13 @@ package com.sitewhere.outbound.spring;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -22,6 +25,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.device.event.processor.filter.FilterOperation;
 import com.sitewhere.device.event.processor.filter.SiteFilter;
 import com.sitewhere.device.event.processor.filter.SpecificationFilter;
+import com.sitewhere.outbound.OutboundProcessorsManager;
 import com.sitewhere.outbound.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.outbound.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.outbound.command.DeviceCommandEventProcessor;
@@ -36,41 +40,40 @@ import com.sitewhere.outbound.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.outbound.initialstate.InitialStateEventProcessor;
 import com.sitewhere.outbound.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.outbound.rabbitmq.RabbitMqOutboundEventProcessor;
-import com.sitewhere.outbound.siddhi.GroovyStreamProcessor;
-import com.sitewhere.outbound.siddhi.SiddhiEventProcessor;
-import com.sitewhere.outbound.siddhi.SiddhiQuery;
-import com.sitewhere.outbound.siddhi.StreamDebugger;
-import com.sitewhere.outbound.siddhi.Wso2CepEventProcessor;
 import com.sitewhere.outbound.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.outbound.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.geospatial.ZoneContainment;
+import com.sitewhere.spi.microservice.spring.OutboundProcessingBeans;
 import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.handler.IOutboundProcessingChainParser.Elements;
-import com.sitewhere.spring.handler.IOutboundProcessingChainParser.Filters;
-import com.sitewhere.spring.handler.IOutboundProcessingChainParser.Multicasters;
-import com.sitewhere.spring.handler.IOutboundProcessingChainParser.RouteBuilders;
-import com.sitewhere.spring.handler.SiteWhereBeanDefinitionParser;
+import com.sitewhere.spring.parser.IOutboundProcessingParser.Elements;
+import com.sitewhere.spring.parser.IOutboundProcessingParser.Filters;
+import com.sitewhere.spring.parser.IOutboundProcessingParser.Multicasters;
+import com.sitewhere.spring.parser.IOutboundProcessingParser.RouteBuilders;
 
 /**
- * Parses configuration data from SiteWhere outbound processing chain section.
+ * Parses elements related to outbound event processing.
  * 
  * @author Derek
  */
-public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser {
+public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
 
-    /**
-     * Parse elements for the outbound processing chain.
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /*
+     * (non-Javadoc)
      * 
-     * @param element
-     * @param context
-     * @return
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
      */
-    public AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	BeanDefinitionBuilder chain = getBuilderFor(String.class);
-	List<Element> dsChildren = DomUtils.getChildElements(element);
-	List<Object> processors = new ManagedList<Object>();
-	for (Element child : dsChildren) {
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	ManagedList<Object> processors = new ManagedList<Object>();
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
 	    Elements type = Elements.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		throw new RuntimeException("Unknown inbound processing chain element: " + child.getLocalName());
@@ -124,22 +127,20 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
 		processors.add(parseCommandDeliveryEventProcessor(child, context));
 		break;
 	    }
-	    case SiddhiEventProcessor: {
-		processors.add(parseSiddhiEventProcessor(child, context));
-		break;
-	    }
-	    case Wso2CepEventProcessor: {
-		processors.add(parseWso2CepEventProcessor(child, context));
-		break;
-	    }
 	    case GroovyEventProcessor: {
 		processors.add(parseGroovyEventProcessor(child, context));
 		break;
 	    }
 	    }
 	}
-	chain.addPropertyValue("processors", processors);
-	return chain.getBeanDefinition();
+
+	// Build outbound event processors manager and inject the list of beans.
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(OutboundProcessorsManager.class);
+	manager.addPropertyValue("outboundEventProcessors", processors);
+	context.getRegistry().registerBeanDefinition(OutboundProcessingBeans.BEAN_OUTBOUND_PROCESSORS_MANAGER,
+		manager.getBeanDefinition());
+
+	return null;
     }
 
     /**
@@ -158,8 +159,8 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
     }
 
     /**
-     * Parse configuration for event processor that tests location events
-     * against zone boundaries for firing alert conditions.
+     * Parse configuration for event processor that tests location events against
+     * zone boundaries for firing alert conditions.
      * 
      * @param element
      * @param context
@@ -240,7 +241,7 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
      * @return
      */
     protected AbstractBeanDefinition parseMqttEventProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = getBuilderFor(MqttOutboundEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
 
 	Attr protocol = element.getAttributeNode("protocol");
 	if (protocol != null) {
@@ -297,8 +298,8 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
     }
 
     /**
-     * Parse configuration for event processor that delivers events to a
-     * RabbitMQ exchange.
+     * Parse configuration for event processor that delivers events to a RabbitMQ
+     * exchange.
      * 
      * @param element
      * @param context
@@ -478,8 +479,8 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
     }
 
     /**
-     * Parse configuration for event processor that routes commands to
-     * communication subsystem.
+     * Parse configuration for event processor that routes commands to communication
+     * subsystem.
      * 
      * @param element
      * @param context
@@ -495,40 +496,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
 
 	// Parse nested filters.
 	processor.addPropertyValue("filters", parseFilters(element, context));
-
-	return processor.getBeanDefinition();
-    }
-
-    /**
-     * Parse configuration for event processor that publishes SiteWhere events
-     * to an external WSO2 CEP engine.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseWso2CepEventProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(Wso2CepEventProcessor.class);
-
-	Attr hostname = element.getAttributeNode("hostname");
-	if (hostname != null) {
-	    processor.addPropertyValue("siddhiHost", hostname.getValue());
-	}
-
-	Attr port = element.getAttributeNode("port");
-	if (port != null) {
-	    processor.addPropertyValue("siddhiPort", port.getValue());
-	}
-
-	Attr username = element.getAttributeNode("username");
-	if (username != null) {
-	    processor.addPropertyValue("siddhiUsername", username.getValue());
-	}
-
-	Attr password = element.getAttributeNode("password");
-	if (password != null) {
-	    processor.addPropertyValue("siddhiPassword", password.getValue());
-	}
 
 	return processor.getBeanDefinition();
     }
@@ -550,109 +517,6 @@ public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser
 	}
 
 	return processor.getBeanDefinition();
-    }
-
-    /**
-     * Parse configuration for event processor that uses Siddhi to perform
-     * complex event processing.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseSiddhiEventProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SiddhiEventProcessor.class);
-
-	List<Object> queries = new ManagedList<Object>();
-	List<Element> queryElements = DomUtils.getChildElementsByTagName(element, "siddhi-query");
-	for (Element queryElement : queryElements) {
-	    queries.add(parseSiddhiQuery(queryElement, context));
-	}
-	processor.addPropertyValue("queries", queries);
-
-	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
-
-	return processor.getBeanDefinition();
-    }
-
-    /**
-     * Parse a single {@link SiddhiQuery}.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseSiddhiQuery(Element element, ParserContext context) {
-	BeanDefinitionBuilder query = BeanDefinitionBuilder.rootBeanDefinition(SiddhiQuery.class);
-
-	Attr selector = element.getAttributeNode("selector");
-	if (selector == null) {
-	    throw new RuntimeException("Selector attribute is required for siddhi-query.");
-	}
-	query.addPropertyValue("selector", selector.getValue());
-
-	List<Object> callbacks = new ManagedList<Object>();
-
-	// Process stream debugger callbacks.
-	List<Element> debuggerElements = DomUtils.getChildElementsByTagName(element, "stream-debugger");
-	for (Element debuggerElement : debuggerElements) {
-	    callbacks.add(parseSiddhiStreamDebugger(debuggerElement, context));
-	}
-
-	// Process Groovy stream processor callbacks.
-	List<Element> groovyElements = DomUtils.getChildElementsByTagName(element, "groovy-stream-processor");
-	for (Element groovyElement : groovyElements) {
-	    callbacks.add(parseSiddhiGroovyStreamProcessor(groovyElement, context));
-	}
-
-	query.addPropertyValue("callbacks", callbacks);
-
-	return query.getBeanDefinition();
-    }
-
-    /**
-     * Parse a Siddhi {@link StreamDebugger} element.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseSiddhiStreamDebugger(Element element, ParserContext context) {
-	BeanDefinitionBuilder debugger = BeanDefinitionBuilder.rootBeanDefinition(StreamDebugger.class);
-
-	Attr stream = element.getAttributeNode("stream");
-	if (stream == null) {
-	    throw new RuntimeException("Stream attribute is required for debug-callback.");
-	}
-	debugger.addPropertyValue("streamId", stream.getValue());
-
-	return debugger.getBeanDefinition();
-    }
-
-    /**
-     * Parse a Siddhi {@link GroovyStreamProcessor} element.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseSiddhiGroovyStreamProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder groovy = BeanDefinitionBuilder.rootBeanDefinition(GroovyStreamProcessor.class);
-
-	Attr stream = element.getAttributeNode("stream");
-	if (stream == null) {
-	    throw new RuntimeException("Stream attribute is required for groovy-stream-processor.");
-	}
-	groovy.addPropertyValue("streamId", stream.getValue());
-
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("The scriptPath attribute is required for groovy-stream-processor.");
-	}
-	groovy.addPropertyValue("scriptPath", scriptPath.getValue());
-
-	return groovy.getBeanDefinition();
     }
 
     /**

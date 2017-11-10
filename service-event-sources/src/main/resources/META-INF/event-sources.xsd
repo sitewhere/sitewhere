@@ -24,7 +24,8 @@
 	<!-- Contains information about inbound event sources -->
 	<xsd:complexType name="eventSourcesType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-event-source" maxOccurs="unbounded" />
+			<xsd:element ref="abstract-event-source" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 

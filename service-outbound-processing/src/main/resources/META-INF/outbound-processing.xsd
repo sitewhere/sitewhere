@@ -1,0 +1,854 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/outbound-processing"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/outbound-processing"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import
+		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:element name="outbound-processing" type="outboundProcessingType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere outbound processing microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Contains information about outbound processing -->
+	<xsd:complexType name="outboundProcessingType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processor" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound processor filter elements to allow 
+		substitutionGroups -->
+	<xsd:element name="abstract-outbound-processor-filter"
+		abstract="true" type="abstractOutboundProcessorFilterType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound processor filter
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common outbound processor filter element information -->
+	<xsd:complexType name="abstractOutboundProcessorFilterType" />
+
+	<!-- Filter operation type -->
+	<xsd:simpleType name="filterOperationType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="include" />
+			<xsd:enumeration value="exclude" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Filters outbound events associated with a site -->
+	<xsd:element name="site-filter" type="siteFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Includes or excludes device events depending on
+				whether the device
+				is associated with a given site.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siteFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="site" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for the site to be filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="operation" type="filterOperationType"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether matches should be included or
+							excluded from the
+							result set.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Filters outbound events associated with a device specification -->
+	<xsd:element name="specification-filter" type="specificationFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Includes or excludes device events depending on
+				whether the device
+				is based on a given specififation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="specificationFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="specification" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for the specification to be
+							filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="operation" type="filterOperationType"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether matches should be included or
+							excluded from the
+							result set.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Chooses events to filter based on a Groovy script -->
+	<xsd:element name="groovy-filter" type="groovyFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes a Groovy script which should return a
+				boolean result. True
+				indicates the event is to be included in the
+				result set, false indicates it should be
+				filtered.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Script that determines whether events are
+							included or filtered.
+							The script should return true if the event
+							is to be included or false if the event
+							is to be filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Element that contains a list of outbound processor filters -->
+	<xsd:complexType name="outboundProcessorFilterList">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processor-filter"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound multicaster elements to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-multicaster" abstract="true"
+		type="abstractOutboundMulticasterType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound multicaster elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common multicaster element information -->
+	<xsd:complexType name="abstractOutboundMulticasterType" />
+
+	<!-- Multicasts events to all devices that use a given specification -->
+	<xsd:element name="all-with-specification-multicaster"
+		type="allWithSpecificationMulticasterType" substitutionGroup="abstract-outbound-multicaster">
+		<xsd:annotation>
+			<xsd:documentation>
+				Multicasts to all devices that use a given
+				specification.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="allWithSpecificationMulticasterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundMulticasterType">
+				<xsd:attribute name="specification" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for device specification.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that returns a String
+							value indicating
+							the calculated route or null if event should not
+							be routed.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound route builder elements to allow 
+		substitutionGroups -->
+	<xsd:element name="abstract-outbound-route-builder"
+		abstract="true" type="abstractOutboundRouteBuilderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound route builder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common route builder element information -->
+	<xsd:complexType name="abstractOutboundRouteBuilderType" />
+
+	<!-- Routes events based on results from a Groovy script -->
+	<xsd:element name="groovy-route-builder" type="groovyRouteBuilderType"
+		substitutionGroup="abstract-outbound-route-builder">
+		<xsd:annotation>
+			<xsd:documentation>
+				Uses Groovy script to build outbound route.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyRouteBuilderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundRouteBuilderType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that returns a String
+							value indicating
+							the calculated route.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-processor" abstract="true"
+		type="abstractOutboundProcessorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound processor elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common outbound processor element information -->
+	<xsd:complexType name="abstractOutboundProcessorType" />
+
+	<!-- Adds ability to add nested filters for outbound processors -->
+	<xsd:complexType name="filteredOutboundProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element name="filters" type="outboundProcessorFilterList"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								List of filters that will be applied to
+								outbound traffic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="outboundProcessingChainType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="outbound-event-processor" type="outboundProcessorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom outbound event processor
+							implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element ref="abstract-outbound-processor" />
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outboundProcessorReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Provisioning outbound event processor -->
+	<xsd:element name="provisioning-event-processor" type="commandDeliveryEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				DEPRECATED: Use 'command-delivery-event-processor'
+				instead.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Command delivery outbound event processor -->
+	<xsd:element name="command-delivery-event-processor" type="commandDeliveryEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Hands off outbound device command events to the
+				device communication
+				subsystem. If this event processor is not
+				configured, no commands will be sent to
+				devices.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandDeliveryEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the number of threads used to process
+							provisioning commands.
+							Increase for situations where the load of
+							device commands is high.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Zone test outbound event processor -->
+	<xsd:element name="zone-test-event-processor" type="zoneTestOutboundEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				For each location event, applies a series of tests
+				to determine
+				whether the location meets a condition of being inside
+				or outside of a given zone. If
+				the condition is met, an alert is
+				fired.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="zoneTestOutboundEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element name="zone-test" type="zoneTestType"
+						maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Tests a location for inclusion/exclusion from
+								a zone and fires
+								an alert if the condition is met.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- MQTT outbound event processor -->
+	<xsd:element name="mqtt-event-processor" type="mqttEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to an MQTT topic.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mqttEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-outbound-multicaster"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows a multicaster to be configured so that
+								events can be
+								broadcast to many different topics.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element ref="abstract-outbound-route-builder"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows customization of route building logic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="sw:mqtt-broker-attributes" />
+				<xsd:attribute name="topic" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							MQTT topic used if no multicaster or route
+							builder is configured.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- RabbitMQ outbound event processor -->
+	<xsd:element name="rabbit-mq-event-processor" type="rabbitMqEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to a RabbitMQ exchange.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="rabbitMqEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-outbound-multicaster"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows a multicaster to be configured so that
+								events can be
+								broadcast to many different exchanges.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element ref="abstract-outbound-route-builder"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows customization of route building logic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="connectionUri" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI that provides information about the
+							RabbitMQ instance to
+							connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="topic" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of topic to publish to if route builder is
+							not
+							configured.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Hazelcast outbound event processor -->
+	<xsd:element name="hazelcast-event-processor" type="hazelcastEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to Hazelcast topics for
+				processing by external
+				consumers.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Groovy outbound event processor -->
+	<xsd:element name="groovy-event-processor" type="groovyEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Delegates event processing to a Groovy script. The
+				script can apply
+				conditional logic or interact with SiteWhere
+				interfaces to create new events or
+				perform other tasks.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for processing each event.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Solr outbound event processor -->
+	<xsd:element name="solr-event-processor" type="solrEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to Apache Solr for indexing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="solrEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Azure EventHub outbound event processor -->
+	<xsd:element name="azure-eventhub-event-processor" type="azureEventHubEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to an Azure EventHub using
+				AMQP 1.0.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="azureEventHubEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="sasName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the identity used for SAS authentication.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="sasKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the key used for SAS authentication.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="serviceBusName" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Set the service bus to connect to (e.g.
+							xxx.servicebus.windows.net).
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="eventHubName" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of EventHub to connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- InitialState.com outbound event processor -->
+	<xsd:element name="initial-state-event-processor" type="initialStateEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to the InitialState.com cloud service
+				where they can be
+				viewed in a customized dashboard.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="initialStateEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="streamingAccessKey" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Access key obtained from the InitialState.com
+							website that
+							specifies the account that the events will be
+							associated with.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Dweet.io outbound event processor -->
+	<xsd:element name="dweet-io-event-processor" type="dweetIoEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to the Dweet.io cloud service where
+				they can be viewed
+				and integrated with other services.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="dweetIoEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Amazon SQS outbound event processor -->
+	<xsd:element name="amazon-sqs-event-processor" type="amazonSqsEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Forwards outbound events to Amazon SQS.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="amazonSqsEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="accessKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amazon AWS access key for account owning SQS
+							queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="secretKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amazon AWS secret key for account owning SQS
+							queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueUrl" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique URL for SQS queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- WSO2 CEP event processor -->
+	<xsd:element name="wso2-cep-event-processor" type="wso2CepEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to streams on an external WSO2 CEP
+				instance for
+				processing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="wso2CepEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="hostname" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Hostname for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Port number for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="username" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Username for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="password" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Password for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Siddhi CEP outbound event processor -->
+	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Processes events through an embedded Siddhi
+				instance to allow
+				complex event processing (CEP) funcitonality.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="unbounded" name="siddhi-query"
+						type="siddhiQueryType">
+						<xsd:annotation>
+							<xsd:documentation>
+								A Siddhi query that executes selector logic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for Siddhi callbacks to allow substitutionGroups -->
+	<xsd:element name="abstract-siddhi-callback" abstract="true"
+		type="abstractSiddhiCallbackType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for Siddhi callback elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common Siddhi callback element information -->
+	<xsd:complexType name="abstractSiddhiCallbackType">
+		<xsd:attribute name="stream" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Name of stream for which a callback will be
+					registered.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Siddhi debug callback -->
+	<xsd:element name="stream-debugger" type="siddhiStreamDebuggerType"
+		substitutionGroup="abstract-siddhi-callback">
+		<xsd:annotation>
+			<xsd:documentation>
+				Debugs Siddhi streams by printing events to the
+				log.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiStreamDebuggerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSiddhiCallbackType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Siddhi Groovy stream processor -->
+	<xsd:element name="groovy-stream-processor" type="siddhiGroovyStreamProcessorType"
+		substitutionGroup="abstract-siddhi-callback">
+		<xsd:annotation>
+			<xsd:documentation>
+				Processes events from a Siddhi stream using a
+				Groovy script.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiGroovyStreamProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSiddhiCallbackType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for processing each event.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="siddhiQueryType">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded"
+				ref="abstract-siddhi-callback" />
+		</xsd:sequence>
+		<xsd:attribute name="selector" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Selector expression that contains processing
+					logic.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:simpleType name="zoneContainmentType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="inside" />
+			<xsd:enumeration value="outside" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="alertLevelType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="info" />
+			<xsd:enumeration value="warning" />
+			<xsd:enumeration value="error" />
+			<xsd:enumeration value="critical" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="zoneTestType">
+		<xsd:attribute name="zoneToken" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="condition" type="zoneContainmentType"
+			use="required" />
+		<xsd:attribute name="alertType" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="alertLevel" type="alertLevelType"
+			use="optional" />
+		<xsd:attribute name="alertMessage" type="xsd:string"
+			use="required"></xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>
