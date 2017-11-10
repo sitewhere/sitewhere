@@ -19,8 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.MapMaker;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
@@ -32,8 +30,10 @@ import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.microservice.multitenant.operations.BootstrapTenantEngineOperation;
 import com.sitewhere.microservice.multitenant.operations.InitializeTenantEngineOperation;
 import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperation;
+import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -57,14 +57,14 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
 
-    /** Map of tenant engines indexed by tenant id */
-    private ConcurrentMap<String, T> tenantEnginesByTenantId = new MapMaker().concurrencyLevel(4).makeMap();
+    /** Map of tenant engines that have been initialized */
+    private ConcurrentMap<String, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
-    /** Map of tenants waiting for an engine to be created */
-    private ConcurrentMap<String, ITenant> pendingEnginesByTenantId = new MapMaker().concurrencyLevel(4).makeMap();
+    /** Map of tenant engines in the process of initializing */
+    private ConcurrentMap<String, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
-    /** Map of tenants waiting for an engine to be created */
-    private BlockingDeque<ITenant> enginesToCreate = new LinkedBlockingDeque<ITenant>();
+    /** List of tenant ids waiting for an engine to be created */
+    private BlockingDeque<String> tenantInitializationQueue = new LinkedBlockingDeque<>();
 
     /** Executor for tenant operations */
     private ExecutorService tenantOperations;
@@ -85,7 +85,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Handles threading for tenant operations.
 	this.tenantOperations = Executors.newFixedThreadPool(MAX_CONCURRENT_TENANT_OPERATIONS,
 		new TenantOperationsThreadFactory());
-	tenantOperations.execute(new TenantEngineStarter());
+	tenantOperations.execute(new TenantEngineStarter(this));
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -106,7 +106,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /**
      * Create components that interact via GRPC.
      */
-    protected void createGrpcComponents() {
+    private void createGrpcComponents() {
 	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
@@ -132,11 +132,11 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Execute startup steps.
 	start.execute(monitor);
 
-	// Initialize tenant engines.
-	initializeTenantEngines(monitor);
-
 	// Call logic for starting microservice subclass.
 	microserviceStart(monitor);
+
+	// Initialize tenant engines.
+	initializeTenantEngines();
     }
 
     /*
@@ -186,29 +186,24 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     @Override
     public T getTenantEngineByTenantId(String id) throws SiteWhereException {
-	return getTenantEnginesByTenantId().get(id);
+	return getInitializedTenantEngines().get(id);
     }
 
     /**
-     * Initialize tenant engines by inspecting the list of tenant
-     * configurations, loading tenant information, then creating a tenant engine
-     * for each.
+     * Initialize tenant engines by inspecting the list of tenant configurations,
+     * loading tenant information, then creating a tenant engine for each.
      * 
-     * @param monitor
-     * @return
      * @throws SiteWhereException
      */
-    protected void initializeTenantEngines(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    protected void initializeTenantEngines() throws SiteWhereException {
 	CuratorFramework curator = getZookeeperManager().getCurator();
 	try {
 	    if (curator.checkExists().forPath(getInstanceTenantsConfigurationPath()) != null) {
 		List<String> tenantIds = curator.getChildren().forPath(getInstanceTenantsConfigurationPath());
 		for (String tenantId : tenantIds) {
 		    if (getTenantEngineByTenantId(tenantId) == null) {
-			try {
-			    queueTenantEngineInitialization(tenantId);
-			} catch (SiteWhereException e) {
-			    getLogger().error("Unable to add tenant engine for id '" + tenantId + "'.", e);
+			if (!getTenantInitializationQueue().contains(tenantId)) {
+			    getTenantInitializationQueue().offer(tenantId);
 			}
 		    }
 		}
@@ -221,46 +216,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     }
 
     /**
-     * Queue initialization for tenant engine with the given tenant id.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    protected void queueTenantEngineInitialization(String tenantId) throws SiteWhereException {
-	synchronized (getPendingEnginesByTenantId()) {
-	    // Check for duplicate request.
-	    if (getPendingEnginesByTenantId().get(tenantId) != null) {
-		getLogger().debug("Skipping duplicate tenant initialization request.");
-		return;
-	    }
-
-	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	    try {
-		// Use system user to look up tenant by id.
-		SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-
-		// Make sure API is available, then look up tenant.
-		getTenantManagementApiChannel().waitForApiAvailable();
-		ITenant tenant = getTenantManagementApiChannel().getTenantById(tenantId);
-		if (tenant == null) {
-		    throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
-		}
-
-		// Indicate engine is pending, then queue for processing.
-		getPendingEnginesByTenantId().put(tenantId, tenant);
-		if (!getEnginesToCreate().offer(tenant)) {
-		    getLogger().error("No room on tenant initialization queue.");
-		}
-	    } finally {
-		SecurityContextHolder.getContext().setAuthentication(previous);
-	    }
-	}
-    }
-
-    /**
-     * Get the tenant engine responsible for handling configuration for the
-     * given path.
+     * Get the tenant engine responsible for handling configuration for the given
+     * path.
      * 
      * @param pathInfo
      * @return
@@ -271,8 +228,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo.getTenantId());
 	    if (engine != null) {
 		return engine;
-	    } else {
-		queueTenantEngineInitialization(pathInfo.getTenantId());
+	    } else if (!getTenantInitializationQueue().contains(pathInfo.getTenantId())) {
+		getTenantInitializationQueue().offer(pathInfo.getTenantId());
 	    }
 	}
 	return null;
@@ -344,8 +301,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getConfigurationPaths()
      */
     @Override
@@ -356,8 +312,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -368,8 +323,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * microserviceStart(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -380,8 +334,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * microserviceStop(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -392,10 +345,9 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * initializeFromSpringContexts(org.springframework.context.
-     * ApplicationContext, java.util.Map)
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
+     * java.util.Map)
      */
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
@@ -418,28 +370,28 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
-    public ConcurrentMap<String, T> getTenantEnginesByTenantId() {
-	return tenantEnginesByTenantId;
+    public ConcurrentMap<String, T> getInitializedTenantEngines() {
+	return initializedTenantEngines;
     }
 
-    public void setTenantEnginesByTenantId(ConcurrentMap<String, T> tenantEnginesByTenantId) {
-	this.tenantEnginesByTenantId = tenantEnginesByTenantId;
+    public void setInitializedTenantEngines(ConcurrentMap<String, T> initializedTenantEngines) {
+	this.initializedTenantEngines = initializedTenantEngines;
     }
 
-    public ConcurrentMap<String, ITenant> getPendingEnginesByTenantId() {
-	return pendingEnginesByTenantId;
+    public ConcurrentMap<String, ITenant> getInitializingTenantEngines() {
+	return initializingTenantEngines;
     }
 
-    public void setPendingEnginesByTenantId(ConcurrentMap<String, ITenant> pendingEnginesByTenantId) {
-	this.pendingEnginesByTenantId = pendingEnginesByTenantId;
+    public void setInitializingTenantEngines(ConcurrentMap<String, ITenant> initializingTenantEngines) {
+	this.initializingTenantEngines = initializingTenantEngines;
     }
 
-    public BlockingDeque<ITenant> getEnginesToCreate() {
-	return enginesToCreate;
+    public BlockingDeque<String> getTenantInitializationQueue() {
+	return tenantInitializationQueue;
     }
 
-    public void setEnginesToCreate(BlockingDeque<ITenant> enginesToCreate) {
-	this.enginesToCreate = enginesToCreate;
+    public void setTenantInitializationQueue(BlockingDeque<String> tenantInitializationQueue) {
+	this.tenantInitializationQueue = tenantInitializationQueue;
     }
 
     public ExecutorService getTenantOperations() {
@@ -455,14 +407,39 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      * 
      * @author Derek
      */
-    private class TenantEngineStarter implements Runnable {
+    private class TenantEngineStarter extends SystemUserRunnable {
 
+	public TenantEngineStarter(IMicroservice microservice) {
+	    super(microservice, null);
+	}
+
+	/*
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
+	 */
 	@Override
-	public void run() {
+	public void runAsSystemUser() {
 	    while (true) {
 		try {
-		    ITenant tenant = getEnginesToCreate().take();
-		    if (getTenantEngineByTenantId(tenant.getId()) == null) {
+		    // Wait for tenant API available.
+		    getTenantManagementApiChannel().waitForApiAvailable();
+
+		    // Get next tenant id from the queue and look up the tenant.
+		    String tenantId = getTenantInitializationQueue().take();
+
+		    // Verify that multiple threads don't start duplicate engines.
+		    if (getInitializingTenantEngines().get(tenantId) != null) {
+			continue;
+		    }
+
+		    // Look up tenant and add it to initializing tenants map.
+		    ITenant tenant = getTenantManagementApiChannel().getTenantById(tenantId);
+		    if (tenant == null) {
+			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
+		    }
+		    getInitializingTenantEngines().put(tenantId, tenant);
+
+		    // Start tenant initialization.
+		    if (getTenantEngineByTenantId(tenantId) == null) {
 			InitializeTenantEngineOperation
 				.createCompletableFuture(MultitenantMicroservice.this, tenant, getTenantOperations())
 				.thenCompose(engine -> StartTenantEngineOperation.createCompletableFuture(engine,
@@ -476,9 +453,6 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception processing tenant engine.", e);
-		} catch (InterruptedException e) {
-		    getLogger().warn("Tenant engine starter thread exiting.");
-		    return;
 		} catch (Throwable e) {
 		    getLogger().warn("Unhandled exception processing tenant engine.", e);
 		}

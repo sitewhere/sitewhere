@@ -93,8 +93,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -137,8 +136,8 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     }
 
     /**
-     * Processor that unmarshals a decoded event and forwards it for
-     * registration verification.
+     * Processor that unmarshals a decoded event and forwards it for registration
+     * verification.
      * 
      * @author Derek
      */
@@ -148,7 +147,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	private byte[] encoded;
 
 	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
-	    super(tenantEngine);
+	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
 	    this.encoded = encoded;
 	}
 

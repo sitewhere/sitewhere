@@ -90,8 +90,7 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -144,7 +143,7 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 	private byte[] encoded;
 
 	public PersistedEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
-	    super(tenantEngine);
+	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
 	    this.encoded = encoded;
 	}
 

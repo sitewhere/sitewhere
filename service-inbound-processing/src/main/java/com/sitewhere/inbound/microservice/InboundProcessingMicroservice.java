@@ -171,14 +171,10 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	stop.execute(monitor);
     }
 
-    /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * createGrpcComponents()
+    /**
+     * Create GRPC components required by the microservice.
      */
-    @Override
-    protected void createGrpcComponents() {
-	super.createGrpcComponents();
-
+    private void createGrpcComponents() {
 	// Device management.
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
@@ -192,8 +188,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     }
 
     /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
      * getDeviceManagementApiChannel()
      */
     @Override
@@ -206,8 +201,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     }
 
     /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
      * getDeviceEventManagementApiChannel()
      */
     @Override

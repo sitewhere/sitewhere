@@ -64,22 +64,21 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
 	    span = getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName())
 		    .startActive();
 
-	    if (getGrpcChannel().getChannel() == null) {
-		ApiNotAvailableException e = new ApiNotAvailableException(
-			"GRPC channel not initialized. Unable to access API.");
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		throw e;
-	    }
-
 	    long deadline = System.currentTimeMillis() + unit.toMillis(duration);
 	    while ((System.currentTimeMillis() - deadline) < 0) {
 		try {
-		    ConnectivityState state = getGrpcChannel().getChannel().getState(true);
-		    if (ConnectivityState.READY != state) {
-			getLogger().info("Waiting for GRPC service to become available. (status:" + state.name() + ")");
+		    if (getGrpcChannel().getChannel() == null) {
+			getLogger().info("Waiting for GRPC channel to be initialized.");
 			Thread.sleep(CONNECTION_CHECK_INTERVAL);
 		    } else {
-			return;
+			ConnectivityState state = getGrpcChannel().getChannel().getState(true);
+			if (ConnectivityState.READY != state) {
+			    getLogger().info(
+				    "Waiting for GRPC service to become available. (status:" + state.name() + ")");
+			    Thread.sleep(CONNECTION_CHECK_INTERVAL);
+			} else {
+			    return;
+			}
 		    }
 		} catch (Exception e) {
 		    TracerUtils.handleErrorInTracerSpan(span, e);

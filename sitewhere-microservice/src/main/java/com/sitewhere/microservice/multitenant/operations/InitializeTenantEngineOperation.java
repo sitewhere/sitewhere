@@ -64,7 +64,6 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
 	    T created = getMicroservice().createTenantEngine(getTenant());
-	    getMicroservice().getTenantEnginesByTenantId().put(getTenant().getId(), created);
 
 	    // Configuration files must be present before initialization.
 	    LOGGER.info("Verifying tenant '" + getTenant().getName() + "' configuration bootstrapped.");
@@ -79,6 +78,10 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	    if (created.getLifecycleStatus() == LifecycleStatus.InitializationError) {
 		throw created.getLifecycleError();
 	    }
+
+	    // Mark tenant engine as initialized.
+	    getMicroservice().getInitializedTenantEngines().put(getTenant().getId(), created);
+
 	    LOGGER.info("Tenant engine for '" + getTenant().getName() + "' initialized in "
 		    + (System.currentTimeMillis() - start) + "ms.");
 	    getCompletableFuture().complete(created);
@@ -89,7 +92,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	    throw t;
 	} finally {
 	    // Make sure that tenant is cleared from the pending map.
-	    getMicroservice().getPendingEnginesByTenantId().remove(getTenant().getId());
+	    getMicroservice().getInitializingTenantEngines().remove(getTenant().getId());
 	}
     }
 
