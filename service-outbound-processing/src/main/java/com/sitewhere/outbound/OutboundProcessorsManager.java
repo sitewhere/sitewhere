@@ -12,9 +12,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.outbound.spi.IOutboundEventProcessor;
+import com.sitewhere.outbound.spi.IOutboundProcessorsManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
-import com.sitewhere.spi.device.event.processor.IOutboundProcessorsManager;
 
 /**
  * Manages lifecycle of the list of outbound event processors configured for a

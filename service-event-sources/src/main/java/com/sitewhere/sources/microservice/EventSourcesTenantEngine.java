@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IEventSourcesManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;

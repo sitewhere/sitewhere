@@ -10,8 +10,8 @@ package com.sitewhere.outbound.groovy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;

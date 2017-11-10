@@ -7,7 +7,7 @@
  */
 package com.sitewhere.sources.spi.microservice;
 
-import com.sitewhere.spi.device.communication.IEventSourcesManager;
+import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**

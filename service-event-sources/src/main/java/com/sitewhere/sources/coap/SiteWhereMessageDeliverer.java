@@ -19,13 +19,13 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.server.MessageDeliverer;
 
-import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
+import com.sitewhere.sources.EventProcessingLogic;
+import com.sitewhere.sources.spi.EventDecodeException;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

@@ -19,11 +19,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.sources.DecodedDeviceRequest;
+import com.sitewhere.sources.spi.EventDecodeException;
+import com.sitewhere.sources.spi.IDecodedDeviceRequest;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**

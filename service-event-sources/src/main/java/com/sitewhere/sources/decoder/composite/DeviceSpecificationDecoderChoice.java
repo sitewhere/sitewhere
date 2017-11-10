@@ -11,10 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
+import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDecoderChoice;
+import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IDecoderChoice;
-import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IDeviceContext;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

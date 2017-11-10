@@ -18,7 +18,7 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;

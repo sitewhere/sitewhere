@@ -7,7 +7,7 @@
  */
 package com.sitewhere.sources;
 
-import com.sitewhere.spi.device.communication.IInboundEventSource;
+import com.sitewhere.sources.spi.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventSource} that deals with binary data.

@@ -16,9 +16,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+import com.sitewhere.sources.spi.EventDecodeException;
+import com.sitewhere.sources.spi.IDecodedDeviceRequest;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**

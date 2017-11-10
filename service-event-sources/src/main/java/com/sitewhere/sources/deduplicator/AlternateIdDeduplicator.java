@@ -11,9 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.sources.spi.IDecodedDeviceRequest;
+import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDeduplicator;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;

@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.qpid.amqp_1_0.client.Message;
 
-import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.azure.client.Constants;
 import com.sitewhere.sources.azure.client.EventData;

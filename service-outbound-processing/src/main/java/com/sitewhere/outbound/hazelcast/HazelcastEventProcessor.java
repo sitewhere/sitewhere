@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
 import com.sitewhere.communication.hazelcast.IHazelcastConfiguration;
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;

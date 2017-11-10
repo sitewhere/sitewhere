@@ -20,10 +20,10 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
-import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

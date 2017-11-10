@@ -7,7 +7,7 @@
  */
 package com.sitewhere.sources.decoder.composite;
 
-import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IMessageMetadata;
+import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
 
 /**
  * Device criteria model object.

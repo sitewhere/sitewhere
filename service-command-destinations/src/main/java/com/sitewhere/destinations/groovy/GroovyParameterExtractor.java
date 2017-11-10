@@ -18,7 +18,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -54,8 +53,8 @@ public class GroovyParameterExtractor<T> extends TenantLifecycleComponent
      * 
      * @see
      * com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor
-     * #extractDeliveryParameters(com.sitewhere.spi.device.
-     * IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
+     * #extractDeliveryParameters(com.sitewhere.spi.device. IDeviceNestingContext,
+     * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
@@ -69,13 +68,13 @@ public class GroovyParameterExtractor<T> extends TenantLifecycleComponent
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    return (T) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
+	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
 	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+	    throw new SiteWhereException("Unable to run Groovy decoder script.", e);
 	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
+	    throw new SiteWhereException("Error compiling Groovy script.", e);
 	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
+	    throw new SiteWhereException("Unhandled exception in Groovy decoder script.", e);
 	}
     }
 

@@ -23,13 +23,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface IDeviceCommunication extends ITenantLifecycleComponent {
 
     /**
-     * Get the list of sources that bring device event data into the system.
-     * 
-     * @return
-     */
-    public List<IInboundEventSource<?>> getInboundEventSources();
-
-    /**
      * Get manager for generating symbols for entities.
      * 
      * @return
@@ -58,8 +51,7 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
     public IOutboundCommandRouter getOutboundCommandRouter();
 
     /**
-     * Get the list of command destinations that can deliver commands to
-     * devices.
+     * Get the list of command destinations that can deliver commands to devices.
      * 
      * @return
      */

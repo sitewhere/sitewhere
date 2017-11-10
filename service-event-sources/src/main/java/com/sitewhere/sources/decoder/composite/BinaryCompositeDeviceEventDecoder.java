@@ -13,9 +13,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

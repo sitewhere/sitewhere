@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.device.communication.EventDecodeException;
+import com.sitewhere.spi.device.communication.CommandEncodeException;
 import com.sitewhere.spi.device.communication.ICommandExecutionEncoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -52,8 +52,7 @@ public class GroovyCommandExecutionEncoder extends TenantLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
+     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
      * com.sitewhere.spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
@@ -71,13 +70,13 @@ public class GroovyCommandExecutionEncoder extends TenantLifecycleComponent
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    return (byte[]) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unable to access Groovy decoder script.", e);
 	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unable to run Groovy decoder script.", e);
 	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
+	    throw new CommandEncodeException("Error compiling Groovy script.", e);
 	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unhandled exception in Groovy decoder script.", e);
 	}
     }
 
@@ -100,13 +99,13 @@ public class GroovyCommandExecutionEncoder extends TenantLifecycleComponent
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    return (byte[]) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unable to access Groovy decoder script.", e);
 	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unable to run Groovy decoder script.", e);
 	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
+	    throw new CommandEncodeException("Error compiling Groovy script.", e);
 	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
+	    throw new CommandEncodeException("Unhandled exception in Groovy decoder script.", e);
 	}
     }
 

@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

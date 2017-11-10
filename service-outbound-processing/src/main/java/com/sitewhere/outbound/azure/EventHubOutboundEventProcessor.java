@@ -29,7 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -37,7 +38,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

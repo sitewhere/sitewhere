@@ -18,7 +18,6 @@ import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
@@ -38,9 +37,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     /** Configured device stream manager */
     private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
-
-    /** Configured list of inbound event sources */
-    private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
 
     /** Configured command processing strategy */
     private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
@@ -96,13 +92,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	    throw new SiteWhereException("No device stream manager configured for communication subsystem.");
 	}
 	startNestedComponent(getDeviceStreamManager(), monitor, true);
-
-	// Start device event sources.
-	if (getInboundEventSources() != null) {
-	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
-		startNestedComponent(processor, monitor, false);
-	    }
-	}
     }
 
     /*
@@ -114,13 +103,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Stop inbound event sources.
-	if (getInboundEventSources() != null) {
-	    for (IInboundEventSource<?> processor : getInboundEventSources()) {
-		processor.lifecycleStop(monitor);
-	    }
-	}
-
 	// Stop device stream manager.
 	if (getDeviceStreamManager() != null) {
 	    getDeviceStreamManager().lifecycleStop(monitor);
@@ -193,20 +175,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
     public void setDeviceStreamManager(IDeviceStreamManager deviceStreamManager) {
 	this.deviceStreamManager = deviceStreamManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getInboundEventSources ()
-     */
-    public List<IInboundEventSource<?>> getInboundEventSources() {
-	return inboundEventSources;
-    }
-
-    public void setInboundEventSources(List<IInboundEventSource<?>> inboundEventSources) {
-	this.inboundEventSources = inboundEventSources;
     }
 
     /*

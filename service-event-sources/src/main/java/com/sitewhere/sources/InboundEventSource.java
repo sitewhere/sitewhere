@@ -15,14 +15,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.sources.spi.EventDecodeException;
+import com.sitewhere.sources.spi.IDecodedDeviceRequest;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
+import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
+import com.sitewhere.sources.spi.IEventSourcesManager;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
+import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
-import com.sitewhere.spi.device.communication.IDeviceEventDeduplicator;
-import com.sitewhere.spi.device.communication.IEventSourcesManager;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

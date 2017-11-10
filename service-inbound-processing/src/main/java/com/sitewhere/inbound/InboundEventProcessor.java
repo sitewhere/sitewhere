@@ -7,9 +7,9 @@
  */
 package com.sitewhere.inbound;
 
+import com.sitewhere.inbound.spi.IInboundEventProcessor;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;

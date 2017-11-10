@@ -14,13 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

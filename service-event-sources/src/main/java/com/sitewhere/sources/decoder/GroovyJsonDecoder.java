@@ -18,10 +18,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.sources.spi.EventDecodeException;
+import com.sitewhere.sources.spi.IDecodedDeviceRequest;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.EventDecodeException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
-import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

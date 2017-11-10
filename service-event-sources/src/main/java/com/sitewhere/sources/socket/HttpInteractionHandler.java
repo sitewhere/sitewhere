@@ -25,12 +25,12 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.sources.EventProcessingLogic;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
+import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
+import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
-import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**

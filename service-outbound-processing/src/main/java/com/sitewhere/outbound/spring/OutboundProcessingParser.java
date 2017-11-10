@@ -22,14 +22,14 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.event.processor.filter.FilterOperation;
-import com.sitewhere.device.event.processor.filter.SiteFilter;
-import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.outbound.OutboundProcessorsManager;
 import com.sitewhere.outbound.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.outbound.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.outbound.command.DeviceCommandEventProcessor;
 import com.sitewhere.outbound.dweetio.DweetIoEventProcessor;
+import com.sitewhere.outbound.filter.FilterOperation;
+import com.sitewhere.outbound.filter.SiteFilter;
+import com.sitewhere.outbound.filter.SpecificationFilter;
 import com.sitewhere.outbound.geospatial.ZoneTest;
 import com.sitewhere.outbound.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.outbound.groovy.GroovyEventProcessor;

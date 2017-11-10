@@ -23,12 +23,12 @@ import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
-import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.FilteredOutboundEventProcessor;
+import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

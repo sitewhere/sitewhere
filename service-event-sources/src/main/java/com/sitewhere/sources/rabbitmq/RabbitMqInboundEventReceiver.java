@@ -26,7 +26,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.rabbitmq.client.ShutdownListener;
-import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

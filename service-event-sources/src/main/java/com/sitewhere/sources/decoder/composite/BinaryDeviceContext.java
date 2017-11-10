@@ -7,9 +7,9 @@
  */
 package com.sitewhere.sources.decoder.composite;
 
+import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.IDeviceContext;
 
 /**
  * Device context with a binary payload.

@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
 
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
 
 /**
  * Extends default CoAP server functionality to support SiteWhere requests.
