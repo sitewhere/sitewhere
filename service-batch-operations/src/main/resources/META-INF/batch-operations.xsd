@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/batch-operations"
+	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/batch-operations"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import
+		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:element name="batch-operations" type="batchOperationsType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere batch operations microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Contains information about batch operations -->
+	<xsd:complexType name="batchOperationsType">
+		<xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

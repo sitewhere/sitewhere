@@ -7,18 +7,40 @@
  */
 package com.sitewhere.batch;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
+import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring boot application for the batch operations microservice.
+ * Spring Boot application for batch operations microservice.
  * 
  * @author Derek
  */
-public class BatchOperationsApplication {
+@ComponentScan
+public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {
 
-    public BatchOperationsApplication() {
+    @Autowired
+    private IBatchOperationsMicroservice microservice;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
+     */
+    @Override
+    public IBatchOperationsMicroservice getMicroservice() {
+	return microservice;
     }
 
+    /**
+     * Entry point for Spring Boot.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
 	SpringApplication.run(BatchOperationsApplication.class, args);
     }

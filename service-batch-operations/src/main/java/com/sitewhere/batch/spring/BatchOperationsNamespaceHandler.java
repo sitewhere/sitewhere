@@ -5,17 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.registration.spring;
+package com.sitewhere.batch.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Registers parsers for elements in the device registration configuration
- * schema.
+ * Registers parsers for elements in the batch operations configuration schema.
  * 
  * @author Derek
  */
-public class DeviceRegistrationNamespaceHandler extends NamespaceHandlerSupport {
+public class BatchOperationsNamespaceHandler extends NamespaceHandlerSupport {
 
     /*
      * (non-Javadoc)
@@ -24,6 +23,6 @@ public class DeviceRegistrationNamespaceHandler extends NamespaceHandlerSupport 
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser("device-registration", new DeviceRegistrationParser());
+	registerBeanDefinitionParser("batch-operations", new BatchOperationsParser());
     }
 }
