@@ -5,12 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.registration.microservice;
+package com.sitewhere.search.microservice;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
+import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,10 +18,10 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservi
  * @author Derek
  */
 @Configuration
-public class DeviceRegistrationMicroserviceConfiguration {
+public class EventSearchMicroserviceConfiguration {
 
     @Bean
-    public IDeviceRegistrationMicroservice deviceRegistrationMicroservice() {
-	return new DeviceRegistrationMicroservice();
+    public IEventSearchMicroservice eventSearchMicroservice() {
+	return new EventSearchMicroservice();
     }
 }

@@ -5,6 +5,7 @@ include ':service-command-destinations'
 include ':service-device-management'
 include ':service-device-registration'
 include ':service-event-management'
+include ':service-event-search'
 include ':service-event-sources'
 include ':service-inbound-processing'
 include ':service-instance-management'
@@ -38,6 +39,7 @@ project(':service-command-destinations').projectDir = "$rootDir/service-command-
 project(':service-device-management').projectDir = "$rootDir/service-device-management" as File
 project(':service-device-registration').projectDir = "$rootDir/service-device-registration" as File
 project(':service-event-management').projectDir = "$rootDir/service-event-management" as File
+project(':service-event-search').projectDir = "$rootDir/service-event-search" as File
 project(':service-event-sources').projectDir = "$rootDir/service-event-sources" as File
 project(':service-inbound-processing').projectDir = "$rootDir/service-inbound-processing" as File
 project(':service-instance-management').projectDir = "$rootDir/service-instance-management" as File

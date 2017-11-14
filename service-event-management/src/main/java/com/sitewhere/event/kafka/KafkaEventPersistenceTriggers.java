@@ -45,6 +45,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorator {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Parent tenant engine */
