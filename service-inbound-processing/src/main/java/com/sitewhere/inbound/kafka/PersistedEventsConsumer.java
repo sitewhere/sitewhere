@@ -22,7 +22,9 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.inbound.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
+import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
@@ -54,8 +56,12 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
     /** Executor */
     private ExecutorService executor;
 
-    public PersistedEventsConsumer(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine) {
+    /** Logic for enriching outbound event payload */
+    private OutboundPayloadEnrichmentLogic outboundPayloadEnrichmentLogic;
+
+    public PersistedEventsConsumer(IMicroservice microservice, IInboundProcessingTenantEngine tenantEngine) {
 	super(microservice, tenantEngine);
+	this.outboundPayloadEnrichmentLogic = new OutboundPayloadEnrichmentLogic(tenantEngine);
     }
 
     /*
@@ -132,6 +138,14 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 	return LOGGER;
     }
 
+    public OutboundPayloadEnrichmentLogic getOutboundPayloadEnrichmentLogic() {
+	return outboundPayloadEnrichmentLogic;
+    }
+
+    public void setOutboundPayloadEnrichmentLogic(OutboundPayloadEnrichmentLogic outboundPayloadEnrichmentLogic) {
+	this.outboundPayloadEnrichmentLogic = outboundPayloadEnrichmentLogic;
+    }
+
     /**
      * Processor that unmarshals a persisted event and processes it.
      * 
@@ -155,11 +169,12 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
 		GPersistedEventPayload grpc = KafkaModelMarshaler.parsePersistedEventPayloadMessage(encoded);
-		PersistedEventPayload payload = KafkaModelConverter.asApiPersisedEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
+		    PersistedEventPayload payload = KafkaModelConverter.asApiPersisedEventPayload(grpc);
 		    getLogger().debug(
 			    "Received persisted event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 		}
+		getOutboundPayloadEnrichmentLogic().process(grpc);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to parse persisted event payload.", e);
 	    }

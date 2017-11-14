@@ -22,6 +22,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -55,9 +56,13 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Executor */
     private ExecutorService executor;
 
+    /** Inbound payload processing logic */
+    private InboundPayloadProcessingLogic inboundPayloadProcessingLogic;
+
     public DecodedEventsConsumer(IInboundProcessingMicroservice microservice,
 	    IInboundProcessingTenantEngine tenantEngine) {
 	super(microservice, tenantEngine);
+	this.inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic(tenantEngine);
     }
 
     /*
@@ -135,6 +140,14 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	return LOGGER;
     }
 
+    public InboundPayloadProcessingLogic getInboundPayloadProcessingLogic() {
+	return inboundPayloadProcessingLogic;
+    }
+
+    public void setInboundPayloadProcessingLogic(InboundPayloadProcessingLogic inboundPayloadProcessingLogic) {
+	this.inboundPayloadProcessingLogic = inboundPayloadProcessingLogic;
+    }
+
     /**
      * Processor that unmarshals a decoded event and forwards it for registration
      * verification.
@@ -159,13 +172,12 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
 		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
-		InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
+		    InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(grpc);
 		    getLogger().debug(
 			    "Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 		}
-		((IInboundProcessingTenantEngine) getTenantEngine()).getRegistrationVerificationProcessor()
-			.process(grpc);
+		getInboundPayloadProcessingLogic().process(grpc);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to parse inbound event payload.", e);
 	    }

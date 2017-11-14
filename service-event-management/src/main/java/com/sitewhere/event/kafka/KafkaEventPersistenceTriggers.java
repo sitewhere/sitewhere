@@ -7,6 +7,9 @@
  */
 package com.sitewhere.event.kafka;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
@@ -40,6 +43,9 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  * @author Derek
  */
 public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorator {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Parent tenant engine */
     private IEventManagementTenantEngine tenantEngine;
@@ -93,8 +99,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     }
 
     /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlert(com.
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlert(com.
      * sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
      */
@@ -105,8 +110,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     }
 
     /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStreamData(
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStreamData(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.streaming.IDeviceStream,
      * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
@@ -132,8 +136,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     /*
      * @see com.sitewhere.event.DeviceEventManagementDecorator#
      * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
@@ -142,8 +145,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     }
 
     /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChange(
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChange(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
      */

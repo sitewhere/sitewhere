@@ -50,6 +50,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for tenant events sent to unregistered devices */
     protected static final String TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS = "inbound-unregistered-device-events";
 
+    /** Topic suffix for events that have been persisted and enriched */
+    protected static final String TENANT_TOPIC_INBOUND_ENRICHED_EVENTS = "inbound-enriched-events";
+
     @Autowired
     private IInstanceSettings instanceSettings;
 
@@ -57,8 +60,7 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#getInstancePrefix(
-     * )
+     * com.sitewhere.microservice.spi.kafka.IKafkaTopicNaming#getInstancePrefix( )
      */
     @Override
     public String getInstancePrefix() {
@@ -66,8 +68,7 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getGlobalPrefix()
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getGlobalPrefix()
      */
     @Override
     public String getGlobalPrefix() {
@@ -75,8 +76,7 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getTenantPrefix(
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getTenantPrefix(
      * com.sitewhere.spi.tenant.ITenant)
      */
     @Override
@@ -138,6 +138,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getUnregisteredDeviceEventsTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getInboundEnrichedEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getInboundEnrichedEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_ENRICHED_EVENTS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

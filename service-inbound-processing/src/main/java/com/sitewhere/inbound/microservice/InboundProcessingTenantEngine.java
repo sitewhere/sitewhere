@@ -11,15 +11,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.inbound.kafka.DecodedEventsConsumer;
+import com.sitewhere.inbound.kafka.EnrichedEventsProducer;
 import com.sitewhere.inbound.kafka.PersistedEventsConsumer;
-import com.sitewhere.inbound.kafka.UnregisteredDeviceEventsProducer;
-import com.sitewhere.inbound.processing.RegistrationVerificationProcessor;
+import com.sitewhere.inbound.kafka.UnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
-import com.sitewhere.inbound.spi.kafka.IUnregisteredDeviceEventsProducer;
+import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.inbound.spi.processing.IRegistrationVerificationProcessor;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -44,22 +44,21 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     /** Kafka consumer that received inbound decoded events */
     private IDecodedEventsConsumer decodedEventsConsumer;
 
-    /** Processor that verifies an event belongs to a registered device */
-    private IRegistrationVerificationProcessor registrationVerificationProcessor;
-
     /** Kafka producer for events sent to unregistered devices */
-    private IUnregisteredDeviceEventsProducer unregisteredDeviceEventsProducer;
+    private IUnregisteredEventsProducer unregisteredDeviceEventsProducer;
 
     /** Kafka consumer for events persisted via event management APIs */
     private IPersistedEventsConsumer persistedEventsConsumer;
+
+    /** Kafka producer for enriched events available for further processing */
+    private IEnrichedEventsProducer enrichedEventsProducer;
 
     public InboundProcessingTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -68,9 +67,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	IInboundProcessingMicroservice ipMicroservice = (IInboundProcessingMicroservice) getMicroservice();
 
 	this.decodedEventsConsumer = new DecodedEventsConsumer(ipMicroservice, this);
-	this.registrationVerificationProcessor = new RegistrationVerificationProcessor(this);
-	this.unregisteredDeviceEventsProducer = new UnregisteredDeviceEventsProducer(ipMicroservice);
+	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer(ipMicroservice);
 	this.persistedEventsConsumer = new PersistedEventsConsumer(ipMicroservice, this);
+	this.enrichedEventsProducer = new EnrichedEventsProducer(ipMicroservice);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -78,22 +77,21 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Initialize decoded events consumer.
 	init.addInitializeStep(this, getDecodedEventsConsumer(), true);
 
-	// Initialize registration verification processor.
-	init.addInitializeStep(this, getRegistrationVerificationProcessor(), true);
-
 	// Initialize unregistered device events producer.
 	init.addInitializeStep(this, getUnregisteredDeviceEventsProducer(), true);
 
 	// Initialize persisted events consumer.
 	init.addInitializeStep(this, getPersistedEventsConsumer(), true);
 
+	// Initialize enriched events producer.
+	init.addInitializeStep(this, getEnrichedEventsProducer(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -104,24 +102,22 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Start unregistered device events producer.
 	start.addStartStep(this, getUnregisteredDeviceEventsProducer(), true);
 
-	// Start registration verification processor.
-	start.addStartStep(this, getRegistrationVerificationProcessor(), true);
-
 	// Start decoded events consumer.
 	start.addStartStep(this, getDecodedEventsConsumer(), true);
 
 	// Start persisted events consumer.
 	start.addStartStep(this, getPersistedEventsConsumer(), true);
 
+	// Start enriched events producer.
+	start.addStartStep(this, getEnrichedEventsProducer(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.
-     * ITenantTemplate,
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant. ITenantTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -129,8 +125,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -141,22 +136,21 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Stop decoded events consumer.
 	start.addStopStep(this, getDecodedEventsConsumer());
 
-	// Stop registration verification processor.
-	start.addStopStep(this, getRegistrationVerificationProcessor());
-
 	// Stop unregistered device events producer.
 	start.addStopStep(this, getUnregisteredDeviceEventsProducer());
 
 	// Stop persisted events consumer.
 	start.addStopStep(this, getPersistedEventsConsumer());
 
+	// Stop enriched events producer.
+	start.addStopStep(this, getEnrichedEventsProducer());
+
 	// Execute shutdown steps.
 	start.execute(monitor);
     }
 
     /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
      * getDecodedEventsConsumer()
      */
     @Override
@@ -169,38 +163,20 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     }
 
     /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getRegistrationVerificationProcessor()
-     */
-    @Override
-    public IRegistrationVerificationProcessor getRegistrationVerificationProcessor() {
-	return registrationVerificationProcessor;
-    }
-
-    public void setRegistrationVerificationProcessor(
-	    IRegistrationVerificationProcessor registrationVerificationProcessor) {
-	this.registrationVerificationProcessor = registrationVerificationProcessor;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
      * getUnregisteredDeviceEventsProducer()
      */
     @Override
-    public IUnregisteredDeviceEventsProducer getUnregisteredDeviceEventsProducer() {
+    public IUnregisteredEventsProducer getUnregisteredDeviceEventsProducer() {
 	return unregisteredDeviceEventsProducer;
     }
 
-    public void setUnregisteredDeviceEventsProducer(
-	    IUnregisteredDeviceEventsProducer unregisteredDeviceEventsProducer) {
+    public void setUnregisteredDeviceEventsProducer(IUnregisteredEventsProducer unregisteredDeviceEventsProducer) {
 	this.unregisteredDeviceEventsProducer = unregisteredDeviceEventsProducer;
     }
 
     /*
-     * @see
-     * com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
      * getPersistedEventsConsumer()
      */
     @Override
@@ -210,6 +186,19 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
     public void setPersistedEventsConsumer(IPersistedEventsConsumer persistedEventsConsumer) {
 	this.persistedEventsConsumer = persistedEventsConsumer;
+    }
+
+    /*
+     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
+     * getEnrichedEventsProducer()
+     */
+    @Override
+    public IEnrichedEventsProducer getEnrichedEventsProducer() {
+	return enrichedEventsProducer;
+    }
+
+    public void setEnrichedEventsProducer(IEnrichedEventsProducer enrichedEventsProducer) {
+	this.enrichedEventsProducer = enrichedEventsProducer;
     }
 
     /*

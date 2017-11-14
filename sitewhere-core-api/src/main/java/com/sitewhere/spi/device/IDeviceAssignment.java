@@ -62,7 +62,7 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
     public String getAssetId();
 
     /**
-     * Get the device assignement status.
+     * Get the device assignment status.
      * 
      * @return
      */

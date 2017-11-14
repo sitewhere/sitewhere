@@ -11,6 +11,7 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.Site;
 
 /**
  * Extends {@link DeviceAssignment} to support fields that can be included on
@@ -34,6 +35,15 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
 
     /** Associated location asset */
     private LocationAsset associatedLocation;
+
+    /** Site */
+    private Site site;
+
+    /** Associated asset name */
+    private String assetName;
+
+    /** Associated asset image */
+    private String assetImageUrl;
 
     public MarshaledDevice getDevice() {
 	return device;
@@ -65,5 +75,29 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
 
     public void setAssociatedLocation(LocationAsset associatedLocation) {
 	this.associatedLocation = associatedLocation;
+    }
+
+    public Site getSite() {
+	return site;
+    }
+
+    public void setSite(Site site) {
+	this.site = site;
+    }
+
+    public String getAssetName() {
+	return assetName;
+    }
+
+    public void setAssetName(String assetName) {
+	this.assetName = assetName;
+    }
+
+    public String getAssetImageUrl() {
+	return assetImageUrl;
+    }
+
+    public void setAssetImageUrl(String assetImageUrl) {
+	this.assetImageUrl = assetImageUrl;
     }
 }

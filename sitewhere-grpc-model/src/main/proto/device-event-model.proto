@@ -127,8 +127,8 @@ message GDeviceEvent {
 	string siteToken = 4;
 	string assignmentToken = 5;
 	GDeviceAssignmentType assignmentType = 6;
-	string assetModuleId = 7;
-	string assetId = 8;
+	GOptionalString assetModuleId = 7;
+	GOptionalString assetId = 8;
 	google.protobuf.Timestamp eventDate = 9;
 	google.protobuf.Timestamp receivedDate = 10;
 	map<string, string> metadata = 11;
@@ -206,6 +206,17 @@ message GAnyDeviceEvent {
 		GDeviceCommandResponse commandResponse = 6;
 		GDeviceStateChange stateChange = 7;
 	}
+}
+
+// Context information for a device event.
+message GDeviceEventContext {
+	string hardwareId = 1;
+	string specificationToken = 2;
+	GOptionalString parentHardwareId = 3;
+	GOptionalString deviceStatus = 4;
+	map<string, string> deviceMetadata = 5;
+	GDeviceAssignmentStatus assignmentStatus = 6;
+	map<string, string> assignmentMetadata = 7;
 }
 
 // Criteria for searching device events.

@@ -16,8 +16,6 @@ import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.inbound.spi.processing.IRegistrationVerificationProcessor;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -35,14 +33,16 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
- * Processing node which verifies that an incoming event belongs to a registered
- * device. If the event does not belong to a registered device, it is added to a
- * Kafka topic that can be processed by other services.
+ * Processing logic which verifies that an incoming event belongs to a
+ * registered device. If the event does not belong to a registered device, it is
+ * added to a Kafka topic that can be processed by a registration manager to
+ * register the device automatically if so configured. The logic also verifies
+ * that an active assignment exists for the device. Finally, the event is
+ * persisted via the event management microservice.
  * 
  * @author Derek
  */
-public class RegistrationVerificationProcessor extends TenantLifecycleComponent
-	implements IRegistrationVerificationProcessor {
+public class InboundPayloadProcessingLogic {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -50,16 +50,16 @@ public class RegistrationVerificationProcessor extends TenantLifecycleComponent
     /** Handle to inbound processing tenant engine */
     private IInboundProcessingTenantEngine tenantEngine;
 
-    public RegistrationVerificationProcessor(IInboundProcessingTenantEngine tenantEngine) {
+    public InboundPayloadProcessingLogic(IInboundProcessingTenantEngine tenantEngine) {
 	this.tenantEngine = tenantEngine;
     }
 
-    /*
-     * @see
-     * com.sitewhere.inbound.spi.processing.IRegistrationVerificationProcessor#
-     * process(com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload)
+    /**
+     * Process an inbound event payload.
+     * 
+     * @param payload
+     * @throws SiteWhereException
      */
-    @Override
     public void process(GInboundEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
 	IDevice device = getDeviceManagement().getDeviceByHardwareId(payload.getHardwareId());
@@ -177,10 +177,6 @@ public class RegistrationVerificationProcessor extends TenantLifecycleComponent
 		.getDeviceEventManagementApiChannel();
     }
 
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
     public Logger getLogger() {
 	return LOGGER;
     }

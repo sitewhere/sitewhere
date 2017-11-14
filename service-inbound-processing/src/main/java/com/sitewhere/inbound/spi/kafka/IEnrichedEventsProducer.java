@@ -10,10 +10,10 @@ package com.sitewhere.inbound.spi.kafka;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
- * Kafka producer that sends events for unregistered devices to a topic for
- * out-of-band processing.
+ * Kafka producer that sends sends enriched events to a topic for further
+ * processing.
  * 
  * @author Derek
  */
-public interface IUnregisteredDeviceEventsProducer extends IMicroserviceKafkaProducer {
+public interface IEnrichedEventsProducer extends IMicroserviceKafkaProducer {
 }

@@ -35,9 +35,11 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseSearchRes
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEvent;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchResponse;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventContext;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchCriteria;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventType;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
@@ -56,6 +58,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
+import com.sitewhere.rest.model.device.event.DeviceEventContext;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
@@ -75,12 +78,14 @@ import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -174,6 +179,66 @@ public class EventModelConverter {
     }
 
     /**
+     * Convert event type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceEventType asApiDeviceEventType(GDeviceEventType grpc) throws SiteWhereException {
+	switch (grpc) {
+	case EVENT_TYPE_ALERT:
+	    return DeviceEventType.Alert;
+	case EVENT_TYPE_COMMAND_INVOCATION:
+	    return DeviceEventType.CommandInvocation;
+	case EVENT_TYPE_COMMAND_RESPONSE:
+	    return DeviceEventType.CommandResponse;
+	case EVENT_TYPE_LOCATION:
+	    return DeviceEventType.Location;
+	case EVENT_TYPE_MEASUREMENT:
+	    return DeviceEventType.Measurement;
+	case EVENT_TYPE_MEASUREMENTS:
+	    return DeviceEventType.Measurements;
+	case EVENT_TYPE_STATE_CHANGE:
+	    return DeviceEventType.StateChange;
+	case EVENT_TYPE_STREAM_DATA:
+	    return DeviceEventType.StreamData;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown event type: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert event type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceEventType asGrpcDeviceEventType(DeviceEventType api) throws SiteWhereException {
+	switch (api) {
+	case Alert:
+	    return GDeviceEventType.EVENT_TYPE_ALERT;
+	case CommandInvocation:
+	    return GDeviceEventType.EVENT_TYPE_COMMAND_INVOCATION;
+	case CommandResponse:
+	    return GDeviceEventType.EVENT_TYPE_COMMAND_RESPONSE;
+	case Location:
+	    return GDeviceEventType.EVENT_TYPE_LOCATION;
+	case Measurement:
+	    return GDeviceEventType.EVENT_TYPE_MEASUREMENT;
+	case Measurements:
+	    return GDeviceEventType.EVENT_TYPE_MEASUREMENTS;
+	case StateChange:
+	    return GDeviceEventType.EVENT_TYPE_STATE_CHANGE;
+	case StreamData:
+	    return GDeviceEventType.EVENT_TYPE_STREAM_DATA;
+	}
+	throw new SiteWhereException("Unknown event type: " + api.name());
+    }
+
+    /**
      * Copy common device event fields from GRPC to API.
      * 
      * @param grpc
@@ -181,8 +246,16 @@ public class EventModelConverter {
      * @throws SiteWhereException
      */
     public static void copyApiDeviceEvent(GDeviceEvent grpc, DeviceEvent api) throws SiteWhereException {
+	api.setId(grpc.getId());
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
+	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
+	api.setSiteToken(grpc.getSiteToken());
+	api.setDeviceAssignmentToken(grpc.getAssignmentToken());
+	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
+	api.setAssetModuleId(grpc.hasAssetId() ? grpc.getAssetModuleId().getValue() : null);
+	api.setAssetId(grpc.hasAssetId() ? grpc.getAssetId().getValue() : null);
 	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
+	api.setReceivedDate(grpc.hasReceivedDate() ? CommonModelConverter.asDate(grpc.getReceivedDate()) : null);
 	api.setMetadata(grpc.getMetadataMap());
     }
 
@@ -195,11 +268,25 @@ public class EventModelConverter {
      */
     public static GDeviceEvent createGrpcDeviceEvent(IDeviceEvent api) throws SiteWhereException {
 	GDeviceEvent.Builder grpc = GDeviceEvent.newBuilder();
+	grpc.setId(api.getId());
 	if (api.getAlternateId() != null) {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
+	grpc.setEventType(EventModelConverter.asGrpcDeviceEventType(api.getEventType()));
+	grpc.setSiteToken(api.getSiteToken());
+	grpc.setAssignmentToken(api.getDeviceAssignmentToken());
+	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
+	if (api.getAssetModuleId() != null) {
+	    grpc.setAssetModuleId(GOptionalString.newBuilder().setValue(api.getAssetModuleId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(GOptionalString.newBuilder().setValue(api.getAssetId()));
+	}
 	if (api.getEventDate() != null) {
 	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));
+	}
+	if (api.getReceivedDate() != null) {
+	    grpc.setReceivedDate(CommonModelConverter.asGrpcTimestamp(api.getReceivedDate()));
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
@@ -1797,6 +1884,48 @@ public class EventModelConverter {
 	    throw new SiteWhereException("Unable to convert event to GRPC. " + api.getClass().getName());
 	}
 
+	return grpc.build();
+    }
+
+    /**
+     * Convert device event context from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceEventContext asApiDeviceEventContext(GDeviceEventContext grpc) throws SiteWhereException {
+	DeviceEventContext api = new DeviceEventContext();
+	api.setHardwareId(grpc.getHardwareId());
+	api.setSpecificationToken(grpc.getSpecificationToken());
+	api.setParentHardwareId(grpc.hasParentHardwareId() ? grpc.getParentHardwareId().getValue() : null);
+	api.setDeviceStatus(grpc.hasDeviceStatus() ? grpc.getDeviceStatus().getValue() : null);
+	api.setDeviceMetadata(grpc.getDeviceMetadataMap());
+	api.setAssignmentStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getAssignmentStatus()));
+	api.setAssignmentMetadata(grpc.getAssignmentMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert device event context from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceEventContext asGrpcDeviceEventContext(IDeviceEventContext api) throws SiteWhereException {
+	GDeviceEventContext.Builder grpc = GDeviceEventContext.newBuilder();
+	grpc.setHardwareId(api.getHardwareId());
+	grpc.setSpecificationToken(api.getSpecificationToken());
+	if (api.getParentHardwareId() != null) {
+	    grpc.setParentHardwareId(GOptionalString.newBuilder().setValue(api.getParentHardwareId()));
+	}
+	if (api.getDeviceStatus() != null) {
+	    grpc.setDeviceStatus(GOptionalString.newBuilder().setValue(api.getDeviceStatus()));
+	}
+	grpc.putAllDeviceMetadata(api.getDeviceMetadata());
+	grpc.setAssignmentStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getAssignmentStatus()));
+	grpc.putAllAssignmentMetadata(api.getAssignmentMetadata());
 	return grpc.build();
     }
 }

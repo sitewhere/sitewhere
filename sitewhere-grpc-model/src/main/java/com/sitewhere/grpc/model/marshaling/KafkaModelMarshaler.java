@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
@@ -151,6 +152,40 @@ public class KafkaModelMarshaler {
 	    return GPersistedEventPayload.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse inbound event payload message.", e);
+	}
+    }
+
+    /**
+     * Build binary message for GRPC enriched event payload.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildEnrichedEventPayloadMessage(GEnrichedEventPayload grpc) throws SiteWhereException {
+	ByteArrayOutputStream output = new ByteArrayOutputStream();
+	try {
+	    grpc.writeTo(output);
+	    return output.toByteArray();
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to build enriched event payload message.", e);
+	} finally {
+	    closeQuietly(output);
+	}
+    }
+
+    /**
+     * Parse message that contains an enriched event payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GEnrichedEventPayload parseEnrichedEventPayloadMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GEnrichedEventPayload.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse enriched event payload message.", e);
 	}
     }
 

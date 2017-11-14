@@ -46,8 +46,6 @@ message GPersistedEventPayload {
 
 // Enriched event payload.
 message GEnrichedEventPayload {
-	com.sitewhere.grpc.model.GSite site = 1;
-	com.sitewhere.grpc.model.GDevice device = 2;
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 3;
-	com.sitewhere.grpc.model.GAnyDeviceEvent event = 4;
+	com.sitewhere.grpc.model.GDeviceEventContext context = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
 }

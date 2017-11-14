@@ -1578,6 +1578,7 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setSiteToken(grpc.getSiteToken());
 	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
 	api.setAssetModuleId(grpc.getAssetModuleId());
 	api.setAssetId(grpc.getAssetId());
@@ -1604,6 +1605,7 @@ public class DeviceModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	grpc.setSiteToken(api.getSiteToken());
 	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
 	grpc.setAssetModuleId(api.getAssetModuleId());
 	grpc.setAssetId(api.getAssetId());

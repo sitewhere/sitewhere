@@ -7,12 +7,15 @@
  */
 package com.sitewhere.grpc.model.converter;
 
+import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
+import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
 
@@ -83,6 +86,35 @@ public class KafkaModelConverter {
 	    throws SiteWhereException {
 	GPersistedEventPayload.Builder grpc = GPersistedEventPayload.newBuilder();
 	grpc.setHardwareId(api.getHardwareId());
+	grpc.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(api.getEvent()));
+	return grpc.build();
+    }
+
+    /**
+     * Convert enriched event payload from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static EnrichedEventPayload asApiEnrichedEventPayload(GEnrichedEventPayload grpc) throws SiteWhereException {
+	EnrichedEventPayload api = new EnrichedEventPayload();
+	api.setEventContext(EventModelConverter.asApiDeviceEventContext(grpc.getContext()));
+	api.setEvent(EventModelConverter.asApiGenericDeviceEvent(grpc.getEvent()));
+	return api;
+    }
+
+    /**
+     * Convert enriched event payload from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GEnrichedEventPayload asGrpcEnrichedEventPayload(IEnrichedEventPayload api)
+	    throws SiteWhereException {
+	GEnrichedEventPayload.Builder grpc = GEnrichedEventPayload.newBuilder();
+	grpc.setContext(EventModelConverter.asGrpcDeviceEventContext(api.getEventContext()));
 	grpc.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(api.getEvent()));
 	return grpc.build();
     }

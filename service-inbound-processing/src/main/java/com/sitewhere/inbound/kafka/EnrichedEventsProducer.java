@@ -10,24 +10,23 @@ package com.sitewhere.inbound.kafka;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.inbound.spi.kafka.IUnregisteredDeviceEventsProducer;
+import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
- * Kafka producer that sends events for unregistered devices to a topic for
- * out-of-band processing.
+ * Kafka producer that sends sends enriched events to a topic for further
+ * processing.
  * 
  * @author Derek
  */
-public class UnregisteredDeviceEventsProducer extends MicroserviceKafkaProducer
-	implements IUnregisteredDeviceEventsProducer {
+public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements IEnrichedEventsProducer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public UnregisteredDeviceEventsProducer(IMicroservice microservice) {
+    public EnrichedEventsProducer(IMicroservice microservice) {
 	super(microservice);
     }
 
@@ -37,7 +36,7 @@ public class UnregisteredDeviceEventsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getUnregisteredDeviceEventsTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenant());
     }
 
     /*

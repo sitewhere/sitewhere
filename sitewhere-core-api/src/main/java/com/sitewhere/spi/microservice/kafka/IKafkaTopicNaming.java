@@ -46,8 +46,8 @@ public interface IKafkaTopicNaming {
     public String getTenantUpdatesTopic();
 
     /**
-     * Get name for topic that contains events that have been decoded from
-     * inbound event sources.
+     * Get name for topic that contains events that have been decoded from inbound
+     * event sources.
      * 
      * @param tenant
      * @return
@@ -55,8 +55,8 @@ public interface IKafkaTopicNaming {
     public String getEventSourceDecodedEventsTopic(ITenant tenant);
 
     /**
-     * Get name for topic that contains events that could not be decoded from
-     * event sources.
+     * Get name for topic that contains events that could not be decoded from event
+     * sources.
      * 
      * @param tenant
      * @return
@@ -64,8 +64,8 @@ public interface IKafkaTopicNaming {
     public String getEventSourceFailedDecodeTopic(ITenant tenant);
 
     /**
-     * Get topic for inbound events that were sent for out-of-band processing,
-     * then returned to be reprocessed.
+     * Get topic for inbound events that were sent for out-of-band processing, then
+     * returned to be reprocessed.
      * 
      * @param tenant
      * @return
@@ -81,11 +81,20 @@ public interface IKafkaTopicNaming {
     public String getInboundPersistedEventsTopic(ITenant tenant);
 
     /**
-     * Get name fro topic that contains events for devices that were not
-     * registered in the system.
+     * Get name fro topic that contains events for devices that were not registered
+     * in the system.
      * 
      * @param tenant
      * @return
      */
     public String getUnregisteredDeviceEventsTopic(ITenant tenant);
+
+    /**
+     * Get topic for events that have been persisted and enriched with
+     * device/assignment data.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getInboundEnrichedEventsTopic(ITenant tenant);
 }
