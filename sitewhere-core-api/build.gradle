@@ -2,6 +2,7 @@ description = 'SiteWhere Core API'
 
 configurations {
     compile.exclude module: 'spring-boot-starter-logging'
+    compile.exclude module: 'spring-boot-autoconfigure'
 }
 
 dependencies {
@@ -14,7 +15,7 @@ dependencies {
 		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   
     }
-    compile group: 'org.apache.kafka', name: 'kafka-streams', version: "${rootProject.ext['kafka.version']}"
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext['kafka.version']}"
     compile (group: 'org.apache.curator', name: 'curator-recipes', version:"${rootProject.ext['curator.version']}") {
 		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   

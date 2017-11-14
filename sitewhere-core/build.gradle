@@ -2,6 +2,7 @@ description = 'SiteWhere Core Library'
 
 configurations {
     compile.exclude module: 'spring-boot-starter-logging'
+    compile.exclude module: 'spring-boot-autoconfigure'
 }
 
 dependencies {

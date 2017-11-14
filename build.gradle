@@ -18,6 +18,7 @@ buildscript {
 
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'SiteWhere "admin@sitewhere.com"'
+ext['docker.java.memory'] = '512m'
 
 ext['kafka.version'] = '0.11.0.0'
 ext['zookeeper.version'] = '3.4.8'
