@@ -10,7 +10,6 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
@@ -20,7 +19,6 @@ import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -31,9 +29,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public abstract class DeviceCommunication extends TenantLifecycleComponent implements IDeviceCommunication {
-
-    /** Configured symbol generator manager */
-    private ISymbolGeneratorManager symbolGeneratorManager = new SymbolGeneratorManager();
 
     /** Configured device stream manager */
     private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
@@ -81,12 +76,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	getOutboundCommandRouter().initialize(getCommandDestinations());
 	startNestedComponent(getOutboundCommandRouter(), monitor, true);
 
-	// Start symbol generator manager.
-	if (getSymbolGeneratorManager() == null) {
-	    throw new SiteWhereException("No symbol generator manager configured for communication subsystem.");
-	}
-	startNestedComponent(getSymbolGeneratorManager(), monitor, true);
-
 	// Start device stream manager.
 	if (getDeviceStreamManager() == null) {
 	    throw new SiteWhereException("No device stream manager configured for communication subsystem.");
@@ -106,11 +95,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	// Stop device stream manager.
 	if (getDeviceStreamManager() != null) {
 	    getDeviceStreamManager().lifecycleStop(monitor);
-	}
-
-	// Stop symbol generator manager.
-	if (getSymbolGeneratorManager() != null) {
-	    getSymbolGeneratorManager().lifecycleStop(monitor);
 	}
 
 	// Stop command processing strategy.
@@ -147,20 +131,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
     @Override
     public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException {
 	getCommandProcessingStrategy().deliverSystemCommand(this, hardwareId, command);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-     * getSymbolGeneratorManager ()
-     */
-    public ISymbolGeneratorManager getSymbolGeneratorManager() {
-	return symbolGeneratorManager;
-    }
-
-    public void setSymbolGeneratorManager(ISymbolGeneratorManager symbolGeneratorManager) {
-	this.symbolGeneratorManager = symbolGeneratorManager;
     }
 
     /*

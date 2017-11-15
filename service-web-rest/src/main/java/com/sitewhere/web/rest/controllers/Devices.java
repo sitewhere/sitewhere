@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
 import com.sitewhere.device.group.DeviceGroupUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
@@ -50,15 +46,11 @@ import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
-import com.sitewhere.spi.device.symbology.IEntityUriProvider;
-import com.sitewhere.spi.device.symbology.ISymbolGenerator;
-import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -279,19 +271,22 @@ public class Devices extends RestControllerBase {
     public ResponseEntity<byte[]> getDeviceDefaultSymbol(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	IDevice device = assertDeviceWithoutUserValidation(hardwareId, servletRequest);
-	IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-	ISymbolGeneratorManager symbols = getDeviceCommunication().getSymbolGeneratorManager();
-	ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
-	if (generator != null) {
-	    byte[] image = generator.getDeviceSymbol(device, provider);
-
-	    final HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.IMAGE_PNG);
-	    return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
-	} else {
-	    return null;
-	}
+	// IDevice device = assertDeviceWithoutUserValidation(hardwareId,
+	// servletRequest);
+	// IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
+	// ISymbolGeneratorManager symbols =
+	// getDeviceCommunication().getSymbolGeneratorManager();
+	// ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
+	// if (generator != null) {
+	// byte[] image = generator.getDeviceSymbol(device, provider);
+	//
+	// final HttpHeaders headers = new HttpHeaders();
+	// headers.setContentType(MediaType.IMAGE_PNG);
+	// return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
+	// } else {
+	// return null;
+	// }
+	return null;
     }
 
     /**
@@ -421,8 +416,8 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * Add a batch of events for the current assignment of the given device.
-     * Note that the hardware id in the URL overrides the one specified in the
+     * Add a batch of events for the current assignment of the given device. Note
+     * that the hardware id in the URL overrides the one specified in the
      * {@link DeviceEventBatch} object.
      * 
      * @param request
@@ -479,9 +474,9 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * Gets a device by unique hardware id. Does not validate that the current
-     * user has access to the tenant. This should *only* be used by non-secure
-     * REST calls as it can be a security risk.
+     * Gets a device by unique hardware id. Does not validate that the current user
+     * has access to the tenant. This should *only* be used by non-secure REST calls
+     * as it can be a security risk.
      * 
      * @param hardwareId
      * @param servletRequest
@@ -522,10 +517,6 @@ public class Devices extends RestControllerBase {
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
-    }
-
-    private IDeviceCommunication getDeviceCommunication() {
 	return null;
     }
 }

@@ -14,7 +14,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -63,13 +62,6 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent, ILife
      * @return
      */
     public IDeviceCommunication getDeviceCommunication();
-
-    /**
-     * Get the search provider manager implementation.
-     * 
-     * @return
-     */
-    public ISearchProviderManager getSearchProviderManager();
 
     /**
      * Get current runtime state of engine.

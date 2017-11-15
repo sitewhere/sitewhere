@@ -25,9 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
-import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -70,7 +66,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -81,9 +76,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.device.symbology.IEntityUriProvider;
-import com.sitewhere.spi.device.symbology.ISymbolGenerator;
-import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -259,8 +251,8 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Parse a date argument from a string and send a "bad request" code if date
-     * can not be parsed.
+     * Parse a date argument from a string and send a "bad request" code if date can
+     * not be parsed.
      * 
      * @param dateString
      * @param response
@@ -776,19 +768,22 @@ public class Assignments extends RestControllerBase {
     public ResponseEntity<byte[]> getDeviceAssignmentSymbol(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	IDeviceAssignment assignment = assureAssignmentWithoutUserValidation(token, servletRequest);
-	IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-	ISymbolGeneratorManager symbols = getDeviceCommunication().getSymbolGeneratorManager();
-	ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
-	if (generator != null) {
-	    byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
-
-	    final HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.IMAGE_PNG);
-	    return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
-	} else {
-	    return null;
-	}
+	// IDeviceAssignment assignment = assureAssignmentWithoutUserValidation(token,
+	// servletRequest);
+	// IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
+	// ISymbolGeneratorManager symbols =
+	// getDeviceCommunication().getSymbolGeneratorManager();
+	// ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
+	// if (generator != null) {
+	// byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
+	//
+	// final HttpHeaders headers = new HttpHeaders();
+	// headers.setContentType(MediaType.IMAGE_PNG);
+	// return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
+	// } else {
+	// return null;
+	// }
+	return null;
     }
 
     /**
@@ -854,8 +849,8 @@ public class Assignments extends RestControllerBase {
 
     /**
      * Gets an assignment given its unique token. This implementation skips the
-     * validation which ensures the authenticated user has access to the tenant.
-     * It should *only* be used to access resources that are not protected.
+     * validation which ensures the authenticated user has access to the tenant. It
+     * should *only* be used to access resources that are not protected.
      * 
      * @param token
      * @param servletRequest
@@ -923,10 +918,6 @@ public class Assignments extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
-    }
-
-    private IDeviceCommunication getDeviceCommunication() {
 	return null;
     }
 

@@ -2,6 +2,8 @@ description = 'SiteWhere Label Generation Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+	
+    compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
 }
 
 apply plugin: 'org.springframework.boot'

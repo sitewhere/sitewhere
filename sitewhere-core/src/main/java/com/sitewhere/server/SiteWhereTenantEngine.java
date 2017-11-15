@@ -26,7 +26,6 @@ import com.sitewhere.rest.model.server.TenantRuntimeState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
-import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,7 +38,6 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -90,9 +88,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /** Interface to device communication subsystem implementation */
     private IDeviceCommunication deviceCommunication;
 
-    /** Interface for the search provider manager */
-    private ISearchProviderManager searchProviderManager;
-
     /** Threads used to issue engine commands */
     private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
@@ -130,9 +125,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	    // Initialize all management implementations.
 	    initializeManagementImplementations(monitor);
 
-	    // Initialize search provider management.
-	    setSearchProviderManager(initializeSearchProviderManagement());
-
 	    // Start core functions that must run regardless of whether the
 	    // tenant is considered 'started'.
 	    startCoreFunctions(monitor);
@@ -149,8 +141,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Start core functionality that must run regardless of whether the tenant
-     * is truly 'started'.
+     * Start core functionality that must run regardless of whether the tenant is
+     * truly 'started'.
      * 
      * @param monitor
      * @throws SiteWhereException
@@ -170,9 +162,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Initialize beans marked with
-     * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
-     * registered components.
+     * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+     * interface and add them as registered components.
      * 
      * @param monitor
      * @throws SiteWhereException
@@ -289,20 +280,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	start.addStartStep(this, getScheduleManagement(), true);
     }
 
-    /**
-     * Verify and initialize search provider manager.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ISearchProviderManager initializeSearchProviderManagement() throws SiteWhereException {
-	try {
-	    return (ISearchProviderManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
-	} catch (NoSuchBeanDefinitionException e) {
-	    return new SearchProviderManager();
-	}
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -361,9 +338,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void startTenantServices(ICompositeLifecycleStep start) throws SiteWhereException {
-	// Start search provider manager.
-	start.addStartStep(this, getSearchProviderManager(), true);
-
 	// Start device communication subsystem.
 	start.addStartStep(this, getDeviceCommunication(), true);
     }
@@ -409,8 +383,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Stops components, but differentiates between server shutdown and an
-     * explicit stop request for the tenant.
+     * Stops components, but differentiates between server shutdown and an explicit
+     * stop request for the tenant.
      * 
      * @param monitor
      * @param persist
@@ -436,9 +410,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     protected void stopTenantServices(ICompositeLifecycleStep stop) throws SiteWhereException {
 	// Disable device communications.
 	stop.addStopStep(this, getDeviceCommunication());
-
-	// Stop search provider manager.
-	stop.addStopStep(this, getSearchProviderManager());
     }
 
     /*
@@ -454,8 +425,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Stop core functionality. This should only happen if the tenant is
-     * completely terminated and not in the standard lifecycle loop.
+     * Stop core functionality. This should only happen if the tenant is completely
+     * terminated and not in the standard lifecycle loop.
      * 
      * @param monitor
      * @throws SiteWhereException
@@ -583,8 +554,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * 
      * @see
      * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#issueCommand(java.
-     * lang.String,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * lang.String, com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public ICommandResponse issueCommand(String command, ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -633,8 +603,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagement()
+     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagement()
      */
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagementWithTriggers;
@@ -648,8 +617,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceEventManagement(
-     * )
+     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceEventManagement( )
      */
     public IDeviceEventManagement getDeviceEventManagement() {
 	return deviceEventManagement;
@@ -675,8 +643,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManagement()
+     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManagement()
      */
     public IScheduleManagement getScheduleManagement() {
 	return scheduleManagement;
@@ -689,8 +656,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
+     * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
      */
     public IDeviceCommunication getDeviceCommunication() {
 	return deviceCommunication;
@@ -698,20 +664,5 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
     public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
 	this.deviceCommunication = deviceCommunication;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereTenantEngine#getSearchProviderManager(
-     * )
-     */
-    public ISearchProviderManager getSearchProviderManager() {
-	return searchProviderManager;
-    }
-
-    public void setSearchProviderManager(ISearchProviderManager searchProviderManager) {
-	this.searchProviderManager = searchProviderManager;
     }
 }

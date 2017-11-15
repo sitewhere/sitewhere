@@ -7,11 +7,9 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,13 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
-import com.sitewhere.spi.search.external.ISearchProvider;
-import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -59,12 +51,14 @@ public class ExternalSearch extends RestControllerBase {
     @ApiOperation(value = "List available search providers")
     @Secured({ SiteWhereRoles.REST })
     public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
-	List<ISearchProvider> providers = getSearchProviderManager().getSearchProviders();
-	List<SearchProvider> retval = new ArrayList<SearchProvider>();
-	for (ISearchProvider provider : providers) {
-	    retval.add(SearchProvider.copy(provider));
-	}
-	return retval;
+	// List<ISearchProvider> providers =
+	// getSearchProviderManager().getSearchProviders();
+	// List<SearchProvider> retval = new ArrayList<SearchProvider>();
+	// for (ISearchProvider provider : providers) {
+	// retval.add(SearchProvider.copy(provider));
+	// }
+	// return retval;
+	return null;
     }
 
     /**
@@ -83,16 +77,20 @@ public class ExternalSearch extends RestControllerBase {
     public List<IDeviceEvent> searchDeviceEvents(
 	    @ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISearchProvider provider = getSearchProviderManager().getSearchProvider(providerId);
-	if (provider == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
-	if (!(provider instanceof IDeviceEventSearchProvider)) {
-	    throw new SiteWhereException("Search provider does not provide event search capability.");
-	}
-	String query = request.getQueryString();
-	return ((IDeviceEventSearchProvider) provider).executeQuery(query);
+	// ISearchProvider provider =
+	// getSearchProviderManager().getSearchProvider(providerId);
+	// if (provider == null) {
+	// throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId,
+	// ErrorLevel.ERROR,
+	// HttpServletResponse.SC_NOT_FOUND);
+	// }
+	// if (!(provider instanceof IDeviceEventSearchProvider)) {
+	// throw new SiteWhereException("Search provider does not provide event search
+	// capability.");
+	// }
+	// String query = request.getQueryString();
+	// return ((IDeviceEventSearchProvider) provider).executeQuery(query);
+	return null;
     }
 
     /**
@@ -109,18 +107,19 @@ public class ExternalSearch extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public JsonNode rawSearch(@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 	    @RequestBody String query, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISearchProvider provider = getSearchProviderManager().getSearchProvider(providerId);
-	if (provider == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
-	if (!(provider instanceof IDeviceEventSearchProvider)) {
-	    throw new SiteWhereException("Search provider does not provide event search capability.");
-	}
-	return ((IDeviceEventSearchProvider) provider).executeQueryWithRawResponse(query);
-    }
-
-    private ISearchProviderManager getSearchProviderManager() {
+	// ISearchProvider provider =
+	// getSearchProviderManager().getSearchProvider(providerId);
+	// if (provider == null) {
+	// throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId,
+	// ErrorLevel.ERROR,
+	// HttpServletResponse.SC_NOT_FOUND);
+	// }
+	// if (!(provider instanceof IDeviceEventSearchProvider)) {
+	// throw new SiteWhereException("Search provider does not provide event search
+	// capability.");
+	// }
+	// return ((IDeviceEventSearchProvider)
+	// provider).executeQueryWithRawResponse(query);
 	return null;
     }
 }

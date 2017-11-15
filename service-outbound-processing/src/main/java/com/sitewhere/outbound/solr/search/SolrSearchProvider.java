@@ -38,8 +38,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
-import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
-import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.search.IDeviceEventSearchProvider;
+import com.sitewhere.spi.search.ISearchProvider;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

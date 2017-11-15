@@ -5,10 +5,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.search.external;
+package com.sitewhere.search.spi;
 
 import java.util.List;
 
+import com.sitewhere.spi.search.ISearchProvider;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
