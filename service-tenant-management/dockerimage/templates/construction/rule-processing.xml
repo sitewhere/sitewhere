@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:rp="http://www.sitewhere.com/schema/sitewhere/microservice/rule-processing"
+	xmlns:rp="http://sitewhere.io/schema/sitewhere/microservice/rule-processing"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/microservice/common http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd
-           http://www.sitewhere.com/schema/sitewhere/microservice/rule-processing http://www.sitewhere.org/schema/sitewhere/microservice/rule-processing/current/rule-processing.xsd">
+           http://sitewhere.io/schema/sitewhere/microservice/common http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd
+           http://sitewhere.io/schema/sitewhere/microservice/rule-processing http://sitewhere.io/schema/sitewhere/microservice/rule-processing/current/rule-processing.xsd">
 
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />

@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/device-registration=com.sitewhere.registration.spring.DeviceRegistrationNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/device-registration=com.sitewhere.registration.spring.DeviceRegistrationNamespaceHandler

@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/event-management=com.sitewhere.event.spring.EventManagementNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/event-management=com.sitewhere.event.spring.EventManagementNamespaceHandler

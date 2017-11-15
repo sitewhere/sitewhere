@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/outbound-processing=com.sitewhere.outbound.spring.OutboundProcessingNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/outbound-processing=com.sitewhere.outbound.spring.OutboundProcessingNamespaceHandler

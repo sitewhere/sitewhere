@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/schedule-management=com.sitewhere.schedule.spring.ScheduleManagementNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/schedule-management=com.sitewhere.schedule.spring.ScheduleManagementNamespaceHandler

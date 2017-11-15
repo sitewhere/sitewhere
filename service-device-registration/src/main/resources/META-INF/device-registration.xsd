@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/device-registration"
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/device-registration"
 	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/device-registration"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/device-registration"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import
-		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:element name="device-registration" type="deviceRegistrationType">
 		<xsd:annotation>

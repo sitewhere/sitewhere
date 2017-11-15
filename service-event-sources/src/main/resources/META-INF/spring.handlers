@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/event-sources=com.sitewhere.sources.spring.EventSourcesNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/event-sources=com.sitewhere.sources.spring.EventSourcesNamespaceHandler

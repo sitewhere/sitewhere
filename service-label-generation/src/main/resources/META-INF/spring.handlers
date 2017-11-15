@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/label-generation=com.sitewhere.labels.spring.LabelGenerationNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/label-generation=com.sitewhere.labels.spring.LabelGenerationNamespaceHandler
