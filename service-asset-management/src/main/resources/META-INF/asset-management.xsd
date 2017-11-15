@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/asset-management"
-	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/asset-management"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/asset-management"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/asset-management"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import
-		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:element name="asset-management" type="assetManagementType">
 		<xsd:annotation>

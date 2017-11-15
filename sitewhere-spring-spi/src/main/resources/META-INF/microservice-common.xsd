@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema
-	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
+<xsd:schema xmlns="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<!-- Used as a placeholder for datastores to allow substitutionGroups -->

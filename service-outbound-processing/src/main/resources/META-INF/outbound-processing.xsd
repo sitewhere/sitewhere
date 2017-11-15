@@ -262,7 +262,28 @@
 	</xsd:element>
 
 	<!-- Common outbound processor element information -->
-	<xsd:complexType name="abstractOutboundProcessorType" />
+	<xsd:complexType name="abstractOutboundProcessorType">
+		<xsd:attributeGroup ref="outbound-processor-attributes" />
+	</xsd:complexType>
+
+	<!-- Attributes common to all outbound processors -->
+	<xsd:attributeGroup name="outbound-processor-attributes">
+		<xsd:attribute name="processorId" type="xsd:token" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique identifier for outbound processor.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="numProcessingThreads" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>
+					Number of processing threads used to pull events
+					from Kafka and into outbound processor.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
 
 	<!-- Adds ability to add nested filters for outbound processors -->
 	<xsd:complexType name="filteredOutboundProcessorType">
@@ -283,36 +304,9 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="outboundProcessingChainType">
-		<xsd:sequence>
-			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="outbound-event-processor" type="outboundProcessorReferenceType">
-					<xsd:annotation>
-						<xsd:documentation>
-							References a custom outbound event processor
-							implementation.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="abstract-outbound-processor" />
-			</xsd:choice>
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="outboundProcessorReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
-
-	<!-- Provisioning outbound event processor -->
-	<xsd:element name="provisioning-event-processor" type="commandDeliveryEventProcessorType"
-		substitutionGroup="abstract-outbound-processor">
-		<xsd:annotation>
-			<xsd:documentation>
-				DEPRECATED: Use 'command-delivery-event-processor'
-				instead.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
 
 	<!-- Command delivery outbound event processor -->
 	<xsd:element name="command-delivery-event-processor" type="commandDeliveryEventProcessorType"

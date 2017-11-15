@@ -25,6 +25,20 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
 
     /**
+     * Get unique id for processor.
+     * 
+     * @return
+     */
+    public String getProcessorId();
+
+    /**
+     * Get number of threads used for processing events.
+     * 
+     * @return
+     */
+    public int getNumProcessingThreads();
+
+    /**
      * Executes code after device measurements have been successfully saved.
      * 
      * @param measurements
@@ -55,8 +69,7 @@ public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
     public void onAlert(IDeviceAlert alert) throws SiteWhereException;
 
     /**
-     * Executes code after device command invocation has been successfully
-     * saved.
+     * Executes code after device command invocation has been successfully saved.
      * 
      * @param invocation
      *            event information

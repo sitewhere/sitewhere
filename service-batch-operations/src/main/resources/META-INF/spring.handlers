@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/batch-operations=com.sitewhere.batch.spring.BatchOperationsNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/batch-operations=com.sitewhere.batch.spring.BatchOperationsNamespaceHandler

@@ -25,6 +25,15 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public abstract class OutboundEventProcessor extends TenantLifecycleComponent implements IOutboundEventProcessor {
 
+    /** Default number of threads used for processing */
+    private static final int DEFAULT_NUM_PROCESSING_THREADS = 2;
+
+    /** Unqiue processor id */
+    private String processorId;
+
+    /** Number of threads used for processing events */
+    private int numProcessingThreads = DEFAULT_NUM_PROCESSING_THREADS;
+
     public OutboundEventProcessor() {
 	super(LifecycleComponentType.OutboundEventProcessor);
     }
@@ -64,8 +73,7 @@ public abstract class OutboundEventProcessor extends TenantLifecycleComponent im
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onCommandInvocation
-     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
     public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
@@ -89,5 +97,30 @@ public abstract class OutboundEventProcessor extends TenantLifecycleComponent im
      */
     @Override
     public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.outbound.spi.IOutboundEventProcessor#getProcessorId()
+     */
+    @Override
+    public String getProcessorId() {
+	return processorId;
+    }
+
+    public void setProcessorId(String processorId) {
+	this.processorId = processorId;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#getNumProcessingThreads()
+     */
+    @Override
+    public int getNumProcessingThreads() {
+	return numProcessingThreads;
+    }
+
+    public void setNumProcessingThreads(int numProcessingThreads) {
+	this.numProcessingThreads = numProcessingThreads;
     }
 }
