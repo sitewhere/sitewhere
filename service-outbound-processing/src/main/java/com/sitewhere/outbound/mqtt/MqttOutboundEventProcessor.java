@@ -29,15 +29,14 @@ import com.sitewhere.outbound.spi.routing.IRouteBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Outbound event processor that sends events to an MQTT topic.
@@ -169,60 +168,57 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceMeasurements)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException {
 	sendEvent(measurements);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	sendEvent(location);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	sendEvent(alert);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onCommandInvocationNotFiltered
-     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException {
 	sendEvent(invocation);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
      * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceCommandResponse)
+     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
-    public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
+    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
+	    throws SiteWhereException {
 	sendEvent(response);
     }
 
@@ -233,16 +229,19 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	IDeviceManagement dm = getDeviceManagement(getTenant());
-	IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-	IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	if (getMulticaster() != null) {
+	    IDeviceAssignment assignment = getDeviceManagement()
+		    .getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+	    IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	    List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
 	    for (String route : routes) {
 		publish(event, route);
 	    }
 	} else {
 	    if (getRouteBuilder() != null) {
+		IDeviceAssignment assignment = getDeviceManagement()
+			.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+		IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
 		publish(event, getRouteBuilder().build(event, device, assignment));
 	    } else {
 		publish(event, getTopic());
@@ -375,8 +374,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
-     * )
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath( )
      */
     @Override
     public String getTrustStorePath() {
@@ -404,8 +402,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
      */
     public String getKeyStorePath() {
 	return keyStorePath;
@@ -435,9 +432,5 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     public void setTopic(String topic) {
 	this.topic = topic;
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
     }
 }

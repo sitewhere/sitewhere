@@ -10,9 +10,12 @@ package com.sitewhere.outbound;
 import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -34,69 +37,75 @@ public abstract class OutboundEventProcessor extends TenantLifecycleComponent im
     /** Number of threads used for processing events */
     private int numProcessingThreads = DEFAULT_NUM_PROCESSING_THREADS;
 
+    /** Handle to device management implementation */
+    private IDeviceManagement deviceManagement;
+
+    /** Handle to device event management implementation */
+    private IDeviceEventManagement deviceEventManagement;
+
     public OutboundEventProcessor() {
 	super(LifecycleComponentType.OutboundEventProcessor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onMeasurements (com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * @see com.sitewhere.outbound.spi.IOutboundEventProcessor#onMeasurements(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+    public void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onLocation(com .sitewhere.spi.device.event.IDeviceLocation)
-     */
-    @Override
-    public void onLocation(IDeviceLocation location) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(
-     * com. sitewhere .spi.device.event.IDeviceAlert)
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#onLocation(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#onAlert(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onCommandResponse (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#onCommandInvocation(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-     * onStateChange(com. sitewhere.spi.device.event.IDeviceStateChange)
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#onCommandResponse(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
-    public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
+	    throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.outbound.spi.IOutboundEventProcessor#onStateChange(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceStateChange)
+     */
+    @Override
+    public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
     }
 
     /*
@@ -122,5 +131,42 @@ public abstract class OutboundEventProcessor extends TenantLifecycleComponent im
 
     public void setNumProcessingThreads(int numProcessingThreads) {
 	this.numProcessingThreads = numProcessingThreads;
+    }
+
+    /*
+     * @see com.sitewhere.outbound.spi.IOutboundEventProcessor#getDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#setDeviceManagement(com.
+     * sitewhere.spi.device.IDeviceManagement)
+     */
+    @Override
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#getDeviceEventManagement()
+     */
+    @Override
+    public IDeviceEventManagement getDeviceEventManagement() {
+	return deviceEventManagement;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundEventProcessor#setDeviceEventManagement(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement)
+     */
+    @Override
+    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+	this.deviceEventManagement = deviceEventManagement;
     }
 }

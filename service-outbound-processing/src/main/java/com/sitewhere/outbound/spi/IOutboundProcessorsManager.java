@@ -9,6 +9,7 @@ package com.sitewhere.outbound.spi;
 
 import java.util.List;
 
+import com.sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -17,6 +18,13 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  */
 public interface IOutboundProcessorsManager extends ITenantLifecycleComponent {
+
+    /**
+     * Set the parent tenant engine.
+     * 
+     * @param tenantEngine
+     */
+    public void setTenantEngine(IOutboundProcessingTenantEngine tenantEngine);
 
     /**
      * Get list of outbound event processors.

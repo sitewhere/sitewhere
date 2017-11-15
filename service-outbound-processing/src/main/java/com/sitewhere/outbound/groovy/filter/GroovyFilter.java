@@ -14,9 +14,8 @@ import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.outbound.filter.DeviceEventFilter;
 import com.sitewhere.outbound.spi.IDeviceEventFilter;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
@@ -45,8 +44,7 @@ public class GroovyFilter extends DeviceEventFilter {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#start(com.
+     * @see com.sitewhere.device.event.processor.filter.DeviceEventFilter#start(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -59,22 +57,17 @@ public class GroovyFilter extends DeviceEventFilter {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
-     * com.sitewhere .spi.device.event.IDeviceEvent,
-     * com.sitewhere.spi.device.IDevice,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.outbound.spi.IDeviceEventFilter#isFiltered(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
      */
     @Override
-    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-	    throws SiteWhereException {
+    public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
 	Binding binding = new Binding();
 	binding.setVariable("logger", getLogger());
+	binding.setVariable("context", context);
 	binding.setVariable("event", event);
-	binding.setVariable("device", device);
-	binding.setVariable("assignment", assignment);
 
 	try {
 	    Object result = getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);

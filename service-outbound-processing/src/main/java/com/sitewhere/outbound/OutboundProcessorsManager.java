@@ -7,14 +7,20 @@
  */
 package com.sitewhere.outbound;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.outbound.kafka.KafkaOutboundEventProcessorHost;
 import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.outbound.spi.IOutboundProcessorsManager;
+import com.sitewhere.outbound.spi.microservice.IOutboundProcessingMicroservice;
+import com.sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Manages lifecycle of the list of outbound event processors configured for a
@@ -27,8 +33,59 @@ public class OutboundProcessorsManager extends TenantLifecycleComponent implemen
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Tenant engine reference */
+    private IOutboundProcessingTenantEngine tenantEngine;
+
     /** List of event sources */
     private List<IOutboundEventProcessor> outboundEventProcessors;
+
+    /** List of host wrappers for outbound processors */
+    private List<KafkaOutboundEventProcessorHost> processorHosts = new ArrayList<KafkaOutboundEventProcessorHost>();
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getProcessorHosts().clear();
+	for (IOutboundEventProcessor processor : outboundEventProcessors) {
+	    // Hook processor to microservice API channels.
+	    processor.setDeviceManagement(getMicroservice().getDeviceManagementApiChannel());
+	    processor.setDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+
+	    // Create host for managing outbound processor.
+	    KafkaOutboundEventProcessorHost host = new KafkaOutboundEventProcessorHost(
+		    getTenantEngine().getMicroservice(), getTenantEngine(), processor);
+	    initializeNestedComponent(host, monitor, true);
+	    getProcessorHosts().add(host);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	for (KafkaOutboundEventProcessorHost host : processorHosts) {
+	    startNestedComponent(host, monitor, true);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	for (KafkaOutboundEventProcessorHost host : processorHosts) {
+	    stopNestedComponent(host, monitor);
+	}
+    }
 
     /*
      * @see com.sitewhere.spi.device.event.processor.IOutboundProcessorsManager#
@@ -49,5 +106,31 @@ public class OutboundProcessorsManager extends TenantLifecycleComponent implemen
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.outbound.spi.IOutboundProcessorsManager#setTenantEngine(com.
+     * sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine)
+     */
+    @Override
+    public void setTenantEngine(IOutboundProcessingTenantEngine tenantEngine) {
+	this.tenantEngine = tenantEngine;
+    }
+
+    protected IOutboundProcessingTenantEngine getTenantEngine() {
+	return tenantEngine;
+    }
+
+    protected List<KafkaOutboundEventProcessorHost> getProcessorHosts() {
+	return processorHosts;
+    }
+
+    protected void setProcessorHosts(List<KafkaOutboundEventProcessorHost> processorHosts) {
+	this.processorHosts = processorHosts;
+    }
+
+    protected IOutboundProcessingMicroservice getMicroservice() {
+	return (IOutboundProcessingMicroservice) getTenantEngine().getMicroservice();
     }
 }

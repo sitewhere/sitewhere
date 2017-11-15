@@ -23,7 +23,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geospatial.ZoneContainment;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -73,17 +73,18 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	for (ZoneTest test : zoneTests) {
 	    Polygon poly = getZonePolygon(test.getZoneToken());
 	    ZoneContainment containment = (poly.contains(GeoUtils.createPointForLocation(location)))
-		    ? ZoneContainment.Inside : ZoneContainment.Outside;
+		    ? ZoneContainment.Inside
+		    : ZoneContainment.Outside;
 	    if (test.getCondition() == containment) {
 		IDeviceAssignment assignment = getDeviceManagement()
 			.getDeviceAssignmentByToken(location.getDeviceAssignmentToken());
@@ -117,10 +118,6 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 	    return poly;
 	}
 	throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": " + token);
-    }
-
-    private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
     }
 
     public List<ZoneTest> getZoneTests() {

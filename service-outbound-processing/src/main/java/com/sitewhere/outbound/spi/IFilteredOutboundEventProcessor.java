@@ -13,6 +13,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -34,48 +35,58 @@ public interface IFilteredOutboundEventProcessor extends IOutboundEventProcessor
     /**
      * Called if measurements data was not filtered.
      * 
+     * @param context
      * @param measurements
      * @throws SiteWhereException
      */
-    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException;
+    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException;
 
     /**
      * Called if location data was not filtered.
      * 
+     * @param context
      * @param location
      * @throws SiteWhereException
      */
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException;
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException;
 
     /**
      * Called if alert data was not filtered.
      * 
+     * @param context
      * @param alert
      * @throws SiteWhereException
      */
-    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException;
+    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException;
 
     /**
      * Called if state change data was not filtered.
      * 
+     * @param context
      * @param state
      * @throws SiteWhereException
      */
-    public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException;
+    public void onStateChangeNotFiltered(IDeviceEventContext context, IDeviceStateChange state)
+	    throws SiteWhereException;
 
     /**
      * Called if command invocation data was not filtered.
      * 
+     * @param context
      * @param invocation
      * @throws SiteWhereException
      */
-    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException;
+    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException;
 
     /**
      * Called if command response data was not filtered.
      * 
+     * @param context
      * @param response
      * @throws SiteWhereException
      */
-    public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException;
+    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
+	    throws SiteWhereException;
 }

@@ -19,6 +19,7 @@ import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -82,14 +83,13 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onCommandInvocationNotFiltered
-     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException {
 	executor.execute(new CommandInvocationProcessor(invocation));
     }
 

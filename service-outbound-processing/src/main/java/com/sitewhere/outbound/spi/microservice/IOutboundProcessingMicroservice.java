@@ -7,6 +7,8 @@
  */
 package com.sitewhere.outbound.spi.microservice;
 
+import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -15,4 +17,18 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IOutboundProcessingMicroservice extends IMultitenantMicroservice<IOutboundProcessingTenantEngine> {
+
+    /**
+     * Get device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagementApiChannel getDeviceManagementApiChannel();
+
+    /**
+     * Get event management API channel.
+     * 
+     * @return
+     */
+    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel();
 }

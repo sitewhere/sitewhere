@@ -36,6 +36,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -147,60 +148,57 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcess
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceMeasurements)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException {
 	sendEvent(measurements);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	sendEvent(location);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	sendEvent(alert);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onCommandInvocationNotFiltered
-     * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
+     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException {
 	sendEvent(invocation);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
      * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceCommandResponse)
+     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
-    public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
+    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
+	    throws SiteWhereException {
 	sendEvent(response);
     }
 

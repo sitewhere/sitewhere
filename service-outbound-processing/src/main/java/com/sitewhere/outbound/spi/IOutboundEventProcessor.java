@@ -8,9 +8,12 @@
 package com.sitewhere.outbound.spi;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -39,62 +42,86 @@ public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
     public int getNumProcessingThreads();
 
     /**
-     * Executes code after device measurements have been successfully saved.
+     * Executes processing code for a device measurements event.
      * 
+     * @param context
      * @param measurements
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
+    public void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements) throws SiteWhereException;
 
     /**
-     * Executes code after device location has been successfully saved.
+     * Executes processing code for a device location event.
      * 
+     * @param context
      * @param location
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onLocation(IDeviceLocation location) throws SiteWhereException;
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException;
 
     /**
-     * Executes code after device alert has been successfully saved.
+     * Executes processing code for a device alert event.
      * 
+     * @param context
      * @param alert
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onAlert(IDeviceAlert alert) throws SiteWhereException;
+    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException;
 
     /**
-     * Executes code after device command invocation has been successfully saved.
+     * Executes processing code for a device command invocation event.
      * 
+     * @param context
      * @param invocation
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
+    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException;
 
     /**
-     * Executes code after device command response has been successfully saved.
+     * Executes processing code for a device command response event.
      * 
+     * @param context
      * @param response
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
+    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
+	    throws SiteWhereException;
 
     /**
-     * Executes code after device state change has been successfully saved.
+     * Executes processing code for a device state change event.
      * 
+     * @param context
      * @param state
-     *            event information
      * @throws SiteWhereException
-     *             if an error occurs in processing
      */
-    public void onStateChange(IDeviceStateChange state) throws SiteWhereException;
+    public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException;
+
+    /**
+     * Get device management API.
+     * 
+     * @return
+     */
+    public IDeviceManagement getDeviceManagement();
+
+    /**
+     * Set device management API.
+     * 
+     * @param deviceManagement
+     */
+    public void setDeviceManagement(IDeviceManagement deviceManagement);
+
+    /**
+     * Get device event management API.
+     * 
+     * @return
+     */
+    public IDeviceEventManagement getDeviceEventManagement();
+
+    /**
+     * Set device event management API.
+     * 
+     * @param eventManagement
+     */
+    public void setDeviceEventManagement(IDeviceEventManagement eventManagement);
 }

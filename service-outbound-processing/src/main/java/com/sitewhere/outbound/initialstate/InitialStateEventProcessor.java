@@ -32,6 +32,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -82,14 +83,13 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceMeasurements)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException {
 	Map<String, Double> mx = measurements.getMeasurements();
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 	for (String name : mx.keySet()) {
@@ -104,14 +104,13 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 	EventCreateRequest event = new EventCreateRequest();
@@ -125,14 +124,13 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
-     * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 	EventCreateRequest event = new EventCreateRequest();

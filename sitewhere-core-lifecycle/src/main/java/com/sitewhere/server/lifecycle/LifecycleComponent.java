@@ -63,8 +63,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
      */
     public String getComponentId() {
 	return componentId;
@@ -94,8 +93,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
      */
     @Override
     public Date getCreatedDate() {
@@ -144,8 +142,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
      */
     @Override
     public boolean canInitialize() throws SiteWhereException {
@@ -155,8 +152,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -249,8 +245,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleComponent,
+     * startNestedComponent(com.sitewhere.spi.server.lifecycle. ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
      * java.lang.String, boolean)
      */
@@ -402,6 +397,22 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stopNestedComponent(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stopNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	component.lifecycleStop(monitor);
+	if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    getLogger().error("Unable to stop '" + component.getComponentName() + "'", component.getLifecycleError());
+	}
+	getLifecycleComponents().remove(component.getComponentId(), component);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
@@ -430,8 +441,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#terminate(com.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#terminate(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -442,8 +452,8 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * lifecycleStatusChanged(com.sitewhere.spi.server.lifecycle.
-     * LifecycleStatus, com.sitewhere.spi.server.lifecycle.LifecycleStatus)
+     * lifecycleStatusChanged(com.sitewhere.spi.server.lifecycle. LifecycleStatus,
+     * com.sitewhere.spi.server.lifecycle.LifecycleStatus)
      */
     @Override
     public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after) {
@@ -527,8 +537,8 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     /**
-     * Recursively navigates component structure and creates a map of components
-     * by id.
+     * Recursively navigates component structure and creates a map of components by
+     * id.
      * 
      * @param current
      * @param map
@@ -547,8 +557,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus
-     * ()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus ()
      */
     public LifecycleStatus getLifecycleStatus() {
 	return lifecycleStatus;
@@ -567,8 +576,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError( )
      */
     public SiteWhereException getLifecycleError() {
 	return lifecycleError;

@@ -27,6 +27,7 @@ import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -104,14 +105,13 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceMeasurements)
+     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
+    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+	    throws SiteWhereException {
 	SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromMeasurements(measurements);
 	try {
 	    queue.put(document);
@@ -121,13 +121,13 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
+    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromLocation(location);
 	try {
 	    queue.put(document);
@@ -137,13 +137,13 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
-     * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
+     * @see
+     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
+    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromAlert(alert);
 	try {
 	    queue.put(document);

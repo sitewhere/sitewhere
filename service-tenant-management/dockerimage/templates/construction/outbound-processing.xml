@@ -12,6 +12,13 @@
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />
 
-	<op:outbound-processing></op:outbound-processing>
+	<!-- Outbound Processing -->
+	<op:outbound-processing>
+
+		<!-- Send events via MQTT -->
+		<op:mqtt-event-processor processorId="mqtt1"
+			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" topic="SiteWhere/output" />
+
+	</op:outbound-processing>
 
 </beans>

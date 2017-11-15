@@ -144,6 +144,26 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
     }
 
     /**
+     * Parse attributes that are common to all outbound processors.
+     * 
+     * @param element
+     * @param builder
+     */
+    protected void parseCommonOutboundProcessorAttributes(Element element, BeanDefinitionBuilder builder) {
+	// Handle processor id.
+	Attr processorId = element.getAttributeNode("processorId");
+	if (processorId != null) {
+	    builder.addPropertyValue("processorId", processorId.getValue());
+	}
+
+	// Handle number of processing threads.
+	Attr numProcessingThreads = element.getAttributeNode("numProcessingThreads");
+	if (numProcessingThreads != null) {
+	    builder.addPropertyValue("numProcessingThreads", numProcessingThreads.getValue());
+	}
+    }
+
+    /**
      * Parse configuration for custom outbound event processor.
      * 
      * @param element
@@ -168,6 +188,10 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseZoneTestEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(ZoneTestEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
+	
 	List<Element> children = DomUtils.getChildElementsByTagName(element, "zone-test");
 	List<Object> tests = new ManagedList<Object>();
 	for (Element testElm : children) {
@@ -242,6 +266,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseMqttEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr protocol = element.getAttributeNode("protocol");
 	if (protocol != null) {
@@ -308,6 +335,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseRabbitMqEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder
 		.rootBeanDefinition(RabbitMqOutboundEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr connectionUri = element.getAttributeNode("connectionUri");
 	if (connectionUri != null) {
@@ -340,6 +370,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseHazelcastEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(HazelcastEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	// Parse nested filters.
 	processor.addPropertyValue("filters", parseFilters(element, context));
@@ -357,6 +390,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseSolrEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SolrDeviceEventProcessor.class);
 	processor.addPropertyReference("solr", SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	// Parse nested filters.
 	processor.addPropertyValue("filters", parseFilters(element, context));
@@ -374,6 +410,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseAzureEventHubEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder
 		.rootBeanDefinition(EventHubOutboundEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr sasKey = element.getAttributeNode("sasKey");
 	if (sasKey == null) {
@@ -414,6 +453,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseAmazonSqsEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr accessKey = element.getAttributeNode("accessKey");
 	if (accessKey == null) {
@@ -449,6 +491,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseInitialStateEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(InitialStateEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr streamingAccessKey = element.getAttributeNode("streamingAccessKey");
 	if (streamingAccessKey == null) {
@@ -471,6 +516,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseDweetIoEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DweetIoEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	// Parse nested filters.
 	processor.addPropertyValue("filters", parseFilters(element, context));
@@ -488,6 +536,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseCommandDeliveryEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DeviceCommandEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr numThreads = element.getAttributeNode("numThreads");
 	if (numThreads != null) {
@@ -510,6 +561,9 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseGroovyEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
+	
+	// Parse common outbound processor attributes.
+	parseCommonOutboundProcessorAttributes(element, processor);
 
 	Attr scriptPath = element.getAttributeNode("scriptPath");
 	if (scriptPath != null) {

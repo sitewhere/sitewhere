@@ -1,0 +1,271 @@
+package com.sitewhere.outbound.kafka;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.converter.KafkaModelConverter;
+import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.outbound.spi.IOutboundEventProcessor;
+import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenant;
+
+/**
+ * Kafka host container that reads from the enriched events topic and forwards
+ * the messages to a wrapped outbound event processor.
+ * 
+ * @author Derek
+ */
+public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
+    /** Number of payloads buffered before consumer threads are blocked */
+    private static final int BUFFER_SIZE = 100;
+
+    /** Consumer id */
+    private static String CONSUMER_ID = UUID.randomUUID().toString();
+
+    /** Get wrapped outbound event processor implementation */
+    private IOutboundEventProcessor outboundEventProcessor;
+
+    /** Queue of payloads pulled from Kafka but not yet processed */
+    private BlockingQueue<byte[]> payloadsQueue = new ArrayBlockingQueue<>(BUFFER_SIZE);
+
+    /** Executor */
+    private ExecutorService executor;
+
+    public KafkaOutboundEventProcessorHost(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine,
+	    IOutboundEventProcessor outboundEventProcessor) {
+	super(microservice, tenantEngine);
+	this.outboundEventProcessor = outboundEventProcessor;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
+     * getConsumerId()
+     */
+    @Override
+    public String getConsumerId() throws SiteWhereException {
+	return CONSUMER_ID;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
+     * getConsumerGroupId()
+     */
+    @Override
+    public String getConsumerGroupId() throws SiteWhereException {
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenant()) + "processor."
+		+ getOutboundEventProcessor().getProcessorId();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
+     * getSourceTopicNames()
+     */
+    @Override
+    public List<String> getSourceTopicNames() throws SiteWhereException {
+	List<String> topics = new ArrayList<String>();
+	topics.add(getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenant()));
+	return topics;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+	initializeNestedComponent(getOutboundEventProcessor(), monitor, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+	startNestedComponent(getOutboundEventProcessor(), monitor, true);
+	executor = Executors.newFixedThreadPool(getOutboundEventProcessor().getNumProcessingThreads(),
+		new OutboundEventProcessingThreadFactory());
+	for (int i = 0; i < getOutboundEventProcessor().getNumProcessingThreads(); i++) {
+	    executor.execute(new OutboundEventPayloadProcessor(getMicroservice(), getTenant()));
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#stop(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+	if (executor != null) {
+	    executor.shutdown();
+	}
+	stopNestedComponent(getOutboundEventProcessor(), monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#received(
+     * java.lang.String, byte[])
+     */
+    @Override
+    public void received(String key, byte[] message) throws SiteWhereException {
+	try {
+	    getPayloadsQueue().put(message);
+	} catch (InterruptedException e) {
+	    getLogger().warn("Outbound event processor interrupted.");
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    public IOutboundEventProcessor getOutboundEventProcessor() {
+	return outboundEventProcessor;
+    }
+
+    public void setOutboundEventProcessor(IOutboundEventProcessor outboundEventProcessor) {
+	this.outboundEventProcessor = outboundEventProcessor;
+    }
+
+    public BlockingQueue<byte[]> getPayloadsQueue() {
+	return payloadsQueue;
+    }
+
+    public void setPayloadsQueue(BlockingQueue<byte[]> payloadsQueue) {
+	this.payloadsQueue = payloadsQueue;
+    }
+
+    /**
+     * Processor that unmarshals an enriched event and forwards it to outbound
+     * processor implementation.
+     * 
+     * @author Derek
+     */
+    protected class OutboundEventPayloadProcessor extends SystemUserRunnable {
+
+	public OutboundEventPayloadProcessor(IMicroservice microservice, ITenant tenant) {
+	    super(microservice, tenant);
+	}
+
+	/*
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
+	 */
+	@Override
+	public void runAsSystemUser() throws SiteWhereException {
+	    while (true) {
+		try {
+		    byte[] encoded = getPayloadsQueue().take();
+		    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
+		    EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		    if (getLogger().isDebugEnabled()) {
+			getLogger().debug("Received enriched event payload:\n\n"
+				+ MarshalUtils.marshalJsonAsPrettyString(payload));
+		    }
+		    routePayload(payload);
+		} catch (SiteWhereException e) {
+		    getLogger().error("Unable to process outbound event payload.", e);
+		} catch (InterruptedException e) {
+		    getLogger().error("Outbound processor thread interrupted.", e);
+		    return;
+		} catch (Throwable e) {
+		    getLogger().error("Unhandled exception processing event payload.", e);
+		}
+	    }
+	}
+
+	/**
+	 * Route payload to correct processor method.
+	 * 
+	 * @param payload
+	 * @throws SiteWhereException
+	 */
+	protected void routePayload(EnrichedEventPayload payload) throws SiteWhereException {
+	    IDeviceEventContext context = payload.getEventContext();
+	    IDeviceEvent event = payload.getEvent();
+	    switch (event.getEventType()) {
+	    case Alert: {
+		getOutboundEventProcessor().onAlert(context, (IDeviceAlert) event);
+		break;
+	    }
+	    case CommandInvocation: {
+		getOutboundEventProcessor().onCommandInvocation(context, (IDeviceCommandInvocation) event);
+		break;
+	    }
+	    case CommandResponse: {
+		getOutboundEventProcessor().onCommandResponse(context, (IDeviceCommandResponse) event);
+		break;
+	    }
+	    case Location: {
+		getOutboundEventProcessor().onLocation(context, (IDeviceLocation) event);
+		break;
+	    }
+	    case Measurements: {
+		getOutboundEventProcessor().onMeasurements(context, (IDeviceMeasurements) event);
+		break;
+	    }
+	    case StateChange: {
+		getOutboundEventProcessor().onStateChange(context, (IDeviceStateChange) event);
+		break;
+	    }
+	    default: {
+		throw new SiteWhereException("Unknown event type. " + event.getEventType().name());
+	    }
+	    }
+	}
+    }
+
+    /** Used for naming outbound event processing threads */
+    private class OutboundEventProcessingThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Outbound Processing '" + getOutboundEventProcessor().getProcessorId() + "' "
+		    + counter.incrementAndGet());
+	}
+    }
+}

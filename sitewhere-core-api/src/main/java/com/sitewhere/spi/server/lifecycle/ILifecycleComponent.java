@@ -157,8 +157,8 @@ public interface ILifecycleComponent {
     public void lifecycleStop(ILifecycleProgressMonitor monitor);
 
     /**
-     * Stops the component while keeping up with lifecycle information. This
-     * version allows constraints to be passed to the operation.
+     * Stops the component while keeping up with lifecycle information. This version
+     * allows constraints to be passed to the operation.
      * 
      * @param monitor
      * @param constraints
@@ -189,6 +189,17 @@ public interface ILifecycleComponent {
     public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException;
 
     /**
+     * Stop a nested lifecycle component.
+     * 
+     * @param component
+     * @param monitor
+     * @param require
+     * @throws SiteWhereException
+     */
+    public void stopNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
+
+    /**
      * Terminates the component while keeping up with lifecycle information.
      * 
      * @param monitor
@@ -211,8 +222,8 @@ public interface ILifecycleComponent {
     public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after);
 
     /**
-     * Find components (including this component and nested components) that are
-     * of the given type.
+     * Find components (including this component and nested components) that are of
+     * the given type.
      * 
      * @param type
      * @return

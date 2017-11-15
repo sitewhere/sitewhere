@@ -8,9 +8,8 @@
 package com.sitewhere.outbound.filter;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 
 /**
  * Includes or excludes events for devices using a given specification.
@@ -26,18 +25,14 @@ public class SpecificationFilter extends DeviceEventFilter {
     private FilterOperation operation = FilterOperation.Include;
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.processor.IDeviceEventFilter#isFiltered(
-     * com.sitewhere .spi.device.event.IDeviceEvent,
-     * com.sitewhere.spi.device.IDevice,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.outbound.spi.IDeviceEventFilter#isFiltered(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
      */
     @Override
-    public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
-	    throws SiteWhereException {
-	if (getSpecificationToken().equals(device.getSpecificationToken())) {
+    public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
+	if (getSpecificationToken().equals(context.getSpecificationToken())) {
 	    return (getOperation() != FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);

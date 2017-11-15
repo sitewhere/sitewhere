@@ -7,6 +7,7 @@
  */
 package com.sitewhere.outbound.spi.microservice;
 
+import com.sitewhere.outbound.spi.IOutboundProcessorsManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IOutboundProcessingTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get manager for outbound processors.
+     * 
+     * @return
+     */
+    public IOutboundProcessorsManager getOutboundProcessorsManager();
 }

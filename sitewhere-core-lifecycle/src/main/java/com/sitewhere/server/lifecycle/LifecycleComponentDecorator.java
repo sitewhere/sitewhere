@@ -38,8 +38,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
      */
     @Override
     public String getComponentId() {
@@ -72,8 +71,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus
-     * ()
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus ()
      */
     @Override
     public LifecycleStatus getLifecycleStatus() {
@@ -84,8 +82,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError( )
      */
     @Override
     public SiteWhereException getLifecycleError() {
@@ -95,8 +92,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getCreatedDate()
      */
     @Override
     public Date getCreatedDate() {
@@ -129,8 +125,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canInitialize()
      */
     @Override
     public boolean canInitialize() throws SiteWhereException {
@@ -140,8 +135,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -196,8 +190,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
 
     /*
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * startNestedComponent(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleComponent,
+     * startNestedComponent(com.sitewhere.spi.server.lifecycle. ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
@@ -300,6 +293,18 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stopNestedComponent(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stopNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
+	delegate.stopNestedComponent(component, monitor);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
@@ -314,8 +319,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#terminate(com.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#terminate(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -327,8 +331,8 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * lifecycleStatusChanged(com.sitewhere.spi.server.lifecycle.
-     * LifecycleStatus, com.sitewhere.spi.server.lifecycle.LifecycleStatus)
+     * lifecycleStatusChanged(com.sitewhere.spi.server.lifecycle. LifecycleStatus,
+     * com.sitewhere.spi.server.lifecycle.LifecycleStatus)
      */
     @Override
     public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after) {
