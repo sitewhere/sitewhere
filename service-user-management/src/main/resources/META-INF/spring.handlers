@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/user-management=com.sitewhere.user.spring.UserManagementNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/user-management=com.sitewhere.user.spring.UserManagementNamespaceHandler

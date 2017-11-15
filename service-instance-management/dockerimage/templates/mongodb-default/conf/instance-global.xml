@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:ig="http://www.sitewhere.com/schema/sitewhere/microservice/instance-global"
+	xmlns:ig="http://sitewhere.io/schema/sitewhere/microservice/instance-global"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/microservice/instance-global http://www.sitewhere.org/schema/sitewhere/microservice/instance-global/current/instance-global.xsd">
+           http://sitewhere.io/schema/sitewhere/microservice/instance-global http://sitewhere.io/schema/sitewhere/microservice/instance-global/current/instance-global.xsd">
 
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />

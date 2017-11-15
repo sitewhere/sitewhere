@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-	xmlns="http://www.sitewhere.com/schema/sitewhere/microservice/instance-global"
-	xmlns:sw="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
-	targetNamespace="http://www.sitewhere.com/schema/sitewhere/microservice/instance-global"
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/instance-global"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/instance-global"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://www.springframework.org/schema/beans"
-		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
-	<xsd:import
-		namespace="http://www.sitewhere.com/schema/sitewhere/microservice/common"
-		schemaLocation="http://www.sitewhere.org/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:element name="instance-global" type="instanceGlobalType">
 		<xsd:annotation>
@@ -55,7 +52,8 @@
 		substitutionGroup="abstract-datastore-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides global datastore configuration using MongoDB for persistence.
+				Provides global datastore configuration using
+				MongoDB for persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>

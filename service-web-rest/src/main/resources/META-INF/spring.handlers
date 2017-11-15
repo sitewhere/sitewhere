@@ -1,1 +1,1 @@
-http\://www.sitewhere.com/schema/sitewhere/microservice/web-rest=com.sitewhere.web.spring.WebRestNamespaceHandler
+http\://sitewhere.io/schema/sitewhere/microservice/web-rest=com.sitewhere.web.spring.WebRestNamespaceHandler
