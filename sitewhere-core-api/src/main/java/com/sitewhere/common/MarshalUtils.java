@@ -56,7 +56,7 @@ public class MarshalUtils {
      */
     public static String marshalJsonAsString(Object object) throws SiteWhereException {
 	try {
-	    return MAPPER.writeValueAsString(object);
+	    return (object != null) ? MAPPER.writeValueAsString(object) : "NULL";
 	} catch (JsonProcessingException e) {
 	    throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 	}
@@ -71,7 +71,7 @@ public class MarshalUtils {
      */
     public static String marshalJsonAsPrettyString(Object object) throws SiteWhereException {
 	try {
-	    return PRETTY_MAPPER.writeValueAsString(object);
+	    return (object != null) ? PRETTY_MAPPER.writeValueAsString(object) : "NULL";
 	} catch (JsonProcessingException e) {
 	    throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 	}

@@ -7,11 +7,11 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
@@ -68,9 +68,8 @@ public class Tenants extends RestControllerBase {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Create new tenant")
-    public ITenant createTenant(@RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
+    public ITenant createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	return getTenantManagement().createTenant(request);
     }
 
@@ -85,10 +84,9 @@ public class Tenants extends RestControllerBase {
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing tenant.")
     public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    @RequestBody TenantCreateRequest request, HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	// ITenant tenant = assureTenant(tenantId);
-	// checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
+	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
+	ITenant tenant = assureTenant(tenantId);
+	checkForAdminOrEditSelf(tenant);
 	return getTenantManagement().updateTenant(tenantId, request);
     }
 
@@ -101,10 +99,10 @@ public class Tenants extends RestControllerBase {
      */
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get tenant by unique id")
-    public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+    public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantId);
-	// checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
+	checkForAdminOrEditSelf(tenant);
 	return tenant;
     }
 
@@ -118,11 +116,11 @@ public class Tenants extends RestControllerBase {
     @RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
     @ApiOperation(value = "Get tenant by authentication token")
     public ITenant getTenantByAuthToken(
-	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
+	    throws SiteWhereException {
 	ITenant tenant = getTenantManagement().getTenantByAuthenticationToken(authToken);
 	if (tenant != null) {
-	    // checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
+	    checkForAdminOrEditSelf(tenant);
 	    return tenant;
 	}
 	return null;
@@ -142,12 +140,12 @@ public class Tenants extends RestControllerBase {
 	    @ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
 	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+	    throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
 
 	// Return all tenants if authorized as tenant admin.
-	if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminTenants, false)) {
+	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
 	    TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 	    criteria.setTextSearch(textSearch);
 	    criteria.setUserId(authUserId);
@@ -156,7 +154,7 @@ public class Tenants extends RestControllerBase {
 	}
 
 	// Only return auth tenants if user has 'admin own tenant'.
-	else if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
+	else if (checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
 	    if (loggedIn != null) {
 		TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
@@ -167,8 +165,7 @@ public class Tenants extends RestControllerBase {
 	    }
 	}
 
-	throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
-		HttpServletResponse.SC_FORBIDDEN);
+	throw operationNotPermitted();
     }
 
     /**
@@ -182,73 +179,37 @@ public class Tenants extends RestControllerBase {
     @RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete existing tenant")
     public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
-	// ITenant tenant = assureTenant(tenantId);
-	// checkForAdminOrEditSelf(servletRequest, servletResponse, tenant);
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
+	ITenant tenant = assureTenant(tenantId);
+	checkForAdminOrEditSelf(tenant);
 	return getTenantManagement().deleteTenant(tenantId, force);
-    }
-
-    /**
-     * Lists all tenants that contain a device with the given hardware id.
-     * 
-     * @param hardwareId
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/device/{hardwareId}", method = RequestMethod.GET)
-    @ApiOperation(value = "List tenants that contain a device")
-    public List<ITenant> listTenantsForDevice(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	// checkAuthForAll(servletRequest, servletResponse,
-	// SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
-	// List<ITenant> tenants = SiteWhere.getServer()
-	// .getAuthorizedTenants(SiteWhere.getCurrentlyLoggedInUser().getUsername(),
-	// true);
-	// List<ITenant> matches = new ArrayList<ITenant>();
-	// for (ITenant tenant : tenants) {
-	// if
-	// (SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId)
-	// != null) {
-	// matches.add(tenant);
-	// }
-	// }
-	// return matches;
-	return null;
     }
 
     /**
      * Get tenant configuration model as a JSON object.
      * 
-     * @param servletRequest
-     * @param servletResponse
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/configuration/model", method = RequestMethod.GET)
     @ApiOperation(value = "Get hierarchical model for tenant configuration")
-    public TenantConfigurationModel getTenantConfigurationModel(HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+    public TenantConfigurationModel getTenantConfigurationModel() throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
 	return new TenantConfigurationModel();
     }
 
     /**
      * Get tenant configuration roles.
      * 
-     * @param servletRequest
-     * @param servletResponse
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/configuration/roles", method = RequestMethod.GET)
     @ApiOperation(value = "Get role information for tenant configuration")
-    public Map<String, ElementRole> getTenantConfigurationRoles(HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
+    public Map<String, ElementRole> getTenantConfigurationRoles() throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
 	ElementRole[] roles = ElementRole.values();
 	Map<String, ElementRole> rolesById = new HashMap<String, ElementRole>();
 	for (ElementRole role : roles) {
@@ -260,21 +221,38 @@ public class Tenants extends RestControllerBase {
     /**
      * Lists all available tenant templates.
      * 
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ApiOperation(value = "List templates available for creating tenants")
-    public List<String> listTenantTemplateNames(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-	    throws SiteWhereException {
-	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
-	if (checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminTenants, false)
-		|| checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminOwnTenant, false)) {
+    public List<String> listTenantTemplateNames() throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
+	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
+		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
 	// return
 	// SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
-	return null; // TODO: Figure out access to tenant templates.
+	return new ArrayList<String>(); // TODO: Figure out access to tenant templates.
+    }
+
+    /**
+     * Check for privileges to use REST services + either admin all tenants or admin
+     * own tenant on the currently logged in user.
+     * 
+     * @param tenant
+     * @throws SiteWhereException
+     */
+    public static void checkForAdminOrEditSelf(ITenant tenant) throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
+	if (!checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
+	    checkAuthFor(SiteWhereAuthority.AdminOwnTenant, true);
+	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    if ((loggedIn == null) || (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
+		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
+			HttpServletResponse.SC_FORBIDDEN);
+	    }
+	}
     }
 
     /**
@@ -293,6 +271,6 @@ public class Tenants extends RestControllerBase {
     }
 
     private ITenantManagement getTenantManagement() {
-	return null;
+	return getMicroservice().getTenantManagementApiChannel();
     }
 }

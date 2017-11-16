@@ -86,7 +86,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    Authentication authenticated = getAuthenticationManager().authenticate(token);
 	    if (authenticated instanceof ITenantAwareAuthentication) {
 		((ITenantAwareAuthentication) authenticated).setTenantToken(tenant);
-		LOGGER.info("Added tenant token to authentication: " + tenant);
+		LOGGER.debug("Added tenant token to authentication: " + tenant);
 	    }
 	    SecurityContextHolder.getContext().setAuthentication(authenticated);
 	    LOGGER.debug("Added authentication to context.");

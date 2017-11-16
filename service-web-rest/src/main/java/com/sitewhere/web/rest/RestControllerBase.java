@@ -7,16 +7,19 @@
  */
 package com.sitewhere.web.rest;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
+import com.sitewhere.web.security.LoginManager;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -25,6 +28,9 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * @author Derek Adams
  */
 public class RestControllerBase {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     @Autowired
     private IWebRestMicroservice microservice;
@@ -42,38 +48,43 @@ public class RestControllerBase {
      * Verifies that requestor has all of the given authorities or throws a
      * "forbidden" error.
      * 
-     * @param request
-     * @param response
-     * @param roles
+     * @param auths
      * @throws SiteWhereException
      */
-    public static void checkAuthForAll(HttpServletRequest request, HttpServletResponse response,
-	    SiteWhereAuthority... auths) throws SiteWhereException {
+    public static void checkAuthForAll(SiteWhereAuthority... auths) throws SiteWhereException {
 	for (SiteWhereAuthority auth : auths) {
-	    checkAuthFor(request, response, auth, true);
+	    checkAuthFor(auth, true);
 	}
     }
 
     /**
-     * Verifies that requestor has the given authority and can throws a
-     * "forbidden" error if not.
+     * Verifies that requestor has the given authority and can throws a "forbidden"
+     * error if not.
      * 
-     * @param request
-     * @param response
      * @param auth
      * @param throwException
      * @return
      * @throws SiteWhereException
      */
-    public static boolean checkAuthFor(HttpServletRequest request, HttpServletResponse response,
-	    SiteWhereAuthority auth, boolean throwException) throws SiteWhereException {
-	if (!request.isUserInRole(auth.getRoleName())) {
+    public static boolean checkAuthFor(SiteWhereAuthority auth, boolean throwException) throws SiteWhereException {
+	IUser user = LoginManager.getCurrentlyLoggedInUser();
+	if (!user.getAuthorities().contains(auth.getName())) {
+	    LOGGER.warn("User not authorized for role " + auth.getRoleName() + ".");
 	    if (throwException) {
-		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
-			HttpServletResponse.SC_FORBIDDEN);
+		throw operationNotPermitted();
 	    }
 	    return false;
 	}
 	return true;
+    }
+
+    /**
+     * Throw exception indicating operation is not permitted.
+     * 
+     * @throws SiteWhereException
+     */
+    public static SiteWhereSystemException operationNotPermitted() throws SiteWhereException {
+	return new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
+		HttpServletResponse.SC_FORBIDDEN);
     }
 }

@@ -10,7 +10,6 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
@@ -68,9 +67,9 @@ public class Authorities extends RestControllerBase {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Create a new authority")
-    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
+	    throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
 	return GrantedAuthority.copy(auth);
     }
@@ -85,9 +84,8 @@ public class Authorities extends RestControllerBase {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     @ApiOperation(value = "Get authority by id")
     public GrantedAuthority getAuthorityByName(
-	    @ApiParam(value = "Authority name", required = true) @PathVariable String name,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+	    @ApiParam(value = "Authority name", required = true) @PathVariable String name) throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
 	if (auth == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
@@ -99,15 +97,16 @@ public class Authorities extends RestControllerBase {
     /**
      * List authorities that match given criteria.
      * 
+     * @param count
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "List authorities that match criteria")
     public SearchResults<GrantedAuthority> listAuthorities(
-	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
+	    throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
 	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
@@ -126,9 +125,8 @@ public class Authorities extends RestControllerBase {
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
     @ApiOperation(value = "Get authorities hierarchy")
     @Secured({ SiteWhereRoles.REST })
-    public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy(HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
 	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
 	return GrantedAuthorityHierarchyBuilder.build(auths);

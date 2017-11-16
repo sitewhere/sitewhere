@@ -8,6 +8,7 @@
 package com.sitewhere.web.spi.microservice;
 
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 
@@ -24,6 +25,13 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * @return
      */
     public IUserManagementApiChannel getUserManagementApiChannel();
+
+    /**
+     * Tenant management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public ITenantManagementApiChannel getTenantManagementApiChannel();
 
     /**
      * Device management API access via GRPC channel.

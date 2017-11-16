@@ -125,8 +125,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.providers.AuthenticationProvider#supports(
+     * @see org.springframework.security.providers.AuthenticationProvider#supports(
      * java.lang .Class)
      */
     @SuppressWarnings("rawtypes")

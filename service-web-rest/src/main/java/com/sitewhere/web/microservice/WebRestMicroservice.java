@@ -15,10 +15,13 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
+import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
+import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
@@ -56,6 +59,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
 
+    /** Tenant management GRPC channel */
+    private TenantManagementGrpcChannel tenantManagementGrpcChannel;
+
+    /** Tenant management API channel */
+    private ITenantManagementApiChannel tenantManagementApiChannel;
+
     /** Device management GRPC channel */
     private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
 
@@ -86,8 +95,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths(
-     * )
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
      */
     @Override
     public String[] getConfigurationPaths() throws SiteWhereException {
@@ -98,8 +106,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context.
-     * ApplicationContext, java.util.Map)
+     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
+     * java.util.Map)
      */
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
@@ -129,6 +137,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     protected void waitForApisAvailable() throws ApiNotAvailableException {
 	getUserManagementApiChannel().waitForApiAvailable();
 	getLogger().info("User management API detected as available.");
+	getTenantManagementApiChannel().waitForApiAvailable();
+	getLogger().info("Tenant management API detected as available.");
     }
 
     /*
@@ -152,6 +162,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize user management GRPC channel.
 	init.addInitializeStep(this, getUserManagementGrpcChannel(), true);
 
+	// Initialize tenant management GRPC channel.
+	init.addInitializeStep(this, getTenantManagementGrpcChannel(), true);
+
 	// Initialize device management GRPC channel.
 	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
 
@@ -167,6 +180,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	this.userManagementGrpcChannel = new UserManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_USER_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
+
+	// Tenant management.
+	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
 
 	// Device management.
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
@@ -192,6 +210,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start user mangement GRPC channel.
 	start.addStartStep(this, getUserManagementGrpcChannel(), true);
 
+	// Start tenant mangement GRPC channel.
+	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
+
 	// Start device mangement GRPC channel.
 	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
 
@@ -202,8 +223,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
+     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -213,6 +233,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop user mangement GRPC channel.
 	stop.addStopStep(this, getUserManagementGrpcChannel());
+
+	// Stop tenant mangement GRPC channel.
+	stop.addStopStep(this, getTenantManagementGrpcChannel());
 
 	// Stop device mangement GRPC channel.
 	stop.addStopStep(this, getDeviceManagementGrpcChannel());
@@ -237,6 +260,19 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
 	this.userManagementApiChannel = userManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getTenantManagementApiChannel()
+     */
+    @Override
+    public ITenantManagementApiChannel getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
+    }
+
+    public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
     /*
@@ -274,6 +310,14 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
 	this.userManagementGrpcChannel = userManagementGrpcChannel;
+    }
+
+    public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {
+	return tenantManagementGrpcChannel;
+    }
+
+    public void setTenantManagementGrpcChannel(TenantManagementGrpcChannel tenantManagementGrpcChannel) {
+	this.tenantManagementGrpcChannel = tenantManagementGrpcChannel;
     }
 
     public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {

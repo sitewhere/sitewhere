@@ -77,9 +77,8 @@ public class Users extends RestControllerBase {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Create new user")
-    public User createUser(@RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
 		|| (input.getLastName() == null)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
@@ -94,6 +93,7 @@ public class Users extends RestControllerBase {
     /**
      * Update an existing user.
      * 
+     * @param username
      * @param input
      * @return
      * @throws SiteWhereException
@@ -101,9 +101,8 @@ public class Users extends RestControllerBase {
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update existing user.")
     public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @RequestBody UserCreateRequest input, HttpServletRequest servletRequest,
-	    HttpServletResponse servletResponse) throws SiteWhereException {
-	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
+	    @RequestBody UserCreateRequest input) throws SiteWhereException {
+	checkForAdminOrEditSelf(username);
 	IUser user = getUserManagement().updateUser(username, input, true);
 	return User.copy(user);
     }
@@ -117,9 +116,9 @@ public class Users extends RestControllerBase {
      */
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get user by username")
-    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
+    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+	    throws SiteWhereException {
+	checkForAdminOrEditSelf(username);
 	IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
 	if (user == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
@@ -131,7 +130,7 @@ public class Users extends RestControllerBase {
     /**
      * Delete information for a given user based on username.
      * 
-     * @param siteToken
+     * @param username
      * @param force
      * @return
      * @throws SiteWhereException
@@ -140,9 +139,9 @@ public class Users extends RestControllerBase {
     @ApiOperation(value = "Delete user by username")
     public User deleteUserByUsername(
 	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkAuthForAll(servletRequest, servletResponse, SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    throws SiteWhereException {
+	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IUser user = getUserManagement().deleteUser(username, force);
 	return User.copy(user);
     }
@@ -157,9 +156,9 @@ public class Users extends RestControllerBase {
     @RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
     @ApiOperation(value = "Get authorities for user")
     public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	checkForAdminOrEditSelf(servletRequest, servletResponse, username);
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
+	    throws SiteWhereException {
+	checkForAdminOrEditSelf(username);
 	List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
 	List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
 	for (IGrantedAuthority auth : matches) {
@@ -221,24 +220,20 @@ public class Users extends RestControllerBase {
     }
 
     /**
-     * Check for privileges to use REST services + either admin all users or
-     * admin self on the currently logged in user.
+     * Check for privileges to use REST services + either admin all users or admin
+     * self on the currently logged in user.
      * 
-     * @param servletRequest
-     * @param servletResponse
      * @param username
      * @throws SiteWhereException
      */
-    public static void checkForAdminOrEditSelf(HttpServletRequest servletRequest, HttpServletResponse servletResponse,
-	    String username) throws SiteWhereException {
-	checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.REST, true);
-	if (!checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminUsers, false)) {
+    public static void checkForAdminOrEditSelf(String username) throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
+	if (!checkAuthFor(SiteWhereAuthority.AdminUsers, false)) {
 	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
-		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
-			HttpServletResponse.SC_FORBIDDEN);
+		throw operationNotPermitted();
 	    } else {
-		checkAuthFor(servletRequest, servletResponse, SiteWhereAuthority.AdminSelf, true);
+		checkAuthFor(SiteWhereAuthority.AdminSelf, true);
 	    }
 	}
     }
