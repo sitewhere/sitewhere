@@ -31,7 +31,7 @@ import io.grpc.Status;
 public class TenantTokenServerInterceptor implements ServerInterceptor {
 
     /** Key for accessing requested tenant id */
-    public static final Context.Key<String> TENANT_TOKEN_KEY = Context.key("tenant");
+    public static final Context.Key<String> TENANT_ID_KEY = Context.key("tenant");
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -52,10 +52,10 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
     @Override
     public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 	    ServerCallHandler<ReqT, RespT> next) {
-	if (headers.containsKey(TenantTokenClientInterceptor.TENANT_TOKEN_KEY)) {
-	    String tenant = headers.get(TenantTokenClientInterceptor.TENANT_TOKEN_KEY);
-	    LOGGER.debug("Received tenant token key: " + tenant);
-	    Context ctx = Context.current().withValue(TENANT_TOKEN_KEY, tenant);
+	if (headers.containsKey(TenantTokenClientInterceptor.TENANT_ID_KEY)) {
+	    String tenantId = headers.get(TenantTokenClientInterceptor.TENANT_ID_KEY);
+	    LOGGER.debug("Received tenant id key: " + tenantId);
+	    Context ctx = Context.current().withValue(TENANT_ID_KEY, tenantId);
 	    return Contexts.interceptCall(ctx, call, headers, next);
 	} else {
 	    call.close(Status.UNAUTHENTICATED.withDescription("No tenant token passed in metadata."), headers);

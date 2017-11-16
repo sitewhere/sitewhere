@@ -177,8 +177,9 @@ export function createAuthApiUrl (store) {
 export function createCoreApiCall (store) {
   var baseUrl = createCoreApiUrl(store)
   var jwt = store.getters.jwt
-  var tenantToken = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
-  return createAxiosJwt(baseUrl, jwt, tenantToken)
+  var tenantId = (store.getters.selectedTenant) ? store.getters.selectedTenant.id : ''
+  var tenantAuth = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
+  return createAxiosJwt(baseUrl, jwt, tenantId, tenantAuth)
 }
 
 /**

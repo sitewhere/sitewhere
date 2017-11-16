@@ -58,8 +58,7 @@ public class SystemUser implements ISystemUser {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.security.ISystemUser#getAuthentication()
+     * @see com.sitewhere.microservice.spi.security.ISystemUser#getAuthentication()
      */
     @Override
     public SitewhereAuthentication getAuthentication() throws SiteWhereException {
@@ -81,7 +80,7 @@ public class SystemUser implements ISystemUser {
     @Override
     public Authentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException {
 	SitewhereAuthentication auth = getAuthentication();
-	auth.setTenantToken(tenant.getId());
+	auth.setTenant(tenant);
 	return auth;
     }
 

@@ -65,18 +65,18 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     }
 
     /**
-     * Based on token passed via GRPC header, look up service implementation
-     * running in tenant engine.
+     * Based on token passed via GRPC header, look up service implementation running
+     * in tenant engine.
      * 
      * @return
      */
     protected AssetManagementGrpc.AssetManagementImplBase getTenantImplementation() {
-	String tenantToken = TenantTokenServerInterceptor.TENANT_TOKEN_KEY.get();
-	if (tenantToken == null) {
-	    throw new RuntimeException("Tenant token not found in asset management request.");
+	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	if (tenantId == null) {
+	    throw new RuntimeException("Tenant id not found in asset management request.");
 	}
 	try {
-	    IAssetManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantToken);
+	    IAssetManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
 	    if (engine != null) {
 		return engine.getAssetManagementImpl();
 	    }
@@ -89,10 +89,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createAssetCategory(com.sitewhere.grpc.service.
-     * GCreateAssetCategoryRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * createAssetCategory(com.sitewhere.grpc.service. GCreateAssetCategoryRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void createAssetCategory(GCreateAssetCategoryRequest request,
@@ -103,8 +102,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * getAssetCategoryById(com.sitewhere.grpc.service.
      * GGetAssetCategoryByIdRequest, io.grpc.stub.StreamObserver)
      */
@@ -117,10 +115,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateAssetCategory(com.sitewhere.grpc.service.
-     * GUpdateAssetCategoryRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * updateAssetCategory(com.sitewhere.grpc.service. GUpdateAssetCategoryRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void updateAssetCategory(GUpdateAssetCategoryRequest request,
@@ -131,10 +128,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * listAssetCategories(com.sitewhere.grpc.service.
-     * GListAssetCategoriesRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * listAssetCategories(com.sitewhere.grpc.service. GListAssetCategoriesRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void listAssetCategories(GListAssetCategoriesRequest request,
@@ -145,10 +141,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * deleteAssetCategory(com.sitewhere.grpc.service.
-     * GDeleteAssetCategoryRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * deleteAssetCategory(com.sitewhere.grpc.service. GDeleteAssetCategoryRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void deleteAssetCategory(GDeleteAssetCategoryRequest request,
@@ -159,10 +154,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createHardwareAsset(com.sitewhere.grpc.service.
-     * GCreateHardwareAssetRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * createHardwareAsset(com.sitewhere.grpc.service. GCreateHardwareAssetRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void createHardwareAsset(GCreateHardwareAssetRequest request,
@@ -173,10 +167,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateHardwareAsset(com.sitewhere.grpc.service.
-     * GUpdateHardwareAssetRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * updateHardwareAsset(com.sitewhere.grpc.service. GUpdateHardwareAssetRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void updateHardwareAsset(GUpdateHardwareAssetRequest request,
@@ -187,8 +180,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * createPersonAsset(com.sitewhere.grpc.service.GCreatePersonAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -201,8 +193,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * updatePersonAsset(com.sitewhere.grpc.service.GUpdatePersonAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -215,10 +206,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createLocationAsset(com.sitewhere.grpc.service.
-     * GCreateLocationAssetRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * createLocationAsset(com.sitewhere.grpc.service. GCreateLocationAssetRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void createLocationAsset(GCreateLocationAssetRequest request,
@@ -229,10 +219,9 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateLocationAsset(com.sitewhere.grpc.service.
-     * GUpdateLocationAssetRequest, io.grpc.stub.StreamObserver)
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * updateLocationAsset(com.sitewhere.grpc.service. GUpdateLocationAssetRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void updateLocationAsset(GUpdateLocationAssetRequest request,
@@ -243,8 +232,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * getAssetById(com.sitewhere.grpc.service.GGetAssetByIdRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -256,8 +244,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * deleteAsset(com.sitewhere.grpc.service.GDeleteAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -269,8 +256,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
      * listAssets(com.sitewhere.grpc.service.GListAssetsRequest,
      * io.grpc.stub.StreamObserver)
      */

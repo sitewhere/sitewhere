@@ -17,13 +17,16 @@ export function createAxiosBasicAuth (baseUrl, authToken) {
 /**
  * Create basic auth axios client for retrieving JWT based on credentials.
  */
-export function createAxiosJwt (baseUrl, jwt, tenantToken) {
+export function createAxiosJwt (baseUrl, jwt, tenantId, tenantAuth) {
   let headers = {}
   if (jwt) {
     headers['Authorization'] = 'Bearer ' + jwt
   }
-  if (tenantToken) {
-    headers['X-SiteWhere-Tenant'] = tenantToken
+  if (tenantId) {
+    headers['X-SiteWhere-Tenant-Id'] = tenantId
+  }
+  if (tenantAuth) {
+    headers['X-SiteWhere-Tenant-Auth'] = tenantAuth
   }
   return axios.create({
     baseURL: baseUrl,

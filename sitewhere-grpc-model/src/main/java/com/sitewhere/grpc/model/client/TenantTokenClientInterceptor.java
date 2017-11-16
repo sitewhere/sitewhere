@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication;
+import com.sitewhere.spi.tenant.ITenant;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -33,7 +34,7 @@ public class TenantTokenClientInterceptor implements ClientInterceptor {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Tenant token metadata key */
-    public static final Metadata.Key<String> TENANT_TOKEN_KEY = Metadata.Key.of("tenant",
+    public static final Metadata.Key<String> TENANT_ID_KEY = Metadata.Key.of("tenant",
 	    Metadata.ASCII_STRING_MARSHALLER);
 
     /*
@@ -50,17 +51,16 @@ public class TenantTokenClientInterceptor implements ClientInterceptor {
 	    /*
 	     * (non-Javadoc)
 	     * 
-	     * @see
-	     * io.grpc.ForwardingClientCall#start(io.grpc.ClientCall.Listener,
+	     * @see io.grpc.ForwardingClientCall#start(io.grpc.ClientCall.Listener,
 	     * io.grpc.Metadata)
 	     */
 	    @Override
 	    public void start(Listener<RespT> responseListener, Metadata headers) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if ((authentication != null) && (authentication instanceof ITenantAwareAuthentication)) {
-		    String tenantToken = ((ITenantAwareAuthentication) authentication).getTenantToken();
-		    if (tenantToken != null) {
-			headers.put(TENANT_TOKEN_KEY, tenantToken);
+		    ITenant tenant = ((ITenantAwareAuthentication) authentication).getTenant();
+		    if (tenant != null) {
+			headers.put(TENANT_ID_KEY, tenant.getId());
 		    }
 		}
 		super.start(responseListener, headers);

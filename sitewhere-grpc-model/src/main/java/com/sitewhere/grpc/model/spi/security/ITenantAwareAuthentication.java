@@ -9,6 +9,8 @@ package com.sitewhere.grpc.model.spi.security;
 
 import org.springframework.security.core.Authentication;
 
+import com.sitewhere.spi.tenant.ITenant;
+
 /**
  * Extends Spring {@link Authentication} with ability to carry a tenant token.
  * 
@@ -17,16 +19,16 @@ import org.springframework.security.core.Authentication;
 public interface ITenantAwareAuthentication extends Authentication {
 
     /**
-     * Get tenant token.
+     * Get tenant.
      * 
      * @return
      */
-    public String getTenantToken();
+    public ITenant getTenant();
 
     /**
-     * Set tenant token.
+     * Set tenant.
      * 
-     * @param token
+     * @param tenant
      */
-    public void setTenantToken(String token);
+    public void setTenant(ITenant tenant);
 }

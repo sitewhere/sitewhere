@@ -47,8 +47,8 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
      * (non-Javadoc)
      * 
      * @see org.springframework.security.config.annotation.web.configuration.
-     * WebSecurityConfigurerAdapter#configure(org.springframework.security.
-     * config. annotation.authentication.builders.AuthenticationManagerBuilder)
+     * WebSecurityConfigurerAdapter#configure(org.springframework.security. config.
+     * annotation.authentication.builders.AuthenticationManagerBuilder)
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -73,7 +73,7 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
-	return new TokenAuthenticationFilter(authenticationManagerBean());
+	return new TokenAuthenticationFilter(getWebRestMicroservice(), authenticationManagerBean());
     }
 
     /**
@@ -90,8 +90,8 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
      * (non-Javadoc)
      * 
      * @see org.springframework.security.config.annotation.web.configuration.
-     * WebSecurityConfigurerAdapter#configure(org.springframework.security.
-     * config. annotation.web.builders.HttpSecurity)
+     * WebSecurityConfigurerAdapter#configure(org.springframework.security. config.
+     * annotation.web.builders.HttpSecurity)
      */
     protected void configure(HttpSecurity http) throws Exception {
 	http.csrf().disable();

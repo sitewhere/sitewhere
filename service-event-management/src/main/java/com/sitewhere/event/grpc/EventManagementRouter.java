@@ -91,18 +91,18 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /**
-     * Based on token passed via GRPC header, look up service implementation
-     * running in tenant engine.
+     * Based on token passed via GRPC header, look up service implementation running
+     * in tenant engine.
      * 
      * @return
      */
     protected DeviceEventManagementGrpc.DeviceEventManagementImplBase getTenantImplementation() {
-	String tenantToken = TenantTokenServerInterceptor.TENANT_TOKEN_KEY.get();
-	if (tenantToken == null) {
-	    throw new RuntimeException("Tenant token not found in event management request.");
+	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	if (tenantId == null) {
+	    throw new RuntimeException("Tenant id not found in event management request.");
 	}
 	try {
-	    IEventManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantToken);
+	    IEventManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
 	    if (engine != null) {
 		return engine.getEventManagementImpl();
 	    }
@@ -237,8 +237,7 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#listLocationsForAssignment(com.sitewhere.
-     * grpc.service.GListLocationsForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GListLocationsForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void listLocationsForAssignment(GListLocationsForAssignmentRequest request,
@@ -303,8 +302,7 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#addStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GAddStreamDataForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GAddStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void addStreamDataForAssignment(GAddStreamDataForAssignmentRequest request,
@@ -317,8 +315,7 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#getStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GGetStreamDataForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GGetStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void getStreamDataForAssignment(GGetStreamDataForAssignmentRequest request,

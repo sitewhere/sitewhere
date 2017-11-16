@@ -12,6 +12,7 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implementation of Spring security interface.
@@ -32,8 +33,8 @@ public class SitewhereAuthentication implements ITenantAwareAuthentication {
     /** Authenticated flag */
     private boolean authenticated;
 
-    /** Tenant token */
-    private String tenantToken;
+    /** Tenant */
+    private ITenant tenant;
 
     public SitewhereAuthentication(SitewhereUserDetails details, String password) {
 	this.userDetails = details;
@@ -92,8 +93,7 @@ public class SitewhereAuthentication implements ITenantAwareAuthentication {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.Authentication#setAuthenticated(boolean)
+     * @see org.springframework.security.Authentication#setAuthenticated(boolean)
      */
     @Override
     public void setAuthenticated(boolean value) throws IllegalArgumentException {
@@ -111,24 +111,21 @@ public class SitewhereAuthentication implements ITenantAwareAuthentication {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.security.ITenantAwareAuthentication#
-     * getTenantToken()
+     * @see
+     * com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication#getTenant()
      */
     @Override
-    public String getTenantToken() {
-	return tenantToken;
+    public ITenant getTenant() {
+	return tenant;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.security.ITenantAwareAuthentication#
-     * setTenantToken(java.lang.String)
+     * @see
+     * com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication#setTenant(
+     * com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public void setTenantToken(String tenantToken) {
-	this.tenantToken = tenantToken;
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
     }
 }

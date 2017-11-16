@@ -37,18 +37,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     }
 
     /**
-     * Based on token passed via GRPC header, look up service implementation
-     * running in tenant engine.
+     * Based on token passed via GRPC header, look up service implementation running
+     * in tenant engine.
      * 
      * @return
      */
     protected DeviceManagementGrpc.DeviceManagementImplBase getTenantImplementation() {
-	String tenantToken = TenantTokenServerInterceptor.TENANT_TOKEN_KEY.get();
-	if (tenantToken == null) {
-	    throw new RuntimeException("Tenant token not found in device management request.");
+	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	if (tenantId == null) {
+	    throw new RuntimeException("Tenant id not found in device management request.");
 	}
 	try {
-	    IDeviceManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantToken);
+	    IDeviceManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
 	    if (engine != null) {
 		return engine.getDeviceManagementImpl();
 	    }
@@ -127,8 +127,8 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createDeviceCommand(com.sitewhere.grpc.service.
-     * GCreateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * createDeviceCommand(com.sitewhere.grpc.service. GCreateDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
@@ -151,8 +151,8 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceCommand(com.sitewhere.grpc.service.
-     * GUpdateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * updateDeviceCommand(com.sitewhere.grpc.service. GUpdateDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void updateDeviceCommand(GUpdateDeviceCommandRequest request,
@@ -175,8 +175,8 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteDeviceCommand(com.sitewhere.grpc.service.
-     * GDeleteDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * deleteDeviceCommand(com.sitewhere.grpc.service. GDeleteDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void deleteDeviceCommand(GDeleteDeviceCommandRequest request,
@@ -507,8 +507,8 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * endDeviceAssignment(com.sitewhere.grpc.service.
-     * GEndDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
+     * endDeviceAssignment(com.sitewhere.grpc.service. GEndDeviceAssignmentRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void endDeviceAssignment(GEndDeviceAssignmentRequest request,

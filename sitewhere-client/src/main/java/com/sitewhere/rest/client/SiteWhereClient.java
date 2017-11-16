@@ -1033,7 +1033,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 	    HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 	    ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
 	    return response.getBody();
@@ -1050,7 +1050,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 	    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 	    HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 	    ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
@@ -1077,7 +1077,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 
 	    ResponseEntity<byte[]> response = getClient().exchange(url, method, new HttpEntity<byte[]>(headers),
 		    byte[].class, vars);
