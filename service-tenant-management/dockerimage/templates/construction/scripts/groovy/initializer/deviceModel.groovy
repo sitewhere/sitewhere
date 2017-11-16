@@ -5,8 +5,8 @@ import com.vividsolutions.jts.algorithm.*;
 // ########### //
 // Common Code //
 // ########### //
-Integer devicesPerSite = 50
-Integer mxPerAssignment = 75
+Integer devicesPerSite = 30
+Integer mxPerAssignment = 50
 Integer locationsPerAssignment = 40
 Integer minTemp = 80
 Integer warnTemp = 160

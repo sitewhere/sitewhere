@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
@@ -20,6 +22,7 @@ import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
@@ -70,6 +73,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Device management API channel */
     private IDeviceManagementApiChannel deviceManagementApiChannel;
+
+    /** Device event management GRPC channel */
+    private DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel;
+
+    /** Device event management API channel */
+    private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -168,6 +177,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize device management GRPC channel.
 	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
 
+	// Initialize device event management GRPC channel.
+	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -190,6 +202,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
+
+	// Device event management.
+	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
+		getDeviceEventManagementGrpcChannel());
     }
 
     /*
@@ -216,6 +234,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start device mangement GRPC channel.
 	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
 
+	// Start device event mangement GRPC channel.
+	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -239,6 +260,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop device mangement GRPC channel.
 	stop.addStopStep(this, getDeviceManagementGrpcChannel());
+
+	// Stop device event mangement GRPC channel.
+	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
@@ -291,6 +315,19 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getDeviceEventManagementApiChannel()
+     */
+    @Override
+    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel() {
+	return deviceEventManagementApiChannel;
+    }
+
+    public void setDeviceEventManagementApiChannel(IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
+	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
@@ -326,5 +363,13 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
 	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
+    }
+
+    public DeviceEventManagementGrpcChannel getDeviceEventManagementGrpcChannel() {
+	return deviceEventManagementGrpcChannel;
+    }
+
+    public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
+	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
     }
 }

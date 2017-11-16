@@ -524,7 +524,7 @@ public class Sites extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {
