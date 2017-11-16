@@ -9,6 +9,7 @@ package com.sitewhere.spi.device;
 
 import java.util.Date;
 
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -48,18 +49,11 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
     public DeviceAssignmentType getAssignmentType();
 
     /**
-     * Get id of referenced asset module.
+     * Get asset reference.
      * 
      * @return
      */
-    public String getAssetModuleId();
-
-    /**
-     * Get the asset identifier.
-     * 
-     * @return
-     */
-    public String getAssetId();
+    public IAssetReference getAssetReference();
 
     /**
      * Get the device assignment status.

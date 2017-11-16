@@ -10,6 +10,7 @@ package com.sitewhere.spi.device.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 
@@ -64,18 +65,11 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
     public DeviceAssignmentType getAssignmentType();
 
     /**
-     * Get id of asset module.
+     * Get asset reference.
      * 
      * @return
      */
-    public String getAssetModuleId();
-
-    /**
-     * Get id of asset if associated.
-     * 
-     * @return
-     */
-    public String getAssetId();
+    public IAssetReference getAssetReference();
 
     /**
      * Get the date the event occurred.

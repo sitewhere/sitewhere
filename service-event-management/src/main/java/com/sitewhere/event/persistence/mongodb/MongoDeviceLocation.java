@@ -21,16 +21,16 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 
     /** Element that holds location information */
-    public static final String PROP_LATLONG = "latLong";
+    public static final String PROP_LATLONG = "ll";
 
     /** Property for latitude */
-    public static final String PROP_LATITUDE = "latitude";
+    public static final String PROP_LATITUDE = "lt";
 
     /** Property for longitude */
-    public static final String PROP_LONGITUDE = "longitude";
+    public static final String PROP_LONGITUDE = "ln";
 
     /** Property for elevation */
-    public static final String PROP_ELEVATION = "elevation";
+    public static final String PROP_ELEVATION = "el";
 
     /*
      * (non-Javadoc)

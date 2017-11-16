@@ -21,6 +21,8 @@ import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;
+import com.sitewhere.rest.model.asset.AssetReference;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -155,7 +157,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_SPECIFICATIONS);
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+		    ? request.getCriteria().getIncludeDeleted().getValue()
+		    : false;
 	    ISearchResults<IDeviceSpecification> apiResult = getDeviceManagement().listDeviceSpecifications(
 		    includeDeleted, CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceSpecificationsResponse.Builder response = GListDeviceSpecificationsResponse.newBuilder();
@@ -203,8 +206,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
      * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createDeviceCommand(com.sitewhere.grpc.service.
-     * GCreateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * createDeviceCommand(com.sitewhere.grpc.service. GCreateDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
@@ -256,8 +259,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
      * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceCommand(com.sitewhere.grpc.service.
-     * GUpdateDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * updateDeviceCommand(com.sitewhere.grpc.service. GUpdateDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void updateDeviceCommand(GUpdateDeviceCommandRequest request,
@@ -291,7 +294,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS);
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+		    ? request.getCriteria().getIncludeDeleted().getValue()
+		    : false;
 	    List<IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(request.getSpecificationToken(),
 		    includeDeleted);
 	    GListDeviceCommandsResponse.Builder response = GListDeviceCommandsResponse.newBuilder();
@@ -311,8 +315,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
      * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteDeviceCommand(com.sitewhere.grpc.service.
-     * GDeleteDeviceCommandRequest, io.grpc.stub.StreamObserver)
+     * deleteDeviceCommand(com.sitewhere.grpc.service. GDeleteDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void deleteDeviceCommand(GDeleteDeviceCommandRequest request,
@@ -550,7 +554,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICES);
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+		    ? request.getCriteria().getIncludeDeleted().getValue()
+		    : false;
 	    ISearchResults<IDevice> apiResult = getDeviceManagement().listDevices(includeDeleted,
 		    DeviceModelConverter.asApiDeviceSearchCriteria(request.getCriteria()));
 	    GListDevicesResponse.Builder response = GListDevicesResponse.newBuilder();
@@ -733,7 +738,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+		    ? request.getCriteria().getIncludeDeleted().getValue()
+		    : false;
 	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroups(includeDeleted,
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupsResponse.Builder response = GListDeviceGroupsResponse.newBuilder();
@@ -765,7 +771,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue() : false;
+		    ? request.getCriteria().getIncludeDeleted().getValue()
+		    : false;
 	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroupsWithRole(
 		    request.getCriteria().getRole(), includeDeleted,
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
@@ -1061,8 +1068,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
      * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * endDeviceAssignment(com.sitewhere.grpc.service.
-     * GEndDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
+     * endDeviceAssignment(com.sitewhere.grpc.service. GEndDeviceAssignmentRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
     public void endDeviceAssignment(GEndDeviceAssignmentRequest request,
@@ -1156,8 +1163,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceAssignmentsForAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAsset(
-		    request.getAssetModuleId(), request.getAssetId(),
+	    IAssetReference reference = new AssetReference.Builder(request.getAssetModuleId(), request.getAssetId())
+		    .build();
+	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAsset(reference,
 		    DeviceModelConverter.asApiAssignmentsForAssetSearchCriteria(request.getCriteria()));
 	    GGetDeviceAssignmentsForAssetResponse.Builder response = GGetDeviceAssignmentsForAssetResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();

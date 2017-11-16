@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.rest.client.SiteWhereClient;
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -160,8 +161,7 @@ public class ApiTests {
 	// Create a device assignment.
 	DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
 	assnRequest.setAssignmentType(DeviceAssignmentType.Associated);
-	assnRequest.setAssetModuleId("testAssetModuleId");
-	assnRequest.setAssetId(TEST_ASSET_ID);
+	assnRequest.setAssetReference(new AssetReference.Builder("testAssetModuleId", TEST_ASSET_ID).build());
 	assnRequest.setDeviceHardwareId(device.getHardwareId());
 	metadata = new HashMap<String, String>();
 	metadata.put("name1", "value1");

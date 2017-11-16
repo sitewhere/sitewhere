@@ -13,9 +13,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -38,11 +40,8 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
     /** Specification name */
     private String name;
 
-    /** Asset module id */
-    private String assetModuleId;
-
-    /** Asset id */
-    private String assetId;
+    /** Asset reference */
+    private IAssetReference assetReference;
 
     /** Indicates if device instances can contain nested devices */
     private DeviceContainerPolicy containerPolicy;
@@ -59,6 +58,7 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
      * getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -68,31 +68,16 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
-     * getAssetModuleId ()
+     * getAssetReference()
      */
-    public String getAssetModuleId() {
-	return assetModuleId;
+    @Override
+    public IAssetReference getAssetReference() {
+	return assetReference;
     }
 
-    public void setAssetModuleId(String assetModuleId) {
-	this.assetModuleId = assetModuleId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
-     * getAssetId()
-     */
-    public String getAssetId() {
-	return assetId;
-    }
-
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
+    public void setAssetReference(IAssetReference assetReference) {
+	this.assetReference = assetReference;
     }
 
     /*
@@ -101,6 +86,7 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
      * getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -115,6 +101,7 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
      * getContainerPolicy ()
      */
+    @Override
     public DeviceContainerPolicy getContainerPolicy() {
 	return containerPolicy;
     }
@@ -129,6 +116,7 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
      * getDeviceElementSchema()
      */
+    @Override
     public IDeviceElementSchema getDeviceElementSchema() {
 	return deviceElementSchema;
     }
@@ -143,6 +131,7 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
      * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
      * getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }
@@ -159,19 +148,17 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
 	public Builder(IDeviceSpecification api) {
 	    request.setToken(api.getToken());
 	    request.setName(api.getName());
-	    request.setAssetModuleId(api.getAssetModuleId());
-	    request.setAssetId(api.getAssetId());
+	    request.setAssetReference(api.getAssetReference());
 	    request.setContainerPolicy(api.getContainerPolicy());
 	    request.setDeviceElementSchema((DeviceElementSchema) api.getDeviceElementSchema());
 	    request.setMetadata(new HashMap<String, String>());
 	    request.getMetadata().putAll(api.getMetadata());
 	}
 
-	public Builder(String token, String name, String assetModuleId, String assetId) {
+	public Builder(String token, String name, String moduleId, String assetId) {
 	    request.setToken(token);
 	    request.setName(name);
-	    request.setAssetModuleId(assetModuleId);
-	    request.setAssetId(assetId);
+	    request.setAssetReference(new AssetReference.Builder(moduleId, assetId).build());
 	    request.setContainerPolicy(DeviceContainerPolicy.Standalone);
 	}
 

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -62,8 +63,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
+     * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
      * com. sitewhere .spi.user.ITenant)
      */
     @Override
@@ -74,8 +74,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
      */
     @Override
     public ITenant getTenant() {
@@ -251,9 +250,9 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return delegate.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
+	return delegate.getDeviceAssignmentsForAsset(assetReference, criteria);
     }
 
     @Override

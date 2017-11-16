@@ -91,13 +91,9 @@ public class DeviceManagementPersistence extends Persistence {
 	require(request.getName());
 	spec.setName(request.getName());
 
-	// Asset module id is required.
-	require(request.getAssetModuleId());
-	spec.setAssetModuleId(request.getAssetModuleId());
-
-	// Asset id is required.
-	require(request.getAssetId());
-	spec.setAssetId(request.getAssetId());
+	// Asset reference is required.
+	requireNotNull(request.getAssetReference());
+	spec.setAssetReference(request.getAssetReference());
 
 	// Container policy is required.
 	requireNotNull(request.getContainerPolicy());
@@ -146,11 +142,8 @@ public class DeviceManagementPersistence extends Persistence {
 		target.setDeviceElementSchema((DeviceElementSchema) schema);
 	    }
 	}
-	if (request.getAssetModuleId() != null) {
-	    target.setAssetModuleId(request.getAssetModuleId());
-	}
-	if (request.getAssetId() != null) {
-	    target.setAssetId(request.getAssetId());
+	if (request.getAssetReference() != null) {
+	    target.setAssetReference(request.getAssetReference());
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
@@ -160,8 +153,7 @@ public class DeviceManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating new device command and populating it from
-     * request.
+     * Common logic for creating new device command and populating it from request.
      * 
      * @param request
      * @param token
@@ -256,8 +248,7 @@ public class DeviceManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating new device status and populating it from
-     * request.
+     * Common logic for creating new device status and populating it from request.
      * 
      * @param spec
      * @param request
@@ -342,8 +333,7 @@ public class DeviceManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating new device object and populating it from
-     * request.
+     * Common logic for creating new device object and populating it from request.
      * 
      * @param request
      * @return
@@ -596,15 +586,10 @@ public class DeviceManagementPersistence extends Persistence {
 	newAssignment.setAssignmentType(source.getAssignmentType());
 
 	if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
-	    if (source.getAssetModuleId() == null) {
+	    if (source.getAssetReference() == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
 	    }
-	    newAssignment.setAssetModuleId(source.getAssetModuleId());
-
-	    if (source.getAssetId() == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
-	    }
-	    newAssignment.setAssetId(source.getAssetId());
+	    newAssignment.setAssetReference(source.getAssetReference());
 	}
 
 	newAssignment.setActiveDate(new Date());

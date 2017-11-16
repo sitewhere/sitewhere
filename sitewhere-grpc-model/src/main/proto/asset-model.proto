@@ -71,6 +71,12 @@ message GLocationAssetCreateRequest {
 	GAssetCreateRequest asset = 4;
 }
 
+// Asset reference.
+message GAssetReference {
+	string module = 1;
+	string assetId = 2;
+}
+
 // Common asset fields.
 message GAsset {
 	string id = 1;

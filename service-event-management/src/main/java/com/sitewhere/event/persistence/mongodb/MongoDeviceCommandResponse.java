@@ -21,13 +21,13 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommandResponse> {
 
     /** Property for originating event id */
-    public static final String PROP_ORIGINATING_EVENT_ID = "originatingEventId";
+    public static final String PROP_ORIGINATING_EVENT_ID = "oi";
 
     /** Property for response event id */
-    public static final String PROP_RESPONSE_EVENT_ID = "responseEventId";
+    public static final String PROP_RESPONSE_EVENT_ID = "ri";
 
     /** Property for response */
-    public static final String PROP_RESPONSE = "response";
+    public static final String PROP_RESPONSE = "rs";
 
     /*
      * (non-Javadoc)

@@ -71,14 +71,13 @@ public class DeviceAssignmentMarshalHelper {
 	result.setReleasedDate(source.getReleasedDate());
 	result.setStatus(source.getStatus());
 	result.setAssignmentType(source.getAssignmentType());
-	result.setAssetModuleId(source.getAssetModuleId());
-	result.setAssetId(source.getAssetId());
+	result.setAssetReference(source.getAssetReference());
 	MetadataProviderEntity.copy(source, result);
-	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-	    IAsset asset = assetResolver.getAssetModuleManagement().getAssetById(source.getAssetModuleId(),
-		    source.getAssetId());
 
-	    // Handle case where referenced asset is not found.
+	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
+
+	    // Look up asset and handle case where not found.
+	    IAsset asset = assetResolver.getAssetModuleManagement().getAsset(source.getAssetReference());
 	    if (asset == null) {
 		LOGGER.warn("Device assignment has reference to non-existent asset.");
 		asset = new InvalidAsset();

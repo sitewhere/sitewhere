@@ -40,6 +40,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -268,9 +269,9 @@ public class HBaseSite {
     }
 
     /**
-     * List device assignments for a site that have state attached and have a
-     * last interaction date within a given date range. TODO: This is not
-     * efficient since it iterates through all assignments for a site.
+     * List device assignments for a site that have state attached and have a last
+     * interaction date within a given date range. TODO: This is not efficient since
+     * it iterates through all assignments for a site.
      * 
      * @param context
      * @param siteToken
@@ -416,23 +417,22 @@ public class HBaseSite {
      * List device assignments that are associated with a given asset.
      * 
      * @param context
-     * @param siteToken
-     * @param assetModuleId
-     * @param assetId
+     * @param assetReference
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
-	    String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
-	    throws SiteWhereException {
+	    IAssetReference assetReference, IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 	if (criteria.getSiteToken() != null) {
-	    locateDeviceAssignmentsForAsset(context, pager, criteria.getSiteToken(), assetModuleId, assetId, criteria);
+	    locateDeviceAssignmentsForAsset(context, pager, criteria.getSiteToken(), assetReference.getModule(),
+		    assetReference.getId(), criteria);
 	} else {
 	    SearchResults<ISite> sites = HBaseSite.listSites(context, SearchCriteria.ALL);
 	    for (ISite site : sites.getResults()) {
-		locateDeviceAssignmentsForAsset(context, pager, site.getToken(), assetModuleId, assetId, criteria);
+		locateDeviceAssignmentsForAsset(context, pager, site.getToken(), assetReference.getModule(),
+			assetReference.getId(), criteria);
 	    }
 	}
 	return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
@@ -482,8 +482,8 @@ public class HBaseSite {
 		if ((payloadType != null) && (payload != null)) {
 		    IDeviceAssignment assignment = (IDeviceAssignment) PayloadMarshalerResolver.getInstance()
 			    .getMarshaler(payloadType).decode(payload, DeviceAssignment.class);
-		    boolean sameAssetModule = assetModuleId.equals(assignment.getAssetModuleId());
-		    boolean sameAssetId = assetId.equals(assignment.getAssetId());
+		    boolean sameAssetModule = assetModuleId.equals(assignment.getAssetReference().getModule());
+		    boolean sameAssetId = assetId.equals(assignment.getAssetReference().getId());
 		    boolean matchingStatus = (criteria.getStatus() == null)
 			    || (criteria.getStatus() == assignment.getStatus());
 		    if (sameAssetModule && sameAssetId && matchingStatus) {
@@ -634,8 +634,8 @@ public class HBaseSite {
     }
 
     /**
-     * Allocate the next zone id and return the new value. (Each id is less than
-     * the last)
+     * Allocate the next zone id and return the new value. (Each id is less than the
+     * last)
      * 
      * @param context
      * @param siteId
@@ -659,8 +659,8 @@ public class HBaseSite {
     }
 
     /**
-     * Allocate the next assignment id and return the new value. (Each id is
-     * less than the last)
+     * Allocate the next assignment id and return the new value. (Each id is less
+     * than the last)
      * 
      * @param context
      * @param siteId
@@ -684,8 +684,8 @@ public class HBaseSite {
     }
 
     /**
-     * Get the unique site identifier based on the long value associated with
-     * the site UUID. This will be a subset of the full 8-bit long value.
+     * Get the unique site identifier based on the long value associated with the
+     * site UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return

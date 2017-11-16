@@ -14,6 +14,7 @@ import org.bson.Document;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -27,31 +28,28 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> {
 
     /** Property for active date */
-    public static final String PROP_ACTIVE_DATE = "activeDate";
+    public static final String PROP_ACTIVE_DATE = "ad";
 
-    /** Property for asset module id */
-    public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
-
-    /** Property for asset id */
-    public static final String PROP_ASSET_ID = "assetId";
+    /** Property for asset reference */
+    public static final String PROP_ASSET_REFERENCE = "ar";
 
     /** Property for assignment type */
-    public static final String PROP_ASSIGNMENT_TYPE = "assignmentType";
+    public static final String PROP_ASSIGNMENT_TYPE = "at";
 
     /** Property for released date */
-    public static final String PROP_RELEASED_DATE = "releasedDate";
+    public static final String PROP_RELEASED_DATE = "rd";
 
     /** Property for status */
-    public static final String PROP_STATUS = "status";
+    public static final String PROP_STATUS = "st";
 
     /** Property for token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for device hardware id */
-    public static final String PROP_DEVICE_HARDWARE_ID = "deviceHardwareId";
+    public static final String PROP_DEVICE_HARDWARE_ID = "hw";
 
     /** Property for site token */
-    public static final String PROP_SITE_TOKEN = "siteToken";
+    public static final String PROP_SITE_TOKEN = "si";
 
     /*
      * (non-Javadoc)
@@ -81,8 +79,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	if (source.getActiveDate() != null) {
 	    target.append(PROP_ACTIVE_DATE, source.getActiveDate());
 	}
-	target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
-	target.append(PROP_ASSET_ID, source.getAssetId());
+	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
 	if (source.getAssignmentType() != null) {
 	    target.append(PROP_ASSIGNMENT_TYPE, source.getAssignmentType().name());
 	}
@@ -108,8 +105,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      */
     public static void fromDocument(Document source, DeviceAssignment target) {
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
-	String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
-	String assetId = (String) source.get(PROP_ASSET_ID);
+	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
 	String assignmentType = (String) source.get(PROP_ASSIGNMENT_TYPE);
 	Date releasedDate = (Date) source.get(PROP_RELEASED_DATE);
 	String status = (String) source.get(PROP_STATUS);
@@ -120,8 +116,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	if (activeDate != null) {
 	    target.setActiveDate(activeDate);
 	}
-	target.setAssetModuleId(assetModuleId);
-	target.setAssetId(assetId);
+	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 	if (assignmentType != null) {
 	    target.setAssignmentType(DeviceAssignmentType.valueOf(assignmentType));
 	}

@@ -4,6 +4,7 @@ package com.sitewhere.grpc.model;
 
 option java_outer_classname = "DeviceModel";
 
+import "asset-model.proto";
 import "sitewhere-common.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -35,11 +36,10 @@ message GDeviceElementSchema {
 message GDeviceSpecificationCreateRequest {
 	string token = 1;
 	string name = 2;
-	string assetModuleId = 3;
-	string assetId = 4;
-	GDeviceContainerPolicy containerPolicy = 5;
-	GDeviceElementSchema deviceElementSchema = 6;
-	map<string, string> metadata = 7;
+	GAssetReference assetReference = 3;
+	GDeviceContainerPolicy containerPolicy = 4;
+	GDeviceElementSchema deviceElementSchema = 5;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching device specifications.
@@ -63,12 +63,11 @@ message GDeviceSpecificationReference {
 message GDeviceSpecification {
 	string token = 1;
 	string name = 2;
-	string assetModuleId = 3;
-	string assetId = 4;
-	GDeviceContainerPolicy containerPolicy = 5;
-	GDeviceElementSchema deviceElementSchema = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	GAssetReference assetReference = 3;
+	GDeviceContainerPolicy containerPolicy = 4;
+	GDeviceElementSchema deviceElementSchema = 5;
+	map<string, string> metadata = 6;
+	GEntityInformation entityInformation = 7;
 }
 
 // #######################
@@ -273,9 +272,8 @@ message GDeviceAssignmentCreateRequest {
 	string token = 1;
 	string deviceHardwareId = 2;
 	GDeviceAssignmentType assignmentType = 3;
-	string assetModuleId = 4;
-	string assetId = 5;
-	map<string, string> metadata = 6;
+	GAssetReference assetReference = 4;
+	map<string, string> metadata = 5;
 }
 
 // Criteria for searching device assignments.
@@ -309,12 +307,11 @@ message GDeviceAssignment {
 	string siteToken = 3;
 	GDeviceAssignmentType assignmentType = 4;
 	GDeviceAssignmentStatus status = 5;
-	string assetModuleId = 6;
-	string assetId = 7;
-	google.protobuf.Timestamp activeDate = 8;
-	google.protobuf.Timestamp releasedDate = 9;
-	map<string, string> metadata = 10;
-	GEntityInformation entityInformation = 11;
+	GAssetReference assetReference = 6;
+	google.protobuf.Timestamp activeDate = 7;
+	google.protobuf.Timestamp releasedDate = 8;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
 }
 
 // ######################

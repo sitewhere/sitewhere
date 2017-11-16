@@ -377,8 +377,7 @@ public class DeviceModelConverter {
 	DeviceSpecificationCreateRequest api = new DeviceSpecificationCreateRequest();
 	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
-	api.setAssetModuleId(grpc.getAssetModuleId());
-	api.setAssetId(grpc.getAssetId());
+	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -397,8 +396,7 @@ public class DeviceModelConverter {
 	GDeviceSpecificationCreateRequest.Builder grpc = GDeviceSpecificationCreateRequest.newBuilder();
 	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
-	grpc.setAssetModuleId(api.getAssetModuleId());
-	grpc.setAssetId(api.getAssetId());
+	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementScheme(api.getDeviceElementSchema()));
 	grpc.putAllMetadata(api.getMetadata());
@@ -416,8 +414,7 @@ public class DeviceModelConverter {
 	DeviceSpecification api = new DeviceSpecification();
 	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
-	api.setAssetModuleId(grpc.getAssetModuleId());
-	api.setAssetId(grpc.getAssetId());
+	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -436,8 +433,7 @@ public class DeviceModelConverter {
 	GDeviceSpecification.Builder grpc = GDeviceSpecification.newBuilder();
 	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
-	grpc.setAssetModuleId(api.getAssetModuleId());
-	grpc.setAssetId(api.getAssetId());
+	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	if (api.getDeviceElementSchema() != null) {
 	    grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementScheme(api.getDeviceElementSchema()));
@@ -1539,8 +1535,7 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
-	api.setAssetModuleId(grpc.getAssetModuleId());
-	api.setAssetId(grpc.getAssetId());
+	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1558,8 +1553,7 @@ public class DeviceModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
-	grpc.setAssetModuleId(api.getAssetModuleId());
-	grpc.setAssetId(api.getAssetId());
+	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1580,8 +1574,7 @@ public class DeviceModelConverter {
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setSiteToken(grpc.getSiteToken());
 	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
-	api.setAssetModuleId(grpc.getAssetModuleId());
-	api.setAssetId(grpc.getAssetId());
+	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
 	if (grpc.hasActiveDate()) {
 	    api.setActiveDate(CommonModelConverter.asDate(grpc.getActiveDate()));
 	}
@@ -1607,8 +1600,7 @@ public class DeviceModelConverter {
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	grpc.setSiteToken(api.getSiteToken());
 	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
-	grpc.setAssetModuleId(api.getAssetModuleId());
-	grpc.setAssetId(api.getAssetId());
+	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	if (api.getActiveDate() != null) {
 	    grpc.setActiveDate(CommonModelConverter.asGrpcTimestamp(api.getActiveDate()));
 	}

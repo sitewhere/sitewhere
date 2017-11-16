@@ -27,19 +27,19 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignmentState> {
 
     /** Property for last interaction date */
-    public static final String PROP_LAST_INTERACTION_DATE = "lastInteractionDate";
+    public static final String PROP_LAST_INTERACTION_DATE = "li";
 
     /** Property for presence missing date */
-    public static final String PROP_PRESENCE_MISSING_DATE = "presenceMissingDate";
+    public static final String PROP_PRESENCE_MISSING_DATE = "pm";
 
     /** Property for last location */
-    public static final String PROP_LAST_LOCATION = "lastLocation";
+    public static final String PROP_LAST_LOCATION = "ll";
 
     /** Property for latest measurements */
-    public static final String PROP_LATEST_MEASUREMENTS = "latestMeasurements";
+    public static final String PROP_LATEST_MEASUREMENTS = "lm";
 
     /** Property for latest measurements */
-    public static final String PROP_LATEST_ALERTS = "latestAlerts";
+    public static final String PROP_LATEST_ALERTS = "la";
 
     /*
      * (non-Javadoc)

@@ -11,9 +11,9 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -32,23 +32,11 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
     /** Unique token */
     private String token;
 
-    /** Specificaiton name */
+    /** Specification name */
     private String name;
 
-    /** Asset module id */
-    private String assetModuleId;
-
-    /** Asset id of device hardware */
-    private String assetId;
-
-    /** Asset name */
-    private String assetName;
-
-    /** Asset image url */
-    private String assetImageUrl;
-
-    /** Asset representing device hardware */
-    private HardwareAsset asset;
+    /** Asset reference */
+    private IAssetReference assetReference;
 
     /** Device container policy */
     private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
@@ -61,6 +49,7 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
      * 
      * @see com.sitewhere.spi.device.IDeviceSpecification#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -74,6 +63,7 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
      * 
      * @see com.sitewhere.spi.device.IDeviceSpecification#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -83,29 +73,15 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceSpecification#getAssetModuleId()
+     * @see com.sitewhere.spi.device.IDeviceSpecification#getAssetReference()
      */
-    public String getAssetModuleId() {
-	return assetModuleId;
+    @Override
+    public IAssetReference getAssetReference() {
+	return assetReference;
     }
 
-    public void setAssetModuleId(String assetModuleId) {
-	this.assetModuleId = assetModuleId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceSpecification#getAssetId()
-     */
-    public String getAssetId() {
-	return assetId;
-    }
-
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
+    public void setAssetReference(IAssetReference assetReference) {
+	this.assetReference = assetReference;
     }
 
     /*
@@ -113,6 +89,7 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
      * 
      * @see com.sitewhere.spi.device.IDeviceSpecification#getContainerPolicy()
      */
+    @Override
     public DeviceContainerPolicy getContainerPolicy() {
 	return containerPolicy;
     }
@@ -124,38 +101,14 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceSpecification#getDeviceElementSchema()
+     * @see com.sitewhere.spi.device.IDeviceSpecification#getDeviceElementSchema()
      */
+    @Override
     public IDeviceElementSchema getDeviceElementSchema() {
 	return deviceElementSchema;
     }
 
     public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
 	this.deviceElementSchema = deviceElementSchema;
-    }
-
-    public String getAssetName() {
-	return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-	this.assetName = assetName;
-    }
-
-    public String getAssetImageUrl() {
-	return assetImageUrl;
-    }
-
-    public void setAssetImageUrl(String assetImageUrl) {
-	this.assetImageUrl = assetImageUrl;
-    }
-
-    public HardwareAsset getAsset() {
-	return asset;
-    }
-
-    public void setAsset(HardwareAsset asset) {
-	this.asset = asset;
     }
 }

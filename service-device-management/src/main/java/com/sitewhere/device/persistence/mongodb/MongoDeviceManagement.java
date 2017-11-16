@@ -42,6 +42,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -142,8 +143,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 		.createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1), new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceAssignment.PROP_SITE_TOKEN, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
+			.append(MongoDeviceAssignment.PROP_ASSET_REFERENCE, 1)
+			.append(MongoDeviceAssignment.PROP_STATUS, 1));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection(getTenant())
@@ -152,8 +153,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 		.createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
 	getMongoClient().getGroupElementsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
-			.append(MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
-				1));
+			.append(MongoDeviceGroupElement.PROP_TYPE, 1)
+			.append(MongoDeviceGroupElement.PROP_ELEMENT_ID, 1));
 	getMongoClient().getGroupElementsCollection(getTenant())
 		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1)
 			.append(MongoDeviceGroupElement.PROP_ROLES, 1));
@@ -324,8 +325,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
      * lang.String )
      */
     @Override
@@ -366,8 +366,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
      * String, boolean)
      */
     @Override
@@ -436,8 +435,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
@@ -462,8 +460,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
      * lang.String, java.lang.String)
      */
     @Override
@@ -478,8 +475,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
@@ -505,8 +501,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
      * String, boolean)
      */
     @Override
@@ -521,8 +516,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -534,8 +528,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return the {@link Document} for a device status based on specification
-     * token and status code.
+     * Return the {@link Document} for a device status based on specification token
+     * and status code.
      * 
      * @param specToken
      * @param code
@@ -550,8 +544,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return the {@link Document} for the device status. Throws an exception if
-     * the token is not valid.
+     * Return the {@link Document} for the device status. Throws an exception if the
+     * token is not valid.
      * 
      * @param token
      * @return
@@ -609,8 +603,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java
      * .lang.String)
      */
     @Override
@@ -625,8 +618,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
      * java.lang.String)
      */
     @Override
@@ -677,8 +669,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
      * java.lang .String, com.sitewhere.spi.device.IDeviceElementMapping)
      */
     @Override
@@ -690,8 +681,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
      * java.lang .String, java.lang.String)
      */
     @Override
@@ -728,8 +718,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Get the {@link Document} containing site information that matches the
-     * given token.
+     * Get the {@link Document} containing site information that matches the given
+     * token.
      * 
      * @param token
      * @return
@@ -744,8 +734,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
      * sitewhere .spi.device.request. IDeviceAssignmentCreateRequest)
      */
     @Override
@@ -778,8 +767,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken
      * (java.lang.String)
      */
     @Override
@@ -794,8 +782,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
      * lang.String, boolean)
      */
     @Override
@@ -841,8 +828,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus
      * (java.lang.String, com.sitewhere.spi.device.DeviceAssignmentStatus)
      */
     @Override
@@ -859,8 +845,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.lang
+     * @see com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.lang
      * .String)
      */
     @Override
@@ -887,8 +872,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
      * java.lang .String, com.sitewhere.spi.common.ISearchCriteria)
      */
     @Override
@@ -903,10 +887,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
-     * java.lang.String,
-     * com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
+     * java.lang.String, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
     public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
@@ -921,19 +903,16 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(
-     * java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
+     * sitewhere.spi.asset.IAssetReference,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
-	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId)
-		.append(MongoDeviceAssignment.PROP_ASSET_ID, assetId);
+	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_REFERENCE, assetReference);
 	if (criteria.getSiteToken() != null) {
 	    query.append(MongoDeviceAssignment.PROP_SITE_TOKEN, criteria.getSiteToken());
 	}
@@ -960,10 +939,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
-     * String,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
+     * String, com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
      */
     @Override
     public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
@@ -981,8 +958,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -997,8 +973,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
      * String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -1013,8 +988,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
      * device. request.ISiteCreateRequest )
      */
     @Override
@@ -1031,8 +1005,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
      * com.sitewhere.spi.device.request.ISiteCreateRequest)
      */
     @Override
@@ -1072,8 +1045,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
      * boolean)
      */
     @Override
@@ -1093,8 +1065,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Get the DBObject containing site information that matches the given
-     * token.
+     * Get the DBObject containing site information that matches the given token.
      * 
      * @param token
      * @return
@@ -1109,8 +1080,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
      * common. ISearchCriteria)
      */
     @Override
@@ -1124,8 +1094,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -1141,8 +1110,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -1177,8 +1145,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
      * com.sitewhere.spi.common.ISearchCriteria)
      */
     @Override
@@ -1192,8 +1159,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
      * boolean)
      */
     @Override
@@ -1234,8 +1200,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceGroupCreateRequest)
      */
     @Override
@@ -1311,8 +1276,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
      * String, boolean)
      */
     @Override
@@ -1340,8 +1304,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
      * lang.String, java.util.List, boolean)
      */
     @Override
@@ -1399,8 +1362,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
      * lang.String , com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -1429,8 +1391,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return the {@link Document} for the device with the given hardware id.
-     * Throws an exception if the hardware id is not found.
+     * Return the {@link Document} for the device with the given hardware id. Throws
+     * an exception if the hardware id is not found.
      * 
      * @param hardwareId
      * @return
@@ -1445,8 +1407,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return the {@link Document} for the assignment with the given token.
-     * Throws an exception if the token is not valid.
+     * Return the {@link Document} for the assignment with the given token. Throws
+     * an exception if the token is not valid.
      * 
      * @param token
      * @return
@@ -1461,8 +1423,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return an {@link IDeviceAssignment} for the given token. Throws an
-     * exception if the token is not valid.
+     * Return an {@link IDeviceAssignment} for the given token. Throws an exception
+     * if the token is not valid.
      * 
      * @param token
      * @return
@@ -1545,8 +1507,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Return the {@link Document} for the device group with the given token.
-     * Throws an exception if the token is not valid.
+     * Return the {@link Document} for the device group with the given token. Throws
+     * an exception if the token is not valid.
      * 
      * @param token
      * @return

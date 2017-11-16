@@ -13,6 +13,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.asset.AssetReference;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -37,11 +39,8 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
     /** Type of assignment */
     private DeviceAssignmentType assignmentType;
 
-    /** Asset module id */
-    private String assetModuleId;
-
-    /** Unique asset id */
-    private String assetId;
+    /** Asset reference */
+    private IAssetReference assetReference;
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -50,9 +49,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getToken(
-     * )
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getToken( )
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -67,6 +66,7 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
      * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
      * getDeviceHardwareId ()
      */
+    @Override
     public String getDeviceHardwareId() {
 	return deviceHardwareId;
     }
@@ -81,6 +81,7 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
      * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
      * getAssignmentType()
      */
+    @Override
     public DeviceAssignmentType getAssignmentType() {
 	return assignmentType;
     }
@@ -90,31 +91,16 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
-     * getAssetModuleId()
+     * getAssetReference()
      */
-    public String getAssetModuleId() {
-	return assetModuleId;
+    @Override
+    public IAssetReference getAssetReference() {
+	return assetReference;
     }
 
-    public void setAssetModuleId(String assetModuleId) {
-	this.assetModuleId = assetModuleId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
-     * getAssetId()
-     */
-    public String getAssetId() {
-	return assetId;
-    }
-
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
+    public void setAssetReference(IAssetReference assetReference) {
+	this.assetReference = assetReference;
     }
 
     /*
@@ -139,8 +125,7 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	public Builder(IDeviceAssignment api) {
 	    request.setToken(api.getToken());
 	    request.setDeviceHardwareId(api.getDeviceHardwareId());
-	    request.setAssetModuleId(api.getAssetModuleId());
-	    request.setAssetId(api.getAssetId());
+	    request.setAssetReference(api.getAssetReference());
 	    request.setAssignmentType(api.getAssignmentType());
 	    if (api.getMetadata() != null) {
 		request.setMetadata(new HashMap<String, String>());
@@ -148,10 +133,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	    }
 	}
 
-	public Builder(String hardwareId, String assetModuleId, String assetId) {
+	public Builder(String hardwareId, String moduleId, String assetId) {
 	    request.setDeviceHardwareId(hardwareId);
-	    request.setAssetModuleId(assetModuleId);
-	    request.setAssetId(assetId);
+	    request.setAssetReference(new AssetReference.Builder(moduleId, assetId).build());
 	    request.setAssignmentType(DeviceAssignmentType.Associated);
 	}
 

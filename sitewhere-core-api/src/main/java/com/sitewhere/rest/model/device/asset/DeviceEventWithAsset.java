@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.asset.IDeviceEventWithAsset;
@@ -43,8 +44,7 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetResolver assetResolver) throws SiteWhereException {
 	this.wrapped = wrapped;
 	if (wrapped.getAssignmentType() == DeviceAssignmentType.Associated) {
-	    this.asset = assetResolver.getAssetModuleManagement().getAssetById(wrapped.getAssetModuleId(),
-		    wrapped.getAssetId());
+	    this.asset = assetResolver.getAssetModuleManagement().getAsset(wrapped.getAssetReference());
 	}
     }
 
@@ -87,8 +87,7 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.common.IMetadataProvider#getMetadata(java.lang.String)
+     * @see com.sitewhere.spi.common.IMetadataProvider#getMetadata(java.lang.String)
      */
     @Override
     public String getMetadata(String name) {
@@ -186,23 +185,11 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetModuleId()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetReference()
      */
     @Override
-    public String getAssetModuleId() {
-	return getWrapped().getAssetModuleId();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getAssetId()
-     */
-    @Override
-    public String getAssetId() {
-	return getWrapped().getAssetId();
+    public IAssetReference getAssetReference() {
+	return getWrapped().getAssetReference();
     }
 
     /*

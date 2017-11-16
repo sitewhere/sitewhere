@@ -98,8 +98,7 @@ public class DeviceEventManagementPersistence extends Persistence {
 	target.setSiteToken(assignment.getSiteToken());
 	target.setDeviceAssignmentToken(assignment.getToken());
 	target.setAssignmentType(assignment.getAssignmentType());
-	target.setAssetModuleId(assignment.getAssetModuleId());
-	target.setAssetId(assignment.getAssetId());
+	target.setAssetReference(assignment.getAssetReference());
 	if (request.getEventDate() != null) {
 	    target.setEventDate(request.getEventDate());
 	} else {

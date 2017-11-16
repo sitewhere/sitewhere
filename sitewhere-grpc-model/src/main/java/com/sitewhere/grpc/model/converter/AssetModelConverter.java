@@ -17,6 +17,7 @@ import com.sitewhere.grpc.model.AssetModel.GAssetCategoryCreateRequest;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchCriteria;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetCreateRequest;
+import com.sitewhere.grpc.model.AssetModel.GAssetReference;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchCriteria;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.AssetModel.GHardwareAsset;
@@ -29,6 +30,7 @@ import com.sitewhere.grpc.model.CommonModel.GAssetType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetCategory;
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -42,6 +44,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -464,6 +467,34 @@ public class AssetModelConverter {
 	    grpc.setElevation(GOptionalDouble.newBuilder().setValue(api.getElevation()).build());
 	}
 	grpc.setAsset(AssetModelConverter.asGrpcAsset(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert asset reference from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AssetReference asApiAssetReference(GAssetReference grpc) throws SiteWhereException {
+	AssetReference api = new AssetReference();
+	api.setModule(grpc.getModule());
+	api.setId(grpc.getAssetId());
+	return api;
+    }
+
+    /**
+     * Convert asset reference from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAssetReference asGrpcAssetReference(IAssetReference api) throws SiteWhereException {
+	GAssetReference.Builder grpc = GAssetReference.newBuilder();
+	grpc.setModule(api.getModule());
+	grpc.setAssetId(api.getId());
 	return grpc.build();
     }
 

@@ -26,19 +26,19 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
 public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange> {
 
     /** Property for state category */
-    public static final String PROP_CATEGORY = "category";
+    public static final String PROP_CATEGORY = "ct";
 
     /** Property for state type */
-    public static final String PROP_TYPE = "type";
+    public static final String PROP_TYPE = "ty";
 
     /** Property for previous state value */
-    public static final String PROP_PREVIOUS_STATE = "previousState";
+    public static final String PROP_PREVIOUS_STATE = "ps";
 
     /** Property for new state value */
-    public static final String PROP_NEW_STATE = "newState";
+    public static final String PROP_NEW_STATE = "ns";
 
     /** Property for supporting data map */
-    public static final String PROP_DATA = "stateData";
+    public static final String PROP_DATA = "dt";
 
     /*
      * (non-Javadoc)

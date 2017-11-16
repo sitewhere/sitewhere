@@ -121,11 +121,8 @@ public class Assignments extends RestControllerBase {
 	    throw new SiteWhereException("Assignment type required.");
 	}
 	if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-	    if (request.getAssetModuleId() == null) {
-		throw new SiteWhereException("Asset module id required.");
-	    }
-	    if (request.getAssetId() == null) {
-		throw new SiteWhereException("Asset id required.");
+	    if (request.getAssetReference() == null) {
+		throw new SiteWhereException("Asset reference required.");
 	    }
 	}
 	IDeviceManagement management = getDeviceManagement();

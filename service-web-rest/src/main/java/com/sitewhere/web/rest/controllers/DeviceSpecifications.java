@@ -85,8 +85,7 @@ public class DeviceSpecifications extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceSpecification createDeviceSpecification(@RequestBody DeviceSpecificationCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IAsset asset = getAssetResolver().getAssetModuleManagement().getAssetById(request.getAssetModuleId(),
-		request.getAssetId());
+	IAsset asset = getAssetResolver().getAssetModuleManagement().getAsset(request.getAssetReference());
 	if (asset == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -414,8 +413,7 @@ public class DeviceSpecifications extends RestControllerBase {
     }
 
     /**
-     * Gets a device specification by token and throws an exception if not
-     * found.
+     * Gets a device specification by token and throws an exception if not found.
      * 
      * @param token
      * @param servletRequest

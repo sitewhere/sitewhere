@@ -252,8 +252,8 @@ public class EventModelConverter {
 	api.setSiteToken(grpc.getSiteToken());
 	api.setDeviceAssignmentToken(grpc.getAssignmentToken());
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
-	api.setAssetModuleId(grpc.hasAssetId() ? grpc.getAssetModuleId().getValue() : null);
-	api.setAssetId(grpc.hasAssetId() ? grpc.getAssetId().getValue() : null);
+	api.setAssetReference(
+		grpc.hasAssetReference() ? AssetModelConverter.asApiAssetReference(grpc.getAssetReference()) : null);
 	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
 	api.setReceivedDate(grpc.hasReceivedDate() ? CommonModelConverter.asDate(grpc.getReceivedDate()) : null);
 	api.setMetadata(grpc.getMetadataMap());
@@ -276,11 +276,8 @@ public class EventModelConverter {
 	grpc.setSiteToken(api.getSiteToken());
 	grpc.setAssignmentToken(api.getDeviceAssignmentToken());
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
-	if (api.getAssetModuleId() != null) {
-	    grpc.setAssetModuleId(GOptionalString.newBuilder().setValue(api.getAssetModuleId()));
-	}
-	if (api.getAssetId() != null) {
-	    grpc.setAssetId(GOptionalString.newBuilder().setValue(api.getAssetId()));
+	if (api.getAssetReference() != null) {
+	    grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	}
 	if (api.getEventDate() != null) {
 	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));

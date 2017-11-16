@@ -107,7 +107,7 @@ public class DeviceMarshalHelper {
 	    } else {
 		result.setSpecificationToken(source.getSpecificationToken());
 		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
-			.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
+			.getAsset(spec.getAssetReference());
 		if (asset != null) {
 		    result.setAssetId(asset.getId());
 		    result.setAssetName(asset.getName());

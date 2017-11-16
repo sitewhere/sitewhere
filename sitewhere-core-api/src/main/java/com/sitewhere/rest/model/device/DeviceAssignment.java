@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -39,11 +40,8 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Type of associated asset */
     private DeviceAssignmentType assignmentType;
 
-    /** Id of asset module */
-    private String assetModuleId;
-
-    /** Id of associated asset */
-    private String assetId;
+    /** Asset reference */
+    private IAssetReference assetReference;
 
     /** Site token */
     private String siteToken;
@@ -100,30 +98,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetModuleId()
-     */
-    public String getAssetModuleId() {
-	return assetModuleId;
-    }
-
-    public void setAssetModuleId(String assetModuleId) {
-	this.assetModuleId = assetModuleId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetReference()
      */
     @Override
-    public String getAssetId() {
-	return assetId;
+    public IAssetReference getAssetReference() {
+	return assetReference;
     }
 
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
+    public void setAssetReference(IAssetReference assetReference) {
+	this.assetReference = assetReference;
     }
 
     /*

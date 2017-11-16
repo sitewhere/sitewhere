@@ -24,6 +24,7 @@ import org.influxdb.dto.QueryResult.Result;
 import org.influxdb.dto.QueryResult.Series;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -58,11 +59,8 @@ public class InfluxDbDeviceEvent {
     /** Event site tag */
     public static final String EVENT_SITE = "site";
 
-    /** Event asset module tag */
-    public static final String EVENT_ASSET_MODULE = "assetmodule";
-
-    /** Event asset tag */
-    public static final String EVENT_ASSET = "asset";
+    /** Event asset reference tag */
+    public static final String EVENT_ASSET_REFERENCE = "assetReference";
 
     /** Event received date field */
     public static final String RECEIVED_DATE = "rcvdate";
@@ -161,8 +159,8 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get a query for events of a given type associated with an assignment and
-     * that meet the search criteria.
+     * Get a query for events of a given type associated with an assignment and that
+     * meet the search criteria.
      * 
      * @param type
      * @param assignmentToken
@@ -180,8 +178,8 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get a query for counting events of a given type associated with an
-     * assignment and that meet the search criteria.
+     * Get a query for counting events of a given type associated with an assignment
+     * and that meet the search criteria.
      * 
      * @param type
      * @param assignmentToken
@@ -198,8 +196,8 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get a query for events of a given type associated with a site and meeting
-     * the search criteria.
+     * Get a query for events of a given type associated with a site and meeting the
+     * search criteria.
      * 
      * @param type
      * @param siteToken
@@ -216,8 +214,8 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get a query for counting events of a given type associated with a site
-     * and meeting the search criteria.
+     * Get a query for counting events of a given type associated with a site and
+     * meeting the search criteria.
      * 
      * @param type
      * @param siteToken
@@ -454,19 +452,19 @@ public class InfluxDbDeviceEvent {
 	event.setId((String) values.get(EVENT_ID));
 	event.setDeviceAssignmentToken((String) values.get(EVENT_ASSIGNMENT));
 	event.setSiteToken(((String) values.get(EVENT_SITE)));
-	event.setAssetModuleId(((String) values.get(EVENT_ASSET_MODULE)));
-	event.setAssetId(((String) values.get(EVENT_ASSET)));
+	event.setAssetReference(
+		new DefaultAssetReferenceEncoder().decode(((String) values.get(EVENT_ASSET_REFERENCE))));
 
 	Object assignmentType = values.get(ASSIGNMENT_TYPE);
 	// handle old events without the tag 'assignmenttype'
 	if (assignmentType == null || String.valueOf(assignmentType).equals("null")) {
-		if (event.getAssetModuleId() == null && event.getAssetId() == null) {
-			event.setAssignmentType(DeviceAssignmentType.Unassociated);
-		} else {
-			event.setAssignmentType(DeviceAssignmentType.Associated);
-		}
+	    if (event.getAssetReference() == null) {
+		event.setAssignmentType(DeviceAssignmentType.Unassociated);
+	    } else {
+		event.setAssignmentType(DeviceAssignmentType.Associated);
+	    }
 	} else {
-		event.setAssignmentType(DeviceAssignmentType.valueOf((String) (assignmentType)));
+	    event.setAssignmentType(DeviceAssignmentType.valueOf((String) (assignmentType)));
 	}
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 	event.setEventDate(parseDateField(values, "time"));
@@ -482,15 +480,13 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Save common event fields to builder.
-     * If a precision field is specified in the meta data, the eventDate must be sent
-     * as an appropriate time stamp rather than a human readable string.
+     * Save common event fields to builder. If a precision field is specified in the
+     * meta data, the eventDate must be sent as an appropriate time stamp rather
+     * than a human readable string.
      * 
-     * Valid precisions :   s -  seconds
-     *                      ms - milliseconds
-     *                      mu - microseconds
-     *                      ns - nanoseconds
-     *                      
+     * Valid precisions : s - seconds ms - milliseconds mu - microseconds ns -
+     * nanoseconds
+     * 
      * Default precision is ms - milliseconds if a precision is not specified.
      * 
      * @param event
@@ -503,16 +499,29 @@ public class InfluxDbDeviceEvent {
 	TimeUnit precision = TimeUnit.MILLISECONDS;
 
 	if (timePrecision != null) {
-		switch(timePrecision) {
-			case("s")  : {precision = TimeUnit.SECONDS; break;}
-			case("ms") : {precision = TimeUnit.MILLISECONDS; break;}
-			case("mu") : {precision = TimeUnit.MICROSECONDS; break;}
-			case("ns") : {precision = TimeUnit.NANOSECONDS; break;}
-			default: {event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");}
-			}
-	}
-	else {
+	    switch (timePrecision) {
+	    case ("s"): {
+		precision = TimeUnit.SECONDS;
+		break;
+	    }
+	    case ("ms"): {
+		precision = TimeUnit.MILLISECONDS;
+		break;
+	    }
+	    case ("mu"): {
+		precision = TimeUnit.MICROSECONDS;
+		break;
+	    }
+	    case ("ns"): {
+		precision = TimeUnit.NANOSECONDS;
+		break;
+	    }
+	    default: {
 		event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
+	    }
+	    }
+	} else {
+	    event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
 	}
 
 	builder.time(event.getEventDate().getTime(), precision);
@@ -521,11 +530,8 @@ public class InfluxDbDeviceEvent {
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
 	builder.tag(ASSIGNMENT_TYPE, String.valueOf(event.getAssignmentType()));
 	builder.tag(EVENT_SITE, event.getSiteToken());
-	if (event.getAssetModuleId() != null) {
-	    builder.tag(EVENT_ASSET_MODULE, event.getAssetModuleId());
-	}
-	if (event.getAssetId() != null) {
-	    builder.tag(EVENT_ASSET, event.getAssetId());
+	if (event.getAssetReference() != null) {
+	    builder.tag(EVENT_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
 	}
 	builder.addField(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));
 
@@ -537,12 +543,13 @@ public class InfluxDbDeviceEvent {
 
     /**
      * Add a tag to an existing object
+     * 
      * @param tagName
      * @param tagValue
      * @param builder
      */
-    public static void addUserDefinedTag(String tagName, String tagValue, Point.Builder builder){
-	    builder.tag(tagName, tagValue);
+    public static void addUserDefinedTag(String tagName, String tagValue, Point.Builder builder) {
+	builder.tag(tagName, tagValue);
     }
 
     /**

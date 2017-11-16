@@ -18,6 +18,7 @@ import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -82,7 +83,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GCreateDeviceSpecificationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceSpecification(grequest.build());
 	    IDeviceSpecification response = (gresponse.hasSpecification())
-		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification()) : null;
+		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_SPECIFICATION, response);
 	    return response;
 	} catch (Throwable t) {
@@ -106,7 +108,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetDeviceSpecificationByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceSpecificationByToken(grequest.build());
 	    IDeviceSpecification response = (gresponse.hasSpecification())
-		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification()) : null;
+		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_SPECIFICATION_BY_TOKEN, response);
 	    return response;
 	} catch (Throwable t) {
@@ -134,7 +137,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GUpdateDeviceSpecificationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceSpecification(grequest.build());
 	    IDeviceSpecification response = (gresponse.hasSpecification())
-		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification()) : null;
+		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_SPECIFICATION, response);
 	    return response;
 	} catch (Throwable t) {
@@ -183,7 +187,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GDeleteDeviceSpecificationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceSpecification(grequest.build());
 	    IDeviceSpecification response = (gresponse.hasSpecification())
-		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification()) : null;
+		    ? DeviceModelConverter.asApiDeviceSpecification(gresponse.getSpecification())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_SPECIFICATION, response);
 	    return response;
 	} catch (Throwable t) {
@@ -209,7 +214,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GCreateDeviceCommandResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceCommand(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
-		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand()) : null;
+		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, response);
 	    return response;
 	} catch (Throwable t) {
@@ -220,8 +226,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
      * lang.String)
      */
     @Override
@@ -233,7 +238,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetDeviceCommandByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceCommandByToken(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
-		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand()) : null;
+		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, response);
 	    return response;
 	} catch (Throwable t) {
@@ -259,7 +265,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GUpdateDeviceCommandResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceCommand(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
-		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand()) : null;
+		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, response);
 	    return response;
 	} catch (Throwable t) {
@@ -270,8 +277,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
      * String, boolean)
      */
     @Override
@@ -308,7 +314,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GDeleteDeviceCommandResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceCommand(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
-		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand()) : null;
+		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, response);
 	    return response;
 	} catch (Throwable t) {
@@ -319,8 +326,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
@@ -334,7 +340,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GCreateDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceStatus(grequest.build());
 	    IDeviceStatus response = (gresponse.hasStatus())
-		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, response);
 	    return response;
 	} catch (Throwable t) {
@@ -345,8 +352,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
      * lang.String, java.lang.String)
      */
     @Override
@@ -359,7 +365,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetDeviceStatusByCodeResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceStatusByCode(grequest.build());
 	    IDeviceStatus response = (gresponse.hasStatus())
-		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, response);
 	    return response;
 	} catch (Throwable t) {
@@ -370,8 +377,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
@@ -387,7 +393,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GUpdateDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceStatus(grequest.build());
 	    IDeviceStatus response = (gresponse.hasStatus())
-		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, response);
 	    return response;
 	} catch (Throwable t) {
@@ -398,8 +405,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
      * String)
      */
     @Override
@@ -423,8 +429,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -437,7 +442,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GDeleteDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceStatus(grequest.build());
 	    IDeviceStatus response = (gresponse.hasStatus())
-		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus()) : null;
+		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, response);
 	    return response;
 	} catch (Throwable t) {
@@ -470,8 +476,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
      * lang.String)
      */
     @Override
@@ -538,8 +543,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
      * java.lang.String, com.sitewhere.spi.device.IDeviceElementMapping)
      */
     @Override
@@ -563,8 +567,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
      * java.lang.String, java.lang.String)
      */
     @Override
@@ -610,8 +613,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
      * sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
@@ -623,7 +625,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GCreateDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceAssignment(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, response);
 	    return response;
 	} catch (Throwable t) {
@@ -634,8 +637,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(
      * java.lang.String)
      */
     @Override
@@ -647,7 +649,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetDeviceAssignmentByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceAssignmentByToken(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, response);
 	    return response;
 	} catch (Throwable t) {
@@ -658,8 +661,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
      * java.lang.String)
      */
     @Override
@@ -671,7 +673,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetCurrentAssignmentForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getCurrentAssignmentForDevice(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, response);
 	    return response;
 	} catch (Throwable t) {
@@ -683,8 +686,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
      * lang.String, boolean)
      */
     @Override
@@ -697,7 +699,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GDeleteDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceAssignment(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, response);
 	    return response;
 	} catch (Throwable t) {
@@ -724,7 +727,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GUpdateDeviceAssignmentMetadataResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceAssignmentMetadata(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, response);
 	    return response;
 	} catch (Throwable t) {
@@ -736,8 +740,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(
      * java.lang.String, com.sitewhere.spi.device.DeviceAssignmentStatus)
      */
     @Override
@@ -751,7 +754,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GUpdateDeviceAssignmentStatusResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceAssignmentStatus(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, response);
 	    return response;
 	} catch (Throwable t) {
@@ -775,7 +779,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GEndDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .endDeviceAssignment(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment()) : null;
+		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, response);
 	    return response;
 	} catch (Throwable t) {
@@ -786,8 +791,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
      * java.lang.String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -812,10 +816,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
-     * java.lang.String,
-     * com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
+     * java.lang.String, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
@@ -836,15 +838,13 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(
-     * java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
+     * sitewhere.spi.asset.IAssetReference,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
@@ -865,10 +865,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
-     * String,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
+     * String, com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
      */
     @Override
     public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
@@ -881,7 +879,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GCreateDeviceStreamResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceStream(grequest.build());
 	    IDeviceStream response = (gresponse.hasDeviceStream())
-		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream()) : null;
+		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, response);
 	    return response;
 	} catch (Throwable t) {
@@ -892,8 +891,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -906,7 +904,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    GGetDeviceStreamByStreamIdResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceStreamByStreamId(grequest.build());
 	    IDeviceStream response = (gresponse.hasDeviceStream())
-		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream()) : null;
+		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, response);
 	    return response;
 	} catch (Throwable t) {
@@ -917,8 +916,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
      * String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -942,8 +940,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
      * device.request.ISiteCreateRequest)
      */
     @Override
@@ -985,8 +982,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
      * com.sitewhere.spi.device.request.ISiteCreateRequest)
      */
     @Override
@@ -1008,8 +1004,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
      * search.ISearchCriteria)
      */
     @Override
@@ -1030,8 +1025,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
      * boolean)
      */
     @Override
@@ -1053,8 +1047,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -1096,8 +1089,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -1119,8 +1111,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -1141,8 +1132,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
      * boolean)
      */
     @Override
@@ -1210,8 +1200,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceGroupCreateRequest)
      */
     @Override
@@ -1284,8 +1273,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
      * String, boolean)
      */
     @Override
@@ -1309,8 +1297,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
      * lang.String, java.util.List, boolean)
      */
     @Override
@@ -1362,8 +1349,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
      * lang.String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override

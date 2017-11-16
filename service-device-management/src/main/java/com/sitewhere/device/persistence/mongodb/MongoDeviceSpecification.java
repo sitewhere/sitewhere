@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
@@ -33,22 +34,19 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Property for unique token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for specification name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for asset module id */
-    public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
-
-    /** Property for asset id */
-    public static final String PROP_ASSET_ID = "assetId";
+    public static final String PROP_ASSET_REFERENCE = "ar";
 
     /** Property for container policy */
-    public static final String PROP_CONTAINER_POLICY = "containerPolicy";
+    public static final String PROP_CONTAINER_POLICY = "cp";
 
     /** Property for device element schema */
-    public static final String PROP_DEVICE_ELEMENT_SCHEMA = "deviceElementSchema";
+    public static final String PROP_DEVICE_ELEMENT_SCHEMA = "es";
 
     /*
      * (non-Javadoc)
@@ -79,8 +77,7 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
     public static void toDocument(IDeviceSpecification source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
-	target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
-	target.append(PROP_ASSET_ID, source.getAssetId());
+	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
 	target.append(PROP_CONTAINER_POLICY, source.getContainerPolicy().name());
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -106,15 +103,13 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
     public static void fromDocument(Document source, DeviceSpecification target) {
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
-	String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
-	String assetId = (String) source.get(PROP_ASSET_ID);
+	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
 	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
 	target.setToken(token);
 	target.setName(name);
-	target.setAssetModuleId(assetModuleId);
-	target.setAssetId(assetId);
+	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 
 	if (containerPolicy != null) {
 	    target.setContainerPolicy(DeviceContainerPolicy.valueOf(containerPolicy));

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
@@ -39,6 +40,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleDescriptor;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
@@ -72,8 +74,7 @@ public class Assets extends RestControllerBase {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Search for assets in an {@link IAssetModule} that meet the given
-     * criteria.
+     * Search for assets in an {@link IAssetModule} that meet the given criteria.
      * 
      * @param assetModuleId
      * @param criteria
@@ -90,8 +91,7 @@ public class Assets extends RestControllerBase {
     }
 
     /**
-     * Search for assets in an {@link IAssetModule} that meet the given
-     * criteria.
+     * Search for assets in an {@link IAssetModule} that meet the given criteria.
      * 
      * @param assetModuleId
      * @param criteria
@@ -115,8 +115,9 @@ public class Assets extends RestControllerBase {
     /**
      * Get an asset from an {@link IAssetModule} by unique id.
      * 
-     * @param assetModuleId
+     * @param moduleId
      * @param assetId
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -124,16 +125,17 @@ public class Assets extends RestControllerBase {
     @ApiOperation(value = "Get an asset by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAsset getAssetById(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
+	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String moduleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetResolver().getAssetModuleManagement().getAssetById(assetModuleId, assetId);
+	return getAssetResolver().getAssetModuleManagement()
+		.getAsset(new AssetReference.Builder(moduleId, assetId).build());
     }
 
     /**
      * Get all assignments for a given asset.
      * 
-     * @param assetModuleId
+     * @param moduleId
      * @param assetId
      * @param siteToken
      * @param page
@@ -145,7 +147,7 @@ public class Assets extends RestControllerBase {
     @ApiOperation(value = "List assignments associated with an asset")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
+	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String moduleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    @ApiParam(value = "Limit results to the given site", required = false) @RequestParam(required = false) String siteToken,
 	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
@@ -158,7 +160,8 @@ public class Assets extends RestControllerBase {
 	    criteria.setStatus(decodedStatus);
 	    criteria.setSiteToken(siteToken);
 
-	    return getDeviceManagement().getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
+	    IAssetReference assetReference = new AssetReference.Builder(moduleId, assetId).build();
+	    return getDeviceManagement().getDeviceAssignmentsForAsset(assetReference, criteria);
 	} catch (IllegalArgumentException e) {
 	    throw new SiteWhereException("Invalid device assignment status: " + status);
 	}
@@ -285,8 +288,8 @@ public class Assets extends RestControllerBase {
     }
 
     /**
-     * Creates a new person asset in the category. If the category does not
-     * support person assets, an exception will be thrown.
+     * Creates a new person asset in the category. If the category does not support
+     * person assets, an exception will be thrown.
      * 
      * @param categoryId
      * @param request

@@ -23,16 +23,16 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
 
     /** Property for source */
-    public static final String PROP_SOURCE = "source";
+    public static final String PROP_SOURCE = "sr";
 
     /** Property for alert level */
-    public static final String PROP_LEVEL = "level";
+    public static final String PROP_LEVEL = "lv";
 
     /** Property for type */
-    public static final String PROP_TYPE = "type";
+    public static final String PROP_TYPE = "ty";
 
     /** Property for message */
-    public static final String PROP_MESSAGE = "message";
+    public static final String PROP_MESSAGE = "mg";
 
     /*
      * (non-Javadoc)

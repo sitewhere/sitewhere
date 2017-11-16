@@ -9,6 +9,7 @@ package com.sitewhere.spi.device.request;
 
 import java.util.Map;
 
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 
 /**
@@ -40,18 +41,11 @@ public interface IDeviceAssignmentCreateRequest {
     public DeviceAssignmentType getAssignmentType();
 
     /**
-     * Get asset module id.
+     * Get asset reference.
      * 
      * @return
      */
-    public String getAssetModuleId();
-
-    /**
-     * Get assigned asset id.
-     * 
-     * @return
-     */
-    public String getAssetId();
+    public IAssetReference getAssetReference();
 
     /**
      * Get metadata values.

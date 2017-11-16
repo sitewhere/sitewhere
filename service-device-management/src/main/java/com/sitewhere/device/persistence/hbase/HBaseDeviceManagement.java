@@ -25,6 +25,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -208,8 +209,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
      * lang.String )
      */
     @Override
@@ -233,8 +233,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.
      * String, boolean)
      */
     @Override
@@ -257,8 +256,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
@@ -270,8 +268,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.
      * lang.String)
      */
     @Override
@@ -282,8 +279,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
@@ -295,8 +291,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.lang.
      * String)
      */
     @Override
@@ -307,8 +302,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -330,8 +324,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
      * lang.String)
      */
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
@@ -352,8 +345,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(
      * java.lang.String)
      */
     public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException {
@@ -378,8 +370,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(
      * java.lang .String, com.sitewhere.spi.device.IDeviceElementMapping)
      */
     @Override
@@ -391,8 +382,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(
      * java.lang .String, java.lang.String)
      */
     @Override
@@ -414,8 +404,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
      * sitewhere .spi.device.request.IDeviceAssignmentCreateRequest)
      */
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
@@ -425,8 +414,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(
      * java.lang .String)
      */
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
@@ -436,8 +424,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.
      * lang.String, boolean)
      */
     public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
@@ -459,8 +446,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(
      * java.lang .String, com.sitewhere.spi.device.DeviceAssignmentStatus)
      */
     public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
@@ -471,8 +457,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentState(
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentState(
      * java.lang .String, com.sitewhere.spi.device.IDeviceAssignmentState)
      */
     public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
@@ -494,8 +479,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(
      * java.lang .String, com.sitewhere.spi.common.ISearchCriteria)
      */
     public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
@@ -506,10 +490,8 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
-     * java.lang.String,
-     * com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
+     * java.lang.String, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
@@ -517,26 +499,22 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(
-     * java.lang.String, java.lang.String,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
+     * sitewhere.spi.asset.IAssetReference,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return HBaseSite.listDeviceAssignmentsForAsset(context, assetModuleId, assetId, criteria);
+	return HBaseSite.listDeviceAssignmentsForAsset(context, assetReference, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
-     * String,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.
+     * String, com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
      */
     @Override
     public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
@@ -547,8 +525,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.
      * String, java.lang.String)
      */
     @Override
@@ -559,8 +536,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.
      * String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -572,8 +548,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
      * device. request.ISiteCreateRequest)
      */
     @Override
@@ -584,8 +559,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.lang.String,
      * boolean)
      */
     @Override
@@ -596,8 +570,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.lang.String,
      * com.sitewhere.spi.device.request.ISiteCreateRequest)
      */
     @Override
@@ -619,8 +592,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
      * common. ISearchCriteria)
      */
     @Override
@@ -631,8 +603,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -643,8 +614,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.lang.String,
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
@@ -665,8 +635,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.lang.String,
      * com.sitewhere.spi.common.ISearchCriteria)
      */
     @Override
@@ -677,8 +646,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.lang.String,
      * boolean)
      */
     @Override
@@ -700,8 +668,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.
      * String, com.sitewhere.spi.device.request.IDeviceGroupCreateRequest)
      */
     @Override
@@ -748,8 +715,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.
      * String, boolean)
      */
     @Override
@@ -760,8 +726,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.
      * lang.String, java.util.List, boolean)
      */
     @Override
@@ -786,8 +751,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.
      * lang.String , com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override

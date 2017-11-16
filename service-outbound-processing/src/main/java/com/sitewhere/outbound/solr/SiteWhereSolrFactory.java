@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 
+import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
@@ -210,7 +211,7 @@ public class SiteWhereSolrFactory {
 	String id = (String) document.get(ISolrFields.EVENT_ID);
 	String assignmentToken = (String) document.get(ISolrFields.ASSIGNMENT_TOKEN);
 	String assignmentTypeStr = (String) document.get(ISolrFields.ASSIGNMENT_TYPE);
-	String assetId = (String) document.get(ISolrFields.ASSET_ID);
+	String assetReference = (String) document.get(ISolrFields.ASSET_REFERENCE);
 	String siteToken = (String) document.get(ISolrFields.SITE_TOKEN);
 	Date eventDate = (Date) document.get(ISolrFields.EVENT_DATE);
 	Date receivedDate = (Date) document.get(ISolrFields.RECEIVED_DATE);
@@ -218,7 +219,7 @@ public class SiteWhereSolrFactory {
 	event.setId(id);
 	event.setDeviceAssignmentToken(assignmentToken);
 	event.setAssignmentType(DeviceAssignmentType.valueOf(assignmentTypeStr));
-	event.setAssetId(assetId);
+	event.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 	event.setSiteToken(siteToken);
 	event.setEventDate(eventDate);
 	event.setReceivedDate(receivedDate);
@@ -246,7 +247,8 @@ public class SiteWhereSolrFactory {
 	document.addField(ISolrFields.EVENT_ID, event.getId());
 	document.addField(ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentToken());
 	document.addField(ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
-	document.addField(ISolrFields.ASSET_ID, event.getAssetId());
+	document.addField(ISolrFields.ASSET_REFERENCE,
+		new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
 	document.addField(ISolrFields.SITE_TOKEN, event.getSiteToken());
 	document.addField(ISolrFields.EVENT_DATE, event.getEventDate());
 	document.addField(ISolrFields.RECEIVED_DATE, event.getReceivedDate());

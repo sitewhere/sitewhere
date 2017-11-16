@@ -26,8 +26,8 @@ public interface ISolrFields {
     /** Assignment type indicator */
     public static final String ASSIGNMENT_TYPE = "assignmentType";
 
-    /** Asset identifier */
-    public static final String ASSET_ID = "assetId";
+    /** Asset reference */
+    public static final String ASSET_REFERENCE = "assetReference";
 
     /** Unique site identifier */
     public static final String SITE_TOKEN = "siteToken";

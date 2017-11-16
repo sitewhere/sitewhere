@@ -56,12 +56,11 @@ public interface IAssetModuleManagement {
     public void refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Get unqiue asset within the context of an asset module.
+     * Get referenced asset.
      * 
-     * @param moduleId
-     * @param assetId
+     * @param reference
      * @return
      * @throws SiteWhereException
      */
-    public IAsset getAssetById(String moduleId, String assetId) throws SiteWhereException;
+    public IAsset getAsset(IAssetReference reference) throws SiteWhereException;
 }

@@ -13,6 +13,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
+import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -26,31 +27,28 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public class MongoDeviceEvent {
 
     /** Alternate (external) id */
-    public static final String PROP_ALTERNATE_ID = "altId";
+    public static final String PROP_ALTERNATE_ID = "ai";
 
     /** Event type indicator */
-    public static final String PROP_EVENT_TYPE = "eventType";
+    public static final String PROP_EVENT_TYPE = "et";
 
     /** Property for site token */
-    public static final String PROP_SITE_TOKEN = "siteToken";
+    public static final String PROP_SITE_TOKEN = "si";
 
     /** Property for device assignment token */
-    public static final String PROP_DEVICE_ASSIGNMENT_TOKEN = "deviceAssignmentToken";
+    public static final String PROP_DEVICE_ASSIGNMENT_TOKEN = "ak";
 
     /** Property for device assignment type */
-    public static final String PROP_DEVICE_ASSIGNMENT_TYPE = "deviceAssignmentType";
+    public static final String PROP_DEVICE_ASSIGNMENT_TYPE = "at";
 
-    /** Property for asset module id */
-    public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
-
-    /** Property for asset id */
-    public static final String PROP_ASSET_ID = "assetId";
+    /** Property for asset reference */
+    public static final String PROP_ASSET_REFERENCE = "ar";
 
     /** Property for time measurements were taken */
-    public static final String PROP_EVENT_DATE = "eventDate";
+    public static final String PROP_EVENT_DATE = "ed";
 
     /** Property for time measurements were received */
-    public static final String PROP_RECEIVED_DATE = "receivedDate";
+    public static final String PROP_RECEIVED_DATE = "rd";
 
     /**
      * Copy information from SPI into Mongo {@link Document}.
@@ -71,8 +69,7 @@ public class MongoDeviceEvent {
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
 	target.append(PROP_DEVICE_ASSIGNMENT_TYPE, source.getAssignmentType().name());
-	target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
-	target.append(PROP_ASSET_ID, source.getAssetId());
+	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
 	target.append(PROP_EVENT_DATE, source.getEventDate());
 	target.append(PROP_RECEIVED_DATE, source.getReceivedDate());
 
@@ -93,8 +90,7 @@ public class MongoDeviceEvent {
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 	String assignmentToken = (String) source.get(PROP_DEVICE_ASSIGNMENT_TOKEN);
 	String assignmentType = (String) source.get(PROP_DEVICE_ASSIGNMENT_TYPE);
-	String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
-	String assetId = (String) source.get(PROP_ASSET_ID);
+	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
 	Date eventDate = (Date) source.get(PROP_EVENT_DATE);
 	Date receivedDate = (Date) source.get(PROP_RECEIVED_DATE);
 
@@ -107,8 +103,7 @@ public class MongoDeviceEvent {
 	target.setAlternateId(alternateId);
 	target.setSiteToken(siteToken);
 	target.setDeviceAssignmentToken(assignmentToken);
-	target.setAssetModuleId(assetModuleId);
-	target.setAssetId(assetId);
+	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 	target.setEventDate(eventDate);
 	target.setReceivedDate(receivedDate);
 

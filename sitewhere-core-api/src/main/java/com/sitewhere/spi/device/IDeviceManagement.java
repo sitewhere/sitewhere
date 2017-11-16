@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -103,8 +104,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException;
 
     /**
-     * Creates a device command associated with an existing device
-     * specification.
+     * Creates a device command associated with an existing device specification.
      * 
      * @param specificationToken
      * @param request
@@ -302,8 +302,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     public IDeviceAssignment getCurrentDeviceAssignment(String hardwareId) throws SiteWhereException;
 
     /**
-     * Delete a device assignment. Depending on 'force' flag the assignment will
-     * be marked for delete or actually be deleted.
+     * Delete a device assignment. Depending on 'force' flag the assignment will be
+     * marked for delete or actually be deleted.
      * 
      * @param token
      * @param force
@@ -368,13 +368,12 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
     /**
      * Get a list of device assignments associated with a given asset.
      * 
-     * @param assetModuleId
-     * @param assetId
+     * @param assetReference
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -449,8 +448,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 
     /**
      * Delete a site based on unique site token. If 'force' is specified, the
-     * database object will be deleted, otherwise the deleted flag will be set
-     * to true.
+     * database object will be deleted, otherwise the deleted flag will be set to
+     * true.
      * 
      * @param siteToken
      * @param force

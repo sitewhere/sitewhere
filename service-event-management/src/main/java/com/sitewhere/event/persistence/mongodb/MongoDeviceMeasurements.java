@@ -24,13 +24,13 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 public class MongoDeviceMeasurements implements MongoConverter<IDeviceMeasurements> {
 
     /** Element that holds measurements */
-    public static final String PROP_MEASUREMENTS = "measurements";
+    public static final String PROP_MEASUREMENTS = "mx";
 
     /** Attribute name for measurement name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "n";
 
     /** Attribute name for measurement value */
-    public static final String PROP_VALUE = "value";
+    public static final String PROP_VALUE = "v";
 
     /*
      * (non-Javadoc)
