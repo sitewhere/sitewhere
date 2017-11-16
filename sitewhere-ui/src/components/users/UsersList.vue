@@ -8,7 +8,7 @@
         <v-data-table v-if="users.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="users"
           :hide-actions="true" no-data-text="No Users Found">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="5%" :title="props.item.username">
               {{ props.item.username }}
             </td>

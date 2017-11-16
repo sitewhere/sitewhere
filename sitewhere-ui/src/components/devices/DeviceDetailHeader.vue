@@ -36,7 +36,7 @@ import Utils from '../common/Utils'
 import Style from '../common/Style'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
-import {createBaseUrl} from '../../http/sitewhere-api-wrapper'
+import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -81,7 +81,7 @@ export default {
       var tenant = this.$store.getters.selectedTenant
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + createBaseUrl(this.$store) + 'devices/' +
+        'background-image': 'url(' + createCoreApiUrl(this.$store) + 'devices/' +
           this.device.hardwareId + '/symbol?tenantAuthToken=' +
           tenant.authenticationToken + ')',
         'background-size': 'contain',

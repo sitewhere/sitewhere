@@ -9,7 +9,7 @@
           :headers="headers" :items="locations" :hide-actions="true"
           no-data-text="No Locations Found for Site"
           total-items="0">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="40%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>

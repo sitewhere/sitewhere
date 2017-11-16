@@ -9,7 +9,7 @@
           :headers="headers" :items="schedules"
           :hide-actions="true" no-data-text="No Schedules Found"
           total-items="0">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="17%" :title="props.item.name">
               {{ props.item.name }}
             </td>

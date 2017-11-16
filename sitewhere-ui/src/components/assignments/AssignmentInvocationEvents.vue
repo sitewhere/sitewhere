@@ -9,7 +9,7 @@
           :headers="headers" :items="alerts" :hide-actions="true"
           no-data-text="No Command Invocations Found for Assignment"
           total-items="0">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="20%" :title="props.item.command.name">
               {{ props.item.command.name }}
             </td>

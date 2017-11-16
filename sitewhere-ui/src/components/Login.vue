@@ -2,14 +2,6 @@
 <v-app>
   <main>
     <v-container>
-      <v-card>
-        <v-card-text class="yellow lighten-4" style="text-align: center;">
-          <v-icon fa class="red--text mr-2">warning</v-icon>
-          This is a preview release of the next-generation SiteWhere UI. It
-          should be considered <strong>beta</strong> quality at this point and is not intended
-          for production use.
-        </v-card-text>
-      </v-card>
       <v-card raised class="grey lighten-4 white--text mt-5"
         style="width: 600px; margin-left: auto; margin-right: auto;">
         <v-card-text class="white">
@@ -66,7 +58,7 @@
 </template>
 
 <script>
-import {_getUser} from '../http/sitewhere-api-wrapper'
+import {_getJwt, _getUser} from '../http/sitewhere-api-wrapper'
 import ErrorBanner from './common/ErrorBanner'
 
 export default {
@@ -132,6 +124,18 @@ export default {
 
       var token = btoa(this.username + ':' + this.password)
       this.$store.commit('authToken', token)
+
+      _getJwt(this.$store)
+        .then(function (response) {
+          let jwt = response.headers['x-sitewhere-jwt']
+          component.$store.commit('jwt', jwt)
+          component.onJwtAcquired()
+        }).catch(function (e) {
+        })
+    },
+
+    onJwtAcquired: function (jwt) {
+      var component = this
 
       _getUser(this.$store, this.username)
         .then(function (response) {

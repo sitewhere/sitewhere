@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
  * @author Derek Adams
  */
 @RestController
-@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
+@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code", TokenAuthenticationFilter.JWT_HEADER })
 @RequestMapping(value = "/jwt")
 @Api(value = "jwt")
 public class JwtService extends RestControllerBase {

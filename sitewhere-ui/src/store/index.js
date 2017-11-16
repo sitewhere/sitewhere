@@ -8,6 +8,7 @@ export default new Vuex.Store({
     protocol: 'http',
     server: 'localhost',
     port: 8080,
+    jwt: null,
     user: null,
     authToken: null,
     authTenants: null,
@@ -29,6 +30,11 @@ export default new Vuex.Store({
     // Set server port.
     port (state, port) {
       state.port = port
+    },
+
+    // Set current JWT.
+    jwt (state, jwt) {
+      state.jwt = jwt
     },
 
     // Set currently logged in user.
@@ -92,6 +98,10 @@ export default new Vuex.Store({
 
     port: state => {
       return state.port
+    },
+
+    jwt: state => {
+      return state.jwt
     },
 
     user: state => {

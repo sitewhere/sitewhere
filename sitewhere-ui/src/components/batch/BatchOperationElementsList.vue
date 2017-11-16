@@ -8,7 +8,7 @@
         <v-data-table v-if="elements.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="elements" :hide-actions="true"
           no-data-text="No Batch Operation Elements Found">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="40%" :title="props.item.hardwareId">
               <a href="javascript: void(0)"
                 @click="onOpenDevice(props.item.hardwareId)">

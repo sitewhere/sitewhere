@@ -42,7 +42,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Header containing JWT on authentication */
-    public static final String JWT_HEADER = "x-sitewhere-jwt";
+    public static final String JWT_HEADER = "X-Sitewhere-JWT";
 
     /** Authentication header */
     private static final String AUTHORIZATION_HEADER = "Authorization";

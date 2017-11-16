@@ -47,7 +47,7 @@
 <script>
 import Utils from '../common/Utils'
 import Style from '../common/Style'
-import {createBaseUrl} from '../../http/sitewhere-api-wrapper'
+import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
@@ -96,7 +96,7 @@ export default {
       var tenant = this.$store.getters.selectedTenant
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + createBaseUrl(this.$store) +
+        'background-image': 'url(' + createCoreApiUrl(this.$store) +
           'assignments/' + this.assignment.token + '/symbol?tenantAuthToken=' +
           tenant.authenticationToken + ')',
         'background-size': 'contain',

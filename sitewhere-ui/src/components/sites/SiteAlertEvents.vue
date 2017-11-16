@@ -9,7 +9,7 @@
           :headers="headers" :items="alerts" :hide-actions="true"
           no-data-text="No Alerts Found for Site"
           total-items="0">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>
