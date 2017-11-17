@@ -122,10 +122,9 @@ public class DeviceMarshalHelper {
 	    if (includeAssignment) {
 		try {
 		    IDeviceAssignment assignment = getDeviceManagement(tenant).getCurrentDeviceAssignment(source);
-		    if (assignment == null) {
-			throw new SiteWhereException("Device contains an invalid assignment reference.");
+		    if (assignment != null) {
+			result.setAssignment(getAssignmentHelper().convert(assignment, manager));
 		    }
-		    result.setAssignment(getAssignmentHelper().convert(assignment, manager));
 		} catch (SiteWhereException e) {
 		    LOGGER.warn("Device has token for non-existent assignment.");
 		}
@@ -136,10 +135,9 @@ public class DeviceMarshalHelper {
 	if (source.getSiteToken() != null) {
 	    if (includeSite) {
 		ISite site = getDeviceManagement(tenant).getSiteByToken(source.getSiteToken());
-		if (site == null) {
-		    throw new SiteWhereException("Device contains an invalid site reference.");
+		if (site != null) {
+		    result.setSite(Site.copy(site));
 		}
-		result.setSite(Site.copy(site));
 	    } else {
 		result.setSiteToken(source.getSiteToken());
 	    }
