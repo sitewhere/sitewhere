@@ -15,6 +15,7 @@ import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.GAddAlertForAssignmentRequest;
 import com.sitewhere.grpc.service.GAddAlertForAssignmentResponse;
@@ -126,12 +127,13 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceAssignment assignment, IDeviceEventBatch batch)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Batch", batch));
 	    GAddDeviceEventBatchRequest.Builder grequest = GAddDeviceEventBatchRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceEventBatch(batch));
-	    GAddDeviceEventBatchResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addDeviceEventBatch(grequest.build());
+	    GAddDeviceEventBatchResponse gresponse = getGrpcChannel().getBlockingStub().addDeviceEventBatch(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, grequest.build()));
 	    IDeviceEventBatchResponse response = EventModelConverter
 		    .asApiDeviceEventBatchResponse(gresponse.getResponse());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, response);
@@ -151,13 +153,15 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     @Override
     public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID,
+		    DebugParameter.create("Id", id));
 	    GGetDeviceEventByIdRequest.Builder grequest = GGetDeviceEventByIdRequest.newBuilder();
 	    grequest.setId(id);
-	    GGetDeviceEventByIdResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceEventById(grequest.build());
+	    GGetDeviceEventByIdResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceEventById(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, grequest.build()));
 	    IDeviceEvent response = (gresponse.hasEvent())
-		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent()) : null;
+		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, response);
 	    return response;
 	} catch (Throwable t) {
@@ -174,13 +178,16 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     @Override
     public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID,
+		    DebugParameter.create("Alternate Id", alternateId));
 	    GGetDeviceEventByAlternateIdRequest.Builder grequest = GGetDeviceEventByAlternateIdRequest.newBuilder();
 	    grequest.setAlternateId(alternateId);
 	    GGetDeviceEventByAlternateIdResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceEventByAlternateId(grequest.build());
+		    .getDeviceEventByAlternateId(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, grequest.build()));
 	    IDeviceEvent response = (gresponse.hasEvent())
-		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent()) : null;
+		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID,
 		    response);
 	    return response;
@@ -193,8 +200,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -202,11 +208,13 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceEvent> listDeviceEvents(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListDeviceEventsRequest.Builder grequest = GListDeviceEventsRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(EventModelConverter.asGrpcDeviceEventSearchCriteria(criteria));
-	    GListDeviceEventsResponse gresponse = getGrpcChannel().getBlockingStub().listDeviceEvents(grequest.build());
+	    GListDeviceEventsResponse gresponse = getGrpcChannel().getBlockingStub().listDeviceEvents(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, grequest.build()));
 	    ISearchResults<IDeviceEvent> results = EventModelConverter
 		    .asApiDeviceEventSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, results);
@@ -227,12 +235,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", measurements));
 	    GAddMeasurementsForAssignmentRequest.Builder grequest = GAddMeasurementsForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceMeasurementsCreateRequest(measurements));
 	    GAddMeasurementsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addMeasurementsForAssignment(grequest.build());
+		    .addMeasurementsForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceMeasurements response = EventModelConverter.asApiDeviceMeasurements(gresponse.getMeasurements());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT,
 		    response);
@@ -254,12 +264,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListMeasurementsForAssignmentRequest.Builder grequest = GListMeasurementsForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListMeasurementsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listMeasurementsForAssignment(grequest.build());
+		    .listMeasurementsForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT, grequest.build()));
 	    ISearchResults<IDeviceMeasurements> results = EventModelConverter
 		    .asApiDeviceMeasurementsSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT,
@@ -282,12 +294,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListMeasurementsForSiteRequest.Builder grequest = GListMeasurementsForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	    GListMeasurementsForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listMeasurementsForSite(grequest.build());
+	    GListMeasurementsForSiteResponse gresponse = getGrpcChannel().getBlockingStub().listMeasurementsForSite(
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE,
+			    grequest.build()));
 	    ISearchResults<IDeviceMeasurements> results = EventModelConverter
 		    .asApiDeviceMeasurementsSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE, results);
@@ -300,8 +314,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -309,12 +322,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", request));
 	    GAddLocationForAssignmentRequest.Builder grequest = GAddLocationForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceLocationCreateRequest(request));
-	    GAddLocationForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addLocationForAssignment(grequest.build());
+	    GAddLocationForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub().addLocationForAssignment(
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT,
+			    grequest.build()));
 	    IDeviceLocation response = EventModelConverter.asApiDeviceLocation(gresponse.getLocation());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT, response);
 	    return response;
@@ -336,12 +351,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListLocationsForAssignmentRequest.Builder grequest = GListLocationsForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListLocationsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listLocationsForAssignment(grequest.build());
+		    .listLocationsForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT, grequest.build()));
 	    ISearchResults<IDeviceLocation> results = EventModelConverter
 		    .asApiDeviceLocationSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT, results);
@@ -363,12 +380,13 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListLocationsForSiteRequest.Builder grequest = GListLocationsForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	    GListLocationsForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listLocationsForSite(grequest.build());
+	    GListLocationsForSiteResponse gresponse = getGrpcChannel().getBlockingStub().listLocationsForSite(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE, grequest.build()));
 	    ISearchResults<IDeviceLocation> results = EventModelConverter
 		    .asApiDeviceLocationSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE, results);
@@ -390,12 +408,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", request));
 	    GAddAlertForAssignmentRequest.Builder grequest = GAddAlertForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceAlertCreateRequest(request));
-	    GAddAlertForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addAlertForAssignment(grequest.build());
+	    GAddAlertForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub().addAlertForAssignment(
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT,
+			    grequest.build()));
 	    IDeviceAlert response = EventModelConverter.asApiDeviceAlert(gresponse.getAlert());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT, response);
 	    return response;
@@ -407,8 +427,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -416,12 +435,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListAlertsForAssignmentRequest.Builder grequest = GListAlertsForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	    GListAlertsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listAlertsForAssignment(grequest.build());
+	    GListAlertsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub().listAlertsForAssignment(
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT,
+			    grequest.build()));
 	    ISearchResults<IDeviceAlert> results = EventModelConverter
 		    .asApiDeviceAlertSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT, results);
@@ -442,12 +463,13 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListAlertsForSiteRequest.Builder grequest = GListAlertsForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	    GListAlertsForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listAlertsForSite(grequest.build());
+	    GListAlertsForSiteResponse gresponse = getGrpcChannel().getBlockingStub().listAlertsForSite(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, grequest.build()));
 	    ISearchResults<IDeviceAlert> results = EventModelConverter
 		    .asApiDeviceAlertSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, results);
@@ -470,13 +492,16 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceStreamData addDeviceStreamData(IDeviceAssignment assignment, IDeviceStream stream,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Stream", stream),
+		    DebugParameter.create("Request", request));
 	    GAddStreamDataForAssignmentRequest.Builder grequest = GAddStreamDataForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setDeviceStream(DeviceModelConverter.asGrpcDeviceStream(stream));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceStreamDataCreateRequest(request));
 	    GAddStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addStreamDataForAssignment(grequest.build());
+		    .addStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceStreamData response = EventModelConverter.asApiDeviceStreamData(gresponse.getStreamData());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT,
 		    response);
@@ -498,13 +523,16 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceStreamData getDeviceStreamData(IDeviceAssignment assignment, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Stream Id", streamId),
+		    DebugParameter.create("Sequence Number", String.valueOf(sequenceNumber)));
 	    GGetStreamDataForAssignmentRequest.Builder grequest = GGetStreamDataForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setStreamId(streamId);
 	    grequest.setSequenceNumber(sequenceNumber);
 	    GGetStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getStreamDataForAssignment(grequest.build());
+		    .getStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceStreamData results = EventModelConverter.asApiDeviceStreamData(gresponse.getStreamData());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, results);
 	    return results;
@@ -525,13 +553,16 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceStreamData> listDeviceStreamData(IDeviceAssignment assignment, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Stream Id", streamId),
+		    DebugParameter.create("Criteria", criteria));
 	    GListStreamDataForAssignmentRequest.Builder grequest = GListStreamDataForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setStreamId(streamId);
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listStreamDataForAssignment(grequest.build());
+		    .listStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
 	    ISearchResults<IDeviceStreamData> results = EventModelConverter
 		    .asApiDeviceStreamDataSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT,
@@ -555,13 +586,15 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", request));
 	    GAddCommandInvocationForAssignmentRequest.Builder grequest = GAddCommandInvocationForAssignmentRequest
 		    .newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceCommandInvocationCreateRequest(request));
 	    GAddCommandInvocationForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addCommandInvocationForAssignment(grequest.build());
+		    .addCommandInvocationForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceCommandInvocation response = EventModelConverter
 		    .asApiDeviceCommandInvocation(gresponse.getInvocation());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT,
@@ -584,13 +617,16 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListCommandInvocationsForAssignmentRequest.Builder grequest = GListCommandInvocationsForAssignmentRequest
 		    .newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandInvocationsForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listCommandInvocationsForAssignment(grequest.build());
+		    .listCommandInvocationsForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT,
+			    grequest.build()));
 	    ISearchResults<IDeviceCommandInvocation> results = EventModelConverter
 		    .asApiDeviceCommandInvocationSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT,
@@ -613,12 +649,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListCommandInvocationsForSiteRequest.Builder grequest = GListCommandInvocationsForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandInvocationsForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listCommandInvocationsForSite(grequest.build());
+		    .listCommandInvocationsForSite(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE, grequest.build()));
 	    ISearchResults<IDeviceCommandInvocation> results = EventModelConverter
 		    .asApiDeviceCommandInvocationSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE,
@@ -640,12 +678,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION,
+		    DebugParameter.create("Invocation Id", invocationId));
 	    GListCommandResponsesForInvocationRequest.Builder grequest = GListCommandResponsesForInvocationRequest
 		    .newBuilder();
 	    grequest.setInvocationId(invocationId);
 	    GListCommandResponsesForInvocationResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listCommandResponsesForInvocation(grequest.build());
+		    .listCommandResponsesForInvocation(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION, grequest.build()));
 	    ISearchResults<IDeviceCommandResponse> results = EventModelConverter
 		    .asApiDeviceCommandResponseSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION,
@@ -662,20 +702,21 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", request));
 	    GAddCommandResponseForAssignmentRequest.Builder grequest = GAddCommandResponseForAssignmentRequest
 		    .newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceCommandResponseCreateRequest(request));
 	    GAddCommandResponseForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addCommandResponseForAssignment(grequest.build());
+		    .addCommandResponseForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceCommandResponse response = EventModelConverter.asApiDeviceCommandResponse(gresponse.getResponse());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT,
 		    response);
@@ -697,13 +738,15 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListCommandResponsesForAssignmentRequest.Builder grequest = GListCommandResponsesForAssignmentRequest
 		    .newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandResponsesForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listCommandResponsesForAssignment(grequest.build());
+		    .listCommandResponsesForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT, grequest.build()));
 	    ISearchResults<IDeviceCommandResponse> results = EventModelConverter
 		    .asApiDeviceCommandResponseSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT,
@@ -726,12 +769,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListCommandResponsesForSiteRequest.Builder grequest = GListCommandResponsesForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandResponsesForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listCommandResponsesForSite(grequest.build());
+		    .listCommandResponsesForSite(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE, grequest.build()));
 	    ISearchResults<IDeviceCommandResponse> results = EventModelConverter
 		    .asApiDeviceCommandResponseSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE,
@@ -754,12 +799,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Request", request));
 	    GAddStateChangeForAssignmentRequest.Builder grequest = GAddStateChangeForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceStateChangeCreateRequest(request));
 	    GAddStateChangeForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .addStateChangeForAssignment(grequest.build());
+		    .addStateChangeForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT, grequest.build()));
 	    IDeviceStateChange response = EventModelConverter.asApiDeviceStateChange(gresponse.getStateChange());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT,
 		    response);
@@ -781,12 +828,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT,
+		    DebugParameter.create("Assignment", assignment), DebugParameter.create("Criteria", criteria));
 	    GListStateChangesForAssignmentRequest.Builder grequest = GListStateChangesForAssignmentRequest.newBuilder();
 	    grequest.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(assignment));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListStateChangesForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listStateChangesForAssignment(grequest.build());
+		    .listStateChangesForAssignment(GrpcUtils.logGrpcClientRequest(
+			    DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT, grequest.build()));
 	    ISearchResults<IDeviceStateChange> results = EventModelConverter
 		    .asApiDeviceStateChangeSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT,
@@ -809,12 +858,14 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE,
+		    DebugParameter.create("Site", site), DebugParameter.create("Criteria", criteria));
 	    GListStateChangesForSiteRequest.Builder grequest = GListStateChangesForSiteRequest.newBuilder();
 	    grequest.setSite(DeviceModelConverter.asGrpcSite(site));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	    GListStateChangesForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listStateChangesForSite(grequest.build());
+	    GListStateChangesForSiteResponse gresponse = getGrpcChannel().getBlockingStub().listStateChangesForSite(
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE,
+			    grequest.build()));
 	    ISearchResults<IDeviceStateChange> results = EventModelConverter
 		    .asApiDeviceStateChangeSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE, results);
@@ -828,20 +879,20 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */
     @Override
     public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT);
+	    GrpcUtils.logClientMethodEntry(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT,
+		    DebugParameter.create("Event Id", eventId), DebugParameter.create("Request", request));
 	    GUpdateDeviceEventRequest.Builder grequest = GUpdateDeviceEventRequest.newBuilder();
 	    grequest.setId(eventId);
 	    grequest.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(request));
-	    GUpdateDeviceEventResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .updateDeviceEvent(grequest.build());
+	    GUpdateDeviceEventResponse gresponse = getGrpcChannel().getBlockingStub().updateDeviceEvent(GrpcUtils
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT, grequest.build()));
 	    IDeviceEvent response = EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent());
 	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT, response);
 	    return response;

@@ -153,8 +153,9 @@ public class CommonModelConverter {
      */
     public static DateRangeSearchCriteria asDateRangeSearchCriteria(GDateRangeSearchCriteria grpc)
 	    throws SiteWhereException {
-	return new DateRangeSearchCriteria(grpc.getPageNumber(), grpc.getPageSize(),
-		CommonModelConverter.asDate(grpc.getStartDate()), CommonModelConverter.asDate(grpc.getEndDate()));
+	Date startDate = grpc.hasStartDate() ? CommonModelConverter.asDate(grpc.getStartDate()) : null;
+	Date endDate = grpc.hasEndDate() ? CommonModelConverter.asDate(grpc.getEndDate()) : null;
+	return new DateRangeSearchCriteria(grpc.getPageNumber(), grpc.getPageSize(), startDate, endDate);
     }
 
     /**

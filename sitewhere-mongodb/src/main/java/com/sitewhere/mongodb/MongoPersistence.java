@@ -41,8 +41,8 @@ public class MongoPersistence {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Common handler for creating new objects. Assures that errors are handled
-     * in a consistent way.
+     * Common handler for creating new objects. Assures that errors are handled in a
+     * consistent way.
      * 
      * @param collection
      * @param object
@@ -66,8 +66,8 @@ public class MongoPersistence {
     }
 
     /**
-     * Common handler for updating existing objects. Assures that errors are
-     * handled in a consistent way.
+     * Common handler for updating existing objects. Assures that errors are handled
+     * in a consistent way.
      * 
      * @param collection
      * @param object
@@ -156,6 +156,8 @@ public class MongoPersistence {
 		found = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 	    }
 	    MongoCursor<Document> cursor = found.iterator();
+	    LOGGER.debug("Executing search query " + query.toJson() + " with sort " + sort.toJson() + " on collection "
+		    + collection.getNamespace());
 	    LOGGER.debug("Search took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();

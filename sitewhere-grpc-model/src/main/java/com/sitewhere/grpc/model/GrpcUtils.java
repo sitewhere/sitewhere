@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
+import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.grpc.MethodDescriptor;
@@ -23,12 +24,48 @@ public class GrpcUtils {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public static void logClientMethodEntry(MethodDescriptor<?, ?> method) {
+    public static void logClientMethodEntry(MethodDescriptor<?, ?> method, DebugParameter... parameters)
+	    throws SiteWhereException {
 	LOGGER.debug("Client received call to  " + method.getFullMethodName() + ".");
+	if (LOGGER.isTraceEnabled()) {
+	    for (DebugParameter parameter : parameters) {
+		if (parameter.getContent() instanceof String) {
+		    LOGGER.trace(parameter.getName() + ":" + parameter.getContent());
+		} else {
+		    LOGGER.trace(parameter.getName() + ":\n\n"
+			    + MarshalUtils.marshalJsonAsPrettyString(parameter.getContent()));
+		}
+	    }
+	}
+    }
+
+    /**
+     * Log the encoded GRPC request sent from client.
+     * 
+     * @param request
+     * @return
+     */
+    public static <T> T logGrpcClientRequest(MethodDescriptor<?, ?> method, T request) {
+	if (LOGGER.isTraceEnabled()) {
+	    LOGGER.trace(
+		    "Encoded GRPC request being sent to " + method.getFullMethodName() + ":\n\n" + request.toString());
+	}
+	return request;
     }
 
     public static void logServerMethodEntry(MethodDescriptor<?, ?> method) {
 	LOGGER.debug("Server received call to  " + method.getFullMethodName() + ".");
+    }
+
+    public static void logServerApiResult(MethodDescriptor<?, ?> method, Object result) throws SiteWhereException {
+	if (result != null) {
+	    if (LOGGER.isTraceEnabled()) {
+		LOGGER.trace("API result for " + method.getFullMethodName() + ":\n\n"
+			+ MarshalUtils.marshalJsonAsPrettyString(result));
+	    }
+	} else {
+	    LOGGER.trace("Response to " + method.getFullMethodName() + " was NULL");
+	}
     }
 
     /**
@@ -40,12 +77,12 @@ public class GrpcUtils {
      */
     public static void logClientMethodResponse(MethodDescriptor<?, ?> method, Object o) throws SiteWhereException {
 	if (o != null) {
-	    if (LOGGER.isDebugEnabled()) {
-		LOGGER.debug("Response to " + method.getFullMethodName() + ":\n\n"
+	    if (LOGGER.isTraceEnabled()) {
+		LOGGER.trace("Response to " + method.getFullMethodName() + ":\n\n"
 			+ MarshalUtils.marshalJsonAsPrettyString(o));
 	    }
 	} else {
-	    LOGGER.debug("Response to " + method.getFullMethodName() + " was NULL");
+	    LOGGER.trace("Response to " + method.getFullMethodName() + " was NULL");
 	}
     }
 

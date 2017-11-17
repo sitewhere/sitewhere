@@ -314,6 +314,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    ISearchResults<IDeviceMeasurements> apiResult = getDeviceEventManagement().listDeviceMeasurementsForSite(
 		    DeviceModelConverter.asApiSite(request.getSite()),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
+	    GrpcUtils.logServerApiResult(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE, apiResult);
 	    GListMeasurementsForSiteResponse.Builder response = GListMeasurementsForSiteResponse.newBuilder();
 	    GDeviceMeasurementsSearchResults.Builder results = GDeviceMeasurementsSearchResults.newBuilder();
 	    for (IDeviceMeasurements api : apiResult.getResults()) {
@@ -361,8 +362,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#listLocationsForAssignment(com.sitewhere.
-     * grpc.service.GListLocationsForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GListLocationsForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void listLocationsForAssignment(GListLocationsForAssignmentRequest request,
@@ -509,8 +509,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#addStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GAddStreamDataForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GAddStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void addStreamDataForAssignment(GAddStreamDataForAssignmentRequest request,
@@ -538,8 +537,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
      * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#getStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GGetStreamDataForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * grpc.service.GGetStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
     public void getStreamDataForAssignment(GGetStreamDataForAssignmentRequest request,
