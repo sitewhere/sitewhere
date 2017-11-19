@@ -39,9 +39,6 @@ public interface SiteWhereServerBeans {
     /** Bean id for event processing subsystem in server configuration */
     public static final String BEAN_EVENT_PROCESSING = "eventProcessing";
 
-    /** Bean id for asset module manager in server configuration */
-    public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
-
     /*****************************
      * SEARCH PROVIDER MANAGMENT *
      *****************************/

@@ -24,7 +24,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface IAssetModuleManager extends ITenantLifecycleComponent {
 
     /**
-     * Set asset management implementation.
+     * Set the asset management implementation.
      * 
      * @param assetManagement
      */

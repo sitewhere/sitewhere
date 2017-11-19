@@ -82,8 +82,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -127,8 +126,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -149,10 +147,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant.
-     * ITenantTemplate,
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant. ITenantTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -186,23 +182,22 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop event management GRPC channel.
-	start.addStopStep(this, getEventManagementGrpcChannel());
+	stop.addStopStep(this, getEventManagementGrpcChannel());
 
 	// Stop asset management GRPC channel.
-	start.addStopStep(this, getAssetManagementGrpcChannel());
+	stop.addStopStep(this, getAssetManagementGrpcChannel());
 
 	// Execute shutdown steps.
-	start.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*

@@ -10,7 +10,6 @@ package com.sitewhere.spi.asset;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Asset management interface for interacting with asset modules.
@@ -46,14 +45,6 @@ public interface IAssetModuleManagement {
      * @throws SiteWhereException
      */
     public List<IAsset> searchAssetModule(String moduleId, String criteria) throws SiteWhereException;
-
-    /**
-     * Refresh all managed modules.
-     * 
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    public void refreshModules(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Get referenced asset.

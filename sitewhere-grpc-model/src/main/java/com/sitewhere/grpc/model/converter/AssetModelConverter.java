@@ -17,6 +17,7 @@ import com.sitewhere.grpc.model.AssetModel.GAssetCategoryCreateRequest;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchCriteria;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetCreateRequest;
+import com.sitewhere.grpc.model.AssetModel.GAssetModuleDescriptor;
 import com.sitewhere.grpc.model.AssetModel.GAssetReference;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchCriteria;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
@@ -30,6 +31,7 @@ import com.sitewhere.grpc.model.CommonModel.GAssetType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetCategory;
+import com.sitewhere.rest.model.asset.AssetModuleDescriptor;
 import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
@@ -44,6 +46,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetModuleDescriptor;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
@@ -581,5 +584,37 @@ public class AssetModelConverter {
 	    gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
 	}
 	return gcriteria.build();
+    }
+
+    /**
+     * Convert asset module descriptor from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AssetModuleDescriptor asApiAssetModuleDescriptor(GAssetModuleDescriptor grpc)
+	    throws SiteWhereException {
+	AssetModuleDescriptor api = new AssetModuleDescriptor();
+	api.setId(grpc.getId());
+	api.setName(grpc.getName());
+	api.setAssetType(AssetModelConverter.asApiAssetType(grpc.getAssetType()));
+	return api;
+    }
+
+    /**
+     * Convert asset module descriptor from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAssetModuleDescriptor asGrpcAssetModuleDescriptor(IAssetModuleDescriptor api)
+	    throws SiteWhereException {
+	GAssetModuleDescriptor.Builder grpc = GAssetModuleDescriptor.newBuilder();
+	grpc.setId(api.getId());
+	grpc.setName(api.getName());
+	grpc.setAssetType(AssetModelConverter.asGrpcAssetType(api.getAssetType()));
+	return grpc.build();
     }
 }

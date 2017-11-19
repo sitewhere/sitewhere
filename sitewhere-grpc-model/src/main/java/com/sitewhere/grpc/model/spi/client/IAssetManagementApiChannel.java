@@ -9,6 +9,7 @@ package com.sitewhere.grpc.model.spi.client;
 
 import com.sitewhere.grpc.model.spi.IApiChannel;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetModuleManagement;
 
 /**
  * Provides an {@link IApiChannel} that supplies the {@link IAssetManagement}.
@@ -16,5 +17,5 @@ import com.sitewhere.spi.asset.IAssetManagement;
  * 
  * @author Derek
  */
-public interface IAssetManagementApiChannel extends IAssetManagement, IApiChannel {
+public interface IAssetManagementApiChannel extends IAssetManagement, IAssetModuleManagement, IApiChannel {
 }

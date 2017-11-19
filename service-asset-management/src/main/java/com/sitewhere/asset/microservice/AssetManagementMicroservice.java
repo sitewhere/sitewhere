@@ -14,11 +14,9 @@ import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
-import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -42,12 +40,6 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
-
-    /** Asset management implementation */
-    private IAssetManagement assetManagement;
-
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
 
     /*
      * (non-Javadoc)
@@ -148,32 +140,6 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
-     * getAssetManagement()
-     */
-    @Override
-    public IAssetManagement getAssetManagement() {
-	return assetManagement;
-    }
-
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
-    /*
-     * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
-     * getAssetModuleManager()
-     */
-    @Override
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
     }
 
     public IAssetManagementGrpcServer getAssetManagementGrpcServer() {

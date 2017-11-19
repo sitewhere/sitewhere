@@ -528,6 +528,6 @@ public class Sites extends RestControllerBase {
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
+	return getMicroservice().getAssetResolver();
     }
 }

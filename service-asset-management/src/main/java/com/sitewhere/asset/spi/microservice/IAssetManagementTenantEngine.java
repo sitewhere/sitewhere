@@ -7,6 +7,7 @@
  */
 package com.sitewhere.asset.spi.microservice;
 
+import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetResolver;
@@ -35,8 +36,14 @@ public interface IAssetManagementTenantEngine extends IMicroserviceTenantEngine 
     public IAssetManagement getAssetManagement();
 
     /**
-     * Get implementation class that wraps asset management with GRPC
-     * conversions.
+     * Get asset module manager implementation.
+     * 
+     * @return
+     */
+    public IAssetModuleManager getAssetModuleManager();
+
+    /**
+     * Get implementation class that wraps asset management with GRPC conversions.
      * 
      * @return
      */

@@ -11,16 +11,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.asset.modules.AssetModuleManager;
 import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
 import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
-import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 import com.sitewhere.spring.parser.IAssetManagementParser.Elements;
@@ -41,9 +38,7 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(AssetModuleManager.class);
 	List<Element> children = DomUtils.getChildElements(element);
-	List<Object> modules = new ManagedList<Object>();
 	for (Element child : children) {
 	    Elements type = Elements.getByLocalName(child.getLocalName());
 	    if (type == null) {
@@ -60,9 +55,6 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 	    }
 	    }
 	}
-	manager.addPropertyValue("modules", modules);
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER,
-		manager.getBeanDefinition());
 	return null;
     }
 

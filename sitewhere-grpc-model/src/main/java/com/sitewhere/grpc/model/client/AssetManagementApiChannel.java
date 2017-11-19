@@ -7,9 +7,14 @@
  */
 package com.sitewhere.grpc.model.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.model.AssetModel.GAnyAsset;
+import com.sitewhere.grpc.model.AssetModel.GAssetModuleDescriptor;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.AssetModelConverter;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
@@ -30,8 +35,16 @@ import com.sitewhere.grpc.service.GGetAssetByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetByIdResponse;
 import com.sitewhere.grpc.service.GGetAssetCategoryByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetCategoryByIdResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdResponse;
 import com.sitewhere.grpc.service.GListAssetCategoriesRequest;
 import com.sitewhere.grpc.service.GListAssetCategoriesResponse;
+import com.sitewhere.grpc.service.GListAssetModuleDescriptorsRequest;
+import com.sitewhere.grpc.service.GListAssetModuleDescriptorsResponse;
 import com.sitewhere.grpc.service.GListAssetsRequest;
 import com.sitewhere.grpc.service.GListAssetsResponse;
 import com.sitewhere.grpc.service.GUpdateAssetCategoryRequest;
@@ -43,8 +56,11 @@ import com.sitewhere.grpc.service.GUpdateLocationAssetResponse;
 import com.sitewhere.grpc.service.GUpdatePersonAssetRequest;
 import com.sitewhere.grpc.service.GUpdatePersonAssetResponse;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetModuleDescriptor;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -89,7 +105,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GCreateAssetCategoryResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createAssetCategory(grequest.build());
 	    IAssetCategory response = (gresponse.hasAssetCategory())
-		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory()) : null;
+		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY, response);
 	    return response;
 	} catch (Throwable t) {
@@ -112,7 +129,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GGetAssetCategoryByIdResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getAssetCategoryById(grequest.build());
 	    IAssetCategory response = (gresponse.hasAssetCategory())
-		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory()) : null;
+		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID, response);
 	    return response;
 	} catch (Throwable t) {
@@ -123,8 +141,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
      * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
     @Override
@@ -138,7 +155,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GUpdateAssetCategoryResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateAssetCategory(grequest.build());
 	    IAssetCategory response = (gresponse.hasAssetCategory())
-		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory()) : null;
+		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY, response);
 	    return response;
 	} catch (Throwable t) {
@@ -172,8 +190,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
      * String)
      */
     @Override
@@ -185,7 +202,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GDeleteAssetCategoryResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteAssetCategory(grequest.build());
 	    IAssetCategory response = (gresponse.hasAssetCategory())
-		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory()) : null;
+		    ? AssetModelConverter.asApiAssetCategory(gresponse.getAssetCategory())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY, response);
 	    return response;
 	} catch (Throwable t) {
@@ -196,8 +214,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
     @Override
@@ -222,8 +239,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
@@ -250,8 +266,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
     @Override
@@ -265,7 +280,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GCreateHardwareAssetResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createHardwareAsset(grequest.build());
 	    IHardwareAsset response = (gresponse.hasAsset())
-		    ? AssetModelConverter.asApiHardwareAsset(gresponse.getAsset()) : null;
+		    ? AssetModelConverter.asApiHardwareAsset(gresponse.getAsset())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET, response);
 	    return response;
 	} catch (Throwable t) {
@@ -276,8 +292,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -293,7 +308,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GUpdateHardwareAssetResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateHardwareAsset(grequest.build());
 	    IHardwareAsset response = (gresponse.hasAsset())
-		    ? AssetModelConverter.asApiHardwareAsset(gresponse.getAsset()) : null;
+		    ? AssetModelConverter.asApiHardwareAsset(gresponse.getAsset())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET, response);
 	    return response;
 	} catch (Throwable t) {
@@ -304,8 +320,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
     @Override
@@ -319,7 +334,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GCreateLocationAssetResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createLocationAsset(grequest.build());
 	    ILocationAsset response = (gresponse.hasAsset())
-		    ? AssetModelConverter.asApiLocationAsset(gresponse.getAsset()) : null;
+		    ? AssetModelConverter.asApiLocationAsset(gresponse.getAsset())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET, response);
 	    return response;
 	} catch (Throwable t) {
@@ -330,8 +346,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -347,7 +362,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    GUpdateLocationAssetResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateLocationAsset(grequest.build());
 	    ILocationAsset response = (gresponse.hasAsset())
-		    ? AssetModelConverter.asApiLocationAsset(gresponse.getAsset()) : null;
+		    ? AssetModelConverter.asApiLocationAsset(gresponse.getAsset())
+		    : null;
 	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET, response);
 	    return response;
 	} catch (Throwable t) {
@@ -381,8 +397,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -405,8 +420,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
@@ -422,6 +436,106 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetModuleManagement#listAssetModuleDescriptors(com
+     * .sitewhere.spi.asset.AssetType)
+     */
+    @Override
+    public List<IAssetModuleDescriptor> listAssetModuleDescriptors(AssetType type) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
+	    GListAssetModuleDescriptorsRequest.Builder grequest = GListAssetModuleDescriptorsRequest.newBuilder();
+	    grequest.setAssetType(AssetModelConverter.asGrpcAssetType(type));
+	    GListAssetModuleDescriptorsResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listAssetModuleDescriptors(grequest.build());
+	    List<IAssetModuleDescriptor> results = new ArrayList<IAssetModuleDescriptor>();
+	    for (GAssetModuleDescriptor descriptor : gresponse.getAssetModuleDescriptorList()) {
+		results.add(AssetModelConverter.asApiAssetModuleDescriptor(descriptor));
+	    }
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetModuleManagement#getAssetModuleDescriptor(java.
+     * lang.String)
+     */
+    @Override
+    public IAssetModuleDescriptor getAssetModuleDescriptor(String moduleId) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID);
+	    GGetAssetModuleDescriptorByModuleIdRequest.Builder grequest = GGetAssetModuleDescriptorByModuleIdRequest
+		    .newBuilder();
+	    grequest.setModuleId(moduleId);
+	    GGetAssetModuleDescriptorByModuleIdResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getAssetModuleDescriptorByModuleId(grequest.build());
+	    IAssetModuleDescriptor response = (gresponse.hasAssetModuleDescriptor())
+		    ? AssetModelConverter.asApiAssetModuleDescriptor(gresponse.getAssetModuleDescriptor())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID,
+		    response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(
+		    AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetModuleManagement#searchAssetModule(java.lang.
+     * String, java.lang.String)
+     */
+    @Override
+    public List<IAsset> searchAssetModule(String moduleId, String criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA);
+	    GGetAssetModuleAssetsByCriteriaRequest.Builder grequest = GGetAssetModuleAssetsByCriteriaRequest
+		    .newBuilder();
+	    grequest.setModuleId(moduleId);
+	    grequest.setCriteria(criteria);
+	    GGetAssetModuleAssetsByCriteriaResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getAssetModuleAssetsByCriteria(grequest.build());
+	    List<IAsset> results = new ArrayList<IAsset>();
+	    for (GAnyAsset asset : gresponse.getAssetList()) {
+		results.add(AssetModelConverter.asApiGenericAsset(asset));
+	    }
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA,
+		    t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetModuleManagement#getAsset(com.sitewhere.spi.
+     * asset.IAssetReference)
+     */
+    @Override
+    public IAsset getAsset(IAssetReference reference) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET);
+	    GGetAssetModuleAssetRequest.Builder grequest = GGetAssetModuleAssetRequest.newBuilder();
+	    grequest.setModuleId(reference.getModule());
+	    grequest.setAssetId(reference.getId());
+	    GGetAssetModuleAssetResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getAssetModuleAsset(grequest.build());
+	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiGenericAsset(gresponse.getAsset())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, t);
 	}
     }
 

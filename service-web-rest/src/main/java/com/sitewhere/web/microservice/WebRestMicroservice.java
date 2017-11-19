@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
+import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
@@ -22,14 +24,17 @@ import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -79,6 +84,15 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
+
+    /** Asset management GRPC channel */
+    private AssetManagementGrpcChannel assetManagementGrpcChannel;
+
+    /** Asset management API channel */
+    private IAssetManagementApiChannel assetManagementApiChannel;
+
+    /** Asset resolver */
+    private IAssetResolver assetResolver;
 
     /*
      * (non-Javadoc)
@@ -180,6 +194,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize device event management GRPC channel.
 	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
 
+	// Initialize asset management GRPC channel.
+	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -208,6 +225,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
 		getDeviceEventManagementGrpcChannel());
+
+	// Asset management.
+	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
+	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
     }
 
     /*
@@ -237,6 +260,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start device event mangement GRPC channel.
 	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
 
+	// Start asset mangement GRPC channel.
+	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -263,6 +289,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop device event mangement GRPC channel.
 	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
+
+	// Stop asset mangement GRPC channel.
+	stop.addStopStep(this, getAssetManagementGrpcChannel());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
@@ -328,6 +357,19 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getAssetManagementApiChannel()
+     */
+    @Override
+    public IAssetManagementApiChannel getAssetManagementApiChannel() {
+	return assetManagementApiChannel;
+    }
+
+    public void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
+	this.assetManagementApiChannel = assetManagementApiChannel;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
@@ -371,5 +413,21 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
 	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
+    }
+
+    public AssetManagementGrpcChannel getAssetManagementGrpcChannel() {
+	return assetManagementGrpcChannel;
+    }
+
+    public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
+	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
+    }
+
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
+    }
+
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 }

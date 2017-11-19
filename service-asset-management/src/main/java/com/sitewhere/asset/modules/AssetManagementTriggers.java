@@ -10,13 +10,13 @@ package com.sitewhere.asset.modules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -24,6 +24,7 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -37,27 +38,32 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Asset module manager reference */
-    private IAssetManagementMicroservice microservice;
+    /** Asset module manager */
+    private IAssetModuleManager assetModuleManager;
 
-    public AssetManagementTriggers(IAssetManagementMicroservice microservice) {
-	super(microservice.getAssetManagement());
+    /** Microservice */
+    private IMicroservice microservice;
+
+    public AssetManagementTriggers(IAssetManagement assetManagement, IAssetModuleManager assetModuleManager,
+	    IMicroservice microservice) {
+	super(assetManagement);
+	this.assetModuleManager = assetModuleManager;
+	this.microservice = microservice;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#createAssetCategory(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#createAssetCategory(
      * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	IAssetCategory category = super.createAssetCategory(request);
-	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
+	IAssetModuleManager manager = getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.onAssetCategoryAdded(category, new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Add asset module for new category."), microservice));
+		    new LifecycleProgressContext(1, "Add asset module for new category."), getMicroservice()));
 	}
 	return category;
     }
@@ -65,8 +71,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#updateAssetCategory(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#updateAssetCategory(
      * java.lang.String,
      * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
@@ -74,7 +79,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
 	IAssetCategory category = super.updateAssetCategory(categoryId, request);
-	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
+	IAssetModuleManager manager = getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.onAssetCategoryUpdated(category, new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Reload asset module for updated category."), getMicroservice()));
@@ -85,14 +90,13 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#deleteAssetCategory(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#deleteAssetCategory(
      * java.lang.String)
      */
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	IAssetCategory category = super.deleteAssetCategory(categoryId);
-	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
+	IAssetModuleManager manager = getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.onAssetCategoryRemoved(category, new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Remove asset module for deleted category."), getMicroservice()));
@@ -103,10 +107,8 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#createPersonAsset(
-     * java.lang .String,
-     * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#createPersonAsset(
+     * java.lang .String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
     @Override
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
@@ -119,8 +121,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#updatePersonAsset(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#updatePersonAsset(
      * java.lang .String, java.lang.String,
      * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
@@ -135,8 +136,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#createHardwareAsset(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#createHardwareAsset(
      * java.lang .String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -151,8 +151,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#updateHardwareAsset(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#updateHardwareAsset(
      * java.lang .String, java.lang.String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -167,8 +166,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#createLocationAsset(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#createLocationAsset(
      * java.lang .String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -183,8 +181,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.asset.AssetManagementDecorator#updateLocationAsset(
+     * @see com.sitewhere.server.asset.AssetManagementDecorator#updateLocationAsset(
      * java.lang .String, java.lang.String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -218,18 +215,26 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
      * @throws SiteWhereException
      */
     protected <T extends IAsset> void refreshAssetModule(String categoryId, T asset) throws SiteWhereException {
-	IAssetModuleManager manager = getMicroservice().getAssetModuleManager();
+	IAssetModuleManager manager = getAssetModuleManager();
 	if ((manager != null) && (manager.getLifecycleStatus() == LifecycleStatus.Started)) {
 	    manager.getModule(categoryId).refresh(new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Refresh asset module."), getMicroservice()));
 	}
     }
 
-    public IAssetManagementMicroservice getMicroservice() {
+    public IAssetModuleManager getAssetModuleManager() {
+	return assetModuleManager;
+    }
+
+    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
+	this.assetModuleManager = assetModuleManager;
+    }
+
+    public IMicroservice getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IAssetManagementMicroservice microservice) {
+    public void setMicroservice(IMicroservice microservice) {
 	this.microservice = microservice;
     }
 }

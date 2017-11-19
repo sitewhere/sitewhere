@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.asset.modules.AssetModuleManager;
 import com.sitewhere.asset.modules.wso2.scim.Wso2ScimAssetModule;
-import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spring.parser.IAssetManagementParser.IAssetModulesParser.Elements;
 
 /**
@@ -60,7 +60,7 @@ public class AssetModulesParser extends AbstractBeanDefinitionParser {
 	    }
 	}
 	manager.addPropertyValue("modules", modules);
-	context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER,
+	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_ASSET_MODULE_MANAGER,
 		manager.getBeanDefinition());
 	return null;
     }

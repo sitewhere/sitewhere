@@ -29,8 +29,16 @@ import com.sitewhere.grpc.service.GGetAssetByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetByIdResponse;
 import com.sitewhere.grpc.service.GGetAssetCategoryByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetCategoryByIdResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaResponse;
+import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdRequest;
+import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdResponse;
 import com.sitewhere.grpc.service.GListAssetCategoriesRequest;
 import com.sitewhere.grpc.service.GListAssetCategoriesResponse;
+import com.sitewhere.grpc.service.GListAssetModuleDescriptorsRequest;
+import com.sitewhere.grpc.service.GListAssetModuleDescriptorsResponse;
 import com.sitewhere.grpc.service.GListAssetsRequest;
 import com.sitewhere.grpc.service.GListAssetsResponse;
 import com.sitewhere.grpc.service.GUpdateAssetCategoryRequest;
@@ -263,6 +271,50 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	getTenantImplementation().listAssets(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * listAssetModuleDescriptors(com.sitewhere.grpc.service.
+     * GListAssetModuleDescriptorsRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAssetModuleDescriptors(GListAssetModuleDescriptorsRequest request,
+	    StreamObserver<GListAssetModuleDescriptorsResponse> responseObserver) {
+	getTenantImplementation().listAssetModuleDescriptors(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetModuleDescriptorByModuleId(com.sitewhere.grpc.service.
+     * GGetAssetModuleDescriptorByModuleIdRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetModuleDescriptorByModuleId(GGetAssetModuleDescriptorByModuleIdRequest request,
+	    StreamObserver<GGetAssetModuleDescriptorByModuleIdResponse> responseObserver) {
+	getTenantImplementation().getAssetModuleDescriptorByModuleId(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetModuleAssetsByCriteria(com.sitewhere.grpc.service.
+     * GGetAssetModuleAssetsByCriteriaRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetModuleAssetsByCriteria(GGetAssetModuleAssetsByCriteriaRequest request,
+	    StreamObserver<GGetAssetModuleAssetsByCriteriaResponse> responseObserver) {
+	getTenantImplementation().getAssetModuleAssetsByCriteria(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetModuleAsset(com.sitewhere.grpc.service.GGetAssetModuleAssetRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetModuleAsset(GGetAssetModuleAssetRequest request,
+	    StreamObserver<GGetAssetModuleAssetResponse> responseObserver) {
+	getTenantImplementation().getAssetModuleAsset(request, responseObserver);
     }
 
     public IAssetManagementMicroservice getMicroservice() {

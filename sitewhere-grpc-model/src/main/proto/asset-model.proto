@@ -130,3 +130,13 @@ message GAnyAsset {
 		GLocationAsset location = 3;
 	}
 }
+
+// #####################
+// ### ASSET MODULES ###
+// #####################
+
+message GAssetModuleDescriptor {
+	string id = 1;
+	string name = 2;
+	GAssetType assetType = 3;
+}

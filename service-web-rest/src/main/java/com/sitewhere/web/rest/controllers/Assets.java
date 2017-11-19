@@ -31,8 +31,6 @@ import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
@@ -186,21 +184,6 @@ public class Assets extends RestControllerBase {
 	} catch (IllegalArgumentException e) {
 	    throw new SiteWhereSystemException(ErrorCode.UnknownAssetType, ErrorLevel.ERROR);
 	}
-    }
-
-    /**
-     * Refresh all asset modules.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
-    @ApiOperation(value = "Refresh the list of asset modules")
-    @Secured({ SiteWhereRoles.REST })
-    public void refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
-	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Refreshing asset modules"), getMicroservice());
-	getAssetResolver().getAssetModuleManagement().refreshModules(monitor);
     }
 
     /**
@@ -463,14 +446,14 @@ public class Assets extends RestControllerBase {
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
+	return getMicroservice().getAssetResolver();
     }
 
     private IAssetManagement getAssetManagement() {
-	return null;
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 }

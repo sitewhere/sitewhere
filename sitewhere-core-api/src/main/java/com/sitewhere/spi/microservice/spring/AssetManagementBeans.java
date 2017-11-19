@@ -19,4 +19,7 @@ public class AssetManagementBeans {
 
     /** Bean id for asset management in server configuration */
     public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
+
+    /** Bean id for asset module manager */
+    public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 }

@@ -50,19 +50,11 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /** Manages asset modules loaded from the datastore */
     private DatastoreAssetModuleManager dsModuleManager = new DatastoreAssetModuleManager();
 
+    /** Asset mangement implementation */
+    private IAssetManagement assetManagement;
+
     public AssetModuleManager() {
 	super(LifecycleComponentType.AssetModuleManager);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetModuleManager#setAssetManagement(com.
-     * sitewhere.spi.asset.IAssetManagement)
-     */
-    @Override
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	dsModuleManager.setAssetManagement(assetManagement);
     }
 
     /*
@@ -125,8 +117,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
      */
     @Override
     public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
@@ -200,8 +191,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryAdded(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryAdded(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -214,8 +204,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -228,8 +217,7 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -245,6 +233,21 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 
     public void setModules(List<IAssetModule<?>> modules) {
 	this.modules = modules;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.asset.spi.modules.IAssetModuleManager#setAssetManagement(com.
+     * sitewhere.spi.asset.IAssetManagement)
+     */
+    @Override
+    public void setAssetManagement(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
+	dsModuleManager.setAssetManagement(assetManagement);
+    }
+
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
     /**

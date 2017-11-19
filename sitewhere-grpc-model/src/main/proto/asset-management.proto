@@ -6,6 +6,7 @@ option java_multiple_files = true;
 option java_package = "com.sitewhere.grpc.service";
 option java_outer_classname = "AssetServices";
 
+import "sitewhere-common.proto";
 import "asset-model.proto";
 
 // Asset management APIs.
@@ -60,6 +61,22 @@ service AssetManagement {
 
 	// List assets that match criteria.
 	rpc ListAssets (GListAssetsRequest) returns (GListAssetsResponse) {}
+
+	// #####################
+	// ### ASSET MODULES ###
+	// #####################
+
+	// List asset module descriptors for a type of asset.
+	rpc ListAssetModuleDescriptors (GListAssetModuleDescriptorsRequest) returns (GListAssetModuleDescriptorsResponse) {}
+	
+	// Get asset module descriptor by module id.
+	rpc GetAssetModuleDescriptorByModuleId (GGetAssetModuleDescriptorByModuleIdRequest) returns (GGetAssetModuleDescriptorByModuleIdResponse) {}
+	
+	// Get assets from an asset module that match the given criteria.
+	rpc GetAssetModuleAssetsByCriteria (GGetAssetModuleAssetsByCriteriaRequest) returns (GGetAssetModuleAssetsByCriteriaResponse) {}
+	
+	// Get asset from an asset module.
+	rpc GetAssetModuleAsset (GGetAssetModuleAssetRequest) returns (GGetAssetModuleAssetResponse) {}
 }
 
 // ########################
@@ -222,4 +239,50 @@ message GListAssetsRequest {
 // Response for listing assets by critieria.
 message GListAssetsResponse {
 	com.sitewhere.grpc.model.GAssetSearchResults results = 1; 
+}
+
+// #####################
+// ### ASSET MODULES ###
+// #####################
+
+// Request for listing asset module descriptors.
+message GListAssetModuleDescriptorsRequest {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
+}
+
+// Response for listing asset module descriptors.
+message GListAssetModuleDescriptorsResponse {
+	repeated com.sitewhere.grpc.model.GAssetModuleDescriptor assetModuleDescriptor = 1; 
+}
+
+// Request for getting an asset module descriptor by module id.
+message GGetAssetModuleDescriptorByModuleIdRequest {
+	string moduleId = 1;
+}
+
+// Response for getting an asset module descriptor by module id.
+message GGetAssetModuleDescriptorByModuleIdResponse {
+	com.sitewhere.grpc.model.GAssetModuleDescriptor assetModuleDescriptor = 1;
+}
+
+// Request for searching asset module for asset matching criteria.
+message GGetAssetModuleAssetsByCriteriaRequest {
+	string moduleId = 1;
+	string criteria = 2;
+}
+
+// Response for searching asset module for asset matching criteria.
+message GGetAssetModuleAssetsByCriteriaResponse {
+	repeated com.sitewhere.grpc.model.GAnyAsset asset = 1; 
+}
+
+// Request for getting an asset from an asset module.
+message GGetAssetModuleAssetRequest {
+	string moduleId = 1;
+	string assetId = 2;
+}
+
+// Response for getting an asset from an asset module.
+message GGetAssetModuleAssetResponse {
+	com.sitewhere.grpc.model.GAnyAsset asset = 1; 
 }
