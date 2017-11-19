@@ -27,25 +27,25 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 public class MongoDevice implements MongoConverter<IDevice> {
 
     /** Property for hardware id */
-    public static final String PROP_HARDWARE_ID = "hardwareId";
+    public static final String PROP_HARDWARE_ID = "hw";
 
     /** Property for specification token */
-    public static final String PROP_SITE_TOKEN = "siteToken";
+    public static final String PROP_SITE_TOKEN = "si";
 
     /** Property for specification token */
-    public static final String PROP_SPECIFICATION_TOKEN = "specificationToken";
+    public static final String PROP_SPECIFICATION_TOKEN = "st";
 
     /** Property for parent hardware id (if nested) */
-    public static final String PROP_PARENT_HARDWARE_ID = "parentHardwareId";
+    public static final String PROP_PARENT_HARDWARE_ID = "ph";
 
     /** Property for device element mappings */
-    public static final String PROP_DEVICE_ELEMENT_MAPPINGS = "deviceElementMappings";
+    public static final String PROP_DEVICE_ELEMENT_MAPPINGS = "em";
 
     /** Property for comments */
-    public static final String PROP_COMMENTS = "comments";
+    public static final String PROP_COMMENTS = "cm";
 
     /** Property for current assignment */
-    public static final String PROP_ASSIGNMENT_TOKEN = "assignmentToken";
+    public static final String PROP_ASSIGNMENT_TOKEN = "at";
 
     /*
      * (non-Javadoc)

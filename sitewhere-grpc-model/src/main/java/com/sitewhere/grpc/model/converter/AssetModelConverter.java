@@ -247,6 +247,7 @@ public class AssetModelConverter {
 	api.setId(grpc.getId());
 	api.setName(grpc.getName());
 	api.setType(AssetModelConverter.asApiAssetType(grpc.getAssetType()));
+	api.setImageUrl(grpc.getImageUrl());
 	api.setProperties(grpc.getPropertiesMap());
     }
 
@@ -263,6 +264,7 @@ public class AssetModelConverter {
 	grpc.setId(api.getId());
 	grpc.setName(api.getName());
 	grpc.setAssetType(AssetModelConverter.asGrpcAssetType(api.getType()));
+	grpc.setImageUrl(api.getImageUrl());
 	grpc.putAllProperties(api.getProperties());
 	return grpc.build();
     }

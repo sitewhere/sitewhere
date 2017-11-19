@@ -27,19 +27,19 @@ import com.sitewhere.spi.tenant.ITenant;
 public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 
     /** Property for unique token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for description */
-    public static final String PROP_DESCRIPTION = "description";
+    public static final String PROP_DESCRIPTION = "ds";
 
     /** Property for list of roles */
-    public static final String PROP_ROLES = "roles";
+    public static final String PROP_ROLES = "rl";
 
     /** Property for element list */
-    public static final String PROP_LAST_INDEX = "lastIndex";
+    public static final String PROP_LAST_INDEX = "li";
 
     /*
      * (non-Javadoc)

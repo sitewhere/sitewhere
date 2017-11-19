@@ -28,34 +28,34 @@ import com.sitewhere.spi.device.IZone;
 public class MongoZone implements MongoConverter<IZone> {
 
     /** Property for unique token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for site token */
-    public static final String PROP_SITE_TOKEN = "siteToken";
+    public static final String PROP_SITE_TOKEN = "si";
 
     /** Property for name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for border color */
-    public static final String PROP_BORDER_COLOR = "borderColor";
+    public static final String PROP_BORDER_COLOR = "bc";
 
     /** Property for fill color */
-    public static final String PROP_FILL_COLOR = "fillColor";
+    public static final String PROP_FILL_COLOR = "fc";
 
     /** Property for opacity */
-    public static final String PROP_OPACITY = "opacity";
+    public static final String PROP_OPACITY = "op";
 
     /** Property for coordinates */
-    public static final String PROP_COORDINATES = "coordinates";
+    public static final String PROP_COORDINATES = "co";
 
     /** Property for latitude */
-    public static final String PROP_LATITUDE = "latitude";
+    public static final String PROP_LATITUDE = "la";
 
     /** Property for longitude */
-    public static final String PROP_LONGITUDE = "longitude";
+    public static final String PROP_LONGITUDE = "ln";
 
     /** Property for elevation */
-    public static final String PROP_ELEVATION = "elevation";
+    public static final String PROP_ELEVATION = "el";
 
     /*
      * (non-Javadoc)

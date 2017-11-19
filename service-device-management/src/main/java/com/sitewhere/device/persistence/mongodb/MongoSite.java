@@ -24,25 +24,25 @@ import com.sitewhere.spi.device.ISite;
 public class MongoSite implements MongoConverter<ISite> {
 
     /** Property for name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for description */
-    public static final String PROP_DESCRIPTION = "description";
+    public static final String PROP_DESCRIPTION = "ds";
 
     /** Property for image URL */
-    public static final String PROP_IMAGE_URL = "imageUrl";
+    public static final String PROP_IMAGE_URL = "im";
 
     /** Property for token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for map data */
-    public static final String PROP_MAP_DATA = "mapData";
+    public static final String PROP_MAP_DATA = "mp";
 
     /** Property for map type */
-    public static final String PROP_MAP_TYPE = "type";
+    public static final String PROP_MAP_TYPE = "mt";
 
     /** Property for map metadata */
-    public static final String PROP_MAP_METADATA = "metadata";
+    public static final String PROP_MAP_METADATA = "md";
 
     /*
      * (non-Javadoc)

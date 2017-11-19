@@ -21,10 +21,10 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementMapping> {
 
     /** Property for device element schema path */
-    public static final String PROP_DEVICE_ELEMENT_SCHEMA_PATH = "deviceElementSchemaPath";
+    public static final String PROP_DEVICE_ELEMENT_SCHEMA_PATH = "sp";
 
     /** Property for mapped hardware id */
-    public static final String PROP_HARDWARE_ID = "hardwareId";
+    public static final String PROP_HARDWARE_ID = "hw";
 
     /*
      * (non-Javadoc)

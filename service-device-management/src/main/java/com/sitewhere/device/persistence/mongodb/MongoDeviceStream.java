@@ -23,13 +23,13 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 
     /** Property for parent assignment token */
-    public static final String PROP_ASSIGNMENT_TOKEN = "assignmentToken";
+    public static final String PROP_ASSIGNMENT_TOKEN = "at";
 
     /** Property for stream id */
-    public static final String PROP_STREAM_ID = "streamId";
+    public static final String PROP_STREAM_ID = "st";
 
     /** Property for content type */
-    public static final String PROP_CONTENT_TYPE = "contentType";
+    public static final String PROP_CONTENT_TYPE = "ct";
 
     /*
      * (non-Javadoc)

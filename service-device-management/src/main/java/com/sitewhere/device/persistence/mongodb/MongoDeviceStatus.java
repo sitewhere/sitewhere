@@ -22,25 +22,25 @@ import com.sitewhere.spi.device.IDeviceStatus;
 public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 
     /** Property for status code */
-    public static final String PROP_CODE = "code";
+    public static final String PROP_CODE = "cd";
 
     /** Property for specification token */
-    public static final String PROP_SPEC_TOKEN = "specToken";
+    public static final String PROP_SPEC_TOKEN = "st";
 
     /** Property for command name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for background color */
-    public static final String PROP_BACKGROUND_COLOR = "bgColor";
+    public static final String PROP_BACKGROUND_COLOR = "bg";
 
     /** Property for foreground color */
-    public static final String PROP_FOREGROUND_COLOR = "fgColor";
+    public static final String PROP_FOREGROUND_COLOR = "fg";
 
     /** Property for border color */
-    public static final String PROP_BORDER_COLOR = "bdColor";
+    public static final String PROP_BORDER_COLOR = "bd";
 
     /** Property for status icon */
-    public static final String PROP_ICON = "icon";
+    public static final String PROP_ICON = "ic";
 
     /*
      * (non-Javadoc)

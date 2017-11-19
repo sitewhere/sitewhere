@@ -825,6 +825,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	try {
 	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_SITE);
 	    GGetDeviceAssignmentsForSiteRequest.Builder grequest = GGetDeviceAssignmentsForSiteRequest.newBuilder();
+	    grequest.setSiteToken(siteToken);
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(criteria));
 	    GGetDeviceAssignmentsForSiteResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceAssignmentsForSite(grequest.build());
@@ -1119,6 +1120,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	try {
 	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_LIST_ZONES);
 	    GListZonesRequest.Builder grequest = GListZonesRequest.newBuilder();
+	    grequest.setSiteToken(siteToken);
 	    grequest.setCriteria(DeviceModelConverter.asApiZoneSearchCriteria(criteria));
 	    GListZonesResponse gresponse = getGrpcChannel().getBlockingStub().listZones(grequest.build());
 	    ISearchResults<IZone> results = DeviceModelConverter.asApiZoneSearchResults(gresponse.getResults());

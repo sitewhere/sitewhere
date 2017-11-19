@@ -29,31 +29,31 @@ import com.sitewhere.spi.device.command.ParameterType;
 public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 
     /** Property for token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tk";
 
     /** Property for specification token */
-    public static final String PROP_SPEC_TOKEN = "specificationToken";
+    public static final String PROP_SPEC_TOKEN = "st";
 
     /** Property for command namespace */
-    public static final String PROP_NAMESPACE = "namespace";
+    public static final String PROP_NAMESPACE = "ns";
 
     /** Property for command name */
-    public static final String PROP_NAME = "name";
+    public static final String PROP_NAME = "nm";
 
     /** Property for command description */
-    public static final String PROP_DESCRIPTION = "description";
+    public static final String PROP_DESCRIPTION = "ds";
 
     /** Property for command parameters list */
-    public static final String PROP_PARAMETERS = "parameters";
+    public static final String PROP_PARAMETERS = "pm";
 
     /** Property for command parameter name */
-    public static final String PROP_PARAM_NAME = "name";
+    public static final String PROP_PARAM_NAME = "pn";
 
     /** Property for command parameter type */
-    public static final String PROP_PARAM_TYPE = "type";
+    public static final String PROP_PARAM_TYPE = "pt";
 
     /** Property for command parameter required indicator */
-    public static final String PROP_PARAM_REQUIRED = "required";
+    public static final String PROP_PARAM_REQUIRED = "rq";
 
     /*
      * (non-Javadoc)
