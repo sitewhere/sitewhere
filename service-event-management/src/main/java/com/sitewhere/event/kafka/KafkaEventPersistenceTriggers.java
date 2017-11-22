@@ -65,14 +65,20 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      * @throws SiteWhereException
      */
     protected <T extends IDeviceEvent> T forwardEvent(IDeviceAssignment assignment, T event) throws SiteWhereException {
-	PersistedEventPayload api = new PersistedEventPayload();
-	api.setHardwareId(assignment.getDeviceHardwareId());
-	api.setEvent(event);
-	GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
+	long start = System.currentTimeMillis();
+	try {
+	    PersistedEventPayload api = new PersistedEventPayload();
+	    api.setHardwareId(assignment.getDeviceHardwareId());
+	    api.setEvent(event);
+	    GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
 
-	getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getDeviceHardwareId(),
-		KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
-	return event;
+	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getDeviceHardwareId(),
+		    KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
+	    return event;
+	} finally {
+	    getLogger()
+		    .trace("Forwarding persisted event to Kafka took " + (System.currentTimeMillis() - start) + " ms.");
+	}
     }
 
     /*

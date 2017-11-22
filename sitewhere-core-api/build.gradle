@@ -11,15 +11,21 @@ dependencies {
 	// Spring security components.
     compile group: 'org.springframework.security', name: 'spring-security-core'
 	
+	// Apache Kafka for reliable data pipeline.
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext['kafka.version']}"
+    
+    // Apache Zookeeper and Curator for centralized configuration management.
     compile (group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}") {
 		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   
     }
-    compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext['kafka.version']}"
     compile (group: 'org.apache.curator', name: 'curator-recipes', version:"${rootProject.ext['curator.version']}") {
 		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   
     }
+	
+	// Apache Ignite datagrid for caching.
+	compile group: 'org.apache.ignite', name: 'ignite-core', version: "${rootProject.ext['ignite.version']}"
 	
 	// Opentracing APIs.
     compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'

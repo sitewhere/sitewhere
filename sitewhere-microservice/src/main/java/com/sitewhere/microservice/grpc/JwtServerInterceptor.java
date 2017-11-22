@@ -73,6 +73,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	    ServerCallHandler<ReqT, RespT> next) {
 	if (headers.containsKey(JwtClientInterceptor.JWT_KEY)) {
 	    String jwt = headers.get(JwtClientInterceptor.JWT_KEY);
+	    long start = System.currentTimeMillis();
 	    try {
 		Claims claims = getClaimsForJwt(jwt);
 		String username = getMicroservice().getTokenManagement().getUsernameFromClaims(claims);
@@ -85,6 +86,9 @@ public class JwtServerInterceptor implements ServerInterceptor {
 		call.close(Status.PERMISSION_DENIED.withDescription(e.getMessage()), headers);
 		return new ServerCall.Listener<ReqT>() {
 		};
+	    } finally {
+		LOGGER.trace("GRPC call for " + call.getMethodDescriptor().getFullMethodName() + " took "
+			+ (System.currentTimeMillis() - start) + "ms.");
 	    }
 	} else {
 	    call.close(Status.UNAUTHENTICATED.withDescription("JWT not passed in metadata."), headers);

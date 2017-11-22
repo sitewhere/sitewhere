@@ -13,13 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.security.LoginManager;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -67,7 +67,7 @@ public class RestControllerBase {
      * @throws SiteWhereException
      */
     public static boolean checkAuthFor(SiteWhereAuthority auth, boolean throwException) throws SiteWhereException {
-	IUser user = LoginManager.getCurrentlyLoggedInUser();
+	IUser user = UserContextManager.getCurrentlyLoggedInUser();
 	if (!user.getAuthorities().contains(auth.getName())) {
 	    LOGGER.warn("User not authorized for role " + auth.getRoleName() + ".");
 	    if (throwException) {

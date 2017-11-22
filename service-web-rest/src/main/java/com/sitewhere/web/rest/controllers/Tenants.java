@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,7 +39,6 @@ import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestControllerBase;
-import com.sitewhere.web.security.LoginManager;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -155,7 +155,7 @@ public class Tenants extends RestControllerBase {
 
 	// Only return auth tenants if user has 'admin own tenant'.
 	else if (checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
 	    if (loggedIn != null) {
 		TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 		criteria.setTextSearch(textSearch);
@@ -247,7 +247,7 @@ public class Tenants extends RestControllerBase {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (!checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
 	    checkAuthFor(SiteWhereAuthority.AdminOwnTenant, true);
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
 		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
 			HttpServletResponse.SC_FORBIDDEN);

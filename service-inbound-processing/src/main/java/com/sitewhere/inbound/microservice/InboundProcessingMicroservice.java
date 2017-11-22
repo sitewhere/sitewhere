@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
@@ -20,6 +19,7 @@ import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -178,7 +178,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Device management.
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this, getDeviceManagementGrpcChannel());
 
 	// Device event management.
 	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,

@@ -43,23 +43,22 @@ public class JwtClientInterceptor implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
 	    CallOptions callOptions, Channel next) {
-	LOGGER.debug("Intercepting client call...");
+	LOGGER.trace("Intercepting client call...");
 	return new SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
 
 	    /*
 	     * (non-Javadoc)
 	     * 
-	     * @see
-	     * io.grpc.ForwardingClientCall#start(io.grpc.ClientCall.Listener,
+	     * @see io.grpc.ForwardingClientCall#start(io.grpc.ClientCall.Listener,
 	     * io.grpc.Metadata)
 	     */
 	    @Override
 	    public void start(Listener<RespT> responseListener, Metadata headers) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		LOGGER.debug("Looking for Spring Security authentication...");
+		LOGGER.trace("Looking for Spring Security authentication...");
 		if (authentication != null) {
 		    String jwt = (String) authentication.getCredentials();
-		    LOGGER.debug("Found JWT " + jwt);
+		    LOGGER.trace("Found JWT " + jwt);
 		    headers.put(JWT_KEY, jwt);
 		}
 		super.start(responseListener, headers);

@@ -15,6 +15,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.ignite.IIgniteManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -45,6 +46,10 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Zookeeper manager */
     @Autowired
     private IZookeeperManager zookeeperManager;
+
+    /** Get Apache Ignite manager */
+    @Autowired
+    private IIgniteManager igniteManager;
 
     /** JWT token management */
     @Autowired
@@ -79,15 +84,34 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
 
+	// Initialize Apache Ignite manager.
+	initialize.addInitializeStep(this, getIgniteManager(), true);
+
 	// Execute initialization steps.
 	initialize.execute(monitor);
     }
 
     /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start Apache Ignite manager.
+	start.addStartStep(this, getIgniteManager(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
+    }
+
+    /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.IMicroservice#afterMicroserviceStarted()
+     * @see com.sitewhere.microservice.spi.IMicroservice#afterMicroserviceStarted()
      */
     @Override
     public void afterMicroserviceStarted() {
@@ -104,6 +128,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Terminate Zk manager.
 	getZookeeperManager().lifecycleTerminate(monitor);
+
+	// Terminate Ignite manager.
+	getIgniteManager().lifecycleTerminate(monitor);
     }
 
     /*
@@ -143,8 +170,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.IMicroservice#getInstanceConfigurationPath
-     * ()
+     * com.sitewhere.microservice.spi.IMicroservice#getInstanceConfigurationPath ()
      */
     @Override
     public String getInstanceConfigurationPath() {
@@ -170,6 +196,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setZookeeperManager(IZookeeperManager zookeeperManager) {
 	this.zookeeperManager = zookeeperManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIgniteManager()
+     */
+    @Override
+    public IIgniteManager getIgniteManager() {
+	return igniteManager;
+    }
+
+    public void setIgniteManager(IIgniteManager igniteManager) {
+	this.igniteManager = igniteManager;
     }
 
     /*

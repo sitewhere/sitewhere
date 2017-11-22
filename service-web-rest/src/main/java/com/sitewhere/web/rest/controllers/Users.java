@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -42,7 +43,6 @@ import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 import com.sitewhere.web.rest.RestControllerBase;
-import com.sitewhere.web.security.LoginManager;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.swagger.annotations.Api;
@@ -229,7 +229,7 @@ public class Users extends RestControllerBase {
     public static void checkForAdminOrEditSelf(String username) throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (!checkAuthFor(SiteWhereAuthority.AdminUsers, false)) {
-	    IUser loggedIn = LoginManager.getCurrentlyLoggedInUser();
+	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
 	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
 		throw operationNotPermitted();
 	    } else {

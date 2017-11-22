@@ -6,6 +6,7 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-spring-spi')
 	
+	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
     
     compile group: 'org.codehaus.groovy', name: 'groovy'

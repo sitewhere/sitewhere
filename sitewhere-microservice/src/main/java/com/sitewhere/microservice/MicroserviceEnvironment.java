@@ -14,6 +14,9 @@ package com.sitewhere.microservice;
  */
 public class MicroserviceEnvironment {
 
+    /** Default Docker hostname for instance management microservice */
+    public static final String HOST_INSTANCE_MANAGEMENT = "instance-management";
+
     /** Default Docker hostname for user management microservice */
     public static final String HOST_USER_MANAGEMENT = "user-management";
 

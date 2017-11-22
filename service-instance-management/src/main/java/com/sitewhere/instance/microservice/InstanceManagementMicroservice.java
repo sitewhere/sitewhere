@@ -94,8 +94,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.Microservice#initialize(com.sitewhere.spi.
+     * @see com.sitewhere.microservice.Microservice#initialize(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -128,6 +127,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -179,12 +180,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
-     * Verify that a Zk node exists to hold instance information. Create the
-     * folder if it does not exist. Other microservices block while waiting on
-     * this node to be created.
+     * Verify that a Zk node exists to hold instance information. Create the folder
+     * if it does not exist. Other microservices block while waiting on this node to
+     * be created.
      * 
      * @return
      */
@@ -212,8 +215,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /**
      * Verify that a Zk node exists to hold instance configuration information.
      * Create the folder and bootstrap from the instance template if it does not
-     * exist. Other microservices block while waiting on this node to be
-     * created.
+     * exist. Other microservices block while waiting on this node to be created.
      * 
      * @return
      */
@@ -260,8 +262,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     /**
      * Initialize user/tenant model from scripts included in instance template.
-     * Note: The scripts execute in the context of the system superuser so that
-     * the initial users/tenants can be populated.
+     * Note: The scripts execute in the context of the system superuser so that the
+     * initial users/tenants can be populated.
      * 
      * @throws SiteWhereException
      */
@@ -311,8 +313,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     }
 
     /**
-     * Initialize tenant model from scripts included in instance template
-     * scripts.
+     * Initialize tenant model from scripts included in instance template scripts.
      * 
      * @param templatePath
      * @param scripts
@@ -380,8 +381,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getUserManagementApiChannel()
      */
     @Override
@@ -396,8 +396,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getTenantManagementApiChannel()
      */
     @Override

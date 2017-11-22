@@ -26,6 +26,7 @@ import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.ignite.server.CacheAwareDeviceManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -89,8 +90,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create management interfaces.
-	this.deviceManagement = (IDeviceManagement) getModuleContext()
+	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
+	this.deviceManagement = new CacheAwareDeviceManagement(implementation, getMicroservice());
 	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
 
 	// Event management microservice connectivity.
