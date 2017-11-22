@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sitewhere.Version;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
@@ -24,6 +25,7 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.system.IVersion;
 
+import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 
 /**
@@ -141,7 +143,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void waitForInstanceInitialization() throws SiteWhereException {
+	ActiveSpan span = null;
 	try {
+	    span = getTracer().buildSpan("Wait for instance to be bootstrapped").startActive();
 	    getLogger().info("Verifying that instance has been bootstrapped...");
 	    while (true) {
 		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
@@ -152,7 +156,10 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	    }
 	    getLogger().info("Confirmed that instance was bootstrapped.");
 	} catch (Exception e) {
+	    TracerUtils.handleErrorInTracerSpan(span, e);
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
+	} finally {
+	    TracerUtils.finishTracerSpan(span);
 	}
     }
 

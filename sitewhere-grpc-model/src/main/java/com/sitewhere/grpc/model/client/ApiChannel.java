@@ -44,17 +44,16 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
      */
     @Override
     public void waitForApiAvailable() throws ApiNotAvailableException {
-	waitForApiAvailable(5, TimeUnit.MINUTES);
+	waitForApiAvailable(5 * 60, TimeUnit.SECONDS, 20);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.spi.IApiChannel#waitForApiAvailable(long,
-     * java.util.concurrent.TimeUnit)
+     * @see com.sitewhere.grpc.model.spi.IApiChannel#waitForApiAvailable(long,
+     * java.util.concurrent.TimeUnit, long)
      */
     @Override
-    public void waitForApiAvailable(long duration, TimeUnit unit) throws ApiNotAvailableException {
+    public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay)
+	    throws ApiNotAvailableException {
 	if (getGrpcChannel() == null) {
 	    throw new ApiNotAvailableException("GRPC channel not found. Unable to access API.");
 	}
@@ -64,17 +63,23 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantLife
 	    span = getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName())
 		    .startActive();
 
-	    long deadline = System.currentTimeMillis() + unit.toMillis(duration);
+	    long start = System.currentTimeMillis();
+	    long deadline = start + unit.toMillis(duration);
+	    long logAfter = start + unit.toMillis(logMessageDelay);
 	    while ((System.currentTimeMillis() - deadline) < 0) {
 		try {
 		    if (getGrpcChannel().getChannel() == null) {
-			getLogger().info("Waiting for GRPC channel to be initialized.");
+			if ((System.currentTimeMillis() - logAfter) > 0) {
+			    getLogger().info("Waiting for GRPC channel to be initialized.");
+			}
 			Thread.sleep(CONNECTION_CHECK_INTERVAL);
 		    } else {
 			ConnectivityState state = getGrpcChannel().getChannel().getState(true);
 			if (ConnectivityState.READY != state) {
-			    getLogger().info(
-				    "Waiting for GRPC service to become available. (status:" + state.name() + ")");
+			    if ((System.currentTimeMillis() - logAfter) > 0) {
+				getLogger().info(
+					"Waiting for GRPC service to become available. (status:" + state.name() + ")");
+			    }
 			    Thread.sleep(CONNECTION_CHECK_INTERVAL);
 			} else {
 			    return;

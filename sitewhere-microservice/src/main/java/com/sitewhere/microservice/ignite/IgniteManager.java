@@ -1,7 +1,16 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package com.sitewhere.microservice.ignite;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteSystemProperties;
@@ -14,10 +23,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.ignite.IIgniteManager;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.opentracing.ActiveSpan;
 
 /**
  * Default implementation of {@link IIgniteManager}.
@@ -37,6 +49,9 @@ public class IgniteManager extends LifecycleComponent implements IIgniteManager 
 
     /** Ignite instance */
     private Ignite ignite;
+
+    /** Execute Ignite startup in background thread */
+    private ExecutorService executor;
 
     public IgniteManager(IMicroservice microservice) {
 	this.microservice = microservice;
@@ -60,7 +75,11 @@ public class IgniteManager extends LifecycleComponent implements IIgniteManager 
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.ignite = Ignition.start(getIgniteConfiguration());
+	if (executor != null) {
+	    executor.shutdown();
+	}
+	executor = Executors.newSingleThreadExecutor();
+	executor.execute(new JoinIgniteCluster());
     }
 
     /*
@@ -121,6 +140,24 @@ public class IgniteManager extends LifecycleComponent implements IIgniteManager 
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    protected class JoinIgniteCluster implements Runnable {
+
+	@Override
+	public void run() {
+	    ActiveSpan span = null;
+	    try {
+		span = getMicroservice().getTracer().buildSpan("Wait for Apache Ignite instance to start")
+			.startActive();
+		IgniteManager.this.ignite = Ignition.start(getIgniteConfiguration());
+	    } catch (Throwable t) {
+		TracerUtils.handleErrorInTracerSpan(span, t);
+		getLogger().error("Unable to start Apache Ignite instance.", t);
+	    } finally {
+		TracerUtils.finishTracerSpan(span);
+	    }
+	}
     }
 
     protected IMicroservice getMicroservice() {

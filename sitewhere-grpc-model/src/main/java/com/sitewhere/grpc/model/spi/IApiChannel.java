@@ -9,8 +9,6 @@ package com.sitewhere.grpc.model.spi;
 
 import java.util.concurrent.TimeUnit;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Common interface for GRPC channels that handle API calls.
  * 
@@ -26,11 +24,13 @@ public interface IApiChannel {
     public void waitForApiAvailable() throws ApiNotAvailableException;
 
     /**
-     * Wait for a maximum amount of time for the API to become available.
+     * Wait for a maximum amount of time for the API to become available. Displays
+     * 'waiting' messages to log after a specified delay.
      * 
      * @param duration
      * @param unit
+     * @param logMessageDelay
      * @throws ApiNotAvailableException
      */
-    public void waitForApiAvailable(long duration, TimeUnit unit) throws ApiNotAvailableException;
+    public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay) throws ApiNotAvailableException;
 }
