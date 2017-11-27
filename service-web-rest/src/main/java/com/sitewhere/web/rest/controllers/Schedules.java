@@ -135,6 +135,6 @@ public class Schedules extends RestControllerBase {
     }
 
     protected IScheduleManagement getScheduleManagement() {
-	return null;
+	return getMicroservice().getScheduleManagementApiChannel();
     }
 }

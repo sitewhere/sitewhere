@@ -149,14 +149,14 @@ public class ScheduledJobs extends RestControllerBase {
     }
 
     protected IScheduleManagement getScheduleManagement() {
-	return null;
+	return getMicroservice().getScheduleManagementApiChannel();
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
+	return getMicroservice().getAssetResolver();
     }
 }

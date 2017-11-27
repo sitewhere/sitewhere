@@ -116,8 +116,8 @@ public class BatchOperations extends RestControllerBase {
     }
 
     /**
-     * Create a batch operation that invokes a command for all devices that
-     * match the given criteria.
+     * Create a batch operation that invokes a command for all devices that match
+     * the given criteria.
      * 
      * @param request
      * @param servletRequest
@@ -186,7 +186,7 @@ public class BatchOperations extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     protected IBatchManagement getBatchManagement() {

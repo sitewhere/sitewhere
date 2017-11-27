@@ -19,6 +19,8 @@ import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
+import com.sitewhere.grpc.model.client.ScheduleManagementApiChannel;
+import com.sitewhere.grpc.model.client.ScheduleManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
 import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
@@ -27,6 +29,7 @@ import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
@@ -90,6 +93,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Asset management API channel */
     private IAssetManagementApiChannel assetManagementApiChannel;
+
+    /** Schedule management GRPC channel */
+    private ScheduleManagementGrpcChannel scheduleManagementGrpcChannel;
+
+    /** Schedule management API channel */
+    private IScheduleManagementApiChannel scheduleManagementApiChannel;
 
     /** Asset resolver */
     private IAssetResolver assetResolver;
@@ -197,6 +206,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize asset management GRPC channel.
 	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
 
+	// Initialize schedule management GRPC channel.
+	init.addInitializeStep(this, getScheduleManagementGrpcChannel(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -231,6 +243,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
+
+	// Schedule management.
+	this.scheduleManagementGrpcChannel = new ScheduleManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(getScheduleManagementGrpcChannel());
     }
 
     /*
@@ -263,6 +280,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start asset mangement GRPC channel.
 	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
 
+	// Start schedule mangement GRPC channel.
+	start.addStartStep(this, getScheduleManagementGrpcChannel(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -293,6 +313,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Stop asset mangement GRPC channel.
 	stop.addStopStep(this, getAssetManagementGrpcChannel());
 
+	// Stop schedule mangement GRPC channel.
+	stop.addStopStep(this, getScheduleManagementGrpcChannel());
+
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
@@ -311,7 +334,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	return userManagementApiChannel;
     }
 
-    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
+    protected void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
 	this.userManagementApiChannel = userManagementApiChannel;
     }
 
@@ -324,7 +347,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	return tenantManagementApiChannel;
     }
 
-    public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
+    protected void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
 	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
@@ -339,7 +362,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
+    protected void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
@@ -352,7 +375,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	return deviceEventManagementApiChannel;
     }
 
-    public void setDeviceEventManagementApiChannel(IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
+    protected void setDeviceEventManagementApiChannel(
+	    IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
 	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 
@@ -365,8 +389,21 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	return assetManagementApiChannel;
     }
 
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
+    protected void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
 	this.assetManagementApiChannel = assetManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getScheduleManagementApiChannel()
+     */
+    @Override
+    public IScheduleManagementApiChannel getScheduleManagementApiChannel() {
+	return scheduleManagementApiChannel;
+    }
+
+    protected void setScheduleManagementApiChannel(IScheduleManagementApiChannel scheduleManagementApiChannel) {
+	this.scheduleManagementApiChannel = scheduleManagementApiChannel;
     }
 
     /*
@@ -421,6 +458,14 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
 	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
+    }
+
+    protected ScheduleManagementGrpcChannel getScheduleManagementGrpcChannel() {
+	return scheduleManagementGrpcChannel;
+    }
+
+    protected void setScheduleManagementGrpcChannel(ScheduleManagementGrpcChannel scheduleManagementGrpcChannel) {
+	this.scheduleManagementGrpcChannel = scheduleManagementGrpcChannel;
     }
 
     public IAssetResolver getAssetResolver() {

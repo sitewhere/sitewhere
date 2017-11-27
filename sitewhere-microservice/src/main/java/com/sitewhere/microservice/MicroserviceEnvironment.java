@@ -31,4 +31,7 @@ public class MicroserviceEnvironment {
 
     /** Default Docker hostname for asset management microservice */
     public static final String HOST_ASSET_MANAGEMENT = "asset-management";
+
+    /** Default Docker hostname for schedule management microservice */
+    public static final String HOST_SCHEDULE_MANAGEMENT = "schedule-management";
 }

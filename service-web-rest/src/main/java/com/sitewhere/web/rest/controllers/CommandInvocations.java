@@ -115,10 +115,10 @@ public class CommandInvocations extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 }

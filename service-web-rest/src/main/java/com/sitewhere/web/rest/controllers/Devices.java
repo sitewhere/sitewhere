@@ -513,10 +513,10 @@ public class Devices extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
+	return getMicroservice().getAssetResolver();
     }
 }

@@ -539,7 +539,7 @@ public class EventModelConverter {
 	GDeviceAlertCreateRequest.Builder grpc = GDeviceAlertCreateRequest.newBuilder();
 	grpc.setSource(EventModelConverter.asGrpcAlertSource(api.getSource()));
 	grpc.setLevel(EventModelConverter.asGrpcAlertLevel(api.getLevel()));
-	grpc.setType(grpc.getType());
+	grpc.setType(api.getType());
 	grpc.setAlertMessage(api.getMessage());
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
 	return grpc.build();
@@ -621,7 +621,7 @@ public class EventModelConverter {
 	GDeviceAlert.Builder grpc = GDeviceAlert.newBuilder();
 	grpc.setSource(EventModelConverter.asGrpcAlertSource(api.getSource()));
 	grpc.setLevel(EventModelConverter.asGrpcAlertLevel(api.getLevel()));
-	grpc.setType(grpc.getType());
+	grpc.setType(api.getType());
 	grpc.setAlertMessage(api.getMessage());
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
 	return grpc.build();

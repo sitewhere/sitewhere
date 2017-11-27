@@ -312,10 +312,10 @@ public class DeviceGroups extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {
-	return null;
+	return getMicroservice().getAssetResolver();
     }
 }

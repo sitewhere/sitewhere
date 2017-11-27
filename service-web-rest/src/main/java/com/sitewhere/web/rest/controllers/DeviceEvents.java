@@ -93,6 +93,6 @@ public class DeviceEvents extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 }
