@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.spi.microservice;
 
+import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -15,4 +16,11 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IDeviceManagementMicroservice extends IMultitenantMicroservice<IDeviceManagementTenantEngine> {
+
+    /**
+     * Get device management GRPC server.
+     * 
+     * @return
+     */
+    public IDeviceManagementGrpcServer getDeviceManagementGrpcServer();
 }

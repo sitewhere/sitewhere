@@ -87,10 +87,10 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     private IDeviceEventBuffer eventBuffer;
 
     /** Indicates whether bulk inserts should be used for adding events */
-    private boolean useBulkEventInserts = false;
+    private boolean useBulkEventInserts = true;
 
     /** Maximum number of records to write in a chunk */
-    private int bulkInsertMaxChunkSize = 1000;
+    private int bulkInsertMaxChunkSize = 200;
 
     public MongoDeviceEventManagement() {
 	super(LifecycleComponentType.DataStore);
@@ -210,8 +210,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -302,8 +301,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -380,8 +378,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -555,8 +552,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
@@ -669,8 +665,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */

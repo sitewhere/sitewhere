@@ -10,12 +10,18 @@ package com.sitewhere.schedule.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -31,6 +37,12 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Schedule management persistence API */
+    private IScheduleManagement scheduleManagement;
+
+    /** Responds to device management GRPC requests */
+    private ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl;
+
     public ScheduleManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
     }
@@ -42,6 +54,22 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create management interfaces.
+	this.scheduleManagement = (IScheduleManagement) getModuleContext()
+		.getBean(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT);
+	this.scheduleManagementImpl = new ScheduleManagementImpl(getScheduleManagement());
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize discoverable lifecycle components.
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+
+	// Initialize schedule management persistence.
+	init.addInitializeStep(this, getScheduleManagement(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -50,6 +78,14 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start schedule management persistence.
+	start.addStartStep(this, getScheduleManagement(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -67,6 +103,40 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop schedule management persistence.
+	stop.addStopStep(this, getScheduleManagement());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine#
+     * getScheduleManagement()
+     */
+    @Override
+    public IScheduleManagement getScheduleManagement() {
+	return scheduleManagement;
+    }
+
+    protected void setScheduleManagement(IScheduleManagement scheduleManagement) {
+	this.scheduleManagement = scheduleManagement;
+    }
+
+    /*
+     * @see com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine#
+     * getScheduleManagementImpl()
+     */
+    @Override
+    public ScheduleManagementGrpc.ScheduleManagementImplBase getScheduleManagementImpl() {
+	return scheduleManagementImpl;
+    }
+
+    protected void setScheduleManagementImpl(ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl) {
+	this.scheduleManagementImpl = scheduleManagementImpl;
     }
 
     /*

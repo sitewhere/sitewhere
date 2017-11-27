@@ -7,6 +7,7 @@
  */
 package com.sitewhere.schedule.spi.microservice;
 
+import com.sitewhere.schedule.spi.IScheduleManagementGrpcServer;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -15,4 +16,11 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IScheduleManagementMicroservice extends IMultitenantMicroservice<IScheduleManagementTenantEngine> {
+
+    /**
+     * Get schedule management GRPC server.
+     * 
+     * @return
+     */
+    public IScheduleManagementGrpcServer getScheduleManagementGrpcServer();
 }

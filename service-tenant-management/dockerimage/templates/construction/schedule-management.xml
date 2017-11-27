@@ -13,6 +13,11 @@
 	<context:property-placeholder />
 
 	<!-- Schedule Management -->
-	<sm:schedule-management></sm:schedule-management>
+	<sm:schedule-management>
+
+		<!-- Use default MongoDB configuration -->
+		<sw:default-mongodb-datastore />
+
+	</sm:schedule-management>
 
 </beans>

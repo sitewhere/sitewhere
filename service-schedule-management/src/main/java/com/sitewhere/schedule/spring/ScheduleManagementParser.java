@@ -7,12 +7,22 @@
  */
 package com.sitewhere.schedule.spring;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
+import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
+import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
+import com.sitewhere.spring.parser.IUserManagementParser.Elements;
 
 /**
  * Parses elements related to schedule management.
@@ -34,6 +44,41 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown schedule management element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case DefaultMongoDatastore: {
+		parseDefaultMongoDatastore(child, context);
+		break;
+	    }
+	    }
+	}
 	return null;
+    }
+
+    /**
+     * Parse the default MongoDB datastore element.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
+	// Build MongoDB client using default global configuration.
+	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementMongoClient.class);
+	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+
+	context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
+		client.getBeanDefinition());
+
+	// Build schedule management implementation.
+	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
+	management.addPropertyReference("mongoClient", ScheduleManagementBeans.BEAN_MONGODB_CLIENT);
+
+	context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT,
+		management.getBeanDefinition());
     }
 }

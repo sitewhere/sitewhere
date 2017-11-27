@@ -136,6 +136,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
+	// Start device management persistence.
+	start.addStartStep(this, getDeviceManagement(), true);
+
 	// Start event management GRPC channel.
 	start.addStartStep(this, getEventManagementGrpcChannel(), true);
 
@@ -191,6 +194,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop device management persistence.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop event management GRPC channel.
 	stop.addStopStep(this, getEventManagementGrpcChannel());

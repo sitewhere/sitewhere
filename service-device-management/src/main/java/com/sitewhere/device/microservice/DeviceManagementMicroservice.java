@@ -142,6 +142,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	return LOGGER;
     }
 
+    /*
+     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
+     * getDeviceManagementGrpcServer()
+     */
+    @Override
     public IDeviceManagementGrpcServer getDeviceManagementGrpcServer() {
 	return deviceManagementGrpcServer;
     }

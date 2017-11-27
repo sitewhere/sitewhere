@@ -20,7 +20,14 @@
 
 	<!-- Contains information about rule processing -->
 	<xsd:complexType name="scheduleManagementType">
-		<xsd:sequence>
-		</xsd:sequence>
+		<xsd:all>
+			<xsd:element ref="sw:abstract-datastore">
+				<xsd:annotation>
+					<xsd:documentation>
+						Datastore used for persistence.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
 	</xsd:complexType>
 </xsd:schema>

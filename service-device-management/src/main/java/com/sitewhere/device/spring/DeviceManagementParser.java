@@ -68,7 +68,7 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());
 
-	// Build device mangement implementation.
+	// Build device management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 	management.addPropertyReference("mongoClient", DeviceManagementBeans.BEAN_MONGODB_CLIENT);
 

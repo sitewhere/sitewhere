@@ -56,8 +56,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -83,8 +82,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     }
 
     /**
-     * Initialize event management implementations based on configured model
-     * Spring context.
+     * Initialize event management implementations based on configured model Spring
+     * context.
      * 
      * @throws SiteWhereException
      */
@@ -100,14 +99,16 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start event management persistence.
+	start.addStartStep(this, getEventManagement(), true);
 
 	// Start inbound persisted events producer.
 	start.addStartStep(this, getInboundPersistedEventsProducer(), true);
@@ -119,10 +120,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant.
-     * ITenantTemplate,
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant. ITenantTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -132,14 +131,16 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop event management persistence.
+	start.addStopStep(this, getEventManagement());
 
 	// Stop inbound persisted events producer.
 	start.addStopStep(this, getInboundPersistedEventsProducer());

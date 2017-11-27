@@ -23,7 +23,7 @@ service ScheduleManagement {
 	rpc UpdateSchedule (GUpdateScheduleRequest) returns (GUpdateScheduleResponse) {}
 
 	// Get schedule by token.
-	rpc GetScheduleByToken (GGetScheduleByTokenRequest) returns (GGeScheduleByTokenResponse) {}
+	rpc GetScheduleByToken (GGetScheduleByTokenRequest) returns (GGetScheduleByTokenResponse) {}
 
 	// List schedules that match criteria.
 	rpc ListSchedules (GListSchedulesRequest) returns (GListSchedulesResponse) {}
@@ -42,7 +42,7 @@ service ScheduleManagement {
 	rpc UpdateScheduledJob (GUpdateScheduledJobRequest) returns (GUpdateScheduledJobResponse) {}
 
 	// Get scheduled job by token.
-	rpc GetScheduledJobByToken (GGetScheduledJobByTokenRequest) returns (GGeScheduledJobByTokenResponse) {}
+	rpc GetScheduledJobByToken (GGetScheduledJobByTokenRequest) returns (GGetScheduledJobByTokenResponse) {}
 
 	// List scheduled jobs that match criteria.
 	rpc ListScheduledJobs (GListScheduledJobsRequest) returns (GListScheduledJobsResponse) {}
@@ -82,7 +82,7 @@ message GGetScheduleByTokenRequest {
 }
 	
 // Response for getting a schedule by token.
-message GGeScheduleByTokenResponse {
+message GGetScheduleByTokenResponse {
 	com.sitewhere.grpc.model.GSchedule schedule = 1;
 }
 	
@@ -138,7 +138,7 @@ message GGetScheduledJobByTokenRequest {
 }
 	
 // Response for getting a scheduled job by token.
-message GGeScheduledJobByTokenResponse {
+message GGetScheduledJobByTokenResponse {
 	com.sitewhere.grpc.model.GScheduledJob scheduledJob = 1;
 }
 	
