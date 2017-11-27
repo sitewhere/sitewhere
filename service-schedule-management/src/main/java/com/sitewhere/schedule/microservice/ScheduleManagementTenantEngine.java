@@ -7,14 +7,22 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
+import com.sitewhere.schedule.initializer.GroovyScheduleModelInitializer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -95,6 +103,26 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	List<String> scripts = template.getInitializers().getScheduleManagement();
+	for (String script : scripts) {
+	    getTenantScriptSynchronizer().add(script);
+	}
+
+	// Execute calls as superuser.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize schedule model."),
+		    getMicroservice()));
+	    for (String script : scripts) {
+		GroovyScheduleModelInitializer initializer = new GroovyScheduleModelInitializer(groovy, script);
+		initializer.initialize(getScheduleManagement());
+	    }
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
+	}
     }
 
     /*
