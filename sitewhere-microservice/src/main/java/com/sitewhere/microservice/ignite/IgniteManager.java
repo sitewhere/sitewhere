@@ -65,6 +65,8 @@ public class IgniteManager extends LifecycleComponent implements IIgniteManager 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	System.setProperty(IgniteSystemProperties.IGNITE_QUIET, "true");
+	System.setProperty(IgniteSystemProperties.IGNITE_NO_ASCII, "true");
+	System.setProperty(IgniteSystemProperties.IGNITE_PERFORMANCE_SUGGESTIONS_DISABLED, "true");
 	this.igniteConfiguration = createIgniteConfiguration();
     }
 
