@@ -14,6 +14,7 @@ import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.ignite.IIgniteCacheProvider;
 import com.sitewhere.spi.tenant.ITenant;
@@ -25,6 +26,9 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
 
+    /** Device specification cache */
+    private IIgniteCacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
+
     /** Device cache */
     private IIgniteCacheProvider<String, IDevice> deviceCache;
 
@@ -33,8 +37,27 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IMicroservice microservice, DeviceManagementGrpcChannel grpcChannel) {
 	super(grpcChannel);
+	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
+		false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, false);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.model.client.DeviceManagementApiChannel#
+     * getDeviceSpecificationByToken(java.lang.String)
+     */
+    @Override
+    public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	IDeviceSpecification specification = getDeviceSpecificationCache().getCacheEntry(tenant, token);
+	if (specification != null) {
+	    getLogger().trace("Using cached information for specification '" + token + "'.");
+	    return specification;
+	} else {
+	    getLogger().trace("No cached information for specification '" + token + "'.");
+	}
+	return super.getDeviceSpecificationByToken(token);
     }
 
     /*
@@ -70,6 +93,15 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	    getLogger().trace("No cached information for assignment '" + token + "'.");
 	}
 	return super.getDeviceAssignmentByToken(token);
+    }
+
+    protected IIgniteCacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {
+	return deviceSpecificationCache;
+    }
+
+    protected void setDeviceSpecificationCache(
+	    IIgniteCacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
+	this.deviceSpecificationCache = deviceSpecificationCache;
     }
 
     protected IIgniteCacheProvider<String, IDevice> getDeviceCache() {

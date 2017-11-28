@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
@@ -21,11 +22,37 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class DeviceManagementCacheProviders {
 
+    /** Cache id for device specification cache */
+    public static final String ID_SPECIFICATION_CACHE = "sp";
+
     /** Cache id for device cache */
-    public static final String ID_DEVICE_CACHE = "device";
+    public static final String ID_DEVICE_CACHE = "dv";
 
     /** Cache id for device assignment cache */
-    public static final String ID_ASSIGNMENT_CACHE = "assignment";
+    public static final String ID_ASSIGNMENT_CACHE = "as";
+
+    /**
+     * Cache for device specifications.
+     * 
+     * @author Derek
+     */
+    public static class DeviceSpecificationCache extends CacheProvider<String, IDeviceSpecification> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public DeviceSpecificationCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_SPECIFICATION_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
 
     /**
      * Cache for devices.

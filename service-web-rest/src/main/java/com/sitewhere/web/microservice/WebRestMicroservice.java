@@ -17,7 +17,6 @@ import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
 import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.ScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.client.ScheduleManagementGrpcChannel;
@@ -34,6 +33,7 @@ import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -230,7 +230,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Device management.
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getDeviceManagementGrpcChannel());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this, getDeviceManagementGrpcChannel());
 
 	// Device event management.
 	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
