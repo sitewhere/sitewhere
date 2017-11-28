@@ -1,10 +1,15 @@
 description = 'SiteWhere Web/REST Microservice'
 
-apply plugin: 'war'
-
 apply plugin: 'org.springframework.boot'
 springBoot {
     mainClass = 'com.sitewhere.web.WebRestApplication'
+}
+
+apply plugin: 'com.moowork.node'
+node {
+	nodeModulesDir = file("${rootProject.projectDir}/sitewhere-ui")
+	npmWorkDir = file("${rootProject.projectDir}/sitewhere-ui")
+	download = true
 }
 
 // Prevents Logback conflict.
@@ -35,6 +40,19 @@ dependencies {
 	
 	// Tracing support for Spring web components.
     compile group: 'io.opentracing.contrib', name: 'opentracing-spring-web', version:'0.0.10'
+}
+
+// Build user interface.
+task buildUserInterface(type: NpmTask, dependsOn: npm_install) {
+	args = ['run', 'build']
+}
+
+apply plugin: 'war'
+war {
+	dependsOn buildUserInterface
+	with {
+		from( "${rootProject.projectDir}/sitewhere-ui/dist" )
+	}
 }
 
 // Create a Dockerfile.

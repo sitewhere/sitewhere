@@ -29,8 +29,7 @@ public class VueConfiguration extends WebMvcConfigurationSupport {
      * 
      * @see org.springframework.web.servlet.config.annotation.
      * WebMvcConfigurationSupport#configureContentNegotiation(org.
-     * springframework.web.servlet.config.annotation.
-     * ContentNegotiationConfigurer)
+     * springframework.web.servlet.config.annotation. ContentNegotiationConfigurer)
      */
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
@@ -46,7 +45,7 @@ public class VueConfiguration extends WebMvcConfigurationSupport {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	registry.addResourceHandler("/static/**").addResourceLocations("/vueadmin/static/");
+	registry.addResourceHandler("/**").addResourceLocations("/admin/");
     }
 
     /*
@@ -58,6 +57,6 @@ public class VueConfiguration extends WebMvcConfigurationSupport {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-	registry.addViewController("/").setViewName("forward:/vueadmin/index.html");
+	registry.addViewController("/").setViewName("forward:/admin/index.html");
     }
 }
