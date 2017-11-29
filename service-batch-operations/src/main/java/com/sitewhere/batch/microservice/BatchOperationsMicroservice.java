@@ -10,6 +10,8 @@ package com.sitewhere.batch.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
+import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
@@ -43,6 +45,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 
     /** Identifies module resources such as configuration file */
     private static final String MODULE_IDENTIFIER = "batch-operations";
+
+    /** Provides server for batch management GRPC requests */
+    private IBatchManagementGrpcServer batchManagementGrpcServer;
 
     /** Device management GRPC channel */
     private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
@@ -121,6 +126,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize batch management GRPC server.
+	init.addInitializeStep(this, getBatchManagementGrpcServer(), true);
+
 	// Initialize device management GRPC channel.
 	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
 
@@ -140,6 +148,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start batch management GRPC server.
+	start.addStartStep(this, getBatchManagementGrpcServer(), true);
 
 	// Start device mangement GRPC channel.
 	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
@@ -161,6 +172,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
+	// Stop batch management GRPC server.
+	stop.addStopStep(this, getBatchManagementGrpcServer());
+
 	// Stop device mangement GRPC channel.
 	stop.addStopStep(this, getDeviceManagementGrpcChannel());
 
@@ -175,6 +189,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      * Create GRPC components required by the microservice.
      */
     private void createGrpcComponents() {
+	// Create batch management GRPC server.
+	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
+
 	// Device management.
 	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
@@ -185,6 +202,19 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
 		getDeviceEventManagementGrpcChannel());
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
+     * getBatchManagementGrpcServer()
+     */
+    @Override
+    public IBatchManagementGrpcServer getBatchManagementGrpcServer() {
+	return batchManagementGrpcServer;
+    }
+
+    public void setBatchManagementGrpcServer(IBatchManagementGrpcServer batchManagementGrpcServer) {
+	this.batchManagementGrpcServer = batchManagementGrpcServer;
     }
 
     /*

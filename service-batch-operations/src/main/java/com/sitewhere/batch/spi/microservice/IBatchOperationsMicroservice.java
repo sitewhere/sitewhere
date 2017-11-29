@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -17,6 +18,13 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IBatchOperationsMicroservice extends IMultitenantMicroservice<IBatchOperationsTenantEngine> {
+
+    /**
+     * Get batch management GRPC server.
+     * 
+     * @return
+     */
+    public IBatchManagementGrpcServer getBatchManagementGrpcServer();
 
     /**
      * Get device management API access via GRPC channel.
