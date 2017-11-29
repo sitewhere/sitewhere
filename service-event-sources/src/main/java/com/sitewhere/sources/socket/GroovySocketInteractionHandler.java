@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
@@ -99,7 +99,7 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
      * 
      * @author Derek
      */
-    public static class Factory extends TenantLifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
+    public static class Factory extends TenantEngineLifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();

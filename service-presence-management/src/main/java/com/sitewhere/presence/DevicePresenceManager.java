@@ -21,7 +21,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import com.sitewhere.presence.spi.IDevicePresenceManager;
 import com.sitewhere.presence.spi.IPresenceNotificationStrategy;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DevicePresenceManager extends TenantLifecycleComponent implements IDevicePresenceManager {
+public class DevicePresenceManager extends TenantEngineLifecycleComponent implements IDevicePresenceManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -80,7 +80,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.devices = getDeviceManagement(getTenant());
+	this.devices = getDeviceManagement(getTenantEngine().getTenant());
 
 	this.executor = Executors.newSingleThreadExecutor();
 	executor.execute(new PresenceChecker());

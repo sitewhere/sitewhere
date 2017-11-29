@@ -14,14 +14,14 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Routes commands to one or more {@link ICommandDestination} implementations.
  * 
  * @author Derek
  */
-public interface IOutboundCommandRouter extends ITenantLifecycleComponent {
+public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent {
 
     /**
      * Initialize the router with destination information.

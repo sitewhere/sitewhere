@@ -14,7 +14,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
@@ -50,7 +50,7 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
      * 
      * @author Derek
      */
-    public static class NoOpDecoder extends TenantLifecycleComponent
+    public static class NoOpDecoder extends TenantEngineLifecycleComponent
 	    implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
 
 	/** Static logger instance */

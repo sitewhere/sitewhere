@@ -21,8 +21,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
  * 
  * @author Derek
  */
-public class UnregisteredEventsProducer extends MicroserviceKafkaProducer
-	implements IUnregisteredEventsProducer {
+public class UnregisteredEventsProducer extends MicroserviceKafkaProducer implements IUnregisteredEventsProducer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -37,7 +36,7 @@ public class UnregisteredEventsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getUnregisteredDeviceEventsTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getUnregisteredDeviceEventsTopic(getTenantEngine().getTenant());
     }
 
     /*

@@ -10,7 +10,7 @@ package com.sitewhere.device.communication;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @param <T>
  */
-public class CommandDestination<T, P> extends TenantLifecycleComponent implements ICommandDestination<T, P> {
+public class CommandDestination<T, P> extends TenantEngineLifecycleComponent implements ICommandDestination<T, P> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

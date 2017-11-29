@@ -21,7 +21,7 @@ import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DatastoreAssetModuleManager extends TenantLifecycleComponent implements IAssetModuleManager {
+public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent implements IAssetModuleManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

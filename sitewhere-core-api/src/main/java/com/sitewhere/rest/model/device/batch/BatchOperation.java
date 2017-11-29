@@ -18,7 +18,6 @@ import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.batch.OperationType;
 
 /**
  * Model object for a batch operation.
@@ -34,7 +33,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
     private String token;
 
     /** Operation type requested */
-    private OperationType operationType;
+    private String operationType;
 
     /** Operation parameters */
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -53,6 +52,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
      * 
      * @see com.sitewhere.spi.device.batch.IBatchOperation#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -62,15 +62,14 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.batch.IBatchOperation#getOperationType()
+     * @see com.sitewhere.spi.batch.IBatchOperation#getOperationType()
      */
-    public OperationType getOperationType() {
+    @Override
+    public String getOperationType() {
 	return operationType;
     }
 
-    public void setOperationType(OperationType operationType) {
+    public void setOperationType(String operationType) {
 	this.operationType = operationType;
     }
 
@@ -79,6 +78,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
      * 
      * @see com.sitewhere.spi.device.batch.IBatchOperation#getParameters()
      */
+    @Override
     public Map<String, String> getParameters() {
 	return parameters;
     }
@@ -92,6 +92,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
      * 
      * @see com.sitewhere.spi.device.batch.IBatchOperation#getProcessingStatus()
      */
+    @Override
     public BatchOperationStatus getProcessingStatus() {
 	return processingStatus;
     }
@@ -106,6 +107,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
      * @see
      * com.sitewhere.spi.device.batch.IBatchOperation#getProcessingStartedDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getProcessingStartedDate() {
 	return processingStartedDate;
@@ -118,9 +120,9 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.batch.IBatchOperation#getProcessingEndedDate()
+     * @see com.sitewhere.spi.device.batch.IBatchOperation#getProcessingEndedDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getProcessingEndedDate() {
 	return processingEndedDate;

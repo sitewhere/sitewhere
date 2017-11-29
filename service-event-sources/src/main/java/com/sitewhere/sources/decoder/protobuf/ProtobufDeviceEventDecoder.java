@@ -38,7 +38,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.request.SendDeviceStreamDataRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -61,7 +61,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ProtobufDeviceEventDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

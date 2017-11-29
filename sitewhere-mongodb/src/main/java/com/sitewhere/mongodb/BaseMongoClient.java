@@ -23,7 +23,7 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.sitewhere.core.Boilerplate;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author dadams
  */
-public abstract class BaseMongoClient extends TenantLifecycleComponent
+public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 	implements IDiscoverableTenantLifecycleComponent {
 
     /** MongoDB client */

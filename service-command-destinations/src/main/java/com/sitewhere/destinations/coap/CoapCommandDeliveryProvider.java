@@ -13,7 +13,7 @@ import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
+public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], CoapParameters> {
 
     /** Static logger instance */

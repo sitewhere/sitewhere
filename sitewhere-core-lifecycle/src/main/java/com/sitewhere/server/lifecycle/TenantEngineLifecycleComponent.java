@@ -8,24 +8,28 @@
 package com.sitewhere.server.lifecycle;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Base class for implementing {@link ITenantLifecycleComponent}.
+ * Base class for implementing {@link ITenantEngineLifecycleComponent}.
  * 
  * @author Derek
  */
-public abstract class TenantLifecycleComponent extends LifecycleComponent implements ITenantLifecycleComponent {
+public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
+	implements ITenantEngineLifecycleComponent {
 
-    public TenantLifecycleComponent() {
+    /** Tenant engine associated with component */
+    private IMicroserviceTenantEngine tenantEngine;
+
+    public TenantEngineLifecycleComponent() {
 	super(LifecycleComponentType.Other);
     }
 
-    public TenantLifecycleComponent(LifecycleComponentType type) {
+    public TenantEngineLifecycleComponent(LifecycleComponentType type) {
 	super(type);
     }
 
@@ -38,35 +42,42 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
 	    boolean require) throws SiteWhereException {
-	if (component instanceof ITenantLifecycleComponent) {
-	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
+	if (component instanceof ITenantEngineLifecycleComponent) {
+	    ((ITenantEngineLifecycleComponent) component).setTenantEngine(getTenantEngine());
 	}
 	super.initializeNestedComponent(component, monitor, require);
     }
 
     /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override
     public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
 	    throws SiteWhereException {
-	if (component instanceof ITenantLifecycleComponent) {
-	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
+	if (component instanceof ITenantEngineLifecycleComponent) {
+	    ((ITenantEngineLifecycleComponent) component).setTenantEngine(getTenantEngine());
 	}
 	super.startNestedComponent(component, monitor, require);
     }
 
-    /** Tenant associated with component */
-    private ITenant tenant;
-
-    public ITenant getTenant() {
-	return tenant;
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
+     */
+    @Override
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return tenantEngine;
     }
 
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
+     */
+    @Override
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	this.tenantEngine = tenantEngine;
     }
 }

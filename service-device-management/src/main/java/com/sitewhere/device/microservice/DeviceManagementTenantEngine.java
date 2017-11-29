@@ -16,19 +16,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
+import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
-import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.ignite.server.CacheAwareDeviceManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -60,21 +55,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /** Responds to device management GRPC requests */
     private DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl;
 
-    /** Event management GRPC channel */
-    private DeviceEventManagementGrpcChannel eventManagementGrpcChannel;
-
-    /** Event management API channel */
-    private IDeviceEventManagementApiChannel eventManagementApiChannel;
-
-    /** Asset management GRPC channel */
-    private AssetManagementGrpcChannel assetManagementGrpcChannel;
-
-    /** Asset management API channel */
-    private IAssetManagementApiChannel assetManagementApiChannel;
-
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
-
     public DeviceManagementTenantEngine(IMultitenantMicroservice<IDeviceManagementTenantEngine> microservice,
 	    ITenant tenant) {
 	super(microservice, tenant);
@@ -95,17 +75,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	this.deviceManagement = new CacheAwareDeviceManagement(implementation, getMicroservice());
 	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
 
-	// Event management microservice connectivity.
-	this.eventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(getMicroservice(),
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getMicroservice().getInstanceSettings().getGrpcPort());
-	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(getEventManagementGrpcChannel());
-
-	// Asset management microservice connectivity.
-	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(getMicroservice(),
-		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getMicroservice().getInstanceSettings().getGrpcPort());
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
-	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), null);
-
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
@@ -114,12 +83,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
 	// Initialize device management persistence.
 	init.addInitializeStep(this, getDeviceManagement(), true);
-
-	// Initialize event management GRPC channel.
-	init.addInitializeStep(this, getEventManagementGrpcChannel(), true);
-
-	// Initialize asset management GRPC channel.
-	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -138,12 +101,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
 	// Start device management persistence.
 	start.addStartStep(this, getDeviceManagement(), true);
-
-	// Start event management GRPC channel.
-	start.addStartStep(this, getEventManagementGrpcChannel(), true);
-
-	// Start asset management GRPC channel.
-	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -198,12 +155,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Stop device management persistence.
 	stop.addStopStep(this, getDeviceManagement());
 
-	// Stop event management GRPC channel.
-	stop.addStopStep(this, getEventManagementGrpcChannel());
-
-	// Stop asset management GRPC channel.
-	stop.addStopStep(this, getAssetManagementGrpcChannel());
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -241,85 +192,22 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
-     * getEventManagementGrpcChannel()
-     */
-    @Override
-    public DeviceEventManagementGrpcChannel getEventManagementGrpcChannel() {
-	return eventManagementGrpcChannel;
-    }
-
-    public void setEventManagementGrpcChannel(DeviceEventManagementGrpcChannel eventManagementGrpcChannel) {
-	this.eventManagementGrpcChannel = eventManagementGrpcChannel;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
-     * getEventManagementApiChannel()
-     */
-    @Override
-    public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
-	return eventManagementApiChannel;
-    }
-
-    public void setEventManagementApiChannel(IDeviceEventManagementApiChannel eventManagementApiChannel) {
-	this.eventManagementApiChannel = eventManagementApiChannel;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
-     * getAssetManagementGrpcChannel()
-     */
-    @Override
-    public AssetManagementGrpcChannel getAssetManagementGrpcChannel() {
-	return assetManagementGrpcChannel;
-    }
-
-    public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
-	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
-     * getAssetManagementApiChannel()
-     */
-    @Override
-    public IAssetManagementApiChannel getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
-     * getAssetResolver()
-     */
-    @Override
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
-    }
-
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
     public Logger getLogger() {
 	return LOGGER;
+    }
+
+    public IAssetManagementApiChannel getAssetManagementApiChannel() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiChannel();
+    }
+
+    public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiChannel();
+    }
+
+    public IAssetResolver getAssetResolver() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetResolver();
     }
 }

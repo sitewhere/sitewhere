@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.outbound.spi.IDeviceEventFilter;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -21,7 +21,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class DeviceEventFilter extends TenantLifecycleComponent implements IDeviceEventFilter {
+public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent implements IDeviceEventFilter {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

@@ -9,6 +9,7 @@ package com.sitewhere.schedule;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -16,7 +17,6 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Wraps an schedule management implementation. Subclasses can implement only
@@ -35,26 +35,22 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-     * com.sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	delegate.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	delegate.setTenantEngine(tenantEngine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
      */
     @Override
-    public ITenant getTenant() {
-	return delegate.getTenant();
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return delegate.getTenantEngine();
     }
 
     /*
@@ -118,8 +114,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
      * sitewhere .spi.scheduling.request.IScheduledJobCreateRequest)
      */
     @Override
@@ -144,8 +139,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
      * java.lang .String)
      */
     @Override
@@ -156,8 +150,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
      * sitewhere .spi.search.ISearchCriteria)
      */
     @Override

@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.outbound.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -41,7 +41,7 @@ import groovy.util.ScriptException;
  *
  * @param <T>
  */
-public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
+public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLifecycleComponent
 	implements IDeviceEventMulticaster<T> {
 
     /** Static logger instance */
@@ -96,7 +96,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
     public List<T> calculateRoutes(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	List<T> routes = new ArrayList<T>();
-	IDeviceManagement dm = getDeviceManagement(getTenant());
+	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
 	for (IDevice targetDevice : matches) {
 	    if (getScriptPath() != null) {
 		IDeviceAssignment targetAssignment = dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
@@ -178,7 +178,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycle
 	public void run() {
 	    while (true) {
 		try {
-		    ITenant tenant = AllWithSpecificationMulticaster.this.getTenant();
+		    ITenant tenant = AllWithSpecificationMulticaster.this.getTenantEngine().getTenant();
 		    String token = AllWithSpecificationMulticaster.this.getSpecificationToken();
 		    DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, null, false, 1, 0, null, null);
 		    ISearchResults<IDevice> results = getDeviceManagement(tenant).listDevices(false, criteria);

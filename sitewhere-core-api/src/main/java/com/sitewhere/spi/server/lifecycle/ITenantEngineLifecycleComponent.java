@@ -7,26 +7,26 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
- * Extends {@link ILifecycleComponent} with tenant-specific functionality.
+ * Extends {@link ILifecycleComponent} with ability to access tenant engine.
  * 
  * @author Derek
  */
-public interface ITenantLifecycleComponent extends ILifecycleComponent {
+public interface ITenantEngineLifecycleComponent extends ILifecycleComponent {
 
     /**
-     * Set tenant for component.
+     * Set tenant engine for component.
      * 
      * @param tenant
      */
-    public void setTenant(ITenant tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine);
 
     /**
-     * Get tenant for component.
+     * Get tenant engine for component.
      * 
      * @return
      */
-    public ITenant getTenant();
+    public IMicroserviceTenantEngine getTenantEngine();
 }

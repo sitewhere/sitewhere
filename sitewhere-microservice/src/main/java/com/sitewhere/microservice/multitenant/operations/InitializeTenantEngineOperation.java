@@ -64,6 +64,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
 	    T created = getMicroservice().createTenantEngine(getTenant());
+	    created.setTenantEngine(created); // Required for nested components.
 
 	    // Configuration files must be present before initialization.
 	    LOGGER.info("Verifying tenant '" + getTenant().getName() + "' configuration bootstrapped.");

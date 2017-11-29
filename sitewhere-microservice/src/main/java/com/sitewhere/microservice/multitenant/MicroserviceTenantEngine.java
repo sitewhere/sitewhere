@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.TenantEngineScriptSynchronizer;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -27,7 +27,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent implements IMicroserviceTenantEngine {
+public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComponent
+	implements IMicroserviceTenantEngine {
 
     /** Suffix appended to module identifier for lock path */
     public static final String MODULE_LOCK_SUFFIX = ".lock";
@@ -44,6 +45,9 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /** Parent microservice */
     private IMultitenantMicroservice<?> microservice;
 
+    /** Hosted tenant */
+    private ITenant tenant;
+
     /** Tenant script synchronizer */
     private TenantEngineScriptSynchronizer tenantScriptSynchronizer;
 
@@ -52,7 +56,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
 
     public MicroserviceTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	this.microservice = microservice;
-	setTenant(tenant);
+	this.tenant = tenant;
 	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
     }
 
@@ -172,8 +176,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getTenantTemplate()
      */
     @Override
@@ -191,8 +194,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getTenantConfigurationPath()
      */
     @Override
@@ -203,8 +205,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getModuleLockPath()
      */
     @Override
@@ -216,8 +217,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getModuleConfigurationPath()
      */
     @Override
@@ -229,8 +229,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getModuleBootstrappedPath()
      */
     @Override
@@ -242,8 +241,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getMicroservice()
      */
     @Override
@@ -256,10 +254,22 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getTenant()
+     */
+    @Override
+    public ITenant getTenant() {
+	return tenant;
+    }
+
+    public void setTenant(ITenant tenant) {
+	this.tenant = tenant;
+    }
+
+    /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getTenantScriptSynchronizer()
      */
     @Override
@@ -274,8 +284,7 @@ public abstract class MicroserviceTenantEngine extends TenantLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * getModuleContext()
      */
     @Override

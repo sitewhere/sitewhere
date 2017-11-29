@@ -26,18 +26,18 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.springframework.util.StringUtils;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Extends {@link TenantLifecycleComponent} with base functionality for
+ * Extends {@link TenantEngineLifecycleComponent} with base functionality for
  * connecting to MQTT.
  * 
  * @author Derek
  */
-public class MqttLifecycleComponent extends TenantLifecycleComponent implements IMqttComponent {
+public class MqttLifecycleComponent extends TenantEngineLifecycleComponent implements IMqttComponent {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

@@ -19,7 +19,7 @@ import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
@@ -40,7 +40,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+public class GroovyEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -58,8 +58,7 @@ public class GroovyEventDecoder extends TenantLifecycleComponent implements IDev
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
      * lang.Object, java.util.Map)
      */
     @Override
@@ -70,9 +69,10 @@ public class GroovyEventDecoder extends TenantLifecycleComponent implements IDev
 	    Binding binding = new Binding();
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
-		    new DeviceManagementRequestBuilder(getDeviceManagement(getTenant())));
-	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER, new DeviceEventRequestBuilder(
-		    getDeviceManagement(getTenant()), getDeviceEventManagement(getTenant())));
+		    new DeviceManagementRequestBuilder(getDeviceManagement(getTenantEngine().getTenant())));
+	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
+		    new DeviceEventRequestBuilder(getDeviceManagement(getTenantEngine().getTenant()),
+			    getDeviceEventManagement(getTenantEngine().getTenant())));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);

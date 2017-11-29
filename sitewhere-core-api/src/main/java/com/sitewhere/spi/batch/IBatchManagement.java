@@ -15,14 +15,14 @@ import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for batch management operations.
  * 
  * @author Derek
  */
-public interface IBatchManagement extends ITenantLifecycleComponent {
+public interface IBatchManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Creates an {@link IBatchOperation} to perform an operation on multiple

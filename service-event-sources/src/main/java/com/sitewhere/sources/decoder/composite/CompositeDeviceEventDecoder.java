@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public abstract class CompositeDeviceEventDecoder<T> extends TenantLifecycleComponent
+public abstract class CompositeDeviceEventDecoder<T> extends TenantEngineLifecycleComponent
 	implements ICompositeDeviceEventDecoder<T> {
 
     public CompositeDeviceEventDecoder() {

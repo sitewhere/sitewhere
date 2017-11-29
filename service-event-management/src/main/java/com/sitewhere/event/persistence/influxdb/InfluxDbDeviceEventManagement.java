@@ -28,7 +28,7 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -65,7 +65,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent implements IDeviceEventManagement {
+public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

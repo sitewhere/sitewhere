@@ -14,14 +14,14 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Asset management interface implemented by datastores that can store assets.
  * 
  * @author Derek
  */
-public interface IAssetManagement extends ITenantLifecycleComponent {
+public interface IAssetManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Create a new asset category.

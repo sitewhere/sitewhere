@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -28,7 +28,7 @@ import io.grpc.ServerBuilder;
  * 
  * @author Derek
  */
-public class GrpcServer extends TenantLifecycleComponent implements IGrpcServer {
+public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcServer {
 
     /** Static logger instance */
     protected static Logger LOGGER = LogManager.getLogger();

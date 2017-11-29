@@ -80,7 +80,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
     }
 
     /*
@@ -90,8 +90,10 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getEventSourceDecodedEventsTopic(getTenant()));
-	topics.add(getMicroservice().getKafkaTopicNaming().getInboundReprocessEventsTopic(getTenant()));
+	topics.add(getMicroservice().getKafkaTopicNaming()
+		.getEventSourceDecodedEventsTopic(getTenantEngine().getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getInboundReprocessEventsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 

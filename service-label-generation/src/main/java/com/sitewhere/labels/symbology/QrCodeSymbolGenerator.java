@@ -12,7 +12,7 @@ import java.net.URI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -31,7 +31,7 @@ import net.glxn.qrgen.javase.QRCode;
  * 
  * @author Derek
  */
-public class QrCodeSymbolGenerator extends TenantLifecycleComponent implements ISymbolGenerator {
+public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implements ISymbolGenerator {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

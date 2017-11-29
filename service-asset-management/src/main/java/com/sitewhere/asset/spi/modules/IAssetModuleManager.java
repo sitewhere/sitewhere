@@ -14,14 +14,14 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for interacting with the asset module manager.
  * 
  * @author dadams
  */
-public interface IAssetModuleManager extends ITenantLifecycleComponent {
+public interface IAssetModuleManager extends ITenantEngineLifecycleComponent {
 
     /**
      * Set the asset management implementation.

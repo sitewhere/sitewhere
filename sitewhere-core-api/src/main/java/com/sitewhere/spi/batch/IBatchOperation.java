@@ -31,7 +31,7 @@ public interface IBatchOperation extends IMetadataProviderEntity {
      * 
      * @return
      */
-    public OperationType getOperationType();
+    public String getOperationType();
 
     /**
      * Operation parameters.

@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.sources.kafka.DecodedEventsProducer;
 import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
@@ -34,7 +34,7 @@ import io.opentracing.ActiveSpan;
  * 
  * @author Derek
  */
-public class EventSourcesManager extends TenantLifecycleComponent implements IEventSourcesManager {
+public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

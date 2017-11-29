@@ -36,7 +36,7 @@ public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenantEngine().getTenant());
     }
 
     /*

@@ -25,7 +25,7 @@ import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Regist
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAckState;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -44,7 +44,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ProtobufExecutionEncoder extends TenantLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
+public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
+	implements ICommandExecutionEncoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -56,8 +57,7 @@ public class ProtobufExecutionEncoder extends TenantLifecycleComponent implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
+     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
      * com.sitewhere .spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
@@ -65,7 +65,8 @@ public class ProtobufExecutionEncoder extends TenantLifecycleComponent implement
     @Override
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested, IDeviceAssignment assignment)
 	    throws SiteWhereException {
-	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment, getTenant());
+	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment,
+		getTenantEngine().getTenant());
 	LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }

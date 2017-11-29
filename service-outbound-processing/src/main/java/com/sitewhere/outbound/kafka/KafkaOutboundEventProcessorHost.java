@@ -89,7 +89,7 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenant()) + "processor."
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + "processor."
 		+ getOutboundEventProcessor().getProcessorId();
     }
 
@@ -100,7 +100,8 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 
@@ -128,7 +129,7 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
 	executor = Executors.newFixedThreadPool(getOutboundEventProcessor().getNumProcessingThreads(),
 		new OutboundEventProcessingThreadFactory());
 	for (int i = 0; i < getOutboundEventProcessor().getNumProcessingThreads(); i++) {
-	    executor.execute(new OutboundEventPayloadProcessor(getMicroservice(), getTenant()));
+	    executor.execute(new OutboundEventPayloadProcessor(getMicroservice(), getTenantEngine().getTenant()));
 	}
     }
 

@@ -17,7 +17,7 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Allows intereseted entities to interact with SiteWhere outbound event
@@ -25,7 +25,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
+public interface IOutboundEventProcessor extends ITenantEngineLifecycleComponent {
 
     /**
      * Get unique id for processor.

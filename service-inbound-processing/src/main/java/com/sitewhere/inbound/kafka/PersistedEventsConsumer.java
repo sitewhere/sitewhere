@@ -79,7 +79,7 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
     }
 
     /*
@@ -89,7 +89,8 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 

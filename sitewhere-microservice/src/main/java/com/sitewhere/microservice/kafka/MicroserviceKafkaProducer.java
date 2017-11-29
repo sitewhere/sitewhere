@@ -15,7 +15,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class MicroserviceKafkaProducer extends TenantLifecycleComponent implements IMicroserviceKafkaProducer {
+public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleComponent implements IMicroserviceKafkaProducer {
 
     /** Producer */
     private KafkaProducer<String, byte[]> producer;

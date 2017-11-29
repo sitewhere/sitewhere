@@ -108,7 +108,7 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	public void run() {
 	    try {
 		LOGGER.debug("Command processor thread processing command invocation.");
-		getDeviceCommunication(getTenant()).deliverCommand(command);
+		getDeviceCommunication(getTenantEngine().getTenant()).deliverCommand(command);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Exception thrown in command processing operation.", e);
 	    } catch (Throwable e) {

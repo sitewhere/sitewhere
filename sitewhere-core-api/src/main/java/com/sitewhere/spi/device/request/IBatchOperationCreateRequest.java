@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.batch.OperationType;
 
 /**
  * Provides information needex to create an {@link IBatchOperation}.
@@ -35,7 +34,7 @@ public interface IBatchOperationCreateRequest {
      * 
      * @return
      */
-    public OperationType getOperationType();
+    public String getOperationType();
 
     /**
      * Get operation parameters.

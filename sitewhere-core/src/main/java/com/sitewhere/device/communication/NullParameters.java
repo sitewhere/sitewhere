@@ -10,7 +10,7 @@ package com.sitewhere.device.communication;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -33,7 +33,7 @@ public class NullParameters {
      * 
      * @author Derek
      */
-    public static class Extractor extends TenantLifecycleComponent
+    public static class Extractor extends TenantEngineLifecycleComponent
 	    implements ICommandDeliveryParameterExtractor<NullParameters> {
 
 	/** Static logger instance */

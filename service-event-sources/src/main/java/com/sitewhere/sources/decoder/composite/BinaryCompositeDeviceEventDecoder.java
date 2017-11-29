@@ -46,7 +46,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
     public IDeviceContext<byte[]> buildContext(IMessageMetadata<byte[]> metadata) throws SiteWhereException {
 	BinaryDeviceContext context = new BinaryDeviceContext();
 
-	IDeviceManagement devices = getDeviceManagement(getTenant());
+	IDeviceManagement devices = getDeviceManagement(getTenantEngine().getTenant());
 	context.setDevice(devices.getDeviceByHardwareId(metadata.getHardwareId()));
 	if (context.getDevice() == null) {
 	    throw new SiteWhereException(

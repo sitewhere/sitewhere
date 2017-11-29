@@ -10,14 +10,14 @@ package com.sitewhere.schedule.spi;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduledJob;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages a list of schedules that are applied to system actions.
  * 
  * @author Derek
  */
-public interface IScheduleManager extends ITenantLifecycleComponent {
+public interface IScheduleManager extends ITenantEngineLifecycleComponent {
 
     /**
      * Called when a new schedule has been added.

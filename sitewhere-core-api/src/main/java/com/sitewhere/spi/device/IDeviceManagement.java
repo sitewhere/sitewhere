@@ -31,14 +31,14 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for device management operations.
  * 
  * @author Derek
  */
-public interface IDeviceManagement extends ITenantLifecycleComponent {
+public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Create a new device specification.

@@ -12,7 +12,7 @@ import java.util.List;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Allows an {@link IDeviceCommandInvocation} to be resolved to one or more
@@ -20,7 +20,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface ICommandTargetResolver extends ITenantLifecycleComponent {
+public interface ICommandTargetResolver extends ITenantEngineLifecycleComponent {
 
     /**
      * Resolves a command invocation to a list of assignments that should

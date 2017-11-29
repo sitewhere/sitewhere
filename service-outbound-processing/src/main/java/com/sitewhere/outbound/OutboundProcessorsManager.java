@@ -17,8 +17,7 @@ import com.sitewhere.outbound.kafka.KafkaOutboundEventProcessorHost;
 import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.outbound.spi.IOutboundProcessorsManager;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingMicroservice;
-import com.sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -28,13 +27,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class OutboundProcessorsManager extends TenantLifecycleComponent implements IOutboundProcessorsManager {
+public class OutboundProcessorsManager extends TenantEngineLifecycleComponent implements IOutboundProcessorsManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Tenant engine reference */
-    private IOutboundProcessingTenantEngine tenantEngine;
 
     /** List of event sources */
     private List<IOutboundEventProcessor> outboundEventProcessors;
@@ -106,20 +102,6 @@ public class OutboundProcessorsManager extends TenantLifecycleComponent implemen
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.outbound.spi.IOutboundProcessorsManager#setTenantEngine(com.
-     * sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine)
-     */
-    @Override
-    public void setTenantEngine(IOutboundProcessingTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
-    }
-
-    protected IOutboundProcessingTenantEngine getTenantEngine() {
-	return tenantEngine;
     }
 
     protected List<KafkaOutboundEventProcessorHost> getProcessorHosts() {

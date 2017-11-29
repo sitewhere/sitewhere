@@ -52,7 +52,6 @@ public class OutboundProcessingTenantEngine extends MicroserviceTenantEngine
 	// Create outbound processors manager.
 	this.outboundProcessorsManager = (IOutboundProcessorsManager) getModuleContext()
 		.getBean(OutboundProcessingBeans.BEAN_OUTBOUND_PROCESSORS_MANAGER);
-	getOutboundProcessorsManager().setTenantEngine(this);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

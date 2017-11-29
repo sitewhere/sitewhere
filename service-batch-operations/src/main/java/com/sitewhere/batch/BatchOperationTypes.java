@@ -5,14 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.schedule.spi;
-
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+package com.sitewhere.batch;
 
 /**
- * Binds to a port and listens for schedule management GRPC requests.
+ * Constants for batch operation types.
  * 
  * @author Derek
  */
-public interface IScheduleManagementGrpcServer extends ITenantEngineLifecycleComponent {
+public interface BatchOperationTypes {
+
+    /** Operation type for batch command invocation */
+    public static final String OPERATION_BATCH_COMMAND_INVOCATION = "BatchCommandInvocation";
 }

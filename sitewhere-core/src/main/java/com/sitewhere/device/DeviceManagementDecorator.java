@@ -36,12 +36,12 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device
@@ -61,24 +61,22 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-     * com. sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	delegate.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	delegate.setTenantEngine(tenantEngine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
      */
     @Override
-    public ITenant getTenant() {
-	return delegate.getTenant();
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return delegate.getTenantEngine();
     }
 
     @Override

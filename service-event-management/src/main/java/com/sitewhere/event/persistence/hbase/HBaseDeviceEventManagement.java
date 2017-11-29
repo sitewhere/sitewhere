@@ -19,7 +19,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -57,7 +57,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseDeviceEventManagement extends TenantLifecycleComponent implements IDeviceEventManagement {
+public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -94,7 +94,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
-	context.setTenant(getTenant());
+	context.setTenant(getTenantEngine().getTenant());
 	context.setClient(getClient());
 	context.setPayloadMarshaler(getPayloadMarshaler());
 
@@ -185,8 +185,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -238,8 +237,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -293,8 +291,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -415,8 +412,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
@@ -492,8 +488,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */
@@ -506,8 +501,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
-     * ()
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement ()
      */
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;

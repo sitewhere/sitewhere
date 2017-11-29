@@ -15,7 +15,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class SymbolGeneratorManager extends TenantLifecycleComponent implements ISymbolGeneratorManager {
+public class SymbolGeneratorManager extends TenantEngineLifecycleComponent implements ISymbolGeneratorManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

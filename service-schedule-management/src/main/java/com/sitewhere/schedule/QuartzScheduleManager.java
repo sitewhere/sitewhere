@@ -24,15 +24,15 @@ import org.quartz.simpl.SimpleThreadPool;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.schedule.jobs.QuartzBuilder;
 import com.sitewhere.schedule.spi.IScheduleManager;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implementation of {@link IScheduleManager} that uses Quartz to handle
@@ -40,7 +40,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class QuartzScheduleManager extends TenantLifecycleComponent implements IScheduleManager {
+public class QuartzScheduleManager extends TenantEngineLifecycleComponent implements IScheduleManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -66,17 +66,15 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.server.lifecycle.TenantLifecycleComponent#setTenant(com.
-     * sitewhere .spi.user.ITenant)
+     * com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent#setTenantEngine
+     * (com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	super.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	super.setTenantEngine(tenantEngine);
 	try {
-	    DirectSchedulerFactory.getInstance().createScheduler(getTenant().getId(), INSTANCE_ID,
+	    DirectSchedulerFactory.getInstance().createScheduler(tenantEngine.getTenant().getId(), INSTANCE_ID,
 		    new SimpleThreadPool(getNumProcessingThreads(), Thread.NORM_PRIORITY), new RAMJobStore());
 	} catch (SchedulerException e) {
 	    throw new RuntimeException("Unable to create Quartz scheduler for schedule manager.", e);
@@ -170,8 +168,7 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManager#scheduleJob(com.sitewhere.
+     * @see com.sitewhere.spi.scheduling.IScheduleManager#scheduleJob(com.sitewhere.
      * spi.scheduling .IScheduledJob)
      */
     @Override
@@ -225,7 +222,7 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
      */
     public Scheduler getScheduler() throws SiteWhereException {
 	try {
-	    return DirectSchedulerFactory.getInstance().getScheduler(getTenant().getId());
+	    return DirectSchedulerFactory.getInstance().getScheduler(getTenantEngine().getTenant().getId());
 	} catch (SchedulerException e) {
 	    throw new SiteWhereException("Unable to get scheduler instance.", e);
 	}

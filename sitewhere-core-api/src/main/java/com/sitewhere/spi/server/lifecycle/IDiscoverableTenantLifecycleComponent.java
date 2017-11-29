@@ -8,14 +8,14 @@
 package com.sitewhere.spi.server.lifecycle;
 
 /**
- * Marker interface for beans that implement {@link ITenantLifecycleComponent}
+ * Marker interface for beans that implement {@link ITenantEngineLifecycleComponent}
  * and can be discovered at runtime by introspecting the application context.
  * Allows beans to be registered with the tenant engine without having a
  * well-known name.
  * 
  * @author Derek
  */
-public interface IDiscoverableTenantLifecycleComponent extends ITenantLifecycleComponent {
+public interface IDiscoverableTenantLifecycleComponent extends ITenantEngineLifecycleComponent {
 
     /**
      * Indicates whether the component is required.

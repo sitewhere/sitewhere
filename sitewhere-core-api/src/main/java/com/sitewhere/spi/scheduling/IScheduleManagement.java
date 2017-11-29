@@ -12,14 +12,14 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Management interface for persistent scheduling implementations.
  * 
  * @author Derek
  */
-public interface IScheduleManagement extends ITenantLifecycleComponent {
+public interface IScheduleManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Create a new schedule.

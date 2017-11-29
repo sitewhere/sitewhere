@@ -19,9 +19,9 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Wraps an asset management implementation. Subclasses can implement only the
@@ -40,26 +40,22 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-     * com.sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	delegate.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	delegate.setTenantEngine(tenantEngine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
      */
     @Override
-    public ITenant getTenant() {
-	return delegate.getTenant();
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return delegate.getTenantEngine();
     }
 
     /*
@@ -87,8 +83,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
      * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
     @Override
@@ -111,8 +106,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
      * String)
      */
     @Override
@@ -123,8 +117,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
     @Override
@@ -136,8 +129,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
@@ -150,8 +142,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
     @Override
@@ -163,8 +154,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -177,8 +167,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
     @Override
@@ -190,8 +179,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -215,8 +203,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -227,8 +214,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override

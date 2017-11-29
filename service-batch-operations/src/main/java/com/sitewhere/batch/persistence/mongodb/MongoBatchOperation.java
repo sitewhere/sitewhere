@@ -17,7 +17,6 @@ import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.batch.OperationType;
 
 /**
  * Used to load or save batch operation data to MongoDB.
@@ -73,7 +72,7 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
     public static void toDocument(IBatchOperation source, Document target) {
 	target.append(PROP_TOKEN, source.getToken());
 	if (source.getOperationType() != null) {
-	    target.append(PROP_OPERATION_TYPE, source.getOperationType().name());
+	    target.append(PROP_OPERATION_TYPE, source.getOperationType());
 	}
 	if (source.getProcessingStatus() != null) {
 	    target.append(PROP_PROC_STATUS, source.getProcessingStatus().name());
@@ -111,7 +110,7 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 
 	target.setToken(token);
 	if (operationType != null) {
-	    target.setOperationType(OperationType.valueOf(operationType));
+	    target.setOperationType(operationType);
 	}
 	if (procStatus != null) {
 	    target.setProcessingStatus(BatchOperationStatus.valueOf(procStatus));

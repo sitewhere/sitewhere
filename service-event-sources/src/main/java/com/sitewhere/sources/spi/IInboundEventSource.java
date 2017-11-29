@@ -10,7 +10,7 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Entity that receives events from one or more {@link IInboundEventReceiver},
@@ -18,7 +18,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
+public interface IInboundEventSource<T> extends ITenantEngineLifecycleComponent {
 
     /**
      * Get unique id for event source.

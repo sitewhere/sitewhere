@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get batch management implementation.
+     * 
+     * @return
+     */
+    public IBatchManagement getBatchManagement();
 }

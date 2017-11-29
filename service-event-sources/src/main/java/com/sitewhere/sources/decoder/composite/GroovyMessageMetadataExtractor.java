@@ -15,7 +15,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadataExtractor;
@@ -35,7 +35,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
+public class GroovyMessageMetadataExtractor extends TenantEngineLifecycleComponent
 	implements IMessageMetadataExtractor<byte[]> {
 
     /** Static logger instance */
@@ -55,8 +55,7 @@ public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
-     * IMessageMetadataExtractor#extractMetadata(java.lang.Object,
-     * java.util.Map)
+     * IMessageMetadataExtractor#extractMetadata(java.lang.Object, java.util.Map)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -64,7 +63,8 @@ public class GroovyMessageMetadataExtractor extends TenantLifecycleComponent
 	    throws EventDecodeException {
 	try {
 	    Binding binding = new Binding();
-	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT, getDeviceManagement(getTenant()));
+	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT,
+		    getDeviceManagement(getTenantEngine().getTenant()));
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);

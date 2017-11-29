@@ -155,7 +155,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	if (cached != null) {
 	    return cached;
 	}
-	IDeviceAssignment assignment = getDeviceManagement(getTenant()).getDeviceAssignmentByToken(assignmentToken);
+	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
+		.getDeviceAssignmentByToken(assignmentToken);
 	if (assignment == null) {
 	    throw new SiteWhereException("Assignment not found.");
 	}

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rest.model.device.command.DeviceStreamAckCommand;
 import com.sitewhere.rest.model.device.command.SendDeviceStreamDataCommand;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -37,7 +37,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DeviceStreamManager extends TenantLifecycleComponent implements IDeviceStreamManager {
+public class DeviceStreamManager extends TenantEngineLifecycleComponent implements IDeviceStreamManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -60,20 +60,20 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
 
 	DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
 	ack.setStreamId(request.getStreamId());
-	IDeviceStream existing = getDeviceManagement(getTenant()).getDeviceStream(assignment.getToken(),
-		request.getStreamId());
+	IDeviceStream existing = getDeviceManagement(getTenantEngine().getTenant())
+		.getDeviceStream(assignment.getToken(), request.getStreamId());
 	if (existing != null) {
 	    ack.setStatus(DeviceStreamStatus.DeviceStreamExists);
 	} else {
 	    try {
-		getDeviceManagement(getTenant()).createDeviceStream(assignment.getToken(), request);
+		getDeviceManagement(getTenantEngine().getTenant()).createDeviceStream(assignment.getToken(), request);
 		ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Unable to create device stream.", e);
 		ack.setStatus(DeviceStreamStatus.DeviceStreamFailed);
 	    }
 	}
-	getDeviceCommunication(getTenant()).deliverSystemCommand(hardwareId, ack);
+	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, ack);
     }
 
     /*
@@ -87,7 +87,7 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
     public void handleDeviceStreamDataRequest(String hardwareId, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-	getDeviceEventManagement(getTenant()).addDeviceStreamData(assignment, null, request);
+	getDeviceEventManagement(getTenantEngine().getTenant()).addDeviceStreamData(assignment, null, request);
     }
 
     /*
@@ -101,7 +101,7 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
     public void handleSendDeviceStreamDataRequest(String hardwareId, ISendDeviceStreamDataRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-	IDeviceStreamData data = getDeviceEventManagement(getTenant()).getDeviceStreamData(assignment,
+	IDeviceStreamData data = getDeviceEventManagement(getTenantEngine().getTenant()).getDeviceStreamData(assignment,
 		request.getStreamId(), request.getSequenceNumber());
 	SendDeviceStreamDataCommand command = new SendDeviceStreamDataCommand();
 	command.setStreamId(request.getStreamId());
@@ -112,7 +112,7 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
 	} else {
 	    command.setData(new byte[0]);
 	}
-	getDeviceCommunication(getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
     }
 
     /*
@@ -133,14 +133,15 @@ public class DeviceStreamManager extends TenantLifecycleComponent implements IDe
      * @throws SiteWhereException
      */
     protected IDeviceAssignment getCurrentAssignment(String hardwareId) throws SiteWhereException {
-	IDevice device = getDeviceManagement(getTenant()).getDeviceByHardwareId(hardwareId);
+	IDevice device = getDeviceManagement(getTenantEngine().getTenant()).getDeviceByHardwareId(hardwareId);
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
 	if (device.getAssignmentToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
-	return getDeviceManagement(getTenant()).getDeviceAssignmentByToken(device.getAssignmentToken());
+	return getDeviceManagement(getTenantEngine().getTenant())
+		.getDeviceAssignmentByToken(device.getAssignmentToken());
     }
 
     private IDeviceManagement getDeviceManagement(ITenant tenant) {

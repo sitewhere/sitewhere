@@ -10,14 +10,14 @@ package com.sitewhere.sources.spi;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Handles receipt of device event information from an underlying transport.
  * 
  * @author Derek
  */
-public interface IInboundEventReceiver<T> extends ITenantLifecycleComponent {
+public interface IInboundEventReceiver<T> extends ITenantEngineLifecycleComponent {
 
     /**
      * Get name shown in user interfaces when referencing receiver.

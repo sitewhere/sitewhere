@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -29,6 +30,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    /** Batch management persistence implementation */
+    private IBatchManagement batchManagement;
 
     public BatchOperationsTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
@@ -66,6 +70,19 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine#
+     * getBatchManagement()
+     */
+    @Override
+    public IBatchManagement getBatchManagement() {
+	return batchManagement;
+    }
+
+    public void setBatchManagement(IBatchManagement batchManagement) {
+	this.batchManagement = batchManagement;
     }
 
     /*

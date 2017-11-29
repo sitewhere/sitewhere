@@ -13,7 +13,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
 import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Engine that manages operations for a single tenant within an
@@ -21,7 +22,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IConfigurationListener {
+public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleComponent, IConfigurationListener {
 
     /**
      * Get parent microservice.
@@ -29,6 +30,13 @@ public interface IMicroserviceTenantEngine extends ITenantLifecycleComponent, IC
      * @return
      */
     public IMultitenantMicroservice<?> getMicroservice();
+
+    /**
+     * Get tenant hosted by engine.
+     * 
+     * @return
+     */
+    public ITenant getTenant();
 
     /**
      * Get tenant template.

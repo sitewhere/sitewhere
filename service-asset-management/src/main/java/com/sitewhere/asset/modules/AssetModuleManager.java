@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.asset.modules.datastore.DatastoreAssetModuleManager;
 import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class AssetModuleManager extends TenantLifecycleComponent implements IAssetModuleManager {
+public class AssetModuleManager extends TenantEngineLifecycleComponent implements IAssetModuleManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

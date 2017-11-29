@@ -22,7 +22,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetReference;
@@ -65,7 +65,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement {
+public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -96,7 +96,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
-	context.setTenant(getTenant());
+	context.setTenant(getTenantEngine().getTenant());
 	context.setClient(getClient());
 	context.setPayloadMarshaler(getPayloadMarshaler());
 

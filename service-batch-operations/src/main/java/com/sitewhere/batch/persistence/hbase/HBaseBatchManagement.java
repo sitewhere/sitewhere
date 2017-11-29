@@ -17,7 +17,7 @@ import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseBatchManagement extends TenantLifecycleComponent implements IBatchManagement {
+public class HBaseBatchManagement extends TenantEngineLifecycleComponent implements IBatchManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();

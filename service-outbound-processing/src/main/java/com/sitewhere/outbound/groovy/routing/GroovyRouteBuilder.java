@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.outbound.spi.routing.IRouteBuilder;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -28,7 +28,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyRouteBuilder extends TenantLifecycleComponent implements IRouteBuilder<String> {
+public class GroovyRouteBuilder extends TenantEngineLifecycleComponent implements IRouteBuilder<String> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

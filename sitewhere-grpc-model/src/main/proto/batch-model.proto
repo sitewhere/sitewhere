@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "BatchModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// ########################
+// ### BATCH OPERATIONS ###
+// ########################

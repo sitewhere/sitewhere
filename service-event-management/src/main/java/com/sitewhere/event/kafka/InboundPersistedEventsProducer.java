@@ -37,7 +37,7 @@ public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenant());
+	return getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenantEngine().getTenant());
     }
 
     /*

@@ -5,18 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.batch;
+package com.sitewhere.batch.spi;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for interacting with a batch operation manager.
  * 
  * @author Derek
  */
-public interface IBatchOperationManager extends ITenantLifecycleComponent {
+public interface IBatchOperationManager extends ITenantEngineLifecycleComponent {
 
     /**
      * Processes an {@link IBatchOperation}. The batch operation is processed in

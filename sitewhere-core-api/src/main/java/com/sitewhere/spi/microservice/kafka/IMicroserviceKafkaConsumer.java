@@ -12,14 +12,14 @@ import java.util.List;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Component that consumes messages that are sent to a Kafka topic.
  * 
  * @author Derek
  */
-public interface IMicroserviceKafkaConsumer extends ITenantLifecycleComponent {
+public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleComponent {
 
     /**
      * Get parent microservice.

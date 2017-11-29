@@ -12,7 +12,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -25,7 +25,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MetadataCoapParameterExtractor extends TenantLifecycleComponent
+public class MetadataCoapParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<CoapParameters> {
 
     /** Static logger instance */

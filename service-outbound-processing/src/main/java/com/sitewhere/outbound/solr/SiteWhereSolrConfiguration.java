@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -23,7 +23,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class SiteWhereSolrConfiguration extends TenantLifecycleComponent
+public class SiteWhereSolrConfiguration extends TenantEngineLifecycleComponent
 	implements IDiscoverableTenantLifecycleComponent {
 
     /** Static logger instance */

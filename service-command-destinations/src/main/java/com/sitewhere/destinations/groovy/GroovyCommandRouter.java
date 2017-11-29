@@ -15,7 +15,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -35,7 +35,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyCommandRouter extends TenantLifecycleComponent implements IOutboundCommandRouter {
+public class GroovyCommandRouter extends TenantEngineLifecycleComponent implements IOutboundCommandRouter {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

@@ -23,7 +23,7 @@ import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
@@ -49,7 +49,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MongoAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
+public class MongoAssetManagement extends TenantEngineLifecycleComponent implements IAssetManagement {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -92,9 +92,9 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getAssetCategoriesCollection(getTenant())
+	getMongoClient().getAssetCategoriesCollection(getTenantEngine().getTenant())
 		.createIndex(Indexes.ascending(MongoAssetCategory.PROP_ID), new IndexOptions().unique(true));
-	getMongoClient().getAssetsCollection(getTenant()).createIndex(Indexes
+	getMongoClient().getAssetsCollection(getTenantEngine().getTenant()).createIndex(Indexes
 		.compoundIndex(Indexes.ascending(MongoAsset.PROP_CATEGORY_ID), Indexes.ascending(MongoAsset.PROP_ID)),
 		new IndexOptions().unique(true));
     }
@@ -110,7 +110,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	// Use common logic so all backend implementations work the same.
 	AssetCategory category = AssetManagementPersistence.assetCategoryCreateLogic(request);
 
-	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	MongoCollection<Document> categories = getMongoClient()
+		.getAssetCategoriesCollection(getTenantEngine().getTenant());
 	Document created = MongoAssetCategory.toDocument(category);
 	MongoPersistence.insert(categories, created, ErrorCode.AssetCategoryIdInUse);
 
@@ -135,8 +136,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
      * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
     @Override
@@ -150,7 +150,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	Document updated = MongoAssetCategory.toDocument(category);
 
 	Document query = new Document(MongoAssetCategory.PROP_ID, categoryId);
-	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	MongoCollection<Document> categories = getMongoClient()
+		.getAssetCategoriesCollection(getTenantEngine().getTenant());
 	MongoPersistence.update(categories, query, updated);
 
 	return MongoAssetCategory.fromDocument(updated);
@@ -164,7 +165,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      */
     @Override
     public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	MongoCollection<Document> categories = getMongoClient()
+		.getAssetCategoriesCollection(getTenantEngine().getTenant());
 	Document query = new Document();
 	Document sort = new Document(MongoAssetCategory.PROP_NAME, 1).append(MongoAssetCategory.PROP_ASSET_TYPE, 1);
 	return MongoPersistence.search(IAssetCategory.class, categories, query, sort, criteria, LOOKUP);
@@ -173,14 +175,14 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
      * String)
      */
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	Document existing = assertAssetCategory(categoryId);
-	MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	MongoCollection<Document> categories = getMongoClient()
+		.getAssetCategoriesCollection(getTenantEngine().getTenant());
 	MongoPersistence.delete(categories, existing);
 
 	return MongoAssetCategory.fromDocument(existing);
@@ -189,8 +191,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
     @Override
@@ -201,7 +202,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	PersonAsset person = AssetManagementPersistence.personAssetCreateLogic(category, request);
 
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	Document created = MongoPersonAsset.toDocument(person);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
@@ -211,8 +212,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
@@ -227,7 +227,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	Document updated = MongoPersonAsset.toDocument(person);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	MongoPersistence.update(assets, query, updated);
 
 	return MongoPersonAsset.fromDocument(updated);
@@ -236,8 +236,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
     @Override
@@ -248,7 +247,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	HardwareAsset hw = AssetManagementPersistence.hardwareAssetCreateLogic(category, request);
 
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	Document created = MongoHardwareAsset.toDocument(hw);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
@@ -258,8 +257,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -274,7 +272,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	Document updated = MongoHardwareAsset.toDocument(hardware);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	MongoPersistence.update(assets, query, updated);
 
 	return MongoHardwareAsset.fromDocument(updated);
@@ -283,8 +281,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
     @Override
@@ -295,7 +292,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	IAssetCategory category = MongoAssetCategory.fromDocument(db);
 	LocationAsset loc = AssetManagementPersistence.locationAssetCreateLogic(category, request);
 
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	Document created = MongoLocationAsset.toDocument(loc);
 	MongoPersistence.insert(assets, created, ErrorCode.AssetIdInUse);
 
@@ -305,8 +302,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -321,7 +317,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
 	Document updated = MongoLocationAsset.toDocument(location);
 
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	MongoPersistence.update(assets, query, updated);
 
 	return MongoLocationAsset.fromDocument(updated);
@@ -345,14 +341,13 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
      * java.lang.String)
      */
     @Override
     public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
 	Document existing = assertAsset(categoryId, assetId);
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	MongoPersistence.delete(assets, existing);
 	return unmarshalAsset(existing);
     }
@@ -360,13 +355,12 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
     public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId);
 	Document sort = new Document(MongoAsset.PROP_NAME, 1);
 	return MongoPersistence.search(IAsset.class, assets, query, sort, criteria, LOOKUP);
@@ -381,7 +375,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      */
     protected Document getAssetCategoryDocument(String id) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> categories = getMongoClient().getAssetCategoriesCollection(getTenant());
+	    MongoCollection<Document> categories = getMongoClient()
+		    .getAssetCategoriesCollection(getTenantEngine().getTenant());
 	    Document query = new Document(MongoAssetCategory.PROP_ID, id);
 	    return categories.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -390,8 +385,8 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     }
 
     /**
-     * Return the {@link Document} for the asset category with the given id.
-     * Throws an exception if the token is not valid.
+     * Return the {@link Document} for the asset category with the given id. Throws
+     * an exception if the token is not valid.
      * 
      * @param token
      * @return
@@ -406,8 +401,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
     }
 
     /**
-     * Retirn the {@link Document} for the given asset. Returns null if not
-     * found.
+     * Retirn the {@link Document} for the given asset. Returns null if not found.
      * 
      * @param categoryId
      * @param assetId
@@ -416,7 +410,7 @@ public class MongoAssetManagement extends TenantLifecycleComponent implements IA
      */
     protected Document getAssetDocument(String categoryId, String assetId) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenant());
+	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection(getTenantEngine().getTenant());
 	    Document query = new Document(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
 	    return assets.find(query).first();
 	} catch (MongoTimeoutException e) {

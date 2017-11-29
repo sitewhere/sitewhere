@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class JsonCommandExecutionEncoder extends TenantLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
+public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

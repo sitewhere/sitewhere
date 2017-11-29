@@ -10,14 +10,14 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Decodes inbound device event messages.
  * 
  * @author Derek
  */
-public interface IDeviceEventDecoder<T> extends ITenantLifecycleComponent {
+public interface IDeviceEventDecoder<T> extends ITenantEngineLifecycleComponent {
 
     /** Metadata field used to pass device into nested decoders */
     public static final String META_DEVICE = "com.sitewhere.spi.device.communication.IDeviceEventDecoder:device";

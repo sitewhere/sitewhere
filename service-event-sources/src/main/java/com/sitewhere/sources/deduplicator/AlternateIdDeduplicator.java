@@ -10,7 +10,7 @@ package com.sitewhere.sources.deduplicator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class AlternateIdDeduplicator extends TenantLifecycleComponent implements IDeviceEventDeduplicator {
+public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent implements IDeviceEventDeduplicator {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -48,7 +48,8 @@ public class AlternateIdDeduplicator extends TenantLifecycleComponent implements
 	if (request.getRequest() instanceof IDeviceEventCreateRequest) {
 	    String alternateId = ((IDeviceEventCreateRequest) request.getRequest()).getAlternateId();
 	    if (alternateId != null) {
-		IDeviceEvent existing = getDeviceEventManagement(getTenant()).getDeviceEventByAlternateId(alternateId);
+		IDeviceEvent existing = getDeviceEventManagement(getTenantEngine().getTenant())
+			.getDeviceEventByAlternateId(alternateId);
 		if (existing != null) {
 		    LOGGER.info("Found event with same alternate id. Will be treated as duplicate.");
 		    return true;

@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
@@ -35,7 +35,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyJsonDecoder extends TenantLifecycleComponent implements IDeviceEventDecoder<JsonNode> {
+public class GroovyJsonDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<JsonNode> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

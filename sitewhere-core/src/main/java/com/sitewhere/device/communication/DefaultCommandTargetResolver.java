@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DefaultCommandTargetResolver extends TenantLifecycleComponent implements ICommandTargetResolver {
+public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent implements ICommandTargetResolver {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -48,7 +48,7 @@ public class DefaultCommandTargetResolver extends TenantLifecycleComponent imple
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	LOGGER.debug("Resolving target for invocation.");
-	IDeviceAssignment assignment = getDeviceManagement(getTenant())
+	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
 		.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);

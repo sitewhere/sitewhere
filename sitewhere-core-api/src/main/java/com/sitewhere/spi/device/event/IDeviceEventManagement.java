@@ -21,14 +21,14 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for device event management operations.
  * 
  * @author Derek
  */
-public interface IDeviceEventManagement extends ITenantLifecycleComponent {
+public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Add a batch of events for the given assignment.

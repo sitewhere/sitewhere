@@ -10,6 +10,7 @@ package com.sitewhere.batch.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.batch.BatchElement;
@@ -17,7 +18,6 @@ import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
-import com.sitewhere.spi.batch.OperationType;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
@@ -130,7 +130,7 @@ public class BatchManagementPersistence extends Persistence {
 	    String uuid) throws SiteWhereException {
 	BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
 	batch.setToken(uuid);
-	batch.setOperationType(OperationType.InvokeCommand);
+	batch.setOperationType(BatchOperationTypes.OPERATION_BATCH_COMMAND_INVOCATION);
 	batch.setHardwareIds(request.getHardwareIds());
 	batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN, request.getCommandToken());
 	Map<String, String> params = new HashMap<String, String>();

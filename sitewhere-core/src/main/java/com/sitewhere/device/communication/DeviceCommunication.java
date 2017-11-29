@@ -10,7 +10,7 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.communication.ICommandDestination;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class DeviceCommunication extends TenantLifecycleComponent implements IDeviceCommunication {
+public abstract class DeviceCommunication extends TenantEngineLifecycleComponent implements IDeviceCommunication {
 
     /** Configured device stream manager */
     private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();

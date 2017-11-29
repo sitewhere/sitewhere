@@ -103,7 +103,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
 	    factory.setUri(getConnectionUri());
 	    this.connection = factory.newConnection();
 	    this.channel = connection.createChannel();
-	    this.exchange = getTenant().getId() + DEFAULT_EXCHANGE_SUFFIX;
+	    this.exchange = getTenantEngine().getTenant().getId() + DEFAULT_EXCHANGE_SUFFIX;
 	    channel.exchangeDeclare(exchange, "topic");
 	    LOGGER.info("RabbitMQ outbound processor connected to: " + getConnectionUri());
 	} catch (Exception e) {
@@ -216,7 +216,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	IDeviceManagement dm = getDeviceManagement(getTenant());
+	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
 	IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
 	IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	if (getMulticaster() != null) {

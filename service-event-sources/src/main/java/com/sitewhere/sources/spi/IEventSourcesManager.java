@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages the list of event sources for a tenant.
  * 
  * @author Derek
  */
-public interface IEventSourcesManager extends ITenantLifecycleComponent {
+public interface IEventSourcesManager extends ITenantEngineLifecycleComponent {
 
     /**
      * Get list of inbound event sources.

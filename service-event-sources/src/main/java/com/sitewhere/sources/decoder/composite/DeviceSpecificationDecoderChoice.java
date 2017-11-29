@@ -10,7 +10,7 @@ package com.sitewhere.sources.decoder.composite;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDecoderChoice;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public class DeviceSpecificationDecoderChoice<T> extends TenantLifecycleComponent implements IDecoderChoice<T> {
+public class DeviceSpecificationDecoderChoice<T> extends TenantEngineLifecycleComponent implements IDecoderChoice<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

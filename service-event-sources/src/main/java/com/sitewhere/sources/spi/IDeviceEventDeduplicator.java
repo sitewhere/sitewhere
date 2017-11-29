@@ -8,7 +8,7 @@
 package com.sitewhere.sources.spi;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Provides support for filtering events that are duplicates of events already
@@ -16,7 +16,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * 
  * @author Derek
  */
-public interface IDeviceEventDeduplicator extends ITenantLifecycleComponent {
+public interface IDeviceEventDeduplicator extends ITenantEngineLifecycleComponent {
 
     /**
      * Detects whether the given device event is a duplicate of another event in

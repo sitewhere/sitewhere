@@ -16,7 +16,7 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
+public class HBaseAssetManagement extends TenantEngineLifecycleComponent implements IAssetManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -70,7 +70,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
-	context.setTenant(getTenant());
+	context.setTenant(getTenantEngine().getTenant());
 	context.setClient(getClient());
 	context.setPayloadMarshaler(getPayloadMarshaler());
 
@@ -127,8 +127,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
      * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
      */
     @Override
@@ -151,8 +150,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
      * String)
      */
     @Override
@@ -163,8 +161,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
     @Override
@@ -176,8 +173,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
      */
@@ -190,8 +186,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
     @Override
@@ -203,8 +198,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
      */
@@ -217,8 +211,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
      * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
     @Override
@@ -230,8 +223,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
      * String, java.lang.String,
      * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
      */
@@ -255,8 +247,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -267,8 +258,7 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
+     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override

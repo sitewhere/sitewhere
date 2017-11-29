@@ -11,7 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Builds routes of a given type.
@@ -20,7 +20,7 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  *
  * @param <T>
  */
-public interface IRouteBuilder<T> extends ITenantLifecycleComponent {
+public interface IRouteBuilder<T> extends ITenantEngineLifecycleComponent {
 
     /**
      * Build a route based on information about a device event.

@@ -19,7 +19,7 @@ import com.sitewhere.asset.modules.AssetMatcher;
 import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleComponent
+public abstract class DataStoreAssetModule<T extends IAsset> extends TenantEngineLifecycleComponent
 	implements IAssetModule<T> {
 
     /** Serial version UID */

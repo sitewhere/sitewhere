@@ -31,9 +31,9 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device
@@ -53,26 +53,22 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-     * com.sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	delegate.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	delegate.setTenantEngine(tenantEngine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
      */
     @Override
-    public ITenant getTenant() {
-	return delegate.getTenant();
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return delegate.getTenantEngine();
     }
 
     /*
@@ -115,8 +111,7 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -168,8 +163,7 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -223,8 +217,7 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * com.sitewhere.spi.device.IDeviceAssignment,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
@@ -345,8 +338,7 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse(com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
@@ -422,8 +414,7 @@ public class DeviceEventManagementDecorator extends LifecycleComponentDecorator 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */

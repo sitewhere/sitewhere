@@ -16,7 +16,7 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseScheduleManagement extends TenantLifecycleComponent implements IScheduleManagement {
+public class HBaseScheduleManagement extends TenantEngineLifecycleComponent implements IScheduleManagement {
 
     /** Static logger instance */
     private static final Logger LOGGER = LogManager.getLogger();
@@ -65,7 +65,7 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create context from configured options.
 	this.context = new HBaseContext();
-	context.setTenant(getTenant());
+	context.setTenant(getTenantEngine().getTenant());
 	context.setClient(getClient());
 	context.setPayloadMarshaler(getPayloadMarshaler());
 
@@ -158,8 +158,7 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
      * sitewhere .spi.scheduling.request.IScheduledJobCreateRequest)
      */
     @Override
@@ -184,8 +183,7 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
      * java.lang .String)
      */
     @Override
@@ -196,8 +194,7 @@ public class HBaseScheduleManagement extends TenantLifecycleComponent implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
+     * @see com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
      * sitewhere .spi.search.ISearchCriteria)
      */
     @Override

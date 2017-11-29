@@ -54,15 +54,14 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.eclipse.californium.core.server.MessageDeliverer#deliverRequest(org.
+     * @see org.eclipse.californium.core.server.MessageDeliverer#deliverRequest(org.
      * eclipse. californium.core.network.Exchange)
      */
     @Override
     public void deliverRequest(Exchange exchange) {
 	OptionSet options = exchange.getRequest().getOptions();
 	List<String> paths = options.getUriPath();
-	handleTenantRequest(getEventReceiver().getTenant(), paths, exchange);
+	handleTenantRequest(getEventReceiver().getTenantEngine().getTenant(), paths, exchange);
     }
 
     /**
