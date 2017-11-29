@@ -22,7 +22,7 @@ import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
 import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
-import com.sitewhere.spring.parser.IUserManagementParser.Elements;
+import com.sitewhere.spring.parser.IScheduleManagementParser.Elements;
 
 /**
  * Parses elements related to schedule management.

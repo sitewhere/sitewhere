@@ -48,7 +48,7 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
     /** Schedule management persistence API */
     private IScheduleManagement scheduleManagement;
 
-    /** Responds to device management GRPC requests */
+    /** Responds to schedule management GRPC requests */
     private ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl;
 
     public ScheduleManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {

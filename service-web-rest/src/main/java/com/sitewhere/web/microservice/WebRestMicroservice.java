@@ -15,6 +15,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
 import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
+import com.sitewhere.grpc.model.client.BatchManagementApiChannel;
+import com.sitewhere.grpc.model.client.BatchManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
@@ -26,6 +28,7 @@ import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IScheduleManagementApiChannel;
@@ -93,6 +96,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Asset management API channel */
     private IAssetManagementApiChannel assetManagementApiChannel;
+
+    /** Batch management GRPC channel */
+    private BatchManagementGrpcChannel batchManagementGrpcChannel;
+
+    /** Batch management API channel */
+    private IBatchManagementApiChannel batchManagementApiChannel;
 
     /** Schedule management GRPC channel */
     private ScheduleManagementGrpcChannel scheduleManagementGrpcChannel;
@@ -206,6 +215,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize asset management GRPC channel.
 	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
 
+	// Initialize batch management GRPC channel.
+	init.addInitializeStep(this, getBatchManagementGrpcChannel(), true);
+
 	// Initialize schedule management GRPC channel.
 	init.addInitializeStep(this, getScheduleManagementGrpcChannel(), true);
 
@@ -244,6 +256,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
 
+	// Batch management.
+	this.batchManagementGrpcChannel = new BatchManagementGrpcChannel(this,
+		MicroserviceEnvironment.HOST_BATCH_OPERATIONS, getInstanceSettings().getGrpcPort());
+	this.batchManagementApiChannel = new BatchManagementApiChannel(getBatchManagementGrpcChannel());
+
 	// Schedule management.
 	this.scheduleManagementGrpcChannel = new ScheduleManagementGrpcChannel(this,
 		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT, getInstanceSettings().getGrpcPort());
@@ -280,6 +297,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start asset mangement GRPC channel.
 	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
 
+	// Start batch mangement GRPC channel.
+	start.addStartStep(this, getBatchManagementGrpcChannel(), true);
+
 	// Start schedule mangement GRPC channel.
 	start.addStartStep(this, getScheduleManagementGrpcChannel(), true);
 
@@ -312,6 +332,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop asset mangement GRPC channel.
 	stop.addStopStep(this, getAssetManagementGrpcChannel());
+
+	// Stop batch mangement GRPC channel.
+	stop.addStopStep(this, getBatchManagementGrpcChannel());
 
 	// Stop schedule mangement GRPC channel.
 	stop.addStopStep(this, getScheduleManagementGrpcChannel());
@@ -395,6 +418,19 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getBatchManagementApiChannel()
+     */
+    @Override
+    public IBatchManagementApiChannel getBatchManagementApiChannel() {
+	return batchManagementApiChannel;
+    }
+
+    public void setBatchManagementApiChannel(IBatchManagementApiChannel batchManagementApiChannel) {
+	this.batchManagementApiChannel = batchManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
      * getScheduleManagementApiChannel()
      */
     @Override
@@ -458,6 +494,14 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
 	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
+    }
+
+    public BatchManagementGrpcChannel getBatchManagementGrpcChannel() {
+	return batchManagementGrpcChannel;
+    }
+
+    public void setBatchManagementGrpcChannel(BatchManagementGrpcChannel batchManagementGrpcChannel) {
+	this.batchManagementGrpcChannel = batchManagementGrpcChannel;
     }
 
     protected ScheduleManagementGrpcChannel getScheduleManagementGrpcChannel() {

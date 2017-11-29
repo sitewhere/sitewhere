@@ -8,15 +8,15 @@
 package com.sitewhere.spi.microservice.spring;
 
 /**
- * Spring bean names for schedule management configuration components.
+ * Spring bean names for batch management configuration components.
  * 
  * @author Derek
  */
-public class ScheduleManagementBeans {
+public class BatchManagementBeans {
 
-    /** Bean id for schedule management MongoDB client */
+    /** Bean id for batch management MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
-    /** Bean id for schedule management in server configuration */
-    public static final String BEAN_SCHEDULE_MANAGEMENT = "scheduleManagement";
+    /** Bean id for batch management in server configuration */
+    public static final String BEAN_BATCH_MANAGEMENT = "batchManagement";
 }

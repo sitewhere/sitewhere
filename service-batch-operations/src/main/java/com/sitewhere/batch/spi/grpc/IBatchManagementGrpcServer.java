@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.schedule.spi;
+package com.sitewhere.batch.spi.grpc;
 
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
- * Binds to a port and listens for schedule management GRPC requests.
+ * Binds to a port and listens for batch management GRPC requests.
  * 
  * @author Derek
  */
-public interface IScheduleManagementGrpcServer extends ITenantEngineLifecycleComponent {
+public interface IBatchManagementGrpcServer extends ITenantEngineLifecycleComponent {
 }

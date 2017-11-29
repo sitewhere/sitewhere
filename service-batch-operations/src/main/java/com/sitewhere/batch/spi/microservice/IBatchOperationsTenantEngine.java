@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
@@ -24,4 +25,11 @@ public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine 
      * @return
      */
     public IBatchManagement getBatchManagement();
+
+    /**
+     * Get implementation class that wraps batch management with GRPC conversions.
+     * 
+     * @return
+     */
+    public BatchManagementGrpc.BatchManagementImplBase getBatchManagementImpl();
 }

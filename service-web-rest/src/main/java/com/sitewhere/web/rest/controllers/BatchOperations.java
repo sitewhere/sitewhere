@@ -191,6 +191,6 @@ public class BatchOperations extends RestControllerBase {
     }
 
     protected IBatchManagement getBatchManagement() {
-	return null;
+	return getMicroservice().getBatchManagementApiChannel();
     }
 }

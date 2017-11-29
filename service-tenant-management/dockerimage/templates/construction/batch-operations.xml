@@ -13,6 +13,11 @@
 	<context:property-placeholder />
 
 	<!-- Batch Operations -->
-	<bop:batch-operations></bop:batch-operations>
+	<bop:batch-operations>
+
+		<!-- Use default MongoDB configuration -->
+		<sw:default-mongodb-datastore />
+
+	</bop:batch-operations>
 
 </beans>

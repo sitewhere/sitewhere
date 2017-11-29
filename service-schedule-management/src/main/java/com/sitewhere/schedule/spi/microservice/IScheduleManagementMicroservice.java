@@ -7,7 +7,7 @@
  */
 package com.sitewhere.schedule.spi.microservice;
 
-import com.sitewhere.schedule.spi.IScheduleManagementGrpcServer;
+import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**

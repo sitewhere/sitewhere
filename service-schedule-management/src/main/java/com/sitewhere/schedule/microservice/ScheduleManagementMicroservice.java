@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
-import com.sitewhere.schedule.spi.IScheduleManagementGrpcServer;
+import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
