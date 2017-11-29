@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.scheduling.ScheduledJobType;

@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.request;
+package com.sitewhere.rest.model.batch.request;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
 import com.sitewhere.spi.batch.ElementProcessingStatus;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 
 /**
  * Holds information needed to update a batch operation element.
@@ -34,11 +34,10 @@ public class BatchElementUpdateRequest implements IBatchElementUpdateRequest, Se
     private Map<String, String> metadata;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#
+     * @see com.sitewhere.spi.batch.request.IBatchElementUpdateRequest#
      * getProcessingStatus()
      */
+    @Override
     public ElementProcessingStatus getProcessingStatus() {
 	return processingStatus;
     }
@@ -48,11 +47,10 @@ public class BatchElementUpdateRequest implements IBatchElementUpdateRequest, Se
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#
-     * getProcessedDate()
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchElementUpdateRequest#getProcessedDate()
      */
+    @Override
     public Date getProcessedDate() {
 	return processedDate;
     }
@@ -62,11 +60,9 @@ public class BatchElementUpdateRequest implements IBatchElementUpdateRequest, Se
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getMetadata()
+     * @see com.sitewhere.spi.batch.request.IBatchElementUpdateRequest#getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }

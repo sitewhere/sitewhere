@@ -9,9 +9,9 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;

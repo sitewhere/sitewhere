@@ -14,7 +14,7 @@ import org.bson.Document;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
 

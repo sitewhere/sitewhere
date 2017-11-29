@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.request;
+package com.sitewhere.rest.model.batch.request;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 
 /**
  * Holds information needed to create a batch operation.
@@ -41,9 +41,7 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     private Map<String, String> metadata;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getToken()
+     * @see com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getToken()
      */
     @Override
     public String getToken() {
@@ -55,8 +53,9 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     }
 
     /*
-     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
-     * getOperationType()
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getOperationType
+     * ()
      */
     @Override
     public String getOperationType() {
@@ -68,10 +67,8 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
-     * getParameters()
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getParameters()
      */
     @Override
     public Map<String, String> getParameters() {
@@ -83,10 +80,8 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#
-     * getHardwareIds()
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getHardwareIds()
      */
     @Override
     public List<String> getHardwareIds() {
@@ -98,10 +93,8 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getMetadata ()
+     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getMetadata()
      */
     @Override
     public Map<String, String> getMetadata() {

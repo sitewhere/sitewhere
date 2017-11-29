@@ -13,7 +13,7 @@ import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 

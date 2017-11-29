@@ -22,19 +22,19 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
-import com.sitewhere.rest.model.device.batch.BatchElement;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.BatchElement;
+import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.common.IFilter;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 
 /**
  * HBase specifics for dealing with SiteWhere batch operations.
@@ -159,17 +159,15 @@ public class HBaseBatchOperation {
     }
 
     /**
-     * Get paged {@link IBatchOperation} results based on the given search
-     * criteria.
+     * Get paged {@link IBatchOperation} results based on the given search criteria.
      * 
      * @param context
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IBatchOperation> listBatchOperations(IHBaseContext context, boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException {
+    public static SearchResults<IBatchOperation> listBatchOperations(IHBaseContext context,
+	    IBatchOperationSearchCriteria criteria) throws SiteWhereException {
 	Comparator<BatchOperation> comparator = new Comparator<BatchOperation>() {
 
 	    public int compare(BatchOperation a, BatchOperation b) {
@@ -183,8 +181,8 @@ public class HBaseBatchOperation {
 		return false;
 	    }
 	};
-	return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER, includeDeleted,
-		IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
+	return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+		criteria.isIncludeDeleted(), IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
     }
 
     /**
@@ -207,8 +205,8 @@ public class HBaseBatchOperation {
     }
 
     /**
-     * Get a {@link BatchOperation} by token or throw an exception if token is
-     * not valid.
+     * Get a {@link BatchOperation} by token or throw an exception if token is not
+     * valid.
      * 
      * @param context
      * @param token
@@ -224,9 +222,8 @@ public class HBaseBatchOperation {
     }
 
     /**
-     * Get the unique device identifier based on the long value associated with
-     * the batch operation UUID. This will be a subset of the full 8-bit long
-     * value.
+     * Get the unique device identifier based on the long value associated with the
+     * batch operation UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return

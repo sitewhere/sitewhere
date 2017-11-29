@@ -54,7 +54,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Asset management GRPC channel */
+    /** Schedule management GRPC channel */
     private ScheduleManagementGrpcChannel grpcChannel;
 
     public ScheduleManagementApiChannel(ScheduleManagementGrpcChannel grpcChannel) {

@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.request;
+package com.sitewhere.rest.model.batch.request;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
 import com.sitewhere.spi.batch.BatchOperationStatus;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 
 /**
  * Holds information needed to update a batch operation.
@@ -36,6 +36,11 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
     /** Metadata values */
     private Map<String, String> metadata;
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#
+     * getProcessingStatus()
+     */
+    @Override
     public BatchOperationStatus getProcessingStatus() {
 	return processingStatus;
     }
@@ -44,6 +49,11 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
 	this.processingStatus = processingStatus;
     }
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#
+     * getProcessingStartedDate()
+     */
+    @Override
     public Date getProcessingStartedDate() {
 	return processingStartedDate;
     }
@@ -52,6 +62,11 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
 	this.processingStartedDate = processingStartedDate;
     }
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#
+     * getProcessingEndedDate()
+     */
+    @Override
     public Date getProcessingEndedDate() {
 	return processingEndedDate;
     }
@@ -60,6 +75,11 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
 	this.processingEndedDate = processingEndedDate;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#getMetadata()
+     */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }

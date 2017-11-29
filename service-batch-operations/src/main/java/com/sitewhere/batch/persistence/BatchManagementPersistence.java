@@ -12,16 +12,16 @@ import java.util.Map;
 
 import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.persistence.Persistence;
+import com.sitewhere.rest.model.batch.BatchElement;
+import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.common.MetadataProvider;
-import com.sitewhere.rest.model.device.batch.BatchElement;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
-import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 
 /**
  * Common methods needed by batch management implementations.

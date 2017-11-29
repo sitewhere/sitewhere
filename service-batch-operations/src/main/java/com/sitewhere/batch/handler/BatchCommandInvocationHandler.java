@@ -24,15 +24,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 
 /**
  * Operation handler for batch command invocations.

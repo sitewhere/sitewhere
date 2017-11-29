@@ -20,8 +20,8 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 
 import com.sitewhere.device.batch.BatchUtils;
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
-import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
+import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchManagement;

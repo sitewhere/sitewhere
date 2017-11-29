@@ -20,8 +20,8 @@ import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.device.batch.BatchElement;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.BatchElement;
+import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -29,14 +29,14 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -137,17 +137,16 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#listBatchOperations(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#listBatchOperations(com.sitewhere.
+     * spi.search.batch.IBatchOperationSearchCriteria)
      */
     @Override
-    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+    public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenantEngine().getTenant());
 	Document dbCriteria = new Document();
-	if (!includeDeleted) {
+	if (!criteria.isIncludeDeleted()) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	}
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);

@@ -10,7 +10,7 @@ package com.sitewhere.schedule;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.spi.scheduling.JobConstants;
 
 public class BatchCommandInvocationJobParser {

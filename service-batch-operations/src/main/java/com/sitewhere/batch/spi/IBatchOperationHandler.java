@@ -11,7 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**

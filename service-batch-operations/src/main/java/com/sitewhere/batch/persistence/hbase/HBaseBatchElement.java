@@ -29,12 +29,12 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.DeleteRecord;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**

@@ -22,12 +22,12 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -68,8 +68,7 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.batch.IBatchManagement#updateBatchOperation(java.lang.
+     * @see com.sitewhere.spi.batch.IBatchManagement#updateBatchOperation(java.lang.
      * String, com.sitewhere.spi.device.request.IBatchOperationUpdateRequest)
      */
     @Override
@@ -81,8 +80,7 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.batch.IBatchManagement#getBatchOperation(java.lang.
+     * @see com.sitewhere.spi.batch.IBatchManagement#getBatchOperation(java.lang.
      * String)
      */
     @Override
@@ -91,23 +89,20 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#listBatchOperations(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * com.sitewhere.spi.batch.IBatchManagement#listBatchOperations(com.sitewhere.
+     * spi.search.batch.IBatchOperationSearchCriteria)
      */
     @Override
-    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+    public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseBatchOperation.listBatchOperations(context, includeDeleted, criteria);
+	return HBaseBatchOperation.listBatchOperations(context, criteria);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.lang.
+     * @see com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.lang.
      * String, boolean)
      */
     @Override
@@ -118,8 +113,7 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.lang.
+     * @see com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.lang.
      * String, com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
      */
     @Override
@@ -131,10 +125,8 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.lang.
-     * String, long,
-     * com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
+     * @see com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.lang.
+     * String, long, com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
      */
     @Override
     public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)

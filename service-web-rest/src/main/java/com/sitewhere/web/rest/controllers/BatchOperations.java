@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.batch.BatchUtils;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
-import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
-import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
+import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -84,8 +84,9 @@ public class BatchOperations extends RestControllerBase {
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IBatchOperation> results = getBatchManagement().listBatchOperations(includeDeleted, criteria);
+	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
+	criteria.setIncludeDeleted(includeDeleted);
+	ISearchResults<IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
 	List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
 	for (IBatchOperation op : results.getResults()) {
 	    opsConv.add(BatchOperation.copy(op));

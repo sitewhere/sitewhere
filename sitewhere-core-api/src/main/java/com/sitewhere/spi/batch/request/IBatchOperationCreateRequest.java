@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.request;
+package com.sitewhere.spi.batch.request;
 
 import java.util.List;
 import java.util.Map;

@@ -8,12 +8,12 @@
 package com.sitewhere.spi.batch;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -57,12 +57,11 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
     /**
      * List batch operations based on the given criteria.
      * 
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+    public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException;
 
     /**
@@ -76,8 +75,7 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
     public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException;
 
     /**
-     * Lists elements for an {@link IBatchOperation} that meet the given
-     * criteria.
+     * Lists elements for an {@link IBatchOperation} that meet the given criteria.
      * 
      * @param batchToken
      * @param criteria

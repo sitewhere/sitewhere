@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.batch;
+package com.sitewhere.rest.model.batch;
 
 import java.io.Serializable;
 import java.util.Date;
