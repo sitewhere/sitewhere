@@ -14,6 +14,9 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
+import com.sitewhere.spi.microservice.state.IMicroserviceState;
+import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -47,6 +50,29 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
     public String getIdentifier();
 
     /**
+     * Get assigned hostname.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getHostname() throws SiteWhereException;
+
+    /**
+     * Get current state for microservice.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IMicroserviceState getCurrentState() throws SiteWhereException;
+
+    /**
+     * Called when state of managed tenant engine is updated.
+     * 
+     * @param state
+     */
+    public void onTenantEngineStateChanged(ITenantEngineState state);
+
+    /**
      * Get settings for SiteWhere instance.
      * 
      * @return
@@ -73,6 +99,14 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public IKafkaTopicNaming getKafkaTopicNaming();
+
+    /**
+     * Get Kafka producer for reporting state updates in microservice and managed
+     * tenant engines.
+     * 
+     * @return
+     */
+    public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
 
     /**
      * Code executed after microservice has been started.

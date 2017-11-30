@@ -46,6 +46,13 @@ public interface IKafkaTopicNaming {
     public String getTenantUpdatesTopic();
 
     /**
+     * Get topic name for tracking microservice state updates.
+     * 
+     * @return
+     */
+    public String getMicroserviceStateUpdatesTopic();
+
+    /**
      * Get name for topic that contains events that have been decoded from inbound
      * event sources.
      * 

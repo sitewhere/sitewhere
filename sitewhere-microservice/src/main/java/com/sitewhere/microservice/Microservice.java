@@ -7,9 +7,17 @@
  */
 package com.sitewhere.microservice;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
+import com.sitewhere.grpc.model.converter.KafkaModelConverter;
+import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
@@ -21,8 +29,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
+import com.sitewhere.spi.microservice.state.IMicroserviceState;
+import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.system.IVersion;
 
 import io.opentracing.ActiveSpan;
@@ -72,6 +84,13 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Version information */
     private IVersion version = new Version();
 
+    /** Kafka producer for microservice state updates */
+    private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
+
+    public Microservice() {
+	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -88,6 +107,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Initialize Apache Ignite manager.
 	initialize.addInitializeStep(this, getIgniteManager(), true);
+
+	// Initialize Kafka producer for reporting state.
+	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -106,6 +128,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Start Apache Ignite manager.
 	start.addStartStep(this, getIgniteManager(), true);
 
+	// Start Kafka producer for reporting state.
+	start.addStartStep(this, getStateUpdatesKafkaProducer(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -117,6 +142,23 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void afterMicroserviceStarted() {
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop Kafka producer for reporting state.
+	start.addStopStep(this, getStateUpdatesKafkaProducer());
+
+	// Execute shutdown steps.
+	start.execute(monitor);
     }
 
     /*
@@ -160,6 +202,69 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getHostname()
+     */
+    @Override
+    public String getHostname() throws SiteWhereException {
+	try {
+	    InetAddress local = InetAddress.getLocalHost();
+	    return local.getHostName();
+	} catch (UnknownHostException e) {
+	    throw new SiteWhereException("Unable to find hostname.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getCurrentState()
+     */
+    @Override
+    public IMicroserviceState getCurrentState() throws SiteWhereException {
+	MicroserviceState state = new MicroserviceState();
+	state.setMicroserviceIdentifier(getIdentifier());
+	state.setMicroserviceHostname(getHostname());
+	state.setLifecycleStatus(getLifecycleStatus());
+	return state;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#setLifecycleStatus(com.
+     * sitewhere.spi.server.lifecycle.LifecycleStatus)
+     */
+    @Override
+    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+	super.setLifecycleStatus(lifecycleStatus);
+	try {
+	    IMicroserviceState state = getCurrentState();
+	    GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
+	    byte[] payload = KafkaModelMarshaler.buildStateUpdatePayloadMessage(update);
+	    if (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started) {
+		getStateUpdatesKafkaProducer().send(state.getMicroserviceIdentifier(), payload);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to report microservice state.", e);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#onTenantEngineStateChanged(com.
+     * sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void onTenantEngineStateChanged(ITenantEngineState state) {
+	try {
+	    GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
+	    byte[] payload = KafkaModelMarshaler.buildStateUpdatePayloadMessage(update);
+	    if (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started) {
+		getStateUpdatesKafkaProducer().send(state.getMicroserviceIdentifier(), payload);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to report tenant engine state.", e);
 	}
     }
 
@@ -251,6 +356,19 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
 	this.kafkaTopicNaming = kafkaTopicNaming;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getStateUpdatesKafkaProducer()
+     */
+    @Override
+    public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer() {
+	return stateUpdatesKafkaProducer;
+    }
+
+    public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
+	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
     }
 
     /*

@@ -49,3 +49,45 @@ message GEnrichedEventPayload {
 	com.sitewhere.grpc.model.GDeviceEventContext context = 1;
 	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
 }
+
+// ########################
+// ### STATE MANAGEMENT ###
+// ########################
+
+// Lifecycle status.
+enum GLifecycleStatus {
+	LIFECYCLE_STATUS_INITIALIZING = 0;
+	LIFECYCLE_STATUS_INITIALIZATION_ERROR = 1;
+	LIFECYCLE_STATUS_STOPPED = 2;
+	LIFECYCLE_STATUS_STARTING = 3;
+	LIFECYCLE_STATUS_STARTED = 4;
+	LIFECYCLE_STATUS_PAUSING = 5;
+	LIFECYCLE_STATUS_PAUSED = 6;
+	LIFECYCLE_STATUS_STOPPING = 7;
+	LIFECYCLE_STATUS_TERMINATING = 8;
+	LIFECYCLE_STATUS_TERMINATED = 9;
+	LIFECYCLE_STATUS_ERROR = 10;
+}
+
+// Microservice state.
+message GMicroserviceState {
+	string microserviceIdentifier = 1;
+	string microserviceHostname = 2;
+	GLifecycleStatus status = 4;
+}
+
+// Tenant engine state.
+message GTenantEngineState {
+	string microserviceIdentifier = 1;
+	string microserviceHostname = 2;
+	string tenantId = 3;
+	GLifecycleStatus status = 4;
+}
+
+// Wrapper for state update types.
+message GStateUpdate {
+	oneof state {
+		GMicroserviceState microserviceState = 1;
+		GTenantEngineState tenantEngineState = 2;
+	}
+}

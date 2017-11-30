@@ -18,6 +18,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
@@ -186,6 +187,25 @@ public class KafkaModelMarshaler {
 	    return GEnrichedEventPayload.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse enriched event payload message.", e);
+	}
+    }
+
+    /**
+     * Build binary message for GRPC state update.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildStateUpdatePayloadMessage(GStateUpdate grpc) throws SiteWhereException {
+	ByteArrayOutputStream output = new ByteArrayOutputStream();
+	try {
+	    grpc.writeTo(output);
+	    return output.toByteArray();
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to build state update message.", e);
+	} finally {
+	    closeQuietly(output);
 	}
     }
 

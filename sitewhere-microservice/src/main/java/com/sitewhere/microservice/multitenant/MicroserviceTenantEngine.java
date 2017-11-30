@@ -13,12 +13,15 @@ import org.springframework.context.ApplicationContext;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.TenantEngineScriptSynchronizer;
+import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -128,6 +131,35 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#setLifecycleStatus(com.
+     * sitewhere.spi.server.lifecycle.LifecycleStatus)
+     */
+    @Override
+    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+	super.setLifecycleStatus(lifecycleStatus);
+	try {
+	    getMicroservice().onTenantEngineStateChanged(getCurrentState());
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to calculate current state.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getCurrentState()
+     */
+    @Override
+    public ITenantEngineState getCurrentState() throws SiteWhereException {
+	TenantEngineState state = new TenantEngineState();
+	state.setMicroserviceIdentifier(getMicroservice().getIdentifier());
+	state.setMicroserviceHostname(getMicroservice().getHostname());
+	state.setLifecycleStatus(getLifecycleStatus());
+	state.setTenantId(getTenant().getId());
+	return state;
     }
 
     /*

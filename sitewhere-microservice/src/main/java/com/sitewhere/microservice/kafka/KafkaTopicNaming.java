@@ -32,6 +32,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Tenant topic indicator */
     protected static final String TENANT_INDICATOR = "tenant";
 
+    /** Topic suffix for microservice state updates */
+    protected static final String MICROSERVICE_STATE_UPDATES_SUFFIX = "microservice-state-updates";
+
     /** Topic suffix for tenant model updates */
     protected static final String TENANT_MODEL_UPDATES_SUFFIX = "tenant-model-updates";
 
@@ -82,6 +85,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getTenantPrefix(ITenant tenant) {
 	return getInstancePrefix() + SEPARATOR + TENANT_INDICATOR + SEPARATOR + tenant.getId() + SEPARATOR;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getMicroserviceStateUpdatesTopic()
+     */
+    @Override
+    public String getMicroserviceStateUpdatesTopic() {
+	return getGlobalPrefix() + MICROSERVICE_STATE_UPDATES_SUFFIX;
     }
 
     /*
