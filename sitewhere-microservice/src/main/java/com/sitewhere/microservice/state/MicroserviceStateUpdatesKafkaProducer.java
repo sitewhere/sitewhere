@@ -10,10 +10,16 @@ package com.sitewhere.microservice.state;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
+import com.sitewhere.grpc.model.converter.KafkaModelConverter;
+import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Kafka producer for state updates in microservices and their managed tenant
@@ -29,6 +35,38 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 
     public MicroserviceStateUpdatesKafkaProducer(IMicroservice microservice) {
 	super(microservice);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer#
+     * send(com.sitewhere.spi.microservice.state.IMicroserviceState)
+     */
+    @Override
+    public void send(IMicroserviceState state) throws SiteWhereException {
+	GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
+	byte[] payload = KafkaModelMarshaler.buildStateUpdateMessage(update);
+	if (getLifecycleStatus() == LifecycleStatus.Started) {
+	    send(state.getMicroserviceIdentifier(), payload);
+	} else {
+	    getLogger().debug("Skipping microservice state update. Kafka producer not started.");
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer#
+     * send(com.sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void send(ITenantEngineState state) throws SiteWhereException {
+	GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
+	byte[] payload = KafkaModelMarshaler.buildStateUpdateMessage(update);
+	if (getLifecycleStatus() == LifecycleStatus.Started) {
+	    send(state.getMicroserviceIdentifier(), payload);
+	} else {
+	    getLogger().debug("Skipping tenant engine state update. Kafka producer not started.");
+	}
     }
 
     /*

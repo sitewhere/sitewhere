@@ -9,6 +9,8 @@ package com.sitewhere.grpc.model.converter;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdate;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdateType;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleStatus;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceState;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
@@ -18,14 +20,17 @@ import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
+import com.sitewhere.rest.model.microservice.state.InstanceTopologyUpdate;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.microservice.state.InstanceTopologyUpdateType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -285,6 +290,80 @@ public class KafkaModelConverter {
     public static GStateUpdate asGrpcGenericStateUpdate(ITenantEngineState api) throws SiteWhereException {
 	GStateUpdate.Builder grpc = GStateUpdate.newBuilder();
 	grpc.setTenantEngineState(KafkaModelConverter.asGrpcTenantEngineState(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert instance topology update type from API to GRPC.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static InstanceTopologyUpdateType asApiInstanceTopologyUpdateType(GInstanceTopologyUpdateType grpc)
+	    throws SiteWhereException {
+	switch (grpc) {
+	case TOPOLOGY_MICROSERVICE_STARTED:
+	    return InstanceTopologyUpdateType.MicroserviceStarted;
+	case TOPOLOGY_MICROSERVICE_STOPPED:
+	    return InstanceTopologyUpdateType.MicroserviceStopped;
+	case TOPOLOGY_MICROSERVICE_UNRESPONSIVE:
+	    return InstanceTopologyUpdateType.MicroserviceUnresponsive;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown instance topology update type: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert instance topology update type from GRPC to API.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GInstanceTopologyUpdateType asGrpcLifecycleStatus(InstanceTopologyUpdateType api)
+	    throws SiteWhereException {
+	switch (api) {
+	case MicroserviceStarted:
+	    return GInstanceTopologyUpdateType.TOPOLOGY_MICROSERVICE_STARTED;
+	case MicroserviceStopped:
+	    return GInstanceTopologyUpdateType.TOPOLOGY_MICROSERVICE_STOPPED;
+	case MicroserviceUnresponsive:
+	    return GInstanceTopologyUpdateType.TOPOLOGY_MICROSERVICE_UNRESPONSIVE;
+	}
+	throw new SiteWhereException("Unknown instance topology update type: " + api.name());
+    }
+
+    /**
+     * Convert instance topology update from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static InstanceTopologyUpdate asApiInstanceTopologyUpdate(GInstanceTopologyUpdate grpc)
+	    throws SiteWhereException {
+	InstanceTopologyUpdate api = new InstanceTopologyUpdate();
+	api.setMicroserviceIdentifier(grpc.getMicroserviceIdentifier());
+	api.setMicroserviceHostname(grpc.getMicroserviceHostname());
+	api.setType(KafkaModelConverter.asApiInstanceTopologyUpdateType(grpc.getType()));
+	return api;
+    }
+
+    /**
+     * Convert instance topology update from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GInstanceTopologyUpdate asGrpcTenantEngineState(IInstanceTopologyUpdate api)
+	    throws SiteWhereException {
+	GInstanceTopologyUpdate.Builder grpc = GInstanceTopologyUpdate.newBuilder();
+	grpc.setMicroserviceIdentifier(api.getMicroserviceIdentifier());
+	grpc.setMicroserviceHostname(api.getMicroserviceHostname());
+	grpc.setType(KafkaModelConverter.asGrpcLifecycleStatus(api.getType()));
 	return grpc.build();
     }
 }

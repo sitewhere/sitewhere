@@ -13,9 +13,6 @@ import java.net.UnknownHostException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -240,11 +237,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	super.setLifecycleStatus(lifecycleStatus);
 	try {
 	    IMicroserviceState state = getCurrentState();
-	    GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
-	    byte[] payload = KafkaModelMarshaler.buildStateUpdatePayloadMessage(update);
-	    if (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started) {
-		getStateUpdatesKafkaProducer().send(state.getMicroserviceIdentifier(), payload);
-	    }
+	    getStateUpdatesKafkaProducer().send(state);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to report microservice state.", e);
 	}
@@ -258,11 +251,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public void onTenantEngineStateChanged(ITenantEngineState state) {
 	try {
-	    GStateUpdate update = KafkaModelConverter.asGrpcGenericStateUpdate(state);
-	    byte[] payload = KafkaModelMarshaler.buildStateUpdatePayloadMessage(update);
-	    if (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started) {
-		getStateUpdatesKafkaProducer().send(state.getMicroserviceIdentifier(), payload);
-	    }
+	    getStateUpdatesKafkaProducer().send(state);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to report tenant engine state.", e);
 	}

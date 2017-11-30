@@ -35,6 +35,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for microservice state updates */
     protected static final String MICROSERVICE_STATE_UPDATES_SUFFIX = "microservice-state-updates";
 
+    /** Topic suffix for instance topology updates */
+    protected static final String INSTANCE_TOPOLOGY_UPDATES_SUFFIX = "instance-topology-updates";
+
     /** Topic suffix for tenant model updates */
     protected static final String TENANT_MODEL_UPDATES_SUFFIX = "tenant-model-updates";
 
@@ -94,6 +97,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getMicroserviceStateUpdatesTopic() {
 	return getGlobalPrefix() + MICROSERVICE_STATE_UPDATES_SUFFIX;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getInstanceTopologyUpdatesTopic()
+     */
+    @Override
+    public String getInstanceTopologyUpdatesTopic() {
+	return getGlobalPrefix() + INSTANCE_TOPOLOGY_UPDATES_SUFFIX;
     }
 
     /*

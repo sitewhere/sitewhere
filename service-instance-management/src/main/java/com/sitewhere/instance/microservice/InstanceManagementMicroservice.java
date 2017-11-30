@@ -34,11 +34,13 @@ import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
+import com.sitewhere.microservice.state.InstanceTopologyUpdatesKafkaProducer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -55,9 +57,6 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
-
-    /** Microservice identifier */
-    private static final String IDENTIFIER = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT;
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -77,6 +76,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** State aggregator Kafka consumer */
     private IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer;
 
+    /** Instance topology updates Kafka producer */
+    private IInstanceTopologyUpdatesKafkaProducer instanceTopologyUpdatesKafkaProducer;
+
     /*
      * (non-Javadoc)
      * 
@@ -94,7 +96,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      */
     @Override
     public String getIdentifier() {
-	return IDENTIFIER;
+	return IMicroserviceIdentifiers.INSTANCE_MANAGEMENT;
     }
 
     /*
@@ -112,6 +114,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
 	// Create state aggregator.
 	this.stateAggregatorKafkaConsumer = new StateAggregatorKafkaConsumer(this);
+
+	// Create topology updates producer.
+	this.instanceTopologyUpdatesKafkaProducer = new InstanceTopologyUpdatesKafkaProducer(this);
     }
 
     /**
@@ -165,6 +170,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	// Start state aggregator consumer.
 	start.addStartStep(this, getStateAggregatorKafkaConsumer(), true);
 
+	// Initialize instance topology updates producer.
+	start.addInitializeStep(this, getInstanceTopologyUpdatesKafkaProducer(), true);
+
+	// Start instance topology updates producer.
+	start.addStartStep(this, getInstanceTopologyUpdatesKafkaProducer(), true);
+
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
 
@@ -183,6 +194,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop instance topology updates producer.
+	stop.addStopStep(this, getInstanceTopologyUpdatesKafkaProducer());
 
 	// Stop state aggregator consumer.
 	stop.addStopStep(this, getStateAggregatorKafkaConsumer());
@@ -437,6 +451,20 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     public void setStateAggregatorKafkaConsumer(IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer) {
 	this.stateAggregatorKafkaConsumer = stateAggregatorKafkaConsumer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getInstanceTopologyUpdatesKafkaProducer()
+     */
+    @Override
+    public IInstanceTopologyUpdatesKafkaProducer getInstanceTopologyUpdatesKafkaProducer() {
+	return instanceTopologyUpdatesKafkaProducer;
+    }
+
+    public void setInstanceTopologyUpdatesKafkaProducer(
+	    IInstanceTopologyUpdatesKafkaProducer instanceTopologyUpdatesKafkaProducer) {
+	this.instanceTopologyUpdatesKafkaProducer = instanceTopologyUpdatesKafkaProducer;
     }
 
     public UserManagementGrpcChannel getUserManagementGrpcChannel() {

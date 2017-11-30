@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
@@ -197,7 +198,7 @@ public class KafkaModelMarshaler {
      * @return
      * @throws SiteWhereException
      */
-    public static byte[] buildStateUpdatePayloadMessage(GStateUpdate grpc) throws SiteWhereException {
+    public static byte[] buildStateUpdateMessage(GStateUpdate grpc) throws SiteWhereException {
 	ByteArrayOutputStream output = new ByteArrayOutputStream();
 	try {
 	    grpc.writeTo(output);
@@ -219,6 +220,40 @@ public class KafkaModelMarshaler {
     public static GStateUpdate parseStateUpdateMessage(byte[] payload) throws SiteWhereException {
 	try {
 	    return GStateUpdate.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse state update message.", e);
+	}
+    }
+
+    /**
+     * Build binary message for GRPC instance topology update.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildInstanceTopologyUpdateMessage(GInstanceTopologyUpdate grpc) throws SiteWhereException {
+	ByteArrayOutputStream output = new ByteArrayOutputStream();
+	try {
+	    grpc.writeTo(output);
+	    return output.toByteArray();
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to build instance topology update message.", e);
+	} finally {
+	    closeQuietly(output);
+	}
+    }
+
+    /**
+     * Parse message that reflects an instance topology update.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GInstanceTopologyUpdate parseInstanceTopologyUpdateMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GInstanceTopologyUpdate.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse state update message.", e);
 	}
