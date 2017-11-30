@@ -10,6 +10,7 @@ package com.sitewhere.schedule.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
@@ -35,9 +36,6 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     /** Microservice name */
     private static final String NAME = "Schedule Management";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "schedule-management";
-
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
 
@@ -54,7 +52,7 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.SCHEDULE_MANAGEMENT;
     }
 
     /*

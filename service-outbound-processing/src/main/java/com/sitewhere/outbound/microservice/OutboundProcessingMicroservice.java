@@ -17,6 +17,7 @@ import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingMicroservice;
@@ -40,9 +41,6 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
 
     /** Microservice name */
     private static final String NAME = "Outbound Processing";
-
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "outbound-processing";
 
     /** Device management GRPC channel */
     private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
@@ -69,7 +67,7 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.OUTBOUND_PROCESSING;
     }
 
     /*

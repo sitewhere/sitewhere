@@ -14,6 +14,7 @@ import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,9 +36,6 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     /** Microservice name */
     private static final String NAME = "Asset Management";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "asset-management";
-
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
@@ -58,7 +56,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.ASSET_MANAGEMENT;
     }
 
     /*

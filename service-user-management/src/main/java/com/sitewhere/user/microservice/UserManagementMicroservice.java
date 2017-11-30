@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.spring.UserManagementBeans;
@@ -37,11 +38,8 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     /** Microservice name */
     private static final String NAME = "User Management";
 
-    /** Microservice identifier */
-    private static final String IDENTIFIER = "user-management";
-
     /** User management configuration file name */
-    private static final String USER_MANAGEMENT_CONFIGURATION = IDENTIFIER + ".xml";
+    private static final String USER_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { USER_MANAGEMENT_CONFIGURATION };
@@ -69,15 +67,14 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
      */
     @Override
     public String getIdentifier() {
-	return IDENTIFIER;
+	return IMicroserviceIdentifiers.USER_MANAGEMENT;
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths(
-     * )
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
      */
     @Override
     public String[] getConfigurationPaths() throws SiteWhereException {
@@ -88,8 +85,8 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context.
-     * ApplicationContext, java.util.Map)
+     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
+     * java.util.Map)
      */
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
@@ -152,8 +149,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
+     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override

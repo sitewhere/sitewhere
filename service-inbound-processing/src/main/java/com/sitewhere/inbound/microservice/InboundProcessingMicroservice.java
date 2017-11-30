@@ -18,6 +18,7 @@ import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -40,9 +41,6 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 
     /** Microservice name */
     private static final String NAME = "Inbound Processing";
-
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "inbound-processing";
 
     /** Device management GRPC channel */
     private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
@@ -69,7 +67,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.INBOUND_PROCESSING;
     }
 
     /*

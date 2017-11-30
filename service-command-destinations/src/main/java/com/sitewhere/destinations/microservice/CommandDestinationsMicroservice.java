@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsMicroservice;
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsTenantEngine;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -30,9 +31,6 @@ public class CommandDestinationsMicroservice extends MultitenantMicroservice<ICo
     /** Microservice name */
     private static final String NAME = "Command Destinations";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "command-destinations";
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -46,7 +44,7 @@ public class CommandDestinationsMicroservice extends MultitenantMicroservice<ICo
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.COMMAND_DESTINATIONS;
     }
 
     /*

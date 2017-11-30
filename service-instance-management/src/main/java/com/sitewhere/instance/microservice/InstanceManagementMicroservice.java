@@ -29,6 +29,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -56,7 +57,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     private static final String NAME = "Instance Management";
 
     /** Microservice identifier */
-    private static final String IDENTIFIER = "instance-management";
+    private static final String IDENTIFIER = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT;
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();

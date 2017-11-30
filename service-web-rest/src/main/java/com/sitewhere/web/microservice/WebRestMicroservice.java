@@ -35,6 +35,7 @@ import com.sitewhere.grpc.model.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.rest.model.asset.AssetResolver;
@@ -58,11 +59,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** Microservice name */
     private static final String NAME = "Web/REST";
 
-    /** Microservice identifier */
-    private static final String IDENTIFIER = "web-rest";
-
     /** Web/REST configuration file name */
-    private static final String WEB_REST_CONFIGURATION = IDENTIFIER + ".xml";
+    private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { WEB_REST_CONFIGURATION };
@@ -129,7 +127,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     @Override
     public String getIdentifier() {
-	return IDENTIFIER;
+	return IMicroserviceIdentifiers.WEB_REST;
     }
 
     /*

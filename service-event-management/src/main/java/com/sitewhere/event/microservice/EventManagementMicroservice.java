@@ -14,6 +14,7 @@ import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,9 +36,6 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     /** Microservice name */
     private static final String NAME = "Event Management";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "event-management";
-
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
 
@@ -58,7 +56,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.EVENT_MANAGEMENT;
     }
 
     /*

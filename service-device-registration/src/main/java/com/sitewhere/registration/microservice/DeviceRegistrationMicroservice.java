@@ -10,6 +10,7 @@ package com.sitewhere.registration.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
@@ -30,9 +31,6 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     /** Microservice name */
     private static final String NAME = "Device Registration";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "device-registration";
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -46,7 +44,7 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.DEVICE_REGISTRATION;
     }
 
     /*

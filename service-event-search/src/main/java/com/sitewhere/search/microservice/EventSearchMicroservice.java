@@ -10,6 +10,7 @@ package com.sitewhere.search.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
@@ -30,9 +31,6 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     /** Microservice name */
     private static final String NAME = "Event Search";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "event-search";
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -46,7 +44,7 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.EVENT_SEARCH;
     }
 
     /*

@@ -10,6 +10,7 @@ package com.sitewhere.rules.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
@@ -30,9 +31,6 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
     /** Microservice name */
     private static final String NAME = "Rule Processing";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "rule-processing";
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -46,7 +44,7 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.RULE_PROCESSING;
     }
 
     /*

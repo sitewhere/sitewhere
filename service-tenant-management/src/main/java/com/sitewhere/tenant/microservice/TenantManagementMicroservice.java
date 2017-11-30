@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
@@ -46,11 +47,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /** Microservice name */
     private static final String NAME = "Tenant Management";
 
-    /** Microservice identifier */
-    private static final String IDENTIFIER = "tenant-management";
-
     /** Tenant management configuration file name */
-    private static final String TENANT_MANAGEMENT_CONFIGURATION = IDENTIFIER + ".xml";
+    private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
 
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { TENANT_MANAGEMENT_CONFIGURATION };
@@ -91,15 +89,14 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
      */
     @Override
     public String getIdentifier() {
-	return IDENTIFIER;
+	return IMicroserviceIdentifiers.TENANT_MANAGEMENT;
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths(
-     * )
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
      */
     @Override
     public String[] getConfigurationPaths() throws SiteWhereException {
@@ -110,8 +107,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context.
-     * ApplicationContext, java.util.Map)
+     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
+     * java.util.Map)
      */
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
@@ -212,8 +209,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
+     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override

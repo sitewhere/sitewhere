@@ -20,6 +20,7 @@ import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -42,9 +43,6 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 
     /** Microservice name */
     private static final String NAME = "Batch Operations";
-
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "batch-operations";
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
@@ -74,7 +72,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.BATCH_OPERATIONS;
     }
 
     /*

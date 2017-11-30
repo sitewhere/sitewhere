@@ -10,6 +10,7 @@ package com.sitewhere.presence.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementMicroservice;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementTenantEngine;
@@ -30,9 +31,6 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     /** Microservice name */
     private static final String NAME = "Presence Management";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "presence-management";
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -46,7 +44,7 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.PRESENCE_MANAGEMENT;
     }
 
     /*

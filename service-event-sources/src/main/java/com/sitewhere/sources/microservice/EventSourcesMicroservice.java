@@ -10,6 +10,7 @@ package com.sitewhere.sources.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
@@ -31,9 +32,6 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     /** Microservice name */
     private static final String NAME = "Event Sources";
 
-    /** Identifies module resources such as configuration file */
-    private static final String MODULE_IDENTIFIER = "event-sources";
-
     /*
      * (non-Javadoc)
      * 
@@ -51,7 +49,7 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
      */
     @Override
     public String getIdentifier() {
-	return MODULE_IDENTIFIER;
+	return IMicroserviceIdentifiers.EVENT_SOURCES;
     }
 
     /*
