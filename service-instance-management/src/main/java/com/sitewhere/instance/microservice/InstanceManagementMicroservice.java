@@ -23,6 +23,8 @@ import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
+import com.sitewhere.instance.kafka.StateAggregatorKafkaConsumer;
+import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
@@ -71,6 +73,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
 
+    /** State aggregator Kafka consumer */
+    private IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer;
+
     /*
      * (non-Javadoc)
      * 
@@ -103,6 +108,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
 	// Create GRPC components.
 	createGrpcComponents();
+
+	// Create state aggregator.
+	this.stateAggregatorKafkaConsumer = new StateAggregatorKafkaConsumer(this);
     }
 
     /**
@@ -150,6 +158,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	// Start tenant mangement GRPC channel.
 	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
 
+	// Initialize state aggregator consumer.
+	start.addInitializeStep(this, getStateAggregatorKafkaConsumer(), true);
+
+	// Start state aggregator consumer.
+	start.addStartStep(this, getStateAggregatorKafkaConsumer(), true);
+
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
 
@@ -168,6 +182,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop state aggregator consumer.
+	stop.addStopStep(this, getStateAggregatorKafkaConsumer());
 
 	// Stop tenant management GRPC channel.
 	stop.addStopStep(this, getTenantManagementGrpcChannel());
@@ -406,6 +423,19 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
 	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getStateAggregatorKafkaConsumer()
+     */
+    @Override
+    public IStateAggregatorKafkaConsumer getStateAggregatorKafkaConsumer() {
+	return stateAggregatorKafkaConsumer;
+    }
+
+    public void setStateAggregatorKafkaConsumer(IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer) {
+	this.stateAggregatorKafkaConsumer = stateAggregatorKafkaConsumer;
     }
 
     public UserManagementGrpcChannel getUserManagementGrpcChannel() {

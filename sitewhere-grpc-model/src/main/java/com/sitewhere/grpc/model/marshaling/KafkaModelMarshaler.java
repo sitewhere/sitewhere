@@ -209,6 +209,21 @@ public class KafkaModelMarshaler {
 	}
     }
 
+    /**
+     * Parse message that reflects a microservice state update.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GStateUpdate parseStateUpdateMessage(byte[] payload) throws SiteWhereException {
+	try {
+	    return GStateUpdate.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse state update message.", e);
+	}
+    }
+
     protected static void closeQuietly(OutputStream output) {
 	if (output != null) {
 	    try {

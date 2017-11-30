@@ -9,6 +9,7 @@ package com.sitewhere.instance.spi.microservice;
 
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
+import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.spi.microservice.IMicroservice;
 
@@ -39,4 +40,12 @@ public interface IInstanceManagementMicroservice extends IMicroservice {
      * @return
      */
     public ITenantManagementApiChannel getTenantManagementApiChannel();
+
+    /**
+     * Get Kafka consumer that aggregates state updates from microservices and
+     * tenant engines.
+     * 
+     * @return
+     */
+    public IStateAggregatorKafkaConsumer getStateAggregatorKafkaConsumer();
 }
