@@ -5,18 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.ignite.client;
+package com.sitewhere.microservice.hazelcast.client;
 
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
-import com.sitewhere.microservice.ignite.DeviceManagementCacheProviders;
+import com.sitewhere.microservice.hazelcast.DeviceManagementCacheProviders;
 import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.ignite.IIgniteCacheProvider;
+import com.sitewhere.spi.microservice.hazelcast.ICacheProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -27,13 +27,13 @@ import com.sitewhere.spi.tenant.ITenant;
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
 
     /** Device specification cache */
-    private IIgniteCacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
+    private ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
 
     /** Device cache */
-    private IIgniteCacheProvider<String, IDevice> deviceCache;
+    private ICacheProvider<String, IDevice> deviceCache;
 
     /** Device assignment cache */
-    private IIgniteCacheProvider<String, IDeviceAssignment> deviceAssignmentCache;
+    private ICacheProvider<String, IDeviceAssignment> deviceAssignmentCache;
 
     public CachedDeviceManagementApiChannel(IMicroservice microservice, DeviceManagementGrpcChannel grpcChannel) {
 	super(grpcChannel);
@@ -95,28 +95,28 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	return super.getDeviceAssignmentByToken(token);
     }
 
-    protected IIgniteCacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {
+    protected ICacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {
 	return deviceSpecificationCache;
     }
 
     protected void setDeviceSpecificationCache(
-	    IIgniteCacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
+	    ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
 	this.deviceSpecificationCache = deviceSpecificationCache;
     }
 
-    protected IIgniteCacheProvider<String, IDevice> getDeviceCache() {
+    protected ICacheProvider<String, IDevice> getDeviceCache() {
 	return deviceCache;
     }
 
-    protected void setDeviceCache(IIgniteCacheProvider<String, IDevice> deviceCache) {
+    protected void setDeviceCache(ICacheProvider<String, IDevice> deviceCache) {
 	this.deviceCache = deviceCache;
     }
 
-    protected IIgniteCacheProvider<String, IDeviceAssignment> getDeviceAssignmentCache() {
+    protected ICacheProvider<String, IDeviceAssignment> getDeviceAssignmentCache() {
 	return deviceAssignmentCache;
     }
 
-    protected void setDeviceAssignmentCache(IIgniteCacheProvider<String, IDeviceAssignment> deviceAssignmentCache) {
+    protected void setDeviceAssignmentCache(ICacheProvider<String, IDeviceAssignment> deviceAssignmentCache) {
 	this.deviceAssignmentCache = deviceAssignmentCache;
     }
 }

@@ -21,7 +21,7 @@ import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.ignite.IIgniteManager;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -58,9 +58,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Autowired
     private IZookeeperManager zookeeperManager;
 
-    /** Get Apache Ignite manager */
+    /** Get Hazelcast manager */
     @Autowired
-    private IIgniteManager igniteManager;
+    private IHazelcastManager hazelcastManager;
 
     /** JWT token management */
     @Autowired
@@ -102,8 +102,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
 
-	// Initialize Apache Ignite manager.
-	initialize.addInitializeStep(this, getIgniteManager(), true);
+	// Initialize Hazelcast manager.
+	initialize.addInitializeStep(this, getHazelcastManager(), true);
 
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
@@ -122,8 +122,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start Apache Ignite manager.
-	start.addStartStep(this, getIgniteManager(), true);
+	// Start Hazelcast manager.
+	start.addStartStep(this, getHazelcastManager(), true);
 
 	// Start Kafka producer for reporting state.
 	start.addStartStep(this, getStateUpdatesKafkaProducer(), true);
@@ -170,8 +170,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Terminate Zk manager.
 	getZookeeperManager().lifecycleTerminate(monitor);
 
-	// Terminate Ignite manager.
-	getIgniteManager().lifecycleTerminate(monitor);
+	// Terminate Hazelcast manager.
+	getHazelcastManager().lifecycleTerminate(monitor);
     }
 
     /*
@@ -300,15 +300,15 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getIgniteManager()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getHazelcastManager()
      */
     @Override
-    public IIgniteManager getIgniteManager() {
-	return igniteManager;
+    public IHazelcastManager getHazelcastManager() {
+	return hazelcastManager;
     }
 
-    public void setIgniteManager(IIgniteManager igniteManager) {
-	this.igniteManager = igniteManager;
+    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
+	this.hazelcastManager = hazelcastManager;
     }
 
     /*

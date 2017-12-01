@@ -5,10 +5,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.microservice.ignite;
+package com.sitewhere.spi.microservice.hazelcast;
 
-import org.apache.ignite.Ignite;
-
+import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -17,12 +16,12 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IIgniteManager extends ILifecycleComponent {
+public interface IHazelcastManager extends ILifecycleComponent {
 
     /**
-     * Get managed Apache Ignite instance.
+     * Get Hazelcast instance.
      * 
      * @return
      */
-    public Ignite getIgnite();
+    public HazelcastInstance getHazelcastInstance();
 }

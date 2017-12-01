@@ -24,8 +24,9 @@ dependencies {
  		exclude (module: 'slf4j-log4j12')   
     }
 	
-	// Apache Ignite datagrid for caching.
-	compile group: 'org.apache.ignite', name: 'ignite-core', version: "${rootProject.ext['ignite.version']}"
+	// Hazelcast for distributed caching.
+	compile group: 'com.hazelcast', name: 'hazelcast', version: "${rootProject.ext['hazelcast.version']}"
+	compile group: 'javax.cache', name: 'cache-api', version: "1.0.0"
 	
 	// Opentracing APIs.
     compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'

@@ -16,6 +16,9 @@ import com.sitewhere.spi.asset.IAssetReference;
  */
 public class AssetReference implements IAssetReference {
 
+    /** Serial version UID */
+    private static final long serialVersionUID = -1493767688896095765L;
+
     /** Asset module id */
     private String module;
 

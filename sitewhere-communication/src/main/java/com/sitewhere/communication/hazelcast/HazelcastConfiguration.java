@@ -18,7 +18,6 @@ import com.hazelcast.config.SerializationConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.GroupProperties;
 import com.hazelcast.util.ServiceLoader;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,7 +31,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-@SuppressWarnings("deprecation")
 public class HazelcastConfiguration extends LifecycleComponent implements IHazelcastConfiguration {
 
     /** Static logger instance */
@@ -161,9 +159,8 @@ public class HazelcastConfiguration extends LifecycleComponent implements IHazel
      * @param config
      */
     public static void performPropertyOverrides(Config config) {
-	config.setProperty(GroupProperties.PROP_LOGGING_TYPE, "log4j2");
-	config.setProperty(GroupProperties.PROP_REST_ENABLED, "true");
-	config.setProperty(GroupProperties.PROP_SHUTDOWNHOOK_ENABLED, "false");
+	config.setProperty("hazelcast.logging.type", "log4j2");
+	config.setProperty("hazelcast.shutdownhook.enabled", "false");
     }
 
     /*

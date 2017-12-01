@@ -37,7 +37,7 @@ import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
-import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
+import com.sitewhere.microservice.hazelcast.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.asset;
 
+import java.io.Serializable;
+
 /**
  * Reference to a SiteWhere asset.
  * 
  * @author Derek
  */
-public interface IAssetReference {
+public interface IAssetReference extends Serializable {
 
     /**
      * Get unique module identifier.

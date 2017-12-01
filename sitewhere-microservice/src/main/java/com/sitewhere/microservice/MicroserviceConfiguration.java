@@ -10,7 +10,7 @@ package com.sitewhere.microservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import com.sitewhere.microservice.ignite.IgniteManager;
+import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.security.SystemUser;
@@ -18,7 +18,7 @@ import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.ignite.IIgniteManager;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -43,8 +43,8 @@ public class MicroserviceConfiguration {
 
     @Bean
     @Autowired
-    public IIgniteManager igniteManager(IMicroservice microservice) {
-	return new IgniteManager(microservice);
+    public IHazelcastManager hazelcastManager(IMicroservice microservice) {
+	return new HazelcastManager(microservice);
     }
 
     @Bean

@@ -20,7 +20,7 @@ import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
-import com.sitewhere.microservice.ignite.client.CachedDeviceManagementApiChannel;
+import com.sitewhere.microservice.hazelcast.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

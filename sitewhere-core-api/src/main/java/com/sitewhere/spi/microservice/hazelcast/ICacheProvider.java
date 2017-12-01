@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.microservice.ignite;
+package com.sitewhere.spi.microservice.hazelcast;
 
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +20,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <K>
  * @param <V>
  */
-public interface IIgniteCacheProvider<K, V> {
+public interface ICacheProvider<K, V> {
 
     /**
      * Set a cache entry.

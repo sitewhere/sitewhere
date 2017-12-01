@@ -5,19 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.ignite;
+package com.sitewhere.microservice.hazelcast;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.ignite.IgniteCache;
-import org.apache.ignite.cache.CacheMode;
-import org.apache.ignite.configuration.CacheConfiguration;
-
+import com.hazelcast.core.ReplicatedMap;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.ignite.IIgniteCacheProvider;
+import com.sitewhere.spi.microservice.hazelcast.ICacheProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -28,7 +24,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <K>
  * @param <V>
  */
-public abstract class CacheProvider<K, V> implements IIgniteCacheProvider<K, V> {
+public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 
     /** Parent microservice */
     private IMicroservice microservice;
@@ -40,7 +36,7 @@ public abstract class CacheProvider<K, V> implements IIgniteCacheProvider<K, V> 
     boolean createIfNotFound;
 
     /** Cache handle */
-    private Map<String, IgniteCache<K, V>> cachesByTenantId = new HashMap<String, IgniteCache<K, V>>();
+    private Map<String, ReplicatedMap<K, V>> cachesByTenantId = new HashMap<String, ReplicatedMap<K, V>>();
 
     public CacheProvider(IMicroservice microservice, String identifier, boolean createIfNotFound) {
 	this.microservice = microservice;
@@ -96,23 +92,12 @@ public abstract class CacheProvider<K, V> implements IIgniteCacheProvider<K, V> 
      * @return
      * @throws SiteWhereException
      */
-    protected IgniteCache<K, V> getCache(ITenant tenant) throws SiteWhereException {
-	IgniteCache<K, V> cache = getCachesByTenantId().get(tenant.getId());
+    protected ReplicatedMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
+	ReplicatedMap<K, V> cache = getCachesByTenantId().get(tenant.getId());
 	if (cache == null) {
-	    String name = getCacheNameForTenant(tenant);
-	    Collection<String> names = getMicroservice().getIgniteManager().getIgnite().cacheNames();
-	    if (names.contains(name)) {
-		getLogger().info("Found existing cache for tenant " + tenant.getId());
-		cache = getMicroservice().getIgniteManager().getIgnite().getOrCreateCache(name);
-		getCachesByTenantId().put(tenant.getId(), cache);
-	    } else if (isCreateIfNotFound()) {
-		getLogger().info("Creating cache for tenant " + tenant.getId());
-		CacheConfiguration<K, V> config = new CacheConfiguration<>();
-		config.setName(getCacheNameForTenant(tenant));
-		config.setCacheMode(CacheMode.REPLICATED);
-		cache = getMicroservice().getIgniteManager().getIgnite().createCache(config);
-		getCachesByTenantId().put(tenant.getId(), cache);
-	    }
+	    String cacheName = getCacheNameForTenant(tenant);
+	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getReplicatedMap(cacheName);
+	    getCachesByTenantId().put(tenant.getId(), cache);
 	}
 	return cache;
     }
@@ -151,11 +136,11 @@ public abstract class CacheProvider<K, V> implements IIgniteCacheProvider<K, V> 
 	this.createIfNotFound = createIfNotFound;
     }
 
-    protected Map<String, IgniteCache<K, V>> getCachesByTenantId() {
+    protected Map<String, ReplicatedMap<K, V>> getCachesByTenantId() {
 	return cachesByTenantId;
     }
 
-    protected void setCachesByTenantId(Map<String, IgniteCache<K, V>> cachesByTenantId) {
+    protected void setCachesByTenantId(Map<String, ReplicatedMap<K, V>> cachesByTenantId) {
 	this.cachesByTenantId = cachesByTenantId;
     }
 }

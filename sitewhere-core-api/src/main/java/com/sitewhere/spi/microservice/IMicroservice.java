@@ -9,7 +9,7 @@ package com.sitewhere.spi.microservice;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.ignite.IIgniteManager;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -143,11 +143,11 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
     public IZookeeperManager getZookeeperManager();
 
     /**
-     * Get manager for Apache Ignite instance.
+     * Get manager for Hazelcast instance.
      * 
      * @return
      */
-    public IIgniteManager getIgniteManager();
+    public IHazelcastManager getHazelcastManager();
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized
