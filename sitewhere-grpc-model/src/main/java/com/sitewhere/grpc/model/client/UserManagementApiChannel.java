@@ -47,6 +47,7 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tracing.ITracerProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -67,8 +68,8 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public UserManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public UserManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
@@ -77,8 +78,9 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
      * tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new UserManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new UserManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

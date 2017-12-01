@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.model.spi;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
@@ -20,7 +20,7 @@ import io.grpc.ManagedChannel;
  * @param <B>
  * @param <A>
  */
-public interface IGrpcChannel<B, A> extends ILifecycleComponent, ITracerProvider {
+public interface IGrpcChannel<B, A> extends ITenantEngineLifecycleComponent, ITracerProvider {
 
     /**
      * Get managed channel.

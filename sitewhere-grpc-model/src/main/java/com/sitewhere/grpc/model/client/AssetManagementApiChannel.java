@@ -68,6 +68,7 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -84,18 +85,19 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public AssetManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public AssetManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * tracing.ITracerProvider, java.lang.String)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new AssetManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new AssetManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

@@ -37,6 +37,7 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -54,18 +55,19 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public BatchManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public BatchManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * tracing.ITracerProvider, java.lang.String)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new BatchManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new BatchManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

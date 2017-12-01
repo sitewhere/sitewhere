@@ -86,7 +86,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize tenant management GRPC channel.
+	// Initialize tenant management API channel.
 	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
 	// Execute initialization steps.
@@ -104,7 +104,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     private void createGrpcComponents() {
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT);
     }
 
     /*

@@ -93,6 +93,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -109,18 +110,19 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceEventManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public DeviceEventManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * tracing.ITracerProvider, java.lang.String)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new DeviceEventManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new DeviceEventManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

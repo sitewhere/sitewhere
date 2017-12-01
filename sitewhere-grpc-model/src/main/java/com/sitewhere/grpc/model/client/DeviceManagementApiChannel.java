@@ -41,6 +41,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
@@ -60,18 +61,19 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public DeviceManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * tracing.ITracerProvider, java.lang.String)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new DeviceManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new DeviceManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

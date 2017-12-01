@@ -9,7 +9,7 @@ package com.sitewhere.grpc.model.client;
 
 import com.sitewhere.grpc.model.spi.IGrpcChannel;
 import com.sitewhere.grpc.model.tracing.ClientTracingInterceptor;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -26,7 +26,7 @@ import io.opentracing.Tracer;
  * @param <B>
  * @param <A>
  */
-public abstract class GrpcChannel<B, A> extends LifecycleComponent implements IGrpcChannel<B, A> {
+public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
 
     /** Tracer provider */
     protected ITracerProvider tracerProvider;

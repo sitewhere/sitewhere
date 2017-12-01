@@ -200,33 +200,33 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void createGrpcComponents() {
 	// User management.
-	this.userManagementApiChannel = new UserManagementApiChannel(this, MicroserviceEnvironment.HOST_USER_MANAGEMENT,
-		getInstanceSettings().getGrpcPort());
+	this.userManagementApiChannel = new UserManagementApiChannel(this,
+		MicroserviceEnvironment.HOST_USER_MANAGEMENT);
 
 	// Tenant management.
 	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT);
 
 	// Device management.
 	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
 
 	// Asset management.
 	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT);
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
 
 	// Batch management.
 	this.batchManagementApiChannel = new BatchManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_BATCH_OPERATIONS, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_BATCH_OPERATIONS);
 
 	// Schedule management.
 	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT);
     }
 
     /*

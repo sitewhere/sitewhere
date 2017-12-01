@@ -35,6 +35,7 @@ import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
@@ -55,18 +56,19 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public ScheduleManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public ScheduleManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * tracing.ITracerProvider, java.lang.String)
      */
     @Override
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new ScheduleManagementGrpcChannel(tracerProvider, host, port);
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
+	return new ScheduleManagementGrpcChannel(tracerProvider, host,
+		getMicroservice().getInstanceSettings().getGrpcPort());
     }
 
     /*

@@ -167,11 +167,11 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     private void createGrpcComponents() {
 	// Device management.
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
     }
 
     /*

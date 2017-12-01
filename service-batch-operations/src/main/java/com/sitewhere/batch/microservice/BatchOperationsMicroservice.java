@@ -184,11 +184,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 
 	// Device management.
 	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
     }
 
     /*

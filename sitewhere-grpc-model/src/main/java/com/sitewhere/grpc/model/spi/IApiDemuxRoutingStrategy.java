@@ -7,11 +7,24 @@
  */
 package com.sitewhere.grpc.model.spi;
 
+import java.util.List;
+
+import com.sitewhere.spi.SiteWhereException;
+
 /**
  * Get strategy used to demulitplex API calls across multiple
  * {@link IApiChannel}.
  * 
  * @author Derek
  */
-public interface IApiDemuxRoutingStrategy {
+public interface IApiDemuxRoutingStrategy<T extends IApiChannel<?>> {
+
+    /**
+     * Choose an API channel from the list of available channels.
+     * 
+     * @param apiChannels
+     * @return
+     * @throws SiteWhereException
+     */
+    public T chooseApiChannel(List<T> apiChannels) throws SiteWhereException;
 }

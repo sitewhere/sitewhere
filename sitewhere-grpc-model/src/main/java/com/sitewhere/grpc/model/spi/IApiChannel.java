@@ -10,6 +10,7 @@ package com.sitewhere.grpc.model.spi;
 import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.model.client.GrpcChannel;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -24,10 +25,9 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> {
      * 
      * @param tracerProvider
      * @param host
-     * @param port
      * @return
      */
-    public T createGrpcChannel(ITracerProvider tracerProvider, String host, int port);
+    public T createGrpcChannel(ITracerProvider tracerProvider, String host);
 
     /**
      * Get underlying GRPC channel.
@@ -53,4 +53,11 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> {
      * @throws ApiNotAvailableException
      */
     public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay) throws ApiNotAvailableException;
+
+    /**
+     * Get parent microservice.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
 }

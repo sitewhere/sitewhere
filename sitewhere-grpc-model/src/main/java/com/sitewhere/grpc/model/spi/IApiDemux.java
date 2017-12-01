@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.grpc.model.client.ApiChannel;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Demulitiplexes API calls across multiple {@link IApiChannel} in order to
@@ -18,30 +19,39 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public interface IApiDemux {
+public interface IApiDemux<T extends IApiChannel<?>> extends ITenantEngineLifecycleComponent {
 
     /**
-     * List of available {@link ApiChannel} that can be used for routing.
+     * List of available {@link IApiChannel} that can be used for routing.
      * 
      * @return
      */
-    public List<ApiChannel> getApiChannels();
+    public List<T> getApiChannels();
 
     /**
-     * Add an {@link ApiChannel}.
+     * Get an API channel based on the routing strategy.
      * 
-     * @param channel
+     * @return
      * @throws SiteWhereException
      */
-    public IApiChannel createApiChannel(String host) throws SiteWhereException;
+    public T getApiChannel() throws SiteWhereException;
 
     /**
-     * Remove an {@link ApiChannel}.
+     * Create an {@link IApiChannel} to the given host.
      * 
-     * @param channel
+     * @param host
+     * @return
      * @throws SiteWhereException
      */
-    public void removeApiChannel(IApiChannel channel) throws SiteWhereException;
+    public T createApiChannel(String host) throws SiteWhereException;
+
+    /**
+     * Remove API channel for the given host.
+     * 
+     * @param host
+     * @throws SiteWhereException
+     */
+    public T removeApiChannel(String host) throws SiteWhereException;
 
     /**
      * Get strategy used for demulitplexing API calls across multiple

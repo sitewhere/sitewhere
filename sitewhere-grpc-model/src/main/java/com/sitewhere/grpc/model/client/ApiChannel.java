@@ -14,8 +14,8 @@ import com.sitewhere.grpc.model.spi.IApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ConnectivityState;
 import io.opentracing.ActiveSpan;
@@ -34,22 +34,18 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;
 
-    /** Tracer provider */
-    private ITracerProvider tracerProvider;
+    /** Microservice */
+    private IMicroservice microservice;
 
     /** Hostname */
     private String host;
 
-    /** Port */
-    private int port;
-
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(ITracerProvider tracerProvider, String host, int port) {
-	this.tracerProvider = tracerProvider;
+    public ApiChannel(IMicroservice microservice, String host) {
+	this.microservice = microservice;
 	this.host = host;
-	this.port = port;
     }
 
     /*
@@ -67,7 +63,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = (T) createGrpcChannel(tracerProvider, host, port);
+	this.grpcChannel = (T) createGrpcChannel(microservice, host);
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -150,5 +146,17 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.model.spi.IApiChannel#getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

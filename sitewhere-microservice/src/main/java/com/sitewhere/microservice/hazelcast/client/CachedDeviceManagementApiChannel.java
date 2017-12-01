@@ -34,8 +34,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment cache */
     private ICacheProvider<String, IDeviceAssignment> deviceAssignmentCache;
 
-    public CachedDeviceManagementApiChannel(IMicroservice microservice, String host, int port) {
-	super(microservice, host, port);
+    public CachedDeviceManagementApiChannel(IMicroservice microservice, String host) {
+	super(microservice, host);
 	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
 		false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);

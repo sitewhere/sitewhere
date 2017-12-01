@@ -100,11 +100,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
 	// Event management microservice connectivity.
 	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
 
 	// Asset management microservice connectivity.
 	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
+		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT);
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), null);
 
 	// Create step that will start components.
