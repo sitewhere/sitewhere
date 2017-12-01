@@ -14,18 +14,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
-import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.BatchManagementApiChannel;
-import com.sitewhere.grpc.model.client.BatchManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.ScheduleManagementApiChannel;
-import com.sitewhere.grpc.model.client.ScheduleManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
-import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;
@@ -65,44 +58,23 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { WEB_REST_CONFIGURATION };
 
-    /** User management GRPC channel */
-    private UserManagementGrpcChannel userManagementGrpcChannel;
-
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
-
-    /** Tenant management GRPC channel */
-    private TenantManagementGrpcChannel tenantManagementGrpcChannel;
 
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
 
-    /** Device management GRPC channel */
-    private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
-
     /** Device management API channel */
     private IDeviceManagementApiChannel deviceManagementApiChannel;
-
-    /** Device event management GRPC channel */
-    private DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
 
-    /** Asset management GRPC channel */
-    private AssetManagementGrpcChannel assetManagementGrpcChannel;
-
     /** Asset management API channel */
     private IAssetManagementApiChannel assetManagementApiChannel;
 
-    /** Batch management GRPC channel */
-    private BatchManagementGrpcChannel batchManagementGrpcChannel;
-
     /** Batch management API channel */
     private IBatchManagementApiChannel batchManagementApiChannel;
-
-    /** Schedule management GRPC channel */
-    private ScheduleManagementGrpcChannel scheduleManagementGrpcChannel;
 
     /** Schedule management API channel */
     private IScheduleManagementApiChannel scheduleManagementApiChannel;
@@ -198,26 +170,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize discoverable lifecycle components.
 	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
-	// Initialize user management GRPC channel.
-	init.addInitializeStep(this, getUserManagementGrpcChannel(), true);
+	// Initialize user management API channel.
+	init.addInitializeStep(this, getUserManagementApiChannel(), true);
 
-	// Initialize tenant management GRPC channel.
-	init.addInitializeStep(this, getTenantManagementGrpcChannel(), true);
+	// Initialize tenant management API channel.
+	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
-	// Initialize device management GRPC channel.
-	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
-	// Initialize device event management GRPC channel.
-	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Initialize device event management API channel.
+	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Initialize asset management GRPC channel.
-	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
-	// Initialize batch management GRPC channel.
-	init.addInitializeStep(this, getBatchManagementGrpcChannel(), true);
+	// Initialize batch management API channel.
+	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
 
-	// Initialize schedule management GRPC channel.
-	init.addInitializeStep(this, getScheduleManagementGrpcChannel(), true);
+	// Initialize schedule management API channel.
+	init.addInitializeStep(this, getScheduleManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -228,41 +200,33 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void createGrpcComponents() {
 	// User management.
-	this.userManagementGrpcChannel = new UserManagementGrpcChannel(this,
-		MicroserviceEnvironment.HOST_USER_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
+	this.userManagementApiChannel = new UserManagementApiChannel(this, MicroserviceEnvironment.HOST_USER_MANAGEMENT,
+		getInstanceSettings().getGrpcPort());
 
 	// Tenant management.
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
 
 	// Device management.
-	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this, getDeviceManagementGrpcChannel());
 
 	// Device event management.
-	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
-		getDeviceEventManagementGrpcChannel());
 
 	// Asset management.
-	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(this,
+	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
 
 	// Batch management.
-	this.batchManagementGrpcChannel = new BatchManagementGrpcChannel(this,
+	this.batchManagementApiChannel = new BatchManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_BATCH_OPERATIONS, getInstanceSettings().getGrpcPort());
-	this.batchManagementApiChannel = new BatchManagementApiChannel(getBatchManagementGrpcChannel());
 
 	// Schedule management.
-	this.scheduleManagementGrpcChannel = new ScheduleManagementGrpcChannel(this,
+	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(getScheduleManagementGrpcChannel());
     }
 
     /*
@@ -280,26 +244,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start discoverable lifecycle components.
 	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
-	// Start user mangement GRPC channel.
-	start.addStartStep(this, getUserManagementGrpcChannel(), true);
+	// Start user mangement API channel.
+	start.addStartStep(this, getUserManagementApiChannel(), true);
 
-	// Start tenant mangement GRPC channel.
-	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
+	// Start tenant mangement API channel.
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
-	// Start device mangement GRPC channel.
-	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
-	// Start device event mangement GRPC channel.
-	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Start device event mangement API channel.
+	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Start asset mangement GRPC channel.
-	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
+	// Start asset mangement API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
-	// Start batch mangement GRPC channel.
-	start.addStartStep(this, getBatchManagementGrpcChannel(), true);
+	// Start batch mangement API channel.
+	start.addStartStep(this, getBatchManagementApiChannel(), true);
 
-	// Start schedule mangement GRPC channel.
-	start.addStartStep(this, getScheduleManagementGrpcChannel(), true);
+	// Start schedule mangement API channel.
+	start.addStartStep(this, getScheduleManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -316,26 +280,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop user mangement GRPC channel.
-	stop.addStopStep(this, getUserManagementGrpcChannel());
+	// Stop user mangement API channel.
+	stop.addStopStep(this, getUserManagementApiChannel());
 
-	// Stop tenant mangement GRPC channel.
-	stop.addStopStep(this, getTenantManagementGrpcChannel());
+	// Stop tenant mangement API channel.
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
-	// Stop device mangement GRPC channel.
-	stop.addStopStep(this, getDeviceManagementGrpcChannel());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
-	// Stop device event mangement GRPC channel.
-	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
+	// Stop device event mangement API channel.
+	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
-	// Stop asset mangement GRPC channel.
-	stop.addStopStep(this, getAssetManagementGrpcChannel());
+	// Stop asset mangement API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
-	// Stop batch mangement GRPC channel.
-	stop.addStopStep(this, getBatchManagementGrpcChannel());
+	// Stop batch mangement API channel.
+	stop.addStopStep(this, getBatchManagementApiChannel());
 
-	// Stop schedule mangement GRPC channel.
-	stop.addStopStep(this, getScheduleManagementGrpcChannel());
+	// Stop schedule mangement API channel.
+	stop.addStopStep(this, getScheduleManagementApiChannel());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
@@ -452,62 +416,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     protected ApplicationContext getWebRestApplicationContext() {
 	return getGlobalContexts().get(WEB_REST_CONFIGURATION);
-    }
-
-    public UserManagementGrpcChannel getUserManagementGrpcChannel() {
-	return userManagementGrpcChannel;
-    }
-
-    public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
-	this.userManagementGrpcChannel = userManagementGrpcChannel;
-    }
-
-    public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {
-	return tenantManagementGrpcChannel;
-    }
-
-    public void setTenantManagementGrpcChannel(TenantManagementGrpcChannel tenantManagementGrpcChannel) {
-	this.tenantManagementGrpcChannel = tenantManagementGrpcChannel;
-    }
-
-    public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {
-	return deviceManagementGrpcChannel;
-    }
-
-    public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
-	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
-    }
-
-    public DeviceEventManagementGrpcChannel getDeviceEventManagementGrpcChannel() {
-	return deviceEventManagementGrpcChannel;
-    }
-
-    public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
-	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
-    }
-
-    public AssetManagementGrpcChannel getAssetManagementGrpcChannel() {
-	return assetManagementGrpcChannel;
-    }
-
-    public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
-	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
-    }
-
-    public BatchManagementGrpcChannel getBatchManagementGrpcChannel() {
-	return batchManagementGrpcChannel;
-    }
-
-    public void setBatchManagementGrpcChannel(BatchManagementGrpcChannel batchManagementGrpcChannel) {
-	this.batchManagementGrpcChannel = batchManagementGrpcChannel;
-    }
-
-    protected ScheduleManagementGrpcChannel getScheduleManagementGrpcChannel() {
-	return scheduleManagementGrpcChannel;
-    }
-
-    protected void setScheduleManagementGrpcChannel(ScheduleManagementGrpcChannel scheduleManagementGrpcChannel) {
-	this.scheduleManagementGrpcChannel = scheduleManagementGrpcChannel;
     }
 
     public IAssetResolver getAssetResolver() {

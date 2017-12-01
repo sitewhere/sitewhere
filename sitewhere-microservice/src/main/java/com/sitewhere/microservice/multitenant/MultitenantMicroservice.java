@@ -22,7 +22,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.MapMaker;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
@@ -50,9 +49,6 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
-
-    /** Tenant management GRPC channel */
-    private TenantManagementGrpcChannel tenantManagementGrpcChannel;
 
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
@@ -91,7 +87,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize tenant management GRPC channel.
-	init.addInitializeStep(this, getTenantManagementGrpcChannel(), true);
+	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -107,9 +103,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      * Create components that interact via GRPC.
      */
     private void createGrpcComponents() {
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 
     /*
@@ -126,8 +121,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start tenant mangement GRPC channel.
-	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
+	// Start tenant mangement API channel.
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -156,8 +151,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant management GRPC channel.
-	stop.addStopStep(this, getTenantManagementGrpcChannel());
+	// Stop tenant management API channel.
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -175,7 +170,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	if (tenantOperations != null) {
 	    tenantOperations.shutdown();
 	}
-	getTenantManagementGrpcChannel().terminate(monitor);
+	getTenantManagementApiChannel().terminate(monitor);
     }
 
     /*
@@ -352,14 +347,6 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
-    }
-
-    public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {
-	return tenantManagementGrpcChannel;
-    }
-
-    public void setTenantManagementGrpcChannel(TenantManagementGrpcChannel tenantManagementGrpcChannel) {
-	this.tenantManagementGrpcChannel = tenantManagementGrpcChannel;
     }
 
     public ITenantManagementApiChannel getTenantManagementApiChannel() {

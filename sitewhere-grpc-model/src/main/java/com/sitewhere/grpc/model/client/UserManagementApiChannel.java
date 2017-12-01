@@ -47,6 +47,7 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.tracing.ITracerProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
@@ -66,11 +67,18 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** User management GRPC channel */
-    private UserManagementGrpcChannel grpcChannel;
+    public UserManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
+    }
 
-    public UserManagementApiChannel(UserManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
+    /*
+     * @see
+     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
+     * tracing.ITracerProvider, java.lang.String, int)
+     */
+    @Override
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new UserManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*
@@ -122,8 +130,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+     * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
      * java.lang.String, boolean)
      */
     @Override
@@ -192,8 +199,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
      * String)
      */
     @Override
@@ -216,8 +222,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
      * String, java.util.List)
      */
     @Override
@@ -269,8 +274,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+     * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * IUserSearchCriteria)
      */
     @Override
@@ -335,8 +339,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
      * lang.String)
      */
     @Override
@@ -361,8 +364,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
      * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
     @Override
@@ -409,8 +411,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
      * String)
      */
     @Override
@@ -425,20 +426,6 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
-     */
-    @Override
-    public UserManagementGrpcChannel getGrpcChannel() {
-	return grpcChannel;
-    }
-
-    public void setGrpcChannel(UserManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
     }
 
     /*

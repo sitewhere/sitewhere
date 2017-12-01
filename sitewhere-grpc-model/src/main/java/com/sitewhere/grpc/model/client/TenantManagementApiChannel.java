@@ -31,6 +31,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere tenant management APIs on top of a
@@ -44,11 +45,18 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant management GRPC channel */
-    private TenantManagementGrpcChannel grpcChannel;
+    public TenantManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
+    }
 
-    public TenantManagementApiChannel(TenantManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
+    /*
+     * @see
+     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
+     * tracing.ITracerProvider, java.lang.String, int)
+     */
+    @Override
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new TenantManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*
@@ -185,20 +193,6 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.METHOD_DELETE_TENANT, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
-     */
-    @Override
-    public TenantManagementGrpcChannel getGrpcChannel() {
-	return grpcChannel;
-    }
-
-    public void setGrpcChannel(TenantManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
     }
 
     /*

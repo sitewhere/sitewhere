@@ -70,6 +70,7 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere asset management APIs on top of a
@@ -83,11 +84,18 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Asset management GRPC channel */
-    private AssetManagementGrpcChannel grpcChannel;
+    public AssetManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
+    }
 
-    public AssetManagementApiChannel(AssetManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
+    /*
+     * @see
+     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
+     * tracing.ITracerProvider, java.lang.String, int)
+     */
+    @Override
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new AssetManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*
@@ -537,20 +545,6 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
-     */
-    @Override
-    public AssetManagementGrpcChannel getGrpcChannel() {
-	return grpcChannel;
-    }
-
-    public void setGrpcChannel(AssetManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
     }
 
     /*

@@ -11,8 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
@@ -42,14 +40,8 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     /** Microservice name */
     private static final String NAME = "Inbound Processing";
 
-    /** Device management GRPC channel */
-    private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
-
     /** Device management API channel */
     private IDeviceManagementApiChannel deviceManagementApiChannel;
-
-    /** Device event management GRPC channel */
-    private DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
@@ -119,11 +111,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management GRPC channel.
-	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
-	// Initialize device event management GRPC channel.
-	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Initialize device event management API channel.
+	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -139,11 +131,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement GRPC channel.
-	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
-	// Start device event mangement GRPC channel.
-	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Start device event mangement API channel.
+	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -159,11 +151,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement GRPC channel.
-	stop.addStopStep(this, getDeviceManagementGrpcChannel());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
-	// Stop device event mangement GRPC channel.
-	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
+	// Stop device event mangement API channel.
+	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -174,15 +166,12 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this, getDeviceManagementGrpcChannel());
 
 	// Device event management.
-	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
-		getDeviceEventManagementGrpcChannel());
     }
 
     /*
@@ -217,21 +206,5 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {
-	return deviceManagementGrpcChannel;
-    }
-
-    public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
-	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
-    }
-
-    public DeviceEventManagementGrpcChannel getDeviceEventManagementGrpcChannel() {
-	return deviceEventManagementGrpcChannel;
-    }
-
-    public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
-	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
     }
 }

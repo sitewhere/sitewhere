@@ -15,9 +15,7 @@ import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
-import com.sitewhere.grpc.model.client.AssetManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.microservice.IMicroserviceIdentifiers;
@@ -48,14 +46,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
 
-    /** Event management GRPC channel */
-    private DeviceEventManagementGrpcChannel eventManagementGrpcChannel;
-
     /** Event management API channel */
     private IDeviceEventManagementApiChannel eventManagementApiChannel;
-
-    /** Asset management GRPC channel */
-    private AssetManagementGrpcChannel assetManagementGrpcChannel;
 
     /** Asset management API channel */
     private IAssetManagementApiChannel assetManagementApiChannel;
@@ -107,14 +99,12 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
 	// Event management microservice connectivity.
-	this.eventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(getEventManagementGrpcChannel());
 
 	// Asset management microservice connectivity.
-	this.assetManagementGrpcChannel = new AssetManagementGrpcChannel(this,
+	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getAssetManagementGrpcChannel());
 	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), null);
 
 	// Create step that will start components.
@@ -123,11 +113,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Initialize event management GRPC channel.
-	init.addInitializeStep(this, getEventManagementGrpcChannel(), true);
+	// Initialize event management API channel.
+	init.addInitializeStep(this, getEventManagementApiChannel(), true);
 
 	// Initialize asset management GRPC channel.
-	init.addInitializeStep(this, getAssetManagementGrpcChannel(), true);
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -148,11 +138,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Start device management GRPC server.
 	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Start event management GRPC channel.
-	start.addStartStep(this, getEventManagementGrpcChannel(), true);
+	// Start event management API channel.
+	start.addStartStep(this, getEventManagementApiChannel(), true);
 
-	// Start asset management GRPC channel.
-	start.addStartStep(this, getAssetManagementGrpcChannel(), true);
+	// Start asset management API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -173,11 +163,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Stop device management GRPC server.
 	stop.addStopStep(this, getDeviceManagementGrpcServer());
 
-	// Stop event management GRPC channel.
-	stop.addStopStep(this, getEventManagementGrpcChannel());
+	// Stop event management API channel.
+	stop.addStopStep(this, getEventManagementApiChannel());
 
-	// Stop asset management GRPC channel.
-	stop.addStopStep(this, getAssetManagementGrpcChannel());
+	// Stop asset management API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -208,19 +198,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getEventManagementGrpcChannel()
-     */
-    @Override
-    public DeviceEventManagementGrpcChannel getEventManagementGrpcChannel() {
-	return eventManagementGrpcChannel;
-    }
-
-    public void setEventManagementGrpcChannel(DeviceEventManagementGrpcChannel eventManagementGrpcChannel) {
-	this.eventManagementGrpcChannel = eventManagementGrpcChannel;
-    }
-
-    /*
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
      * getEventManagementApiChannel()
      */
     @Override
@@ -230,19 +207,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     public void setEventManagementApiChannel(IDeviceEventManagementApiChannel eventManagementApiChannel) {
 	this.eventManagementApiChannel = eventManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getAssetManagementGrpcChannel()
-     */
-    @Override
-    public AssetManagementGrpcChannel getAssetManagementGrpcChannel() {
-	return assetManagementGrpcChannel;
-    }
-
-    public void setAssetManagementGrpcChannel(AssetManagementGrpcChannel assetManagementGrpcChannel) {
-	this.assetManagementGrpcChannel = assetManagementGrpcChannel;
     }
 
     /*

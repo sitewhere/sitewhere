@@ -95,6 +95,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere device event management APIs on top of a
@@ -108,11 +109,18 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Device event management GRPC channel */
-    private DeviceEventManagementGrpcChannel grpcChannel;
+    public DeviceEventManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
+    }
 
-    public DeviceEventManagementApiChannel(DeviceEventManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
+    /*
+     * @see
+     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
+     * tracing.ITracerProvider, java.lang.String, int)
+     */
+    @Override
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new DeviceEventManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*
@@ -899,20 +907,6 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
-     */
-    @Override
-    public DeviceEventManagementGrpcChannel getGrpcChannel() {
-	return grpcChannel;
-    }
-
-    public void setGrpcChannel(DeviceEventManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
     }
 
     /*

@@ -8,7 +8,6 @@
 package com.sitewhere.microservice.hazelcast.client;
 
 import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.microservice.hazelcast.DeviceManagementCacheProviders;
 import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,8 +34,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment cache */
     private ICacheProvider<String, IDeviceAssignment> deviceAssignmentCache;
 
-    public CachedDeviceManagementApiChannel(IMicroservice microservice, DeviceManagementGrpcChannel grpcChannel) {
-	super(grpcChannel);
+    public CachedDeviceManagementApiChannel(IMicroservice microservice, String host, int port) {
+	super(microservice, host, port);
 	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
 		false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
@@ -99,8 +98,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	return deviceSpecificationCache;
     }
 
-    protected void setDeviceSpecificationCache(
-	    ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
+    protected void setDeviceSpecificationCache(ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
 	this.deviceSpecificationCache = deviceSpecificationCache;
     }
 

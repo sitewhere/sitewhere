@@ -11,22 +11,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdate;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaConsumer;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaConsumer;
 
 /**
- * Base class for Kafka consumers that process state updates for microservices
- * and their managed tenant engines.
+ * Base class for Kafka consumers that process instance topology updates.
  * 
  * @author Derek
  */
-public abstract class MicroserviceStateUpdatesKafkaConsumer extends MicroserviceKafkaConsumer
-	implements IMicroserviceStateUpdatesKafkaConsumer {
+public abstract class InstanceTopologyUpdatesKafkaConsumer extends MicroserviceKafkaConsumer
+	implements IInstanceTopologyUpdatesKafkaConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -34,15 +33,14 @@ public abstract class MicroserviceStateUpdatesKafkaConsumer extends Microservice
     /** Unique group id as each consumer should see all messages */
     private static String GROUP_ID_SUFFIX = UUID.randomUUID().toString();
 
-    public MicroserviceStateUpdatesKafkaConsumer(IMicroservice microservice) {
+    public InstanceTopologyUpdatesKafkaConsumer(IMicroservice microservice) {
 	super(microservice, null);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#
-     * getConsumerId()
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#getConsumerId
+     * ()
      */
     @Override
     public String getConsumerId() throws SiteWhereException {
@@ -50,9 +48,7 @@ public abstract class MicroserviceStateUpdatesKafkaConsumer extends Microservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#
+     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
      * getConsumerGroupId()
      */
     @Override
@@ -66,32 +62,17 @@ public abstract class MicroserviceStateUpdatesKafkaConsumer extends Microservice
      */
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
-	return Collections.singletonList(getMicroservice().getKafkaTopicNaming().getMicroserviceStateUpdatesTopic());
+	return Collections.singletonList(getMicroservice().getKafkaTopicNaming().getInstanceTopologyUpdatesTopic());
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#received(java
+     * .lang.String, byte[])
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	GStateUpdate update = KafkaModelMarshaler.parseStateUpdateMessage(message);
-
-	switch (update.getStateCase()) {
-	case MICROSERVICESTATE: {
-	    onMicroserviceStateUpdate(KafkaModelConverter.asApiMicroserviceState(update.getMicroserviceState()));
-	    break;
-	}
-	case TENANTENGINESTATE: {
-	    onTenantEngineStateUpdate(KafkaModelConverter.asApiTenantEngineState(update.getTenantEngineState()));
-	    break;
-	}
-	case STATE_NOT_SET: {
-	    getLogger().warn("Invalid state message received: " + update.getStateCase().name());
-	}
-	}
+	GInstanceTopologyUpdate update = KafkaModelMarshaler.parseInstanceTopologyUpdateMessage(message);
+	onInstanceTopologyUpdate(KafkaModelConverter.asApiInstanceTopologyUpdate(update));
     }
 }

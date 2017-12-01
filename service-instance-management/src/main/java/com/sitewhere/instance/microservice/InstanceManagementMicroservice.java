@@ -16,9 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.TenantManagementGrpcChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
-import com.sitewhere.grpc.model.client.UserManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
@@ -61,14 +59,8 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
-    /** User management GRPC channel */
-    private UserManagementGrpcChannel userManagementGrpcChannel;
-
     /** User management API channel */
     private IUserManagementApiChannel userManagementApiChannel;
-
-    /** Tenant management GRPC channel */
-    private TenantManagementGrpcChannel tenantManagementGrpcChannel;
 
     /** Tenant management API channel */
     private ITenantManagementApiChannel tenantManagementApiChannel;
@@ -123,13 +115,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementGrpcChannel = new UserManagementGrpcChannel(this,
-		MicroserviceEnvironment.HOST_USER_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.userManagementApiChannel = new UserManagementApiChannel(getUserManagementGrpcChannel());
+	this.userManagementApiChannel = new UserManagementApiChannel(this, MicroserviceEnvironment.HOST_USER_MANAGEMENT,
+		getInstanceSettings().getGrpcPort());
 
-	this.tenantManagementGrpcChannel = new TenantManagementGrpcChannel(this,
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getTenantManagementGrpcChannel());
     }
 
     /*
@@ -152,17 +142,17 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	// Start instance template manager.
 	start.addStartStep(this, getInstanceTemplateManager(), true);
 
-	// Initialize user management GRPC channel.
-	start.addInitializeStep(this, getUserManagementGrpcChannel(), true);
+	// Initialize user management API channel.
+	start.addInitializeStep(this, getUserManagementApiChannel(), true);
 
-	// Start user mangement GRPC channel.
-	start.addStartStep(this, getUserManagementGrpcChannel(), true);
+	// Start user mangement API channel.
+	start.addStartStep(this, getUserManagementApiChannel(), true);
 
-	// Initialize tenant management GRPC channel.
-	start.addInitializeStep(this, getTenantManagementGrpcChannel(), true);
+	// Initialize tenant management API channel.
+	start.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
-	// Start tenant mangement GRPC channel.
-	start.addStartStep(this, getTenantManagementGrpcChannel(), true);
+	// Start tenant mangement API channel.
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
 	// Initialize state aggregator consumer.
 	start.addInitializeStep(this, getStateAggregatorKafkaConsumer(), true);
@@ -201,11 +191,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	// Stop state aggregator consumer.
 	stop.addStopStep(this, getStateAggregatorKafkaConsumer());
 
-	// Stop tenant management GRPC channel.
-	stop.addStopStep(this, getTenantManagementGrpcChannel());
+	// Stop tenant management API channel.
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
-	// Stop user management GRPC channel.
-	stop.addStopStep(this, getUserManagementGrpcChannel());
+	// Stop user management API channel.
+	stop.addStopStep(this, getUserManagementApiChannel());
 
 	// Stop instance template manager.
 	stop.addStopStep(this, getInstanceTemplateManager());
@@ -465,21 +455,5 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     public void setInstanceTopologyUpdatesKafkaProducer(
 	    IInstanceTopologyUpdatesKafkaProducer instanceTopologyUpdatesKafkaProducer) {
 	this.instanceTopologyUpdatesKafkaProducer = instanceTopologyUpdatesKafkaProducer;
-    }
-
-    public UserManagementGrpcChannel getUserManagementGrpcChannel() {
-	return userManagementGrpcChannel;
-    }
-
-    public void setUserManagementGrpcChannel(UserManagementGrpcChannel userManagementGrpcChannel) {
-	this.userManagementGrpcChannel = userManagementGrpcChannel;
-    }
-
-    public TenantManagementGrpcChannel getTenantManagementGrpcChannel() {
-	return tenantManagementGrpcChannel;
-    }
-
-    public void setTenantManagementGrpcChannel(TenantManagementGrpcChannel tenantManagementGrpcChannel) {
-	this.tenantManagementGrpcChannel = tenantManagementGrpcChannel;
     }
 }

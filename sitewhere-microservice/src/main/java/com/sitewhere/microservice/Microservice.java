@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
+import com.sitewhere.microservice.state.InstanceTopologyUpdatesManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -26,6 +27,7 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -84,8 +86,12 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
 
+    /** Consumes Kafka instance topology updates and broadcasts them */
+    private IInstanceTopologyUpdatesManager instanceTopologyUpdatesManager;
+
     public Microservice() {
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
+	this.instanceTopologyUpdatesManager = new InstanceTopologyUpdatesManager(this);
     }
 
     /*
@@ -104,6 +110,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Initialize Hazelcast manager.
 	initialize.addInitializeStep(this, getHazelcastManager(), true);
+
+	// Initialize Kafka consumer for instance topology updates.
+	initialize.addInitializeStep(this, getInstanceTopologyUpdatesManager(), true);
 
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
@@ -124,6 +133,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Start Hazelcast manager.
 	start.addStartStep(this, getHazelcastManager(), true);
+
+	// Start Kafka consumer for instance topology updates.
+	start.addStartStep(this, getInstanceTopologyUpdatesManager(), true);
 
 	// Start Kafka producer for reporting state.
 	start.addStartStep(this, getStateUpdatesKafkaProducer(), true);
@@ -150,6 +162,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop Kafka consumer for instance topology updates.
+	start.addStopStep(this, getInstanceTopologyUpdatesManager());
 
 	// Stop Kafka producer for reporting state.
 	start.addStopStep(this, getStateUpdatesKafkaProducer());
@@ -358,6 +373,19 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
 	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceTopologyUpdatesManager()
+     */
+    @Override
+    public IInstanceTopologyUpdatesManager getInstanceTopologyUpdatesManager() {
+	return instanceTopologyUpdatesManager;
+    }
+
+    public void setInstanceTopologyUpdatesManager(IInstanceTopologyUpdatesManager instanceTopologyUpdatesManager) {
+	this.instanceTopologyUpdatesManager = instanceTopologyUpdatesManager;
     }
 
     /*

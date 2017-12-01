@@ -9,12 +9,32 @@ package com.sitewhere.grpc.model.spi;
 
 import java.util.concurrent.TimeUnit;
 
+import com.sitewhere.grpc.model.client.GrpcChannel;
+import com.sitewhere.spi.tracing.ITracerProvider;
+
 /**
  * Common interface for GRPC channels that handle API calls.
  * 
  * @author Derek
  */
-public interface IApiChannel {
+public interface IApiChannel<T extends GrpcChannel<?, ?>> {
+
+    /**
+     * Create underlying GRPC channel.
+     * 
+     * @param tracerProvider
+     * @param host
+     * @param port
+     * @return
+     */
+    public T createGrpcChannel(ITracerProvider tracerProvider, String host, int port);
+
+    /**
+     * Get underlying GRPC channel.
+     * 
+     * @return
+     */
+    public T getGrpcChannel();
 
     /**
      * Wait the default amount of time for API to become available.

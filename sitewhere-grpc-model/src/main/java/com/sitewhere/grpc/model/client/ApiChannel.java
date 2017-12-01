@@ -13,6 +13,9 @@ import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.IApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ConnectivityState;
 import io.opentracing.ActiveSpan;
@@ -25,17 +28,68 @@ import io.opentracing.ActiveSpan;
  *
  * @param <T>
  */
-public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngineLifecycleComponent implements IApiChannel {
+public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngineLifecycleComponent
+	implements IApiChannel {
 
     /** Interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;
 
-    /**
-     * Get underlying GRPC channel.
-     * 
-     * @return
+    /** Tracer provider */
+    private ITracerProvider tracerProvider;
+
+    /** Hostname */
+    private String host;
+
+    /** Port */
+    private int port;
+
+    /** Underlying GRPC channel */
+    private T grpcChannel;
+
+    public ApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	this.tracerProvider = tracerProvider;
+	this.host = host;
+	this.port = port;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.model.spi.IApiChannel#getGrpcChannel()
      */
-    public abstract T getGrpcChannel();
+    @Override
+    public T getGrpcChannel() {
+	return grpcChannel;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.grpcChannel = (T) createGrpcChannel(tracerProvider, host, port);
+	initializeNestedComponent(getGrpcChannel(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getGrpcChannel(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getGrpcChannel(), monitor);
+    }
 
     /*
      * (non-Javadoc)
@@ -44,7 +98,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void waitForApiAvailable() throws ApiNotAvailableException {
-	waitForApiAvailable(5 * 60, TimeUnit.SECONDS, 20);
+	waitForApiAvailable(5 * 60, TimeUnit.SECONDS, 60);
     }
 
     /*

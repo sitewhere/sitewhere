@@ -15,8 +15,6 @@ import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementGrpcChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementGrpcChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
@@ -47,14 +45,8 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
 
-    /** Device management GRPC channel */
-    private DeviceManagementGrpcChannel deviceManagementGrpcChannel;
-
     /** Device management API channel */
     private IDeviceManagementApiChannel deviceManagementApiChannel;
-
-    /** Device event management GRPC channel */
-    private DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
@@ -127,11 +119,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Initialize batch management GRPC server.
 	init.addInitializeStep(this, getBatchManagementGrpcServer(), true);
 
-	// Initialize device management GRPC channel.
-	init.addInitializeStep(this, getDeviceManagementGrpcChannel(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
-	// Initialize device event management GRPC channel.
-	init.addInitializeStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Initialize device event management API channel.
+	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -150,11 +142,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Start batch management GRPC server.
 	start.addStartStep(this, getBatchManagementGrpcServer(), true);
 
-	// Start device mangement GRPC channel.
-	start.addStartStep(this, getDeviceManagementGrpcChannel(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
-	// Start device event mangement GRPC channel.
-	start.addStartStep(this, getDeviceEventManagementGrpcChannel(), true);
+	// Start device event mangement API channel.
+	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -173,11 +165,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Stop batch management GRPC server.
 	stop.addStopStep(this, getBatchManagementGrpcServer());
 
-	// Stop device mangement GRPC channel.
-	stop.addStopStep(this, getDeviceManagementGrpcChannel());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
-	// Stop device event mangement GRPC channel.
-	stop.addStopStep(this, getDeviceEventManagementGrpcChannel());
+	// Stop device event mangement API channel.
+	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -191,15 +183,12 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementGrpcChannel = new DeviceManagementGrpcChannel(this,
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this, getDeviceManagementGrpcChannel());
 
 	// Device event management.
-	this.deviceEventManagementGrpcChannel = new DeviceEventManagementGrpcChannel(this,
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT, getInstanceSettings().getGrpcPort());
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(
-		getDeviceEventManagementGrpcChannel());
     }
 
     /*
@@ -247,21 +236,5 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public DeviceManagementGrpcChannel getDeviceManagementGrpcChannel() {
-	return deviceManagementGrpcChannel;
-    }
-
-    public void setDeviceManagementGrpcChannel(DeviceManagementGrpcChannel deviceManagementGrpcChannel) {
-	this.deviceManagementGrpcChannel = deviceManagementGrpcChannel;
-    }
-
-    public DeviceEventManagementGrpcChannel getDeviceEventManagementGrpcChannel() {
-	return deviceEventManagementGrpcChannel;
-    }
-
-    public void setDeviceEventManagementGrpcChannel(DeviceEventManagementGrpcChannel deviceEventManagementGrpcChannel) {
-	this.deviceEventManagementGrpcChannel = deviceEventManagementGrpcChannel;
     }
 }

@@ -41,6 +41,7 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere schedule management APIs on top of a
@@ -54,11 +55,18 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Schedule management GRPC channel */
-    private ScheduleManagementGrpcChannel grpcChannel;
+    public ScheduleManagementApiChannel(ITracerProvider tracerProvider, String host, int port) {
+	super(tracerProvider, host, port);
+    }
 
-    public ScheduleManagementApiChannel(ScheduleManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
+    /*
+     * @see
+     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
+     * tracing.ITracerProvider, java.lang.String, int)
+     */
+    @Override
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new ScheduleManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*
@@ -286,20 +294,6 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.client.ApiChannel#getGrpcChannel()
-     */
-    @Override
-    public ScheduleManagementGrpcChannel getGrpcChannel() {
-	return grpcChannel;
-    }
-
-    public void setGrpcChannel(ScheduleManagementGrpcChannel grpcChannel) {
-	this.grpcChannel = grpcChannel;
     }
 
     /*

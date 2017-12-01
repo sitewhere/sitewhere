@@ -15,4 +15,11 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
  * @author Derek
  */
 public interface IInstanceTopologyUpdatesKafkaConsumer extends IMicroserviceKafkaConsumer {
+
+    /**
+     * Called when an instance topology update is received.
+     * 
+     * @param state
+     */
+    public void onInstanceTopologyUpdate(IInstanceTopologyUpdate update);
 }
