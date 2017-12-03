@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice;
+package com.sitewhere.spi.microservice;
 
 /**
  * Provides a list of known identifiers for microservices.

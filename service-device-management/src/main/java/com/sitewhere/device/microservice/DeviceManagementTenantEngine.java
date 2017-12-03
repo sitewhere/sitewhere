@@ -200,7 +200,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     }
 
     public IAssetManagementApiChannel getAssetManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiChannel();
+	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux().getApiChannel();
     }
 
     public IDeviceEventManagementApiChannel getEventManagementApiChannel() {

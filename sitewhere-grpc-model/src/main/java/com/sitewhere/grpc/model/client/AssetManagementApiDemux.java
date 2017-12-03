@@ -7,8 +7,11 @@
  */
 package com.sitewhere.grpc.model.client;
 
-import com.sitewhere.grpc.model.spi.IApiChannel;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 
 /**
  * Demultiplexes asset management requests across one or more API channels.
@@ -17,14 +20,26 @@ import com.sitewhere.spi.SiteWhereException;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class AssetManagementApiDemux<IAssetManagementApiChannel> extends ApiDemux {
+public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel> implements IAssetManagementApiDemux {
+
+    public AssetManagementApiDemux(IMicroservice microservice) {
+	super(microservice);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     */
+    @Override
+    public String getTargetIdentifier() {
+	return IMicroserviceIdentifiers.ASSET_MANAGEMENT;
+    }
 
     /*
      * @see
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new AssetManagementApiChannel(getTenantEngine().getMicroservice(), host);
+    public IAssetManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+	return new AssetManagementApiChannel(getMicroservice(), host);
     }
 }

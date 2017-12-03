@@ -10,11 +10,11 @@ package com.sitewhere.presence.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementMicroservice;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

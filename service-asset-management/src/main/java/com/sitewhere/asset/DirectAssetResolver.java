@@ -5,33 +5,31 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.asset;
+package com.sitewhere.asset;
 
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManagement;
 import com.sitewhere.spi.asset.IAssetResolver;
 
 /**
- * Default {@link IAssetResolver} implementation.
+ * Asset resolver that uses the persistence APIs directly.
  * 
  * @author Derek
  */
-public class AssetResolver implements IAssetResolver {
+public class DirectAssetResolver implements IAssetResolver {
 
-    /** Asset management */
+    /** Asset management implementation */
     private IAssetManagement assetManagement;
 
-    /** Asset module management */
+    /** Asset module management implementation */
     private IAssetModuleManagement assetModuleManagement;
 
-    public AssetResolver(IAssetManagement assetManagement, IAssetModuleManagement assetModuleManagement) {
+    public DirectAssetResolver(IAssetManagement assetManagement, IAssetModuleManagement assetModuleManagement) {
 	this.assetManagement = assetManagement;
 	this.assetModuleManagement = assetModuleManagement;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.asset.IAssetResolver#getAssetManagement()
      */
     @Override
@@ -39,21 +37,11 @@ public class AssetResolver implements IAssetResolver {
 	return assetManagement;
     }
 
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.asset.IAssetResolver#getAssetModuleManagement()
      */
     @Override
     public IAssetModuleManagement getAssetModuleManagement() {
 	return assetModuleManagement;
-    }
-
-    public void setAssetModuleManagement(IAssetModuleManagement assetModuleManagement) {
-	this.assetModuleManagement = assetModuleManagement;
     }
 }

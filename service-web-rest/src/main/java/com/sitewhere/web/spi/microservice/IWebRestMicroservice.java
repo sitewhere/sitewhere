@@ -7,7 +7,7 @@
  */
 package com.sitewhere.web.spi.microservice;
 
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
@@ -53,11 +53,11 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
     public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel();
 
     /**
-     * Asset management API access via GRPC channel.
+     * Asset management API demux.
      * 
      * @return
      */
-    public IAssetManagementApiChannel getAssetManagementApiChannel();
+    public IAssetManagementApiDemux getAssetManagementApiDemux();
 
     /**
      * Batch management API access via GRPC channel.

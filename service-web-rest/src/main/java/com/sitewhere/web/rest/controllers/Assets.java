@@ -449,8 +449,8 @@ public class Assets extends RestControllerBase {
 	return getMicroservice().getAssetResolver();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getAssetManagement() throws SiteWhereException {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 
     private IDeviceManagement getDeviceManagement() {

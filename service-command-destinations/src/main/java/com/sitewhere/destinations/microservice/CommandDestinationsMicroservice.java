@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsMicroservice;
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsTenantEngine;
-import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

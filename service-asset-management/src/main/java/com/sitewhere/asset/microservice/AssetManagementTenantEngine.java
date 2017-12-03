@@ -12,15 +12,16 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.asset.DirectAssetResolver;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
 import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
 import com.sitewhere.asset.modules.AssetManagementTriggers;
+import com.sitewhere.asset.modules.AssetModuleManagementAdapter;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -81,7 +82,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	this.assetManagement = new AssetManagementTriggers(implementation, getAssetModuleManager(), getMicroservice());
 	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement(), getAssetModuleManager());
-	this.assetResolver = new AssetResolver(getAssetManagement(), null);
+	this.assetResolver = new DirectAssetResolver(getAssetManagement(),
+		new AssetModuleManagementAdapter(getAssetModuleManager()));
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

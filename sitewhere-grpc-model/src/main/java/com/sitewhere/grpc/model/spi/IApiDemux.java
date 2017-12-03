@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.grpc.model.client.ApiChannel;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -19,7 +20,21 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * 
  * @author Derek
  */
-public interface IApiDemux<T extends IApiChannel<?>> extends ITenantEngineLifecycleComponent {
+public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycleComponent {
+
+    /**
+     * Get parent microservice.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
+
+    /**
+     * Get microservice identifier that will trigger creation of an API channel.
+     * 
+     * @return
+     */
+    public String getTargetIdentifier();
 
     /**
      * List of available {@link IApiChannel} that can be used for routing.
@@ -32,18 +47,25 @@ public interface IApiDemux<T extends IApiChannel<?>> extends ITenantEngineLifecy
      * Get an API channel based on the routing strategy.
      * 
      * @return
-     * @throws SiteWhereException
      */
-    public T getApiChannel() throws SiteWhereException;
+    public T getApiChannel();
 
     /**
-     * Create an {@link IApiChannel} to the given host.
+     * Create an API channel to the given host.
      * 
      * @param host
      * @return
      * @throws SiteWhereException
      */
     public T createApiChannel(String host) throws SiteWhereException;
+
+    /**
+     * Initialize a new API channel for the given host.
+     * 
+     * @param host
+     * @throws SiteWhereException
+     */
+    public void initializeApiChannel(String host) throws SiteWhereException;
 
     /**
      * Remove API channel for the given host.

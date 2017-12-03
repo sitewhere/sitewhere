@@ -10,11 +10,11 @@ package com.sitewhere.search.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

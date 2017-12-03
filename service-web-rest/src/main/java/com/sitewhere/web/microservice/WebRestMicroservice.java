@@ -13,14 +13,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
+import com.sitewhere.grpc.model.client.AssetManagementApiDemux;
 import com.sitewhere.grpc.model.client.BatchManagementApiChannel;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.client.ScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
 import com.sitewhere.grpc.model.client.UserManagementApiChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
@@ -28,13 +28,13 @@ import com.sitewhere.grpc.model.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.microservice.hazelcast.client.CachedDeviceManagementApiChannel;
-import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -70,8 +70,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
 
-    /** Asset management API channel */
-    private IAssetManagementApiChannel assetManagementApiChannel;
+    /** Asset management API connectivity */
+    private IAssetManagementApiDemux assetManagementApiDemux;
 
     /** Batch management API channel */
     private IBatchManagementApiChannel batchManagementApiChannel;
@@ -182,8 +182,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Initialize asset management API channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	// Initialize asset management API demux.
+	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
 
 	// Initialize batch management API channel.
 	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
@@ -197,8 +197,10 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /**
      * Create components that interact via GRPC.
+     * 
+     * @throws SiteWhereException
      */
-    protected void createGrpcComponents() {
+    protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
 	this.userManagementApiChannel = new UserManagementApiChannel(this,
 		MicroserviceEnvironment.HOST_USER_MANAGEMENT);
@@ -216,9 +218,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT);
-	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), getAssetManagementApiChannel());
+	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
+	this.assetResolver = new AssetResolver(getAssetManagementApiDemux());
 
 	// Batch management.
 	this.batchManagementApiChannel = new BatchManagementApiChannel(this,
@@ -256,8 +257,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Start asset mangement API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	// Start asset mangement API demux.
+	start.addStartStep(this, getAssetManagementApiDemux(), true);
 
 	// Start batch mangement API channel.
 	start.addStartStep(this, getBatchManagementApiChannel(), true);
@@ -292,8 +293,8 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
-	// Stop asset mangement API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	// Stop asset mangement API demux.
+	stop.addStopStep(this, getAssetManagementApiDemux());
 
 	// Stop batch mangement API channel.
 	stop.addStopStep(this, getBatchManagementApiChannel());
@@ -367,15 +368,15 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getAssetManagementApiChannel()
+     * getAssetManagementApiDemux()
      */
     @Override
-    public IAssetManagementApiChannel getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
+    public IAssetManagementApiDemux getAssetManagementApiDemux() {
+	return assetManagementApiDemux;
     }
 
-    protected void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
+    public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
+	this.assetManagementApiDemux = assetManagementApiDemux;
     }
 
     /*

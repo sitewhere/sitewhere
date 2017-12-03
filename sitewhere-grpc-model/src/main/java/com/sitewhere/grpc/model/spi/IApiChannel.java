@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.model.client.GrpcChannel;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -18,7 +19,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-public interface IApiChannel<T extends GrpcChannel<?, ?>> {
+public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineLifecycleComponent {
 
     /**
      * Create underlying GRPC channel.

@@ -14,17 +14,17 @@ import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.model.client.AssetManagementApiChannel;
+import com.sitewhere.grpc.model.client.AssetManagementApiDemux;
 import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.rest.model.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -49,8 +49,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     /** Event management API channel */
     private IDeviceEventManagementApiChannel eventManagementApiChannel;
 
-    /** Asset management API channel */
-    private IAssetManagementApiChannel assetManagementApiChannel;
+    /** Asset management API demux */
+    private IAssetManagementApiDemux assetManagementApiDemux;
 
     /** Asset resolver */
     private IAssetResolver assetResolver;
@@ -103,9 +103,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
 
 	// Asset management microservice connectivity.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_ASSET_MANAGEMENT);
-	this.assetResolver = new AssetResolver(getAssetManagementApiChannel(), null);
+	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
+	this.assetResolver = new AssetResolver(getAssetManagementApiDemux());
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -116,8 +115,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Initialize event management API channel.
 	init.addInitializeStep(this, getEventManagementApiChannel(), true);
 
-	// Initialize asset management GRPC channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	// Initialize asset management GRPC demux.
+	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -141,8 +140,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Start event management API channel.
 	start.addStartStep(this, getEventManagementApiChannel(), true);
 
-	// Start asset management API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	// Start asset management API demux.
+	start.addStartStep(this, getAssetManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -166,8 +165,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Stop event management API channel.
 	stop.addStopStep(this, getEventManagementApiChannel());
 
-	// Stop asset management API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	// Stop asset management API demux.
+	stop.addStopStep(this, getAssetManagementApiDemux());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -211,15 +210,15 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getAssetManagementApiChannel()
+     * getAssetManagementApiDemux()
      */
     @Override
-    public IAssetManagementApiChannel getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
+    public IAssetManagementApiDemux getAssetManagementApiDemux() {
+	return assetManagementApiDemux;
     }
 
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
+    public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
+	this.assetManagementApiDemux = assetManagementApiDemux;
     }
 
     /*
