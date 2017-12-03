@@ -14,7 +14,7 @@ import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;

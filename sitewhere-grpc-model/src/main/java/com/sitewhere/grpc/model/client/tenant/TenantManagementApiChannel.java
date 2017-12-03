@@ -5,12 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.client;
+package com.sitewhere.grpc.model.client.tenant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.model.client.ApiChannel;
+import com.sitewhere.grpc.model.client.GrpcChannel;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.service.GCreateTenantRequest;

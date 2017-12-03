@@ -21,7 +21,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.MapMaker;
-import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
+import com.sitewhere.grpc.model.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;

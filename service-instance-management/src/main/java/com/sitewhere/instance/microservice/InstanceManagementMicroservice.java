@@ -15,8 +15,8 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.UserManagementApiChannel;
+import com.sitewhere.grpc.model.client.tenant.TenantManagementApiChannel;
+import com.sitewhere.grpc.model.client.user.UserManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;

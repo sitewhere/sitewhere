@@ -5,28 +5,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.client;
+package com.sitewhere.grpc.model.client.event;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.service.TenantManagementGrpc;
-import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingStub;
-import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
+import com.sitewhere.grpc.model.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
+import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementBlockingStub;
+import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementStub;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
- * Channel that allows for communication with a remote tenant management GRPC
- * server.
+ * Channel that allows for communication with a remote device event management
+ * GRPC server.
  * 
  * @author Derek
  */
-public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlockingStub, TenantManagementStub> {
+public class DeviceEventManagementGrpcChannel
+	extends MultitenantGrpcChannel<DeviceEventManagementBlockingStub, DeviceEventManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public TenantManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public DeviceEventManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
     }
 
@@ -36,8 +38,8 @@ public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlo
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createBlockingStub()
      */
     @Override
-    public TenantManagementBlockingStub createBlockingStub() {
-	return TenantManagementGrpc.newBlockingStub(getChannel());
+    public DeviceEventManagementBlockingStub createBlockingStub() {
+	return DeviceEventManagementGrpc.newBlockingStub(getChannel());
     }
 
     /*
@@ -46,8 +48,8 @@ public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlo
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createAsyncStub()
      */
     @Override
-    public TenantManagementStub createAsyncStub() {
-	return TenantManagementGrpc.newStub(getChannel());
+    public DeviceEventManagementStub createAsyncStub() {
+	return DeviceEventManagementGrpc.newStub(getChannel());
     }
 
     /*

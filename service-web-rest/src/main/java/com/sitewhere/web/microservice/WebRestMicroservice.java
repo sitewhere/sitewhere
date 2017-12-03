@@ -13,12 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.grpc.model.client.AssetManagementApiDemux;
-import com.sitewhere.grpc.model.client.BatchManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.ScheduleManagementApiChannel;
-import com.sitewhere.grpc.model.client.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.UserManagementApiChannel;
+import com.sitewhere.grpc.model.client.asset.AssetManagementApiDemux;
+import com.sitewhere.grpc.model.client.batch.BatchManagementApiChannel;
+import com.sitewhere.grpc.model.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.model.client.schedule.ScheduleManagementApiChannel;
+import com.sitewhere.grpc.model.client.tenant.TenantManagementApiChannel;
+import com.sitewhere.grpc.model.client.user.UserManagementApiChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;

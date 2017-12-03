@@ -10,8 +10,8 @@ package com.sitewhere.outbound.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.client.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
+import com.sitewhere.grpc.model.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.model.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;

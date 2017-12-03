@@ -7,7 +7,7 @@
  */
 package com.sitewhere.microservice.hazelcast.client;
 
-import com.sitewhere.grpc.model.client.DeviceManagementApiChannel;
+import com.sitewhere.grpc.model.client.device.DeviceManagementApiChannel;
 import com.sitewhere.microservice.hazelcast.DeviceManagementCacheProviders;
 import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;

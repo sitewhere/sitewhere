@@ -5,29 +5,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.client;
+package com.sitewhere.grpc.model.client.schedule;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementBlockingStub;
-import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementStub;
+import com.sitewhere.grpc.model.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementBlockingStub;
+import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementStub;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
- * Channel that allows for communication with a remote device management GRPC
+ * Channel that allows for communication with a remote schedule management GRPC
  * server.
  * 
  * @author Derek
  */
-public class DeviceManagementGrpcChannel
-	extends MultitenantGrpcChannel<DeviceManagementBlockingStub, DeviceManagementStub> {
+public class ScheduleManagementGrpcChannel
+	extends MultitenantGrpcChannel<ScheduleManagementBlockingStub, ScheduleManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public ScheduleManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
     }
 
@@ -37,8 +38,8 @@ public class DeviceManagementGrpcChannel
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createBlockingStub()
      */
     @Override
-    public DeviceManagementBlockingStub createBlockingStub() {
-	return DeviceManagementGrpc.newBlockingStub(getChannel());
+    public ScheduleManagementBlockingStub createBlockingStub() {
+	return ScheduleManagementGrpc.newBlockingStub(getChannel());
     }
 
     /*
@@ -47,8 +48,8 @@ public class DeviceManagementGrpcChannel
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createAsyncStub()
      */
     @Override
-    public DeviceManagementStub createAsyncStub() {
-	return DeviceManagementGrpc.newStub(getChannel());
+    public ScheduleManagementStub createAsyncStub() {
+	return ScheduleManagementGrpc.newStub(getChannel());
     }
 
     /*

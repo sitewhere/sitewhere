@@ -5,28 +5,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.client;
+package com.sitewhere.grpc.model.client.batch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.service.UserManagementGrpc;
-import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementBlockingStub;
-import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementStub;
+import com.sitewhere.grpc.model.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.service.BatchManagementGrpc;
+import com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementBlockingStub;
+import com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementStub;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
- * Channel that allows for communication with a remote user mangement GRPC
+ * Channel that allows for communication with a remote batch management GRPC
  * server.
  * 
  * @author Derek
  */
-public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockingStub, UserManagementStub> {
+public class BatchManagementGrpcChannel
+	extends MultitenantGrpcChannel<BatchManagementBlockingStub, BatchManagementStub> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public UserManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public BatchManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
     }
 
@@ -36,8 +38,8 @@ public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockin
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createBlockingStub()
      */
     @Override
-    public UserManagementBlockingStub createBlockingStub() {
-	return UserManagementGrpc.newBlockingStub(getChannel());
+    public BatchManagementBlockingStub createBlockingStub() {
+	return BatchManagementGrpc.newBlockingStub(getChannel());
     }
 
     /*
@@ -46,8 +48,8 @@ public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockin
      * @see com.sitewhere.grpc.model.client.GrpcChannel#createAsyncStub()
      */
     @Override
-    public UserManagementStub createAsyncStub() {
-	return UserManagementGrpc.newStub(getChannel());
+    public BatchManagementStub createAsyncStub() {
+	return BatchManagementGrpc.newStub(getChannel());
     }
 
     /*

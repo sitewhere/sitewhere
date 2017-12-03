@@ -5,24 +5,25 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.client;
+package com.sitewhere.grpc.model.client.batch;
 
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
+import com.sitewhere.grpc.model.client.ApiDemux;
+import com.sitewhere.grpc.model.spi.client.IBatchManagementApiChannel;
+import com.sitewhere.grpc.model.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 
 /**
- * Demultiplexes asset management requests across one or more API channels.
+ * Demultiplexes batch management requests across one or more API channels.
  * 
  * @author Derek
  *
  * @param <IAssetManagementApiChannel>
  */
-public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel> implements IAssetManagementApiDemux {
+public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel> implements IBatchManagementApiDemux {
 
-    public AssetManagementApiDemux(IMicroservice microservice) {
+    public BatchManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
     }
 
@@ -31,7 +32,7 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      */
     @Override
     public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.ASSET_MANAGEMENT;
+	return IMicroserviceIdentifiers.BATCH_OPERATIONS;
     }
 
     /*
@@ -39,7 +40,7 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IAssetManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new AssetManagementApiChannel(getMicroservice(), host);
+    public IBatchManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+	return new BatchManagementApiChannel(getMicroservice(), host);
     }
 }
