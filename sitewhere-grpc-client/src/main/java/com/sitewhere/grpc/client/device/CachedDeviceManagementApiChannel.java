@@ -13,6 +13,7 @@ import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -22,6 +23,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
+
+    /** Site cache */
+    private ICacheProvider<String, ISite> siteCache;
 
     /** Device specification cache */
     private ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
@@ -34,10 +38,29 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IMicroservice microservice, String host) {
 	super(microservice, host);
+	this.siteCache = new DeviceManagementCacheProviders.SiteCache(microservice, false);
 	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
 		false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, false);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getSiteByToken(
+     * java.lang.String)
+     */
+    @Override
+    public ISite getSiteByToken(String token) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	ISite site = getSiteCache().getCacheEntry(tenant, token);
+	if (site != null) {
+	    getLogger().trace("Using cached information for site '" + token + "'.");
+	    return site;
+	} else {
+	    getLogger().trace("No cached information for site '" + token + "'.");
+	}
+	return super.getSiteByToken(token);
     }
 
     /*
@@ -90,6 +113,14 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	    getLogger().trace("No cached information for assignment '" + token + "'.");
 	}
 	return super.getDeviceAssignmentByToken(token);
+    }
+
+    public ICacheProvider<String, ISite> getSiteCache() {
+	return siteCache;
+    }
+
+    public void setSiteCache(ICacheProvider<String, ISite> siteCache) {
+	this.siteCache = siteCache;
     }
 
     protected ICacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {

@@ -14,6 +14,7 @@ import com.sitewhere.grpc.client.cache.CacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
@@ -23,6 +24,9 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class DeviceManagementCacheProviders {
 
+    /** Cache id for site cache */
+    public static final String ID_SITE_CACHE = "si";
+
     /** Cache id for device specification cache */
     public static final String ID_SPECIFICATION_CACHE = "sp";
 
@@ -31,6 +35,29 @@ public class DeviceManagementCacheProviders {
 
     /** Cache id for device assignment cache */
     public static final String ID_ASSIGNMENT_CACHE = "as";
+
+    /**
+     * Cache for sites.
+     * 
+     * @author Derek
+     */
+    public static class SiteCache extends CacheProvider<String, ISite> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public SiteCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_SITE_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
 
     /**
      * Cache for device specifications.

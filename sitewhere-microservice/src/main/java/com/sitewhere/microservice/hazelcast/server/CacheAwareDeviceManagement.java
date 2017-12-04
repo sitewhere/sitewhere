@@ -19,9 +19,11 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
+import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -31,6 +33,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
+
+    /** Site cache */
+    private ICacheProvider<String, ISite> siteCache;
 
     /** Device specification cache */
     private ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
@@ -43,9 +48,67 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     public CacheAwareDeviceManagement(IDeviceManagement delegate, IMicroservice microservice) {
 	super(delegate);
+	this.siteCache = new DeviceManagementCacheProviders.SiteCache(microservice, true);
 	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice, true);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, true);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#createSite(com.sitewhere.spi.
+     * device.request.ISiteCreateRequest)
+     */
+    @Override
+    public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	ISite result = super.createSite(request);
+	getSiteCache().setCacheEntry(tenant, result.getToken(), result);
+	getLogger().trace("Added created site to cache.");
+	return result;
+    }
+
+    /*
+     * @see com.sitewhere.device.DeviceManagementDecorator#getSiteByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ISite getSiteByToken(String token) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	ISite result = super.getSiteByToken(token);
+	if ((result != null) && (getSiteCache().getCacheEntry(tenant, token) == null)) {
+	    getSiteCache().setCacheEntry(tenant, result.getToken(), result);
+	    getLogger().trace("Added site to cache.");
+	}
+	return result;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#updateSite(java.lang.String,
+     * com.sitewhere.spi.device.request.ISiteCreateRequest)
+     */
+    @Override
+    public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	ISite result = super.updateSite(siteToken, request);
+	getSiteCache().setCacheEntry(tenant, result.getToken(), result);
+	getLogger().trace("Updated site in cache.");
+	return result;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#deleteSite(java.lang.String,
+     * boolean)
+     */
+    @Override
+    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	ISite result = super.deleteSite(siteToken, force);
+	getSiteCache().removeCacheEntry(tenant, result.getToken());
+	getLogger().trace("Removed site from cache.");
+	return result;
     }
 
     /*
@@ -239,6 +302,14 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	getDeviceSpecificationCache().removeCacheEntry(tenant, result.getToken());
 	getLogger().trace("Removed specification from cache.");
 	return result;
+    }
+
+    public ICacheProvider<String, ISite> getSiteCache() {
+	return siteCache;
+    }
+
+    public void setSiteCache(ICacheProvider<String, ISite> siteCache) {
+	this.siteCache = siteCache;
     }
 
     protected ICacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {
