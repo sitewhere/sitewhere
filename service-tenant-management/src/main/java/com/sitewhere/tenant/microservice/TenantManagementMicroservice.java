@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.hazelcast.server.CacheAwareTenantManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
@@ -132,7 +133,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     protected ITenantManagement initializeTenantManagement(ApplicationContext context) throws SiteWhereException {
 	try {
 	    ITenantManagement bean = (ITenantManagement) context.getBean(TenantManagementBeans.BEAN_TENANT_MANAGEMENT);
-	    return new TenantManagementKafkaTriggers(bean, getTenantModelProducer());
+	    ITenantManagement cached = new CacheAwareTenantManagement(bean, this);
+	    return new TenantManagementKafkaTriggers(cached, getTenantModelProducer());
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("Tenant management bean not found.", e);
 	}

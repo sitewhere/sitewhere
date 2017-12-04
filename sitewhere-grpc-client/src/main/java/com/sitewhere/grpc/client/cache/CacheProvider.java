@@ -26,6 +26,9 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 
+    /** Cache prefix for global caches */
+    private static final String GLOBAL_CACHE_INDICATOR = "_global_";
+
     /** Parent microservice */
     private IMicroservice microservice;
 
@@ -87,17 +90,18 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
     }
 
     /**
-     * Get cache only if it has already been created.
+     * Get cache (create if not found).
      * 
      * @return
      * @throws SiteWhereException
      */
     protected ReplicatedMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
-	ReplicatedMap<K, V> cache = getCachesByTenantId().get(tenant.getId());
+	String tenantId = (tenant != null) ? tenant.getId() : GLOBAL_CACHE_INDICATOR;
+	ReplicatedMap<K, V> cache = getCachesByTenantId().get(tenantId);
 	if (cache == null) {
-	    String cacheName = getCacheNameForTenant(tenant);
+	    String cacheName = getCacheNameForTenant(tenantId);
 	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getReplicatedMap(cacheName);
-	    getCachesByTenantId().put(tenant.getId(), cache);
+	    getCachesByTenantId().put(tenantId, cache);
 	}
 	return cache;
     }
@@ -108,8 +112,8 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @param tenant
      * @return
      */
-    protected String getCacheNameForTenant(ITenant tenant) {
-	return getIdentifier() + ":" + ((tenant == null) ? "_global_" : tenant.getId());
+    protected String getCacheNameForTenant(String tenantId) {
+	return getIdentifier() + ":" + tenantId;
     }
 
     protected IMicroservice getMicroservice() {

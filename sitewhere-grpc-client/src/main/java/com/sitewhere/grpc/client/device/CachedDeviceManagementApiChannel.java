@@ -17,7 +17,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Adds Apache Ignite caching support to device management API channel.
+ * Adds caching support to device management API channel.
  * 
  * @author Derek
  */

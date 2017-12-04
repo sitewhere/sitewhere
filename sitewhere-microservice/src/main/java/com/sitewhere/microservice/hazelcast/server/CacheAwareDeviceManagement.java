@@ -26,8 +26,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Wraps {@link IDeviceManagement} implementation with Apache Ignite cache
- * support.
+ * Wraps {@link IDeviceManagement} implementation with cache support.
  * 
  * @author Derek
  */
@@ -72,7 +71,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice result = super.getDeviceByHardwareId(hardwareId);
-	if (getDeviceCache().getCacheEntry(tenant, hardwareId) == null) {
+	if ((result != null) && (getDeviceCache().getCacheEntry(tenant, hardwareId) == null)) {
 	    getDeviceCache().setCacheEntry(tenant, result.getHardwareId(), result);
 	    getLogger().trace("Added device to cache.");
 	}
@@ -130,7 +129,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.getDeviceAssignmentByToken(token);
-	if (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null) {
+	if ((result != null) && (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	    getLogger().trace("Added assignment to cache.");
 	}
@@ -205,7 +204,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceSpecification result = super.getDeviceSpecificationByToken(token);
-	if (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null) {
+	if ((result != null) && (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceSpecificationCache().setCacheEntry(tenant, result.getToken(), result);
 	    getLogger().trace("Added specification to cache.");
 	}
@@ -246,8 +245,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	return deviceSpecificationCache;
     }
 
-    protected void setDeviceSpecificationCache(
-	    ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
+    protected void setDeviceSpecificationCache(ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
 	this.deviceSpecificationCache = deviceSpecificationCache;
     }
 
