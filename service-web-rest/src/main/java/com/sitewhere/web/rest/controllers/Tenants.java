@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;

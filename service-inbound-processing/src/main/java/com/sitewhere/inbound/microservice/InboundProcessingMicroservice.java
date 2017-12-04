@@ -10,14 +10,13 @@ package com.sitewhere.inbound.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.client.event.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.ApiNotAvailableException;
-import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.microservice.MicroserviceEnvironment;
-import com.sitewhere.microservice.hazelcast.client.CachedDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -41,10 +40,10 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     private static final String NAME = "Inbound Processing";
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel deviceManagementApiChannel;
+    private IDeviceManagementApiDemux deviceManagementApiDemux;
 
     /** Device event management API channel */
-    private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
+    private IDeviceEventManagementApiDemux deviceEventManagementApiDemux;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -92,9 +91,9 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      * @throws ApiNotAvailableException
      */
     protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getDeviceManagementApiChannel().waitForApiAvailable();
+	getDeviceManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Device management API detected as available.");
-	getDeviceEventManagementApiChannel().waitForApiAvailable();
+	getDeviceEventManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Device event management API detected as available.");
     }
 
@@ -111,11 +110,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API demux.
+	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
-	// Initialize device event management API channel.
-	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
+	// Initialize device event management API demux.
+	init.addInitializeStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -131,11 +130,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API demux.
+	start.addStartStep(this, getDeviceManagementApiDemux(), true);
 
-	// Start device event mangement API channel.
-	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
+	// Start device event mangement API demux.
+	start.addStartStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -151,11 +150,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API demux.
+	stop.addStopStep(this, getDeviceManagementApiDemux());
 
-	// Stop device event mangement API channel.
-	stop.addStopStep(this, getDeviceEventManagementApiChannel());
+	// Stop device event mangement API demux.
+	stop.addStopStep(this, getDeviceEventManagementApiDemux());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -166,38 +165,36 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
     }
 
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagementApiDemux()
      */
     @Override
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
+	return deviceManagementApiDemux;
     }
 
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
+	this.deviceManagementApiDemux = deviceManagementApiDemux;
     }
 
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getDeviceEventManagementApiChannel()
+     * getDeviceEventManagementApiDemux()
      */
     @Override
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel() {
-	return deviceEventManagementApiChannel;
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
+	return deviceEventManagementApiDemux;
     }
 
-    public void setDeviceEventManagementApiChannel(IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
+    public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
+	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
     }
 
     /*

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.outbound.spi.microservice;
 
-import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**

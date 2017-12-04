@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
+import com.sitewhere.security.SitewhereAuthentication;
+import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;

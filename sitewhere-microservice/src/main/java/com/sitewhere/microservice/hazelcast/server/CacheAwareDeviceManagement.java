@@ -10,9 +10,10 @@ package com.sitewhere.microservice.hazelcast.server;
 import java.util.Map;
 
 import com.sitewhere.device.DeviceManagementDecorator;
-import com.sitewhere.microservice.hazelcast.DeviceManagementCacheProviders;
-import com.sitewhere.microservice.security.UserContextManager;
+import com.sitewhere.grpc.client.device.DeviceManagementCacheProviders;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -22,7 +23,6 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.hazelcast.ICacheProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

@@ -10,7 +10,7 @@ package com.sitewhere.microservice.grpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.client.TenantTokenClientInterceptor;
+import com.sitewhere.grpc.client.TenantTokenClientInterceptor;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 import io.grpc.Context;

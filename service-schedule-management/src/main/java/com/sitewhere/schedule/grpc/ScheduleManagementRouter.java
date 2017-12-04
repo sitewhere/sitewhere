@@ -32,9 +32,9 @@ import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.microservice.security.UserContextManager;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.grpc.stub.StreamObserver;

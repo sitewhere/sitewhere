@@ -14,7 +14,7 @@ import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.microservice.security.UserContextManager;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.grpc.stub.StreamObserver;

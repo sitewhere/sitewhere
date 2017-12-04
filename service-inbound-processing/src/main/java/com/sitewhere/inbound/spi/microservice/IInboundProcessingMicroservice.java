@@ -7,8 +7,8 @@
  */
 package com.sitewhere.inbound.spi.microservice;
 
-import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -23,12 +23,12 @@ public interface IInboundProcessingMicroservice extends IMultitenantMicroservice
      * 
      * @return
      */
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel();
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
 
     /**
      * Get device event management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel();
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
 }

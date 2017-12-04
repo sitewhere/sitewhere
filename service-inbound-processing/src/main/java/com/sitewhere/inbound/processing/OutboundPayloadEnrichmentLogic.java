@@ -93,7 +93,8 @@ public class OutboundPayloadEnrichmentLogic {
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
     public IInboundProcessingTenantEngine getTenantEngine() {

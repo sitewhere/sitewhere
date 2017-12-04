@@ -164,7 +164,8 @@ public class InboundPayloadProcessingLogic {
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
     /**
@@ -173,8 +174,8 @@ public class InboundPayloadProcessingLogic {
      * @return
      */
     protected IDeviceEventManagement getDeviceEventManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 
     public Logger getLogger() {

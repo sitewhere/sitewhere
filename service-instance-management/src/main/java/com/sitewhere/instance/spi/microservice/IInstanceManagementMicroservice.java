@@ -7,8 +7,8 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.spi.microservice.IMicroservice;

@@ -15,10 +15,10 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.model.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.grpc.model.client.user.UserManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IUserManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
+import com.sitewhere.grpc.client.user.UserManagementApiChannel;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.kafka.StateAggregatorKafkaConsumer;

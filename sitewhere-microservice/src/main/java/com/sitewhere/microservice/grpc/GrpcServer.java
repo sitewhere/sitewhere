@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.spi.server.IGrpcServer;
+import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;

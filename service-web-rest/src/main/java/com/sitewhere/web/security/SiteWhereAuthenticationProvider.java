@@ -19,8 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.microservice.security.SitewhereAuthentication;
-import com.sitewhere.microservice.security.SitewhereUserDetails;
+import com.sitewhere.security.SitewhereAuthentication;
+import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;

@@ -14,11 +14,10 @@ import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.model.client.asset.AssetManagementApiDemux;
-import com.sitewhere.grpc.model.client.event.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
-import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -46,8 +45,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
 
-    /** Event management API channel */
-    private IDeviceEventManagementApiChannel eventManagementApiChannel;
+    /** Event management API demux */
+    private IDeviceEventManagementApiDemux eventManagementApiDemux;
 
     /** Asset management API demux */
     private IAssetManagementApiDemux assetManagementApiDemux;
@@ -99,8 +98,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
 	// Event management microservice connectivity.
-	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
+	this.eventManagementApiDemux = new DeviceEventManagementApiDemux(this);
 
 	// Asset management microservice connectivity.
 	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
@@ -112,8 +110,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Initialize event management API channel.
-	init.addInitializeStep(this, getEventManagementApiChannel(), true);
+	// Initialize event management API demux.
+	init.addInitializeStep(this, getEventManagementApiDemux(), true);
 
 	// Initialize asset management GRPC demux.
 	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
@@ -137,8 +135,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Start device management GRPC server.
 	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Start event management API channel.
-	start.addStartStep(this, getEventManagementApiChannel(), true);
+	// Start event management API demux.
+	start.addStartStep(this, getEventManagementApiDemux(), true);
 
 	// Start asset management API demux.
 	start.addStartStep(this, getAssetManagementApiDemux(), true);
@@ -162,8 +160,8 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 	// Stop device management GRPC server.
 	stop.addStopStep(this, getDeviceManagementGrpcServer());
 
-	// Stop event management API channel.
-	stop.addStopStep(this, getEventManagementApiChannel());
+	// Stop event management API demux.
+	stop.addStopStep(this, getEventManagementApiDemux());
 
 	// Stop asset management API demux.
 	stop.addStopStep(this, getAssetManagementApiDemux());
@@ -197,15 +195,15 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getEventManagementApiChannel()
+     * getEventManagementApiDemux()
      */
     @Override
-    public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
-	return eventManagementApiChannel;
+    public IDeviceEventManagementApiDemux getEventManagementApiDemux() {
+	return eventManagementApiDemux;
     }
 
-    public void setEventManagementApiChannel(IDeviceEventManagementApiChannel eventManagementApiChannel) {
-	this.eventManagementApiChannel = eventManagementApiChannel;
+    public void setEventManagementApiDemux(IDeviceEventManagementApiDemux eventManagementApiDemux) {
+	this.eventManagementApiDemux = eventManagementApiDemux;
     }
 
     /*

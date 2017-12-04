@@ -10,7 +10,7 @@ package com.sitewhere.microservice.asset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManagement;
 import com.sitewhere.spi.asset.IAssetResolver;

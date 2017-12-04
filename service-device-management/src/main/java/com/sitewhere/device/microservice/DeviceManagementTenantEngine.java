@@ -18,8 +18,8 @@ import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.model.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.grpc.model.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.hazelcast.server.CacheAwareDeviceManagement;
@@ -200,11 +200,11 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     }
 
     public IAssetManagementApiChannel getAssetManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux().getApiChannel();
+	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux().waitForApiChannel();
     }
 
     public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiChannel();
+	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiDemux().waitForApiChannel();
     }
 
     public IAssetResolver getAssetResolver() {

@@ -30,7 +30,7 @@ import com.sitewhere.grpc.service.GUpdateBatchOperationElementResponse;
 import com.sitewhere.grpc.service.GUpdateBatchOperationRequest;
 import com.sitewhere.grpc.service.GUpdateBatchOperationResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.microservice.security.UserContextManager;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.grpc.stub.StreamObserver;

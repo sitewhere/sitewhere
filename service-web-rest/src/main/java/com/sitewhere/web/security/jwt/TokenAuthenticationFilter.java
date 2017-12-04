@@ -25,10 +25,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.grpc.model.spi.security.ITenantAwareAuthentication;
-import com.sitewhere.microservice.security.SitewhereGrantedAuthority;
 import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
