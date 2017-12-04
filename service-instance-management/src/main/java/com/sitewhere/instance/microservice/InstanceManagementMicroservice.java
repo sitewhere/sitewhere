@@ -31,14 +31,14 @@ import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
-import com.sitewhere.microservice.state.InstanceTopologyUpdatesKafkaProducer;
+import com.sitewhere.microservice.state.InstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -69,7 +69,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     private IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer;
 
     /** Instance topology updates Kafka producer */
-    private IInstanceTopologyUpdatesKafkaProducer instanceTopologyUpdatesKafkaProducer;
+    private IInstanceTopologySnapshotsKafkaProducer instanceTopologyUpdatesKafkaProducer;
 
     /*
      * (non-Javadoc)
@@ -108,7 +108,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 	this.stateAggregatorKafkaConsumer = new StateAggregatorKafkaConsumer(this);
 
 	// Create topology updates producer.
-	this.instanceTopologyUpdatesKafkaProducer = new InstanceTopologyUpdatesKafkaProducer(this);
+	this.instanceTopologyUpdatesKafkaProducer = new InstanceTopologySnapshotsKafkaProducer(this);
     }
 
     /**
@@ -448,12 +448,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
      * getInstanceTopologyUpdatesKafkaProducer()
      */
     @Override
-    public IInstanceTopologyUpdatesKafkaProducer getInstanceTopologyUpdatesKafkaProducer() {
+    public IInstanceTopologySnapshotsKafkaProducer getInstanceTopologyUpdatesKafkaProducer() {
 	return instanceTopologyUpdatesKafkaProducer;
     }
 
     public void setInstanceTopologyUpdatesKafkaProducer(
-	    IInstanceTopologyUpdatesKafkaProducer instanceTopologyUpdatesKafkaProducer) {
+	    IInstanceTopologySnapshotsKafkaProducer instanceTopologyUpdatesKafkaProducer) {
 	this.instanceTopologyUpdatesKafkaProducer = instanceTopologyUpdatesKafkaProducer;
     }
 }

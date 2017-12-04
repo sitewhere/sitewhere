@@ -8,8 +8,8 @@
 package com.sitewhere.batch.spi.microservice;
 
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -27,16 +27,16 @@ public interface IBatchOperationsMicroservice extends IMultitenantMicroservice<I
     public IBatchManagementGrpcServer getBatchManagementGrpcServer();
 
     /**
-     * Get device management API access via GRPC channel.
+     * Get device management API access via GRPC demux.
      * 
      * @return
      */
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel();
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
 
     /**
-     * Get device event management API access via GRPC channel.
+     * Get device event management API access via GRPC demux.
      * 
      * @return
      */
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel();
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
 }

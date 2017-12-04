@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
-import com.sitewhere.microservice.state.InstanceTopologyUpdatesManager;
+import com.sitewhere.microservice.state.InstanceTopologySnapshotsManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -91,7 +91,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public Microservice() {
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
-	this.instanceTopologyUpdatesManager = new InstanceTopologyUpdatesManager(this);
+	this.instanceTopologyUpdatesManager = new InstanceTopologySnapshotsManager(this);
     }
 
     /*

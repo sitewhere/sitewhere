@@ -23,8 +23,9 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -36,7 +37,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 @SuppressWarnings("rawtypes")
 public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent
-	implements IApiDemux<T>, IInstanceTopologyUpdatesListener {
+	implements IApiDemux<T>, IInstanceTopologySnapshotsListener {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -125,13 +126,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public T removeApiChannel(String host) throws SiteWhereException {
-	T toRemove = null;
-	for (T channel : getApiChannels()) {
-	    if (channel.getGrpcChannel().getHostname().equals(host)) {
-		toRemove = channel;
-		break;
-	    }
-	}
+	T toRemove = getApiChannelForHost(host);
 	if (toRemove != null) {
 	    getApiChannels().remove(toRemove);
 	    stopNestedComponent(toRemove, new LifecycleProgressMonitor(
@@ -140,19 +135,41 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	return toRemove;
     }
 
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onInstanceTopologyUpdated(com.sitewhere.spi.microservice.state.
-     * IInstanceTopologyUpdate)
+    /**
+     * Get API channel for the given host or null if not found.
+     * 
+     * @param host
+     * @return
      */
-    public void onInstanceTopologyUpdated(IInstanceTopologyUpdate update) {
-	if (getTargetIdentifier().equals(update.getMicroserviceIdentifier())) {
-	    getLogger().info("Microservice for '" + getTargetIdentifier() + "' discovered at hostname "
-		    + update.getMicroserviceHostname());
-	    try {
-		initializeApiChannel(update.getMicroserviceHostname());
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to initialize API channel for " + update.getMicroserviceHostname() + ".");
+    protected T getApiChannelForHost(String host) {
+	for (T channel : getApiChannels()) {
+	    if (channel.getGrpcChannel().getHostname().equals(host)) {
+		return channel;
+	    }
+	}
+	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener#
+     * onInstanceTopologySnapshot(com.sitewhere.spi.microservice.state.
+     * IInstanceTopologySnapshot)
+     */
+    @Override
+    public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
+	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
+	    if (getTargetIdentifier().equals(entry.getMicroserviceIdentifier())) {
+		T existing = getApiChannelForHost(entry.getMicroserviceHostname());
+		if (existing == null) {
+		    getLogger().info("Microservice for '" + getTargetIdentifier() + "' discovered at hostname "
+			    + entry.getMicroserviceHostname());
+		    try {
+			initializeApiChannel(entry.getMicroserviceHostname());
+		    } catch (SiteWhereException e) {
+			getLogger()
+				.error("Unable to initialize API channel for " + entry.getMicroserviceHostname() + ".");
+		    }
+		}
 	    }
 	}
     }

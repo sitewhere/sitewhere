@@ -9,6 +9,8 @@ package com.sitewhere.instance.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,16 +20,16 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaConsumer;
 import com.sitewhere.rest.model.microservice.state.InstanceMicroservice;
 import com.sitewhere.rest.model.microservice.state.InstanceTenantEngine;
-import com.sitewhere.rest.model.microservice.state.InstanceTopologyUpdate;
+import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
+import com.sitewhere.rest.model.microservice.state.InstanceTopologySnapshot;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTenantEngine;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
-import com.sitewhere.spi.microservice.state.InstanceTopologyUpdateType;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -42,11 +44,41 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Interval at which topology snapshots are sent */
+    private static final int AUTO_SNAPSHOT_INTERVAL = 15 * 1000;
+
     /** Current inferred topology */
     private Map<String, Map<String, IInstanceMicroservice>> topology = new HashMap<String, Map<String, IInstanceMicroservice>>();
 
+    /** Executor service */
+    private ExecutorService executor;
+
     public StateAggregatorKafkaConsumer(IMicroservice microservice) {
 	super(microservice);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+	executor = Executors.newSingleThreadExecutor();
+	executor.execute(new TopologySnapshotUpdate());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+	if (executor != null) {
+	    executor.shutdownNow();
+	}
     }
 
     /*
@@ -57,8 +89,7 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
      */
     @Override
     public void onMicroserviceStateUpdate(IMicroserviceState state) {
-	IInstanceMicroservice microservice = getOrCreateMicroservice(state);
-	detectMicroserviceStateChange(microservice, state);
+	getOrCreateMicroservice(state);
     }
 
     /*
@@ -95,6 +126,7 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
 	IInstanceMicroservice microservice = getMicroservice(state);
 	if (microservice == null) {
 	    microservice = addMicroservice(state);
+	    sendTopologySnapshot();
 	}
 	return microservice;
     }
@@ -131,49 +163,66 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
 	microservice.setLatestState(state);
 	services.put(state.getMicroserviceHostname(), microservice);
 
-	// Send a topology update.
-	InstanceTopologyUpdate update = new InstanceTopologyUpdate();
-	update.setMicroserviceIdentifier(state.getMicroserviceIdentifier());
-	update.setMicroserviceHostname(state.getMicroserviceHostname());
-	update.setType(InstanceTopologyUpdateType.MicroserviceStarted);
-	sendTopologyUpdate(update);
-
 	return microservice;
     }
 
     /**
-     * Detect microservice state changes.
+     * Create a topology snapshot from current inferred state.
      * 
-     * @param microservice
-     * @param updated
+     * @return
      */
-    protected void detectMicroserviceStateChange(IInstanceMicroservice microservice, IMicroserviceState updated) {
-	IMicroserviceState last = microservice.getLatestState();
-	if (updated.getLifecycleStatus() != last.getLifecycleStatus()) {
-	    if (updated.getLifecycleStatus() == LifecycleStatus.Stopped) {
-		InstanceTopologyUpdate update = new InstanceTopologyUpdate();
-		update.setMicroserviceIdentifier(updated.getMicroserviceIdentifier());
-		update.setMicroserviceHostname(updated.getMicroserviceHostname());
-		update.setType(InstanceTopologyUpdateType.MicroserviceStopped);
-		sendTopologyUpdate(update);
+    protected InstanceTopologySnapshot createTopologySnapshot() {
+	InstanceTopologySnapshot snapshot = new InstanceTopologySnapshot();
+	for (Map<String, IInstanceMicroservice> category : getTopology().values()) {
+	    for (IInstanceMicroservice service : category.values()) {
+		IMicroserviceState state = service.getLatestState();
+		InstanceTopologyEntry entry = new InstanceTopologyEntry();
+		entry.setMicroserviceIdentifier(state.getMicroserviceIdentifier());
+		entry.setMicroserviceHostname(state.getMicroserviceHostname());
+		entry.setLastUpdated(System.currentTimeMillis());
+		snapshot.getTopologyEntries().add(entry);
 	    }
 	}
-	((InstanceMicroservice) microservice).setLatestState(updated);
+	return snapshot;
     }
 
     /**
-     * Send a topology update.
+     * Send a snapshot of the current inferred topology.
      * 
      * @param update
      */
-    protected void sendTopologyUpdate(IInstanceTopologyUpdate update) {
+    protected void sendTopologySnapshot() {
 	try {
-	    getLogger().debug("Sending topology update -> " + update.getMicroserviceIdentifier() + ":"
-		    + update.getMicroserviceHostname() + ":" + update.getType().name());
 	    ((IInstanceManagementMicroservice) getMicroservice()).getInstanceTopologyUpdatesKafkaProducer()
-		    .send(update);
+		    .send(createTopologySnapshot());
 	} catch (SiteWhereException e) {
-	    getLogger().warn("Unable to send topology update.", e);
+	    getLogger().warn("Unable to send topology snapshot.", e);
+	}
+    }
+
+    /**
+     * Sends instance topology snapshots at an interval.
+     * 
+     * @author Derek
+     */
+    private class TopologySnapshotUpdate implements Runnable {
+
+	/*
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+	    while (true) {
+		try {
+		    sendTopologySnapshot();
+		    Thread.sleep(AUTO_SNAPSHOT_INTERVAL);
+		} catch (InterruptedException e) {
+		    getLogger().warn("Snapshot update thread shutting down.");
+		    return;
+		} catch (Throwable t) {
+		    getLogger().error("Error in topology snapshot delivery.");
+		}
+	    }
 	}
     }
 

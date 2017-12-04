@@ -7,18 +7,19 @@
  */
 package com.sitewhere.spi.microservice.state;
 
+import java.util.List;
+
 /**
- * Listener interested in updates to instance topology such as microservices
- * being added or removed.
+ * Snapshot of instance topology at a given point in time.
  * 
  * @author Derek
  */
-public interface IInstanceTopologyUpdatesListener {
+public interface IInstanceTopologySnapshot {
 
     /**
-     * Handle instance topology update.
+     * Get list of microservice topology entries.
      * 
-     * @param update
+     * @return
      */
-    public void onInstanceTopologyUpdated(IInstanceTopologyUpdate update);
+    public List<IInstanceTopologyEntry> getTopologyEntries();
 }

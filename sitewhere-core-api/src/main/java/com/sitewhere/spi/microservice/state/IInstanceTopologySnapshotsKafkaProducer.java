@@ -11,17 +11,17 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
- * Kafka producer that reports instance topology updates.
+ * Kafka producer that reports instance topology snapshots.
  * 
  * @author Derek
  */
-public interface IInstanceTopologyUpdatesKafkaProducer extends IMicroserviceKafkaProducer {
+public interface IInstanceTopologySnapshotsKafkaProducer extends IMicroserviceKafkaProducer {
 
     /**
-     * Send an instance topology update.
+     * Send an instance topology snapshot.
      * 
-     * @param update
+     * @param snapshot
      * @throws SiteWhereException
      */
-    public void send(IInstanceTopologyUpdate update) throws SiteWhereException;
+    public void send(IInstanceTopologySnapshot snapshot) throws SiteWhereException;
 }

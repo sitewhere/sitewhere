@@ -115,11 +115,12 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
     }
 
     public IDeviceManagementApiChannel getDeviceManagement() {
-	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
     public IDeviceEventManagementApiChannel getDeviceEventManagement() {
-	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiChannel();
+	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 }

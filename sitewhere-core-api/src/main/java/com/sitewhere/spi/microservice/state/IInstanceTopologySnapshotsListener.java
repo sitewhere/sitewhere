@@ -8,18 +8,17 @@
 package com.sitewhere.spi.microservice.state;
 
 /**
- * Enumerates instance topology update types.
+ * Listener interested in snapshots of the instance topology as microservices
+ * are added or removed.
  * 
  * @author Derek
  */
-public enum InstanceTopologyUpdateType {
+public interface IInstanceTopologySnapshotsListener {
 
-    /** Microservice started */
-    MicroserviceStarted,
-
-    /** Microservice stopped */
-    MicroserviceStopped,
-
-    /** Microservice unresponsive */
-    MicroserviceUnresponsive;
+    /**
+     * Handle instance topology snapshot.
+     * 
+     * @param update
+     */
+    public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot);
 }

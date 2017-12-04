@@ -12,7 +12,7 @@ import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 
 /**
  * API for instance management microservice.
@@ -55,5 +55,5 @@ public interface IInstanceManagementMicroservice extends IMicroservice {
      * 
      * @return
      */
-    public IInstanceTopologyUpdatesKafkaProducer getInstanceTopologyUpdatesKafkaProducer();
+    public IInstanceTopologySnapshotsKafkaProducer getInstanceTopologyUpdatesKafkaProducer();
 }

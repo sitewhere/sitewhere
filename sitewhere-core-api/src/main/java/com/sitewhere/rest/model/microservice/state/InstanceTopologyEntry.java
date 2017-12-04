@@ -7,15 +7,14 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
-import com.sitewhere.spi.microservice.state.InstanceTopologyUpdateType;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 
 /**
- * Model object for instance topology update.
+ * Entry for a microservice within the instance topology.
  * 
  * @author Derek
  */
-public class InstanceTopologyUpdate implements IInstanceTopologyUpdate {
+public class InstanceTopologyEntry implements IInstanceTopologyEntry {
 
     /** Microservice identifier */
     private String microserviceIdentifier;
@@ -23,11 +22,11 @@ public class InstanceTopologyUpdate implements IInstanceTopologyUpdate {
     /** Microservice hostname */
     private String microserviceHostname;
 
-    /** Topology update type */
-    private InstanceTopologyUpdateType type;
+    /** Last updated timestamp */
+    private long lastUpdated;
 
     /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate#
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#
      * getMicroserviceIdentifier()
      */
     @Override
@@ -40,7 +39,7 @@ public class InstanceTopologyUpdate implements IInstanceTopologyUpdate {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate#
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#
      * getMicroserviceHostname()
      */
     @Override
@@ -53,14 +52,15 @@ public class InstanceTopologyUpdate implements IInstanceTopologyUpdate {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate#getType()
+     * @see
+     * com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#getLastUpdated()
      */
     @Override
-    public InstanceTopologyUpdateType getType() {
-	return type;
+    public long getLastUpdated() {
+	return lastUpdated;
     }
 
-    public void setType(InstanceTopologyUpdateType type) {
-	this.type = type;
+    public void setLastUpdated(long lastUpdated) {
+	this.lastUpdated = lastUpdated;
     }
 }

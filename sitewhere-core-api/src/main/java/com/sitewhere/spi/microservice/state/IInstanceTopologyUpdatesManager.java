@@ -13,19 +13,19 @@ package com.sitewhere.spi.microservice.state;
  * 
  * @author Derek
  */
-public interface IInstanceTopologyUpdatesManager extends IInstanceTopologyUpdatesKafkaConsumer {
+public interface IInstanceTopologyUpdatesManager extends IInstanceTopologySnapshotsKafkaConsumer {
 
     /**
      * Add a listener.
      * 
      * @param listener
      */
-    public void addListener(IInstanceTopologyUpdatesListener listener);
+    public void addListener(IInstanceTopologySnapshotsListener listener);
 
     /**
      * Remove a listener.
      * 
      * @param listener
      */
-    public void removeListener(IInstanceTopologyUpdatesListener listener);
+    public void removeListener(IInstanceTopologySnapshotsListener listener);
 }

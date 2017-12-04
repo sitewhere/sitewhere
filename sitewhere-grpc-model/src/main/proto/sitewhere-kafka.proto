@@ -92,16 +92,14 @@ message GStateUpdate {
 	}
 }
 
-// Instace topology update type.
-enum GInstanceTopologyUpdateType {
-	TOPOLOGY_MICROSERVICE_STARTED = 0;
-	TOPOLOGY_MICROSERVICE_STOPPED = 1;
-	TOPOLOGY_MICROSERVICE_UNRESPONSIVE = 2;
-}
-
-// nstace topology update.
-message GInstanceTopologyUpdate {
+// Instance topology update.
+message GInstanceTopologyEntry {
 	string microserviceIdentifier = 1;
 	string microserviceHostname = 2;
-	GInstanceTopologyUpdateType type = 3;
+	int64 lastUpdated = 3;
+}
+
+// Snapshot of latest instance topology.
+message GInstanceTopologySnapshot {
+	repeated GInstanceTopologyEntry entries = 1;
 }

@@ -11,21 +11,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdate;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologySnapshot;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaConsumer;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaConsumer;
 
 /**
- * Base class for Kafka consumers that process instance topology updates.
+ * Base class for Kafka consumers that process instance topology snapshots.
  * 
  * @author Derek
  */
-public abstract class InstanceTopologyUpdatesKafkaConsumer extends MicroserviceKafkaConsumer
-	implements IInstanceTopologyUpdatesKafkaConsumer {
+public abstract class InstanceTopologySnapshotsKafkaConsumer extends MicroserviceKafkaConsumer
+	implements IInstanceTopologySnapshotsKafkaConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -33,7 +33,7 @@ public abstract class InstanceTopologyUpdatesKafkaConsumer extends MicroserviceK
     /** Unique group id as each consumer should see all messages */
     private static String GROUP_ID_SUFFIX = UUID.randomUUID().toString();
 
-    public InstanceTopologyUpdatesKafkaConsumer(IMicroservice microservice) {
+    public InstanceTopologySnapshotsKafkaConsumer(IMicroservice microservice) {
 	super(microservice, null);
     }
 
@@ -72,7 +72,7 @@ public abstract class InstanceTopologyUpdatesKafkaConsumer extends MicroserviceK
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	GInstanceTopologyUpdate update = KafkaModelMarshaler.parseInstanceTopologyUpdateMessage(message);
-	onInstanceTopologyUpdate(KafkaModelConverter.asApiInstanceTopologyUpdate(update));
+	GInstanceTopologySnapshot snapshot = KafkaModelMarshaler.parseInstanceTopologySnapshotMessage(message);
+	onInstanceTopologySnapshot(KafkaModelConverter.asApiInstanceTopologySnapshot(snapshot));
     }
 }

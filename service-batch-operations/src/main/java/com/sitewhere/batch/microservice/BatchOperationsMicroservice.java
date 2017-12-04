@@ -14,12 +14,11 @@ import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
-import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -45,11 +44,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
 
-    /** Device management API channel */
-    private IDeviceManagementApiChannel deviceManagementApiChannel;
+    /** Device management API demux */
+    private IDeviceManagementApiDemux deviceManagementApiDemux;
 
-    /** Device event management API channel */
-    private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
+    /** Device event management API demux */
+    private IDeviceEventManagementApiDemux deviceEventManagementApiDemux;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -97,9 +96,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      * @throws ApiNotAvailableException
      */
     protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getDeviceManagementApiChannel().waitForApiAvailable();
+	getDeviceManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Device management API detected as available.");
-	getDeviceEventManagementApiChannel().waitForApiAvailable();
+	getDeviceEventManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Device event management API detected as available.");
     }
 
@@ -119,11 +118,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Initialize batch management GRPC server.
 	init.addInitializeStep(this, getBatchManagementGrpcServer(), true);
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API demux.
+	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
-	// Initialize device event management API channel.
-	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
+	// Initialize device event management API demux.
+	init.addInitializeStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -142,11 +141,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Start batch management GRPC server.
 	start.addStartStep(this, getBatchManagementGrpcServer(), true);
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API demux.
+	start.addStartStep(this, getDeviceManagementApiDemux(), true);
 
-	// Start device event mangement API channel.
-	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
+	// Start device event mangement API demux.
+	start.addStartStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -165,11 +164,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	// Stop batch management GRPC server.
 	stop.addStopStep(this, getBatchManagementGrpcServer());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API demux.
+	stop.addStopStep(this, getDeviceManagementApiDemux());
 
-	// Stop device event mangement API channel.
-	stop.addStopStep(this, getDeviceEventManagementApiChannel());
+	// Stop device event mangement API demux.
+	stop.addStopStep(this, getDeviceEventManagementApiDemux());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -183,12 +182,10 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
     }
 
     /*
@@ -205,29 +202,29 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     }
 
     /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getDeviceManagementApiChannel()
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
+     * getDeviceManagementApiDemux()
      */
     @Override
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
+	return deviceManagementApiDemux;
     }
 
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
+	this.deviceManagementApiDemux = deviceManagementApiDemux;
     }
 
     /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getDeviceEventManagementApiChannel()
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
+     * getDeviceEventManagementApiDemux()
      */
     @Override
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel() {
-	return deviceEventManagementApiChannel;
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
+	return deviceEventManagementApiDemux;
     }
 
-    public void setDeviceEventManagementApiChannel(IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
+    public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
+	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
     }
 
     /*

@@ -10,16 +10,16 @@ package com.sitewhere.spi.microservice.state;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
- * Kafka consumer that processes instance topology updates.
+ * Kafka consumer that processes instance topology snapshots.
  * 
  * @author Derek
  */
-public interface IInstanceTopologyUpdatesKafkaConsumer extends IMicroserviceKafkaConsumer {
+public interface IInstanceTopologySnapshotsKafkaConsumer extends IMicroserviceKafkaConsumer {
 
     /**
-     * Called when an instance topology update is received.
+     * Called when instance topology snapshot is received.
      * 
-     * @param state
+     * @param snapshot
      */
-    public void onInstanceTopologyUpdate(IInstanceTopologyUpdate update);
+    public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot);
 }

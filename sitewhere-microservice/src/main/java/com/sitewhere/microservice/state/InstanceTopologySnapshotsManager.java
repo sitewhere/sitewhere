@@ -14,49 +14,49 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
 
 /**
- * Consumes instance topology update messages from Kafka an distributes them to
- * any interested listeners.
+ * Consumes instance topology snapshot messages from Kafka an distributes them
+ * to any interested listeners.
  * 
  * @author Derek
  */
-public class InstanceTopologyUpdatesManager extends InstanceTopologyUpdatesKafkaConsumer
+public class InstanceTopologySnapshotsManager extends InstanceTopologySnapshotsKafkaConsumer
 	implements IInstanceTopologyUpdatesManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** List of listeners */
-    private List<IInstanceTopologyUpdatesListener> listeners = new ArrayList<IInstanceTopologyUpdatesListener>();
+    private List<IInstanceTopologySnapshotsListener> listeners = new ArrayList<IInstanceTopologySnapshotsListener>();
 
-    public InstanceTopologyUpdatesManager(IMicroservice microservice) {
+    public InstanceTopologySnapshotsManager(IMicroservice microservice) {
 	super(microservice);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaConsumer#
-     * onInstanceTopologyUpdate(com.sitewhere.spi.microservice.state.
-     * IInstanceTopologyUpdate)
+     * com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaConsumer#
+     * onInstanceTopologySnapshot(com.sitewhere.spi.microservice.state.
+     * IInstanceTopologySnapshot)
      */
     @Override
-    public void onInstanceTopologyUpdate(IInstanceTopologyUpdate update) {
-	for (IInstanceTopologyUpdatesListener listener : listeners) {
-	    listener.onInstanceTopologyUpdated(update);
+    public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
+	for (IInstanceTopologySnapshotsListener listener : listeners) {
+	    listener.onInstanceTopologySnapshot(snapshot);
 	}
     }
 
     /*
      * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager#
      * addListener(com.sitewhere.spi.microservice.state.
-     * IInstanceTopologyUpdatesListener)
+     * IInstanceTopologySnapshotsListener)
      */
     @Override
-    public void addListener(IInstanceTopologyUpdatesListener listener) {
+    public void addListener(IInstanceTopologySnapshotsListener listener) {
 	if (!listeners.contains(listener)) {
 	    listeners.add(listener);
 	}
@@ -65,10 +65,10 @@ public class InstanceTopologyUpdatesManager extends InstanceTopologyUpdatesKafka
     /*
      * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager#
      * removeListener(com.sitewhere.spi.microservice.state.
-     * IInstanceTopologyUpdatesListener)
+     * IInstanceTopologySnapshotsListener)
      */
     @Override
-    public void removeListener(IInstanceTopologyUpdatesListener listener) {
+    public void removeListener(IInstanceTopologySnapshotsListener listener) {
 	listeners.remove(listener);
     }
 

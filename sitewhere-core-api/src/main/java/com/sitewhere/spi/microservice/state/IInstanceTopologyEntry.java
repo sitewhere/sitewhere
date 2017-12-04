@@ -8,11 +8,11 @@
 package com.sitewhere.spi.microservice.state;
 
 /**
- * Indicates an update to instance topology.
+ * Entry for a microservice within the instance topology.
  * 
  * @author Derek
  */
-public interface IInstanceTopologyUpdate {
+public interface IInstanceTopologyEntry {
 
     /**
      * Get microservice identifier.
@@ -29,9 +29,9 @@ public interface IInstanceTopologyUpdate {
     public String getMicroserviceHostname();
 
     /**
-     * Get topology update type.
+     * Get timestamp for last updated.
      * 
      * @return
      */
-    public InstanceTopologyUpdateType getType();
+    public long getLastUpdated();
 }

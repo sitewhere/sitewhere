@@ -10,14 +10,14 @@ package com.sitewhere.microservice.state;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyUpdate;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologySnapshot;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaProducer;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -25,29 +25,29 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class InstanceTopologyUpdatesKafkaProducer extends MicroserviceKafkaProducer
-	implements IInstanceTopologyUpdatesKafkaProducer {
+public class InstanceTopologySnapshotsKafkaProducer extends MicroserviceKafkaProducer
+	implements IInstanceTopologySnapshotsKafkaProducer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public InstanceTopologyUpdatesKafkaProducer(IMicroservice microservice) {
+    public InstanceTopologySnapshotsKafkaProducer(IMicroservice microservice) {
 	super(microservice);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesKafkaProducer#
-     * send(com.sitewhere.spi.microservice.state.IInstanceTopologyUpdate)
+     * com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer#
+     * send(com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot)
      */
     @Override
-    public void send(IInstanceTopologyUpdate update) throws SiteWhereException {
-	GInstanceTopologyUpdate grpc = KafkaModelConverter.asGrpcTenantEngineState(update);
-	byte[] payload = KafkaModelMarshaler.buildInstanceTopologyUpdateMessage(grpc);
+    public void send(IInstanceTopologySnapshot snapshot) throws SiteWhereException {
+	GInstanceTopologySnapshot grpc = KafkaModelConverter.asGrpcInstanceTopologySnapshot(snapshot);
+	byte[] payload = KafkaModelMarshaler.buildInstanceTopologySnapshotMessage(grpc);
 	if (getLifecycleStatus() == LifecycleStatus.Started) {
-	    send(update.getMicroserviceIdentifier(), payload);
+	    send(getMicroservice().getInstanceSettings().getInstanceId(), payload);
 	} else {
-	    getLogger().debug("Skipping microservice state update. Kafka producer not started.");
+	    getLogger().debug("Skipping topology snapshot. Kafka producer not started.");
 	}
     }
 
