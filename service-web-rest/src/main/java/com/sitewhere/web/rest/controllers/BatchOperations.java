@@ -187,10 +187,10 @@ public class BatchOperations extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
     protected IBatchManagement getBatchManagement() {
-	return getMicroservice().getBatchManagementApiChannel();
+	return getMicroservice().getBatchManagementApiDemux().getApiChannel();
     }
 }

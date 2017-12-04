@@ -8,12 +8,12 @@
 package com.sitewhere.web.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 
@@ -29,28 +29,28 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * 
      * @return
      */
-    public IUserManagementApiChannel getUserManagementApiChannel();
+    public IUserManagementApiDemux getUserManagementApiDemux();
 
     /**
      * Tenant management API access via GRPC channel.
      * 
      * @return
      */
-    public ITenantManagementApiChannel getTenantManagementApiChannel();
+    public ITenantManagementApiDemux getTenantManagementApiDemux();
 
     /**
      * Device management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel();
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
 
     /**
      * Device event management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel();
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
 
     /**
      * Asset management API demux.
@@ -64,14 +64,14 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * 
      * @return
      */
-    public IBatchManagementApiChannel getBatchManagementApiChannel();
+    public IBatchManagementApiDemux getBatchManagementApiDemux();
 
     /**
      * Schedule management API access via GRPC channel.
      * 
      * @return
      */
-    public IScheduleManagementApiChannel getScheduleManagementApiChannel();
+    public IScheduleManagementApiDemux getScheduleManagementApiDemux();
 
     /**
      * Get asset resolver implementation.

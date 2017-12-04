@@ -142,11 +142,11 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getWebRestMicroservice().getUserManagementApiChannel() == null) {
+	if (getWebRestMicroservice().getUserManagementApiDemux().getApiChannel() == null) {
 	    throw new AuthenticationServiceException(
 		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getWebRestMicroservice().getUserManagementApiChannel();
+	return getWebRestMicroservice().getUserManagementApiDemux().getApiChannel();
     }
 
     public IWebRestMicroservice getWebRestMicroservice() {

@@ -93,6 +93,6 @@ public class Zones extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 }

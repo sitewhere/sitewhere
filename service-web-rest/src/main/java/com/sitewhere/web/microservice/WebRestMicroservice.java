@@ -14,22 +14,21 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
-import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
-import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
-import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.schedule.ScheduleManagementApiChannel;
+import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
+import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.schedule.ScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.grpc.client.user.UserManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
+import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -58,26 +57,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** List of configuration paths required by microservice */
     private static final String[] CONFIGURATION_PATHS = { WEB_REST_CONFIGURATION };
 
-    /** User management API channel */
-    private IUserManagementApiChannel userManagementApiChannel;
+    /** User management API demux */
+    private IUserManagementApiDemux userManagementApiDemux;
 
-    /** Tenant management API channel */
-    private ITenantManagementApiChannel tenantManagementApiChannel;
+    /** Tenant management API demux */
+    private ITenantManagementApiDemux tenantManagementApiDemux;
 
-    /** Device management API channel */
-    private IDeviceManagementApiChannel deviceManagementApiChannel;
+    /** Device management API demux */
+    private IDeviceManagementApiDemux deviceManagementApiDemux;
 
-    /** Device event management API channel */
-    private IDeviceEventManagementApiChannel deviceEventManagementApiChannel;
+    /** Device event management API demux */
+    private IDeviceEventManagementApiDemux deviceEventManagementApiDemux;
 
-    /** Asset management API connectivity */
+    /** Asset management API demux */
     private IAssetManagementApiDemux assetManagementApiDemux;
 
-    /** Batch management API channel */
-    private IBatchManagementApiChannel batchManagementApiChannel;
+    /** Batch management API demux */
+    private IBatchManagementApiDemux batchManagementApiDemux;
 
-    /** Schedule management API channel */
-    private IScheduleManagementApiChannel scheduleManagementApiChannel;
+    /** Schedule management API demux */
+    private IScheduleManagementApiDemux scheduleManagementApiDemux;
 
     /** Asset resolver */
     private IAssetResolver assetResolver;
@@ -146,9 +145,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * @throws ApiNotAvailableException
      */
     protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getUserManagementApiChannel().waitForApiAvailable();
+	getUserManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("User management API detected as available.");
-	getTenantManagementApiChannel().waitForApiAvailable();
+	getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Tenant management API detected as available.");
     }
 
@@ -170,26 +169,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize discoverable lifecycle components.
 	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
-	// Initialize user management API channel.
-	init.addInitializeStep(this, getUserManagementApiChannel(), true);
+	// Initialize user management API demux.
+	init.addInitializeStep(this, getUserManagementApiDemux(), true);
 
-	// Initialize tenant management API channel.
-	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
+	// Initialize tenant management API demux.
+	init.addInitializeStep(this, getTenantManagementApiDemux(), true);
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API demux.
+	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
-	// Initialize device event management API channel.
-	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
+	// Initialize device event management API demux.
+	init.addInitializeStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Initialize asset management API demux.
 	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
 
-	// Initialize batch management API channel.
-	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
+	// Initialize batch management API demux.
+	init.addInitializeStep(this, getBatchManagementApiDemux(), true);
 
-	// Initialize schedule management API channel.
-	init.addInitializeStep(this, getScheduleManagementApiChannel(), true);
+	// Initialize schedule management API demux.
+	init.addInitializeStep(this, getScheduleManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -202,32 +201,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiChannel = new UserManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_USER_MANAGEMENT);
+	this.userManagementApiDemux = new UserManagementApiDemux(this);
 
 	// Tenant management.
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT);
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_DEVICE_MANAGEMENT);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_EVENT_MANAGEMENT);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
 
 	// Asset management.
 	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
 	this.assetResolver = new AssetResolver(getAssetManagementApiDemux());
 
 	// Batch management.
-	this.batchManagementApiChannel = new BatchManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_BATCH_OPERATIONS);
+	this.batchManagementApiDemux = new BatchManagementApiDemux(this);
 
 	// Schedule management.
-	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_SCHEDULE_MANAGEMENT);
+	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux(this);
     }
 
     /*
@@ -245,26 +238,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start discoverable lifecycle components.
 	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
-	// Start user mangement API channel.
-	start.addStartStep(this, getUserManagementApiChannel(), true);
+	// Start user mangement API demux.
+	start.addStartStep(this, getUserManagementApiDemux(), true);
 
-	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
+	// Start tenant mangement API demux.
+	start.addStartStep(this, getTenantManagementApiDemux(), true);
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API demux.
+	start.addStartStep(this, getDeviceManagementApiDemux(), true);
 
-	// Start device event mangement API channel.
-	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
+	// Start device event mangement API demux.
+	start.addStartStep(this, getDeviceEventManagementApiDemux(), true);
 
 	// Start asset mangement API demux.
 	start.addStartStep(this, getAssetManagementApiDemux(), true);
 
-	// Start batch mangement API channel.
-	start.addStartStep(this, getBatchManagementApiChannel(), true);
+	// Start batch mangement API demux.
+	start.addStartStep(this, getBatchManagementApiDemux(), true);
 
-	// Start schedule mangement API channel.
-	start.addStartStep(this, getScheduleManagementApiChannel(), true);
+	// Start schedule mangement API demux.
+	start.addStartStep(this, getScheduleManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -281,26 +274,26 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop user mangement API channel.
-	stop.addStopStep(this, getUserManagementApiChannel());
+	// Stop user mangement API demux.
+	stop.addStopStep(this, getUserManagementApiDemux());
 
-	// Stop tenant mangement API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
+	// Stop tenant mangement API demux.
+	stop.addStopStep(this, getTenantManagementApiDemux());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API demux.
+	stop.addStopStep(this, getDeviceManagementApiDemux());
 
-	// Stop device event mangement API channel.
-	stop.addStopStep(this, getDeviceEventManagementApiChannel());
+	// Stop device event mangement API demux.
+	stop.addStopStep(this, getDeviceEventManagementApiDemux());
 
 	// Stop asset mangement API demux.
 	stop.addStopStep(this, getAssetManagementApiDemux());
 
-	// Stop batch mangement API channel.
-	stop.addStopStep(this, getBatchManagementApiChannel());
+	// Stop batch mangement API demux.
+	stop.addStopStep(this, getBatchManagementApiDemux());
 
-	// Stop schedule mangement API channel.
-	stop.addStopStep(this, getScheduleManagementApiChannel());
+	// Stop schedule mangement API demux.
+	stop.addStopStep(this, getScheduleManagementApiDemux());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
@@ -310,60 +303,55 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getUserManagementApiChannel()
+     * getUserManagementApiDemux()
      */
     @Override
-    public IUserManagementApiChannel getUserManagementApiChannel() {
-	return userManagementApiChannel;
+    public IUserManagementApiDemux getUserManagementApiDemux() {
+	return userManagementApiDemux;
     }
 
-    protected void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
-	this.userManagementApiChannel = userManagementApiChannel;
+    public void setUserManagementApiDemux(IUserManagementApiDemux userManagementApiDemux) {
+	this.userManagementApiDemux = userManagementApiDemux;
     }
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getTenantManagementApiChannel()
+     * getTenantManagementApiDemux()
      */
     @Override
-    public ITenantManagementApiChannel getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
+    public ITenantManagementApiDemux getTenantManagementApiDemux() {
+	return tenantManagementApiDemux;
     }
 
-    protected void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getDeviceManagementApiChannel()
-     */
-    @Override
-    public IDeviceManagementApiChannel getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    protected void setDeviceManagementApiChannel(IDeviceManagementApiChannel deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
+	this.tenantManagementApiDemux = tenantManagementApiDemux;
     }
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getDeviceEventManagementApiChannel()
+     * getDeviceManagementApiDemux()
      */
     @Override
-    public IDeviceEventManagementApiChannel getDeviceEventManagementApiChannel() {
-	return deviceEventManagementApiChannel;
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
+	return deviceManagementApiDemux;
     }
 
-    protected void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
+    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
+	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getDeviceEventManagementApiDemux()
+     */
+    @Override
+    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
+	return deviceEventManagementApiDemux;
+    }
+
+    public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
+	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
     }
 
     /*
@@ -381,28 +369,28 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getBatchManagementApiChannel()
+     * getBatchManagementApiDemux()
      */
     @Override
-    public IBatchManagementApiChannel getBatchManagementApiChannel() {
-	return batchManagementApiChannel;
+    public IBatchManagementApiDemux getBatchManagementApiDemux() {
+	return batchManagementApiDemux;
     }
 
-    public void setBatchManagementApiChannel(IBatchManagementApiChannel batchManagementApiChannel) {
-	this.batchManagementApiChannel = batchManagementApiChannel;
+    public void setBatchManagementApiDemux(IBatchManagementApiDemux batchManagementApiDemux) {
+	this.batchManagementApiDemux = batchManagementApiDemux;
     }
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getScheduleManagementApiChannel()
+     * getScheduleManagementApiDemux()
      */
     @Override
-    public IScheduleManagementApiChannel getScheduleManagementApiChannel() {
-	return scheduleManagementApiChannel;
+    public IScheduleManagementApiDemux getScheduleManagementApiDemux() {
+	return scheduleManagementApiDemux;
     }
 
-    protected void setScheduleManagementApiChannel(IScheduleManagementApiChannel scheduleManagementApiChannel) {
-	this.scheduleManagementApiChannel = scheduleManagementApiChannel;
+    public void setScheduleManagementApiDemux(IScheduleManagementApiDemux scheduleManagementApiDemux) {
+	this.scheduleManagementApiDemux = scheduleManagementApiDemux;
     }
 
     /*

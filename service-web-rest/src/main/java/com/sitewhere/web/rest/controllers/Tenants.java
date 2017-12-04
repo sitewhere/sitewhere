@@ -271,6 +271,6 @@ public class Tenants extends RestControllerBase {
     }
 
     private ITenantManagement getTenantManagement() {
-	return getMicroservice().getTenantManagementApiChannel();
+	return getMicroservice().getTenantManagementApiDemux().getApiChannel();
     }
 }

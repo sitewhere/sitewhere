@@ -431,7 +431,7 @@ public class DeviceSpecifications extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {

@@ -48,8 +48,8 @@ public class OutboundProcessorsManager extends TenantEngineLifecycleComponent im
 	getProcessorHosts().clear();
 	for (IOutboundEventProcessor processor : outboundEventProcessors) {
 	    // Hook processor to microservice API channels.
-	    processor.setDeviceManagement(getMicroservice().getDeviceManagementApiChannel());
-	    processor.setDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+	    processor.setDeviceManagement(getMicroservice().getDeviceManagementApiDemux().getApiChannel());
+	    processor.setDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
 
 	    // Create host for managing outbound processor.
 	    KafkaOutboundEventProcessorHost host = new KafkaOutboundEventProcessorHost(

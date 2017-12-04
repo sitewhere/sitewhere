@@ -911,11 +911,11 @@ public class Assignments extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiChannel();
+	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
     }
 
     private IAssetResolver getAssetResolver() {
