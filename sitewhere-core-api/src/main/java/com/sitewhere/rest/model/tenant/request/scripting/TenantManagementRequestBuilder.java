@@ -9,7 +9,6 @@ package com.sitewhere.rest.model.tenant.request.scripting;
 
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
@@ -20,6 +19,9 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  */
 public class TenantManagementRequestBuilder {
 
+    /** Template that does not load any device data */
+    private static final String EMPTY_TEMPLATE_NAME = "empty";
+
     /** Device management implementation */
     private ITenantManagement tenantManagement;
 
@@ -28,8 +30,8 @@ public class TenantManagementRequestBuilder {
     }
 
     /**
-     * Create builder for new tenant request. Assumes tenant uses the "empty"
-     * tenant template.
+     * Create builder for new tenant request. Assumes tenant uses the "empty" tenant
+     * template.
      * 
      * @param id
      * @param name
@@ -38,7 +40,7 @@ public class TenantManagementRequestBuilder {
      * @return
      */
     public TenantCreateRequest.Builder newTenant(String id, String name, String authenticationToken, String logoUrl) {
-	return newTenant(id, name, authenticationToken, logoUrl, IDefaultResourcePaths.EMPTY_TEMPLATE_NAME);
+	return newTenant(id, name, authenticationToken, logoUrl, EMPTY_TEMPLATE_NAME);
     }
 
     /**

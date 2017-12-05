@@ -2,7 +2,6 @@ description = 'SiteWhere Command Destinations Microservice'
 
 dependencies {
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-spring')
 	compile project(':sitewhere-protobuf')
 	compile project(':sitewhere-microservice')
 	

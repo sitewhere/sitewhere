@@ -31,7 +31,6 @@ include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
 include ':sitewhere-server-api'
 include ':sitewhere-spark'
-include ':sitewhere-spring'
 include ':sitewhere-spring-spi'
 
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
@@ -66,5 +65,4 @@ project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
 project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File
 project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
-project(':sitewhere-spring').projectDir = "$rootDir/sitewhere-spring" as File
 project(':sitewhere-spring-spi').projectDir = "$rootDir/sitewhere-spring-spi" as File

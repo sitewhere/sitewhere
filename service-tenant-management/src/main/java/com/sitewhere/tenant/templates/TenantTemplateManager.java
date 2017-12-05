@@ -28,7 +28,6 @@ import com.sitewhere.microservice.multitenant.TenantTemplate;
 import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.configuration.IDefaultResourcePaths;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -41,6 +40,9 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * @author Derek
  */
 public class TenantTemplateManager extends LifecycleComponent implements ITenantTemplateManager {
+
+    /** Name for template descriptor */
+    private static final String TEMPLATE_JSON_FILE_NAME = "template.json";
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -71,7 +73,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	File root = getMicroservice().getTenantTemplatesRoot();
 	File[] folders = root.listFiles(File::isDirectory);
 	for (File folder : folders) {
-	    File tfile = new File(folder, IDefaultResourcePaths.TEMPLATE_JSON_FILE_NAME);
+	    File tfile = new File(folder, TEMPLATE_JSON_FILE_NAME);
 	    if (tfile.exists()) {
 		InputStream input;
 		try {
@@ -99,8 +101,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.tenant.ITenantTemplateManager#getTenantTemplates
-     * ()
+     * com.sitewhere.spi.server.tenant.ITenantTemplateManager#getTenantTemplates ()
      */
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {

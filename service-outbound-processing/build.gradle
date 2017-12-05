@@ -4,7 +4,6 @@ apply plugin: 'nebula.provided-base'
 
 dependencies {
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-spring')
 	compile project(':sitewhere-microservice')
     
     // Amazon SQS dependencies.

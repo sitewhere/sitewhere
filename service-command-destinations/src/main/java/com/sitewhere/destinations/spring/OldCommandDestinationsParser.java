@@ -17,6 +17,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -46,7 +47,6 @@ import com.sitewhere.spring.handler.ICommandDestinationsParser.BinaryCommandEnco
 import com.sitewhere.spring.handler.ICommandDestinationsParser.Elements;
 import com.sitewhere.spring.handler.ICommandDestinationsParser.StringCommandEncoders;
 import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.handler.SiteWhereBeanListParser;
 
 /**
  * Parses the list of {@link ICommandDestination} elements used in the
@@ -54,7 +54,7 @@ import com.sitewhere.spring.handler.SiteWhereBeanListParser;
  * 
  * @author Derek
  */
-public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
+public class OldCommandDestinationsParser extends AbstractBeanDefinitionParser {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -66,11 +66,12 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
-     * Element, org.springframework.beans.factory.xml.ParserContext)
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal (org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
      */
-    public ManagedList<?> parse(Element element, ParserContext context) {
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	ManagedList<Object> result = new ManagedList<Object>();
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
@@ -97,7 +98,7 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
 	    }
 	    }
 	}
-	return result;
+	return null;
     }
 
     /**
@@ -116,15 +117,15 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse the MQTT command destination configuration and create beans
-     * necessary for implementation.
+     * Parse the MQTT command destination configuration and create beans necessary
+     * for implementation.
      * 
      * @param element
      * @param context
      * @return
      */
     protected AbstractBeanDefinition parseMqttCommandDestination(Element element, ParserContext context) {
-	BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDestination.class);
+	BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDestination.class);
 	addCommonAttributes(mqtt, element, context);
 
 	// Add encoder reference.
@@ -153,7 +154,7 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition createMqttDeliveryProvider(Element element) {
-	BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDeliveryProvider.class);
+	BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDeliveryProvider.class);
 
 	Attr protocol = element.getAttributeNode("protocol");
 	if (protocol != null) {
@@ -206,15 +207,15 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse the CoAP command destination configuration and create beans
-     * necessary for implementation.
+     * Parse the CoAP command destination configuration and create beans necessary
+     * for implementation.
      * 
      * @param element
      * @param context
      * @return
      */
     protected AbstractBeanDefinition parseCoapCommandDestination(Element element, ParserContext context) {
-	BeanDefinitionBuilder mqtt = getBuilderFor(CoapCommandDestination.class);
+	BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(CoapCommandDestination.class);
 	addCommonAttributes(mqtt, element, context);
 
 	// Add encoder reference.
@@ -243,13 +244,13 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
      * @return
      */
     protected AbstractBeanDefinition createCoapDeliveryProvider(Element element) {
-	BeanDefinitionBuilder mqtt = getBuilderFor(CoapCommandDeliveryProvider.class);
+	BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(CoapCommandDeliveryProvider.class);
 	return mqtt.getBeanDefinition();
     }
 
     /**
-     * Parse the Twilio command destination configuration and create beans
-     * necessary for implementation.
+     * Parse the Twilio command destination configuration and create beans necessary
+     * for implementation.
      * 
      * @param element
      * @param context
@@ -632,8 +633,8 @@ public class OldCommandDestinationsParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Create {@link ICommandDeliveryParameterExtractor} that uses a Groovy
-     * script to extract an {@link SmsParameters} object for use by the command
+     * Create {@link ICommandDeliveryParameterExtractor} that uses a Groovy script
+     * to extract an {@link SmsParameters} object for use by the command
      * destination.
      * 
      * @param element
