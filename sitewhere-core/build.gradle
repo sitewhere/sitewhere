@@ -7,7 +7,6 @@ configurations {
 
 dependencies {
     compile project(':sitewhere-core-lifecycle')
-    compile project(':sitewhere-server-api')
      
     compile group: 'org.springframework', name: 'spring-core'
     compile group: 'org.springframework', name: 'spring-beans'
