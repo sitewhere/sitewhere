@@ -18,11 +18,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.parser.IScheduleManagementParser.Elements;
 import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
 import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
-import com.sitewhere.spring.parser.IScheduleManagementParser.Elements;
 
 /**
  * Parses elements related to schedule management.

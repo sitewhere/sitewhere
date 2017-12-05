@@ -1,0 +1,8 @@
+description = 'SiteWhere Configuration Components'
+
+dependencies {
+	compile project(':sitewhere-core')
+}
+test {
+    exclude '**/*'
+}

@@ -7,12 +7,12 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.IEventProcessingParser;
-import com.sitewhere.spring.handler.IInboundProcessingChainParser;
-import com.sitewhere.spring.handler.IInboundProcessingStrategyParser;
-import com.sitewhere.spring.handler.IOutboundProcessingStrategyParser;
-import com.sitewhere.spring.handler.ITenantConfigurationParser;
-import com.sitewhere.spring.parser.IOutboundProcessingParser;
+import com.sitewhere.configuration.old.IEventProcessingParser;
+import com.sitewhere.configuration.old.IInboundProcessingChainParser;
+import com.sitewhere.configuration.old.IInboundProcessingStrategyParser;
+import com.sitewhere.configuration.old.IOutboundProcessingStrategyParser;
+import com.sitewhere.configuration.old.ITenantConfigurationParser;
+import com.sitewhere.configuration.parser.IOutboundProcessingParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;

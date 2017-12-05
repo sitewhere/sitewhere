@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-datastore" abstract="true"
+		type="abstractDatastoreType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for datastore elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Default MongoDB datastore reference -->
+	<xsd:element name="default-mongodb-datastore" type="defaultMongoDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to MongoDB using the default global
+				configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultMongoDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Alternate MongoDB datastore reference -->
+	<xsd:element name="alternate-mongodb-datastore" type="alternateMongoDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to MongoDB using an alternate MongoDB
+				datastore configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="alternateMongoDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="id" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for alternate datastore
+							configuration.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Common datastore information -->
+	<xsd:complexType name="abstractDatastoreType" />
+
+	<!-- MongoDB datastore attributes -->
+	<xsd:attributeGroup name="mongo-attributes">
+		<xsd:attribute name="hostname" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Server hostname for MongoDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Server port for MongoDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="databaseName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>MongoDB database name for SiteWhere storage.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="useDockerLinking" type="xsd:boolean"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>If enabled, uses environment variables set by
+					Docker linking to
+					derive host and port to connect to.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="authDatabaseName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Authentication database name.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Username used to authenticate.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Password used to authenticate.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="replicaSetName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Name of replica set if using replication.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="autoConfigureReplication" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Indicates whether replication should be
+					configured automatically when multiple hosts/ports are specified.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- HBase datastore attributes -->
+	<xsd:attributeGroup name="hbase-attributes">
+		<xsd:attribute name="quorum" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper quorum address</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperClientPort" type="xsd:int"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper client port. Defaults to 2181.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperZnodeParent" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>ZooKeeper znode root server. Defaults to
+					'root-region-server'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Attributes for MQTT broker connectivity -->
+	<xsd:attributeGroup name="mqtt-broker-attributes">
+		<xsd:attribute name="protocol" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT protocol (defaults to tcp).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="hostname" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker hostname.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="substitutableInt" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker port.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker username.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker password.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Defines property placeholder regular expression -->
+	<xsd:simpleType name="propertyPlaceholderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines string value restricted to a Spring
+				property placeholder.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\$\{[^\}]+\}" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableInt">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be an integer or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:int" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableBoolean">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be a boolean or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:boolean" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+</xsd:schema>

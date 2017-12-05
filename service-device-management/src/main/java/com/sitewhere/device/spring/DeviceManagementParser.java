@@ -16,11 +16,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
 import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
 import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
-import com.sitewhere.spring.parser.IUserManagementParser.Elements;
 
 /**
  * Parses configuration data for the SiteWhere device management microservice.

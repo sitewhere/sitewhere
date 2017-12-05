@@ -30,9 +30,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spring.handler.IConfigurationElements;
 import com.sitewhere.web.configuration.content.AttributeContent;
 import com.sitewhere.web.configuration.content.ElementContent;
 

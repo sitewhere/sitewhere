@@ -24,6 +24,13 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.parser.IEventSourcesParser.BinaryDecoders;
+import com.sitewhere.configuration.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
+import com.sitewhere.configuration.parser.IEventSourcesParser.CompositeDecoderChoiceElements;
+import com.sitewhere.configuration.parser.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
+import com.sitewhere.configuration.parser.IEventSourcesParser.Deduplicators;
+import com.sitewhere.configuration.parser.IEventSourcesParser.Elements;
+import com.sitewhere.configuration.parser.IEventSourcesParser.StringDecoders;
 import com.sitewhere.sources.BinaryInboundEventSource;
 import com.sitewhere.sources.DecodedInboundEventSource;
 import com.sitewhere.sources.EventSourcesManager;
@@ -57,13 +64,6 @@ import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.sources.websocket.BinaryWebSocketEventReceiver;
 import com.sitewhere.sources.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
-import com.sitewhere.spring.parser.IEventSourcesParser.BinaryDecoders;
-import com.sitewhere.spring.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
-import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderChoiceElements;
-import com.sitewhere.spring.parser.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
-import com.sitewhere.spring.parser.IEventSourcesParser.Deduplicators;
-import com.sitewhere.spring.parser.IEventSourcesParser.Elements;
-import com.sitewhere.spring.parser.IEventSourcesParser.StringDecoders;
 
 /**
  * Parses the list of {@link IInboundEventSource} elements used in the

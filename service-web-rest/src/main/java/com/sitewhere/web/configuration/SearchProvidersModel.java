@@ -7,8 +7,8 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.ISearchProvidersParser;
-import com.sitewhere.spring.handler.ITenantConfigurationParser;
+import com.sitewhere.configuration.old.ISearchProvidersParser;
+import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;

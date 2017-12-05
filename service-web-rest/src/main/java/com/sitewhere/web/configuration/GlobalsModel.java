@@ -7,9 +7,9 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.handler.IGlobalsParser;
-import com.sitewhere.spring.handler.ITenantConfigurationParser;
+import com.sitewhere.configuration.old.IConfigurationElements;
+import com.sitewhere.configuration.old.IGlobalsParser;
+import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;

@@ -7,13 +7,13 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.spring.handler.ICommandDestinationsParser;
-import com.sitewhere.spring.handler.ICommandRoutingParser;
-import com.sitewhere.spring.handler.IDeviceCommunicationParser;
-import com.sitewhere.spring.handler.IDeviceServicesParser;
-import com.sitewhere.spring.handler.ITenantConfigurationParser;
-import com.sitewhere.spring.parser.IBatchOperationsParser;
-import com.sitewhere.spring.parser.IEventSourcesParser;
+import com.sitewhere.configuration.old.ICommandDestinationsParser;
+import com.sitewhere.configuration.old.ICommandRoutingParser;
+import com.sitewhere.configuration.old.IDeviceCommunicationParser;
+import com.sitewhere.configuration.old.IDeviceServicesParser;
+import com.sitewhere.configuration.old.ITenantConfigurationParser;
+import com.sitewhere.configuration.parser.IBatchOperationsParser;
+import com.sitewhere.configuration.parser.IEventSourcesParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;

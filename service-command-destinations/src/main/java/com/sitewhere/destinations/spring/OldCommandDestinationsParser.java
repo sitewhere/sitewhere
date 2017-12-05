@@ -24,6 +24,10 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.old.IConfigurationElements;
+import com.sitewhere.configuration.old.ICommandDestinationsParser.BinaryCommandEncoders;
+import com.sitewhere.configuration.old.ICommandDestinationsParser.Elements;
+import com.sitewhere.configuration.old.ICommandDestinationsParser.StringCommandEncoders;
 import com.sitewhere.destinations.coap.CoapCommandDeliveryProvider;
 import com.sitewhere.destinations.coap.CoapCommandDestination;
 import com.sitewhere.destinations.coap.CoapParameters;
@@ -43,10 +47,6 @@ import com.sitewhere.device.communication.sms.SmsCommandDestination;
 import com.sitewhere.device.communication.sms.SmsParameters;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.communication.ICommandDestination;
-import com.sitewhere.spring.handler.ICommandDestinationsParser.BinaryCommandEncoders;
-import com.sitewhere.spring.handler.ICommandDestinationsParser.Elements;
-import com.sitewhere.spring.handler.ICommandDestinationsParser.StringCommandEncoders;
-import com.sitewhere.spring.handler.IConfigurationElements;
 
 /**
  * Parses the list of {@link ICommandDestination} elements used in the

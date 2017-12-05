@@ -18,9 +18,9 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
 import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
+import com.sitewhere.configuration.parser.IAssetManagementParser.Elements;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
-import com.sitewhere.spring.parser.IAssetManagementParser.Elements;
 
 /**
  * Parses configuration data for the SiteWhere asset management section.

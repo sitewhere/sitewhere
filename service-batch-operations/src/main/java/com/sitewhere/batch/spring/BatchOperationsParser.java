@@ -20,9 +20,9 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.batch.persistence.mongodb.BatchManagementMongoClient;
 import com.sitewhere.batch.persistence.mongodb.MongoBatchManagement;
+import com.sitewhere.configuration.parser.IBatchOperationsParser.Elements;
 import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
-import com.sitewhere.spring.parser.IBatchOperationsParser.Elements;
 
 /**
  * Parses elements related to batch operations.

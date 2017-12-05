@@ -2,7 +2,6 @@ description = 'SiteWhere Instance Management Microservice'
 
 dependencies {
 	compile project(':sitewhere-core')
-	compile project(':sitewhere-spring-spi')
 	compile project(':sitewhere-microservice')
 }
 

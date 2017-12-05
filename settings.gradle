@@ -20,6 +20,7 @@ include ':service-web-rest'
 
 include ':sitewhere-client'
 include ':sitewhere-communication'
+include ':sitewhere-configuration'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-core-lifecycle'
@@ -31,7 +32,6 @@ include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
 include ':sitewhere-server-api'
 include ':sitewhere-spark'
-include ':sitewhere-spring-spi'
 
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
 project(':service-batch-operations').projectDir = "$rootDir/service-batch-operations" as File
@@ -54,6 +54,7 @@ project(':service-web-rest').projectDir = "$rootDir/service-web-rest" as File
 
 project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
 project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
+project(':sitewhere-configuration').projectDir = "$rootDir/sitewhere-configuration" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
@@ -65,4 +66,3 @@ project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
 project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File
 project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
-project(':sitewhere-spring-spi').projectDir = "$rootDir/sitewhere-spring-spi" as File

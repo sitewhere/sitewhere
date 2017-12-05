@@ -22,6 +22,11 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.old.IConfigurationElements;
+import com.sitewhere.configuration.parser.IOutboundProcessingParser.Elements;
+import com.sitewhere.configuration.parser.IOutboundProcessingParser.Filters;
+import com.sitewhere.configuration.parser.IOutboundProcessingParser.Multicasters;
+import com.sitewhere.configuration.parser.IOutboundProcessingParser.RouteBuilders;
 import com.sitewhere.outbound.OutboundProcessorsManager;
 import com.sitewhere.outbound.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.outbound.azure.EventHubOutboundEventProcessor;
@@ -45,11 +50,6 @@ import com.sitewhere.outbound.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.geospatial.ZoneContainment;
 import com.sitewhere.spi.microservice.spring.OutboundProcessingBeans;
-import com.sitewhere.spring.handler.IConfigurationElements;
-import com.sitewhere.spring.parser.IOutboundProcessingParser.Elements;
-import com.sitewhere.spring.parser.IOutboundProcessingParser.Filters;
-import com.sitewhere.spring.parser.IOutboundProcessingParser.Multicasters;
-import com.sitewhere.spring.parser.IOutboundProcessingParser.RouteBuilders;
 
 /**
  * Parses elements related to outbound event processing.

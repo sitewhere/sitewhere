@@ -15,7 +15,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.spring.parser.IInstanceGlobalParser.Elements;
+import com.sitewhere.configuration.parser.IInstanceGlobalParser.Elements;
 
 /**
  * Parses configuration data for the instance global configuration.
@@ -50,8 +50,8 @@ public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse a MongoDB datasource configuration and create beans needed to
-     * realize it.
+     * Parse a MongoDB datasource configuration and create beans needed to realize
+     * it.
      * 
      * @param element
      * @param context

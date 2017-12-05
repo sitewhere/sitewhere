@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.asset.modules.AssetModuleManager;
 import com.sitewhere.asset.modules.wso2.scim.Wso2ScimAssetModule;
+import com.sitewhere.configuration.parser.IAssetManagementParser.IAssetModulesParser.Elements;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
-import com.sitewhere.spring.parser.IAssetManagementParser.IAssetModulesParser.Elements;
 
 /**
  * Parses asset module Spring beans.
