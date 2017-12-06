@@ -39,7 +39,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     private static final String NAME = "Event Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventManagementModel();
+    private IConfigurationModel configurationModel = new EventManagementModel(this);
 
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;

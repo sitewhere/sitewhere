@@ -13,6 +13,14 @@ package com.sitewhere.spi.microservice.configuration.model;
  * @author Derek
  */
 public interface IXmlNode {
+    
+    public String getName();
+
+    public String getIcon();
+
+    public String getDescription();
+
+    public NodeType getNodeType();
 
     public String getLocalName();
 

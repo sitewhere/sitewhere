@@ -14,9 +14,6 @@ package com.sitewhere.spi.microservice.configuration.model;
  */
 public enum NodeType {
 
-    /** Container node (no XML representation) */
-    Container,
-
     /** Corresponds to an XML element */
     Element,
 

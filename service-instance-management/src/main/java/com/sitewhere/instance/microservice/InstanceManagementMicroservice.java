@@ -59,7 +59,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     private static final String NAME = "Instance Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new InstanceManagementModel();
+    private IConfigurationModel configurationModel = new InstanceManagementModel(this);
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();

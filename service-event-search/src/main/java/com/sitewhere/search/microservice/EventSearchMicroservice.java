@@ -34,7 +34,7 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     private static final String NAME = "Event Search";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventSearchModel();
+    private IConfigurationModel configurationModel = new EventSearchModel(this);
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

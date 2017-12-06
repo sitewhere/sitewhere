@@ -42,7 +42,7 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     private static final String NAME = "Outbound Processing";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new OutboundProcessingModel();
+    private IConfigurationModel configurationModel = new OutboundProcessingModel(this);
 
     /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;

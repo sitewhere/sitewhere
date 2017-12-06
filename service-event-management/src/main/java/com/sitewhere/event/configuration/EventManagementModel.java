@@ -7,12 +7,35 @@
  */
 package com.sitewhere.event.configuration;
 
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Configuration model for event management microservice.
  * 
  * @author Derek
  */
-public class EventManagementModel extends ConfigurationModel {
+public class EventManagementModel extends MicroserviceConfigurationModel {
+
+    public EventManagementModel(IMicroservice microservice) {
+	super(microservice, null, null, null);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/event-management";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
+    }
 }

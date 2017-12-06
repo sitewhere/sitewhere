@@ -39,7 +39,7 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     private static final String NAME = "Schedule Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new ScheduleManagementModel();
+    private IConfigurationModel configurationModel = new ScheduleManagementModel(this);
 
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;

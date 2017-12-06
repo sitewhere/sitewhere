@@ -7,12 +7,35 @@
  */
 package com.sitewhere.labels.configuration;
 
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Configuration model for label generation microservice.
  * 
  * @author Derek
  */
-public class LabelGenerationModel extends ConfigurationModel {
+public class LabelGenerationModel extends MicroserviceConfigurationModel {
+
+    public LabelGenerationModel(IMicroservice microservice) {
+	super(microservice, null, null, null);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/label-generation";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
+    }
 }

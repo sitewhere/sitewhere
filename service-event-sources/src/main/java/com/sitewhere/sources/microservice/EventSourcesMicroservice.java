@@ -32,10 +32,10 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice name */
-    private static final String NAME = "Event Sources";
+    public static final String NAME = "Event Sources";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventSourcesModel();
+    private IConfigurationModel configurationModel = new EventSourcesModel(this);
 
     /*
      * (non-Javadoc)

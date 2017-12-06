@@ -45,7 +45,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     private static final String NAME = "Device Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new DeviceManagementModel();
+    private IConfigurationModel configurationModel = new DeviceManagementModel(this);
 
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;

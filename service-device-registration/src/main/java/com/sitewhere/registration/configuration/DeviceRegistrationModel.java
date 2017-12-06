@@ -7,12 +7,35 @@
  */
 package com.sitewhere.registration.configuration;
 
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Configuration model for device registration microservice.
  * 
  * @author Derek
  */
-public class DeviceRegistrationModel extends ConfigurationModel {
+public class DeviceRegistrationModel extends MicroserviceConfigurationModel {
+
+    public DeviceRegistrationModel(IMicroservice microservice) {
+	super(microservice, null, null, null);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/device-registration";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
+    }
 }

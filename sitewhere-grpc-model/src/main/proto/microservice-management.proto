@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "MicroserviceServices";
+
+import "sitewhere-common.proto";
+import "microservice-model.proto";
+
+// Microservice management APIs.
+service MicroserviceManagement {
+
+	// #####################
+	// ### CONFIGURATION ###
+	// #####################
+
+	// Create a new batch operation.
+	rpc GetConfigurationModel (GGetConfigurationModelRequest) returns (GGetConfigurationModelResponse) {}
+}
+
+// #####################
+// ### CONFIGURATION ###
+// #####################
+
+// Request for getting configuration model.
+message GGetConfigurationModelRequest {
+}
+	
+// Response for creating a batch operation.
+message GGetConfigurationModelResponse {
+}

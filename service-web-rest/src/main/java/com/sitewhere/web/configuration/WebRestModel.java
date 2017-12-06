@@ -7,12 +7,35 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Configuration model for web/REST microservice.
  * 
  * @author Derek
  */
-public class WebRestModel extends ConfigurationModel {
+public class WebRestModel extends MicroserviceConfigurationModel {
+
+    public WebRestModel(IMicroservice microservice) {
+	super(microservice, null, null, null);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/web-rest";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
+    }
 }

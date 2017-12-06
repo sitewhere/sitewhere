@@ -41,7 +41,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     private static final String NAME = "User Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new UserManagementModel();
+    private IConfigurationModel configurationModel = new UserManagementModel(this);
 
     /** User management configuration file name */
     private static final String USER_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";

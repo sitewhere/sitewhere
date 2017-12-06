@@ -7,12 +7,35 @@
  */
 package com.sitewhere.user.configuration;
 
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Configuration model for user management microservice.
  * 
  * @author Derek
  */
-public class UserManagementModel extends ConfigurationModel {
+public class UserManagementModel extends MicroserviceConfigurationModel {
+
+    public UserManagementModel(IMicroservice microservice) {
+	super(microservice, null, null, null);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/user-management";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
+    }
 }

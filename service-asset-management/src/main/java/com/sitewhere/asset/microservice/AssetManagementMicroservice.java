@@ -42,7 +42,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new AssetManagementModel();
+    private IConfigurationModel configurationModel = new AssetManagementModel(this);
 
     /*
      * (non-Javadoc)

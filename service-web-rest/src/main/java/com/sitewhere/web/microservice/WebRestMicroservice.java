@@ -54,7 +54,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     private static final String NAME = "Web/REST";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new WebRestModel();
+    private IConfigurationModel configurationModel = new WebRestModel(this);
 
     /** Web/REST configuration file name */
     private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";

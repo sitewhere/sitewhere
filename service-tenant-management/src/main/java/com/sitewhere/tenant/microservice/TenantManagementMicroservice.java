@@ -51,7 +51,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     private static final String NAME = "Tenant Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new TenantManagementModel();
+    private IConfigurationModel configurationModel = new TenantManagementModel(this);
 
     /** Tenant management configuration file name */
     private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";

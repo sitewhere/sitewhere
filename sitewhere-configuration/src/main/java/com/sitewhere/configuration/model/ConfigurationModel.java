@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.configuration.model.IElementNode;
  * 
  * @author Derek
  */
-public class ConfigurationModel extends ElementNode implements IConfigurationModel {
+public abstract class ConfigurationModel extends ElementNode implements IConfigurationModel {
 
     /** Map of elements by role */
     private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();

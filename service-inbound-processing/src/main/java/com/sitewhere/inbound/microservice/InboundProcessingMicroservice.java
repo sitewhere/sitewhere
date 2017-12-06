@@ -42,7 +42,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     private static final String NAME = "Inbound Processing";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new InboundProcessingModel();
+    private IConfigurationModel configurationModel = new InboundProcessingModel(this);
 
     /** Device management API channel */
     private IDeviceManagementApiDemux deviceManagementApiDemux;

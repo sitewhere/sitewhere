@@ -15,7 +15,14 @@ import java.util.Map;
  * 
  * @author Derek
  */
-public interface IConfigurationModel {
+public interface IConfigurationModel extends IElementNode {
+
+    /**
+     * Get default XML namespace used for elements that do not provide one.
+     * 
+     * @return
+     */
+    public String getDefaultXmlNamespace();
 
     /**
      * Add a new element to the model.

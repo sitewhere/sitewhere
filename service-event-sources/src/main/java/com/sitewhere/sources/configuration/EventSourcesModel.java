@@ -9,15 +9,16 @@ package com.sitewhere.sources.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
 import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.ConfigurationModel;
 import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
+import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
 import com.sitewhere.configuration.old.ICommandDestinationsParser;
 import com.sitewhere.configuration.old.ICommandRoutingParser;
 import com.sitewhere.configuration.old.IDeviceCommunicationParser;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser;
 import com.sitewhere.configuration.parser.IEventSourcesParser;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
@@ -25,9 +26,29 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
  * 
  * @author Derek
  */
-public class EventSourcesModel extends ConfigurationModel {
+public class EventSourcesModel extends MicroserviceConfigurationModel {
 
-    public EventSourcesModel() {
+    public EventSourcesModel(IMicroservice microservice) {
+	super(microservice, EventSourcesElementRoles.EventSources.name(), "sign-in",
+		"Event sources are responsible for acquiring device event data from external devices or systems.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getDefaultXmlNamespace()
+     */
+    @Override
+    public String getDefaultXmlNamespace() {
+	return "http://sitewhere.io/schema/sitewhere/microservice/event-sources";
+    }
+
+    /*
+     * @see
+     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
+     * )
+     */
+    @Override
+    public void addElements() {
 	// Event sources.
 	addElement(createMqttEventSourceElement());
 	addElement(createRabbitMqEventSourceElement());

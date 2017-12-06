@@ -34,7 +34,7 @@ public class CommandDestinationsMicroservice extends MultitenantMicroservice<ICo
     private static final String NAME = "Command Destinations";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new CommandDestinationsModel();
+    private IConfigurationModel configurationModel = new CommandDestinationsModel(this);
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
