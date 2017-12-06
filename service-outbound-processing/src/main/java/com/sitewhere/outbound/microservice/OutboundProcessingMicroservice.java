@@ -16,11 +16,13 @@ import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.outbound.configuration.OutboundProcessingModel;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingMicroservice;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -38,6 +40,9 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
 
     /** Microservice name */
     private static final String NAME = "Outbound Processing";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new OutboundProcessingModel();
 
     /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
@@ -59,6 +64,14 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.OUTBOUND_PROCESSING;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

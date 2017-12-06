@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.presence.configuration.PresenceManagementModel;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementMicroservice;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -31,6 +33,9 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     /** Microservice name */
     private static final String NAME = "Presence Management";
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new PresenceManagementModel();
+
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -45,6 +50,14 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.PRESENCE_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

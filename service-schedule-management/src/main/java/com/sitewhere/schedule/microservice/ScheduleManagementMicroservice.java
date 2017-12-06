@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.schedule.configuration.ScheduleManagementModel;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
@@ -18,6 +19,7 @@ import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -36,6 +38,9 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     /** Microservice name */
     private static final String NAME = "Schedule Management";
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new ScheduleManagementModel();
+
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
 
@@ -53,6 +58,14 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.SCHEDULE_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

@@ -34,8 +34,10 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.web.configuration.WebRestModel;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -50,6 +52,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Microservice name */
     private static final String NAME = "Web/REST";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new WebRestModel();
 
     /** Web/REST configuration file name */
     private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";
@@ -99,6 +104,14 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.WEB_REST;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

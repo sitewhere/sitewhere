@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.rules.configuration.RuleProcessingModel;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -31,6 +33,9 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
     /** Microservice name */
     private static final String NAME = "Rule Processing";
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new RuleProcessingModel();
+
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -45,6 +50,14 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.RULE_PROCESSING;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

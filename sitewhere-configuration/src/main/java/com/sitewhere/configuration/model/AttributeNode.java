@@ -12,6 +12,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
+import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Configuration node associated with an XML element attribute.
@@ -19,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AttributeNode extends XmlNode {
+public class AttributeNode extends XmlNode implements IAttributeNode {
 
     /** Attribute type */
     private AttributeType type;
@@ -43,6 +46,11 @@ public class AttributeNode extends XmlNode {
 	super(NodeType.Attribute);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IAttributeNode#getType()
+     */
+    @Override
     public AttributeType getType() {
 	return type;
     }
@@ -51,6 +59,11 @@ public class AttributeNode extends XmlNode {
 	this.type = type;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IAttributeNode#
+     * getDefaultValue()
+     */
+    @Override
     public String getDefaultValue() {
 	return defaultValue;
     }
@@ -59,6 +72,11 @@ public class AttributeNode extends XmlNode {
 	this.defaultValue = defaultValue;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IAttributeNode#isIndex()
+     */
+    @Override
     public boolean isIndex() {
 	return index;
     }
@@ -67,6 +85,12 @@ public class AttributeNode extends XmlNode {
 	this.index = index;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IAttributeNode#getChoices(
+     * )
+     */
+    @Override
     public List<String> getChoices() {
 	return choices;
     }
@@ -75,6 +99,12 @@ public class AttributeNode extends XmlNode {
 	this.choices = choices;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IAttributeNode#isRequired(
+     * )
+     */
+    @Override
     public boolean isRequired() {
 	return required;
     }
@@ -83,6 +113,11 @@ public class AttributeNode extends XmlNode {
 	this.required = required;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IAttributeNode#getGroup()
+     */
+    @Override
     public String getGroup() {
 	return group;
     }

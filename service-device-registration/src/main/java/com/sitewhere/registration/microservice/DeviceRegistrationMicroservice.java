@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.registration.configuration.DeviceRegistrationModel;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -31,6 +33,9 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     /** Microservice name */
     private static final String NAME = "Device Registration";
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new DeviceRegistrationModel();
+
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -45,6 +50,14 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.DEVICE_REGISTRATION;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

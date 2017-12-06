@@ -9,7 +9,6 @@ package com.sitewhere.sources.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
 import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.AttributeType;
 import com.sitewhere.configuration.model.ConfigurationModel;
 import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
@@ -19,9 +18,10 @@ import com.sitewhere.configuration.old.IDeviceCommunicationParser;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser;
 import com.sitewhere.configuration.parser.IEventSourcesParser;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
- * Configuration model for device communication elements.
+ * Configuration model for event sources microservice.
  * 
  * @author Derek
  */

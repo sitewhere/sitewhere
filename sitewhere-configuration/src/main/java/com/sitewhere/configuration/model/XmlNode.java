@@ -7,12 +7,15 @@
  */
 package com.sitewhere.configuration.model;
 
+import com.sitewhere.spi.microservice.configuration.model.IXmlNode;
+import com.sitewhere.spi.microservice.configuration.model.NodeType;
+
 /**
  * Common base class for nodes that wrap XML content.
  * 
  * @author Derek
  */
-public abstract class XmlNode extends ConfigurationNode {
+public abstract class XmlNode extends ConfigurationNode implements IXmlNode {
 
     /** XML local name */
     private String localName;
@@ -24,6 +27,11 @@ public abstract class XmlNode extends ConfigurationNode {
 	super(type);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IXmlNode#getLocalName()
+     */
+    @Override
     public String getLocalName() {
 	return localName;
     }
@@ -32,6 +40,11 @@ public abstract class XmlNode extends ConfigurationNode {
 	this.localName = localName;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IXmlNode#getNamespace()
+     */
+    @Override
     public String getNamespace() {
 	return namespace;
     }

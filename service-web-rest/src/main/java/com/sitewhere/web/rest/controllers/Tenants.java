@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.configuration.TenantConfigurationModel;
 import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
@@ -185,19 +184,6 @@ public class Tenants extends RestControllerBase {
 	ITenant tenant = assureTenant(tenantId);
 	checkForAdminOrEditSelf(tenant);
 	return getTenantManagement().deleteTenant(tenantId, force);
-    }
-
-    /**
-     * Get tenant configuration model as a JSON object.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/configuration/model", method = RequestMethod.GET)
-    @ApiOperation(value = "Get hierarchical model for tenant configuration")
-    public TenantConfigurationModel getTenantConfigurationModel() throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	return new TenantConfigurationModel();
     }
 
     /**

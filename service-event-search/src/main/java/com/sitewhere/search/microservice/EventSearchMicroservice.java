@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.search.configuration.EventSearchModel;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -31,6 +33,9 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     /** Microservice name */
     private static final String NAME = "Event Search";
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new EventSearchModel();
+
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -45,6 +50,14 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.EVENT_SEARCH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

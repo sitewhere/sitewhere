@@ -19,6 +19,7 @@ import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.grpc.client.user.UserManagementApiChannel;
+import com.sitewhere.instance.configuration.InstanceManagementModel;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.kafka.StateAggregatorKafkaConsumer;
@@ -38,6 +39,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -55,6 +57,9 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new InstanceManagementModel();
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -89,6 +94,14 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.INSTANCE_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

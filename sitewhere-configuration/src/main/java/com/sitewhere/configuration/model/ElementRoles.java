@@ -22,22 +22,6 @@ public enum ElementRoles implements IElementRoleProvider {
     /** Data management container. Cache provider configuration. */
     DataManagement_CacheProvider(ElementRole.build("Cache Provider", true, false, false)),
 
-    /** Data management container. Device model initializer configuration. */
-    DataManagement_DeviceModelInitializer(ElementRole.build("Device Model Initializer", true, false, false)),
-
-    /** Data management container. Asset model initializer configuration. */
-    DataManagement_AssetModelInitializer(ElementRole.build("Asset Model Initializer", true, false, false)),
-
-    /** Data management container. Schedule model initializer configuration. */
-    DataManagement_ScheduleModelInitializer(ElementRole.build("Schedule Model Initializer", true, false, false)),
-
-    /** Data management. */
-    DataManagement(ElementRole.build(null, false, false, false,
-	    new ElementRoles[] { DataManagement_Datastore, DataManagement_CacheProvider,
-		    DataManagement_DeviceModelInitializer, DataManagement_AssetModelInitializer,
-		    DataManagement_ScheduleModelInitializer },
-	    new ElementRoles[0], true)),
-
     /** Inbound processing chain. Event processor. */
     InboundProcessingChain_EventProcessor(ElementRole.build("Event Processors", true, true, true)),
 
@@ -160,12 +144,6 @@ public enum ElementRoles implements IElementRoleProvider {
     DeviceCommunication_CommandDestinations(ElementRole.build(null, false, false, false,
 	    new ElementRoles[] { CommandDestinations_CommandDestination }, new ElementRoles[0], true)),
 
-    /** Device communication element. */
-    DeviceCommunication(ElementRole.build(null, false, false, false,
-	    new ElementRoles[] { DeviceCommunication_DeviceServices, DeviceCommunication_BatchOperations,
-		    DeviceCommunication_CommandRouting, DeviceCommunication_CommandDestinations },
-	    new ElementRoles[0], true)),
-
     /** Asset Management. Asset module */
     AssetManagment_AssetModule(ElementRole.build("Asset Modules", true, true, true)),
 
@@ -181,8 +159,7 @@ public enum ElementRoles implements IElementRoleProvider {
 	    new ElementRoles[] { SearchProviders_SearchProvider }, new ElementRoles[0], true)),
 
     /** Top level element. */
-    Root(ElementRole.build(null, false, false, false,
-	    new ElementRoles[] { Globals, DataManagement, DeviceCommunication, AssetManagment, SearchProviders }));
+    Root(ElementRole.build(null, false, false, false, new ElementRoles[] { Globals, AssetManagment, SearchProviders }));
 
     // Wrapped role.
     private ElementRole role;

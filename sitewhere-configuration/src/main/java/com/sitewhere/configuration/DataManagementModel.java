@@ -8,12 +8,11 @@
 package com.sitewhere.configuration;
 
 import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.AttributeType;
 import com.sitewhere.configuration.model.ConfigurationModel;
 import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
-import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
  * Configuration model for data management elements.
@@ -23,26 +22,10 @@ import com.sitewhere.configuration.old.ITenantDatastoreParser;
 public class DataManagementModel extends ConfigurationModel {
 
     public DataManagementModel() {
-	addElement(createDataManagement());
-
 	// Datastore implementations.
 	addElement(createMongoTenantDatastoreElement());
 	addElement(createMongoInfluxDbTenantDatastoreElement());
 	addElement(createHBaseTenantDatastoreElement());
-    }
-
-    /**
-     * Create the container for datastore information.
-     * 
-     * @return
-     */
-    protected ElementNode createDataManagement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Data Management",
-		ITenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-		ElementRoles.DataManagement);
-	builder.description(
-		"Configure the datastore and related aspects such as caching and " + "data model initialization.");
-	return builder.build();
     }
 
     /**

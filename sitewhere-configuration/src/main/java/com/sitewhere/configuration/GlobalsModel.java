@@ -8,13 +8,13 @@
 package com.sitewhere.configuration;
 
 import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.AttributeType;
 import com.sitewhere.configuration.model.ConfigurationModel;
 import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
  * Configuration model for global elements.

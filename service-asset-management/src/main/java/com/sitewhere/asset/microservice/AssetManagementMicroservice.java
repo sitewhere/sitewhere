@@ -10,6 +10,7 @@ package com.sitewhere.asset.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.asset.configuration.AssetManagementModel;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
@@ -18,6 +19,7 @@ import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -39,6 +41,9 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new AssetManagementModel();
+
     /*
      * (non-Javadoc)
      * 
@@ -57,6 +62,14 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.ASSET_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

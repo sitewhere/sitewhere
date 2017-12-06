@@ -9,6 +9,7 @@ package com.sitewhere.spi.microservice;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -57,6 +58,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @throws SiteWhereException
      */
     public String getHostname() throws SiteWhereException;
+
+    /**
+     * Get configuration model.
+     * 
+     * @return
+     */
+    public IConfigurationModel getConfigurationModel();
 
     /**
      * Get current state for microservice.

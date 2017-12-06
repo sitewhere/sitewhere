@@ -21,11 +21,13 @@ import com.sitewhere.microservice.hazelcast.server.CacheAwareTenantManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
+import com.sitewhere.tenant.configuration.TenantManagementModel;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.kafka.TenantBootstrapModelConsumer;
 import com.sitewhere.tenant.kafka.TenantModelProducer;
@@ -47,6 +49,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
     /** Microservice name */
     private static final String NAME = "Tenant Management";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new TenantManagementModel();
 
     /** Tenant management configuration file name */
     private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
@@ -91,6 +96,14 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.TENANT_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

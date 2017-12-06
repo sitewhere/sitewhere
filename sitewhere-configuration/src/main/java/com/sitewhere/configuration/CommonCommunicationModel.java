@@ -8,8 +8,8 @@
 package com.sitewhere.configuration;
 
 import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.AttributeType;
 import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
  * Common shared model characteristics.

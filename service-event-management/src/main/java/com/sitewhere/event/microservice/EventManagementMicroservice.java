@@ -10,6 +10,7 @@ package com.sitewhere.event.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.event.configuration.EventManagementModel;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
@@ -18,6 +19,7 @@ import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -35,6 +37,9 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 
     /** Microservice name */
     private static final String NAME = "Event Management";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new EventManagementModel();
 
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
@@ -57,6 +62,14 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.EVENT_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

@@ -10,6 +10,7 @@ package com.sitewhere.device.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.device.configuration.DeviceManagementModel;
 import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
@@ -24,6 +25,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -41,6 +43,9 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /** Microservice name */
     private static final String NAME = "Device Management";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new DeviceManagementModel();
 
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
@@ -72,6 +77,14 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.DEVICE_MANAGEMENT;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

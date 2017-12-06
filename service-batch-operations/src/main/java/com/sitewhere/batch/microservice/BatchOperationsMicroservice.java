@@ -10,6 +10,7 @@ package com.sitewhere.batch.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.batch.configuration.BatchOperationsModel;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
@@ -23,6 +24,7 @@ import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -40,6 +42,9 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 
     /** Microservice name */
     private static final String NAME = "Batch Operations";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new BatchOperationsModel();
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
@@ -64,6 +69,14 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.BATCH_OPERATIONS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

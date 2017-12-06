@@ -11,10 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.sources.configuration.EventSourcesModel;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -31,6 +33,9 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
 
     /** Microservice name */
     private static final String NAME = "Event Sources";
+
+    /** Configuration model */
+    private IConfigurationModel configurationModel = new EventSourcesModel();
 
     /*
      * (non-Javadoc)
@@ -50,6 +55,14 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     @Override
     public String getIdentifier() {
 	return IMicroserviceIdentifiers.EVENT_SOURCES;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
     }
 
     /*

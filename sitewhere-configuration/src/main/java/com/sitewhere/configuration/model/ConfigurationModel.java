@@ -12,30 +12,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+
 /**
- * Top-level node for configuration model.
+ * Contains a map of all model elements grouped by role.
  * 
  * @author Derek
  */
-public class ConfigurationModel extends ElementNode {
+public class ConfigurationModel extends ElementNode implements IConfigurationModel {
 
     /** Map of elements by role */
-    private Map<String, List<ElementNode>> elementsByRole = new HashMap<String, List<ElementNode>>();
+    private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();
 
-    public void addElement(ElementNode element) {
-	List<ElementNode> elements = getElementsByRole().get(element.getRole());
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * addElement(com.sitewhere.spi.microservice.configuration.model.IElementNode)
+     */
+    @Override
+    public void addElement(IElementNode element) {
+	List<IElementNode> elements = getElementsByRole().get(element.getRole());
 	if (elements == null) {
-	    elements = new ArrayList<ElementNode>();
+	    elements = new ArrayList<IElementNode>();
 	    getElementsByRole().put(element.getRole(), elements);
 	}
 	elements.add(element);
     }
 
-    public Map<String, List<ElementNode>> getElementsByRole() {
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getElementsByRole()
+     */
+    @Override
+    public Map<String, List<IElementNode>> getElementsByRole() {
 	return elementsByRole;
     }
 
-    public void setElementsByRole(Map<String, List<ElementNode>> elementsByRole) {
+    public void setElementsByRole(Map<String, List<IElementNode>> elementsByRole) {
 	this.elementsByRole = elementsByRole;
     }
 }

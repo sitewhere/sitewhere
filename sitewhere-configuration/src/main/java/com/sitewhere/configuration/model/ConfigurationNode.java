@@ -7,6 +7,8 @@
  */
 package com.sitewhere.configuration.model;
 
+import com.sitewhere.spi.microservice.configuration.model.NodeType;
+
 /**
  * Base class for all configuration node types.
  * 

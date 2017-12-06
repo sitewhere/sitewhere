@@ -14,6 +14,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
+import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Configuration node associated with an XML element.
@@ -21,10 +24,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class ElementNode extends XmlNode {
+public class ElementNode extends XmlNode implements IElementNode {
 
     /** List of attribute nodes */
-    private List<AttributeNode> attributes;
+    private List<IAttributeNode> attributes;
 
     /** Element role */
     private String role;
@@ -45,14 +48,25 @@ public class ElementNode extends XmlNode {
 	super(NodeType.Element);
     }
 
-    public List<AttributeNode> getAttributes() {
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementNode#getAttributes
+     * ()
+     */
+    @Override
+    public List<IAttributeNode> getAttributes() {
 	return attributes;
     }
 
-    public void setAttributes(List<AttributeNode> attributes) {
+    public void setAttributes(List<IAttributeNode> attributes) {
 	this.attributes = attributes;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementNode#getRole()
+     */
+    @Override
     public String getRole() {
 	return role;
     }
@@ -61,6 +75,11 @@ public class ElementNode extends XmlNode {
 	this.role = role;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IElementNode#
+     * getOnDeleteWarning()
+     */
+    @Override
     public String getOnDeleteWarning() {
 	return onDeleteWarning;
     }
@@ -69,6 +88,11 @@ public class ElementNode extends XmlNode {
 	this.onDeleteWarning = onDeleteWarning;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IElementNode#
+     * getSpecializes()
+     */
+    @Override
     public Map<String, String> getSpecializes() {
 	return specializes;
     }
@@ -77,6 +101,11 @@ public class ElementNode extends XmlNode {
 	this.specializes = specializes;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IElementNode#
+     * getAttributeGroups()
+     */
+    @Override
     public Map<String, String> getAttributeGroups() {
 	return attributeGroups;
     }
@@ -85,6 +114,12 @@ public class ElementNode extends XmlNode {
 	this.attributeGroups = attributeGroups;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementNode#isDeprecated(
+     * )
+     */
+    @Override
     public boolean isDeprecated() {
 	return deprecated;
     }
@@ -100,7 +135,7 @@ public class ElementNode extends XmlNode {
      */
     public String getIndexAttribute() {
 	if (attributes != null) {
-	    for (AttributeNode attribute : attributes) {
+	    for (IAttributeNode attribute : attributes) {
 		if (attribute.isIndex()) {
 		    return attribute.getLocalName();
 		}
@@ -138,7 +173,7 @@ public class ElementNode extends XmlNode {
 
 	public Builder attribute(AttributeNode attribute) {
 	    if (element.getAttributes() == null) {
-		element.setAttributes(new ArrayList<AttributeNode>());
+		element.setAttributes(new ArrayList<IAttributeNode>());
 	    }
 	    element.getAttributes().add(attribute);
 	    return this;
