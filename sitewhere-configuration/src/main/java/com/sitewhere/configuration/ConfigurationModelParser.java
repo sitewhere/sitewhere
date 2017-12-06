@@ -8,7 +8,7 @@
 package com.sitewhere.configuration;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.spi.SiteWhereException;
 
 /**

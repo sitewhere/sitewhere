@@ -7,6 +7,7 @@
  */
 package com.sitewhere.configuration.model;
 
+import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 

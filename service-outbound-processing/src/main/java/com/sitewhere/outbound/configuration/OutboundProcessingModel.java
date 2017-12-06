@@ -8,12 +8,12 @@
 package com.sitewhere.outbound.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
-import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
 import com.sitewhere.configuration.old.IInboundProcessingChainParser;
 import com.sitewhere.configuration.parser.IOutboundProcessingParser;
+import com.sitewhere.rest.model.configuration.AttributeNode;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 

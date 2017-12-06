@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.configuration.model;
+package com.sitewhere.rest.model.configuration;
 
 import java.io.IOException;
 
@@ -14,7 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.configuration.model.ElementRole.Serializer;
+import com.sitewhere.rest.model.configuration.ElementRole.Serializer;
+import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
 
 /**
  * Used to indicate role of an element.

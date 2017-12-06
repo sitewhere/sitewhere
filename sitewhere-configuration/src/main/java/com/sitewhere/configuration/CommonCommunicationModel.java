@@ -7,8 +7,8 @@
  */
 package com.sitewhere.configuration;
 
-import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.rest.model.configuration.AttributeNode;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**

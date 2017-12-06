@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.configuration.model;
+package com.sitewhere.rest.model.configuration;
 
 import java.util.ArrayList;
 import java.util.List;

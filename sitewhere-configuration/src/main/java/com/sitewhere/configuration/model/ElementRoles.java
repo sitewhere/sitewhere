@@ -7,6 +7,9 @@
  */
 package com.sitewhere.configuration.model;
 
+import com.sitewhere.rest.model.configuration.ElementRole;
+import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
+
 public enum ElementRoles implements IElementRoleProvider {
 
     /** Top level element. */

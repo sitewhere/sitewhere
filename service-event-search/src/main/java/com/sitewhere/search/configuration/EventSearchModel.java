@@ -7,12 +7,12 @@
  */
 package com.sitewhere.search.configuration;
 
-import com.sitewhere.configuration.model.AttributeNode;
-import com.sitewhere.configuration.model.ElementNode;
 import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
 import com.sitewhere.configuration.old.ISearchProvidersParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
+import com.sitewhere.rest.model.configuration.AttributeNode;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 

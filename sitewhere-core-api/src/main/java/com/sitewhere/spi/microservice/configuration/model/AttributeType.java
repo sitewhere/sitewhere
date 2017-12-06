@@ -26,6 +26,9 @@ public enum AttributeType {
     /** Boolean value */
     Boolean,
 
+    /** Script */
+    Script,
+
     /** Reference to a site by token */
     SiteReference,
 

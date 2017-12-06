@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.configuration.model;
+package com.sitewhere.rest.model.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**

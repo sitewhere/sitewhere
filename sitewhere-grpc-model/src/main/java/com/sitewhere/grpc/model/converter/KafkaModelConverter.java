@@ -203,7 +203,7 @@ public class KafkaModelConverter {
 	case LifecycleError:
 	    return GLifecycleStatus.LIFECYCLE_STATUS_ERROR;
 	}
-	throw new SiteWhereException("Unknown trigger type: " + api.name());
+	throw new SiteWhereException("Unknown lifecycle status: " + api.name());
     }
 
     /**

@@ -41,7 +41,7 @@ enum GAttributeType {
 // Attribute node.
 message GAttributeNode {
 	GAttributeType type = 1;
-	string defaultValue = 2;
+	GOptionalString defaultValue = 2;
 	bool index = 3;
 	repeated string choices = 4;
 	bool required = 5;
@@ -58,4 +58,16 @@ message GElementNode {
 	map<string, string> attributeGroups = 5;
 	bool deprecated = 6;
 	GXmlNode node = 7;
+}
+
+// List of element nodes.
+message GElementNodeList {
+	repeated GElementNode elements = 1;
+}
+
+// Microservice configuration information.
+message GMicroserviceConfiguration {
+	string defaultNamespace = 1;
+	map<string, GElementNodeList> elementsByRole = 2;
+	GElementNode root = 3;
 }

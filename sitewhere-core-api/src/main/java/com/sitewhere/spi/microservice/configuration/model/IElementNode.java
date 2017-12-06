@@ -15,7 +15,7 @@ import java.util.Map;
  * 
  * @author Derek
  */
-public interface IElementNode {
+public interface IElementNode extends IXmlNode {
 
     public List<IAttributeNode> getAttributes();
 

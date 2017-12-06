@@ -7,8 +7,8 @@
  */
 package com.sitewhere.sources.configuration;
 
-import com.sitewhere.configuration.model.ElementRole;
-import com.sitewhere.configuration.model.IElementRoleProvider;
+import com.sitewhere.rest.model.configuration.ElementRole;
+import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
 
 /**
  * Component roles associated with event sources microservice.
