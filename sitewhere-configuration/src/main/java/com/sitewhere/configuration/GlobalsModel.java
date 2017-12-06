@@ -5,16 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.configuration;
 
+import com.sitewhere.configuration.model.AttributeNode;
+import com.sitewhere.configuration.model.AttributeType;
+import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
-import com.sitewhere.web.configuration.model.AttributeNode;
-import com.sitewhere.web.configuration.model.AttributeType;
-import com.sitewhere.web.configuration.model.ConfigurationModel;
-import com.sitewhere.web.configuration.model.ElementNode;
-import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Configuration model for global elements.
@@ -35,7 +35,7 @@ public class GlobalsModel extends ConfigurationModel {
      */
     protected ElementNode createGlobals() {
 	ElementNode.Builder builder = new ElementNode.Builder("Global Overrides",
-		ITenantConfigurationParser.Elements.Globals.getLocalName(), "cogs", ElementRole.Globals);
+		ITenantConfigurationParser.Elements.Globals.getLocalName(), "cogs", ElementRoles.Globals);
 	builder.description("Allow tenant-specific changes to global configuration elements.");
 	return builder.build();
     }
@@ -47,7 +47,7 @@ public class GlobalsModel extends ConfigurationModel {
      */
     protected ElementNode createSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Solr Configuration",
-		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs", ElementRole.Globals_Global);
+		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs", ElementRoles.Globals_Global);
 
 	builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 	builder.description("Overrides global Solr settings for a tenant.");

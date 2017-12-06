@@ -5,15 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.configuration;
 
+import com.sitewhere.configuration.model.AttributeNode;
+import com.sitewhere.configuration.model.AttributeType;
+import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
-import com.sitewhere.web.configuration.model.AttributeNode;
-import com.sitewhere.web.configuration.model.AttributeType;
-import com.sitewhere.web.configuration.model.ConfigurationModel;
-import com.sitewhere.web.configuration.model.ElementNode;
-import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Configuration model for data management elements.
@@ -39,7 +39,7 @@ public class DataManagementModel extends ConfigurationModel {
     protected ElementNode createDataManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Data Management",
 		ITenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-		ElementRole.DataManagement);
+		ElementRoles.DataManagement);
 	builder.description(
 		"Configure the datastore and related aspects such as caching and " + "data model initialization.");
 	return builder.build();
@@ -53,7 +53,7 @@ public class DataManagementModel extends ConfigurationModel {
     protected ElementNode createMongoTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
-		ElementRole.DataManagement_Datastore);
+		ElementRoles.DataManagement_Datastore);
 
 	builder.description("Store tenant data using a MongoDB database. Note that the "
 		+ "global datastore must be configured to use MongoDB if this tenant datastore is to "
@@ -77,7 +77,7 @@ public class DataManagementModel extends ConfigurationModel {
     protected ElementNode createMongoInfluxDbTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB/InfluxDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoInfluxDbTenantDatastore.getLocalName(), "database",
-		ElementRole.DataManagement_Datastore);
+		ElementRoles.DataManagement_Datastore);
 
 	builder.description("Store tenant master data using a MongoDB database and store tenant event "
 		+ "data in InfluxDB. Note that the global datastore must be configured to "
@@ -120,7 +120,7 @@ public class DataManagementModel extends ConfigurationModel {
     protected ElementNode createHBaseTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HBase Tenant Datastore",
 		ITenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
-		ElementRole.DataManagement_Datastore);
+		ElementRoles.DataManagement_Datastore);
 	builder.description("Store tenant data using tables in an HBase instance. Note that the "
 		+ "global datastore must be configured to use HBase if this tenant datastore is to "
 		+ "be used. Most core HBase settings are configured at the global level.");

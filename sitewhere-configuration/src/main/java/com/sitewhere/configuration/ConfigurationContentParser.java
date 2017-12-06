@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -30,11 +30,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.sitewhere.configuration.content.AttributeContent;
+import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.web.configuration.content.AttributeContent;
-import com.sitewhere.web.configuration.content.ElementContent;
 
 /**
  * Used to parse SiteWhere XML configuration into JSON representation.

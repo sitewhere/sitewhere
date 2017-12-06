@@ -5,15 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.configuration;
 
+import com.sitewhere.configuration.model.AttributeNode;
+import com.sitewhere.configuration.model.AttributeType;
+import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.old.ISearchProvidersParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
-import com.sitewhere.web.configuration.model.AttributeNode;
-import com.sitewhere.web.configuration.model.AttributeType;
-import com.sitewhere.web.configuration.model.ConfigurationModel;
-import com.sitewhere.web.configuration.model.ElementNode;
-import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Configuration model for search provider elements.
@@ -35,7 +35,7 @@ public class SearchProvidersModel extends ConfigurationModel {
     protected ElementNode createSearchProviders() {
 	ElementNode.Builder builder = new ElementNode.Builder("Search Providers",
 		ITenantConfigurationParser.Elements.SearchProviders.getLocalName(), "search",
-		ElementRole.SearchProviders);
+		ElementRoles.SearchProviders);
 	builder.description("Configure search providers.");
 	return builder.build();
     }
@@ -48,7 +48,7 @@ public class SearchProvidersModel extends ConfigurationModel {
     protected ElementNode createSolrSearchProvider() {
 	ElementNode.Builder builder = new ElementNode.Builder("Solr Search Provider",
 		ISearchProvidersParser.Elements.SolrSearchProvider.getLocalName(), "search",
-		ElementRole.SearchProviders_SearchProvider);
+		ElementRoles.SearchProviders_SearchProvider);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)

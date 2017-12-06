@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.configuration;
 
+import com.sitewhere.configuration.model.AttributeNode;
+import com.sitewhere.configuration.model.AttributeType;
+import com.sitewhere.configuration.model.ConfigurationModel;
+import com.sitewhere.configuration.model.ElementNode;
+import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
-import com.sitewhere.web.configuration.model.AttributeNode;
-import com.sitewhere.web.configuration.model.AttributeType;
-import com.sitewhere.web.configuration.model.ConfigurationModel;
-import com.sitewhere.web.configuration.model.ElementNode;
-import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Configuration model for asset management elements.
@@ -33,7 +33,7 @@ public class AssetManagementModel extends ConfigurationModel {
      */
     protected ElementNode createAssetManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Asset Management",
-		ITenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag", ElementRole.AssetManagment);
+		ITenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag", ElementRoles.AssetManagment);
 	builder.description("Configure asset management features.");
 	return builder.build();
     }
@@ -57,7 +57,7 @@ public class AssetManagementModel extends ConfigurationModel {
 	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
 		com.sitewhere.configuration.parser.IAssetManagementParser.IAssetModulesParser.Elements.Wso2IdentityAssetModule
 			.getLocalName(),
-		"users", ElementRole.AssetManagment_AssetModule);
+		"users", ElementRoles.AssetManagment_AssetModule);
 
 	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
 		+ "to provide a list of person assets.");

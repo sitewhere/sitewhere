@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.configuration.TenantConfigurationModel;
+import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.security.UserContextManager;
@@ -36,8 +38,6 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.configuration.TenantConfigurationModel;
-import com.sitewhere.web.configuration.model.ElementRole;
 import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
@@ -208,11 +208,11 @@ public class Tenants extends RestControllerBase {
      */
     @RequestMapping(value = "/configuration/roles", method = RequestMethod.GET)
     @ApiOperation(value = "Get role information for tenant configuration")
-    public Map<String, ElementRole> getTenantConfigurationRoles() throws SiteWhereException {
+    public Map<String, ElementRoles> getTenantConfigurationRoles() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
-	ElementRole[] roles = ElementRole.values();
-	Map<String, ElementRole> rolesById = new HashMap<String, ElementRole>();
-	for (ElementRole role : roles) {
+	ElementRoles[] roles = ElementRoles.values();
+	Map<String, ElementRoles> rolesById = new HashMap<String, ElementRoles>();
+	for (ElementRoles role : roles) {
 	    rolesById.put(role.name(), role);
 	}
 	return rolesById;
