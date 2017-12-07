@@ -41,12 +41,20 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Hostname */
     private String host;
 
+    /** GRPC Port */
+    private int port;
+
     /** Underlying GRPC channel */
     private T grpcChannel;
 
     public ApiChannel(IMicroservice microservice, String host) {
+	this(microservice, host, microservice.getInstanceSettings().getGrpcPort());
+    }
+
+    public ApiChannel(IMicroservice microservice, String host, int port) {
 	this.microservice = microservice;
 	this.host = host;
+	this.port = port;
     }
 
     /*
@@ -65,7 +73,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = (T) createGrpcChannel(microservice, host);
+	this.grpcChannel = (T) createGrpcChannel(microservice, host, port);
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 

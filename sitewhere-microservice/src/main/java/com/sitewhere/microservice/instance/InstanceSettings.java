@@ -42,9 +42,13 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.filesystem.storage.root:/var/sitewhere}")
     private String fileSystemStorageRoot;
 
-    /** GRPC port info for microservices */
+    /** GRPC port for serving APIs */
     @Value("${sitewhere.grpc.port:9000}")
     private int grpcPort;
+
+    /** GRPC port info for microservice management */
+    @Value("${sitewhere.management.grpc.port:9001}")
+    private int managementGrpcPort;
 
     /** Tracer server information */
     @Value("${sitewhere.tracer.server:jaeger}")
@@ -143,8 +147,7 @@ public class InstanceSettings implements IInstanceSettings {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getGrpcPort()
+     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#getGrpcPort()
      */
     @Override
     public int getGrpcPort() {
@@ -156,11 +159,23 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getManagementGrpcPort()
+     */
+    @Override
+    public int getManagementGrpcPort() {
+	return managementGrpcPort;
+    }
+
+    public void setManagementGrpcPort(int managementGrpcPort) {
+	this.managementGrpcPort = managementGrpcPort;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getTracerServer
-     * ()
+     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getTracerServer ()
      */
     @Override
     public String getTracerServer() {

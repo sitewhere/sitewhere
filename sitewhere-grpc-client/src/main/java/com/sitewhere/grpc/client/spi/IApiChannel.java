@@ -26,9 +26,10 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * 
      * @param tracerProvider
      * @param host
+     * @param port
      * @return
      */
-    public T createGrpcChannel(ITracerProvider tracerProvider, String host);
+    public T createGrpcChannel(ITracerProvider tracerProvider, String host, int port);
 
     /**
      * Get underlying GRPC channel.

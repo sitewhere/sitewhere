@@ -64,6 +64,13 @@ public interface IInstanceSettings {
     public int getGrpcPort();
 
     /**
+     * Get port to which management GRPC service is bound.
+     * 
+     * @return
+     */
+    public int getManagementGrpcPort();
+
+    /**
      * Get server information for tracer collector.
      * 
      * @return

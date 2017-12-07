@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
+import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.state.InstanceTopologySnapshotsManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
@@ -22,6 +23,7 @@ import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -83,6 +85,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Version information */
     private IVersion version = new Version();
 
+    /** Microservice management GRPC server */
+    private IMicroserviceManagementGrpcServer microserviceManagementGrpcServer;
+
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
 
@@ -102,6 +107,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Initialize GRPC components.
+	initializeGrpcComponents();
+
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -111,6 +119,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Initialize Hazelcast manager.
 	initialize.addInitializeStep(this, getHazelcastManager(), true);
 
+	// Initialize microservice management GRPC server.
+	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
+
 	// Initialize Kafka consumer for instance topology updates.
 	initialize.addInitializeStep(this, getInstanceTopologyUpdatesManager(), true);
 
@@ -119,6 +130,13 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+    }
+
+    /**
+     * Initialize GRPC components.
+     */
+    protected void initializeGrpcComponents() {
+	this.microserviceManagementGrpcServer = new MicroserviceManagementGrpcServer(this);
     }
 
     /*
@@ -133,6 +151,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Start Hazelcast manager.
 	start.addStartStep(this, getHazelcastManager(), true);
+
+	// Start microservice management GRPC server.
+	start.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
 	// Start Kafka consumer for instance topology updates.
 	start.addStartStep(this, getInstanceTopologyUpdatesManager(), true);
@@ -162,6 +183,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop microservice management GRPC server.
+	start.addStopStep(this, getMicroserviceManagementGrpcServer());
 
 	// Stop Kafka consumer for instance topology updates.
 	start.addStopStep(this, getInstanceTopologyUpdatesManager());
@@ -360,6 +384,20 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setKafkaTopicNaming(IKafkaTopicNaming kafkaTopicNaming) {
 	this.kafkaTopicNaming = kafkaTopicNaming;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getMicroserviceManagementGrpcServer()
+     */
+    @Override
+    public IMicroserviceManagementGrpcServer getMicroserviceManagementGrpcServer() {
+	return microserviceManagementGrpcServer;
+    }
+
+    public void setMicroserviceManagementGrpcServer(
+	    IMicroserviceManagementGrpcServer microserviceManagementGrpcServer) {
+	this.microserviceManagementGrpcServer = microserviceManagementGrpcServer;
     }
 
     /*

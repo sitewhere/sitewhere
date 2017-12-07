@@ -118,14 +118,13 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
-	return new DeviceEventManagementGrpcChannel(tracerProvider, host,
-		getMicroservice().getInstanceSettings().getGrpcPort());
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new DeviceEventManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*

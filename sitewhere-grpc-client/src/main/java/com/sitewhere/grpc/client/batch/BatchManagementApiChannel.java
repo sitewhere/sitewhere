@@ -63,14 +63,13 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
-	return new BatchManagementGrpcChannel(tracerProvider, host,
-		getMicroservice().getInstanceSettings().getGrpcPort());
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new BatchManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*

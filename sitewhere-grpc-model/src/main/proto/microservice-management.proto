@@ -30,4 +30,5 @@ message GGetConfigurationModelRequest {
 	
 // Response for creating a batch operation.
 message GGetConfigurationModelResponse {
+	com.sitewhere.grpc.model.GMicroserviceConfiguration configuration = 1;
 }

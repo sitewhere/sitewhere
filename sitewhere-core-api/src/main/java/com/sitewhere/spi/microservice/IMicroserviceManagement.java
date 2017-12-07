@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.microservice;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 
 /**
@@ -20,6 +21,7 @@ public interface IMicroserviceManagement {
      * Get configuration model for microservice.
      * 
      * @return
+     * @throws SiteWhereException
      */
-    public IConfigurationModel getConfigurationModel();
+    public IConfigurationModel getConfigurationModel() throws SiteWhereException;
 }

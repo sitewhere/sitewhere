@@ -75,14 +75,13 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
-	return new UserManagementGrpcChannel(tracerProvider, host,
-		getMicroservice().getInstanceSettings().getGrpcPort());
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new UserManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*

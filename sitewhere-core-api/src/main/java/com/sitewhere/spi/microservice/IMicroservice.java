@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -108,6 +109,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public IKafkaTopicNaming getKafkaTopicNaming();
+
+    /**
+     * Get microservice management GRPC server.
+     * 
+     * @return
+     */
+    public IMicroserviceManagementGrpcServer getMicroserviceManagementGrpcServer();
 
     /**
      * Get Kafka producer for reporting state updates in microservice and managed

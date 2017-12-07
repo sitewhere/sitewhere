@@ -54,14 +54,13 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi.
-     * tracing.ITracerProvider, java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
     @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host) {
-	return new TenantManagementGrpcChannel(tracerProvider, host,
-		getMicroservice().getInstanceSettings().getGrpcPort());
+    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+	return new TenantManagementGrpcChannel(tracerProvider, host, port);
     }
 
     /*

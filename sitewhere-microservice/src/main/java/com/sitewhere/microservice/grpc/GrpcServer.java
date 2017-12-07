@@ -75,6 +75,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	try {
 	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
 	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(trace).build();
+	    getLogger().info("Initialized GRPC server on port " + port + ".");
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
 	}
@@ -91,6 +92,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    getServer().start();
+	    getLogger().info("Started GRPC server on port " + port + ".");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to start tenant management GRPC server.", e);
 	}
@@ -111,8 +113,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.grpc.IManagedGrpcServer#getMicroservice()
+     * @see com.sitewhere.microservice.spi.grpc.IManagedGrpcServer#getMicroservice()
      */
     @Override
     public IMicroservice getMicroservice() {
