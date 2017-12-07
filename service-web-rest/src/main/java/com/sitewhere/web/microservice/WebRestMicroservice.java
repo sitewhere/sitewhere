@@ -30,11 +30,13 @@ import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.asset.AssetResolver;
+import com.sitewhere.microservice.management.MicroserviceManagementCoordinator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.web.configuration.WebRestModel;
@@ -85,6 +87,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Asset resolver */
     private IAssetResolver assetResolver;
+
+    /** Microservice management coordinator */
+    private IMicroserviceManagementCoordinator microserviceManagementCoordinator;
 
     /*
      * (non-Javadoc)
@@ -203,6 +208,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize schedule management API demux.
 	init.addInitializeStep(this, getScheduleManagementApiDemux(), true);
 
+	// Initialize microservice management coordinator.
+	init.addInitializeStep(this, getMicroserviceManagementCoordinator(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -234,6 +242,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Schedule management.
 	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux(this);
+
+	// Microservice management coordinator.
+	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator(this);
     }
 
     /*
@@ -272,6 +283,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Start schedule mangement API demux.
 	start.addStartStep(this, getScheduleManagementApiDemux(), true);
 
+	// Start microservice management coordinator.
+	start.addStartStep(this, getMicroserviceManagementCoordinator(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -307,6 +321,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop schedule mangement API demux.
 	stop.addStopStep(this, getScheduleManagementApiDemux());
+
+	// Stop microservice management coordinator.
+	stop.addStopStep(this, getMicroserviceManagementCoordinator());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
@@ -404,6 +421,20 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setScheduleManagementApiDemux(IScheduleManagementApiDemux scheduleManagementApiDemux) {
 	this.scheduleManagementApiDemux = scheduleManagementApiDemux;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getMicroserviceManagementCoordinator()
+     */
+    @Override
+    public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
+	return microserviceManagementCoordinator;
+    }
+
+    public void setMicroserviceManagementCoordinator(
+	    IMicroserviceManagementCoordinator microserviceManagementCoordinator) {
+	this.microserviceManagementCoordinator = microserviceManagementCoordinator;
     }
 
     /*

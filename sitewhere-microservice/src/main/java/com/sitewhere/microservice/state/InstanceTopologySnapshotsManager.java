@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.state;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ public class InstanceTopologySnapshotsManager extends InstanceTopologySnapshotsK
     private static Logger LOGGER = LogManager.getLogger();
 
     /** List of listeners */
-    private List<IInstanceTopologySnapshotsListener> listeners = new ArrayList<IInstanceTopologySnapshotsListener>();
+    private List<IInstanceTopologySnapshotsListener> listeners = new CopyOnWriteArrayList<IInstanceTopologySnapshotsListener>();
 
     public InstanceTopologySnapshotsManager(IMicroservice microservice) {
 	super(microservice);

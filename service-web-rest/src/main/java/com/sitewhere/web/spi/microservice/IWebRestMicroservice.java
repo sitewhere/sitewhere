@@ -16,6 +16,7 @@ import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
+import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 
 /**
  * Microservice that provides web/REST functionality.
@@ -79,4 +80,11 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * @return
      */
     public IAssetResolver getAssetResolver();
+
+    /**
+     * Get microservice management coordinator.
+     * 
+     * @return
+     */
+    public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator();
 }
