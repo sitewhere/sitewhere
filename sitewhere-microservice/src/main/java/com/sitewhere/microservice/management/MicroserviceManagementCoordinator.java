@@ -46,6 +46,9 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
     /** API demuxes by service identifier */
     private Map<String, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier = new HashMap<>();
 
+    /** Latest instance topology snapshot */
+    private IInstanceTopologySnapshot instanceTopologySnapshot;
+
     public MicroserviceManagementCoordinator(IMicroservice microservice) {
 	this.microservice = microservice;
     }
@@ -91,6 +94,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     @Override
     public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
+	this.instanceTopologySnapshot = snapshot;
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
 	    IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier()
 		    .get(entry.getMicroserviceIdentifier());
@@ -123,6 +127,20 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to initialize microservice management demux.", e);
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator#
+     * getInstanceTopologySnapshot()
+     */
+    @Override
+    public IInstanceTopologySnapshot getInstanceTopologySnapshot() {
+	return instanceTopologySnapshot;
+    }
+
+    public void setInstanceTopologySnapshot(IInstanceTopologySnapshot instanceTopologySnapshot) {
+	this.instanceTopologySnapshot = instanceTopologySnapshot;
     }
 
     /*

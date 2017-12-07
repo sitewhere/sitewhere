@@ -34,6 +34,9 @@ public abstract class MicroserviceConfigurationModel extends ConfigurationModel 
 	this.microservice = microservice;
 	setLocalName(getMicroservice().getIdentifier());
 	setName(getMicroservice().getName());
+	setRole(role);
+	setIcon(icon);
+	setDescription(description);
 	addElements();
     }
 

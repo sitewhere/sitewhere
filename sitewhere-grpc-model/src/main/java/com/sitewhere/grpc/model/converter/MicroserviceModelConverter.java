@@ -178,7 +178,7 @@ public class MicroserviceModelConverter {
 	api.setType(MicroserviceModelConverter.asApiAttributeType(grpc.getType()));
 	api.setDefaultValue(grpc.hasDefaultValue() ? grpc.getDefaultValue().getValue() : null);
 	api.setIndex(grpc.getIndex());
-	api.setChoices(grpc.getChoicesList());
+	api.setChoices((grpc.getChoicesList().size() > 0) ? grpc.getChoicesList() : null);
 	api.setRequired(grpc.getRequired());
 	api.setGroup(grpc.hasGroup() ? grpc.getGroup().getValue() : null);
 	updateFromGrpcXmlNode(api, grpc.getNode());
@@ -199,7 +199,9 @@ public class MicroserviceModelConverter {
 	    grpc.setDefaultValue(GOptionalString.newBuilder().setValue(api.getDefaultValue()));
 	}
 	grpc.setIndex(api.isIndex());
-	grpc.addAllChoices(api.getChoices());
+	if (api.getChoices() != null) {
+	    grpc.addAllChoices(api.getChoices());
+	}
 	grpc.setRequired(api.isRequired());
 	if (api.getGroup() != null) {
 	    grpc.setGroup(GOptionalString.newBuilder().setValue(api.getGroup()));
@@ -237,8 +239,8 @@ public class MicroserviceModelConverter {
 	}
 	api.setRole(grpc.getRole());
 	api.setOnDeleteWarning(grpc.hasOnDeleteWarning() ? grpc.getOnDeleteWarning().getValue() : null);
-	api.setSpecializes(grpc.getSpecializesMap());
-	api.setAttributeGroups(grpc.getAttributeGroupsMap());
+	api.setSpecializes((grpc.getSpecializesMap().size() > 0) ? grpc.getSpecializesMap() : null);
+	api.setAttributeGroups((grpc.getAttributeGroupsMap().size() > 0) ? grpc.getAttributeGroupsMap() : null);
 	api.setDeprecated(grpc.getDeprecated());
 	updateFromGrpcXmlNode(api, grpc.getNode());
     }
@@ -261,8 +263,12 @@ public class MicroserviceModelConverter {
 	if (api.getOnDeleteWarning() != null) {
 	    grpc.setOnDeleteWarning(GOptionalString.newBuilder().setValue(api.getOnDeleteWarning()).build());
 	}
-	grpc.putAllSpecializes(api.getSpecializes());
-	grpc.putAllAttributeGroups(api.getAttributeGroups());
+	if (api.getSpecializes() != null) {
+	    grpc.putAllSpecializes(api.getSpecializes());
+	}
+	if (api.getAttributeGroups() != null) {
+	    grpc.putAllAttributeGroups(api.getAttributeGroups());
+	}
 	grpc.setDeprecated(api.isDeprecated());
 	grpc.setNode(MicroserviceModelConverter.asGrpcXmlNode(api));
 	return grpc.build();
