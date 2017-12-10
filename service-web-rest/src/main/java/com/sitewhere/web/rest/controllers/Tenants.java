@@ -8,9 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.configuration.model.ElementRoles;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.security.UserContextManager;
@@ -184,24 +181,6 @@ public class Tenants extends RestControllerBase {
 	ITenant tenant = assureTenant(tenantId);
 	checkForAdminOrEditSelf(tenant);
 	return getTenantManagement().deleteTenant(tenantId, force);
-    }
-
-    /**
-     * Get tenant configuration roles.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/configuration/roles", method = RequestMethod.GET)
-    @ApiOperation(value = "Get role information for tenant configuration")
-    public Map<String, ElementRoles> getTenantConfigurationRoles() throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	ElementRoles[] roles = ElementRoles.values();
-	Map<String, ElementRoles> rolesById = new HashMap<String, ElementRoles>();
-	for (ElementRoles role : roles) {
-	    rolesById.put(role.name(), role);
-	}
-	return rolesById;
     }
 
     /**

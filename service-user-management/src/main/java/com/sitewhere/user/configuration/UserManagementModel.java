@@ -7,19 +7,15 @@
  */
 package com.sitewhere.user.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for user management microservice.
  * 
  * @author Derek
  */
-public class UserManagementModel extends MicroserviceConfigurationModel {
-
-    public UserManagementModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class UserManagementModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class UserManagementModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/user-management";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return UserManagementRoles.UserManagement;
     }
 
     /*

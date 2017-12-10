@@ -7,19 +7,15 @@
  */
 package com.sitewhere.web.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for web/REST microservice.
  * 
  * @author Derek
  */
-public class WebRestModel extends MicroserviceConfigurationModel {
-
-    public WebRestModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class WebRestModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class WebRestModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/web-rest";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return WebRestRoles.WebRest;
     }
 
     /*

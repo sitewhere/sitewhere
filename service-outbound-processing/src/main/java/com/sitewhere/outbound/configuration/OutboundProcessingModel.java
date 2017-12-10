@@ -8,25 +8,19 @@
 package com.sitewhere.outbound.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
-import com.sitewhere.configuration.model.ElementRoles;
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.configuration.old.IInboundProcessingChainParser;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
 import com.sitewhere.configuration.parser.IOutboundProcessingParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for outbound processing microservice.
  * 
  * @author Derek
  */
-public class OutboundProcessingModel extends MicroserviceConfigurationModel {
-
-    public OutboundProcessingModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class OutboundProcessingModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -38,19 +32,21 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     }
 
     /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return OutboundProcessingRoles.OutboundProcessing;
+    }
+
+    /*
      * @see
      * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
      * )
      */
     @Override
     public void addElements() {
-	// Inbound processing chain.
-	addElement(createInboundProcessorElement());
-	addElement(createEventStorageProcessorElement());
-	addElement(createRegistrationProcessorElement());
-	addElement(createDeviceStreamProcessorElement());
-	addElement(createHazelcastQueueElement());
-
 	// Outbound processing chain.
 	addElement(createOutboundProcessorElement());
 	addElement(createCommandDeliveryEventProcessorElement());
@@ -79,91 +75,6 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     }
 
     /**
-     * Create a generic inbound event processor reference.
-     * 
-     * @return
-     */
-    protected ElementNode createInboundProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Inbound Processor Bean Reference",
-		IInboundProcessingChainParser.Elements.InboundEventProcessor.getLocalName(), "sign-in",
-		ElementRoles.InboundProcessingChain_EventProcessor);
-	builder.description("Configures an inbound event processor that is declared in an external Spring bean.");
-	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
-		"Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs")
-		.build()));
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration event storage processor.
-     * 
-     * @return
-     */
-    protected ElementNode createEventStorageProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Event Storage Processor",
-		IInboundProcessingChainParser.Elements.EventStorageProcessor.getLocalName(), "database",
-		ElementRoles.InboundProcessingChain_EventProcessor);
-
-	builder.description("Persists incoming events into the datastore. If this processor is removed, "
-		+ "events will not be stored and outbound processing will not be triggered for the events.");
-	builder.warnOnDelete("Deleting this component will prevent events from being persisted!");
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for registration processor.
-     * 
-     * @return
-     */
-    protected ElementNode createRegistrationProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Registration Processor",
-		IInboundProcessingChainParser.Elements.RegistrationProcessor.getLocalName(), "key",
-		ElementRoles.InboundProcessingChain_EventProcessor);
-
-	builder.description("Passes registration events to the registration manager. "
-		+ "If this processor is removed, device registration events will be ignored.");
-	builder.warnOnDelete("Deleting this component will cause registration events to be ignored!");
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for device stream.
-     * 
-     * @return
-     */
-    protected ElementNode createDeviceStreamProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Device Stream Processor",
-		IInboundProcessingChainParser.Elements.DeviceStreamProcessor.getLocalName(), "exchange",
-		ElementRoles.InboundProcessingChain_EventProcessor);
-
-	builder.description("Passes device stream events to the device stream manager. "
-		+ "If this processor is removed, device streaming events will be ignored.");
-	builder.warnOnDelete("Deleting this component will cause device stream events to be ignored!");
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for Hazelcast queue processor.
-     * 
-     * @return
-     */
-    protected ElementNode createHazelcastQueueElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Queue Processor",
-		IInboundProcessingChainParser.Elements.HazelcastQueueProcessor.getLocalName(), "long-arrow-right",
-		ElementRoles.InboundProcessingChain_EventProcessor);
-
-	builder.description("Forwards device events to a Hazelcast queue. This processor is often "
-		+ "configured to allow events to be processed by other SiteWhere instances in the "
-		+ "same Hazelcast group. By adding this processor and removing all others, this "
-		+ "instance will load-balance event processing between subordinate instances.");
-
-	return builder.build();
-    }
-
-    /**
      * Create a generic outbound event processor reference.
      * 
      * @return
@@ -171,7 +82,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createOutboundProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Outbound Processor Bean Reference",
 		IOutboundProcessingParser.Elements.OutboundEventProcessor.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_EventProcessor);
+		OutboundProcessingRoleKeys.OutboundEventProcessor);
 	builder.description("Configures an outbound event processor that is declared in an external Spring bean.");
 	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
 		"Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs")
@@ -187,7 +98,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createCommandDeliveryEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Command Delivery Processor",
 		IOutboundProcessingParser.Elements.CommandDeliveryEventProcessor.getLocalName(), "bolt",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.CommandDeliveryEventProcessor);
 	builder.description("Hands off outbound device command events to the device communication subsystem. "
 		+ "If this event processor is not configured, no commands will be sent to devices.");
 	builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
@@ -206,7 +117,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
      */
     protected ElementNode createZoneTestElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
-		ElementRoles.OutboundProcessingChain_ZoneTest);
+		OutboundProcessingRoleKeys.ZoneTestElement);
 	builder.description("Describes zone test criteria and alert to be generated in case of a match.");
 	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String)
 		.description("Unique token for zone locations are to be tested against.").build()));
@@ -231,7 +142,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createZoneTestEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Zone Test Processor",
 		IOutboundProcessingParser.Elements.ZoneTestEventProcessor.getLocalName(), "map-pin",
-		ElementRoles.OutboundProcessingChain_ZoneTestEventProcessor);
+		OutboundProcessingRoleKeys.ZoneTestEventProcessor);
 	builder.description("Allows alerts to be generated if location events are inside "
 		+ "or outside of a zone based on criteria.");
 	return builder.build();
@@ -245,7 +156,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createGroovyRouteBuilderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Route Builder",
 		IOutboundProcessingParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_RouteBuilder);
+		OutboundProcessingRoleKeys.GroovyRouteBuilder);
 	builder.description(
 		"Route builder which executes a Groovy script to choose routes where events will be delivered.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
@@ -261,7 +172,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createMqttEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Event Processor",
 		IOutboundProcessingParser.Elements.MqttEventProcessor.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_MqttEventProcessor);
+		OutboundProcessingRoleKeys.MqttEventProcessor);
 	builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
 		+ "field determines where events are delivered.");
@@ -279,7 +190,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createRabbitMqEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Event Processor",
 		IOutboundProcessingParser.Elements.RabbitMqEventProcessor.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_RabbitMqEventProcessor);
+		OutboundProcessingRoleKeys.RabbitMqEventProcessor);
 	builder.description("Allows events to be forwarded to any number of RabbitMQ exchanges based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the exchange "
 		+ "field determines where events are delivered.");
@@ -299,7 +210,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createHazelcastEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Processor",
 		IOutboundProcessingParser.Elements.HazelcastEventProcessor.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Forwards outbound events to Hazelcast topics for processing by external consumers.");
 	return builder.build();
     }
@@ -312,7 +223,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createSolrEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Apache Solr Processor",
 		IOutboundProcessingParser.Elements.SolrEventProcessor.getLocalName(), "sign-out",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine. This "
 		+ "event processor relies on the global Solr properties to determine the Solr instance the "
 		+ "client will connect with.");
@@ -327,7 +238,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createAzureEventHubEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Azure EventHub Processor",
 		IOutboundProcessingParser.Elements.AzureEventHubEventProcessor.getLocalName(), "cloud",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Forwards outbound events to a Microsoft Azure EventHub for further processing.");
 	builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String)
 		.description("Sets the identity used for SAS authentication.").makeRequired().build()));
@@ -349,7 +260,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createAmazonSqsEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Amazon SQS Processor",
 		IOutboundProcessingParser.Elements.AmazonSqsEventProcessor.getLocalName(), "cloud",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Forwards outbound events to an Amazon SQS queue for further processing.");
 	builder.attribute((new AttributeNode.Builder("Access key", "accessKey", AttributeType.String)
 		.description("Amazon AWS access key for account owning SQS queue.").makeRequired().build()));
@@ -368,7 +279,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createInitialStateEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("InitialState Processor",
 		IOutboundProcessingParser.Elements.InitialStateEventProcessor.getLocalName(), "cloud",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Forwards outbound events to InitialState.com for advanced visualization.");
 	builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey", AttributeType.String)
 		.description(
@@ -385,7 +296,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createDweetEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Dweet.io Processor",
 		IOutboundProcessingParser.Elements.DweetIoEventProcessor.getLocalName(), "cloud",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description(
 		"Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
 			+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
@@ -400,7 +311,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createGroovyEventProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Processor",
 		IOutboundProcessingParser.Elements.GroovyEventProcessor.getLocalName(), "cogs",
-		ElementRoles.OutboundProcessingChain_FilteredEventProcessor);
+		OutboundProcessingRoleKeys.FilteredEventProcessor);
 	builder.description("Delegates event processing to a Groovy script which can execute "
 		+ "conditional logic, create new events, or carry out other tasks.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
@@ -415,7 +326,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
      */
     protected ElementNode createFilterCriteriaElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Filter Criteria", "filters", "filter",
-		ElementRoles.OutboundProcessingChain_Filters);
+		OutboundProcessingRoleKeys.Filters);
 	builder.description("Adds filter criteria to control which events are sent to processor. "
 		+ "Each filter is applied in the order below. Any events that have not been filtered "
 		+ "will be passed to the outbound processor implementation.");
@@ -430,7 +341,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createSiteFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Site Filter",
 		IOutboundProcessingParser.Filters.SiteFilter.getLocalName(), "filter",
-		ElementRoles.OutboundProcessingChain_OutboundFilters);
+		OutboundProcessingRoleKeys.OutboundFilters);
 	builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
 	builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference)
 		.description("Site filter applies to.").makeIndex().build()));
@@ -448,7 +359,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createSpecificationFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Filter",
 		IOutboundProcessingParser.Filters.SpecificationFilter.getLocalName(), "filter",
-		ElementRoles.OutboundProcessingChain_OutboundFilters);
+		OutboundProcessingRoleKeys.OutboundFilters);
 	builder.description("Allows events for devices using a given specification to be included or "
 		+ "excluded for an outbound processor.");
 	builder.attribute(
@@ -468,7 +379,7 @@ public class OutboundProcessingModel extends MicroserviceConfigurationModel {
     protected ElementNode createGroovyFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Filter",
 		IOutboundProcessingParser.Filters.GroovyFilter.getLocalName(), "filter",
-		ElementRoles.OutboundProcessingChain_OutboundFilters);
+		OutboundProcessingRoleKeys.OutboundFilters);
 	builder.description("Allows events to be filtered based on the return value of a Groovy script. "
 		+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
 		+ "a description of the variable bindings provided by the system.");

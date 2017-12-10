@@ -14,26 +14,33 @@ import java.util.Map;
 
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 
 /**
- * Contains a map of all model elements grouped by role.
+ * Contains information about model used to configure a microservice.
  * 
  * @author Derek
  */
-public class ConfigurationModel extends ElementNode implements IConfigurationModel {
+public class ConfigurationModel implements IConfigurationModel {
 
     /** Default XML namespace */
     private String defaultXmlNamespace;
 
+    /** Id of root role */
+    private String rootRoleId;
+
     /** Map of elements by role */
     private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();
 
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * addElement(com.sitewhere.spi.microservice.configuration.model.IElementNode)
+    /** Map of element roles by id */
+    private Map<String, IElementRole> rolesById = new HashMap<String, IElementRole>();
+
+    /**
+     * Add an element to the model.
+     * 
+     * @param element
      */
-    @Override
-    public void addElement(IElementNode element) {
+    protected void addElement(IElementNode element) {
 	List<IElementNode> elements = getElementsByRole().get(element.getRole());
 	if (elements == null) {
 	    elements = new ArrayList<IElementNode>();
@@ -57,6 +64,19 @@ public class ConfigurationModel extends ElementNode implements IConfigurationMod
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getRootRoleId()
+     */
+    @Override
+    public String getRootRoleId() {
+	return rootRoleId;
+    }
+
+    public void setRootRoleId(String rootRoleId) {
+	this.rootRoleId = rootRoleId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
      * getElementsByRole()
      */
     @Override
@@ -66,5 +86,18 @@ public class ConfigurationModel extends ElementNode implements IConfigurationMod
 
     public void setElementsByRole(Map<String, List<IElementNode>> elementsByRole) {
 	this.elementsByRole = elementsByRole;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getRolesById()
+     */
+    @Override
+    public Map<String, IElementRole> getRolesById() {
+	return rolesById;
+    }
+
+    public void setRolesById(Map<String, IElementRole> rolesById) {
+	this.rolesById = rolesById;
     }
 }

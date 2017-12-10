@@ -7,19 +7,15 @@
  */
 package com.sitewhere.inbound.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for inbound processing microservice.
  * 
  * @author Derek
  */
-public class InboundProcessingModel extends MicroserviceConfigurationModel {
-
-    public InboundProcessingModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class InboundProcessingModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class InboundProcessingModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/inbound-processing";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return InboundProcessingRoles.InboundProcessing;
     }
 
     /*

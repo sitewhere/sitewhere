@@ -7,72 +7,43 @@
  */
 package com.sitewhere.rest.model.configuration;
 
-import java.io.IOException;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.configuration.ElementRole.Serializer;
-import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
+import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 
 /**
- * Used to indicate role of an element.
+ * Model object for a configuration element role.
  * 
  * @author Derek
  */
-@JsonSerialize(using = Serializer.class)
-public class ElementRole {
+public class ElementRole implements IElementRole {
 
-    /** Role name */
+    /** Display name */
     private String name;
 
-    /** Indicates if role is optional */
+    /** Optional flag */
     private boolean optional;
 
-    /** Indicates if multiple elements in role are allowed */
+    /** Multiple allowed */
     private boolean multiple;
 
-    /** Indicates if elements in role can be reordered */
+    /** Elements reorderable */
     private boolean reorderable;
 
-    /** Indicates if element is permanent */
+    /** Can not be deleted */
     private boolean permanent;
 
-    /** Child roles in the order they should appear */
-    private IElementRoleProvider[] children;
+    /** Child roles */
+    private List<String> childRoles;
 
-    /** Subtypes that specialize the given role */
-    private IElementRoleProvider[] subtypes;
+    /** Subtypes for replacement */
+    private List<String> subtypeRoles;
 
-    public static ElementRole build(String name, boolean optional, boolean multiple, boolean reorderable) {
-	return build(name, optional, multiple, reorderable, new IElementRoleProvider[0]);
-    }
-
-    public static ElementRole build(String name, boolean optional, boolean multiple, boolean reorderable,
-	    IElementRoleProvider[] children) {
-	return build(name, optional, multiple, reorderable, children, new IElementRoleProvider[0]);
-    }
-
-    public static ElementRole build(String name, boolean optional, boolean multiple, boolean reorderable,
-	    IElementRoleProvider[] children, IElementRoleProvider[] subtypes) {
-	return build(name, optional, multiple, reorderable, children, subtypes, false);
-    }
-
-    public static ElementRole build(String name, boolean optional, boolean multiple, boolean reorderable,
-	    IElementRoleProvider[] children, IElementRoleProvider[] subtypes, boolean permanent) {
-	ElementRole role = new ElementRole();
-	role.name = name;
-	role.optional = optional;
-	role.multiple = multiple;
-	role.reorderable = reorderable;
-	role.children = children;
-	role.subtypes = subtypes;
-	role.permanent = permanent;
-	return role;
-    }
-
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#getName()
+     */
+    @Override
     public String getName() {
 	return name;
     }
@@ -81,6 +52,11 @@ public class ElementRole {
 	this.name = name;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#isOptional()
+     */
+    @Override
     public boolean isOptional() {
 	return optional;
     }
@@ -89,6 +65,11 @@ public class ElementRole {
 	this.optional = optional;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#isMultiple()
+     */
+    @Override
     public boolean isMultiple() {
 	return multiple;
     }
@@ -97,6 +78,12 @@ public class ElementRole {
 	this.multiple = multiple;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#isReorderable
+     * ()
+     */
+    @Override
     public boolean isReorderable() {
 	return reorderable;
     }
@@ -105,6 +92,11 @@ public class ElementRole {
 	this.reorderable = reorderable;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#isPermanent()
+     */
+    @Override
     public boolean isPermanent() {
 	return permanent;
     }
@@ -113,55 +105,30 @@ public class ElementRole {
 	this.permanent = permanent;
     }
 
-    public IElementRoleProvider[] getChildren() {
-	return children;
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.model.IElementRole#getChildRoles
+     * ()
+     */
+    @Override
+    public List<String> getChildRoles() {
+	return childRoles;
     }
 
-    public void setChildren(IElementRoleProvider[] children) {
-	this.children = children;
+    public void setChildRoles(List<String> childRoles) {
+	this.childRoles = childRoles;
     }
 
-    public IElementRoleProvider[] getSubtypes() {
-	return subtypes;
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IElementRole#
+     * getSubtypeRoles()
+     */
+    @Override
+    public List<String> getSubtypeRoles() {
+	return subtypeRoles;
     }
 
-    public void setSubtypes(IElementRoleProvider[] subtypes) {
-	this.subtypes = subtypes;
-    }
-
-    public static class Serializer extends JsonSerializer<ElementRole> {
-
-	public void serialize(ElementRole value, JsonGenerator generator, SerializerProvider provider)
-		throws IOException, JsonProcessingException {
-	    generator.writeStartObject();
-	    generator.writeFieldName("name");
-	    generator.writeString(value.getName());
-	    generator.writeFieldName("optional");
-	    generator.writeBoolean(value.isOptional());
-	    generator.writeFieldName("multiple");
-	    generator.writeBoolean(value.isMultiple());
-	    generator.writeFieldName("reorderable");
-	    generator.writeBoolean(value.isReorderable());
-	    generator.writeFieldName("permanent");
-	    generator.writeBoolean(value.isPermanent());
-
-	    if (value.getChildren() != null) {
-		generator.writeArrayFieldStart("children");
-		for (IElementRoleProvider child : value.getChildren()) {
-		    generator.writeString(child.getName());
-		}
-		generator.writeEndArray();
-	    }
-
-	    if (value.getSubtypes() != null) {
-		generator.writeArrayFieldStart("subtypes");
-		for (IElementRoleProvider child : value.getSubtypes()) {
-		    generator.writeString(child.getName());
-		}
-		generator.writeEndArray();
-	    }
-
-	    generator.writeEndObject();
-	}
+    public void setSubtypeRoles(List<String> subtypeRoles) {
+	this.subtypeRoles = subtypeRoles;
     }
 }

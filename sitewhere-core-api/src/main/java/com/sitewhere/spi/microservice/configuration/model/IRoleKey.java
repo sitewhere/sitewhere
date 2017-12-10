@@ -7,21 +7,17 @@
  */
 package com.sitewhere.spi.microservice.configuration.model;
 
-import com.sitewhere.rest.model.configuration.ElementRole;
-
-public interface IElementRoleProvider {
+/**
+ * Unique key for a configuration role.
+ * 
+ * @author Derek
+ */
+public interface IRoleKey {
 
     /**
-     * Get provider name.
+     * Get unique key.
      * 
      * @return
      */
-    public String getName();
-
-    /**
-     * Get role associated with provider.
-     * 
-     * @return
-     */
-    public ElementRole getElementRole();
+    public String getId();
 }

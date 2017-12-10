@@ -7,27 +7,21 @@
  */
 package com.sitewhere.instance.configuration;
 
-import com.sitewhere.configuration.model.ElementRoles;
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
-import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for instance management microservice.
  * 
  * @author Derek
  */
-public class InstanceManagementModel extends MicroserviceConfigurationModel {
-
-    public InstanceManagementModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class InstanceManagementModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -36,6 +30,15 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/instance-global";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return InstanceManagementRoles.InstanceManagement;
     }
 
     /*
@@ -49,8 +52,8 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
 	addElement(createMongoTenantDatastoreElement());
 	addElement(createMongoInfluxDbTenantDatastoreElement());
 	addElement(createHBaseTenantDatastoreElement());
-	
-	addElement(createGlobals());
+
+	// TODO: Add global Solr configuration.
 	addElement(createSolrConfigurationElement());
     }
 
@@ -62,7 +65,7 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
     protected ElementNode createMongoTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
-		ElementRoles.DataManagement_Datastore);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
 
 	builder.description("Store tenant data using a MongoDB database. Note that the "
 		+ "global datastore must be configured to use MongoDB if this tenant datastore is to "
@@ -86,7 +89,7 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
     protected ElementNode createMongoInfluxDbTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB/InfluxDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoInfluxDbTenantDatastore.getLocalName(), "database",
-		ElementRoles.DataManagement_Datastore);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
 
 	builder.description("Store tenant master data using a MongoDB database and store tenant event "
 		+ "data in InfluxDB. Note that the global datastore must be configured to "
@@ -129,22 +132,10 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
     protected ElementNode createHBaseTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HBase Tenant Datastore",
 		ITenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
-		ElementRoles.DataManagement_Datastore);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
 	builder.description("Store tenant data using tables in an HBase instance. Note that the "
 		+ "global datastore must be configured to use HBase if this tenant datastore is to "
 		+ "be used. Most core HBase settings are configured at the global level.");
-	return builder.build();
-    }
-
-    /**
-     * Create the container for global overrides information.
-     * 
-     * @return
-     */
-    protected ElementNode createGlobals() {
-	ElementNode.Builder builder = new ElementNode.Builder("Global Overrides",
-		ITenantConfigurationParser.Elements.Globals.getLocalName(), "cogs", ElementRoles.Globals);
-	builder.description("Allow tenant-specific changes to global configuration elements.");
 	return builder.build();
     }
 
@@ -155,7 +146,8 @@ public class InstanceManagementModel extends MicroserviceConfigurationModel {
      */
     protected ElementNode createSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Solr Configuration",
-		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs", ElementRoles.Globals_Global);
+		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs",
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
 
 	builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 	builder.description("Overrides global Solr settings for a tenant.");

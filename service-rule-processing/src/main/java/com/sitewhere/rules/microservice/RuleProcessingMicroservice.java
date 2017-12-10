@@ -34,7 +34,7 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
     private static final String NAME = "Rule Processing";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new RuleProcessingModel(this);
+    private IConfigurationModel configurationModel = new RuleProcessingModel();
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

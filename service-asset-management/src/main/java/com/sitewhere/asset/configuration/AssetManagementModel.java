@@ -7,24 +7,19 @@
  */
 package com.sitewhere.asset.configuration;
 
-import com.sitewhere.configuration.model.ElementRoles;
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for asset management microservice.
  * 
  * @author Derek
  */
-public class AssetManagementModel extends MicroserviceConfigurationModel {
-
-    public AssetManagementModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class AssetManagementModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -33,6 +28,15 @@ public class AssetManagementModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/asset-management";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return AssetManagementRoles.AssetManagement;
     }
 
     /*
@@ -53,7 +57,8 @@ public class AssetManagementModel extends MicroserviceConfigurationModel {
      */
     protected ElementNode createAssetManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Asset Management",
-		ITenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag", ElementRoles.AssetManagment);
+		ITenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
+		AssetManagementRoleKeys.AssetManagement);
 	builder.description("Configure asset management features.");
 	return builder.build();
     }
@@ -77,7 +82,7 @@ public class AssetManagementModel extends MicroserviceConfigurationModel {
 	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
 		com.sitewhere.configuration.parser.IAssetManagementParser.IAssetModulesParser.Elements.Wso2IdentityAssetModule
 			.getLocalName(),
-		"users", ElementRoles.AssetManagment_AssetModule);
+		"users", AssetManagementRoleKeys.AssetModule);
 
 	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
 		+ "to provide a list of person assets.");
@@ -97,17 +102,5 @@ public class AssetManagementModel extends MicroserviceConfigurationModel {
 			.defaultValue("false").build()));
 
 	return builder.build();
-    }
-
-    /**
-     * Add common filesystem asset module attributes.
-     * 
-     * @param builder
-     */
-    protected void addCommonFilesystemAssetModuleAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Module name", "moduleName", AttributeType.String)
-		.description("Name shown for module in user interface.").build()));
-	builder.attribute((new AttributeNode.Builder("Filename", "filename", AttributeType.String)
-		.description("Name of XML file found in the configuration assets folder.").build()));
     }
 }

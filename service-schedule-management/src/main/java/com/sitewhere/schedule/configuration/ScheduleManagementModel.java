@@ -7,19 +7,15 @@
  */
 package com.sitewhere.schedule.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for schedule management microservice.
  * 
  * @author Derek
  */
-public class ScheduleManagementModel extends MicroserviceConfigurationModel {
-
-    public ScheduleManagementModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class ScheduleManagementModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class ScheduleManagementModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/schedule-management";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return ScheduleManagementRoles.ScheduleManagement;
     }
 
     /*

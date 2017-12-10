@@ -34,7 +34,7 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     private static final String NAME = "Label Generation";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new LabelGenerationModel(this);
+    private IConfigurationModel configurationModel = new LabelGenerationModel();
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

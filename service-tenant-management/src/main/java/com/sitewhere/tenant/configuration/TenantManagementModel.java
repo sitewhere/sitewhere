@@ -7,19 +7,15 @@
  */
 package com.sitewhere.tenant.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for tenant management microservice.
  * 
  * @author Derek
  */
-public class TenantManagementModel extends MicroserviceConfigurationModel {
-
-    public TenantManagementModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class TenantManagementModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class TenantManagementModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/tenant-management";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return TenantManagementRoles.TenantManagement;
     }
 
     /*

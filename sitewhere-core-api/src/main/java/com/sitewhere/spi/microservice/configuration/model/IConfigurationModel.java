@@ -15,7 +15,7 @@ import java.util.Map;
  * 
  * @author Derek
  */
-public interface IConfigurationModel extends IElementNode {
+public interface IConfigurationModel {
 
     /**
      * Get default XML namespace used for elements that do not provide one.
@@ -25,11 +25,11 @@ public interface IConfigurationModel extends IElementNode {
     public String getDefaultXmlNamespace();
 
     /**
-     * Add a new element to the model.
+     * Get root role id.
      * 
-     * @param element
+     * @return
      */
-    public void addElement(IElementNode element);
+    public String getRootRoleId();
 
     /**
      * Get map of elements by role.
@@ -37,4 +37,11 @@ public interface IConfigurationModel extends IElementNode {
      * @return
      */
     public Map<String, List<IElementNode>> getElementsByRole();
+
+    /**
+     * Get map of element roles by id.
+     * 
+     * @return
+     */
+    public Map<String, IElementRole> getRolesById();
 }

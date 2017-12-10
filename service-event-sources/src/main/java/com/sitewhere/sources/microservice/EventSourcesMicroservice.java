@@ -35,7 +35,7 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     public static final String NAME = "Event Sources";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventSourcesModel(this);
+    private IConfigurationModel configurationModel = new EventSourcesModel();
 
     /*
      * (non-Javadoc)

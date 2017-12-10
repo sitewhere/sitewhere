@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
-import com.sitewhere.spi.microservice.configuration.model.IElementRoleProvider;
+import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
@@ -154,12 +154,12 @@ public class ElementNode extends XmlNode implements IElementNode {
 
 	private ElementNode element;
 
-	public Builder(String name, String localName, String icon, IElementRoleProvider role) {
+	public Builder(String name, String localName, String icon, IRoleKey role) {
 	    this.element = new ElementNode();
 	    element.setName(name);
 	    element.setLocalName(localName);
 	    element.setIcon(icon);
-	    element.setRole(role.getName());
+	    element.setRole(role.getId());
 	}
 
 	public Builder description(String description) {
@@ -180,11 +180,11 @@ public class ElementNode extends XmlNode implements IElementNode {
 	    return this;
 	}
 
-	public Builder specializes(IElementRoleProvider type, IElementRoleProvider subtype) {
+	public Builder specializes(IRoleKey type, IRoleKey subtype) {
 	    if (element.getSpecializes() == null) {
 		element.setSpecializes(new HashMap<String, String>());
 	    }
-	    element.getSpecializes().put(type.getName(), subtype.getName());
+	    element.getSpecializes().put(type.getId(), subtype.getId());
 	    return this;
 	}
 

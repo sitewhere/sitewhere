@@ -7,19 +7,15 @@
  */
 package com.sitewhere.rules.configuration;
 
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for rule processing microservice.
  * 
  * @author Derek
  */
-public class RuleProcessingModel extends MicroserviceConfigurationModel {
-
-    public RuleProcessingModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class RuleProcessingModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -28,6 +24,15 @@ public class RuleProcessingModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/rule-processing";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return RuleProcessingRoles.RuleProcessing;
     }
 
     /*

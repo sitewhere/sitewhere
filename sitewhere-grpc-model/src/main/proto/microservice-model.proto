@@ -65,9 +65,21 @@ message GElementNodeList {
 	repeated GElementNode elements = 1;
 }
 
+// Element role.
+message GElementRole {
+	string name = 1;
+	bool optional = 2;
+	bool multiple = 3;
+	bool reorderable = 4;
+	bool permanent = 5;
+	repeated string childRoles = 6;
+	repeated string subtypeRoles = 7;
+}
+
 // Microservice configuration information.
 message GMicroserviceConfiguration {
 	string defaultNamespace = 1;
-	map<string, GElementNodeList> elementsByRole = 2;
-	GElementNode root = 3;
+	string rootRoleId = 2;
+	map<string, GElementNodeList> elementsByRole = 3;
+	map<string, GElementRole> rolesById = 4;
 }

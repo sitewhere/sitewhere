@@ -16,18 +16,21 @@ import com.sitewhere.grpc.model.MicroserviceModel.GAttributeNode;
 import com.sitewhere.grpc.model.MicroserviceModel.GAttributeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementNode;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementNodeList;
+import com.sitewhere.grpc.model.MicroserviceModel.GElementRole;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceConfiguration;
 import com.sitewhere.grpc.model.MicroserviceModel.GNodeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GXmlNode;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementNode;
+import com.sitewhere.rest.model.configuration.ElementRole;
 import com.sitewhere.rest.model.configuration.XmlNode;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.configuration.model.IXmlNode;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
@@ -219,18 +222,6 @@ public class MicroserviceModelConverter {
      */
     public static ElementNode asApiElementNode(GElementNode grpc) throws SiteWhereException {
 	ElementNode api = new ElementNode();
-	updateFromElementNode(api, grpc);
-	return api;
-    }
-
-    /**
-     * Update API element node information from GRPC.
-     * 
-     * @param api
-     * @param grpc
-     * @throws SiteWhereException
-     */
-    public static void updateFromElementNode(ElementNode api, GElementNode grpc) throws SiteWhereException {
 	if (grpc.getAttributesList().size() > 0) {
 	    api.setAttributes(new ArrayList<IAttributeNode>());
 	    for (GAttributeNode attribute : grpc.getAttributesList()) {
@@ -243,6 +234,7 @@ public class MicroserviceModelConverter {
 	api.setAttributeGroups((grpc.getAttributeGroupsMap().size() > 0) ? grpc.getAttributeGroupsMap() : null);
 	api.setDeprecated(grpc.getDeprecated());
 	updateFromGrpcXmlNode(api, grpc.getNode());
+	return api;
     }
 
     /**
@@ -305,6 +297,54 @@ public class MicroserviceModelConverter {
     }
 
     /**
+     * Convert element role from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ElementRole asApiElementRole(GElementRole grpc) throws SiteWhereException {
+	ElementRole api = new ElementRole();
+	api.setName(grpc.getName());
+	api.setOptional(grpc.getOptional());
+	api.setMultiple(grpc.getMultiple());
+	api.setReorderable(grpc.getReorderable());
+	api.setPermanent(grpc.getPermanent());
+	if (grpc.getChildRolesList().size() > 0) {
+	    api.setChildRoles(new ArrayList<String>());
+	    api.getChildRoles().addAll(grpc.getChildRolesList());
+	}
+	if (grpc.getSubtypeRolesList().size() > 0) {
+	    api.setSubtypeRoles(new ArrayList<String>());
+	    api.getSubtypeRoles().addAll(grpc.getSubtypeRolesList());
+	}
+	return api;
+    }
+
+    /**
+     * Convert element role from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GElementRole asGrpcElementRole(IElementRole api) throws SiteWhereException {
+	GElementRole.Builder grpc = GElementRole.newBuilder();
+	grpc.setName(api.getName());
+	grpc.setOptional(api.isOptional());
+	grpc.setMultiple(api.isMultiple());
+	grpc.setReorderable(api.isReorderable());
+	grpc.setPermanent(api.isPermanent());
+	if (api.getChildRoles() != null) {
+	    grpc.addAllChildRoles(api.getChildRoles());
+	}
+	if (api.getSubtypeRoles() != null) {
+	    grpc.addAllSubtypeRoles(api.getSubtypeRoles());
+	}
+	return grpc.build();
+    }
+
+    /**
      * Convert configuration model from GRPC to API.
      * 
      * @param grpc
@@ -315,12 +355,17 @@ public class MicroserviceModelConverter {
 	    throws SiteWhereException {
 	ConfigurationModel api = new ConfigurationModel();
 	api.setDefaultXmlNamespace(grpc.getDefaultNamespace());
+	api.setRootRoleId(grpc.getRootRoleId());
 	Map<String, GElementNodeList> elementsByRole = grpc.getElementsByRoleMap();
 	for (String role : elementsByRole.keySet()) {
 	    GElementNodeList list = elementsByRole.get(role);
 	    api.getElementsByRole().put(role, MicroserviceModelConverter.asApiElementNodeList(list));
 	}
-	updateFromElementNode(api, grpc.getRoot());
+	Map<String, GElementRole> rolesById = grpc.getRolesByIdMap();
+	for (String roleId : rolesById.keySet()) {
+	    GElementRole role = rolesById.get(roleId);
+	    api.getRolesById().put(roleId, MicroserviceModelConverter.asApiElementRole(role));
+	}
 	return api;
     }
 
@@ -335,11 +380,15 @@ public class MicroserviceModelConverter {
 	    throws SiteWhereException {
 	GMicroserviceConfiguration.Builder grpc = GMicroserviceConfiguration.newBuilder();
 	grpc.setDefaultNamespace(api.getDefaultXmlNamespace());
+	grpc.setRootRoleId(api.getRootRoleId());
 	for (String role : api.getElementsByRole().keySet()) {
 	    List<IElementNode> list = api.getElementsByRole().get(role);
 	    grpc.putElementsByRole(role, MicroserviceModelConverter.asGrpcElementNodeList(list));
 	}
-	grpc.setRoot(MicroserviceModelConverter.asGrpcElementNode(api));
+	for (String roleId : api.getRolesById().keySet()) {
+	    IElementRole role = api.getRolesById().get(roleId);
+	    grpc.putRolesById(roleId, MicroserviceModelConverter.asGrpcElementRole(role));
+	}
 	return grpc.build();
     }
 }

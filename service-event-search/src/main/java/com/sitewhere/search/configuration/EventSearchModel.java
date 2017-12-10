@@ -7,25 +7,20 @@
  */
 package com.sitewhere.search.configuration;
 
-import com.sitewhere.configuration.model.ElementRoles;
-import com.sitewhere.configuration.model.MicroserviceConfigurationModel;
+import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
 import com.sitewhere.configuration.old.ISearchProvidersParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
  * Configuration model for event search microservice.
  * 
  * @author Derek
  */
-public class EventSearchModel extends MicroserviceConfigurationModel {
-
-    public EventSearchModel(IMicroservice microservice) {
-	super(microservice, null, null, null);
-    }
+public class EventSearchModel extends DependencyResolvingConfigurationModel {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -34,6 +29,15 @@ public class EventSearchModel extends MicroserviceConfigurationModel {
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/event-search";
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
+     * getRootRole()
+     */
+    @Override
+    public IConfigurationRoleProvider getRootRole() {
+	return EventSearchRoles.EventSearch;
     }
 
     /*
@@ -55,7 +59,7 @@ public class EventSearchModel extends MicroserviceConfigurationModel {
     protected ElementNode createSearchProviders() {
 	ElementNode.Builder builder = new ElementNode.Builder("Search Providers",
 		ITenantConfigurationParser.Elements.SearchProviders.getLocalName(), "search",
-		ElementRoles.SearchProviders);
+		EventSearchRoleKeys.SearchProviders);
 	builder.description("Configure search providers.");
 	return builder.build();
     }
@@ -68,7 +72,7 @@ public class EventSearchModel extends MicroserviceConfigurationModel {
     protected ElementNode createSolrSearchProvider() {
 	ElementNode.Builder builder = new ElementNode.Builder("Solr Search Provider",
 		ISearchProvidersParser.Elements.SolrSearchProvider.getLocalName(), "search",
-		ElementRoles.SearchProviders_SearchProvider);
+		EventSearchRoleKeys.SearchProvider);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)

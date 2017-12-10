@@ -44,7 +44,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     private static final String NAME = "Batch Operations";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new BatchOperationsModel(this);
+    private IConfigurationModel configurationModel = new BatchOperationsModel();
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
