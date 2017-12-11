@@ -10,7 +10,7 @@ package com.sitewhere.labels.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.labels.configuration.LabelGenerationModel;
+import com.sitewhere.labels.configuration.LabelGenerationModelProvider;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -34,7 +34,7 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     private static final String NAME = "Label Generation";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new LabelGenerationModel();
+    private IConfigurationModel configurationModel = new LabelGenerationModelProvider().buildModel();
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

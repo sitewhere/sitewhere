@@ -16,7 +16,7 @@ import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.outbound.configuration.OutboundProcessingModel;
+import com.sitewhere.outbound.configuration.OutboundProcessingModelProvider;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingMicroservice;
 import com.sitewhere.outbound.spi.microservice.IOutboundProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -42,7 +42,7 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     private static final String NAME = "Outbound Processing";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new OutboundProcessingModel();
+    private IConfigurationModel configurationModel = new OutboundProcessingModelProvider().buildModel();
 
     /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;

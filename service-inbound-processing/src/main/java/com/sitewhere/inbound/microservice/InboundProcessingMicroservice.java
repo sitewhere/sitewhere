@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
-import com.sitewhere.inbound.configuration.InboundProcessingModel;
+import com.sitewhere.inbound.configuration.InboundProcessingModelProvider;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -42,7 +42,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     private static final String NAME = "Inbound Processing";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new InboundProcessingModel();
+    private IConfigurationModel configurationModel = new InboundProcessingModelProvider().buildModel();
 
     /** Device management API channel */
     private IDeviceManagementApiDemux deviceManagementApiDemux;

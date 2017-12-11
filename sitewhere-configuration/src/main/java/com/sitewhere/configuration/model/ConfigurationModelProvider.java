@@ -8,6 +8,9 @@
 package com.sitewhere.configuration.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,21 +19,32 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
+import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 
 /**
- * Implementation of {@link IConfigurationModel} that pulls information from a
- * microservice.
+ * Implementation of {@link IConfigurationModelProvider} that can use other
+ * configuration models to resolve model dependencies.
  * 
  * @author Derek
  */
-public abstract class DependencyResolvingConfigurationModel extends ConfigurationModel {
+public abstract class ConfigurationModelProvider implements IConfigurationModelProvider {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    /** Map of elements by role */
+    private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();
+
+    /** Map of element roles by id */
+    private Map<String, IElementRole> rolesById = new HashMap<String, IElementRole>();
+
+    /** Other configuration models that provide role/element dependencies */
+    private List<IConfigurationModel> dependencies = new ArrayList<IConfigurationModel>();
 
     /**
      * Create configuration model for a microservice.
@@ -40,22 +54,39 @@ public abstract class DependencyResolvingConfigurationModel extends Configuratio
      * @param icon
      * @param description
      */
-    public DependencyResolvingConfigurationModel() {
+    public ConfigurationModelProvider() {
 	addElements();
 	addRoles();
     }
 
     /**
-     * Get root role for model.
+     * Add an element to the model.
      * 
-     * @return
+     * @param element
      */
-    public abstract IConfigurationRoleProvider getRootRole();
+    protected void addElement(IElementNode element) {
+	List<IElementNode> elements = getElementsByRole().get(element.getRole());
+	if (elements == null) {
+	    elements = new ArrayList<IElementNode>();
+	    getElementsByRole().put(element.getRole(), elements);
+	}
+	elements.add(element);
+    }
 
     /**
      * Add elements contained in model.
      */
     public abstract void addElements();
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#buildModel()
+     */
+    @Override
+    public IConfigurationModel buildModel() {
+	addRoles();
+	return new ConfigurationModel();
+    }
 
     /**
      * Recursively add roles based on root role.
@@ -73,8 +104,8 @@ public abstract class DependencyResolvingConfigurationModel extends Configuratio
      * @param current
      */
     @SuppressWarnings("unused")
-    protected void addRoles(IConfigurationRoleProvider current) {
-	IConfigurationRole role = current.getRole();
+    protected void addRoles(IConfigurationRoleProvider provider) {
+	IConfigurationRole role = provider.getRole();
 	if (!getRolesById().containsKey(role.getKey().getId())) {
 	    getRolesById().put(role.getKey().getId(), convert(role));
 	}
@@ -118,5 +149,34 @@ public abstract class DependencyResolvingConfigurationModel extends Configuratio
 	    LOGGER.error("Unable to convert role.", t);
 	    throw new RuntimeException(t);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDependencies()
+     */
+    @Override
+    public List<IConfigurationModel> getDependencies() {
+	return dependencies;
+    }
+
+    public void setDependencies(List<IConfigurationModel> dependencies) {
+	this.dependencies = dependencies;
+    }
+
+    public Map<String, List<IElementNode>> getElementsByRole() {
+	return elementsByRole;
+    }
+
+    public void setElementsByRole(Map<String, List<IElementNode>> elementsByRole) {
+	this.elementsByRole = elementsByRole;
+    }
+
+    public Map<String, IElementRole> getRolesById() {
+	return rolesById;
+    }
+
+    public void setRolesById(Map<String, IElementRole> rolesById) {
+	this.rolesById = rolesById;
     }
 }

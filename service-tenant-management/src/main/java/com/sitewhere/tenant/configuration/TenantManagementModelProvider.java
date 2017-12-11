@@ -7,7 +7,7 @@
  */
 package com.sitewhere.tenant.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -15,7 +15,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
  * 
  * @author Derek
  */
-public class TenantManagementModel extends DependencyResolvingConfigurationModel {
+public class TenantManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -27,8 +27,8 @@ public class TenantManagementModel extends DependencyResolvingConfigurationModel
     }
 
     /*
-     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
-     * getRootRole()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {

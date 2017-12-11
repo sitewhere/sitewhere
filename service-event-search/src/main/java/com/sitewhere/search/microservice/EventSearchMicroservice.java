@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.search.configuration.EventSearchModel;
+import com.sitewhere.search.configuration.EventSearchModelProvider;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,7 +34,7 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     private static final String NAME = "Event Search";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventSearchModel();
+    private IConfigurationModel configurationModel = new EventSearchModelProvider().buildModel();
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

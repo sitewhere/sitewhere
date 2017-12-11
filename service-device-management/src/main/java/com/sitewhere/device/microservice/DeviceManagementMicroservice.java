@@ -10,7 +10,7 @@ package com.sitewhere.device.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.device.configuration.DeviceManagementModel;
+import com.sitewhere.device.configuration.DeviceManagementModelProvider;
 import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
@@ -45,7 +45,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     private static final String NAME = "Device Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new DeviceManagementModel();
+    private IConfigurationModel configurationModel = new DeviceManagementModelProvider().buildModel();
 
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;

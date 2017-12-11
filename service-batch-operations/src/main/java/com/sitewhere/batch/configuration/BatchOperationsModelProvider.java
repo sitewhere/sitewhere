@@ -7,7 +7,7 @@
  */
 package com.sitewhere.batch.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceCommunicationParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -16,11 +16,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for batch operations microservice.
+ * Configuration model provider for batch operations microservice.
  * 
  * @author Derek
  */
-public class BatchOperationsModel extends DependencyResolvingConfigurationModel {
+public class BatchOperationsModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

@@ -10,7 +10,7 @@ package com.sitewhere.asset.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.asset.configuration.AssetManagementModel;
+import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
@@ -42,7 +42,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new AssetManagementModel();
+    private IConfigurationModel configurationModel = new AssetManagementModelProvider().buildModel();
 
     /*
      * (non-Javadoc)

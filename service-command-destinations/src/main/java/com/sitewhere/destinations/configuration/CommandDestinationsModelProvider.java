@@ -8,7 +8,7 @@
 package com.sitewhere.destinations.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.ICommandDestinationsParser;
 import com.sitewhere.configuration.old.ICommandRoutingParser;
 import com.sitewhere.configuration.old.IDeviceCommunicationParser;
@@ -18,11 +18,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for command destinations microservice.
+ * Configuration model provider for command destinations microservice.
  * 
  * @author Derek
  */
-public class CommandDestinationsModel extends DependencyResolvingConfigurationModel {
+public class CommandDestinationsModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

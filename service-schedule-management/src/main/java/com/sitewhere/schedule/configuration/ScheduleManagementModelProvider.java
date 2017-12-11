@@ -7,15 +7,15 @@
  */
 package com.sitewhere.schedule.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for schedule management microservice.
+ * Configuration model provider for schedule management microservice.
  * 
  * @author Derek
  */
-public class ScheduleManagementModel extends DependencyResolvingConfigurationModel {
+public class ScheduleManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

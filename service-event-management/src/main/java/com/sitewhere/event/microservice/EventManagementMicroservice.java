@@ -10,7 +10,7 @@ package com.sitewhere.event.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.event.configuration.EventManagementModel;
+import com.sitewhere.event.configuration.EventManagementModelProvider;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
@@ -39,7 +39,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     private static final String NAME = "Event Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new EventManagementModel();
+    private IConfigurationModel configurationModel = new EventManagementModelProvider().buildModel();
 
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;

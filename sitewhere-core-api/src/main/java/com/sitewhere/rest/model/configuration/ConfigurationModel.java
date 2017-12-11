@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.configuration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +33,6 @@ public class ConfigurationModel implements IConfigurationModel {
 
     /** Map of element roles by id */
     private Map<String, IElementRole> rolesById = new HashMap<String, IElementRole>();
-
-    /**
-     * Add an element to the model.
-     * 
-     * @param element
-     */
-    protected void addElement(IElementNode element) {
-	List<IElementNode> elements = getElementsByRole().get(element.getRole());
-	if (elements == null) {
-	    elements = new ArrayList<IElementNode>();
-	    getElementsByRole().put(element.getRole(), elements);
-	}
-	elements.add(element);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

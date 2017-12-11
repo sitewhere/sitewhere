@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.schedule.configuration.ScheduleManagementModel;
+import com.sitewhere.schedule.configuration.ScheduleManagementModelProvider;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
@@ -39,7 +39,7 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     private static final String NAME = "Schedule Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new ScheduleManagementModel();
+    private IConfigurationModel configurationModel = new ScheduleManagementModelProvider().buildModel();
 
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;

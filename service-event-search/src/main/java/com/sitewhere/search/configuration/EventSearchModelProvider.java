@@ -7,7 +7,7 @@
  */
 package com.sitewhere.search.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.ISearchProvidersParser;
 import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -16,11 +16,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for event search microservice.
+ * Configuration model provider for event search microservice.
  * 
  * @author Derek
  */
-public class EventSearchModel extends DependencyResolvingConfigurationModel {
+public class EventSearchModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

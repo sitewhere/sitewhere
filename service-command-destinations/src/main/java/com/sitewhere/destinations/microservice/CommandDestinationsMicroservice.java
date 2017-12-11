@@ -10,7 +10,7 @@ package com.sitewhere.destinations.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.destinations.configuration.CommandDestinationsModel;
+import com.sitewhere.destinations.configuration.CommandDestinationsModelProvider;
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsMicroservice;
 import com.sitewhere.destinations.spi.microservice.ICommandDestinationsTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -34,7 +34,7 @@ public class CommandDestinationsMicroservice extends MultitenantMicroservice<ICo
     private static final String NAME = "Command Destinations";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new CommandDestinationsModel();
+    private IConfigurationModel configurationModel = new CommandDestinationsModelProvider().buildModel();
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

@@ -8,7 +8,7 @@
 package com.sitewhere.sources.configuration;
 
 import com.sitewhere.configuration.CommonCommunicationModel;
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IEventSourcesParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -16,11 +16,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for event sources microservice.
+ * Configuration model provider for event sources microservice.
  * 
  * @author Derek
  */
-public class EventSourcesModel extends DependencyResolvingConfigurationModel {
+public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

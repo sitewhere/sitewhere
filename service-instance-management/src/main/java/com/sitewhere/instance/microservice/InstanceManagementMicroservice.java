@@ -19,7 +19,7 @@ import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.grpc.client.user.UserManagementApiChannel;
-import com.sitewhere.instance.configuration.InstanceManagementModel;
+import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.kafka.StateAggregatorKafkaConsumer;
@@ -59,7 +59,7 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     private static final String NAME = "Instance Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new InstanceManagementModel();
+    private IConfigurationModel configurationModel = new InstanceManagementModelProvider().buildModel();
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();

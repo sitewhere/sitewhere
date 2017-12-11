@@ -7,7 +7,7 @@
  */
 package com.sitewhere.instance.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
@@ -17,11 +17,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for instance management microservice.
+ * Configuration model provider for instance management microservice.
  * 
  * @author Derek
  */
-public class InstanceManagementModel extends DependencyResolvingConfigurationModel {
+public class InstanceManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

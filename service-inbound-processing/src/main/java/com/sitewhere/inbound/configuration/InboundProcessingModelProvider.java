@@ -5,17 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rules.configuration;
+package com.sitewhere.inbound.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for rule processing microservice.
+ * Configuration model provider for inbound processing microservice.
  * 
  * @author Derek
  */
-public class RuleProcessingModel extends DependencyResolvingConfigurationModel {
+public class InboundProcessingModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -23,7 +23,7 @@ public class RuleProcessingModel extends DependencyResolvingConfigurationModel {
      */
     @Override
     public String getDefaultXmlNamespace() {
-	return "http://sitewhere.io/schema/sitewhere/microservice/rule-processing";
+	return "http://sitewhere.io/schema/sitewhere/microservice/inbound-processing";
     }
 
     /*
@@ -32,7 +32,7 @@ public class RuleProcessingModel extends DependencyResolvingConfigurationModel {
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
-	return RuleProcessingRoles.RuleProcessing;
+	return InboundProcessingRoles.InboundProcessing;
     }
 
     /*

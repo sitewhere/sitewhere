@@ -5,17 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.configuration;
+package com.sitewhere.device.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for web/REST microservice.
+ * Configuration model provider for device management microservice.
  * 
  * @author Derek
  */
-public class WebRestModel extends DependencyResolvingConfigurationModel {
+public class DeviceManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -23,7 +23,7 @@ public class WebRestModel extends DependencyResolvingConfigurationModel {
      */
     @Override
     public String getDefaultXmlNamespace() {
-	return "http://sitewhere.io/schema/sitewhere/microservice/web-rest";
+	return "http://sitewhere.io/schema/sitewhere/microservice/device-management";
     }
 
     /*
@@ -32,7 +32,7 @@ public class WebRestModel extends DependencyResolvingConfigurationModel {
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
-	return WebRestRoles.WebRest;
+	return DeviceManagementRoles.DeviceManagement;
     }
 
     /*

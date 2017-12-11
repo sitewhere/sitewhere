@@ -7,7 +7,7 @@
  */
 package com.sitewhere.presence.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -15,11 +15,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for presence management microservice.
+ * Configuration model provider for presence management microservice.
  * 
  * @author Derek
  */
-public class PresenceManagementModel extends DependencyResolvingConfigurationModel {
+public class PresenceManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

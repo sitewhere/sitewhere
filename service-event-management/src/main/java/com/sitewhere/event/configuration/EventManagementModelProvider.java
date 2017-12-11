@@ -5,17 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.user.configuration;
+package com.sitewhere.event.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for user management microservice.
+ * Configuration model provider for event management microservice.
  * 
  * @author Derek
  */
-public class UserManagementModel extends DependencyResolvingConfigurationModel {
+public class EventManagementModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
@@ -23,16 +23,15 @@ public class UserManagementModel extends DependencyResolvingConfigurationModel {
      */
     @Override
     public String getDefaultXmlNamespace() {
-	return "http://sitewhere.io/schema/sitewhere/microservice/user-management";
+	return "http://sitewhere.io/schema/sitewhere/microservice/event-management";
     }
 
-    /*
-     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
-     * getRootRole()
+    /**
+     * @return
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
-	return UserManagementRoles.UserManagement;
+	return EventManagementRoles.EventManagement;
     }
 
     /*

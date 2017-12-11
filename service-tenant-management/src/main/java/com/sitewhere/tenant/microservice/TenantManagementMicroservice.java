@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
-import com.sitewhere.tenant.configuration.TenantManagementModel;
+import com.sitewhere.tenant.configuration.TenantManagementModelProvider;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.kafka.TenantBootstrapModelConsumer;
 import com.sitewhere.tenant.kafka.TenantModelProducer;
@@ -51,7 +51,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     private static final String NAME = "Tenant Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new TenantManagementModel();
+    private IConfigurationModel configurationModel = new TenantManagementModelProvider().buildModel();
 
     /** Tenant management configuration file name */
     private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";

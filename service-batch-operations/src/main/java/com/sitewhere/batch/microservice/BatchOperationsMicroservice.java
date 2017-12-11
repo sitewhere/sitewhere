@@ -10,7 +10,7 @@ package com.sitewhere.batch.microservice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.batch.configuration.BatchOperationsModel;
+import com.sitewhere.batch.configuration.BatchOperationsModelProvider;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
@@ -44,7 +44,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     private static final String NAME = "Batch Operations";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new BatchOperationsModel();
+    private IConfigurationModel configurationModel = new BatchOperationsModelProvider().buildModel();
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;

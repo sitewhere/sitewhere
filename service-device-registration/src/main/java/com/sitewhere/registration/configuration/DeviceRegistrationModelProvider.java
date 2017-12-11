@@ -7,7 +7,7 @@
  */
 package com.sitewhere.registration.configuration;
 
-import com.sitewhere.configuration.model.DependencyResolvingConfigurationModel;
+import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -15,11 +15,11 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
- * Configuration model for device registration microservice.
+ * Configuration model provider for device registration microservice.
  * 
  * @author Derek
  */
-public class DeviceRegistrationModel extends DependencyResolvingConfigurationModel {
+public class DeviceRegistrationModelProvider extends ConfigurationModelProvider {
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

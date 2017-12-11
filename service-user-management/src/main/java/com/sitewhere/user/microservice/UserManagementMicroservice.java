@@ -22,7 +22,7 @@ import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.user.configuration.UserManagementModel;
+import com.sitewhere.user.configuration.UserManagementModelProvider;
 import com.sitewhere.user.grpc.UserManagementGrpcServer;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -41,7 +41,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     private static final String NAME = "User Management";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new UserManagementModel();
+    private IConfigurationModel configurationModel = new UserManagementModelProvider().buildModel();
 
     /** User management configuration file name */
     private static final String USER_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";

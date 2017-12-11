@@ -39,7 +39,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.web.configuration.WebRestModel;
+import com.sitewhere.web.configuration.WebRestModelProvider;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
@@ -56,7 +56,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     private static final String NAME = "Web/REST";
 
     /** Configuration model */
-    private IConfigurationModel configurationModel = new WebRestModel();
+    private IConfigurationModel configurationModel = new WebRestModelProvider().buildModel();
 
     /** Web/REST configuration file name */
     private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";
