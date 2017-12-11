@@ -23,8 +23,8 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 public class OutboundProcessingModelProvider extends ConfigurationModelProvider {
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * getDefaultXmlNamespace()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDefaultXmlNamespace()
      */
     @Override
     public String getDefaultXmlNamespace() {
@@ -32,8 +32,8 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
-     * getRootRole()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
@@ -41,12 +41,11 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see
-     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
-     * )
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeElements()
      */
     @Override
-    public void addElements() {
+    public void initializeElements() {
 	// Outbound processing chain.
 	addElement(createOutboundProcessorElement());
 	addElement(createCommandDeliveryEventProcessorElement());
@@ -72,6 +71,17 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
 	addElement(createSiteFilterElement());
 	addElement(createSpecificationFilterElement());
 	addElement(createGroovyFilterElement());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeRoles()
+     */
+    @Override
+    public void initializeRoles() {
+	for (OutboundProcessingRoles role : OutboundProcessingRoles.values()) {
+	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+	}
     }
 
     /**

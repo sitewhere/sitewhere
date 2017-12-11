@@ -22,8 +22,8 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 public class PresenceManagementModelProvider extends ConfigurationModelProvider {
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * getDefaultXmlNamespace()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDefaultXmlNamespace()
      */
     @Override
     public String getDefaultXmlNamespace() {
@@ -31,8 +31,8 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
-     * getRootRole()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
@@ -40,13 +40,23 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see
-     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
-     * )
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeElements()
      */
     @Override
-    public void addElements() {
+    public void initializeElements() {
 	addElement(createDefaultPresenceManagerElement());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeRoles()
+     */
+    @Override
+    public void initializeRoles() {
+	for (PresenceManagementRoles role : PresenceManagementRoles.values()) {
+	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+	}
     }
 
     /**

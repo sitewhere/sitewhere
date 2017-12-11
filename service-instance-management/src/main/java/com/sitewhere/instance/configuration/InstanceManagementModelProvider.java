@@ -24,8 +24,8 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 public class InstanceManagementModelProvider extends ConfigurationModelProvider {
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * getDefaultXmlNamespace()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDefaultXmlNamespace()
      */
     @Override
     public String getDefaultXmlNamespace() {
@@ -33,8 +33,8 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see com.sitewhere.configuration.model.DependencyResolvingConfigurationModel#
-     * getRootRole()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
@@ -42,12 +42,11 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     }
 
     /*
-     * @see
-     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
-     * )
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeElements()
      */
     @Override
-    public void addElements() {
+    public void initializeElements() {
 	// Datastore implementations.
 	addElement(createMongoTenantDatastoreElement());
 	addElement(createMongoInfluxDbTenantDatastoreElement());
@@ -55,6 +54,17 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	// TODO: Add global Solr configuration.
 	addElement(createSolrConfigurationElement());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeRoles()
+     */
+    @Override
+    public void initializeRoles() {
+	for (InstanceManagementRoles role : InstanceManagementRoles.values()) {
+	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+	}
     }
 
     /**

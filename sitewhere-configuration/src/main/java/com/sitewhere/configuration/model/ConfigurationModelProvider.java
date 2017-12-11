@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementRole;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
@@ -40,11 +41,11 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
     /** Map of elements by role */
     private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();
 
-    /** Map of element roles by id */
-    private Map<String, IElementRole> rolesById = new HashMap<String, IElementRole>();
+    /** Map of roles by id */
+    private Map<String, IConfigurationRole> rolesById = new HashMap<String, IConfigurationRole>();
 
     /** Other configuration models that provide role/element dependencies */
-    private List<IConfigurationModel> dependencies = new ArrayList<IConfigurationModel>();
+    private List<IConfigurationModelProvider> dependencies = new ArrayList<IConfigurationModelProvider>();
 
     /**
      * Create configuration model for a microservice.
@@ -55,8 +56,8 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
      * @param description
      */
     public ConfigurationModelProvider() {
-	addElements();
-	addRoles();
+	initializeElements();
+	initializeRoles();
     }
 
     /**
@@ -73,48 +74,88 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 	elements.add(element);
     }
 
-    /**
-     * Add elements contained in model.
-     */
-    public abstract void addElements();
-
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.
      * IConfigurationModelProvider#buildModel()
      */
     @Override
     public IConfigurationModel buildModel() {
-	addRoles();
-	return new ConfigurationModel();
+	Map<String, IConfigurationRole> usedRoles = findUsedRoles();
+	Map<String, List<IElementNode>> usedElements = findUsedElements(usedRoles);
+
+	ConfigurationModel model = new ConfigurationModel();
+	model.setDefaultXmlNamespace(getDefaultXmlNamespace());
+	model.setRootRoleId(getRootRole().getRole().getKey().getId());
+	for (String roleId : usedRoles.keySet()) {
+	    IConfigurationRole configRole = usedRoles.get(roleId);
+	    model.getRolesById().put(roleId, convert(configRole));
+	}
+	for (String roleId : usedElements.keySet()) {
+	    List<IElementNode> elements = usedElements.get(roleId);
+	    model.getElementsByRole().put(roleId, elements);
+	}
+	try {
+	    if (LOGGER.isDebugEnabled()) {
+		LOGGER.debug("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
+	    }
+	} catch (SiteWhereException e) {
+	    LOGGER.error("Unable to marshal model.");
+	}
+	return model;
     }
 
     /**
      * Recursively add roles based on root role.
      */
-    protected void addRoles() {
+    protected Map<String, IConfigurationRole> findUsedRoles() {
 	IConfigurationRoleProvider root = getRootRole();
-	if (root != null) {
-	    addRoles(root);
-	}
+	Map<String, IConfigurationRole> usedRolesById = new HashMap<String, IConfigurationRole>();
+	addRoles(root.getRole(), usedRolesById);
+	return usedRolesById;
     }
 
     /**
      * Add roles recursively for a given role.
      * 
-     * @param current
+     * @param role
+     * @param usedRolesById
      */
-    @SuppressWarnings("unused")
-    protected void addRoles(IConfigurationRoleProvider provider) {
-	IConfigurationRole role = provider.getRole();
-	if (!getRolesById().containsKey(role.getKey().getId())) {
-	    getRolesById().put(role.getKey().getId(), convert(role));
+    protected void addRoles(IConfigurationRole role, Map<String, IConfigurationRole> usedRolesById) {
+	String roleId = role.getKey().getId();
+	if (!usedRolesById.containsKey(role.getKey().getId())) {
+	    IConfigurationRole referenced = getRoleForId(roleId);
+	    usedRolesById.put(role.getKey().getId(), referenced);
 	}
 	for (IRoleKey child : role.getChildren()) {
-	    // addRoles(child);
+	    if (!usedRolesById.containsKey(child.getId())) {
+		addRoles(getRoleForId(child.getId()), usedRolesById);
+	    }
 	}
 	for (IRoleKey child : role.getSubtypes()) {
-	    // addRoles(child);
+	    if (!usedRolesById.containsKey(child.getId())) {
+		addRoles(getRoleForId(child.getId()), usedRolesById);
+	    }
 	}
+    }
+
+    /**
+     * Get role for role id.
+     * 
+     * @param roleId
+     * @return
+     */
+    protected IConfigurationRole getRoleForId(String roleId) {
+	IConfigurationRole role = getRolesById().get(roleId);
+	if (role != null) {
+	    return role;
+	}
+	for (IConfigurationModelProvider model : getDependencies()) {
+	    IConfigurationRole nested = model.getRolesById().get(roleId);
+	    if (nested != null) {
+		return nested;
+	    }
+	}
+	throw new RuntimeException("Model references unknown role: " + roleId);
     }
 
     /**
@@ -125,7 +166,6 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
      */
     protected IElementRole convert(IConfigurationRole role) {
 	try {
-	    LOGGER.info("About to convert \n\n" + MarshalUtils.marshalJsonAsPrettyString(role));
 	    ElementRole converted = new ElementRole();
 	    converted.setName(role.getName());
 	    converted.setOptional(role.isOptional());
@@ -146,9 +186,48 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 	    }
 	    return converted;
 	} catch (Throwable t) {
-	    LOGGER.error("Unable to convert role.", t);
 	    throw new RuntimeException(t);
 	}
+    }
+
+    /**
+     * Get list of elements associated with role. Recurse into dependencies.
+     * 
+     * @param roleId
+     * @return
+     */
+    protected List<IElementNode> getElementsForRole(String roleId) {
+	List<IElementNode> elements = getElementsByRole().get(roleId);
+	if (elements != null) {
+	    return elements;
+	} else {
+	    for (IConfigurationModelProvider model : getDependencies()) {
+		elements = model.getElementsByRole().get(roleId);
+		if (elements != null) {
+		    return elements;
+		}
+	    }
+	    return null;
+	}
+    }
+
+    /**
+     * Find used elements based on used roles.
+     * 
+     * @param usedRoles
+     * @return
+     */
+    protected Map<String, List<IElementNode>> findUsedElements(Map<String, IConfigurationRole> usedRoles) {
+	Map<String, List<IElementNode>> used = new HashMap<>();
+	for (String key : usedRoles.keySet()) {
+	    IConfigurationRole role = usedRoles.get(key);
+	    String roleId = role.getKey().getId();
+	    List<IElementNode> elements = getElementsForRole(roleId);
+	    if (elements != null) {
+		used.put(roleId, elements);
+	    }
+	}
+	return used;
     }
 
     /*
@@ -156,27 +235,37 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
      * IConfigurationModelProvider#getDependencies()
      */
     @Override
-    public List<IConfigurationModel> getDependencies() {
+    public List<IConfigurationModelProvider> getDependencies() {
 	return dependencies;
     }
 
-    public void setDependencies(List<IConfigurationModel> dependencies) {
+    public void setDependencies(List<IConfigurationModelProvider> dependencies) {
 	this.dependencies = dependencies;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRolesById()
+     */
+    @Override
+    public Map<String, IConfigurationRole> getRolesById() {
+	return rolesById;
+    }
+
+    public void setRolesById(Map<String, IConfigurationRole> rolesById) {
+	this.rolesById = rolesById;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getElementsByRole()
+     */
+    @Override
     public Map<String, List<IElementNode>> getElementsByRole() {
 	return elementsByRole;
     }
 
     public void setElementsByRole(Map<String, List<IElementNode>> elementsByRole) {
 	this.elementsByRole = elementsByRole;
-    }
-
-    public Map<String, IElementRole> getRolesById() {
-	return rolesById;
-    }
-
-    public void setRolesById(Map<String, IElementRole> rolesById) {
-	this.rolesById = rolesById;
     }
 }

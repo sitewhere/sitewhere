@@ -32,6 +32,23 @@ public interface IConfigurationModelProvider {
     public IConfigurationRoleProvider getRootRole();
 
     /**
+     * Get all roles available in this model indexed by role id.
+     * 
+     * @return
+     */
+    public Map<String, IConfigurationRole> getRolesById();
+
+    /**
+     * Initialize elements contained in model.
+     */
+    public void initializeElements();
+
+    /**
+     * Initialize roles used by model.
+     */
+    public void initializeRoles();
+
+    /**
      * Get elements by role.
      * 
      * @return
@@ -39,11 +56,11 @@ public interface IConfigurationModelProvider {
     public Map<String, List<IElementNode>> getElementsByRole();
 
     /**
-     * Get other configuration model that serve as dependencies.
+     * Get other configuration model providers that serve as dependencies.
      * 
      * @return
      */
-    public List<IConfigurationModel> getDependencies();
+    public List<IConfigurationModelProvider> getDependencies();
 
     /**
      * Build the configuration model.

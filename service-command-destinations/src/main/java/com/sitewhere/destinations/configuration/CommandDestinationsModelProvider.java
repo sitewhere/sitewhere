@@ -25,26 +25,29 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 public class CommandDestinationsModelProvider extends ConfigurationModelProvider {
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * getDefaultXmlNamespace()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDefaultXmlNamespace()
      */
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/command-destinations";
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
+     */
     @Override
     public IConfigurationRoleProvider getRootRole() {
 	return CommandDestinationsRoles.CommandDestinations;
     }
 
     /*
-     * @see
-     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
-     * )
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeElements()
      */
     @Override
-    public void addElements() {
+    public void initializeElements() {
 	// Command routing.
 	addElement(createCommandRoutingElement());
 	addElement(createGroovyCommandRouterElement());
@@ -70,6 +73,17 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
 	addElement(createHardwareIdParameterExtractorElement());
 	addElement(createCoapMetadataParameterExtractorElement());
 	addElement(createGroovySmsParameterExtractorElement());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeRoles()
+     */
+    @Override
+    public void initializeRoles() {
+	for (CommandDestinationsRoles role : CommandDestinationsRoles.values()) {
+	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+	}
     }
 
     /**

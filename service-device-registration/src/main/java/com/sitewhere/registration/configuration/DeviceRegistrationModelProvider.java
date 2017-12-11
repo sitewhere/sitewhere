@@ -22,27 +22,41 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 public class DeviceRegistrationModelProvider extends ConfigurationModelProvider {
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
-     * getDefaultXmlNamespace()
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getDefaultXmlNamespace()
      */
     @Override
     public String getDefaultXmlNamespace() {
 	return "http://sitewhere.io/schema/sitewhere/microservice/device-registration";
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#getRootRole()
+     */
     @Override
     public IConfigurationRoleProvider getRootRole() {
 	return DeviceRegistrationRoles.DeviceRegistration;
     }
 
     /*
-     * @see
-     * com.sitewhere.configuration.model.MicroserviceConfigurationModel#addElements(
-     * )
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeElements()
      */
     @Override
-    public void addElements() {
+    public void initializeElements() {
 	addElement(createDefaultRegistrationManagerElement());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeRoles()
+     */
+    @Override
+    public void initializeRoles() {
+	for (DeviceRegistrationRoles role : DeviceRegistrationRoles.values()) {
+	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+	}
     }
 
     /**
