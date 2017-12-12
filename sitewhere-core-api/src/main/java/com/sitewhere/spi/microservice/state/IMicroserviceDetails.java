@@ -49,4 +49,11 @@ public interface IMicroserviceDetails {
      * @return
      */
     public String getDescription();
+
+    /**
+     * Indicates if microservice is global in scope.
+     * 
+     * @return
+     */
+    public boolean isGlobal();
 }

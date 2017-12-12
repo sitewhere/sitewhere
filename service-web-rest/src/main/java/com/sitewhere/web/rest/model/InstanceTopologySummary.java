@@ -29,6 +29,9 @@ public class InstanceTopologySummary {
     /** Description */
     private String description;
 
+    /** Scope flag */
+    private boolean global;
+
     /** List of hostnames for entry. */
     private List<String> hostnames = new ArrayList<>();
 
@@ -70,5 +73,13 @@ public class InstanceTopologySummary {
 
     public void setHostnames(List<String> hostnames) {
 	this.hostnames = hostnames;
+    }
+
+    public boolean isGlobal() {
+	return global;
+    }
+
+    public void setGlobal(boolean global) {
+	this.global = global;
     }
 }

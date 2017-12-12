@@ -58,6 +58,14 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return false;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override

@@ -272,6 +272,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	details.setName(root.getName());
 	details.setIcon(root.getIcon());
 	details.setDescription(root.getDescription());
+	details.setGlobal(isGlobal());
 	return details;
     }
 

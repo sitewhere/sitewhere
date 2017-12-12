@@ -53,6 +53,14 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return false;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override

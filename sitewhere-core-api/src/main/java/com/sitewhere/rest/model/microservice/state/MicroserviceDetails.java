@@ -31,6 +31,9 @@ public class MicroserviceDetails implements IMicroserviceDetails {
     /** Description */
     private String description;
 
+    /** Global flag */
+    private boolean global;
+
     /*
      * @see
      * com.sitewhere.spi.microservice.state.IMicroserviceDetails#getIdentifier()
@@ -91,5 +94,17 @@ public class MicroserviceDetails implements IMicroserviceDetails {
 
     public void setDescription(String description) {
 	this.description = description;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IMicroserviceDetails#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return global;
+    }
+
+    public void setGlobal(boolean global) {
+	this.global = global;
     }
 }

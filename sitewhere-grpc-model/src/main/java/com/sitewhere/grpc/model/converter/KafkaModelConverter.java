@@ -223,6 +223,7 @@ public class KafkaModelConverter {
 	api.setName(grpc.getName());
 	api.setIcon(grpc.getIcon());
 	api.setDescription(grpc.getDescription());
+	api.setGlobal(grpc.getGlobal());
 	return api;
     }
 
@@ -240,6 +241,7 @@ public class KafkaModelConverter {
 	grpc.setName(api.getName());
 	grpc.setIcon(api.getIcon());
 	grpc.setDescription(api.getDescription());
+	grpc.setGlobal(api.isGlobal());
 	return grpc.build();
     }
 

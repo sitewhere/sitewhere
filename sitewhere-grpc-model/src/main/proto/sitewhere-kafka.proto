@@ -76,6 +76,7 @@ message GMicroserviceDetails {
 	string name = 3;
 	string icon = 4;
 	string description = 5;
+	bool global = 6;
 }
 
 // Microservice state.

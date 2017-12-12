@@ -62,6 +62,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
     public String getHostname() throws SiteWhereException;
 
     /**
+     * Indicates whether the microservice is global in scope.
+     * 
+     * @return
+     */
+    public boolean isGlobal();
+
+    /**
      * Get configuration model.
      * 
      * @return

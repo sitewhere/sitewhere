@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +48,8 @@ public class Instance extends RestControllerBase {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Get most recent snapshot of instance topology.
+     * Get most recent instance topology (includes both global and tenant
+     * microservices).
      * 
      * @return
      * @throws SiteWhereException
@@ -58,6 +60,48 @@ public class Instance extends RestControllerBase {
     public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
 	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
 	return TopologySummaryBuilder.build(snapshot);
+    }
+
+    /**
+     * Get most recent instance topology (includes only global microservices).
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/topology/global", method = RequestMethod.GET)
+    @ApiOperation(value = "Get current instance topology")
+    @Secured({ SiteWhereRoles.REST })
+    public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
+	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
+	List<InstanceTopologySummary> filtered = new ArrayList<>();
+	for (InstanceTopologySummary current : summary) {
+	    if (current.isGlobal()) {
+		filtered.add(current);
+	    }
+	}
+	return filtered;
+    }
+
+    /**
+     * Get most recent instance topology (includes only tenant microservices).
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/topology/tenant", method = RequestMethod.GET)
+    @ApiOperation(value = "Get current instance topology")
+    @Secured({ SiteWhereRoles.REST })
+    public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
+	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
+	List<InstanceTopologySummary> filtered = new ArrayList<>();
+	for (InstanceTopologySummary current : summary) {
+	    if (!current.isGlobal()) {
+		filtered.add(current);
+	    }
+	}
+	return filtered;
     }
 
     /**

@@ -36,6 +36,7 @@ public class TopologySummaryBuilder {
 		summary.setName(microservice.getName());
 		summary.setIcon(microservice.getIcon());
 		summary.setDescription(microservice.getDescription());
+		summary.setGlobal(microservice.isGlobal());
 		summary.getHostnames().add(microservice.getHostname());
 		summaries.put(microservice.getIdentifier(), summary);
 	    } else {

@@ -53,6 +53,14 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return false;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override

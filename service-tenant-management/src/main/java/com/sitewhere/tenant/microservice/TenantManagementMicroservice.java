@@ -99,6 +99,14 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return true;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override

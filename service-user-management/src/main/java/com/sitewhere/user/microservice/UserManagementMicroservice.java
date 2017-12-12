@@ -76,6 +76,14 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     */
+    @Override
+    public boolean isGlobal() {
+	return true;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override
