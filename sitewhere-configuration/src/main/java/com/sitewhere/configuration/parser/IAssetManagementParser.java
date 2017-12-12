@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IAssetManagementParser {
 
+    /** Root tag for asset management */
+    public static final String ROOT = "asset-management";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */

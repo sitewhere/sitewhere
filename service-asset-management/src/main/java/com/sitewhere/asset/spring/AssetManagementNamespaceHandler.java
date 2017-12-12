@@ -9,6 +9,8 @@ package com.sitewhere.asset.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
+import com.sitewhere.configuration.parser.IAssetManagementParser;
+
 /**
  * Registers parsers for elements in the asset management configuration schema.
  * 
@@ -23,6 +25,6 @@ public class AssetManagementNamespaceHandler extends NamespaceHandlerSupport {
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser("asset-management", new AssetManagementParser());
+	registerBeanDefinitionParser(IAssetManagementParser.ROOT, new AssetManagementParser());
     }
 }

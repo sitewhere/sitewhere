@@ -56,6 +56,7 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
      * @param description
      */
     public ConfigurationModelProvider() {
+	initializeDependencies();
 	initializeElements();
 	initializeRoles();
     }
@@ -72,6 +73,14 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 	    getElementsByRole().put(element.getRole(), elements);
 	}
 	elements.add(element);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.
+     * IConfigurationModelProvider#initializeDependencies()
+     */
+    @Override
+    public void initializeDependencies() {
     }
 
     /*
@@ -99,7 +108,7 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 		LOGGER.debug("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
 	    }
 	} catch (SiteWhereException e) {
-	    LOGGER.error("Unable to marshal model.");
+	    LOGGER.error("Unable to marshal model.", e);
 	}
 	return model;
     }

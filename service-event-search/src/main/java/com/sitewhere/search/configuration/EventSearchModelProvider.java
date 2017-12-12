@@ -9,7 +9,6 @@ package com.sitewhere.search.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.ISearchProvidersParser;
-import com.sitewhere.configuration.old.ITenantConfigurationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -67,8 +66,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createSearchProviders() {
-	ElementNode.Builder builder = new ElementNode.Builder("Search Providers",
-		ITenantConfigurationParser.Elements.SearchProviders.getLocalName(), "search",
+	ElementNode.Builder builder = new ElementNode.Builder("Search Providers", "search-providers", "search",
 		EventSearchRoleKeys.SearchProviders);
 	builder.description("Configure search providers.");
 	return builder.build();

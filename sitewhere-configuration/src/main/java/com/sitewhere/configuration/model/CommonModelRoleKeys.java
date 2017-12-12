@@ -5,24 +5,21 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.asset.configuration;
+package com.sitewhere.configuration.model;
 
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 
-public enum AssetManagementRoleKeys implements IRoleKey {
+public enum CommonModelRoleKeys implements IRoleKey {
 
-    /** Asset management */
-    AssetManagement("asset_mgmt"),
+    /** SiteWhere common roles */
+    SiteWhereCommon("sw_common"),
 
-    /** Asset modules */
-    AssetModules("asset_mods"),
-
-    /** Asset module */
-    AssetModule("asset_mod");
+    /** Datastore */
+    Datastore("datastore");
 
     private String id;
 
-    private AssetManagementRoleKeys(String id) {
+    private CommonModelRoleKeys(String id) {
 	this.id = id;
     }
 

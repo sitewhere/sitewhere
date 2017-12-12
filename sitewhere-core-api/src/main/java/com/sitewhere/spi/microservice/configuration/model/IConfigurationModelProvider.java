@@ -39,16 +39,6 @@ public interface IConfigurationModelProvider {
     public Map<String, IConfigurationRole> getRolesById();
 
     /**
-     * Initialize elements contained in model.
-     */
-    public void initializeElements();
-
-    /**
-     * Initialize roles used by model.
-     */
-    public void initializeRoles();
-
-    /**
      * Get elements by role.
      * 
      * @return
@@ -61,6 +51,21 @@ public interface IConfigurationModelProvider {
      * @return
      */
     public List<IConfigurationModelProvider> getDependencies();
+
+    /**
+     * Initialize elements contained in model.
+     */
+    public void initializeElements();
+
+    /**
+     * Initialize roles used by model.
+     */
+    public void initializeRoles();
+
+    /**
+     * Initialize model dependencies.
+     */
+    public void initializeDependencies();
 
     /**
      * Build the configuration model.
