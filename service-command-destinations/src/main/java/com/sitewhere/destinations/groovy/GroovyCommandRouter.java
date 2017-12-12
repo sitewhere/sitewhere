@@ -94,8 +94,8 @@ public class GroovyCommandRouter extends TenantEngineLifecycleComponent implemen
     }
 
     /**
-     * Route either a custom command or system command based on logic determined
-     * in a Groovy script.
+     * Route either a custom command or system command based on logic determined in
+     * a Groovy script.
      * 
      * @param execution
      * @param system
@@ -103,12 +103,10 @@ public class GroovyCommandRouter extends TenantEngineLifecycleComponent implemen
      * @param assignment
      * @throws SiteWhereException
      */
-    @SuppressWarnings("deprecation")
     protected void route(IDeviceCommandExecution execution, ISystemCommand system, IDeviceNestingContext nesting,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	try {
 	    Binding binding = new Binding();
-	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXCUTION, execution);
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, execution);
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +24,8 @@ import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordina
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
+import com.sitewhere.web.rest.model.InstanceTopologySummary;
+import com.sitewhere.web.rest.model.TopologySummaryBuilder;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,8 +55,9 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/topology", method = RequestMethod.GET)
     @ApiOperation(value = "Get current instance topology")
     @Secured({ SiteWhereRoles.REST })
-    public IInstanceTopologySnapshot getInstanceTopology() throws SiteWhereException {
-	return getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+    public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
+	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	return TopologySummaryBuilder.build(snapshot);
     }
 
     /**

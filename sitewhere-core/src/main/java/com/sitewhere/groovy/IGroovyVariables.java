@@ -44,10 +44,6 @@ public interface IGroovyVariables {
     /** Groovy variable used for passing logger */
     public static final String VAR_LOGGER = "logger";
 
-    @Deprecated
-    /** Groovy variable used for passing command execution */
-    public static final String VAR_COMMAND_EXCUTION = "command";
-
     /** Groovy variable used for passing command execution */
     public static final String VAR_COMMAND_EXECUTION = "execution";
 
