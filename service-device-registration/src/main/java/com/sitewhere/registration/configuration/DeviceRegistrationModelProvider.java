@@ -9,6 +9,7 @@ package com.sitewhere.registration.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
+import com.sitewhere.configuration.parser.IDeviceRegistrationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -45,6 +46,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
+	addElement(createDeviceRegistrationElement());
 	addElement(createDefaultRegistrationManagerElement());
     }
 
@@ -57,6 +59,20 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 	for (DeviceRegistrationRoles role : DeviceRegistrationRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create element configuration for device registration.
+     * 
+     * @return
+     */
+    protected ElementNode createDeviceRegistrationElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Device Registration", IDeviceRegistrationParser.ROOT,
+		"server", DeviceRegistrationRoleKeys.DeviceRegistration);
+
+	builder.description("Handles operations related to the device management model including persistence.");
+
+	return builder.build();
     }
 
     /**

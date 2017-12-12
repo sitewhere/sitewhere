@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IScheduleManagementParser {
 
+    // Root element name.
+    public static final String ROOT = "schedule-management";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */

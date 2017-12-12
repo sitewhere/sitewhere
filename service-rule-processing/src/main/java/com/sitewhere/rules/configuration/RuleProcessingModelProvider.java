@@ -8,6 +8,8 @@
 package com.sitewhere.rules.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IRuleProcessingParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,7 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createRuleProcessingElement());
     }
 
     /*
@@ -52,5 +55,19 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 	for (RuleProcessingRoles role : RuleProcessingRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create rule processing element.
+     * 
+     * @return
+     */
+    protected ElementNode createRuleProcessingElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Rule Processing", IRuleProcessingParser.ROOT, "sign-in",
+		RuleProcessingRoleKeys.RuleProcessing);
+
+	builder.description("Applies rules to the stream of device events.");
+
+	return builder.build();
     }
 }

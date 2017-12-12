@@ -26,6 +26,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -158,16 +159,16 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     @Override
     public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
-	    if (getTargetIdentifier().equals(entry.getMicroserviceIdentifier())) {
-		T existing = getApiChannelForHost(entry.getMicroserviceHostname());
+	    IMicroserviceDetails microservice = entry.getMicroserviceDetails();
+	    if (getTargetIdentifier().equals(microservice.getIdentifier())) {
+		T existing = getApiChannelForHost(microservice.getHostname());
 		if (existing == null) {
 		    getLogger().info("Microservice for '" + getTargetIdentifier() + "' discovered at hostname "
-			    + entry.getMicroserviceHostname());
+			    + microservice.getHostname());
 		    try {
-			initializeApiChannel(entry.getMicroserviceHostname());
+			initializeApiChannel(microservice.getHostname());
 		    } catch (SiteWhereException e) {
-			getLogger()
-				.error("Unable to initialize API channel for " + entry.getMicroserviceHostname() + ".");
+			getLogger().error("Unable to initialize API channel for " + microservice.getHostname() + ".");
 		    }
 		}
 	    }

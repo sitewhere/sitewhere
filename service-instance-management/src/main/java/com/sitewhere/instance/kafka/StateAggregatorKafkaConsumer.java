@@ -27,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTenantEngine;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -101,8 +102,7 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
     @Override
     public void onTenantEngineStateUpdate(ITenantEngineState state) {
 	MicroserviceState placeholder = new MicroserviceState();
-	placeholder.setMicroserviceIdentifier(state.getMicroserviceIdentifier());
-	placeholder.setMicroserviceHostname(state.getMicroserviceHostname());
+	placeholder.setMicroserviceDetails(state.getMicroserviceDetails());
 	placeholder.setLifecycleStatus(LifecycleStatus.Started);
 
 	IInstanceMicroservice microservice = getOrCreateMicroservice(placeholder);
@@ -138,11 +138,12 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
      * @return
      */
     protected IInstanceMicroservice getMicroservice(IMicroserviceState state) {
-	Map<String, IInstanceMicroservice> services = getTopology().get(state.getMicroserviceIdentifier());
+	IMicroserviceDetails microservice = state.getMicroserviceDetails();
+	Map<String, IInstanceMicroservice> services = getTopology().get(microservice.getIdentifier());
 	if (services == null) {
 	    return null;
 	}
-	return services.get(state.getMicroserviceHostname());
+	return services.get(microservice.getHostname());
     }
 
     /**
@@ -152,16 +153,17 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
      * @return
      */
     protected IInstanceMicroservice addMicroservice(IMicroserviceState state) {
-	Map<String, IInstanceMicroservice> services = getTopology().get(state.getMicroserviceIdentifier());
+	IMicroserviceDetails details = state.getMicroserviceDetails();
+	Map<String, IInstanceMicroservice> services = getTopology().get(details.getIdentifier());
 	if (services == null) {
 	    services = new HashMap<String, IInstanceMicroservice>();
-	    getTopology().put(state.getMicroserviceIdentifier(), services);
+	    getTopology().put(details.getIdentifier(), services);
 	}
 
 	// Create record for microservice.
 	InstanceMicroservice microservice = new InstanceMicroservice();
 	microservice.setLatestState(state);
-	services.put(state.getMicroserviceHostname(), microservice);
+	services.put(details.getHostname(), microservice);
 
 	return microservice;
     }
@@ -177,8 +179,7 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
 	    for (IInstanceMicroservice service : category.values()) {
 		IMicroserviceState state = service.getLatestState();
 		InstanceTopologyEntry entry = new InstanceTopologyEntry();
-		entry.setMicroserviceIdentifier(state.getMicroserviceIdentifier());
-		entry.setMicroserviceHostname(state.getMicroserviceHostname());
+		entry.setMicroserviceDetails(state.getMicroserviceDetails());
 		entry.setLastUpdated(System.currentTimeMillis());
 		snapshot.getTopologyEntries().add(entry);
 	    }

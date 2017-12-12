@@ -8,6 +8,8 @@
 package com.sitewhere.tenant.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.ITenantManagementParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,7 @@ public class TenantManagementModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createTenantManagementElement());
     }
 
     /*
@@ -52,5 +55,19 @@ public class TenantManagementModelProvider extends ConfigurationModelProvider {
 	for (TenantManagementRoles role : TenantManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create tenant management element.
+     * 
+     * @return
+     */
+    protected ElementNode createTenantManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Tenant Management", ITenantManagementParser.ROOT,
+		"sign-in", TenantManagementRoleKeys.TenantManagement);
+
+	builder.description("Handles tenant model operations including persistence.");
+
+	return builder.build();
     }
 }

@@ -17,18 +17,11 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public interface IMicroserviceState {
 
     /**
-     * Get microservice identifier.
+     * Get microservice details.
      * 
      * @return
      */
-    public String getMicroserviceIdentifier();
-
-    /**
-     * Get hostname for microservice.
-     * 
-     * @return
-     */
-    public String getMicroserviceHostname();
+    public IMicroserviceDetails getMicroserviceDetails();
 
     /**
      * Get current lifeycle status of tenant engine.

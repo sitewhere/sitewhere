@@ -103,7 +103,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createEventSourcesElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Event Sources", "event-sources", "sign-in",
+	ElementNode.Builder builder = new ElementNode.Builder("Event Sources", IEventSourcesParser.ROOT, "sign-in",
 		EventSourcesRoleKeys.EventSources);
 
 	builder.description(

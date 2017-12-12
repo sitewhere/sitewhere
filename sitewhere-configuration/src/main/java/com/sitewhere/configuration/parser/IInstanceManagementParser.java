@@ -8,11 +8,14 @@
 package com.sitewhere.configuration.parser;
 
 /**
- * Enumerates elements used by instance global parser.
+ * Enumerates elements used by instance management parser.
  * 
  * @author Derek
  */
-public interface IInstanceGlobalParser {
+public interface IInstanceManagementParser {
+
+    // Root element name.
+    public static final String ROOT = "instance-management";
 
     public static enum Elements {
 

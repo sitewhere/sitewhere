@@ -69,19 +69,26 @@ enum GLifecycleStatus {
 	LIFECYCLE_STATUS_ERROR = 10;
 }
 
+// Microservice details.
+message GMicroserviceDetails {
+	string identifier = 1;
+	string hostname = 2;
+	string name = 3;
+	string icon = 4;
+	string description = 5;
+}
+
 // Microservice state.
 message GMicroserviceState {
-	string microserviceIdentifier = 1;
-	string microserviceHostname = 2;
-	GLifecycleStatus status = 4;
+	GMicroserviceDetails microserviceDetails = 1;
+	GLifecycleStatus status = 2;
 }
 
 // Tenant engine state.
 message GTenantEngineState {
-	string microserviceIdentifier = 1;
-	string microserviceHostname = 2;
-	string tenantId = 3;
-	GLifecycleStatus status = 4;
+	GMicroserviceDetails microserviceDetails = 1;
+	string tenantId = 2;
+	GLifecycleStatus status = 3;
 }
 
 // Wrapper for state update types.
@@ -94,9 +101,8 @@ message GStateUpdate {
 
 // Instance topology update.
 message GInstanceTopologyEntry {
-	string microserviceIdentifier = 1;
-	string microserviceHostname = 2;
-	int64 lastUpdated = 3;
+	GMicroserviceDetails microserviceDetails = 1;
+	int64 lastUpdated = 2;
 }
 
 // Snapshot of latest instance topology.

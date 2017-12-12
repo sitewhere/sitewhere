@@ -26,6 +26,7 @@ import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordina
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -96,11 +97,11 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
     public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
 	this.instanceTopologySnapshot = snapshot;
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
-	    IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier()
-		    .get(entry.getMicroserviceIdentifier());
+	    IMicroserviceDetails microservice = entry.getMicroserviceDetails();
+	    IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(microservice.getIdentifier());
 	    if (demux == null) {
-		demux = new MicroserviceManagementApiDemux(getMicroservice(), entry.getMicroserviceIdentifier());
-		getDemuxesByServiceIdentifier().put(entry.getMicroserviceIdentifier(), demux);
+		demux = new MicroserviceManagementApiDemux(getMicroservice(), microservice.getIdentifier());
+		getDemuxesByServiceIdentifier().put(microservice.getIdentifier(), demux);
 		startDemux(demux, entry);
 	    }
 	}
@@ -114,16 +115,15 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     protected void startDemux(IMicroserviceManagementApiDemux demux, IInstanceTopologyEntry entry) {
 	try {
+	    String identifier = entry.getMicroserviceDetails().getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(2,
-			    "Create microservice mangagement demux for '" + entry.getMicroserviceIdentifier() + "'."),
+		    new LifecycleProgressContext(2, "Create microservice mangagement demux for '" + identifier + "'."),
 		    microservice);
 	    initializeNestedComponent(demux, monitor, true);
-	    getLogger()
-		    .info("Initialized microservice management demux for '" + entry.getMicroserviceIdentifier() + "'.");
+	    getLogger().info("Initialized microservice management demux for '" + identifier + "'.");
 
 	    startNestedComponent(demux, monitor, true);
-	    getLogger().info("Started microservice management demux for '" + entry.getMicroserviceIdentifier() + "'.");
+	    getLogger().info("Started microservice management demux for '" + identifier + "'.");
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to initialize microservice management demux.", e);
 	}

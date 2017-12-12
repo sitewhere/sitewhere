@@ -46,6 +46,8 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
+	addElement(createOutboundProcessingElement());
+
 	// Outbound processing chain.
 	addElement(createOutboundProcessorElement());
 	addElement(createCommandDeliveryEventProcessorElement());
@@ -82,6 +84,20 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
 	for (OutboundProcessingRoles role : OutboundProcessingRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create outbound processing element.
+     * 
+     * @return
+     */
+    protected ElementNode createOutboundProcessingElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Outbound Processing", IOutboundProcessingParser.ROOT,
+		"sign-in", OutboundProcessingRoleKeys.OutboundProcessing);
+
+	builder.description("Handles outbound processing tasks such as forwarding events to external entities.");
+
+	return builder.build();
     }
 
     /**

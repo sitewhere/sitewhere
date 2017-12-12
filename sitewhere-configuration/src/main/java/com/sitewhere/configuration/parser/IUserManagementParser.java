@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IUserManagementParser {
 
+    // Root element name.
+    public static final String ROOT = "user-management";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */

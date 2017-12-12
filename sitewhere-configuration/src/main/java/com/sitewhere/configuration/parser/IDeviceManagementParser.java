@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IDeviceManagementParser {
 
+    // Root element name.
+    public static final String ROOT = "device-management";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */

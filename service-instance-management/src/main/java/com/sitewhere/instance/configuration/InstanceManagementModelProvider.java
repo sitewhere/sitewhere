@@ -11,6 +11,7 @@ import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
+import com.sitewhere.configuration.parser.IInstanceManagementParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -47,6 +48,8 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
+	addElement(createInstanceManagementElement());
+
 	// Datastore implementations.
 	addElement(createMongoTenantDatastoreElement());
 	addElement(createMongoInfluxDbTenantDatastoreElement());
@@ -65,6 +68,20 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	for (InstanceManagementRoles role : InstanceManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create instance management element.
+     * 
+     * @return
+     */
+    protected ElementNode createInstanceManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Instance Management", IInstanceManagementParser.ROOT,
+		"sign-in", InstanceManagementRoleKeys.InstanceManagement);
+
+	builder.description("Handles global instance configuration.");
+
+	return builder.build();
     }
 
     /**

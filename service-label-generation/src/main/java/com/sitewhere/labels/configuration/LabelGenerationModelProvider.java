@@ -9,6 +9,7 @@ package com.sitewhere.labels.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
+import com.sitewhere.configuration.parser.ILabelGenerationParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -45,6 +46,8 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createLabelGenerationElement());
+
 	addElement(createSymbolGeneratorManagerElement());
 	addElement(createQRCodeSymbolGeneratorElement());
     }
@@ -58,6 +61,20 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
 	for (LabelGenerationRoles role : LabelGenerationRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create label generation element.
+     * 
+     * @return
+     */
+    protected ElementNode createLabelGenerationElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Label Generation", ILabelGenerationParser.ROOT,
+		"sign-in", LabelGenerationRoleKeys.LabelGeneration);
+
+	builder.description("Handles generation of labels such as QR codes.");
+
+	return builder.build();
     }
 
     /**

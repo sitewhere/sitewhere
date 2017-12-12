@@ -8,6 +8,8 @@
 package com.sitewhere.user.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IUserManagementParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,7 @@ public class UserManagementModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createUserManagementElement());
     }
 
     /*
@@ -52,5 +55,19 @@ public class UserManagementModelProvider extends ConfigurationModelProvider {
 	for (UserManagementRoles role : UserManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create user management element.
+     * 
+     * @return
+     */
+    protected ElementNode createUserManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("User Management", IUserManagementParser.ROOT, "sign-in",
+		UserManagementRoleKeys.UserManagement);
+
+	builder.description("Handles user model operations including persistence.");
+
+	return builder.build();
     }
 }

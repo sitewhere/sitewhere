@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IOutboundProcessingParser {
 
+    // Root element name.
+    public static final String ROOT = "outbound-processing";
+
     /**
      * Expected child elements.
      * 

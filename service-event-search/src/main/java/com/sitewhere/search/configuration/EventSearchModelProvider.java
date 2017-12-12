@@ -8,7 +8,7 @@
 package com.sitewhere.search.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.old.ISearchProvidersParser;
+import com.sitewhere.configuration.parser.IEventSearchParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -45,7 +45,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
-	addElement(createSearchProviders());
+	addElement(createEventSearch());
 	addElement(createSolrSearchProvider());
     }
 
@@ -65,10 +65,10 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
      * 
      * @return
      */
-    protected ElementNode createSearchProviders() {
-	ElementNode.Builder builder = new ElementNode.Builder("Search Providers", "search-providers", "search",
-		EventSearchRoleKeys.SearchProviders);
-	builder.description("Configure search providers.");
+    protected ElementNode createEventSearch() {
+	ElementNode.Builder builder = new ElementNode.Builder("Event Search", IEventSearchParser.ROOT, "search",
+		EventSearchRoleKeys.EventSearch);
+	builder.description("Provides ability to query events via externally provided search interfaces.");
 	return builder.build();
     }
 
@@ -79,7 +79,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createSolrSearchProvider() {
 	ElementNode.Builder builder = new ElementNode.Builder("Solr Search Provider",
-		ISearchProvidersParser.Elements.SolrSearchProvider.getLocalName(), "search",
+		IEventSearchParser.SearchProvidersElements.SolrSearchProvider.getLocalName(), "search",
 		EventSearchRoleKeys.SearchProvider);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -17,39 +18,23 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class MicroserviceState implements IMicroserviceState {
 
-    /** Microservice identifier */
-    private String microserviceIdentifier;
-
-    /** Microservice hostname */
-    private String microserviceHostname;
+    /** Microservice details */
+    private IMicroserviceDetails microserviceDetails;
 
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
 
     /*
      * @see com.sitewhere.spi.microservice.state.IMicroserviceState#
-     * getMicroserviceIdentifier()
+     * getMicroserviceDetails()
      */
     @Override
-    public String getMicroserviceIdentifier() {
-	return microserviceIdentifier;
+    public IMicroserviceDetails getMicroserviceDetails() {
+	return microserviceDetails;
     }
 
-    public void setMicroserviceIdentifier(String microserviceIdentifier) {
-	this.microserviceIdentifier = microserviceIdentifier;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IMicroserviceState#
-     * getMicroserviceHostname()
-     */
-    @Override
-    public String getMicroserviceHostname() {
-	return microserviceHostname;
-    }
-
-    public void setMicroserviceHostname(String microserviceHostname) {
-	this.microserviceHostname = microserviceHostname;
+    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
+	this.microserviceDetails = microserviceDetails;
     }
 
     /*

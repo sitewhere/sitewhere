@@ -8,6 +8,8 @@
 package com.sitewhere.schedule.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IScheduleManagementParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,7 @@ public class ScheduleManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
+	addElement(createScheduleManagementElement());
     }
 
     /*
@@ -52,5 +55,19 @@ public class ScheduleManagementModelProvider extends ConfigurationModelProvider 
 	for (ScheduleManagementRoles role : ScheduleManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create schedule management element.
+     * 
+     * @return
+     */
+    protected ElementNode createScheduleManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Schedule Management", IScheduleManagementParser.ROOT,
+		"sign-in", ScheduleManagementRoleKeys.ScheduleManagement);
+
+	builder.description("Handles schedule persistence and processing.");
+
+	return builder.build();
     }
 }

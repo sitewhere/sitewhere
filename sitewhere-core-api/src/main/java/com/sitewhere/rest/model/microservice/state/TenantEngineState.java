@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -17,11 +18,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class TenantEngineState implements ITenantEngineState {
 
-    /** Microservice identifier */
-    private String microserviceIdentifier;
-
-    /** Microservice hostname */
-    private String microserviceHostname;
+    /** Microservice details */
+    private IMicroserviceDetails microserviceDetails;
 
     /** Tenant id */
     private String tenantId;
@@ -31,28 +29,15 @@ public class TenantEngineState implements ITenantEngineState {
 
     /*
      * @see com.sitewhere.spi.microservice.state.ITenantEngineState#
-     * getMicroserviceIdentifier()
+     * getMicroserviceDetails()
      */
     @Override
-    public String getMicroserviceIdentifier() {
-	return microserviceIdentifier;
+    public IMicroserviceDetails getMicroserviceDetails() {
+	return microserviceDetails;
     }
 
-    public void setMicroserviceIdentifier(String microserviceIdentifier) {
-	this.microserviceIdentifier = microserviceIdentifier;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#
-     * getMicroserviceHostname()
-     */
-    @Override
-    public String getMicroserviceHostname() {
-	return microserviceHostname;
-    }
-
-    public void setMicroserviceHostname(String microserviceHostname) {
-	this.microserviceHostname = microserviceHostname;
+    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
+	this.microserviceDetails = microserviceDetails;
     }
 
     /*

@@ -8,6 +8,8 @@
 package com.sitewhere.device.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IDeviceManagementParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,21 @@ public class DeviceManagementModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createDeviceManagementElement());
+    }
+
+    /**
+     * Create element configuration for batch operations.
+     * 
+     * @return
+     */
+    protected ElementNode createDeviceManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Device Management", IDeviceManagementParser.ROOT,
+		"server", DeviceManagementRoleKeys.DeviceManagement);
+
+	builder.description("Handles operations related to the device management model including persistence.");
+
+	return builder.build();
     }
 
     /*

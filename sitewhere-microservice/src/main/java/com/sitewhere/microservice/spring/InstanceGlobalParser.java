@@ -15,7 +15,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.parser.IInstanceGlobalParser.Elements;
+import com.sitewhere.configuration.parser.IInstanceManagementParser.Elements;
 
 /**
  * Parses configuration data for the instance global configuration.

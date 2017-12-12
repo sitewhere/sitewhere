@@ -9,6 +9,7 @@ package com.sitewhere.microservice;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ import com.sitewhere.Version;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.state.InstanceTopologySnapshotsManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -23,6 +25,8 @@ import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.configuration.model.IElementNode;
+import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -30,6 +34,7 @@ import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -255,15 +260,51 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMicroserviceDetails()
+     */
+    @Override
+    public IMicroserviceDetails getMicroserviceDetails() throws SiteWhereException {
+	MicroserviceDetails details = new MicroserviceDetails();
+	details.setIdentifier(getIdentifier());
+	details.setHostname(getHostname());
+
+	IElementNode root = getRootElementNode();
+	details.setName(root.getName());
+	details.setIcon(root.getIcon());
+	details.setDescription(root.getDescription());
+	return details;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getCurrentState()
      */
     @Override
     public IMicroserviceState getCurrentState() throws SiteWhereException {
 	MicroserviceState state = new MicroserviceState();
-	state.setMicroserviceIdentifier(getIdentifier());
-	state.setMicroserviceHostname(getHostname());
+	state.setMicroserviceDetails(getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
 	return state;
+    }
+
+    /**
+     * Get element node for root configuration role.
+     * 
+     * @return
+     */
+    protected IElementNode getRootElementNode() {
+	IElementRole role = getConfigurationModel().getRolesById().get(getConfigurationModel().getRootRoleId());
+	if (role == null) {
+	    throw new RuntimeException("Root role was not found for configuration model.");
+	}
+	List<IElementNode> matches = getConfigurationModel().getElementsByRole()
+		.get(getConfigurationModel().getRootRoleId());
+	if (matches == null) {
+	    throw new RuntimeException("Configuration had no elements for root role.");
+	}
+	if (matches.size() != 1) {
+	    throw new RuntimeException("Configuration model had " + matches.size() + " elements for root role.");
+	}
+	return matches.get(0);
     }
 
     /*

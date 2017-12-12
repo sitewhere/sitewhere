@@ -8,6 +8,8 @@
 package com.sitewhere.inbound.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IInboundProcessingParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,22 @@ public class InboundProcessingModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createInboundProcessingElement());
+    }
+
+    /**
+     * Create inbound processing element.
+     * 
+     * @return
+     */
+    protected ElementNode createInboundProcessingElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Inbound Processing", IInboundProcessingParser.ROOT,
+		"sign-in", InboundProcessingRoleKeys.InboundProcessing);
+
+	builder.description(
+		"Handles inbound processing tasks such as enriching event data with device/assignment information.");
+
+	return builder.build();
     }
 
     /*

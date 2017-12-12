@@ -17,6 +17,7 @@ import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -66,6 +67,14 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public IConfigurationModel getConfigurationModel();
+
+    /**
+     * Get details that identify and describe the microservice.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IMicroserviceDetails getMicroserviceDetails() throws SiteWhereException;
 
     /**
      * Get current state for microservice.

@@ -8,6 +8,8 @@
 package com.sitewhere.web.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IWebRestParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,7 @@ public class WebRestModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createWebRestElement());
     }
 
     /*
@@ -52,5 +55,19 @@ public class WebRestModelProvider extends ConfigurationModelProvider {
 	for (WebRestRoles role : WebRestRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create web/REST element.
+     * 
+     * @return
+     */
+    protected ElementNode createWebRestElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Web/REST", IWebRestParser.ROOT, "sign-in",
+		WebRestRoleKeys.WebRest);
+
+	builder.description("Handles REST services and administrative user interface.");
+
+	return builder.build();
     }
 }

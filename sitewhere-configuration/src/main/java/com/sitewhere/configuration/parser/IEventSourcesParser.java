@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IEventSourcesParser {
 
+    // Root element name.
+    public static final String ROOT = "event-sources";
+
     /**
      * Expected child elements.
      * 
@@ -182,20 +185,17 @@ public interface IEventSourcesParser {
     public static enum BinarySocketInteractionHandlers {
 
 	/**
-	 * Reference to a socket interaction handler factory defined in a Spring
-	 * bean
+	 * Reference to a socket interaction handler factory defined in a Spring bean
 	 */
 	InteractionHandlerFactoryReference("interaction-handler-factory"),
 
 	/**
-	 * Produces interaction handler that reads all data from the client
-	 * socket
+	 * Produces interaction handler that reads all data from the client socket
 	 */
 	ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory"),
 
 	/**
-	 * Produces interaction handler that reads HTTP data from the client
-	 * socket
+	 * Produces interaction handler that reads HTTP data from the client socket
 	 */
 	HttpInteractionHandlerFactory("http-interaction-handler-factory"),
 

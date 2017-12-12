@@ -8,6 +8,8 @@
 package com.sitewhere.event.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
+import com.sitewhere.configuration.parser.IDeviceRegistrationParser;
+import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -41,6 +43,21 @@ public class EventManagementModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeElements() {
+	addElement(createEventManagementElement());
+    }
+
+    /**
+     * Create element configuration for event management.
+     * 
+     * @return
+     */
+    protected ElementNode createEventManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Event Management", IDeviceRegistrationParser.ROOT,
+		"server", EventManagementRoleKeys.EventManagement);
+
+	builder.description("Handles operations related to the device event management model including persistence.");
+
+	return builder.build();
     }
 
     /*

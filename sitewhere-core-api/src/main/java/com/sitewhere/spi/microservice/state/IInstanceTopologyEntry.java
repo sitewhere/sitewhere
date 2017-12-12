@@ -15,18 +15,11 @@ package com.sitewhere.spi.microservice.state;
 public interface IInstanceTopologyEntry {
 
     /**
-     * Get microservice identifier.
+     * Get microservice details.
      * 
      * @return
      */
-    public String getMicroserviceIdentifier();
-
-    /**
-     * Get hostname for microservice.
-     * 
-     * @return
-     */
-    public String getMicroserviceHostname();
+    public IMicroserviceDetails getMicroserviceDetails();
 
     /**
      * Get timestamp for last updated.

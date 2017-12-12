@@ -9,6 +9,7 @@ package com.sitewhere.presence.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IDeviceServicesParser;
+import com.sitewhere.configuration.parser.IPresenceManagementParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -45,6 +46,8 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
+	addElement(createPresenceManagementElement());
+
 	addElement(createDefaultPresenceManagerElement());
     }
 
@@ -57,6 +60,20 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
 	for (PresenceManagementRoles role : PresenceManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /**
+     * Create presence management element.
+     * 
+     * @return
+     */
+    protected ElementNode createPresenceManagementElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Presence Management", IPresenceManagementParser.ROOT,
+		"sign-in", PresenceManagementRoleKeys.PresenceManagement);
+
+	builder.description("Handles notification when devices are detected as present or missing.");
+
+	return builder.build();
     }
 
     /**

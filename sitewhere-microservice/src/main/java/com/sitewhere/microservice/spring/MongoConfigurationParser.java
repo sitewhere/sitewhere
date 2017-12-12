@@ -17,7 +17,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.parser.IInstanceGlobalParser.MongoDbElements;
+import com.sitewhere.configuration.parser.IInstanceManagementParser.MongoDbElements;
 import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 

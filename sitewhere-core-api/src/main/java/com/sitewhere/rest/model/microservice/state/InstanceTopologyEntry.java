@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.microservice.state;
 
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Entry for a microservice within the instance topology.
@@ -16,39 +17,23 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
  */
 public class InstanceTopologyEntry implements IInstanceTopologyEntry {
 
-    /** Microservice identifier */
-    private String microserviceIdentifier;
-
-    /** Microservice hostname */
-    private String microserviceHostname;
+    /** Microservice details */
+    private IMicroserviceDetails microserviceDetails;
 
     /** Last updated timestamp */
     private long lastUpdated;
 
     /*
      * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#
-     * getMicroserviceIdentifier()
+     * getMicroserviceDetails()
      */
     @Override
-    public String getMicroserviceIdentifier() {
-	return microserviceIdentifier;
+    public IMicroserviceDetails getMicroserviceDetails() {
+	return microserviceDetails;
     }
 
-    public void setMicroserviceIdentifier(String microserviceIdentifier) {
-	this.microserviceIdentifier = microserviceIdentifier;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#
-     * getMicroserviceHostname()
-     */
-    @Override
-    public String getMicroserviceHostname() {
-	return microserviceHostname;
-    }
-
-    public void setMicroserviceHostname(String microserviceHostname) {
-	this.microserviceHostname = microserviceHostname;
+    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
+	this.microserviceDetails = microserviceDetails;
     }
 
     /*

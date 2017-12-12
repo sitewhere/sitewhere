@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface ITenantManagementParser {
 
+    // Root element name.
+    public static final String ROOT = "tenant-management";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */
