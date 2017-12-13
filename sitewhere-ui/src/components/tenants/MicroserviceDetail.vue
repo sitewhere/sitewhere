@@ -4,7 +4,6 @@
       <tenant-detail-header :tenant="tenant"
         :tenantCommandRunning="tenantCommandRunning"
         :tenantCommandPercent="tenantCommandPercent" class="mb-3"
-        @start="onStartTenant" @stop="onStopTenant" @reboot="onRebootTenant"
         @refresh="refresh">
       </tenant-detail-header>
       <v-tabs class="elevation-2" dark v-model="active">
@@ -109,9 +108,6 @@
         :model="tenantDialogModel" :config="tenantDialogConfig"
         @elementUpdated="onConfigurationElementUpdated">
       </configuration-element-update-dialog>
-      <stage-updates-dialog :tenantId="tenantId" :json="tenantConfig"
-        @staged="onStagingComplete">
-      </stage-updates-dialog>
     </v-app>
   </div>
 </template>
@@ -123,28 +119,22 @@ import TenantDetailHeader from './TenantDetailHeader'
 import ElementPlaceholder from './ElementPlaceholder'
 import AttributeField from './AttributeField'
 import ElementDeleteDialog from './ElementDeleteDialog'
-import StageUpdatesDialog from './StageUpdatesDialog'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
 import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
 import {wizard} from './TenantConfigEditor'
 import {
   _getTenant,
-  _getTenantConfiguration,
-  _getTenantConfigurationModel,
-  _getTenantConfigurationRoles,
-  _startTenant,
-  _stopTenant,
-  _rebootTenant
+  _getConfigurationModel
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     tenantId: null,
+    identifier: null,
     tenant: null,
-    tenantConfig: null,
-    tenantConfigModel: null,
-    tenantConfigRoles: null,
+    config: null,
+    configModel: null,
     currentContext: null,
     wizardContexts: [],
     tenantDialogModel: null,
@@ -160,20 +150,19 @@ export default {
     ElementPlaceholder,
     AttributeField,
     ElementDeleteDialog,
-    StageUpdatesDialog,
     ConfigurationElementCreateDialog,
     ConfigurationElementUpdateDialog
   },
 
   created: function () {
     this.$data.tenantId = this.$route.params.tenantId
+    this.$data.identifier = this.$route.params.identifier
     this.refresh()
   },
 
   computed: {
     configDataAvailable: function () {
-      return this.$data.tenantConfig && this.$data.tenantConfigModel &&
-        this.$data.tenantConfigRoles
+      return this.$data.config && this.$data.configModel
     },
 
     // Compute attribute values for current context.
@@ -188,10 +177,9 @@ export default {
 
   watch: {
     configDataAvailable: function (available) {
-      wizard.config = this.$data.tenantConfig
-      wizard.configModel = this.$data.tenantConfigModel
+      wizard.config = this.$data.config
+      wizard.configModel = this.$data.configModel
       wizard.editorContexts = this.$data.wizardContexts
-      wizard.roles = this.$data.tenantConfigRoles
       this.onWizardContextsUpdated(wizard.reset())
     }
   },
@@ -211,19 +199,18 @@ export default {
 
       // Load configuration data.
       var component = this
-      _getTenantConfiguration(this.$store, this.$data.tenantId)
+      _getConfigurationModel(this.$store, this.$data.identifier)
         .then(function (response) {
-          component.$data.tenantConfig = response.data
-        }).catch(function (e) {
-        })
-      _getTenantConfigurationModel(this.$store)
-        .then(function (response) {
-          component.$data.tenantConfigModel = response.data
-        }).catch(function (e) {
-        })
-      _getTenantConfigurationRoles(this.$store)
-        .then(function (response) {
-          component.$data.tenantConfigRoles = response.data
+          component.$data.configModel = response.data
+          var microservice = response.data.microserviceDetails
+          var section = {
+            id: 'tenants',
+            title: 'Configure Microservice',
+            icon: 'layers',
+            route: '/tenants/' + component.$data.tenantId + '/' + microservice.identifier,
+            longTitle: 'Configure Tenant Microservice: ' + microservice.name
+          }
+          component.$store.commit('currentSection', section)
         }).catch(function (e) {
         })
     },
@@ -241,14 +228,6 @@ export default {
     // Called after data is loaded.
     onLoaded: function (tenant) {
       this.$data.tenant = tenant
-      var section = {
-        id: 'tenants',
-        title: 'Manage Tenant',
-        icon: 'layers',
-        route: '/tenants/' + tenant.id,
-        longTitle: 'Manage Tenant: ' + tenant.id
-      }
-      this.$store.commit('currentSection', section)
     },
 
     // Update wizard context stack.
@@ -344,66 +323,6 @@ export default {
         }
         return JSON.parse(entries[entries.length - 2])
       }
-    },
-
-    // Start a tenant while monitoring progress.
-    onStartTenant: function () {
-      var component = this
-      this.$data.tenantCommandRunning = true
-      this.$data.tenantCommandPercent = 0
-      _startTenant(this.$store, this.$data.tenantId,
-        e => {
-          let record = this.lastRecord(e.currentTarget.response)
-          if (record.progressPercentage) {
-            this.$data.tenantCommandPercent = record.progressPercentage
-          }
-        })
-        .then(function (response) {
-          component.$data.tenantCommandRunning = false
-          component.refresh()
-        }).catch(function (e) {
-          component.$data.tenantCommandRunning = false
-        })
-    },
-
-    // Stop a tenant while monitoring progress.
-    onStopTenant: function () {
-      var component = this
-      this.$data.tenantCommandRunning = true
-      this.$data.tenantCommandPercent = 0
-      _stopTenant(this.$store, this.$data.tenantId,
-        e => {
-          let record = this.lastRecord(e.currentTarget.response)
-          if (record.progressPercentage) {
-            this.$data.tenantCommandPercent = record.progressPercentage
-          }
-        })
-        .then(function (response) {
-          component.$data.tenantCommandRunning = false
-          component.refresh()
-        }).catch(function (e) {
-          component.$data.tenantCommandRunning = false
-        })
-    },
-
-    // Reboot a tenant while monitoring progress.
-    onRebootTenant: function () {
-      var component = this
-      this.$data.tenantCommandRunning = true
-      this.$data.tenantCommandPercent = 0
-      _rebootTenant(this.$store, this.$data.tenantId,
-        e => {
-          let record = this.lastRecord(e.currentTarget.response)
-          if (record.progressPercentage) {
-            this.$data.tenantCommandPercent = record.progressPercentage
-          }
-        })
-        .then(function (response) {
-          component.$data.tenantCommandRunning = false
-          component.refresh()
-        }).catch(function (e) {
-          component.$data.tenantCommandRunning = false
-        })
     }
   }
 }

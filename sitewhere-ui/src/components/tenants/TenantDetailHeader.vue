@@ -1,17 +1,20 @@
 <template>
   <div>
-    <v-card v-if="tenant" class="tenant white">
-      <v-card-text>
-        <div class="tenant-logo" :style="tenantLogoStyle(this.tenant)"></div>
-        <div class="tenant-headers">
-          <header-field label="Tenant id">
-            <span>{{ tenant.id }}</span>
-          </header-field>
-          <header-field label="Name">
-            <span>{{ tenant.name }}</span>
-          </header-field>
-        </div>
-      </v-card-text>
+    <v-card v-if="tenant" color="white" class="grey--text">
+      <v-container fluid grid-list-lg>
+        <v-layout row>
+          <v-flex xs3>
+            <v-card-media :src="tenant.logoUrl" height="50px" contain>
+            </v-card-media>
+          </v-flex>
+          <v-flex xs9>
+            <div>
+              <div class="headline">{{ tenant.name }}</div>
+              <div>{{ tenant.id }}</div>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-card>
     <tenant-update-dialog ref="update" :tenantId="tenant.id"
       @tenantUpdated="onTenantEdited">
@@ -44,15 +47,6 @@ export default {
   },
 
   methods: {
-    // Styling for tenant logo.
-    tenantLogoStyle: function (tenant) {
-      return {
-        'background': 'url(' + tenant.logoUrl + ')',
-        'background-size': 'contain',
-        'background-repeat': 'no-repeat',
-        'background-position': '50% 50%'
-      }
-    },
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -78,27 +72,6 @@ export default {
 </script>
 
 <style scoped>
-.tenant {
-  min-height: 100px;
-  overflow-y: hidden;
-}
-.tenant-logo {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  bottom: 10px;
-  width: 200px;
-}
-.tenant-headers {
-  position: absolute;
-  top: 14px;
-  left: 250px;
-}
-.tenant-buttons {
-  position: absolute;
-  top: 25px;
-  right: 10px;
-}
 .progress {
   position: absolute;
   bottom: 0px;

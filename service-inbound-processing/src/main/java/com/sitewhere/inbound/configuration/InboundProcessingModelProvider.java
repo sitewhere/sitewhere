@@ -53,7 +53,7 @@ public class InboundProcessingModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createInboundProcessingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Inbound Processing", IInboundProcessingParser.ROOT,
-		"sign-in", InboundProcessingRoleKeys.InboundProcessing);
+		"cogs", InboundProcessingRoleKeys.InboundProcessing);
 
 	builder.description(
 		"Handles inbound processing tasks such as enriching event data with device/assignment information.");

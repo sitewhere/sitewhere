@@ -93,10 +93,10 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createCommandRoutingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Routing",
-		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap",
+		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "bolt",
 		CommandDestinationsRoleKeys.CommandRouting);
 
-	builder.description("Determines how commands are routed to command destinations.");
+	builder.description("Determines how commands are routed, encoded, and delivered to destinations.");
 	return builder.build();
     }
 

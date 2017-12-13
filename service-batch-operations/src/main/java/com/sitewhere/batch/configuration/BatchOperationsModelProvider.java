@@ -68,12 +68,10 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createBatchOperationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management",
-		IDeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
+		IDeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "list-ol",
 		BatchOperationsRoleKeys.BatchOperations);
 
-	builder.description("Manages how batch operations are processed. Batch operations are "
-		+ "actions that are executed asynchronously for many devices with the ability to monitor "
-		+ "progress at both the batch and element level.");
+	builder.description("Manage processing of batch operations including persistence and throttling.");
 	return builder.build();
     }
 

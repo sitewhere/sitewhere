@@ -3,17 +3,18 @@
     <v-app>
       <tenant-detail-header :tenant="tenant" class="mb-3" @refresh="refresh">
       </tenant-detail-header>
-      <v-toolbar class="blue darken-2 white--text" v-if="tenantTopology">
+      <v-toolbar class="blue darken-2 white--text" flat card v-if="tenantTopology">
         <v-toolbar-title>Tenant Microservices</v-toolbar-title>
       </v-toolbar>
-      <v-list v-if="tenantTopology" two-line class="elevation-2">
+      <v-list v-if="tenantTopology" two-line dense class="elevation-2 mb-4">
         <template v-for="microservice in tenantTopology">
-          <v-list-tile :key="microservice.identifier">
+          <v-list-tile :key="microservice.identifier"
+            @click.native="onMicroserviceClicked(microservice.identifier)">
             <v-list-tile-avatar>
               <v-icon left light fa>{{microservice.icon}}</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title v-text="microservice.name"></v-list-tile-title>
+              <v-list-tile-title v-text="microservice.name" class="subheading"></v-list-tile-title>
               <v-list-tile-sub-title v-html="microservice.description">
               </v-list-tile-sub-title>
             </v-list-tile-content>
@@ -53,6 +54,11 @@ export default {
   },
 
   methods: {
+    // Called if a microservice is clicked.
+    onMicroserviceClicked: function (identifier) {
+      this.$router.push('/system/tenants/' + this.$data.tenantId + '/' + identifier)
+    },
+
     // Called to refresh data.
     refresh: function () {
       // Load tenant data.

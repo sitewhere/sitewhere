@@ -10,7 +10,8 @@ import {
 import {
   getTopology,
   getGlobalTopology,
-  getTenantTopology
+  getTenantTopology,
+  getConfigurationModel
 } from './sitewhere-instance-api'
 
 // Users.
@@ -243,6 +244,15 @@ export function _getGlobalTopology (store) {
 export function _getTenantTopology (store) {
   let axios = createCoreApiCall(store)
   let api = getTenantTopology(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get configuration model for a microservice based on identifier.
+ */
+export function _getConfigurationModel (store, identifier) {
+  let axios = createCoreApiCall(store)
+  let api = getConfigurationModel(axios, identifier)
   return loaderWrapper(store, api)
 }
 

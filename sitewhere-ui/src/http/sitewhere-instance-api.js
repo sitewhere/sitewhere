@@ -25,3 +25,11 @@ export function getGlobalTopology (axios) {
 export function getTenantTopology (axios) {
   return restAuthGet(axios, 'instance/topology/tenant')
 }
+
+/**
+ * Get configuration model for a given microservice identifier.
+ */
+export function getConfigurationModel (axios, identifier) {
+  return restAuthGet(axios, 'instance/microservice/' + identifier +
+    '/configuration/model')
+}
