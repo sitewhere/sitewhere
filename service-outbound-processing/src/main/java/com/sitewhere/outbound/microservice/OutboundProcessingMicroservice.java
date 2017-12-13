@@ -41,9 +41,6 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     /** Microservice name */
     private static final String NAME = "Outbound Processing";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new OutboundProcessingModelProvider().buildModel();
-
     /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
 
@@ -75,11 +72,11 @@ public class OutboundProcessingMicroservice extends MultitenantMicroservice<IOut
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new OutboundProcessingModelProvider().buildModel();
     }
 
     /*

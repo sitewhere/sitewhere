@@ -33,9 +33,6 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     /** Microservice name */
     private static final String NAME = "Presence Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new PresenceManagementModelProvider().buildModel();
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -61,11 +58,11 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new PresenceManagementModelProvider().buildModel();
     }
 
     /*

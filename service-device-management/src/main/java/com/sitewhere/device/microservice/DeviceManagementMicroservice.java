@@ -44,9 +44,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     /** Microservice name */
     private static final String NAME = "Device Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new DeviceManagementModelProvider().buildModel();
-
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
 
@@ -88,11 +85,11 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new DeviceManagementModelProvider().buildModel();
     }
 
     /*

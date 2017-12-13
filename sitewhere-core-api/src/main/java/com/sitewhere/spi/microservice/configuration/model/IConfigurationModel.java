@@ -10,12 +10,21 @@ package com.sitewhere.spi.microservice.configuration.model;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
+
 /**
  * Contains a map of all model elements grouped by role.
  * 
  * @author Derek
  */
 public interface IConfigurationModel {
+
+    /**
+     * Get information about microservice that owns the model.
+     * 
+     * @return
+     */
+    public IMicroserviceDetails getMicroserviceDetails();
 
     /**
      * Get default XML namespace used for elements that do not provide one.

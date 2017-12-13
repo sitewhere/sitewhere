@@ -33,9 +33,6 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     /** Microservice name */
     private static final String NAME = "Label Generation";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new LabelGenerationModelProvider().buildModel();
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -61,11 +58,11 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new LabelGenerationModelProvider().buildModel();
     }
 
     /*

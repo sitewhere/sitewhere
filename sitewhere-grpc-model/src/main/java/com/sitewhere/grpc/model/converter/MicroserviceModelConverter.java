@@ -18,6 +18,7 @@ import com.sitewhere.grpc.model.MicroserviceModel.GElementNode;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementNodeList;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementRole;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceConfiguration;
+import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceDetails;
 import com.sitewhere.grpc.model.MicroserviceModel.GNodeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GXmlNode;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -25,6 +26,7 @@ import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.rest.model.configuration.ElementRole;
 import com.sitewhere.rest.model.configuration.XmlNode;
+import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
@@ -33,6 +35,7 @@ import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.configuration.model.IXmlNode;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Convert model objects used for interacting with microservices.
@@ -345,6 +348,42 @@ public class MicroserviceModelConverter {
     }
 
     /**
+     * Convert microservice details from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static MicroserviceDetails asApiMicroserviceDetails(GMicroserviceDetails grpc) throws SiteWhereException {
+	MicroserviceDetails api = new MicroserviceDetails();
+	api.setIdentifier(grpc.getIdentifier());
+	api.setHostname(grpc.getHostname());
+	api.setName(grpc.getName());
+	api.setIcon(grpc.getIcon());
+	api.setDescription(grpc.getDescription());
+	api.setGlobal(grpc.getGlobal());
+	return api;
+    }
+
+    /**
+     * Convert microservice details from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GMicroserviceDetails asGrpcMicroserviceDetails(IMicroserviceDetails api) throws SiteWhereException {
+	GMicroserviceDetails.Builder grpc = GMicroserviceDetails.newBuilder();
+	grpc.setIdentifier(api.getIdentifier());
+	grpc.setHostname(api.getHostname());
+	grpc.setName(api.getName());
+	grpc.setIcon(api.getIcon());
+	grpc.setDescription(api.getDescription());
+	grpc.setGlobal(api.isGlobal());
+	return grpc.build();
+    }
+
+    /**
      * Convert configuration model from GRPC to API.
      * 
      * @param grpc
@@ -354,6 +393,7 @@ public class MicroserviceModelConverter {
     public static ConfigurationModel asApiConfigurationModel(GMicroserviceConfiguration grpc)
 	    throws SiteWhereException {
 	ConfigurationModel api = new ConfigurationModel();
+	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
 	api.setDefaultXmlNamespace(grpc.getDefaultNamespace());
 	api.setRootRoleId(grpc.getRootRoleId());
 	Map<String, GElementNodeList> elementsByRole = grpc.getElementsByRoleMap();
@@ -379,6 +419,7 @@ public class MicroserviceModelConverter {
     public static GMicroserviceConfiguration asGrpcConfigurationModel(IConfigurationModel api)
 	    throws SiteWhereException {
 	GMicroserviceConfiguration.Builder grpc = GMicroserviceConfiguration.newBuilder();
+	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
 	grpc.setDefaultNamespace(api.getDefaultXmlNamespace());
 	grpc.setRootRoleId(api.getRootRoleId());
 	for (String role : api.getElementsByRole().keySet()) {

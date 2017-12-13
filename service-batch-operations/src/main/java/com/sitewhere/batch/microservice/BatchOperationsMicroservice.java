@@ -43,9 +43,6 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     /** Microservice name */
     private static final String NAME = "Batch Operations";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new BatchOperationsModelProvider().buildModel();
-
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
 
@@ -80,11 +77,11 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new BatchOperationsModelProvider().buildModel();
     }
 
     /*

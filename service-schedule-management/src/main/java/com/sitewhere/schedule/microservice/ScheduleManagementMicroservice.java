@@ -38,9 +38,6 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     /** Microservice name */
     private static final String NAME = "Schedule Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new ScheduleManagementModelProvider().buildModel();
-
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
 
@@ -69,11 +66,11 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new ScheduleManagementModelProvider().buildModel();
     }
 
     /*

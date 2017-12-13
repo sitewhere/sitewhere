@@ -41,9 +41,6 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     /** Microservice name */
     private static final String NAME = "Inbound Processing";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new InboundProcessingModelProvider().buildModel();
-
     /** Device management API channel */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
 
@@ -75,11 +72,11 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new InboundProcessingModelProvider().buildModel();
     }
 
     /*

@@ -54,9 +54,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     /** Microservice name */
     private static final String NAME = "Tenant Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new TenantManagementModelProvider().buildModel();
-
     /** Tenant management configuration file name */
     private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
 
@@ -111,11 +108,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new TenantManagementModelProvider().buildModel();
     }
 
     /*

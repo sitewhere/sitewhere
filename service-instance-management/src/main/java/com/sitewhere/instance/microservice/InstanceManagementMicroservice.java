@@ -58,9 +58,6 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /** Microservice name */
     private static final String NAME = "Instance Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new InstanceManagementModelProvider().buildModel();
-
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
@@ -105,11 +102,11 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new InstanceManagementModelProvider().buildModel();
     }
 
     /*

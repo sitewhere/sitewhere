@@ -41,9 +41,6 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new AssetManagementModelProvider().buildModel();
-
     /*
      * (non-Javadoc)
      * 
@@ -73,11 +70,11 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new AssetManagementModelProvider().buildModel();
     }
 
     /*

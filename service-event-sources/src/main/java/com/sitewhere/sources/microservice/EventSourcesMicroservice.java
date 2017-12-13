@@ -34,9 +34,6 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     /** Microservice name */
     public static final String NAME = "Event Sources";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new EventSourcesModelProvider().buildModel();
-
     /*
      * (non-Javadoc)
      * 
@@ -66,11 +63,11 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new EventSourcesModelProvider().buildModel();
     }
 
     /*

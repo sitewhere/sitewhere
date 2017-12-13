@@ -5,6 +5,7 @@ package com.sitewhere.grpc.kafka.model;
 option java_outer_classname = "KafkaModel";
 
 import "sitewhere-common.proto";
+import "microservice-model.proto";
 import "tenant-model.proto";
 import "device-model.proto";
 import "device-event-model.proto";
@@ -69,25 +70,15 @@ enum GLifecycleStatus {
 	LIFECYCLE_STATUS_ERROR = 10;
 }
 
-// Microservice details.
-message GMicroserviceDetails {
-	string identifier = 1;
-	string hostname = 2;
-	string name = 3;
-	string icon = 4;
-	string description = 5;
-	bool global = 6;
-}
-
 // Microservice state.
 message GMicroserviceState {
-	GMicroserviceDetails microserviceDetails = 1;
+	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
 	GLifecycleStatus status = 2;
 }
 
 // Tenant engine state.
 message GTenantEngineState {
-	GMicroserviceDetails microserviceDetails = 1;
+	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
 	string tenantId = 2;
 	GLifecycleStatus status = 3;
 }
@@ -102,7 +93,7 @@ message GStateUpdate {
 
 // Instance topology update.
 message GInstanceTopologyEntry {
-	GMicroserviceDetails microserviceDetails = 1;
+	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
 	int64 lastUpdated = 2;
 }
 

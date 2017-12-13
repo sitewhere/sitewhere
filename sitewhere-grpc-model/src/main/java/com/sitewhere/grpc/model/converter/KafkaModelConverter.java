@@ -12,7 +12,6 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyEntry;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologySnapshot;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleStatus;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceDetails;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceState;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
@@ -23,7 +22,6 @@ import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologySnapshot;
-import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,7 +30,6 @@ import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
-import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -210,42 +207,6 @@ public class KafkaModelConverter {
     }
 
     /**
-     * Convert microservice details from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static MicroserviceDetails asApiMicroserviceDetails(GMicroserviceDetails grpc) throws SiteWhereException {
-	MicroserviceDetails api = new MicroserviceDetails();
-	api.setIdentifier(grpc.getIdentifier());
-	api.setHostname(grpc.getHostname());
-	api.setName(grpc.getName());
-	api.setIcon(grpc.getIcon());
-	api.setDescription(grpc.getDescription());
-	api.setGlobal(grpc.getGlobal());
-	return api;
-    }
-
-    /**
-     * Convert microservice details from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GMicroserviceDetails asGrpcMicroserviceDetails(IMicroserviceDetails api) throws SiteWhereException {
-	GMicroserviceDetails.Builder grpc = GMicroserviceDetails.newBuilder();
-	grpc.setIdentifier(api.getIdentifier());
-	grpc.setHostname(api.getHostname());
-	grpc.setName(api.getName());
-	grpc.setIcon(api.getIcon());
-	grpc.setDescription(api.getDescription());
-	grpc.setGlobal(api.isGlobal());
-	return grpc.build();
-    }
-
-    /**
      * Convert microservice state from GRPC to API.
      * 
      * @param grpc
@@ -254,7 +215,7 @@ public class KafkaModelConverter {
      */
     public static MicroserviceState asApiMicroserviceState(GMicroserviceState grpc) throws SiteWhereException {
 	MicroserviceState api = new MicroserviceState();
-	api.setMicroserviceDetails(KafkaModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	return api;
     }
@@ -268,7 +229,7 @@ public class KafkaModelConverter {
      */
     public static GMicroserviceState asGrpcMicroserviceState(IMicroserviceState api) throws SiteWhereException {
 	GMicroserviceState.Builder grpc = GMicroserviceState.newBuilder();
-	grpc.setMicroserviceDetails(KafkaModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	return grpc.build();
     }
@@ -282,7 +243,7 @@ public class KafkaModelConverter {
      */
     public static TenantEngineState asApiTenantEngineState(GTenantEngineState grpc) throws SiteWhereException {
 	TenantEngineState api = new TenantEngineState();
-	api.setMicroserviceDetails(KafkaModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
 	api.setTenantId(grpc.getTenantId());
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	return api;
@@ -297,7 +258,7 @@ public class KafkaModelConverter {
      */
     public static GTenantEngineState asGrpcTenantEngineState(ITenantEngineState api) throws SiteWhereException {
 	GTenantEngineState.Builder grpc = GTenantEngineState.newBuilder();
-	grpc.setMicroserviceDetails(KafkaModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
 	grpc.setTenantId(api.getTenantId());
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	return grpc.build();
@@ -339,7 +300,7 @@ public class KafkaModelConverter {
     public static InstanceTopologyEntry asApiInstanceTopologyEntry(GInstanceTopologyEntry grpc)
 	    throws SiteWhereException {
 	InstanceTopologyEntry api = new InstanceTopologyEntry();
-	api.setMicroserviceDetails(KafkaModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
 	api.setLastUpdated(grpc.getLastUpdated());
 	return api;
     }
@@ -354,7 +315,7 @@ public class KafkaModelConverter {
     public static GInstanceTopologyEntry asGrpcInstanceTopologyEntry(IInstanceTopologyEntry api)
 	    throws SiteWhereException {
 	GInstanceTopologyEntry.Builder grpc = GInstanceTopologyEntry.newBuilder();
-	grpc.setMicroserviceDetails(KafkaModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
 	grpc.setLastUpdated(api.getLastUpdated());
 	return grpc.build();
     }

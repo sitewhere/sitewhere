@@ -33,9 +33,6 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     /** Microservice name */
     private static final String NAME = "Device Registration";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new DeviceRegistrationModelProvider().buildModel();
-
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
@@ -61,11 +58,11 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new DeviceRegistrationModelProvider().buildModel();
     }
 
     /*

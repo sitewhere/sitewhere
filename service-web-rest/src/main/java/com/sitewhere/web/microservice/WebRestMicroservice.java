@@ -55,9 +55,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /** Microservice name */
     private static final String NAME = "Web/REST";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new WebRestModelProvider().buildModel();
-
     /** Web/REST configuration file name */
     private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";
 
@@ -120,11 +117,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new WebRestModelProvider().buildModel();
     }
 
     /*

@@ -7,6 +7,12 @@ import {
   getJwt
 } from './sitewhere-auth-api'
 
+import {
+  getTopology,
+  getGlobalTopology,
+  getTenantTopology
+} from './sitewhere-instance-api'
+
 // Users.
 import {
   createUser,
@@ -27,12 +33,7 @@ import {
   deleteTenant,
   getTenantTemplates,
   getTenantConfiguration,
-  getTenantConfigurationModel,
-  getTenantConfigurationRoles,
-  stageTenantUpdates,
-  startTenant,
-  stopTenant,
-  rebootTenant
+  getTenantConfigurationModel
 } from './sitewhere-tenants-api.js'
 
 // Sites.
@@ -219,6 +220,33 @@ export function _getJwt (store) {
 }
 
 /**
+ * Get all microservices in instance topology.
+ */
+export function _getTopology (store) {
+  let axios = createCoreApiCall(store)
+  let api = getTopology(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get global microservices in instance topology.
+ */
+export function _getGlobalTopology (store) {
+  let axios = createCoreApiCall(store)
+  let api = getGlobalTopology(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant microservices in instance topology.
+ */
+export function _getTenantTopology (store) {
+  let axios = createCoreApiCall(store)
+  let api = getTenantTopology(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Create a user.
  */
 export function _createUser (store, payload) {
@@ -353,51 +381,6 @@ export function _getTenantConfiguration (store, tenantId) {
 export function _getTenantConfigurationModel (store) {
   let axios = createCoreApiCall(store)
   let api = getTenantConfigurationModel(axios)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Get tenant configuration roles.
- */
-export function _getTenantConfigurationRoles (store) {
-  let axios = createCoreApiCall(store)
-  let api = getTenantConfigurationRoles(axios)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Stage updates for a tenant.
- */
-export function _stageTenantUpdates (store, tenantId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = stageTenantUpdates(axios, tenantId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Start a tenant and monitor progress.
- */
-export function _startTenant (store, tenantId, callback) {
-  let axios = createCoreApiCall(store)
-  let api = startTenant(axios, tenantId, callback)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Stop a tenant and monitor progress.
- */
-export function _stopTenant (store, tenantId, callback) {
-  let axios = createCoreApiCall(store)
-  let api = stopTenant(axios, tenantId, callback)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Reboot a tenant and monitor progress.
- */
-export function _rebootTenant (store, tenantId, callback) {
-  let axios = createCoreApiCall(store)
-  let api = rebootTenant(axios, tenantId, callback)
   return loaderWrapper(store, api)
 }
 

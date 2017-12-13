@@ -57,9 +57,8 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * Get assigned hostname.
      * 
      * @return
-     * @throws SiteWhereException
      */
-    public String getHostname() throws SiteWhereException;
+    public String getHostname();
 
     /**
      * Indicates whether the microservice is global in scope.
@@ -67,6 +66,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public boolean isGlobal();
+
+    /**
+     * Build configuration model.
+     * 
+     * @return
+     */
+    public IConfigurationModel buildConfigurationModel();
 
     /**
      * Get configuration model.
@@ -81,7 +87,7 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      * @throws SiteWhereException
      */
-    public IMicroserviceDetails getMicroserviceDetails() throws SiteWhereException;
+    public IMicroserviceDetails getMicroserviceDetails();
 
     /**
      * Get current state for microservice.

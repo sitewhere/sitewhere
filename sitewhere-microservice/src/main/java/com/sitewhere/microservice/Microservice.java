@@ -17,6 +17,7 @@ import com.sitewhere.Version;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.state.InstanceTopologySnapshotsManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -25,6 +26,7 @@ import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
@@ -90,6 +92,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Version information */
     private IVersion version = new Version();
 
+    /** Configuration model */
+    private IConfigurationModel configurationModel;
+
     /** Microservice management GRPC server */
     private IMicroserviceManagementGrpcServer microserviceManagementGrpcServer;
 
@@ -102,6 +107,8 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     public Microservice() {
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
 	this.instanceTopologyUpdatesManager = new InstanceTopologySnapshotsManager(this);
+	this.configurationModel = buildConfigurationModel();
+	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
     }
 
     /*
@@ -250,12 +257,12 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      * @see com.sitewhere.spi.microservice.IMicroservice#getHostname()
      */
     @Override
-    public String getHostname() throws SiteWhereException {
+    public String getHostname() {
 	try {
 	    InetAddress local = InetAddress.getLocalHost();
 	    return local.getHostName();
 	} catch (UnknownHostException e) {
-	    throw new SiteWhereException("Unable to find hostname.", e);
+	    throw new RuntimeException("Unable to find hostname.", e);
 	}
     }
 
@@ -263,7 +270,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      * @see com.sitewhere.spi.microservice.IMicroservice#getMicroserviceDetails()
      */
     @Override
-    public IMicroserviceDetails getMicroserviceDetails() throws SiteWhereException {
+    public IMicroserviceDetails getMicroserviceDetails() {
 	MicroserviceDetails details = new MicroserviceDetails();
 	details.setIdentifier(getIdentifier());
 	details.setHostname(getHostname());
@@ -366,6 +373,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public String getInstanceBootstrappedMarker() throws SiteWhereException {
 	return getInstanceConfigurationPath() + INSTANCE_BOOTSTRAP_MARKER;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     */
+    @Override
+    public IConfigurationModel getConfigurationModel() {
+	return configurationModel;
+    }
+
+    public void setConfigurationModel(IConfigurationModel configurationModel) {
+	this.configurationModel = configurationModel;
     }
 
     /*

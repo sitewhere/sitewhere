@@ -40,9 +40,6 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     /** Microservice name */
     private static final String NAME = "User Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new UserManagementModelProvider().buildModel();
-
     /** User management configuration file name */
     private static final String USER_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";
 
@@ -84,11 +81,11 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new UserManagementModelProvider().buildModel();
     }
 
     /*

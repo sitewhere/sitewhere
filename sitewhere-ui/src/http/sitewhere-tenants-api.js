@@ -5,7 +5,6 @@ import {
   restAuthGet,
   restAuthPost,
   restAuthPut,
-  restAuthPostWithProgress,
   restAuthDelete
 } from './sitewhere-api'
 
@@ -83,43 +82,4 @@ export function getTenantConfiguration (axios, tenantId) {
  */
 export function getTenantConfigurationModel (axios) {
   return restAuthGet(axios, 'tenants/configuration/model')
-}
-
-/**
- * Get configuration roles for tenant.
- */
-export function getTenantConfigurationRoles (axios) {
-  return restAuthGet(axios, 'tenants/configuration/roles')
-}
-
-/**
- * Stage tenant updates.
- */
-export function stageTenantUpdates (axios, tenantId, payload) {
-  return restAuthPost(axios,
-    '/tenants/' + tenantId + '/engine/configuration/json', payload)
-}
-
-/**
- * Start a tenant (with progress monitoring).
- */
-export function startTenant (axios, tenantId, callback) {
-  return restAuthPostWithProgress(axios,
-    'tenants/' + tenantId + '/engine/start', null, callback)
-}
-
-/**
- * Stop a tenant (with progress monitoring).
- */
-export function stopTenant (axios, tenantId, callback) {
-  return restAuthPostWithProgress(axios,
-    'tenants/' + tenantId + '/engine/stop', null, callback)
-}
-
-/**
- * Reboot a tenant (with progress monitoring).
- */
-export function rebootTenant (axios, tenantId, callback) {
-  return restAuthPostWithProgress(axios,
-    'tenants/' + tenantId + '/engine/reboot', null, callback)
 }

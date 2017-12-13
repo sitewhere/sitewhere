@@ -14,6 +14,7 @@ import java.util.Map;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
+import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Contains information about model used to configure a microservice.
@@ -21,6 +22,9 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
  * @author Derek
  */
 public class ConfigurationModel implements IConfigurationModel {
+
+    /** Microservice details */
+    private IMicroserviceDetails microserviceDetails;
 
     /** Default XML namespace */
     private String defaultXmlNamespace;
@@ -33,6 +37,19 @@ public class ConfigurationModel implements IConfigurationModel {
 
     /** Map of element roles by id */
     private Map<String, IElementRole> rolesById = new HashMap<String, IElementRole>();
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#
+     * getMicroserviceDetails()
+     */
+    @Override
+    public IMicroserviceDetails getMicroserviceDetails() {
+	return microserviceDetails;
+    }
+
+    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
+	this.microserviceDetails = microserviceDetails;
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.IConfigurationModel#

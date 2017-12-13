@@ -38,9 +38,6 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     /** Microservice name */
     private static final String NAME = "Event Management";
 
-    /** Configuration model */
-    private IConfigurationModel configurationModel = new EventManagementModelProvider().buildModel();
-
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
 
@@ -73,11 +70,11 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
      */
     @Override
-    public IConfigurationModel getConfigurationModel() {
-	return configurationModel;
+    public IConfigurationModel buildConfigurationModel() {
+	return new EventManagementModelProvider().buildModel();
     }
 
     /*
