@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,8 +28,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -184,6 +185,23 @@ public class Tenants extends RestControllerBase {
     }
 
     /**
+     * Get a tenant by unique id.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{tenantId}/configuration/{identifier}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get tenant by unique id")
+    public ITenant getTenantConfiguration(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Identifier", required = true) @PathVariable String identifier)
+	    throws SiteWhereException {
+	ITenant tenant = assureTenant(tenantId);
+	checkForAdminOrEditSelf(tenant);
+	return tenant;
+    }
+
+    /**
      * Lists all available tenant templates.
      * 
      * @return
@@ -191,14 +209,12 @@ public class Tenants extends RestControllerBase {
      */
     @RequestMapping(value = "/templates", method = RequestMethod.GET)
     @ApiOperation(value = "List templates available for creating tenants")
-    public List<String> listTenantTemplateNames() throws SiteWhereException {
+    public List<ITenantTemplate> listTenantTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	// return
-	// SiteWhere.getServer().getTenantTemplateManager().getTenantTemplates();
-	return new ArrayList<String>(); // TODO: Figure out access to tenant templates.
+	return getTenantAdministration().getTenantTemplates();
     }
 
     /**
@@ -236,6 +252,10 @@ public class Tenants extends RestControllerBase {
     }
 
     private ITenantManagement getTenantManagement() {
+	return getMicroservice().getTenantManagementApiDemux().getApiChannel();
+    }
+
+    private ITenantAdministration getTenantAdministration() {
 	return getMicroservice().getTenantManagementApiDemux().getApiChannel();
     }
 }

@@ -9,6 +9,7 @@ package com.sitewhere.tenant.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 
@@ -19,7 +20,8 @@ import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
  */
 public class TenantManagementGrpcServer extends GrpcServer implements ITenantManagementGrpcServer {
 
-    public TenantManagementGrpcServer(IMicroservice microservice, ITenantManagement tenantManagement) {
-	super(microservice, new TenantManagementImpl(tenantManagement));
+    public TenantManagementGrpcServer(IMicroservice microservice, ITenantManagement tenantManagement,
+	    ITenantAdministration tenantAdministration) {
+	super(microservice, new TenantManagementImpl(tenantManagement, tenantAdministration));
     }
 }

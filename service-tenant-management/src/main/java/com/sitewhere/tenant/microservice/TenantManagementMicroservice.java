@@ -8,6 +8,7 @@
 package com.sitewhere.tenant.microservice;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,9 +23,11 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.tenant.configuration.TenantManagementModelProvider;
@@ -42,7 +45,8 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * 
  * @author Derek
  */
-public class TenantManagementMicroservice extends GlobalMicroservice implements ITenantManagementMicroservice {
+public class TenantManagementMicroservice extends GlobalMicroservice
+	implements ITenantManagementMicroservice, ITenantAdministration {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -140,7 +144,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 
 	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
 	this.tenantManagement = initializeTenantManagement(context);
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
     }
 
     /**
@@ -275,6 +279,14 @@ public class TenantManagementMicroservice extends GlobalMicroservice implements 
 	    throw new SiteWhereException("Templates folder not found in Docker image.");
 	}
 	return templates;
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
+     */
+    @Override
+    public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
+	return getTenantTemplateManager().getTenantTemplates();
     }
 
     /*

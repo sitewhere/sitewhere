@@ -7,6 +7,8 @@
  */
 package com.sitewhere.tenant.grpc;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +22,17 @@ import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenRequest;
 import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
+import com.sitewhere.grpc.service.GGetTenantTemplatesRequest;
+import com.sitewhere.grpc.service.GGetTenantTemplatesResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
 import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
@@ -46,8 +52,12 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     /** Tenant management persistence */
     private ITenantManagement tenantMangagement;
 
-    public TenantManagementImpl(ITenantManagement tenantManagement) {
+    /** Tenant administration */
+    private ITenantAdministration tenantAdministration;
+
+    public TenantManagementImpl(ITenantManagement tenantManagement, ITenantAdministration tenantAdministration) {
 	this.tenantMangagement = tenantManagement;
+	this.tenantAdministration = tenantAdministration;
     }
 
     /*
@@ -197,11 +207,41 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
+     * getTenantTemplates(com.sitewhere.grpc.service.GGetTenantTemplatesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getTenantTemplates(GGetTenantTemplatesRequest request,
+	    StreamObserver<GGetTenantTemplatesResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES);
+	    List<ITenantTemplate> apiResult = getTenantAdministration().getTenantTemplates();
+	    GGetTenantTemplatesResponse.Builder response = GGetTenantTemplatesResponse.newBuilder();
+	    response.addAllTemplate(TenantModelConverter.asGrpcTenantTemplateList(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, e);
+	    responseObserver.onError(e);
+	}
+    }
+
     public ITenantManagement getTenantMangagement() {
 	return tenantMangagement;
     }
 
     public void setTenantMangagement(ITenantManagement tenantMangagement) {
 	this.tenantMangagement = tenantMangagement;
+    }
+
+    public ITenantAdministration getTenantAdministration() {
+	return tenantAdministration;
+    }
+
+    public void setTenantAdministration(ITenantAdministration tenantAdministration) {
+	this.tenantAdministration = tenantAdministration;
     }
 }

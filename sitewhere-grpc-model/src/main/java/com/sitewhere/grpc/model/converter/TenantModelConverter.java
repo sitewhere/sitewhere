@@ -18,11 +18,14 @@ import com.sitewhere.grpc.model.TenantModel.GTenant;
 import com.sitewhere.grpc.model.TenantModel.GTenantCreateRequest;
 import com.sitewhere.grpc.model.TenantModel.GTenantSearchCriteria;
 import com.sitewhere.grpc.model.TenantModel.GTenantSearchResults;
+import com.sitewhere.grpc.model.TenantModel.GTenantTemplate;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.Tenant;
+import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
@@ -36,8 +39,7 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 public class TenantModelConverter {
 
     /**
-     * Convert a {@link GTenantCreateRequest} to an
-     * {@link ITenantCreateRequest}.
+     * Convert a {@link GTenantCreateRequest} to an {@link ITenantCreateRequest}.
      * 
      * @param grpc
      * @return
@@ -56,8 +58,7 @@ public class TenantModelConverter {
     }
 
     /**
-     * Convert an {@link ITenantCreateRequest} to a
-     * {@link GTenantCreateRequest}.
+     * Convert an {@link ITenantCreateRequest} to a {@link GTenantCreateRequest}.
      * 
      * @param api
      * @return
@@ -146,8 +147,7 @@ public class TenantModelConverter {
     }
 
     /**
-     * Converts a {@link GTenantSearchCriteria} to an
-     * {@link ITenantSearchCriteria}.
+     * Converts a {@link GTenantSearchCriteria} to an {@link ITenantSearchCriteria}.
      * 
      * @param grpc
      * @return
@@ -171,8 +171,7 @@ public class TenantModelConverter {
     }
 
     /**
-     * Convert an {@link ITenantSearchCriteria} to a
-     * {@link GTenantSearchCriteria}.
+     * Convert an {@link ITenantSearchCriteria} to a {@link GTenantSearchCriteria}.
      * 
      * @param api
      * @return
@@ -224,5 +223,63 @@ public class TenantModelConverter {
 	grpc.setCount(api.getNumResults());
 	grpc.addAllTenants(TenantModelConverter.asGrpcTenants(api.getResults()));
 	return grpc.build();
+    }
+
+    /**
+     * Convert tenant template from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static TenantTemplate asApiTenantTemplate(GTenantTemplate grpc) throws SiteWhereException {
+	TenantTemplate api = new TenantTemplate();
+	api.setId(grpc.getId());
+	api.setName(grpc.getName());
+	return api;
+    }
+
+    /**
+     * Convert tenant templates list from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<ITenantTemplate> asApiTenantTemplateList(List<GTenantTemplate> grpc) throws SiteWhereException {
+	List<ITenantTemplate> api = new ArrayList<>();
+	for (GTenantTemplate gtemplate : grpc) {
+	    api.add(TenantModelConverter.asApiTenantTemplate(gtemplate));
+	}
+	return api;
+    }
+
+    /**
+     * Convert tenant template from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GTenantTemplate asGrpcTenantTemplate(ITenantTemplate api) throws SiteWhereException {
+	GTenantTemplate.Builder grpc = GTenantTemplate.newBuilder();
+	grpc.setId(api.getId());
+	grpc.setName(api.getName());
+	return grpc.build();
+    }
+
+    /**
+     * Convert tenant templates list from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GTenantTemplate> asGrpcTenantTemplateList(List<ITenantTemplate> api) throws SiteWhereException {
+	List<GTenantTemplate> grpc = new ArrayList<GTenantTemplate>();
+	for (ITenantTemplate atemplate : api) {
+	    grpc.add(TenantModelConverter.asGrpcTenantTemplate(atemplate));
+	}
+	return grpc;
     }
 }

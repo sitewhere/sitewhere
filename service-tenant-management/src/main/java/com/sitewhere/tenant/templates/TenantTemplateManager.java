@@ -24,8 +24,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.microservice.multitenant.TenantTemplate;
 import com.sitewhere.microservice.zookeeper.ZkUtils;
+import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;

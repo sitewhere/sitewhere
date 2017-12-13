@@ -45,3 +45,12 @@ message GTenant {
 	map<string, string> metadata = 7;
 	GEntityInformation entityInformation = 8;
 }
+
+// ########################
+// ### TENANT TEMPLATES ###
+// ########################
+
+message GTenantTemplate {
+	string id = 1;
+	string name = 2;
+}

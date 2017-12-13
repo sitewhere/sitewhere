@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +25,8 @@ import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenRequest;
 import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
+import com.sitewhere.grpc.service.GGetTenantTemplatesRequest;
+import com.sitewhere.grpc.service.GGetTenantTemplatesResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
 import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
@@ -30,6 +34,7 @@ import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
@@ -196,6 +201,24 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.METHOD_DELETE_TENANT, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
+     */
+    @Override
+    public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES);
+	    GGetTenantTemplatesRequest.Builder grequest = GGetTenantTemplatesRequest.newBuilder();
+	    GGetTenantTemplatesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getTenantTemplates(grequest.build());
+	    List<ITenantTemplate> response = TenantModelConverter.asApiTenantTemplateList(gresponse.getTemplateList());
+	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, t);
 	}
     }
 

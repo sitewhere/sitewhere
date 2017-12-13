@@ -5,10 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.multitenant;
+package com.sitewhere.rest.model.tenant;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 
 /**
@@ -16,6 +18,7 @@ import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class TenantTemplate implements ITenantTemplate {
 
     /** Template id */
