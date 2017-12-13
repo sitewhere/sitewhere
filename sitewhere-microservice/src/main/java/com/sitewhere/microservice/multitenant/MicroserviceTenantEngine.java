@@ -78,12 +78,12 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	tenantInitialize(monitor);
     }
 
-    /**
-     * Load Spring configuration into module context.
-     * 
-     * @throws SiteWhereException
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getModuleConfiguration()
      */
-    protected void loadModuleConfiguration() throws SiteWhereException {
+    @Override
+    public byte[] getModuleConfiguration() throws SiteWhereException {
 	try {
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	    if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
@@ -91,6 +91,20 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 			+ "' does not exist for '" + getTenant().getName() + "'.");
 	    }
 	    byte[] data = curator.getData().forPath(getModuleConfigurationPath());
+	    return data;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to load module configuration.", e);
+	}
+    }
+
+    /**
+     * Load Spring configuration into module context.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void loadModuleConfiguration() throws SiteWhereException {
+	try {
+	    byte[] data = getModuleConfiguration();
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getVersion(),
 		    getMicroservice().getInstanceGlobalContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");

@@ -7,13 +7,22 @@
  */
 package com.sitewhere.microservice.management;
 
+import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
+import com.sitewhere.grpc.service.GGetGlobalConfigurationRequest;
+import com.sitewhere.grpc.service.GGetGlobalConfigurationResponse;
+import com.sitewhere.grpc.service.GGetTenantConfigurationRequest;
+import com.sitewhere.grpc.service.GGetTenantConfigurationResponse;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
@@ -43,11 +52,66 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL);
 	    IConfigurationModel apiResult = getMicroservice().getConfigurationModel();
 	    GGetConfigurationModelResponse.Builder response = GGetConfigurationModelResponse.newBuilder();
-	    response.setConfiguration(MicroserviceModelConverter.asGrpcConfigurationModel(apiResult));
+	    response.setModel(MicroserviceModelConverter.asGrpcConfigurationModel(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, e);
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#getGlobalConfiguration(com.sitewhere.grpc.
+     * service.GGetGlobalConfigurationRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getGlobalConfiguration(GGetGlobalConfigurationRequest request,
+	    StreamObserver<GGetGlobalConfigurationResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
+	    GGetGlobalConfigurationResponse.Builder response = GGetGlobalConfigurationResponse.newBuilder();
+	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+	    if (getMicroservice() instanceof IGlobalMicroservice) {
+		byte[] content = ((IGlobalMicroservice) getMicroservice()).getConfiguration();
+		configuration.setContent(ByteString.copyFrom(content));
+	    } else {
+		throw new SiteWhereException("Requesting global configuration from a tenant microservice.");
+	    }
+	    response.setConfiguration(configuration.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, e);
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#getTenantConfiguration(com.sitewhere.grpc.
+     * service.GGetTenantConfigurationRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getTenantConfiguration(GGetTenantConfigurationRequest request,
+	    StreamObserver<GGetTenantConfigurationResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
+	    GGetTenantConfigurationResponse.Builder response = GGetTenantConfigurationResponse.newBuilder();
+	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+	    if (getMicroservice() instanceof IMultitenantMicroservice) {
+		byte[] content = ((IMultitenantMicroservice<?>) getMicroservice())
+			.getTenantConfiguration(request.getTenantId());
+		configuration.setContent(ByteString.copyFrom(content));
+	    } else {
+		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
+	    }
+	    response.setConfiguration(configuration.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, e);
 	    responseObserver.onError(e);
 	}
     }

@@ -24,4 +24,21 @@ public interface IMicroserviceManagement {
      * @throws SiteWhereException
      */
     public IConfigurationModel getConfigurationModel() throws SiteWhereException;
+
+    /**
+     * Get configuration for a global microservice.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getConfiguration() throws SiteWhereException;
+
+    /**
+     * Get configuration for a tenant microservice.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
 }

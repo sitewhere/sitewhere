@@ -30,9 +30,18 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
     /**
      * Get tenant engine corresponding to the given id.
      * 
-     * @param id
+     * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public T getTenantEngineByTenantId(String id) throws SiteWhereException;
+    public T getTenantEngineByTenantId(String tenantId) throws SiteWhereException;
+
+    /**
+     * Get configuration for the given tenant.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
 }

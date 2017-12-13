@@ -65,4 +65,16 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 	// Call logic for stopping microservice subclass.
 	microserviceStop(monitor);
     }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IGlobalMicroservice#getConfiguration()
+     */
+    @Override
+    public byte[] getConfiguration() throws SiteWhereException {
+	String[] paths = getConfigurationPaths();
+	if (paths.length > 0) {
+	    return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + paths[0]);
+	}
+	return new byte[0];
+    }
 }

@@ -32,6 +32,9 @@ import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperat
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -249,6 +252,19 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		getLogger().error("Error processing configuration addition.", e);
 	    }
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * getTenantConfiguration(java.lang.String)
+     */
+    @Override
+    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	return engine.getModuleConfiguration();
     }
 
     /*

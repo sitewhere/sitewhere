@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.microservice;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
 /**
@@ -15,4 +16,11 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
  * @author Derek
  */
 public interface IGlobalMicroservice extends IConfigurableMicroservice {
+
+    /**
+     * Get configuration data (for global microservices).
+     * 
+     * @return
+     */
+    public byte[] getConfiguration() throws SiteWhereException;
 }

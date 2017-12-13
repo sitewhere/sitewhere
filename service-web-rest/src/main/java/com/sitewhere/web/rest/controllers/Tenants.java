@@ -185,23 +185,6 @@ public class Tenants extends RestControllerBase {
     }
 
     /**
-     * Get a tenant by unique id.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{tenantId}/configuration/{identifier}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get tenant by unique id")
-    public ITenant getTenantConfiguration(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
-	    @ApiParam(value = "Identifier", required = true) @PathVariable String identifier)
-	    throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantId);
-	checkForAdminOrEditSelf(tenant);
-	return tenant;
-    }
-
-    /**
      * Lists all available tenant templates.
      * 
      * @return

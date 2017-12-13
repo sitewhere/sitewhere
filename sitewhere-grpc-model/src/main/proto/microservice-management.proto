@@ -18,6 +18,12 @@ service MicroserviceManagement {
 
 	// Create a new batch operation.
 	rpc GetConfigurationModel (GGetConfigurationModelRequest) returns (GGetConfigurationModelResponse) {}
+
+	// Get global configuration content.
+	rpc GetGlobalConfiguration (GGetGlobalConfigurationRequest) returns (GGetGlobalConfigurationResponse) {}
+
+	// Get global configuration content.
+	rpc GetTenantConfiguration (GGetTenantConfigurationRequest) returns (GGetTenantConfigurationResponse) {}
 }
 
 // #####################
@@ -30,5 +36,24 @@ message GGetConfigurationModelRequest {
 	
 // Response for creating a batch operation.
 message GGetConfigurationModelResponse {
-	com.sitewhere.grpc.model.GMicroserviceConfiguration configuration = 1;
+	com.sitewhere.grpc.model.GMicroserviceConfiguration model = 1;
+}
+
+// Request for getting global configuration data.
+message GGetGlobalConfigurationRequest {
+}
+	
+// Response for getting global configuration data.
+message GGetGlobalConfigurationResponse {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+
+// Request for getting tenant configuration data.
+message GGetTenantConfigurationRequest {
+	string tenantId = 1;
+}
+	
+// Response for getting tenant configuration data.
+message GGetTenantConfigurationResponse {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
 }

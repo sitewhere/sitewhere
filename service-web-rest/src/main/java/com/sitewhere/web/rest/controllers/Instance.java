@@ -120,6 +120,41 @@ public class Instance extends RestControllerBase {
 	return getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfigurationModel();
     }
 
+    /**
+     * Get configuration for microservice based on service identifier.
+     * 
+     * @param identifier
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.GET)
+    @ApiOperation(value = "Get global configuration based on service identifier")
+    @Secured({ SiteWhereRoles.REST })
+    public String getMicroserviceGlobalConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
+	    throws SiteWhereException {
+	return new String(
+		getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfiguration());
+    }
+
+    /**
+     * Get tenant configuration for microservice based on service identifier.
+     * 
+     * @param identifier
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/configuration/{tenantId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get tenant configuration based on service identifier")
+    @Secured({ SiteWhereRoles.REST })
+    public String getMicroserviceTenantConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
+	return new String(getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier)
+		.getTenantConfiguration(tenantId));
+    }
+
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
 	return getMicroservice().getMicroserviceManagementCoordinator();
     }

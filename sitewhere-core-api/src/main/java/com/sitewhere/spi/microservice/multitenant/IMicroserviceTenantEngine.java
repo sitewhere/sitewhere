@@ -93,6 +93,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public String getModuleConfigurationPath() throws SiteWhereException;
 
     /**
+     * Get module configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getModuleConfiguration() throws SiteWhereException;
+
+    /**
      * Get Zk configuration path for module bootstrapped indicator.
      * 
      * @return

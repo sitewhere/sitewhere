@@ -83,3 +83,8 @@ message GMicroserviceConfiguration {
 	map<string, GElementNodeList> elementsByRole = 3;
 	map<string, GElementRole> rolesById = 4;
 }
+
+// Configuration content for a microservice.
+message GConfigurationContent {
+	bytes content = 1;
+}
