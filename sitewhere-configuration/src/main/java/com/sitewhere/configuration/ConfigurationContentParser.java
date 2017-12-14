@@ -170,10 +170,10 @@ public class ConfigurationContentParser {
      */
     protected static void buildXml(Document document, Element parent, ElementContent content,
 	    IConfigurationModel configurationModel) throws SiteWhereException {
-	Element created = (content.getNamespace() == null)
-		? document.createElementNS("http://www.sitewhere.com/schema/sitewhere/ce/tenant",
-			"sw:" + content.getName())
-		: document.createElementNS(content.getNamespace(), content.getName());
+	String namespace = (content.getNamespace() != null) ? content.getNamespace()
+		: configurationModel.getDefaultXmlNamespace();
+	String prefix = getModelNamespacePrefix(namespace) + ":";
+	Element created = document.createElementNS(namespace, prefix + content.getName());
 	parent.appendChild(created);
 	if (content.getAttributes() != null) {
 	    for (AttributeContent attribute : content.getAttributes()) {
@@ -187,6 +187,23 @@ public class ConfigurationContentParser {
 		buildXml(document, created, childContent, configurationModel);
 	    }
 	}
+    }
+
+    /**
+     * Generates a prefix based on the last entry in the namespace URL.
+     * 
+     * @param model
+     * @return
+     */
+    protected static String getModelNamespacePrefix(String namespace) {
+	String[] urlParts = namespace.split("/");
+	String name = urlParts[urlParts.length - 1];
+	String[] nameParts = name.split("-");
+	String id = "";
+	for (String part : nameParts) {
+	    id += part.substring(0, 3);
+	}
+	return id;
     }
 
     /**

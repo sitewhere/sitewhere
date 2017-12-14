@@ -18,9 +18,17 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 public interface IGlobalMicroservice extends IConfigurableMicroservice {
 
     /**
-     * Get configuration data (for global microservices).
+     * Get configuration data.
      * 
      * @return
      */
     public byte[] getConfiguration() throws SiteWhereException;
+
+    /**
+     * Update configuration data.
+     * 
+     * @param content
+     * @throws SiteWhereException
+     */
+    public void updateConfiguration(byte[] content) throws SiteWhereException;
 }

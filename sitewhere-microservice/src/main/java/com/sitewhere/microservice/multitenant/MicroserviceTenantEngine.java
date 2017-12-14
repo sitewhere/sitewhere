@@ -97,6 +97,24 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	}
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * updateModuleConfiguration(byte[])
+     */
+    @Override
+    public void updateModuleConfiguration(byte[] content) throws SiteWhereException {
+	try {
+	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
+	    if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
+		curator.create().forPath(getModuleConfigurationPath(), content);
+	    } else {
+		curator.setData().forPath(getModuleConfigurationPath(), content);
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to update module configuration.", e);
+	}
+    }
+
     /**
      * Load Spring configuration into module context.
      * 

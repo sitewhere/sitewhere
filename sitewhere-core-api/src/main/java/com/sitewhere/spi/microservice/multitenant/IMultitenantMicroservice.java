@@ -44,4 +44,13 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @throws SiteWhereException
      */
     public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
+
+    /**
+     * Update configuration for the given tenant.
+     * 
+     * @param tenantId
+     * @param content
+     * @throws SiteWhereException
+     */
+    public void updateTenantConfiguration(String tenantId, byte[] content) throws SiteWhereException;
 }

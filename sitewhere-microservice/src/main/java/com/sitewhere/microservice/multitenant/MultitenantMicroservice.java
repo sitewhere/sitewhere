@@ -268,6 +268,19 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * updateTenantConfiguration(java.lang.String, byte[])
+     */
+    @Override
+    public void updateTenantConfiguration(String tenantId, byte[] content) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	engine.updateModuleConfiguration(content);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#

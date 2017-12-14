@@ -7,6 +7,8 @@
  */
 package com.sitewhere.microservice;
 
+import org.apache.curator.framework.CuratorFramework;
+
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
@@ -76,5 +78,26 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
 	    return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + paths[0]);
 	}
 	return new byte[0];
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IGlobalMicroservice#updateConfiguration(byte[]
+     * )
+     */
+    @Override
+    public void updateConfiguration(byte[] content) throws SiteWhereException {
+	try {
+	    String[] paths = getConfigurationPaths();
+	    String configPath = getInstanceConfigurationPath() + "/" + paths[0];
+	    CuratorFramework curator = getZookeeperManager().getCurator();
+	    if (curator.checkExists().forPath(configPath) == null) {
+		curator.create().forPath(configPath, content);
+	    } else {
+		curator.setData().forPath(configPath, content);
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to update module configuration.", e);
+	}
     }
 }

@@ -83,12 +83,14 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
 	    GGetGlobalConfigurationResponse.Builder response = GGetGlobalConfigurationResponse.newBuilder();
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+
 	    if (getMicroservice() instanceof IGlobalMicroservice) {
 		byte[] content = ((IGlobalMicroservice) getMicroservice()).getConfiguration();
 		configuration.setContent(ByteString.copyFrom(content));
 	    } else {
 		throw new SiteWhereException("Requesting global configuration from a tenant microservice.");
 	    }
+
 	    response.setConfiguration(configuration.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -110,6 +112,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
 	    GGetTenantConfigurationResponse.Builder response = GGetTenantConfigurationResponse.newBuilder();
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
 		byte[] content = ((IMultitenantMicroservice<?>) getMicroservice())
 			.getTenantConfiguration(request.getTenantId());
@@ -117,6 +120,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    } else {
 		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
 	    }
+
 	    response.setConfiguration(configuration.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -136,8 +140,14 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    StreamObserver<GUpdateGlobalConfigurationResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
-	    byte[] config = request.getConfiguration().getContent().toByteArray();
-	    LOGGER.info("Received global configuration:\n\n" + new String(config));
+	    byte[] content = request.getConfiguration().getContent().toByteArray();
+
+	    if (getMicroservice() instanceof IGlobalMicroservice) {
+		((IGlobalMicroservice) getMicroservice()).updateConfiguration(content);
+	    } else {
+		throw new SiteWhereException("Requesting global configuration update from a tenant microservice.");
+	    }
+
 	    GUpdateGlobalConfigurationResponse.Builder response = GUpdateGlobalConfigurationResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -157,8 +167,15 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    StreamObserver<GUpdateTenantConfigurationResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
-	    byte[] config = request.getConfiguration().getContent().toByteArray();
-	    LOGGER.info("Received tenant configuration for " + request.getTenantId() + ":\n\n" + new String(config));
+	    byte[] content = request.getConfiguration().getContent().toByteArray();
+
+	    if (getMicroservice() instanceof IMultitenantMicroservice) {
+		((IMultitenantMicroservice<?>) getMicroservice()).updateTenantConfiguration(request.getTenantId(),
+			content);
+	    } else {
+		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
+	    }
+
 	    GUpdateTenantConfigurationResponse.Builder response = GUpdateTenantConfigurationResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
