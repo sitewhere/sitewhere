@@ -54,7 +54,7 @@ public class CommonModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createMongoDbDefaultDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Default Datastore", "default-mongodb-datastore",
-		"database", CommonModelRoleKeys.Datastore);
+		"database", CommonModelRoleKeys.Datastore, this);
 
 	builder.description("Use the default MongoDB datastore configuration specified for the instance.");
 
@@ -68,7 +68,7 @@ public class CommonModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createMongoDbAlternateDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Alternate Datastore",
-		"alternate-mongodb-datastore", "database", CommonModelRoleKeys.Datastore);
+		"alternate-mongodb-datastore", "database", CommonModelRoleKeys.Datastore, this);
 
 	builder.description("Use an alternate MongoDB datastore configuration specified for the instance.");
 

@@ -69,7 +69,7 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createPresenceManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Presence Management", IPresenceManagementParser.ROOT,
-		"question-circle", PresenceManagementRoleKeys.PresenceManagement);
+		"question-circle", PresenceManagementRoleKeys.PresenceManagement, this);
 
 	builder.description("Handles notification when devices are detected as present or missing.");
 
@@ -84,7 +84,7 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createDefaultPresenceManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default Presence Manager",
 		IDeviceServicesParser.Elements.DefaultPresenceManager.getLocalName(), "bullseye",
-		PresenceManagementRoleKeys.PresenceManager);
+		PresenceManagementRoleKeys.PresenceManager, this);
 
 	builder.description("Determines device presence information by monitoring the last interaction date"
 		+ "for the device and firing an event if too much time has elapsed.");

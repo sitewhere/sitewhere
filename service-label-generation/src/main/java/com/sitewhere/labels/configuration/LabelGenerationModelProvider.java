@@ -69,8 +69,8 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createLabelGenerationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Label Generation", ILabelGenerationParser.ROOT,
-		"qrcode", LabelGenerationRoleKeys.LabelGeneration);
+	ElementNode.Builder builder = new ElementNode.Builder("Label Generation", ILabelGenerationParser.ROOT, "qrcode",
+		LabelGenerationRoleKeys.LabelGeneration, this);
 
 	builder.description("Handles generation of labels such as QR codes.");
 
@@ -85,7 +85,7 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
     protected ElementNode createSymbolGeneratorManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Symbol Generator Manager",
 		IDeviceServicesParser.Elements.SymbolGeneratorManager.getLocalName(), "qrcode",
-		LabelGenerationRoleKeys.SymbolGeneratorManager);
+		LabelGenerationRoleKeys.SymbolGeneratorManager, this);
 
 	builder.description("Manages how symbols such as QR-Codes are generated for devices "
 		+ "and other SiteWhere entities. Generated symbol images are made available via "
@@ -101,7 +101,7 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
     protected ElementNode createQRCodeSymbolGeneratorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("QR-Code Symbol Generator",
 		IDeviceServicesParser.SymbolGenerators.QRCodeSymbolGenerator.getLocalName(), "qrcode",
-		LabelGenerationRoleKeys.SymbolGenerator);
+		LabelGenerationRoleKeys.SymbolGenerator, this);
 
 	builder.description("Generates QR-Codes for devices and other SiteWhere entities. The generated "
 		+ "images are available via the REST services.");

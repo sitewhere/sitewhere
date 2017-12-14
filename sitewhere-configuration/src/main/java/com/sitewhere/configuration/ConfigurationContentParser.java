@@ -34,6 +34,7 @@ import com.sitewhere.configuration.content.AttributeContent;
 import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 
 /**
  * Used to parse SiteWhere XML configuration into JSON representation.
@@ -51,16 +52,18 @@ public class ConfigurationContentParser {
      * representation.
      * 
      * @param config
+     * @param configurationModel
      * @return
      * @throws SiteWhereException
      */
-    public static ElementContent parse(byte[] config) throws SiteWhereException {
+    public static ElementContent parse(byte[] config, IConfigurationModel configurationModel)
+	    throws SiteWhereException {
 	try {
 	    DocumentBuilderFactory factory = DataUtils.getDocumentBuilderFactory();
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document document = builder.parse(new InputSource(new ByteArrayInputStream(config)));
 	    Element element = document.getDocumentElement();
-	    ElementContent content = parse(element);
+	    ElementContent content = parse(element, configurationModel);
 	    return content;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to parse configuration content.", e);
@@ -71,19 +74,25 @@ public class ConfigurationContentParser {
      * Recursively parse the XML document.
      * 
      * @param element
+     * @param configurationModel
      * @return
      * @throws SiteWhereException
      */
-    protected static ElementContent parse(Element element) throws SiteWhereException {
+    protected static ElementContent parse(Element element, IConfigurationModel configurationModel)
+	    throws SiteWhereException {
 	ElementContent econ = new ElementContent();
-	econ.setNamespace(element.getNamespaceURI());
+	if (!configurationModel.getDefaultXmlNamespace().equals(element.getNamespaceURI())) {
+	    econ.setNamespace(element.getNamespaceURI());
+	}
 	econ.setName(element.getLocalName());
 	NamedNodeMap attrs = element.getAttributes();
 	List<AttributeContent> acons = new ArrayList<AttributeContent>();
 	for (int i = 0; i < attrs.getLength(); i++) {
 	    Node attr = attrs.item(i);
 	    AttributeContent acon = new AttributeContent();
-	    acon.setNamespace(attr.getNamespaceURI());
+	    if (!configurationModel.getDefaultXmlNamespace().equals(attr.getNamespaceURI())) {
+		acon.setNamespace(attr.getNamespaceURI());
+	    }
 	    acon.setName(attr.getLocalName());
 	    acon.setValue(attr.getNodeValue());
 	    acons.add(acon);
@@ -94,7 +103,7 @@ public class ConfigurationContentParser {
 	List<Element> children = DomUtils.getChildElements(element);
 	List<ElementContent> econs = new ArrayList<ElementContent>();
 	for (Element child : children) {
-	    econs.add(parse(child));
+	    econs.add(parse(child, configurationModel));
 	}
 	if (!econs.isEmpty()) {
 	    econ.setChildren(econs);
@@ -106,16 +115,18 @@ public class ConfigurationContentParser {
      * Build an XML configuration file from the JSON content.
      * 
      * @param content
+     * @param configurationModel
      * @return
      * @throws SiteWhereException
      */
-    public static Document buildXml(ElementContent content) throws SiteWhereException {
+    public static Document buildXml(ElementContent content, IConfigurationModel configurationModel)
+	    throws SiteWhereException {
 	try {
 	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    factory.setNamespaceAware(true);
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document document = builder.newDocument();
-	    buildXml(document, content);
+	    buildXml(document, content, configurationModel);
 	    return document;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to parse configuration content.", e);
@@ -127,9 +138,11 @@ public class ConfigurationContentParser {
      * 
      * @param document
      * @param content
+     * @param configurationModel
      * @throws SiteWhereException
      */
-    protected static void buildXml(Document document, ElementContent content) throws SiteWhereException {
+    protected static void buildXml(Document document, ElementContent content, IConfigurationModel configurationModel)
+	    throws SiteWhereException {
 	Element created = document.createElementNS(content.getNamespace(), content.getName());
 	document.appendChild(created);
 	if (content.getAttributes() != null) {
@@ -141,7 +154,7 @@ public class ConfigurationContentParser {
 	}
 	if (content.getChildren() != null) {
 	    for (ElementContent childContent : content.getChildren()) {
-		buildXml(document, document.getDocumentElement(), childContent);
+		buildXml(document, document.getDocumentElement(), childContent, configurationModel);
 	    }
 	}
     }
@@ -152,10 +165,11 @@ public class ConfigurationContentParser {
      * @param document
      * @param parent
      * @param content
+     * @param configurationModel
      * @throws SiteWhereException
      */
-    protected static void buildXml(Document document, Element parent, ElementContent content)
-	    throws SiteWhereException {
+    protected static void buildXml(Document document, Element parent, ElementContent content,
+	    IConfigurationModel configurationModel) throws SiteWhereException {
 	Element created = (content.getNamespace() == null)
 		? document.createElementNS("http://www.sitewhere.com/schema/sitewhere/ce/tenant",
 			"sw:" + content.getName())
@@ -170,7 +184,7 @@ public class ConfigurationContentParser {
 	}
 	if (content.getChildren() != null) {
 	    for (ElementContent childContent : content.getChildren()) {
-		buildXml(document, created, childContent);
+		buildXml(document, created, childContent, configurationModel);
 	    }
 	}
     }

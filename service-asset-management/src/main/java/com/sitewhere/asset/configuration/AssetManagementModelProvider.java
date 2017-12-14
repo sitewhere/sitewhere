@@ -78,7 +78,7 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createAssetManagement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Asset Management", IAssetManagementParser.ROOT, "tag",
-		AssetManagementRoleKeys.AssetManagement);
+		AssetManagementRoleKeys.AssetManagement, this);
 	builder.description("Configure asset management features such as persistence and external modules.");
 	return builder.build();
     }
@@ -91,7 +91,7 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
     protected ElementNode createAssetModules() {
 	ElementNode.Builder builder = new ElementNode.Builder("Asset Modules",
 		IAssetManagementParser.Elements.AssetModules.getLocalName(), "tag",
-		AssetManagementRoleKeys.AssetModules);
+		AssetManagementRoleKeys.AssetModules, this);
 	builder.description("Configure asset modules.");
 	return builder.build();
     }
@@ -115,7 +115,7 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
 	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
 		com.sitewhere.configuration.parser.IAssetManagementParser.IAssetModulesParser.Elements.Wso2IdentityAssetModule
 			.getLocalName(),
-		"users", AssetManagementRoleKeys.AssetModule);
+		"users", AssetManagementRoleKeys.AssetModule, this);
 
 	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
 		+ "to provide a list of person assets.");

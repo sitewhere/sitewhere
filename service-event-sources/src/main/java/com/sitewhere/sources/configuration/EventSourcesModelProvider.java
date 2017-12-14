@@ -104,7 +104,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createEventSourcesElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Event Sources", IEventSourcesParser.ROOT, "sign-in",
-		EventSourcesRoleKeys.EventSources);
+		EventSourcesRoleKeys.EventSources, this);
 
 	builder.description(
 		"Event sources are responsible for acquiring device event data from external devices or systems.");
@@ -120,7 +120,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createMqttEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Event Source",
 		IEventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an MQTT topic.");
 	addEventSourceAttributes(builder);
@@ -144,7 +144,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createRabbitMqEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Event Source",
 		IEventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an RabbitMQ queue.");
 	addEventSourceAttributes(builder);
@@ -187,7 +187,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createAzureEventHubEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Azure EventHub Event Source",
 		IEventSourcesParser.Elements.AzureEventHubEventSource.getLocalName(), "cloud",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description(
 		"Event source that pulls binary information from an Azure EventHub endpoint and decodes it.");
@@ -222,7 +222,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createActiveMQEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Event Source",
 		IEventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that pulls binary information from an ActiveMQ queue and decodes it.");
 	addEventSourceAttributes(builder);
@@ -251,7 +251,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createActiveMQClientEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Client Event Source",
 		IEventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that uses ActiveMQ consumers to ingest "
 		+ "messages from a remote broker and decodes them.");
@@ -278,7 +278,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createReadAllSocketInteractionHandlerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Read-All Socket Interaction Handler Factory",
 		IEventSourcesParser.BinarySocketInteractionHandlers.ReadAllInteractionHandlerFactory.getLocalName(),
-		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory);
+		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory, this);
 
 	builder.description("Interaction handler that reads all content from the client socket and delivers it "
 		+ "to the decoder as a byte array.");
@@ -294,7 +294,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createHttpSocketInteractionHandlerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HTTP Socket Interaction Handler Factory",
 		IEventSourcesParser.BinarySocketInteractionHandlers.HttpInteractionHandlerFactory.getLocalName(), "cog",
-		EventSourcesRoleKeys.SocketInteractionHandlerFactory);
+		EventSourcesRoleKeys.SocketInteractionHandlerFactory, this);
 
 	builder.description("Interaction handler that reads HTTP content from the client socket and delivers "
 		+ "the wrapped entity to the decoder as binary data. This interaction handler "
@@ -312,7 +312,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Socket Interaction Handler Factory",
 		IEventSourcesParser.BinarySocketInteractionHandlers.GroovySocketInteractionHandlerFactory
 			.getLocalName(),
-		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory);
+		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory, this);
 
 	builder.description("Interaction handler uses a Groovy script to handle socket interactions.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
@@ -329,7 +329,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createSocketEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Socket Event Source",
 		IEventSourcesParser.Elements.SocketEventSource.getLocalName(), "plug",
-		EventSourcesRoleKeys.SocketEventSource);
+		EventSourcesRoleKeys.SocketEventSource, this);
 
 	builder.description("Event source that pulls binary information from connections to a TCP/IP server socket.");
 	addEventSourceAttributes(builder);
@@ -354,7 +354,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createWebSocketHeaderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("WebSocket Header", "header", "cog",
-		EventSourcesRoleKeys.WebSocketHeader);
+		EventSourcesRoleKeys.WebSocketHeader, this);
 
 	builder.description("Header that is passed to the web socket for configuration.");
 
@@ -374,7 +374,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createWebSocketEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("WebSocket Event Source",
 		IEventSourcesParser.Elements.WebSocketEventSource.getLocalName(), "plug",
-		EventSourcesRoleKeys.WebSocketEventSource);
+		EventSourcesRoleKeys.WebSocketEventSource, this);
 
 	builder.description("Event source that pulls data from a web socket. Note that the event decoder needs "
 		+ "to correspond to the payload type chosen.");
@@ -397,7 +397,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createHazelcastQueueEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Queue Event Source",
 		IEventSourcesParser.Elements.HazelcastQueueEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
 		+ "allow one instance of SiteWhere to decode events and feed them to multiple subordinate instances for processing.");
@@ -417,7 +417,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createCoapServerEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Server Event Source",
 		IEventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that acts as a CoAP server, allowing events to be created "
 		+ "by posting data to well-known system URLs.");
@@ -442,7 +442,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createPollingRestEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Polling REST Event Source",
 		IEventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource);
+		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that polls a REST service at a given interval to generate payloads. "
 		+ "A groovy script is used to make the REST call(s) and parse the responses "
@@ -477,7 +477,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createProtobufEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Google Protocol Buffers Event Decoder",
 		IEventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.BinaryEventDecoder);
+		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
 		+ "and decodes them using the standard SiteWhere Google Protocol Buffers format. This is "
@@ -493,7 +493,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createJsonDeviceRequestDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Device Request Decoder",
 		IEventSourcesParser.BinaryDecoders.JsonDeviceRequestDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.BinaryEventDecoder);
+		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
 		+ "and parses them as the JSON representation of a request from a device.");
@@ -508,7 +508,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createJsonBatchEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Batch Event Decoder",
 		IEventSourcesParser.BinaryDecoders.JsonBatchEventDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.BinaryEventDecoder);
+		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Event decoder that takes binary messages from an underlying transport "
 		+ "and parses them as the JSON representation of a batch of device events.");
@@ -523,7 +523,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createGroovyEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Binary Event Decoder",
 		IEventSourcesParser.BinaryDecoders.GroovyEventDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.BinaryEventDecoder);
+		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
@@ -539,7 +539,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createGroovyStringEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy String Event Decoder",
 		IEventSourcesParser.StringDecoders.GroovyStringDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.StringEventDecoder);
+		EventSourcesRoleKeys.StringEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
@@ -555,7 +555,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createEchoStringEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Echo String Event Decoder",
 		IEventSourcesParser.StringDecoders.EchoStringDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.StringEventDecoder);
+		EventSourcesRoleKeys.StringEventDecoder, this);
 
 	builder.description(
 		"Decoder for event receivers with String payloads that simply echoes the payload to the log.");
@@ -570,7 +570,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createCompositeEventDecoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Composite Event Decoder (Binary)",
 		IEventSourcesParser.BinaryDecoders.CompositeDecoder.getLocalName(), "cogs",
-		EventSourcesRoleKeys.CompositeEventDecoder);
+		EventSourcesRoleKeys.CompositeEventDecoder, this);
 
 	builder.description("Decoder that extracts device metadata from the binary payload, then delegates "
 		+ "further decoding to a list of sub-decoders, which may be invoked if criteria are met.");
@@ -584,7 +584,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createCompositeEventDecoderChoicesElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Composite Event Decoder Choices", "choices", "cogs",
-		EventSourcesRoleKeys.CED_DecoderChoices);
+		EventSourcesRoleKeys.CED_DecoderChoices, this);
 
 	builder.description("List of decoder choices avaliable for parsing the payload. The first choice to "
 		+ "match based on the given criteria is used to decode the payload.");
@@ -599,7 +599,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createDeviceSpecificationDecoderChoiceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Match Device Specification",
 		IEventSourcesParser.CompositeDecoderChoiceElements.DeviceSpecificationDecoderChoice.getLocalName(),
-		"cogs", EventSourcesRoleKeys.CED_DecoderChoice);
+		"cogs", EventSourcesRoleKeys.CED_DecoderChoice, this);
 
 	builder.description("Composite event decoder choice that applies when the device specification from the "
 		+ " extracted metadata matches the specified value. This allows payload processing to be directly "
@@ -619,7 +619,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Metadata Extractor (Binary)",
 		IEventSourcesParser.CompositeDecoderMetadataExtractorElements.GroovyDeviceMetadataExtractor
 			.getLocalName(),
-		"cogs", EventSourcesRoleKeys.CED_MetadataExtractor);
+		"cogs", EventSourcesRoleKeys.CED_MetadataExtractor, this);
 
 	builder.description("Metadata extractor that uses a Groovy script to parse a binary payload and extract "
 		+ " information such as the unique hardware id and payload. This data will be forwarded to the list "
@@ -637,7 +637,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createAlternateIdDeduplicatorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Alternate Id Deduplicator",
 		IEventSourcesParser.Deduplicators.AlternateIdDeduplicator.getLocalName(), "cogs",
-		EventSourcesRoleKeys.EventDeduplicator);
+		EventSourcesRoleKeys.EventDeduplicator, this);
 
 	builder.description("Deduplicator that uses the event alternate id to test for duplicates.");
 	return builder.build();
@@ -651,7 +651,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createGroovyEventDeduplicatorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Event Deduplicator",
 		IEventSourcesParser.Deduplicators.GroovyEventDeduplicator.getLocalName(), "cogs",
-		EventSourcesRoleKeys.EventDeduplicator);
+		EventSourcesRoleKeys.EventDeduplicator, this);
 
 	builder.description("Deduplicator that uses a Groovy script to check for duplicate events.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)

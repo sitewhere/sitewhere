@@ -76,7 +76,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createInstanceManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Instance Management", IInstanceManagementParser.ROOT,
-		"sign-in", InstanceManagementRoleKeys.InstanceManagement);
+		"sign-in", InstanceManagementRoleKeys.InstanceManagement, this);
 
 	builder.description("Handles global instance configuration.");
 
@@ -91,7 +91,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createMongoTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
 
 	builder.description("Store tenant data using a MongoDB database. Note that the "
 		+ "global datastore must be configured to use MongoDB if this tenant datastore is to "
@@ -115,7 +115,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createMongoInfluxDbTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MongoDB/InfluxDB Tenant Datastore",
 		ITenantDatastoreParser.Elements.MongoInfluxDbTenantDatastore.getLocalName(), "database",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
 
 	builder.description("Store tenant master data using a MongoDB database and store tenant event "
 		+ "data in InfluxDB. Note that the global datastore must be configured to "
@@ -158,7 +158,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createHBaseTenantDatastoreElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("HBase Tenant Datastore",
 		ITenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
 	builder.description("Store tenant data using tables in an HBase instance. Note that the "
 		+ "global datastore must be configured to use HBase if this tenant datastore is to "
 		+ "be used. Most core HBase settings are configured at the global level.");
@@ -173,7 +173,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Override Solr Configuration",
 		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
+		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
 
 	builder.description("Overrides global Solr settings for a tenant.");
 	builder.attributeGroup("instance", "Solr Instance Information");

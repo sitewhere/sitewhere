@@ -94,7 +94,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createCommandRoutingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Routing",
 		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap",
-		CommandDestinationsRoleKeys.CommandRouting);
+		CommandDestinationsRoleKeys.CommandRouting, this);
 
 	builder.description("Determines how commands are routed to command destinations.");
 	return builder.build();
@@ -108,7 +108,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createSpecificationMappingRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Mapping Router",
 		ICommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap",
-		CommandDestinationsRoleKeys.SpecificationMappingRouter);
+		CommandDestinationsRoleKeys.SpecificationMappingRouter, this);
 
 	builder.description("Routes commands based on a direct mapping from device specification token "
 		+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
@@ -127,7 +127,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createGroovyCommandRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Router",
 		ICommandRoutingParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap",
-		CommandDestinationsRoleKeys.CommandRouter);
+		CommandDestinationsRoleKeys.CommandRouter, this);
 
 	builder.description("Routes commands to command destinations based on routing logic "
 		+ "contained in a Groovy script. The script returns the id of the command "
@@ -144,7 +144,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createSpecificationMappingRouterMappingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Mapping", "mapping", "arrows-h",
-		CommandDestinationsRoleKeys.SpecificationMappingRouterMapping);
+		CommandDestinationsRoleKeys.SpecificationMappingRouterMapping, this);
 
 	builder.description("Maps a specification token to a command destination that should process it.");
 	builder.attribute(
@@ -163,7 +163,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createCommandDestinationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Destinations",
 		IDeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "bolt",
-		CommandDestinationsRoleKeys.CommandDestinations);
+		CommandDestinationsRoleKeys.CommandDestinations, this);
 
 	builder.description("Determines how commands are routed, encoded, and delivered to destinations.");
 	return builder.build();
@@ -187,7 +187,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createMqttCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Command Destination",
 		ICommandDestinationsParser.Elements.MqttCommandDestination.getLocalName(), "sign-out",
-		CommandDestinationsRoleKeys.CommandDestination);
+		CommandDestinationsRoleKeys.CommandDestination, this);
 
 	builder.description("Sends commands to remote devices using the MQTT protocol. Commands are first encoded "
 		+ "using a binary encoder, then a parameter extractor is used to determine the topic used "
@@ -218,7 +218,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createCoapCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Command Destination",
 		ICommandDestinationsParser.Elements.CoapCommandDestination.getLocalName(), "sign-out",
-		CommandDestinationsRoleKeys.CommandDestination);
+		CommandDestinationsRoleKeys.CommandDestination, this);
 
 	builder.description("Sends commands to remote devices using the CoAP protocol. Commands are first encoded "
 		+ "using a binary encoder, then a parameter extractor is used to determine the connection "
@@ -246,7 +246,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createTwilioCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Twilio Command Destination",
 		ICommandDestinationsParser.Elements.TwilioCommandDestination.getLocalName(), "phone",
-		CommandDestinationsRoleKeys.CommandDestination);
+		CommandDestinationsRoleKeys.CommandDestination, this);
 
 	builder.description("Destination that delivers commands via Twilio SMS messages.");
 
@@ -279,7 +279,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createProtobufCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Google Protocol Buffers Command Encoder",
 		ICommandDestinationsParser.BinaryCommandEncoders.ProtobufEncoder.getLocalName(), "cogs",
-		CommandDestinationsRoleKeys.BinaryCommandEncoder);
+		CommandDestinationsRoleKeys.BinaryCommandEncoder, this);
 
 	builder.description("Encodes a command using the default Google Protocol Buffers representation. "
 		+ "The proto file for the representation can be found in the <strong>code generation</strong> "
@@ -296,7 +296,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createProtobufHybridCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Java/Protobuf Hybrid Command Encoder",
 		ICommandDestinationsParser.BinaryCommandEncoders.JavaHybridProtobufEncoder.getLocalName(), "cogs",
-		CommandDestinationsRoleKeys.BinaryCommandEncoder);
+		CommandDestinationsRoleKeys.BinaryCommandEncoder, this);
 
 	builder.description("Command encoder that encodes system commands using protocol buffers but encodes "
 		+ "custom commands using serialized Java objects. This allows Java clients to use the commands "
@@ -313,7 +313,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createJsonCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("JSON Command Encoder",
 		ICommandDestinationsParser.BinaryCommandEncoders.JsonCommandEncoder.getLocalName(), "cogs",
-		CommandDestinationsRoleKeys.BinaryCommandEncoder);
+		CommandDestinationsRoleKeys.BinaryCommandEncoder, this);
 
 	builder.description(
 		"Command encoder that encodes both system and custom commands as JSON for " + "simplified client use.");
@@ -329,7 +329,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createGroovyCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Encoder",
 		ICommandDestinationsParser.BinaryCommandEncoders.GroovyCommandEncoder.getLocalName(), "cogs",
-		CommandDestinationsRoleKeys.BinaryCommandEncoder);
+		CommandDestinationsRoleKeys.BinaryCommandEncoder, this);
 
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "
 		+ "script for the encoding logic.");
@@ -347,7 +347,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
     protected ElementNode createGroovyStringCommandEncoderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy String Command Encoder",
 		ICommandDestinationsParser.StringCommandEncoders.GroovyStringCommandEncoder.getLocalName(), "cogs",
-		CommandDestinationsRoleKeys.StringCommandEncoder);
+		CommandDestinationsRoleKeys.StringCommandEncoder, this);
 
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "
 		+ "script for the encoding logic. The script is expected to return a String which will be used "
@@ -365,7 +365,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createHardwareIdParameterExtractorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Hardware Id Topic Extractor",
-		"hardware-id-topic-extractor", "cogs", CommandDestinationsRoleKeys.MqttParameterExtractor);
+		"hardware-id-topic-extractor", "cogs", CommandDestinationsRoleKeys.MqttParameterExtractor, this);
 
 	builder.description("Calculates MQTT topic for publishing commands by substituting the device "
 		+ "hardware id into parameterized strings. The resulting values are used by the command "
@@ -390,7 +390,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createCoapMetadataParameterExtractorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Device Metadata Extractor",
-		"metadata-coap-parameter-extractor", "cogs", CommandDestinationsRoleKeys.CoapParameterExtractor);
+		"metadata-coap-parameter-extractor", "cogs", CommandDestinationsRoleKeys.CoapParameterExtractor, this);
 
 	builder.description("Extracts CoAP connection information from metadata associated with a device.");
 	builder.attribute((new AttributeNode.Builder("Hostname metadata", "hostnameMetadataField", AttributeType.String)
@@ -414,7 +414,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createGroovySmsParameterExtractorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy SMS Parameter Extractor",
-		"groovy-sms-parameter-extractor", "cogs", CommandDestinationsRoleKeys.SmsParameterExtractor);
+		"groovy-sms-parameter-extractor", "cogs", CommandDestinationsRoleKeys.SmsParameterExtractor, this);
 
 	builder.description("Uses a Groovy script to extract SMS parameter information for delivering a command.");
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)

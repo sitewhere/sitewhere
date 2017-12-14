@@ -15,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
+import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
@@ -154,10 +155,12 @@ public class ElementNode extends XmlNode implements IElementNode {
 
 	private ElementNode element;
 
-	public Builder(String name, String localName, String icon, IRoleKey role) {
+	public Builder(String name, String localName, String icon, IRoleKey role,
+		IConfigurationModelProvider modelProvider) {
 	    this.element = new ElementNode();
 	    element.setName(name);
 	    element.setLocalName(localName);
+	    element.setNamespace(modelProvider.getDefaultXmlNamespace());
 	    element.setIcon(icon);
 	    element.setRole(role.getId());
 	}

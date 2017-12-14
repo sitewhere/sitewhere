@@ -67,7 +67,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createEventSearch() {
 	ElementNode.Builder builder = new ElementNode.Builder("Event Search", IEventSearchParser.ROOT, "search",
-		EventSearchRoleKeys.EventSearch);
+		EventSearchRoleKeys.EventSearch, this);
 	builder.description("Provides ability to query events via externally provided search interfaces.");
 	return builder.build();
     }
@@ -80,7 +80,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
     protected ElementNode createSolrSearchProvider() {
 	ElementNode.Builder builder = new ElementNode.Builder("Solr Search Provider",
 		IEventSearchParser.SearchProvidersElements.SolrSearchProvider.getLocalName(), "search",
-		EventSearchRoleKeys.SearchProvider);
+		EventSearchRoleKeys.SearchProvider, this);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)

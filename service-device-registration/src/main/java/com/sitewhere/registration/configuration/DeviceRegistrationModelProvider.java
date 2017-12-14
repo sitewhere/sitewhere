@@ -68,7 +68,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createDeviceRegistrationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Registration", IDeviceRegistrationParser.ROOT,
-		"user-plus", DeviceRegistrationRoleKeys.DeviceRegistration);
+		"user-plus", DeviceRegistrationRoleKeys.DeviceRegistration, this);
 
 	builder.description("Determines how new devices are registered with the system.");
 
@@ -83,7 +83,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
     protected ElementNode createDefaultRegistrationManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Registration Manager",
 		IDeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
-		DeviceRegistrationRoleKeys.DeviceRegistrationManager);
+		DeviceRegistrationRoleKeys.DeviceRegistrationManager, this);
 
 	builder.description("Provides device registration management functionality.");
 	builder.attribute((new AttributeNode.Builder("Allow registration of new devices", "allowNewDevices",

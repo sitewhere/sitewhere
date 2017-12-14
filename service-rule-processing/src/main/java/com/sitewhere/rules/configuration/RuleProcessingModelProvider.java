@@ -64,7 +64,7 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createRuleProcessingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Rule Processing", IRuleProcessingParser.ROOT, "gear",
-		RuleProcessingRoleKeys.RuleProcessing);
+		RuleProcessingRoleKeys.RuleProcessing, this);
 
 	builder.description("Applies rules to the stream of device events.");
 

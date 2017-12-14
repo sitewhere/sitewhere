@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
@@ -135,8 +136,9 @@ public class Instance extends RestControllerBase {
     public ElementContent getMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	return ConfigurationContentParser
-		.parse(getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfiguration());
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	return ConfigurationContentParser.parse(management.getConfiguration(), management.getConfigurationModel());
     }
 
     /**
@@ -153,8 +155,10 @@ public class Instance extends RestControllerBase {
     public ElementContent getMicroserviceTenantConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
-	return ConfigurationContentParser.parse(getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier).getTenantConfiguration(tenantId));
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	return ConfigurationContentParser.parse(management.getTenantConfiguration(tenantId),
+		management.getConfigurationModel());
     }
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {

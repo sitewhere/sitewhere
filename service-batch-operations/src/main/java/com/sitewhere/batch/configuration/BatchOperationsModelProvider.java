@@ -69,7 +69,7 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
     protected ElementNode createBatchOperationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management",
 		IDeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "list-ol",
-		BatchOperationsRoleKeys.BatchOperations);
+		BatchOperationsRoleKeys.BatchOperations, this);
 
 	builder.description("Manage processing of batch operations including persistence and throttling.");
 	return builder.build();
@@ -83,7 +83,7 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
     protected ElementNode createBatchOperationManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Manager",
 		IBatchOperationsParser.Elements.DefaultBatchOperationManager.getLocalName(), "server",
-		BatchOperationsRoleKeys.BatchOperationManager);
+		BatchOperationsRoleKeys.BatchOperationManager, this);
 
 	builder.description("Manages how batch operations are processed.");
 	builder.attribute((new AttributeNode.Builder("Throttle delay (ms)", "throttleDelayMs", AttributeType.Integer)

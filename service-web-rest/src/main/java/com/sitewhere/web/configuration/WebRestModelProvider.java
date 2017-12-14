@@ -64,7 +64,7 @@ public class WebRestModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createWebRestElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Web/REST", IWebRestParser.ROOT, "sign-in",
-		WebRestRoleKeys.WebRest);
+		WebRestRoleKeys.WebRest, this);
 
 	builder.description("Handles REST services and administrative user interface.");
 
