@@ -61,7 +61,7 @@ export function updateGlobalConfiguration (axios, identifier, config) {
 /**
  * Update tenant microservice configuration based on identifier.
  */
-export function updatTenantConfiguration (axios, tenantId, identifier, config) {
+export function updateTenantConfiguration (axios, tenantId, identifier, config) {
   return restAuthPost(axios, 'instance/microservice/' + identifier +
     '/configuration/' + tenantId, config)
 }

@@ -1,12 +1,13 @@
 <template>
   <div v-if="tenant">
     <v-app>
-      <tenant-detail-header :tenant="tenant"
-        :tenantCommandRunning="tenantCommandRunning"
-        :tenantCommandPercent="tenantCommandPercent" class="mb-3"
-        @refresh="refresh">
+      <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
       </tenant-detail-header>
-      <microservice-editor :configModel="configModel" :config="config">
+      <unsaved-updates-warning class="mb-3" :unsaved="dirty"
+        @save="onSaveConfiguration" @revert="onRevertConfiguration">
+      </unsaved-updates-warning>
+      <microservice-editor :configModel="configModel" :config="config"
+        @dirty="onConfigurationUpdated">
       </microservice-editor>
     </v-app>
   </div>
@@ -16,10 +17,12 @@
 import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
 import MicroserviceEditor from './MicroserviceEditor'
+import UnsavedUpdatesWarning from './UnsavedUpdatesWarning'
 import {
   _getTenant,
   _getConfigurationModel,
-  _getTenantConfiguration
+  _getTenantConfiguration,
+  _updateTenantConfiguration
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -32,13 +35,14 @@ export default {
     configModel: null,
     tenantCommandPercent: 0,
     tenantCommandRunning: false,
-    active: null
+    dirty: false
   }),
 
   components: {
     FloatingActionButton,
     TenantDetailHeader,
-    MicroserviceEditor
+    MicroserviceEditor,
+    UnsavedUpdatesWarning
   },
 
   created: function () {
@@ -90,6 +94,28 @@ export default {
     // Called after data is loaded.
     onLoaded: function (tenant) {
       this.$data.tenant = tenant
+    },
+
+    // Called when configuration is changed.
+    onConfigurationUpdated: function () {
+      this.$data.dirty = true
+    },
+
+    // Called when configuration is to be saved.
+    onSaveConfiguration: function () {
+      var component = this
+      _updateTenantConfiguration(this.$store, this.$data.tenantId,
+        this.$data.identifier, this.$data.config)
+        .then(function (response) {
+          component.$data.dirty = false
+        }).catch(function (e) {
+        })
+    },
+
+    // Called when configuration is to be reverted.
+    onRevertConfiguration: function () {
+      alert('revert')
+      this.$data.dirty = false
     }
   }
 }

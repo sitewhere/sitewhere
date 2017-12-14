@@ -13,7 +13,9 @@ import {
   getTenantTopology,
   getConfigurationModel,
   getGlobalConfiguration,
-  getTenantConfiguration
+  getTenantConfiguration,
+  updateGlobalConfiguration,
+  updateTenantConfiguration
 } from './sitewhere-instance-api'
 
 // Users.
@@ -257,7 +259,7 @@ export function _getConfigurationModel (store, identifier) {
 }
 
 /**
- * Get tenant microservice configuration based on identifier.
+ * Get global microservice configuration based on identifier.
  */
 export function _getGlobalConfiguration (store, identifier) {
   let axios = createCoreApiCall(store)
@@ -271,6 +273,24 @@ export function _getGlobalConfiguration (store, identifier) {
 export function _getTenantConfiguration (store, tenantId, identifier) {
   let axios = createCoreApiCall(store)
   let api = getTenantConfiguration(axios, tenantId, identifier)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update global microservice configuration based on identifier.
+ */
+export function _updateGlobalConfiguration (store, identifier, content) {
+  let axios = createCoreApiCall(store)
+  let api = updateGlobalConfiguration(axios, identifier, content)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update tenant microservice configuration based on identifier.
+ */
+export function _updateTenantConfiguration (store, tenantId, identifier, content) {
+  let axios = createCoreApiCall(store)
+  let api = updateTenantConfiguration(axios, tenantId, identifier, content)
   return loaderWrapper(store, api)
 }
 

@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-card v-if="currentContext" class="elevation-0">
+    <v-card v-if="currentContext" class="elevation-1">
       <v-card-text>
         <div>
           <v-breadcrumbs divider="/">
@@ -110,7 +110,8 @@ export default {
     currentContext: null,
     wizardContexts: [],
     elementDialogModel: null,
-    elementDialogConfig: null
+    elementDialogConfig: null,
+    dirty: false
   }),
 
   props: ['config', 'configModel'],
@@ -185,6 +186,7 @@ export default {
       let contexts = wizard.onAddChild(
         component.name, component.attributes)
       this.onWizardContextsUpdated(contexts)
+      this.fireDirty()
     },
 
     // Push a context on to the stack.
@@ -217,16 +219,22 @@ export default {
     onConfigurationElementUpdated: function (updated) {
       let contexts = wizard.onUpdateCurrent(updated.attributes)
       this.onWizardContextsUpdated(contexts)
+      this.fireDirty()
     },
 
     // Called to delete the current context.
     onDeleteElement: function (element) {
       let contexts = wizard.onDeleteChild(element.id)
       this.onWizardContextsUpdated(contexts)
+      this.fireDirty()
     },
 
     // Called to delete the current context.
     onDeleteCurrent: function () {
+    },
+
+    fireDirty: function () {
+      this.$emit('dirty')
     }
   }
 }

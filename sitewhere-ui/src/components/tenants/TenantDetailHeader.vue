@@ -35,7 +35,7 @@ export default {
     showIdCopied: false
   }),
 
-  props: ['tenant', 'tenantCommandRunning', 'tenantCommandPercent'],
+  props: ['tenant'],
 
   components: {
     HeaderField,
