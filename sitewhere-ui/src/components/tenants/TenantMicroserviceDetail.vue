@@ -2,6 +2,16 @@
   <div v-if="tenant">
     <v-app>
       <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
+        <span slot="buttons">
+          <v-btn class="red darken-2 white--text"
+            @click.native="onDeleteTenant">
+            Delete <v-icon fa class="white--text pl-2">times</v-icon>
+          </v-btn>
+          <v-btn class="blue white--text"
+            @click.native="onEditTenant">
+            Edit <v-icon fa class="white--text pl-2">edit</v-icon>
+          </v-btn>
+        </span>
       </tenant-detail-header>
       <unsaved-updates-warning class="mb-3" :unsaved="dirty"
         @save="onSaveConfiguration" @revert="onRevertConfiguration">
@@ -14,9 +24,8 @@
 </template>
 
 <script>
-import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
-import MicroserviceEditor from './MicroserviceEditor'
+import MicroserviceEditor from '../microservice/MicroserviceEditor'
 import UnsavedUpdatesWarning from './UnsavedUpdatesWarning'
 import {
   _getTenant,
@@ -39,7 +48,6 @@ export default {
   }),
 
   components: {
-    FloatingActionButton,
     TenantDetailHeader,
     MicroserviceEditor,
     UnsavedUpdatesWarning
@@ -114,7 +122,7 @@ export default {
 
     // Called when configuration is to be reverted.
     onRevertConfiguration: function () {
-      alert('revert')
+      this.refresh()
       this.$data.dirty = false
     }
   }

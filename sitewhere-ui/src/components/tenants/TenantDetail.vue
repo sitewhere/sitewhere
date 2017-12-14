@@ -1,34 +1,37 @@
 <template>
   <div v-if="tenant">
     <v-app>
-      <tenant-detail-header :tenant="tenant" class="mb-3" @refresh="refresh">
+      <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
+        <span slot="buttons">
+          <v-btn class="red darken-2 white--text"
+            @click.native="onDeleteTenant">
+            Delete <v-icon fa class="white--text pl-2">times</v-icon>
+          </v-btn>
+          <v-btn class="blue white--text"
+            @click.native="onEditTenant">
+            Edit <v-icon fa class="white--text pl-2">edit</v-icon>
+          </v-btn>
+        </span>
       </tenant-detail-header>
-      <v-toolbar class="blue darken-2 white--text" flat card v-if="tenantTopology">
-        <v-toolbar-title>Tenant Microservices</v-toolbar-title>
-      </v-toolbar>
-      <v-list v-if="tenantTopology" two-line dense class="elevation-2 mb-4">
-        <template v-for="microservice in tenantTopology">
-          <v-list-tile :key="microservice.identifier"
-            @click.native="onMicroserviceClicked(microservice.identifier)">
-            <v-list-tile-avatar>
-              <v-icon left light fa>{{microservice.icon}}</v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title v-text="microservice.name" class="subheading"></v-list-tile-title>
-              <v-list-tile-sub-title v-html="microservice.description">
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-divider></v-divider>
-        </template>
-      </v-list>
+      <microservice-list title="Tenant Microservices" :topology="tenantTopology"
+        @microserviceClicked="onMicroserviceClicked">
+      </microservice-list>
     </v-app>
+    <tenant-update-dialog ref="update" :tenantId="tenant.id"
+      @tenantUpdated="onTenantEdited">
+    </tenant-update-dialog>
+    <tenant-delete-dialog ref="delete" :tenantId="tenant.id"
+      @tenantDeleted="onTenantDeleted">
+    </tenant-delete-dialog>
   </div>
 </template>
 
 <script>
 import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
+import MicroserviceList from '../microservice/MicroserviceList'
+import TenantUpdateDialog from './TenantUpdateDialog'
+import TenantDeleteDialog from './TenantDeleteDialog'
 import {
   _getTenant,
   _getTenantTopology
@@ -45,7 +48,10 @@ export default {
 
   components: {
     FloatingActionButton,
-    TenantDetailHeader
+    TenantDetailHeader,
+    MicroserviceList,
+    TenantUpdateDialog,
+    TenantDeleteDialog
   },
 
   created: function () {
@@ -55,8 +61,9 @@ export default {
 
   methods: {
     // Called if a microservice is clicked.
-    onMicroserviceClicked: function (identifier) {
-      this.$router.push('/system/tenants/' + this.$data.tenantId + '/' + identifier)
+    onMicroserviceClicked: function (microservice) {
+      this.$router.push('/system/tenants/' +
+        this.$data.tenantId + '/' + microservice.identifier)
     },
 
     // Called to refresh data.
@@ -94,6 +101,26 @@ export default {
         longTitle: 'Manage Tenant: ' + tenant.id
       }
       this.$store.commit('currentSection', section)
+    },
+
+    // Called to edit tenant.
+    onEditTenant: function () {
+      this.$refs['update'].onOpenDialog()
+    },
+
+    // Called after tenant is edited.
+    onTenantEdited: function () {
+      this.$emit('refresh')
+    },
+
+    // Called to delete tenant.
+    onDeleteTenant: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+
+    // Called after tenant is deleted.
+    onTenantDeleted: function () {
+      this.$router.push('/system/tenants')
     }
   }
 }
