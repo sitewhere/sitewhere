@@ -68,9 +68,9 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createDeviceRegistrationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Registration", IDeviceRegistrationParser.ROOT,
-		"server", DeviceRegistrationRoleKeys.DeviceRegistration);
+		"user-plus", DeviceRegistrationRoleKeys.DeviceRegistration);
 
-	builder.description("Handles operations related to the device management model including persistence.");
+	builder.description("Determines how new devices are registered with the system.");
 
 	return builder.build();
     }

@@ -33,3 +33,18 @@ export function getConfigurationModel (axios, identifier) {
   return restAuthGet(axios, 'instance/microservice/' + identifier +
     '/configuration/model')
 }
+
+/**
+ * Get global microservice configuration based on identifier.
+ */
+export function getGlobalConfiguration (axios, identifier) {
+  return restAuthGet(axios, 'instance/microservice/' + identifier +
+    '/configuration')
+}
+/**
+ * Get tenant microservice configuration based on identifier.
+ */
+export function getTenantConfiguration (axios, tenantId, identifier) {
+  return restAuthGet(axios, 'instance/microservice/' + identifier +
+    '/configuration/' + tenantId)
+}

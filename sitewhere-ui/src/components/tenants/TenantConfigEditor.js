@@ -14,11 +14,6 @@ export var wizard = {
   configModel: null,
 
   /**
-   * Tenant configuration roles.
-   */
-  roles: null,
-
-  /**
    * List of sites.
    */
   sites: null,
@@ -60,11 +55,11 @@ export var wizard = {
 
   /** Add the root context */
   addRootContext: function () {
-    var configNode = this.findConfigNodeByName(
-      this.config, 'tenant-configuration')
-    var modelNode = this.findModelNodeByName(
-      this.configModel, 'tenant-configuration')
-    return this.pushContext(configNode, modelNode)
+    var rootRoleId = this.configModel.rootRoleId
+    var rootModel = this.configModel.elementsByRole[rootRoleId][0]
+    var rootConfig = this.findConfigNodeByName(
+      this.config, rootModel.localName)
+    return this.pushContext(rootConfig, rootModel)
   },
 
   /**
@@ -238,7 +233,7 @@ export var wizard = {
     if (model.localName === name) {
       return model
     } else {
-      let role = this.roles[model.role]
+      let role = this.configModel.rolesById[model.role]
       let childRoles = getSpecializedRoleChildren(role, model)
 
       // Loop through all possible child roles for model.
@@ -339,7 +334,7 @@ function buildContent (context) {
   let children = {}
 
   let childrenByRole = getConfigChildrenByRole(modelNode, configNode)
-  let role = wizard.roles[modelNode.role]
+  let role = wizard.configModel.rolesById[modelNode.role]
   if (!role) {
     return children
   }
@@ -349,7 +344,7 @@ function buildContent (context) {
   let childRoles = getSpecializedRoleChildren(role, modelNode)
   for (let i = 0; i < childRoles.length; i++) {
     let childRoleName = childRoles[i]
-    let childRole = wizard.roles[childRoleName]
+    let childRole = wizard.configModel.rolesById[childRoleName]
     let childrenWithRole = childrenByRole[childRoleName]
     let availableForRole = findModelChildrenInRole(childRoleName)
 
@@ -469,7 +464,7 @@ function generateUniqueId () {
 /** Fix order of children to match model */
 function fixChildOrder (modelNode, configNode) {
   let childrenByRole = getConfigChildrenByRole(modelNode, configNode)
-  let role = wizard.roles[modelNode.role]
+  let role = wizard.configModel.rolesById[modelNode.role]
   let childRoles = getSpecializedRoleChildren(role, modelNode)
 
   var updated = []
@@ -531,7 +526,7 @@ export function onChildOpenClicked (childName, childId) {
 
 /** Find children of a model node with the given role */
 function findModelChildrenInRole (roleName) {
-  var role = wizard.roles[roleName]
+  var role = wizard.configModel.rolesById[roleName]
   var all = []
   all.push.apply(all, wizard.configModel.elementsByRole[roleName])
 
@@ -556,7 +551,7 @@ function findModelChildrenInRole (roleName) {
 
 /** Get configuration children grouped by role */
 function getConfigChildrenByRole (modelNode, configNode) {
-  let role = wizard.roles[modelNode.role]
+  let role = wizard.configModel.rolesById[modelNode.role]
   let result = {}
 
   // Get child roles with constraints.
@@ -564,7 +559,7 @@ function getConfigChildrenByRole (modelNode, configNode) {
   let modelNotFound = []
   for (let i = 0; i < childRoles.length; i++) {
     var childRoleName = childRoles[i]
-    var childRole = wizard.roles[childRoleName]
+    var childRole = wizard.configModel.rolesById[childRoleName]
     var roleSubtypes = []
     roleSubtypes.push(childRoleName)
     if (childRole.subtypes) {
@@ -597,18 +592,20 @@ function getConfigChildrenByRole (modelNode, configNode) {
 /** Get child roles, taking into account model specializations */
 function getSpecializedRoleChildren (role, modelNode) {
   var specialized = []
-  var childRoles = role.children
-  for (var i = 0; i < childRoles.length; i++) {
-    var childRole = childRoles[i]
-    if (modelNode.specializes) {
-      var match = modelNode.specializes[childRole]
-      if (match) {
-        specialized.push(match)
+  if (role.childRoles) {
+    var childRoles = role.childRoles
+    for (var i = 0; i < childRoles.length; i++) {
+      var childRole = childRoles[i]
+      if (modelNode.specializes) {
+        var match = modelNode.specializes[childRole]
+        if (match) {
+          specialized.push(match)
+        } else {
+          specialized.push(childRole)
+        }
       } else {
         specialized.push(childRole)
       }
-    } else {
-      specialized.push(childRole)
     }
   }
   return specialized

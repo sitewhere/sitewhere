@@ -53,7 +53,7 @@ public class DeviceManagementModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createDeviceManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Management", IDeviceManagementParser.ROOT,
-		"server", DeviceManagementRoleKeys.DeviceManagement);
+		"microchip", DeviceManagementRoleKeys.DeviceManagement);
 
 	builder.description("Handles operations related to the device management model including persistence.");
 

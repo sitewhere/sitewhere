@@ -70,7 +70,7 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createLabelGenerationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Label Generation", ILabelGenerationParser.ROOT,
-		"sign-in", LabelGenerationRoleKeys.LabelGeneration);
+		"qrcode", LabelGenerationRoleKeys.LabelGeneration);
 
 	builder.description("Handles generation of labels such as QR codes.");
 

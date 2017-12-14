@@ -93,10 +93,10 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createCommandRoutingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Routing",
-		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "bolt",
+		IDeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap",
 		CommandDestinationsRoleKeys.CommandRouting);
 
-	builder.description("Determines how commands are routed, encoded, and delivered to destinations.");
+	builder.description("Determines how commands are routed to command destinations.");
 	return builder.build();
     }
 
@@ -162,12 +162,10 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
      */
     protected ElementNode createCommandDestinationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Command Destinations",
-		IDeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "sign-out",
+		IDeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "bolt",
 		CommandDestinationsRoleKeys.CommandDestinations);
 
-	builder.description("Command destinations provide the information SiteWhere needs "
-		+ "to route commands to devices. This includes information about how to encode the "
-		+ "command and how to deliver the command via the underlying transport.");
+	builder.description("Determines how commands are routed, encoded, and delivered to destinations.");
 	return builder.build();
     }
 

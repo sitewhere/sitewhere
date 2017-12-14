@@ -69,7 +69,7 @@ public class PresenceManagementModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createPresenceManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Presence Management", IPresenceManagementParser.ROOT,
-		"sign-in", PresenceManagementRoleKeys.PresenceManagement);
+		"question-circle", PresenceManagementRoleKeys.PresenceManagement);
 
 	builder.description("Handles notification when devices are detected as present or missing.");
 

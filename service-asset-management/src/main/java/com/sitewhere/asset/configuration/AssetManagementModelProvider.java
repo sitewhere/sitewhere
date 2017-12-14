@@ -47,6 +47,7 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
     @Override
     public void initializeElements() {
 	addElement(createAssetManagement());
+	addElement(createAssetModules());
 	addElement(createWso2IdentityAssetModuleElement());
     }
 

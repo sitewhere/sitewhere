@@ -93,9 +93,9 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createOutboundProcessingElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Outbound Processing", IOutboundProcessingParser.ROOT,
-		"sign-in", OutboundProcessingRoleKeys.OutboundProcessing);
+		"sign-out", OutboundProcessingRoleKeys.OutboundProcessing);
 
-	builder.description("Handles outbound processing tasks such as forwarding events to external entities.");
+	builder.description("Handles outbound processing tasks such as forwarding events for external processing.");
 
 	return builder.build();
     }

@@ -6,100 +6,90 @@
         :tenantCommandPercent="tenantCommandPercent" class="mb-3"
         @refresh="refresh">
       </tenant-detail-header>
-      <v-tabs class="elevation-2" dark v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
-          <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
-          <v-tabs-item key="configuration" href="#configuration">
-            Tenant Configuration
-          </v-tabs-item>
-        </v-tabs-bar>
-        <v-tabs-content key="configuration" id="configuration">
-          <v-card v-if="currentContext" class="elevation-0">
-            <v-card-text>
-              <div>
-                <v-breadcrumbs divider="/">
-                  <v-breadcrumbs-item v-for="context in wizardContexts"
-                    :key="context.model.localName"
-                    @click.native="onPopToContext(context.model.localName)">
-                    {{ context.model.name }}
-                  </v-breadcrumbs-item>
-                </v-breadcrumbs>
-              </div>
-              <!-- Banner -->
-              <v-card class="mb-3">
-                <v-toolbar flat dark class="primary">
-                  <v-icon dark fa class="fa-lg">{{currentContext.model.icon}}</v-icon>
-                  <v-toolbar-title class="white--text">{{currentContext.model.name}}</v-toolbar-title>
-                  <v-spacer></v-spacer>
-                  <v-btn icon class="ml-0" v-if="wizardContexts.length > 1"
-                    @click.native="onPopContext">
-                    <v-icon fa class="fa-lg">arrow-up</v-icon>
-                  </v-btn>
-                  <v-btn icon class="ml-0" v-if="currentContext.model.attributes"
-                    @click.native="onConfigureCurrent">
-                    <v-icon fa class="fa-lg">gear</v-icon>
-                  </v-btn>
-                  <v-btn icon class="ml-0" v-if="currentContext.model.role.optional"
-                    @click.native="onDeleteCurrent">
-                    <v-icon fa class="fa-lg">times</v-icon>
-                  </v-btn>
-                </v-toolbar>
-                <v-card-text v-html="currentContext.model.description"></v-card-text>
-              </v-card>
-              <!-- Attributes -->
-              <div
-                v-if="currentContext.groups && currentContext.groups.length">
-                <v-card class="grey lighten-4 mb-3"
-                  v-for="group in currentContext.groups"
-                  :key="group.id">
-                  <v-card-text
-                    class="subheading blue darken-2 white--text pa-2">
-                    <strong>
-                      {{ group.id ? group.description : 'Component Settings' }}
-                    </strong>
-                  </v-card-text>
-                  <v-card-text class="subheading pa-0 pl-2">
-                    <v-container fluid>
-                      <attribute-field
-                        v-for="attribute in group.attributes"
-                        :key="attribute.name" :attribute="attribute"
-                        :attrValues="attributeValues" :readOnly="true">
-                      </attribute-field>
-                    </v-container>
-                  </v-card-text>
-                </v-card>
-              </div>
-              <!-- Elements -->
-              <v-card v-if="currentContext.content">
-                <v-card-text class="pa-0"
-                  v-for="contextElement in currentContext.content.elements"
-                  :key="contextElement.name">
-                  <element-placeholder v-if="!contextElement.hasContent"
-                    :contextElement="contextElement"
-                    @addComponent="onAddComponent">
-                  </element-placeholder>
-                  <v-toolbar v-else flat light class="grey lighten-4">
-                    <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
-                    <v-toolbar-title class="black--text">
-                      {{ elementTitle(contextElement) }}
-                    </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <element-delete-dialog v-if="contextElement.optional"
-                      :element="contextElement"
-                      @elementDeleted="onDeleteElement(contextElement)">
-                    </element-delete-dialog>
-                    <v-btn class="blue darken-2 white--text mr-3"
-                      @click.native="onPushContext(contextElement)">
-                      <v-icon fa class="white--text mr-1">edit</v-icon>
-                      Edit
-                    </v-btn>
-                  </v-toolbar>
-                </v-card-text>
-              </v-card>
+      <v-card v-if="currentContext" class="elevation-0">
+        <v-card-text>
+          <div>
+            <v-breadcrumbs divider="/">
+              <v-breadcrumbs-item v-for="context in wizardContexts"
+                :key="context.model.localName"
+                @click.native="onPopToContext(context.model.localName)">
+                {{ context.model.name }}
+              </v-breadcrumbs-item>
+            </v-breadcrumbs>
+          </div>
+          <!-- Banner -->
+          <v-card class="mb-3">
+            <v-toolbar flat dark class="primary">
+              <v-icon dark fa class="fa-lg">{{currentContext.model.icon}}</v-icon>
+              <v-toolbar-title class="white--text">{{currentContext.model.name}}</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon class="ml-0" v-if="wizardContexts.length > 1"
+                @click.native="onPopContext">
+                <v-icon fa class="fa-lg">arrow-up</v-icon>
+              </v-btn>
+              <v-btn icon class="ml-0" v-if="currentContext.model.attributes"
+                @click.native="onConfigureCurrent">
+                <v-icon fa class="fa-lg">gear</v-icon>
+              </v-btn>
+              <v-btn icon class="ml-0" v-if="currentContext.model.role.optional"
+                @click.native="onDeleteCurrent">
+                <v-icon fa class="fa-lg">times</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text v-html="currentContext.model.description"></v-card-text>
+          </v-card>
+          <!-- Attributes -->
+          <div
+            v-if="currentContext.groups && currentContext.groups.length">
+            <v-card class="grey lighten-4 mb-3"
+              v-for="group in currentContext.groups"
+              :key="group.id">
+              <v-card-text
+                class="subheading blue darken-2 white--text pa-2">
+                <strong>
+                  {{ group.id ? group.description : 'Component Settings' }}
+                </strong>
+              </v-card-text>
+              <v-card-text class="subheading pa-0 pl-2">
+                <v-container fluid>
+                  <attribute-field
+                    v-for="attribute in group.attributes"
+                    :key="attribute.name" :attribute="attribute"
+                    :attrValues="attributeValues" :readOnly="true">
+                  </attribute-field>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </div>
+          <!-- Elements -->
+          <v-card v-if="currentContext.content">
+            <v-card-text class="pa-0"
+              v-for="contextElement in currentContext.content.elements"
+              :key="contextElement.name">
+              <element-placeholder v-if="!contextElement.hasContent"
+                :contextElement="contextElement"
+                @addComponent="onAddComponent">
+              </element-placeholder>
+              <v-toolbar v-else flat light class="grey lighten-4">
+                <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
+                <v-toolbar-title class="black--text">
+                  {{ elementTitle(contextElement) }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <element-delete-dialog v-if="contextElement.optional"
+                  :element="contextElement"
+                  @elementDeleted="onDeleteElement(contextElement)">
+                </element-delete-dialog>
+                <v-btn class="blue darken-2 white--text mr-3"
+                  @click.native="onPushContext(contextElement)">
+                  <v-icon fa class="white--text mr-1">edit</v-icon>
+                  Edit
+                </v-btn>
+              </v-toolbar>
             </v-card-text>
           </v-card>
-        </v-tabs-content>
-      </v-tabs>
+        </v-card-text>
+      </v-card>
       <configuration-element-create-dialog ref="create"
         :model="tenantDialogModel"
         @elementAdded="onComponentAdded">
@@ -124,7 +114,8 @@ import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog
 import {wizard} from './TenantConfigEditor'
 import {
   _getTenant,
-  _getConfigurationModel
+  _getConfigurationModel,
+  _getTenantConfiguration
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -211,6 +202,12 @@ export default {
             longTitle: 'Configure Tenant Microservice: ' + microservice.name
           }
           component.$store.commit('currentSection', section)
+        }).catch(function (e) {
+        })
+      _getTenantConfiguration(this.$store, this.$data.tenantId,
+        this.$data.identifier)
+        .then(function (response) {
+          component.$data.config = response.data
         }).catch(function (e) {
         })
     },

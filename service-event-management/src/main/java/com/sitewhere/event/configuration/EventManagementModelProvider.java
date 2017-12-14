@@ -53,7 +53,7 @@ public class EventManagementModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createEventManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Event Management", IDeviceRegistrationParser.ROOT,
-		"server", EventManagementRoleKeys.EventManagement);
+		"exchange", EventManagementRoleKeys.EventManagement);
 
 	builder.description("Handles operations related to the device event management model including persistence.");
 

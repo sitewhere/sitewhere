@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.configuration.ConfigurationContentParser;
+import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
@@ -130,11 +132,11 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.GET)
     @ApiOperation(value = "Get global configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
-    public String getMicroserviceGlobalConfiguration(
+    public ElementContent getMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	return new String(
-		getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfiguration());
+	return ConfigurationContentParser
+		.parse(getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfiguration());
     }
 
     /**
@@ -148,11 +150,11 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration/{tenantId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get tenant configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
-    public String getMicroserviceTenantConfiguration(
+    public ElementContent getMicroserviceTenantConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
-	return new String(getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier)
-		.getTenantConfiguration(tenantId));
+	return ConfigurationContentParser.parse(getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier).getTenantConfiguration(tenantId));
     }
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {

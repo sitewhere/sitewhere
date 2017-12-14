@@ -11,7 +11,9 @@ import {
   getTopology,
   getGlobalTopology,
   getTenantTopology,
-  getConfigurationModel
+  getConfigurationModel,
+  getGlobalConfiguration,
+  getTenantConfiguration
 } from './sitewhere-instance-api'
 
 // Users.
@@ -32,9 +34,7 @@ import {
   updateTenant,
   listTenants,
   deleteTenant,
-  getTenantTemplates,
-  getTenantConfiguration,
-  getTenantConfigurationModel
+  getTenantTemplates
 } from './sitewhere-tenants-api.js'
 
 // Sites.
@@ -257,6 +257,24 @@ export function _getConfigurationModel (store, identifier) {
 }
 
 /**
+ * Get tenant microservice configuration based on identifier.
+ */
+export function _getGlobalConfiguration (store, identifier) {
+  let axios = createCoreApiCall(store)
+  let api = getGlobalConfiguration(axios, identifier)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant microservice configuration based on identifier.
+ */
+export function _getTenantConfiguration (store, tenantId, identifier) {
+  let axios = createCoreApiCall(store)
+  let api = getTenantConfiguration(axios, tenantId, identifier)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Create a user.
  */
 export function _createUser (store, payload) {
@@ -373,24 +391,6 @@ export function _deleteTenant (store, tenantId, force) {
 export function _getTenantTemplates (store) {
   let axios = createCoreApiCall(store)
   let api = getTenantTemplates(axios)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Get tenant configuration.
- */
-export function _getTenantConfiguration (store, tenantId) {
-  let axios = createCoreApiCall(store)
-  let api = getTenantConfiguration(axios, tenantId)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Get tenant configuration model.
- */
-export function _getTenantConfigurationModel (store) {
-  let axios = createCoreApiCall(store)
-  let api = getTenantConfigurationModel(axios)
   return loaderWrapper(store, api)
 }
 
