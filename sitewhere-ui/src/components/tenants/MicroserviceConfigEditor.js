@@ -252,21 +252,6 @@ export var wizard = {
   }
 }
 
-/** Edit a component */
-export function ceComponentEdit (topModel, topConfig, onCurrentEdited) {
-  console.log('Editing a component')
-}
-
-/** Create a component */
-export function ceComponentCreate (childModel, childConfig, onChildAdded) {
-  console.log('Creating a component')
-}
-
-/** Show confirmation dialog */
-export function swConfirm (dialogTitle, dialogMessage, callback) {
-  console.log('Show confirmation dialog')
-}
-
 /**
  * Hash configuration node attributes by name.
  */
@@ -480,36 +465,6 @@ function fixChildOrder (modelNode, configNode) {
     }
   }
   configNode.children = updated
-}
-
-/** Delete the given element */
-export function onChildDeleteClicked (childName, childId) {
-  let top = wizard.getLastContext()
-  let topModel = top['model']
-  let topConfig = top['config']
-  let childModel = wizard.findModelNodeByName(topModel, childName)
-  let childConfig = wizard.findConfigNodeById(topConfig, childId)
-  let childRole = wizard.roles[childModel.role]
-
-  let dialogTitle = 'Delete Component?'
-  let dialogMessage = 'Are you sure that you want to delete \'' + childModel.name + '\'?'
-  if (!childRole.optional) {
-    dialogTitle = 'Delete Required Component?'
-    dialogMessage = 'Are you sure that you want to delete \'' + childModel.name + '\'? ' +
-      'This component is required by \'' + topModel.name + '\'.'
-  }
-
-  // Confirm delete, then remove the element and reload the panel.
-  swConfirm(dialogTitle, dialogMessage, function (result) {
-    if (result) {
-      for (var i = 0; i < topConfig.children.length; i++) {
-        if (topConfig.children[i].id === childConfig.id) {
-          topConfig.children.splice(i, 1)
-          break
-        }
-      }
-    }
-  })
 }
 
 /** Open a child page in the wizard */

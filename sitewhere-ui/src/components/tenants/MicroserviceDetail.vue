@@ -110,7 +110,7 @@ import AttributeField from './AttributeField'
 import ElementDeleteDialog from './ElementDeleteDialog'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
 import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
-import {wizard} from './TenantConfigEditor'
+import {wizard} from './MicroserviceConfigEditor'
 import {
   _getTenant,
   _getConfigurationModel,

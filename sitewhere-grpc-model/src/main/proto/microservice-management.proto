@@ -22,8 +22,14 @@ service MicroserviceManagement {
 	// Get global configuration content.
 	rpc GetGlobalConfiguration (GGetGlobalConfigurationRequest) returns (GGetGlobalConfigurationResponse) {}
 
-	// Get global configuration content.
+	// Get tenant configuration content.
 	rpc GetTenantConfiguration (GGetTenantConfigurationRequest) returns (GGetTenantConfigurationResponse) {}
+
+	// Update global configuration content.
+	rpc UpdateGlobalConfiguration (GUpdateGlobalConfigurationRequest) returns (GUpdateGlobalConfigurationResponse) {}
+
+	// Update tenant configuration content.
+	rpc UpdateTenantConfiguration (GUpdateTenantConfigurationRequest) returns (GUpdateTenantConfigurationResponse) {}
 }
 
 // #####################
@@ -56,4 +62,23 @@ message GGetTenantConfigurationRequest {
 // Response for getting tenant configuration data.
 message GGetTenantConfigurationResponse {
 	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+
+// Request for updating global configuration data.
+message GUpdateGlobalConfigurationRequest {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+	
+// Response for updating global configuration data.
+message GUpdateGlobalConfigurationResponse {
+}
+
+// Request for updating tenant configuration data.
+message GUpdateTenantConfigurationRequest {
+	string tenantId = 1;
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 2;
+}
+	
+// Response for updating tenant configuration data.
+message GUpdateTenantConfigurationResponse {
 }

@@ -7,6 +7,9 @@
  */
 package com.sitewhere.microservice.management;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
@@ -17,6 +20,10 @@ import com.sitewhere.grpc.service.GGetGlobalConfigurationRequest;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationResponse;
 import com.sitewhere.grpc.service.GGetTenantConfigurationRequest;
 import com.sitewhere.grpc.service.GGetTenantConfigurationResponse;
+import com.sitewhere.grpc.service.GUpdateGlobalConfigurationRequest;
+import com.sitewhere.grpc.service.GUpdateGlobalConfigurationResponse;
+import com.sitewhere.grpc.service.GUpdateTenantConfigurationRequest;
+import com.sitewhere.grpc.service.GUpdateTenantConfigurationResponse;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
@@ -32,6 +39,9 @@ import io.grpc.stub.StreamObserver;
  * @author Derek
  */
 public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.MicroserviceManagementImplBase {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice */
     private IMicroservice microservice;
@@ -112,6 +122,48 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, e);
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#updateGlobalConfiguration(com.sitewhere.grpc.
+     * service.GUpdateGlobalConfigurationRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateGlobalConfiguration(GUpdateGlobalConfigurationRequest request,
+	    StreamObserver<GUpdateGlobalConfigurationResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
+	    byte[] config = request.getConfiguration().getContent().toByteArray();
+	    LOGGER.info("Received global configuration:\n\n" + new String(config));
+	    GUpdateGlobalConfigurationResponse.Builder response = GUpdateGlobalConfigurationResponse.newBuilder();
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION, e);
+	    responseObserver.onError(e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#updateTenantConfiguration(com.sitewhere.grpc.
+     * service.GUpdateTenantConfigurationRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateTenantConfiguration(GUpdateTenantConfigurationRequest request,
+	    StreamObserver<GUpdateTenantConfigurationResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
+	    byte[] config = request.getConfiguration().getContent().toByteArray();
+	    LOGGER.info("Received tenant configuration for " + request.getTenantId() + ":\n\n" + new String(config));
+	    GUpdateTenantConfigurationResponse.Builder response = GUpdateTenantConfigurationResponse.newBuilder();
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION, e);
 	    responseObserver.onError(e);
 	}
     }

@@ -2,7 +2,8 @@
  * API calls associated with SiteWhere instance.
  */
 import {
-  restAuthGet
+  restAuthGet,
+  restAuthPost
 } from './sitewhere-api'
 
 /**
@@ -47,4 +48,20 @@ export function getGlobalConfiguration (axios, identifier) {
 export function getTenantConfiguration (axios, tenantId, identifier) {
   return restAuthGet(axios, 'instance/microservice/' + identifier +
     '/configuration/' + tenantId)
+}
+
+/**
+ * Update global microservice configuration based on identifier.
+ */
+export function updateGlobalConfiguration (axios, identifier, config) {
+  return restAuthPost(axios, 'instance/microservice/' + identifier +
+    '/configuration', config)
+}
+
+/**
+ * Update tenant microservice configuration based on identifier.
+ */
+export function updatTenantConfiguration (axios, tenantId, identifier, config) {
+  return restAuthPost(axios, 'instance/microservice/' + identifier +
+    '/configuration/' + tenantId, config)
 }

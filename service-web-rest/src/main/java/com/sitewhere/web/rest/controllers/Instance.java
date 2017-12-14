@@ -15,9 +15,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.Document;
 
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
@@ -72,7 +74,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/topology/global", method = RequestMethod.GET)
-    @ApiOperation(value = "Get current instance topology")
+    @ApiOperation(value = "Get global microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
 	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
@@ -93,7 +95,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/topology/tenant", method = RequestMethod.GET)
-    @ApiOperation(value = "Get current instance topology")
+    @ApiOperation(value = "Get tenant microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
 	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
@@ -124,7 +126,7 @@ public class Instance extends RestControllerBase {
     }
 
     /**
-     * Get configuration for microservice based on service identifier.
+     * Get global configuration for microservice based on service identifier.
      * 
      * @param identifier
      * @return
@@ -138,7 +140,8 @@ public class Instance extends RestControllerBase {
 	    throws SiteWhereException {
 	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
 		.getMicroserviceManagement(identifier);
-	return ConfigurationContentParser.parse(management.getConfiguration(), management.getConfigurationModel());
+	return ConfigurationContentParser.parse(management.getGlobalConfiguration(),
+		management.getConfigurationModel());
     }
 
     /**
@@ -159,6 +162,47 @@ public class Instance extends RestControllerBase {
 		.getMicroserviceManagement(identifier);
 	return ConfigurationContentParser.parse(management.getTenantConfiguration(tenantId),
 		management.getConfigurationModel());
+    }
+
+    /**
+     * Update global configuration for microservice based on service identifier.
+     * 
+     * @param identifier
+     * @param content
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.POST)
+    @ApiOperation(value = "Update global configuration based on service identifier.")
+    @Secured({ SiteWhereRoles.REST })
+    public void updateMicroserviceGlobalConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @RequestBody ElementContent content) throws SiteWhereException {
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	String config = ConfigurationContentParser.format(xml);
+	management.updateGlobalConfiguration(config.getBytes());
+    }
+
+    /**
+     * Update tenant configuration for microservice based on service identifier.
+     * 
+     * @param identifier
+     * @param content
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/configuration/{tenantId}", method = RequestMethod.POST)
+    @ApiOperation(value = "Update global configuration based on service identifier.")
+    @Secured({ SiteWhereRoles.REST })
+    public void updateMicroserviceTenantConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @RequestBody ElementContent content) throws SiteWhereException {
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	String config = ConfigurationContentParser.format(xml);
+	management.updateTenantConfiguration(tenantId, config.getBytes());
     }
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {

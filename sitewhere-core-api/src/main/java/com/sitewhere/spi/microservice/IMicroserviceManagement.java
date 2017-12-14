@@ -31,7 +31,7 @@ public interface IMicroserviceManagement {
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getConfiguration() throws SiteWhereException;
+    public byte[] getGlobalConfiguration() throws SiteWhereException;
 
     /**
      * Get configuration for a tenant microservice.
@@ -41,4 +41,21 @@ public interface IMicroserviceManagement {
      * @throws SiteWhereException
      */
     public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
+
+    /**
+     * Update configuration for a global microservice.
+     * 
+     * @param config
+     * @throws SiteWhereException
+     */
+    public void updateGlobalConfiguration(byte[] config) throws SiteWhereException;
+
+    /**
+     * Update configuration for a tenant microservice.
+     * 
+     * @param tenantId
+     * @param config
+     * @throws SiteWhereException
+     */
+    public void updateTenantConfiguration(String tenantId, byte[] config) throws SiteWhereException;
 }
