@@ -32,7 +32,6 @@ import org.xml.sax.InputSource;
 
 import com.sitewhere.configuration.content.AttributeContent;
 import com.sitewhere.configuration.content.ElementContent;
-import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -77,18 +76,14 @@ public class ConfigurationContentParser {
      */
     protected static ElementContent parse(Element element) throws SiteWhereException {
 	ElementContent econ = new ElementContent();
-	if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(element.getNamespaceURI())) {
-	    econ.setNamespace(element.getNamespaceURI());
-	}
+	econ.setNamespace(element.getNamespaceURI());
 	econ.setName(element.getLocalName());
 	NamedNodeMap attrs = element.getAttributes();
 	List<AttributeContent> acons = new ArrayList<AttributeContent>();
 	for (int i = 0; i < attrs.getLength(); i++) {
 	    Node attr = attrs.item(i);
 	    AttributeContent acon = new AttributeContent();
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(attr.getNamespaceURI())) {
-		acon.setNamespace(attr.getNamespaceURI());
-	    }
+	    acon.setNamespace(attr.getNamespaceURI());
 	    acon.setName(attr.getLocalName());
 	    acon.setValue(attr.getNodeValue());
 	    acons.add(acon);

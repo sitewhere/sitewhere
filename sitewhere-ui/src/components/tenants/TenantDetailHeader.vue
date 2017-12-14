@@ -1,20 +1,17 @@
 <template>
   <div>
     <v-card v-if="tenant" color="white" class="grey--text">
-      <v-container fluid grid-list-lg>
-        <v-layout row>
-          <v-flex xs3>
-            <v-card-media :src="tenant.logoUrl" height="50px" contain>
-            </v-card-media>
-          </v-flex>
-          <v-flex xs9>
-            <div>
-              <div class="headline">{{ tenant.name }}</div>
-              <div>{{ tenant.id }}</div>
-            </div>
-          </v-flex>
-        </v-layout>
-      </v-container>
+      <v-layout class="pa-2" row>
+        <v-flex xs3>
+          <v-card-media :src="tenant.logoUrl" height="60px" contain>
+          </v-card-media>
+        </v-flex>
+        <v-flex xs9>
+          <v-card-title class="pa-3" primary-title>
+            <div class="headline">{{ tenant.name }}</div>
+          </v-card-title>
+        </v-flex>
+      </v-layout>
     </v-card>
     <tenant-update-dialog ref="update" :tenantId="tenant.id"
       @tenantUpdated="onTenantEdited">

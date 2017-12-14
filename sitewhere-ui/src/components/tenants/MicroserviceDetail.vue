@@ -70,20 +70,19 @@
                 :contextElement="contextElement"
                 @addComponent="onAddComponent">
               </element-placeholder>
-              <v-toolbar v-else flat light class="grey lighten-4">
+              <v-toolbar v-else flat light class="grey lighten-4 pa-2">
                 <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
                 <v-toolbar-title class="black--text">
                   {{ elementTitle(contextElement) }}
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <element-delete-dialog v-if="contextElement.optional"
-                  :element="contextElement"
+                <element-delete-dialog :element="contextElement"
                   @elementDeleted="onDeleteElement(contextElement)">
                 </element-delete-dialog>
-                <v-btn class="blue darken-2 white--text mr-3"
+                <v-btn class="green darken-2 white--text mr-3"
                   @click.native="onPushContext(contextElement)">
-                  <v-icon fa class="white--text mr-1">edit</v-icon>
-                  Edit
+                  <v-icon fa class="white--text mr-2 mt-0">arrow-right</v-icon>
+                  Open
                 </v-btn>
               </v-toolbar>
             </v-card-text>

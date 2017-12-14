@@ -11,20 +11,17 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
-import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.ICommandDestinationsParser.BinaryCommandEncoders;
 import com.sitewhere.configuration.old.ICommandDestinationsParser.Elements;
 import com.sitewhere.configuration.old.ICommandDestinationsParser.StringCommandEncoders;
@@ -338,19 +335,6 @@ public class OldCommandDestinationsParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder destination) {
 	List<Element> children = DomUtils.getChildElements(parent);
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition decoderBean = nested.parse(child, context);
-		    String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
-		    destination.addPropertyReference("commandExecutionEncoder", decoderName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    BinaryCommandEncoders type = BinaryCommandEncoders.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		return false;
@@ -479,19 +463,6 @@ public class OldCommandDestinationsParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder destination) {
 	List<Element> children = DomUtils.getChildElements(parent);
 	for (Element child : children) {
-	    if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-		NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
-			.resolve(child.getNamespaceURI());
-		if (nested != null) {
-		    BeanDefinition decoderBean = nested.parse(child, context);
-		    String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
-		    context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
-		    destination.addPropertyReference("commandExecutionEncoder", decoderName);
-		    return true;
-		} else {
-		    continue;
-		}
-	    }
 	    StringCommandEncoders type = StringCommandEncoders.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		return false;

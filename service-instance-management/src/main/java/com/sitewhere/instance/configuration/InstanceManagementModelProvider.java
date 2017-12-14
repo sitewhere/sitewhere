@@ -8,7 +8,6 @@
 package com.sitewhere.instance.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.old.IConfigurationElements;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.old.ITenantDatastoreParser;
 import com.sitewhere.configuration.parser.IInstanceManagementParser;
@@ -176,7 +175,6 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs",
 		InstanceManagementRoleKeys.DefaultMongoDBConfiguration);
 
-	builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 	builder.description("Overrides global Solr settings for a tenant.");
 	builder.attributeGroup("instance", "Solr Instance Information");
 	builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl", AttributeType.String)

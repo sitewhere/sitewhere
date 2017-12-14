@@ -1,7 +1,6 @@
 <template>
   <v-layout row wrap class="mb-2">
     <v-flex xs4 class="text-xs-right subheading mt-1">
-      <v-icon fa class="mr-1 mb-1">{{ attribute.icon }}</v-icon>
       <strong>{{ attribute.name }}</strong>:
     </v-flex>
     <v-flex xs1>

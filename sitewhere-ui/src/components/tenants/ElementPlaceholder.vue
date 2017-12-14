@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat dark class="grey lighten-5">
+  <v-toolbar flat dark class="grey lighten-5 pa-2">
     <v-icon light fa class="fa-lg">plus</v-icon>
     <v-toolbar-title class="black--text">
       {{ contextElement.name }}
