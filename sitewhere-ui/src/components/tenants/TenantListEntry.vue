@@ -4,7 +4,7 @@
       <div class="tenant-logo" :style="tenantLogoStyle(tenant)">
       </div>
       <div class="tenant-divider"></div>
-      <div class="tenant-name headline ellipsis">
+      <div class="tenant-name headline ellipsis mt-2">
         {{tenant.name}} ({{tenant.id}})
       </div>
       <div class="tenant-actions">

@@ -13,8 +13,10 @@ import Login from '@/components/Login'
 import SystemAdministration from '@/components/SystemAdministration'
 import TenantsList from '@/components/tenants/TenantsList'
 import TenantDetail from '@/components/tenants/TenantDetail'
-import TenantMicroserviceDetail from '@/components/tenants/TenantMicroserviceDetail'
+import TenantMicroserviceEditor from '@/components/tenants/TenantMicroserviceEditor'
 import UsersList from '@/components/users/UsersList'
+import GlobalMicroservicesList from '@/components/global/GlobalMicroservicesList'
+import GlobalMicroserviceEditor from '@/components/global/GlobalMicroserviceEditor'
 import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
@@ -85,10 +87,16 @@ export default new Router({
           component: TenantDetail
         }, {
           path: 'tenants/:tenantId/:identifier',
-          component: TenantMicroserviceDetail
+          component: TenantMicroserviceEditor
         }, {
           path: 'users',
           component: UsersList
+        }, {
+          path: 'microservices',
+          component: GlobalMicroservicesList
+        }, {
+          path: 'microservices/:identifier',
+          component: GlobalMicroserviceEditor
         }
       ]
     }, {

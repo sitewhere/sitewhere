@@ -50,19 +50,27 @@ export default {
     tenantId: null,
     sections: [{
       id: 'tenants',
-      title: 'Tenants',
+      title: 'Tenant Management',
       icon: 'layers',
       route: 'system/tenants',
-      longTitle: 'Manage Tenants',
+      longTitle: 'Manage System Tenants',
       requireAll: ['ADMINISTER_TENANTS']
     },
     {
       id: 'users',
-      title: 'Users',
+      title: 'User Management',
       icon: 'people',
       route: 'system/users',
-      longTitle: 'Manage Users',
+      longTitle: 'Manage System Users',
       requireAll: ['ADMINISTER_USERS']
+    },
+    {
+      id: 'global',
+      title: 'Global Microservices',
+      icon: 'language',
+      route: 'system/microservices',
+      longTitle: 'Manage Global microservices',
+      requireAll: ['ADMINISTER_TENANTS']
     }],
     userActions: [{
       id: 'logout',

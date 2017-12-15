@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-toolbar class="blue darken-2 white--text" flat card v-if="tenantTopology">
+    <v-toolbar class="blue darken-2 white--text" flat card v-if="topology">
       <v-toolbar-title>{{title}}</v-toolbar-title>
     </v-toolbar>
     <v-list v-if="topology" two-line dense class="elevation-2 mb-4">
@@ -28,11 +28,6 @@ export default {
   }),
 
   props: ['title', 'topology'],
-
-  created: function () {
-    this.$data.tenantId = this.$route.params.tenantId
-    this.refresh()
-  },
 
   methods: {
     // Called if a microservice is clicked.

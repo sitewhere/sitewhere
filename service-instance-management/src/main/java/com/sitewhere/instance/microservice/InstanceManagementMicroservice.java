@@ -8,10 +8,12 @@
 package com.sitewhere.instance.microservice;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -28,7 +30,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
-import com.sitewhere.microservice.Microservice;
+import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
@@ -50,13 +52,20 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * 
  * @author Derek
  */
-public class InstanceManagementMicroservice extends Microservice implements IInstanceManagementMicroservice {
+public class InstanceManagementMicroservice extends GlobalMicroservice implements IInstanceManagementMicroservice {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
+
+    /** User management configuration file name */
+    private static final String INSTANCE_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT
+	    + ".xml";
+
+    /** List of configuration paths required by microservice */
+    private static final String[] CONFIGURATION_PATHS = { INSTANCE_MANAGEMENT_CONFIGURATION };
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -112,13 +121,63 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.Microservice#initialize(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
      */
     @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
+    public String[] getConfigurationPaths() throws SiteWhereException {
+	return CONFIGURATION_PATHS;
+    }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
+     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
+     * java.util.Map)
+     */
+    @Override
+    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
+	    throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.microservice.Microservice#waitForInstanceInitialization()
+     */
+    @Override
+    public void waitForInstanceInitialization() throws SiteWhereException {
+	// Prevent deadlock waiting for self.
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationCacheInitialized()
+     */
+    @Override
+    public void onConfigurationCacheInitialized() {
+	// Override default configuration loading behavior because instance bootstrap
+	// must be done first.
+	setConfigurationCacheReady(true);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
+     * waitForConfigurationReady()
+     */
+    @Override
+    public void waitForConfigurationReady() throws SiteWhereException {
+	// Configuration will be loaded manually after instance bootstrap.
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -141,16 +200,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -192,14 +247,12 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
@@ -220,8 +273,6 @@ public class InstanceManagementMicroservice extends Microservice implements IIns
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
-
-	super.stop(monitor);
     }
 
     /**

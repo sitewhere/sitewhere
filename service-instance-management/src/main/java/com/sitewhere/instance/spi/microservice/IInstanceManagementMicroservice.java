@@ -11,7 +11,7 @@ import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 
 /**
@@ -19,7 +19,7 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProdu
  * 
  * @author Derek
  */
-public interface IInstanceManagementMicroservice extends IMicroservice {
+public interface IInstanceManagementMicroservice extends IGlobalMicroservice {
 
     /**
      * Get instance template manager instance.

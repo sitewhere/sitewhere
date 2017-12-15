@@ -22,7 +22,7 @@ import com.sitewhere.configuration.parser.IInstanceManagementParser.Elements;
  * 
  * @author Derek
  */
-public class InstanceGlobalParser extends AbstractBeanDefinitionParser {
+public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 
     /*
      * (non-Javadoc)

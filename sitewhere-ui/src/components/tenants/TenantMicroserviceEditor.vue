@@ -3,20 +3,17 @@
     <v-app>
       <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
         <span slot="buttons">
-          <v-btn class="red darken-2 white--text"
-            @click.native="onDeleteTenant">
-            Delete <v-icon fa class="white--text pl-2">times</v-icon>
-          </v-btn>
-          <v-btn class="blue white--text"
-            @click.native="onEditTenant">
-            Edit <v-icon fa class="white--text pl-2">edit</v-icon>
+          <v-btn :disabled="dirty" class="blue darken-2 white--text"
+            @click.native="onBackToList">
+            <v-icon fa class="white--text pr-2">arrow-left</v-icon>
+            Back To Tenant Microservices
           </v-btn>
         </span>
       </tenant-detail-header>
       <unsaved-updates-warning class="mb-3" :unsaved="dirty"
         @save="onSaveConfiguration" @revert="onRevertConfiguration">
       </unsaved-updates-warning>
-      <microservice-editor :configModel="configModel" :config="config"
+      <microservice-editor :config="config" :configModel="configModel"
         @dirty="onConfigurationUpdated">
       </microservice-editor>
     </v-app>
@@ -26,7 +23,7 @@
 <script>
 import TenantDetailHeader from './TenantDetailHeader'
 import MicroserviceEditor from '../microservice/MicroserviceEditor'
-import UnsavedUpdatesWarning from './UnsavedUpdatesWarning'
+import UnsavedUpdatesWarning from '../microservice/UnsavedUpdatesWarning'
 import {
   _getTenant,
   _getConfigurationModel,
@@ -124,6 +121,11 @@ export default {
     onRevertConfiguration: function () {
       this.refresh()
       this.$data.dirty = false
+    },
+
+    // Navigate back to microservices list.
+    onBackToList: function () {
+      this.$router.push('/system/tenants/' + this.$data.tenantId)
     }
   }
 }

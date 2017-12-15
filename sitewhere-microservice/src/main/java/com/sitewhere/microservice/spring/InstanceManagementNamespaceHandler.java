@@ -9,12 +9,15 @@ package com.sitewhere.microservice.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+
 /**
- * Registers parsers for elements in the instance global configuration schema.
+ * Registers parsers for elements in the instance management configuration
+ * schema.
  * 
  * @author Derek
  */
-public class InstanceGlobalNamespaceHandler extends NamespaceHandlerSupport {
+public class InstanceManagementNamespaceHandler extends NamespaceHandlerSupport {
 
     /*
      * (non-Javadoc)
@@ -23,6 +26,6 @@ public class InstanceGlobalNamespaceHandler extends NamespaceHandlerSupport {
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser("instance-global", new InstanceGlobalParser());
+	registerBeanDefinitionParser(IMicroserviceIdentifiers.INSTANCE_MANAGEMENT, new InstanceManagementParser());
     }
 }

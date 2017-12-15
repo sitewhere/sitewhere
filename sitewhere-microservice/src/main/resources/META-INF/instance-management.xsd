@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-	xmlns="http://sitewhere.io/schema/sitewhere/microservice/instance-global"
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/instance-management"
 	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/instance-global"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/instance-management"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
-	<xsd:element name="instance-global" type="instanceGlobalType">
+	<xsd:element name="instance-management" type="instanceManagementType">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides global information used by instance-level
-				components.
+				Provides global instance management configuration
+				data.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 
-	<!-- Top-level global elements -->
-	<xsd:complexType name="instanceGlobalType">
+	<!-- Top-level instance management elements -->
+	<xsd:complexType name="instanceManagementType">
 		<xsd:all>
 			<xsd:element ref="abstract-datastore-configuration">
 				<xsd:annotation>

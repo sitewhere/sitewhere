@@ -40,8 +40,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 public abstract class ConfigurableMicroservice extends Microservice
 	implements IConfigurableMicroservice, IConfigurationListener {
 
-    /** Relative path to instance global configuration file */
-    private static final String INSTANCE_GLOBAL_CONFIGURATION_PATH = "/instance-global.xml";
+    /** Relative path to instance management configuration file */
+    private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";
 
     /** Relative path to configuration data for tenants */
     private static final String INSTANCE_TENANTS_CONFIGURATION_PATH = "/tenants";
@@ -131,8 +131,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getConfigurationDataFor(java.lang.String)
      */
     @Override
@@ -144,34 +143,27 @@ public abstract class ConfigurableMicroservice extends Microservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getInstanceGlobalConfigurationPath()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceManagementConfigurationPath()
      */
     @Override
-    public String getInstanceGlobalConfigurationPath() {
-	return getInstanceConfigurationPath() + INSTANCE_GLOBAL_CONFIGURATION_PATH;
+    public String getInstanceManagementConfigurationPath() {
+	return getInstanceConfigurationPath() + INSTANCE_MANAGEMENT_CONFIGURATION_PATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceManagementConfigurationData()
+     */
+    @Override
+    public byte[] getInstanceManagementConfigurationData() throws SiteWhereException {
+	return getConfigurationMonitor().getConfigurationDataFor(getInstanceManagementConfigurationPath());
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getInstanceGlobalConfigurationData()
-     */
-    @Override
-    public byte[] getInstanceGlobalConfigurationData() throws SiteWhereException {
-	return getConfigurationMonitor().getConfigurationDataFor(getInstanceGlobalConfigurationPath());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getInstanceTenantsConfigurationPath()
      */
     @Override
@@ -182,8 +174,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getInstanceTenantConfigurationPath(java.lang.String)
      */
     @Override
@@ -194,8 +185,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getInstanceTenantBootstrappedIndicatorPath(java.lang.String)
      */
     @Override
@@ -233,10 +223,8 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * initializeDiscoverableBeans(org.springframework.context.
-     * ApplicationContext,
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * initializeDiscoverableBeans(org.springframework.context. ApplicationContext,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -259,8 +247,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * startDiscoverableBeans(org.springframework.context.ApplicationContext,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -284,8 +271,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * stopDiscoverableBeans(org.springframework.context.ApplicationContext,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -343,8 +329,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * waitForConfigurationReady()
      */
     @Override
@@ -387,8 +372,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getConfigurationState()
      */
     @Override
@@ -403,8 +387,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * isConfigurationCacheReady()
      */
     @Override
@@ -419,8 +402,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getInstanceGlobalContext()
      */
     @Override
@@ -435,8 +417,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
      * getGlobalContexts()
      */
     @Override
@@ -467,9 +448,9 @@ public abstract class ConfigurableMicroservice extends Microservice
 	public void run() {
 	    try {
 		setConfigurationState(ConfigurationState.Loading);
-		byte[] global = getInstanceGlobalConfigurationData();
+		byte[] global = getInstanceManagementConfigurationData();
 		if (global == null) {
-		    throw new SiteWhereException("Global instance configuration file not found.");
+		    throw new SiteWhereException("Global instance management file not found.");
 		}
 		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, getVersion(),
 			getMicroserviceContext());

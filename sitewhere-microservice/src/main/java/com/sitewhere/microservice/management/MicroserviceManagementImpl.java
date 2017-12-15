@@ -41,6 +41,7 @@ import io.grpc.stub.StreamObserver;
 public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.MicroserviceManagementImplBase {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice */
