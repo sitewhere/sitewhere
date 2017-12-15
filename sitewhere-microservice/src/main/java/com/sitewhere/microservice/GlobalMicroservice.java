@@ -73,11 +73,7 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
      */
     @Override
     public byte[] getConfiguration() throws SiteWhereException {
-	String[] paths = getConfigurationPaths();
-	if (paths.length > 0) {
-	    return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + paths[0]);
-	}
-	return new byte[0];
+	return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + getConfigurationPath());
     }
 
     /*
@@ -88,8 +84,7 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     @Override
     public void updateConfiguration(byte[] content) throws SiteWhereException {
 	try {
-	    String[] paths = getConfigurationPaths();
-	    String configPath = getInstanceConfigurationPath() + "/" + paths[0];
+	    String configPath = getInstanceConfigurationPath() + "/" + getConfigurationPath();
 	    CuratorFramework curator = getZookeeperManager().getCurator();
 	    if (curator.checkExists().forPath(configPath) == null) {
 		curator.create().forPath(configPath, content);

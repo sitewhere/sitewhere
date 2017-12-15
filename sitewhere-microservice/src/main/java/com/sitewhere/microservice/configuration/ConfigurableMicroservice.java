@@ -97,9 +97,6 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    getLogger().debug("Configuration added for '" + path + "'.");
-	}
     }
 
     /*
@@ -110,9 +107,6 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    getLogger().debug("Configuration updated for '" + path + "'.");
-	}
     }
 
     /*
@@ -123,9 +117,6 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public void onConfigurationDeleted(String path) {
-	if (isConfigurationCacheReady()) {
-	    getLogger().debug("Configuration deleted for '" + path + "'.");
-	}
     }
 
     /*
@@ -456,7 +447,8 @@ public abstract class ConfigurableMicroservice extends Microservice
 			getMicroserviceContext());
 
 		Map<String, ApplicationContext> contexts = new HashMap<String, ApplicationContext>();
-		for (String path : getConfigurationPaths()) {
+		String path = getConfigurationPath();
+		if (path != null) {
 		    String fullPath = getInstanceConfigurationPath() + "/" + path;
 		    getLogger().info("Loading configuration at path: " + fullPath);
 		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);

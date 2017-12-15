@@ -15,7 +15,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.parser.IInstanceManagementParser.Elements;
+import com.sitewhere.configuration.parser.IInstanceManagementParser.PersistenceConfigurationsElements;
+import com.sitewhere.configuration.parser.IInstanceManagementParser.TopLevelElements;
 
 /**
  * Parses configuration data for the instance global configuration.
@@ -35,18 +36,42 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> dsChildren = DomUtils.getChildElements(element);
 	for (Element child : dsChildren) {
-	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    TopLevelElements type = TopLevelElements.getByLocalName(child.getLocalName());
 	    if (type == null) {
-		throw new RuntimeException("Unknown instance global element: " + child.getLocalName());
+		throw new RuntimeException("Unknown top level instance management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case MongoConfiguration: {
-		parseMongoConfigurations(child, context);
+	    case PersistenceConfigurations: {
+		parsePersistenceConfigurations(child, context);
 		break;
 	    }
 	    }
 	}
 	return null;
+    }
+
+    /**
+     * Parse a MongoDB datasource configuration and create beans needed to realize
+     * it.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parsePersistenceConfigurations(Element element, ParserContext context) {
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    PersistenceConfigurationsElements type = PersistenceConfigurationsElements
+		    .getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown persistence configurations element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoConfigurations: {
+		parseMongoConfigurations(child, context);
+		break;
+	    }
+	    }
+	}
     }
 
     /**

@@ -35,7 +35,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleComponent implements IMicroserviceKafkaConsumer {
+public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleComponent
+	implements IMicroserviceKafkaConsumer {
 
     /** Consumer */
     private KafkaConsumer<String, byte[]> consumer;
@@ -80,7 +81,9 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getConsumer().wakeup();
+	if (getConsumer() != null) {
+	    getConsumer().wakeup();
+	}
 	if (executor != null) {
 	    executor.shutdown();
 	}

@@ -14,17 +14,20 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** Instance management */
     InstanceManagement("instance_mgmt"),
 
-    /** Datastore configuration */
-    DatastoreConfiguration("ds_config"),
+    /** Persistence configurations */
+    PersistenceConfigurations("persist_confs"),
 
-    /** MongoDB configuration */
-    MongoDBConfiguration("mongo_cfg"),
+    /** Persistence configurations element */
+    PersistenceConfigurationsElement("persist_conf_elm"),
+
+    /** MongoDB persistence configurations */
+    MongoDBConfigurations("mongo_confs"),
 
     /** Default MongoDB configuration */
-    DefaultMongoDBConfiguration("def_mongo_cfg"),
+    DefaultMongoDBConfiguration("def_mongo_conf"),
 
     /** Alternate MongoDB configuration */
-    AlternateMongoDBConfiguration("alt_mongo_cfg");
+    AlternateMongoDBConfiguration("alt_mongo_conf");
 
     private String id;
 

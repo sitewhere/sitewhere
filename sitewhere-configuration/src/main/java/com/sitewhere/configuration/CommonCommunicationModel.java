@@ -12,7 +12,7 @@ import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
- * Common shared model characteristics.
+ * Common shared communication model characteristics.
  * 
  * @author Derek
  */

@@ -213,6 +213,14 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
 	getLogger().debug("Tenant engine configuration path added: " + path);
+	try {
+	    // Handle updated configuration file.
+	    if (getModuleConfigurationName().equals(path)) {
+		getLogger().info("Tenant engine configuration added.");
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to process added configuration file.", e);
+	}
     }
 
     /*
@@ -224,6 +232,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
 	getLogger().debug("Tenant engine configuration path updated: " + path);
+	try {
+	    // Handle updated configuration file.
+	    if (getModuleConfigurationName().equals(path)) {
+		getLogger().info("Tenant engine configuration updated.");
+		getMicroservice().restartTenantEngine(getTenant().getId());
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to process updated configuration file.", e);
+	}
     }
 
     /*
@@ -235,6 +252,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public void onConfigurationDeleted(String path) {
 	getLogger().debug("Tenant engine configuration path deleted: " + path);
+	try {
+	    // Handle updated configuration file.
+	    if (getModuleConfigurationName().equals(path)) {
+		getLogger().info("Tenant engine configuration deleted.");
+		getMicroservice().removeTenantEngine(getTenant().getId());
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to process deleted configuration file.", e);
+	}
     }
 
     /*
@@ -279,6 +305,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getModuleConfigurationName()
+     */
+    @Override
+    public String getModuleConfigurationName() throws SiteWhereException {
+	return getMicroservice().getIdentifier() + MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
@@ -286,8 +321,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getModuleConfigurationPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
-		+ MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
+	return getTenantConfigurationPath() + "/" + getModuleConfigurationName();
     }
 
     /*

@@ -41,10 +41,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     private static final String NAME = "User Management";
 
     /** User management configuration file name */
-    private static final String USER_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";
-
-    /** List of configuration paths required by microservice */
-    private static final String[] CONFIGURATION_PATHS = { USER_MANAGEMENT_CONFIGURATION };
+    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
@@ -89,14 +86,12 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationPath()
      */
     @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return CONFIGURATION_PATHS;
+    public String getConfigurationPath() throws SiteWhereException {
+	return CONFIGURATION_PATH;
     }
 
     /*
@@ -109,7 +104,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     @Override
     public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
 	    throws SiteWhereException {
-	ApplicationContext context = contexts.get(USER_MANAGEMENT_CONFIGURATION);
+	ApplicationContext context = contexts.get(CONFIGURATION_PATH);
 	this.userManagement = (IUserManagement) context.getBean(UserManagementBeans.BEAN_USER_MANAGEMENT);
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
     }
@@ -229,6 +224,6 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     }
 
     protected ApplicationContext getUserManagementApplicationContext() {
-	return getGlobalContexts().get(USER_MANAGEMENT_CONFIGURATION);
+	return getGlobalContexts().get(CONFIGURATION_PATH);
     }
 }

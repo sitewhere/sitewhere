@@ -7,7 +7,7 @@
  */
 package com.sitewhere.instance.configuration;
 
-import com.sitewhere.configuration.CommonCommunicationModel;
+import com.sitewhere.configuration.CommonDatastoreModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.IGlobalsParser;
 import com.sitewhere.configuration.parser.IInstanceManagementParser;
@@ -48,9 +48,10 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     @Override
     public void initializeElements() {
 	addElement(createInstanceManagementElement());
-
-	// Datastore implementations.
+	addElement(createPersistenceConfigurationsElement());
+	addElement(createMongoDBPersistenceConfigurationsElement());
 	addElement(createDefaultMongoConfigurationElement());
+	addElement(createAlternateMongoConfigurationElement());
 
 	// addElement(createMongoInfluxDbTenantDatastoreElement());
 	// addElement(createHBaseTenantDatastoreElement());
@@ -77,9 +78,39 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createInstanceManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Instance Management", IInstanceManagementParser.ROOT,
-		"sign-in", InstanceManagementRoleKeys.InstanceManagement, this);
+		"globe", InstanceManagementRoleKeys.InstanceManagement, this);
 
 	builder.description("Handles global instance configuration.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create persistence configurations element.
+     * 
+     * @return
+     */
+    protected ElementNode createPersistenceConfigurationsElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Persistence Configurations",
+		IInstanceManagementParser.TopLevelElements.PersistenceConfigurations.getLocalName(), "database",
+		InstanceManagementRoleKeys.PersistenceConfigurations, this);
+
+	builder.description("Provides global persistence configurations that can be reused in tenants.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create MongoDB persistence configurations element.
+     * 
+     * @return
+     */
+    protected ElementNode createMongoDBPersistenceConfigurationsElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("MongoDB Persistence Configurations",
+		IInstanceManagementParser.PersistenceConfigurationsElements.MongoConfigurations.getLocalName(),
+		"database", InstanceManagementRoleKeys.MongoDBConfigurations, this);
+
+	builder.description("Provides global persistence configurations that can be reused in tenants.");
 
 	return builder.build();
     }
@@ -95,7 +126,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
 
 	builder.description("Default configuration for MongoDB data persistence.");
-	CommonCommunicationModel.addMqttConnectivityAttributes(builder);
+	CommonDatastoreModel.addMongoDbAttributes(builder);
 
 	return builder.build();
     }
@@ -111,7 +142,10 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.AlternateMongoDBConfiguration, this);
 
 	builder.description("Alternate configuration for MongoDB data persistence.");
-	CommonCommunicationModel.addMqttConnectivityAttributes(builder);
+
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
+		.description("Unique id for referencing configuration.").build()));
+	CommonDatastoreModel.addMongoDbAttributes(builder);
 
 	return builder.build();
     }

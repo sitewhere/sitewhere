@@ -486,9 +486,9 @@ function findModelChildrenInRole (roleName) {
   all.push.apply(all, wizard.configModel.elementsByRole[roleName])
 
   // Also matches of subtypes.
-  if (role.subtypes) {
-    for (var i = 0; i < role.subtypes.length; i++) {
-      var subtypeName = role.subtypes[i]
+  if (role.subtypeRoles) {
+    for (var i = 0; i < role.subtypeRoles.length; i++) {
+      var subtypeName = role.subtypeRoles[i]
       all.push.apply(all, wizard.configModel.elementsByRole[subtypeName])
     }
   }
@@ -517,8 +517,8 @@ function getConfigChildrenByRole (modelNode, configNode) {
     var childRole = wizard.configModel.rolesById[childRoleName]
     var roleSubtypes = []
     roleSubtypes.push(childRoleName)
-    if (childRole.subtypes) {
-      roleSubtypes.push.apply(roleSubtypes, childRole.subtypes)
+    if (childRole.subtypeRoles) {
+      roleSubtypes.push.apply(roleSubtypes, childRole.subtypeRoles)
     }
 
     let matches = []

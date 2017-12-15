@@ -17,20 +17,50 @@ public interface IInstanceManagementParser {
     // Root element name.
     public static final String ROOT = "instance-management";
 
-    public static enum Elements {
+    public static enum TopLevelElements {
 
-	/** MongoDB configuration elements */
-	MongoConfiguration("mongodb-configuration");
+	/** Persistence configurations */
+	PersistenceConfigurations("persistence-configurations");
 
 	/** Event code */
 	private String localName;
 
-	private Elements(String localName) {
+	private TopLevelElements(String localName) {
 	    this.localName = localName;
 	}
 
-	public static Elements getByLocalName(String localName) {
-	    for (Elements value : Elements.values()) {
+	public static TopLevelElements getByLocalName(String localName) {
+	    for (TopLevelElements value : TopLevelElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum PersistenceConfigurationsElements {
+
+	/** MongoDB configuration elements */
+	MongoConfigurations("mongodb-configurations");
+
+	/** Event code */
+	private String localName;
+
+	private PersistenceConfigurationsElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static PersistenceConfigurationsElements getByLocalName(String localName) {
+	    for (PersistenceConfigurationsElements value : PersistenceConfigurationsElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

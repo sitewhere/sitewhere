@@ -61,11 +61,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     private static final String NAME = "Instance Management";
 
     /** User management configuration file name */
-    private static final String INSTANCE_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT
-	    + ".xml";
-
-    /** List of configuration paths required by microservice */
-    private static final String[] CONFIGURATION_PATHS = { INSTANCE_MANAGEMENT_CONFIGURATION };
+    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT + ".xml";
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -119,14 +115,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationPath()
      */
     @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return CONFIGURATION_PATHS;
+    public String getConfigurationPath() throws SiteWhereException {
+	return CONFIGURATION_PATH;
     }
 
     /*

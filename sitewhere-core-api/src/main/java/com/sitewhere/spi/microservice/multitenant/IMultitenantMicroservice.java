@@ -37,6 +37,22 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
     public T getTenantEngineByTenantId(String tenantId) throws SiteWhereException;
 
     /**
+     * Shuts down and restarts the given tenant engine.
+     * 
+     * @param tenantId
+     * @throws SiteWhereException
+     */
+    public void restartTenantEngine(String tenantId) throws SiteWhereException;
+
+    /**
+     * Shuts down and removes a tenant engine.
+     * 
+     * @param tenantId
+     * @throws SiteWhereException
+     */
+    public void removeTenantEngine(String tenantId) throws SiteWhereException;
+
+    /**
      * Get configuration for the given tenant.
      * 
      * @param tenantId

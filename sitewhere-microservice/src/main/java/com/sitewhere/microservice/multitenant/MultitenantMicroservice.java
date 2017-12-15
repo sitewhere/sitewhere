@@ -31,6 +31,8 @@ import com.sitewhere.microservice.multitenant.operations.InitializeTenantEngineO
 import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperation;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -40,6 +42,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -177,6 +180,15 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationPath()
+     */
+    @Override
+    public String getConfigurationPath() throws SiteWhereException {
+	return null;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
@@ -231,6 +243,44 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	    }
 	}
 	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * restartTenantEngine(java.lang.String)
+     */
+    @Override
+    public void restartTenantEngine(String tenantId) throws SiteWhereException {
+	// Shut down and remove existing tenant engine.
+	removeTenantEngine(tenantId);
+
+	// Add to queue for restart.
+	getTenantInitializationQueue().offer(tenantId);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * removeTenantEngine(java.lang.String)
+     */
+    @Override
+    public void removeTenantEngine(String tenantId) throws SiteWhereException {
+	IMicroserviceTenantEngine engine = getTenantEngineByTenantId(tenantId);
+	getInitializedTenantEngines().remove(tenantId);
+
+	ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		new LifecycleProgressContext(1, "Shut down tenant engine."), this);
+
+	// Stop tenant engine.
+	engine.lifecycleStop(monitor);
+	if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    getLogger().error("Error while stopping tenant engine.", engine.getLifecycleError());
+	}
+
+	// Terminate tenant engine.
+	engine.lifecycleTerminate(monitor);
+	if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    getLogger().error("Error while terminating tenant engine.", engine.getLifecycleError());
+	}
     }
 
     /*
@@ -320,17 +370,6 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		getLogger().error("Error processing configuration delete.", e);
 	    }
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getConfigurationPaths()
-     */
-    @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return new String[0];
     }
 
     /*

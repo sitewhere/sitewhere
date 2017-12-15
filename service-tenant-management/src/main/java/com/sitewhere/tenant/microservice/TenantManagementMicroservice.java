@@ -55,10 +55,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     private static final String NAME = "Tenant Management";
 
     /** Tenant management configuration file name */
-    private static final String TENANT_MANAGEMENT_CONFIGURATION = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
-
-    /** List of configuration paths required by microservice */
-    private static final String[] CONFIGURATION_PATHS = { TENANT_MANAGEMENT_CONFIGURATION };
+    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
 
     /** Root folder for instance templates */
     private static final String TEMPLATES_ROOT = "/templates";
@@ -116,14 +113,12 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationPath()
      */
     @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return CONFIGURATION_PATHS;
+    public String getConfigurationPath() throws SiteWhereException {
+	return CONFIGURATION_PATH;
     }
 
     /*
@@ -139,7 +134,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 	this.tenantModelProducer = new TenantModelProducer(this);
 	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
 
-	ApplicationContext context = contexts.get(TENANT_MANAGEMENT_CONFIGURATION);
+	ApplicationContext context = contexts.get(CONFIGURATION_PATH);
 	this.tenantManagement = initializeTenantManagement(context);
 	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
     }
@@ -372,6 +367,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     protected ApplicationContext getTenantManagementApplicationContext() {
-	return getGlobalContexts().get(TENANT_MANAGEMENT_CONFIGURATION);
+	return getGlobalContexts().get(CONFIGURATION_PATH);
     }
 }

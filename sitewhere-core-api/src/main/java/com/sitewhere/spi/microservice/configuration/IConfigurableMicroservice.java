@@ -62,13 +62,13 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public byte[] getConfigurationDataFor(String path) throws SiteWhereException;
 
     /**
-     * Get paths for configuration files needed by microservice (excluding global
+     * Get path for configuration file needed by microservice (excluding global
      * instance configuration).
      * 
      * @return
      * @throws SiteWhereException
      */
-    public String[] getConfigurationPaths() throws SiteWhereException;
+    public String getConfigurationPath() throws SiteWhereException;
 
     /**
      * Get path for instance management configuration.

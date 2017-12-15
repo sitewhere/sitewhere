@@ -13,15 +13,20 @@
 	<!-- Instance global configuration -->
 	<im:instance-management>
 
-		<!-- MongoDB global configuration management -->
-		<im:mongodb-configuration>
+		<!-- Reusable persistence configurations -->
+		<im:persistence-configurations>
 
-			<!-- Default configuration for MongoDB data access -->
-			<im:default-mongodb-configuration
-				hostname="${datastore.host:mongodb}" port="${datastore.port:27017}"
-				databaseName="${datastore.database:sitewhere}" replicaSetName="${datastore.replicaset:}" />
+			<!-- MongoDB global configuration management -->
+			<im:mongodb-configurations>
 
-		</im:mongodb-configuration>
+				<!-- Default configuration for MongoDB data access -->
+				<im:default-mongodb-configuration
+					hostname="${datastore.host:mongodb}" port="${datastore.port:27017}"
+					databaseName="${datastore.database:sitewhere}" replicaSetName="${datastore.replicaset:}" />
+
+			</im:mongodb-configurations>
+
+		</im:persistence-configurations>
 
 	</im:instance-management>
 

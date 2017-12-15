@@ -56,10 +56,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     private static final String NAME = "Web/REST";
 
     /** Web/REST configuration file name */
-    private static final String WEB_REST_CONFIGURATION = IMicroserviceIdentifiers.WEB_REST + ".xml";
-
-    /** List of configuration paths required by microservice */
-    private static final String[] CONFIGURATION_PATHS = { WEB_REST_CONFIGURATION };
+    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.WEB_REST + ".xml";
 
     /** User management API demux */
     private IUserManagementApiDemux userManagementApiDemux;
@@ -125,14 +122,12 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#getConfigurationPaths( )
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationPath()
      */
     @Override
-    public String[] getConfigurationPaths() throws SiteWhereException {
-	return CONFIGURATION_PATHS;
+    public String getConfigurationPath() throws SiteWhereException {
+	return CONFIGURATION_PATH;
     }
 
     /*
@@ -453,7 +448,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     protected ApplicationContext getWebRestApplicationContext() {
-	return getGlobalContexts().get(WEB_REST_CONFIGURATION);
+	return getGlobalContexts().get(CONFIGURATION_PATH);
     }
 
     public IAssetResolver getAssetResolver() {

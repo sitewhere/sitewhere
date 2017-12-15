@@ -21,19 +21,24 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 
     /** Root instance management role. */
     InstanceManagement(ConfigurationRole.build(InstanceManagementRoleKeys.InstanceManagement, "Instance Management",
-	    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.DatastoreConfiguration }, new IRoleKey[0],
-	    true)),
+	    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.PersistenceConfigurations },
+	    new IRoleKey[0], true)),
 
-    /** Datastore configuration. */
-    DatastoreConfiguration(
-	    ConfigurationRole.build(InstanceManagementRoleKeys.DatastoreConfiguration, "Datastore Configuration", false,
-		    false, false, new IRoleKey[0], new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfiguration })),
+    /** Persistence configurations. */
+    PersistenceConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations,
+	    "Persistence Configurations", false, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.PersistenceConfigurationsElement })),
 
-    /** MongoDB datastore configuration. */
-    MongoDBConfiguration(
-	    ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfiguration, "MongoDB Datastore Configuration",
-		    true, false, false, new IRoleKey[] { InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
-			    InstanceManagementRoleKeys.AlternateMongoDBConfiguration })),
+    /** Persistence configurations element. */
+    PersistenceConfigurationsElement(ConfigurationRole.build(
+	    InstanceManagementRoleKeys.PersistenceConfigurationsElement, "Persistence Configuration", true, true, true,
+	    new IRoleKey[0], new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations })),
+
+    /** MongoDB persistence configurations. */
+    MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
+	    "MongoDB Persistence Configuration", true, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
+		    InstanceManagementRoleKeys.AlternateMongoDBConfiguration })),
 
     /** Default MongoDB datastore configuration. */
     DefaultMongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultMongoDBConfiguration,

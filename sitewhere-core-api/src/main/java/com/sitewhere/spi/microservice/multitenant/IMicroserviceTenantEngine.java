@@ -85,6 +85,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public String getModuleLockPath() throws SiteWhereException;
 
     /**
+     * Get name of for module configuration file (without path).
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getModuleConfigurationName() throws SiteWhereException;
+
+    /**
      * Get Zk configuration path for module configuration.
      * 
      * @return

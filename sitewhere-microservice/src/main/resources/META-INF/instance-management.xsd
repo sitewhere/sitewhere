@@ -21,35 +21,49 @@
 	<!-- Top-level instance management elements -->
 	<xsd:complexType name="instanceManagementType">
 		<xsd:all>
-			<xsd:element ref="abstract-datastore-configuration">
+			<xsd:element name="persistence-configurations" type="persistenceConfigurationsType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Provides global datastore configuration.
+						Captures reusable configuration information that
+						can be used by tenants to access common datastores.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 
+	<!-- Persistence configurations -->
+	<xsd:complexType name="persistenceConfigurationsType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-persistence-configuration"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provides global datastore configuration.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for datastore configurations to allow substitutionGroups -->
-	<xsd:element name="abstract-datastore-configuration"
-		abstract="true" type="abstractDatastoreConfigurationType">
+	<xsd:element name="abstract-persistence-configuration"
+		abstract="true" type="abstractPersistenceConfigurationType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for datastore configuration
+				A placeholder for persistence configuration
 				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 
 	<!-- Common datastore configuration information -->
-	<xsd:complexType name="abstractDatastoreConfigurationType">
+	<xsd:complexType name="abstractPersistenceConfigurationType">
 	</xsd:complexType>
 
-	<!-- Mongo configuration elements -->
-	<!-- Default user model initializer -->
-	<xsd:element name="mongodb-configuration" type="mongoConfigurationType"
-		substitutionGroup="abstract-datastore-configuration">
+	<!-- MongoDB persistence configuration elements -->
+	<xsd:element name="mongodb-configurations" type="mongoConfigurationsType"
+		substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides global datastore configuration using
@@ -57,9 +71,9 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="mongoConfigurationType">
+	<xsd:complexType name="mongoConfigurationsType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreConfigurationType">
+			<xsd:extension base="abstractPersistenceConfigurationType">
 				<xsd:sequence>
 					<xsd:element name="default-mongodb-configuration"
 						type="defaultMongoDatastoreConfigurationType" minOccurs="1">
