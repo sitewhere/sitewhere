@@ -8,7 +8,6 @@
 package com.sitewhere.microservice.multitenant;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +17,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.MapMaker;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
@@ -177,6 +175,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	    tenantOperations.shutdown();
 	}
 	getTenantManagementApiChannel().terminate(monitor);
+
+	super.terminate(monitor);
     }
 
     /*
@@ -340,10 +340,20 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     public void onConfigurationUpdated(String path, byte[] data) {
 	if (isConfigurationCacheReady()) {
 	    try {
-		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-		if (engine != null) {
-		    engine.onConfigurationUpdated(pathInfo.getPath(), data);
+		// Detect global configuration update and inform all engines.
+		if (getInstanceManagementConfigurationPath().equals(path)) {
+		    for (T engine : getInitializedTenantEngines().values()) {
+			engine.onGlobalConfigurationUpdated();
+		    }
+		}
+
+		// Otherwise, only report updates to tenant-specific paths.
+		else {
+		    TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
+		    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+		    if (engine != null) {
+			engine.onConfigurationUpdated(pathInfo.getPath(), data);
+		    }
 		}
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration update.", e);
@@ -403,18 +413,6 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     @Override
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
-     * java.util.Map)
-     */
-    @Override
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
     }
 
     public ITenantManagementApiChannel getTenantManagementApiChannel() {

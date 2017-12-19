@@ -117,6 +117,13 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public void updateModuleConfiguration(byte[] content) throws SiteWhereException;
 
     /**
+     * Called when global configuration is updated.
+     * 
+     * @throws SiteWhereException
+     */
+    public void onGlobalConfigurationUpdated() throws SiteWhereException;
+
+    /**
      * Get Zk configuration path for module bootstrapped indicator.
      * 
      * @return

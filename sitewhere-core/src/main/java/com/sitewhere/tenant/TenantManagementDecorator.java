@@ -21,14 +21,11 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  * 
  * @author Derek
  */
-public class TenantManagementDecorator extends LifecycleComponentDecorator implements ITenantManagement {
-
-    /** Delegate */
-    private ITenantManagement delegate;
+public class TenantManagementDecorator extends LifecycleComponentDecorator<ITenantManagement>
+	implements ITenantManagement {
 
     public TenantManagementDecorator(ITenantManagement delegate) {
 	super(delegate);
-	this.delegate = delegate;
     }
 
     /*
@@ -40,7 +37,7 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-	return delegate.createTenant(request);
+	return getDelegate().createTenant(request);
     }
 
     /*
@@ -52,7 +49,7 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-	return delegate.updateTenant(id, request);
+	return getDelegate().updateTenant(id, request);
     }
 
     /*
@@ -63,7 +60,7 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ITenant getTenantById(String id) throws SiteWhereException {
-	return delegate.getTenantById(id);
+	return getDelegate().getTenantById(id);
     }
 
     /*
@@ -75,7 +72,7 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-	return delegate.getTenantByAuthenticationToken(token);
+	return getDelegate().getTenantByAuthenticationToken(token);
     }
 
     /*
@@ -87,7 +84,7 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-	return delegate.listTenants(criteria);
+	return getDelegate().listTenants(criteria);
     }
 
     /*
@@ -99,6 +96,6 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator imple
      */
     @Override
     public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-	return delegate.deleteTenant(tenantId, force);
+	return getDelegate().deleteTenant(tenantId, force);
     }
 }

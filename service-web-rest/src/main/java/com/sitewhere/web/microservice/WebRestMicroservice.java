@@ -7,11 +7,8 @@
  */
 package com.sitewhere.web.microservice;
 
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
@@ -133,18 +130,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
-     * java.util.Map)
-     */
-    @Override
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
      */
     @Override
@@ -183,9 +168,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Initialize user management API demux.
 	init.addInitializeStep(this, getUserManagementApiDemux(), true);
@@ -259,9 +241,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getWebRestApplicationContext(), monitor));
-
 	// Start user mangement API demux.
 	start.addStartStep(this, getUserManagementApiDemux(), true);
 
@@ -324,9 +303,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop microservice management coordinator.
 	stop.addStopStep(this, getMicroserviceManagementCoordinator());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getWebRestApplicationContext(), monitor));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -445,10 +421,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    protected ApplicationContext getWebRestApplicationContext() {
-	return getGlobalContexts().get(CONFIGURATION_PATH);
     }
 
     public IAssetResolver getAssetResolver() {

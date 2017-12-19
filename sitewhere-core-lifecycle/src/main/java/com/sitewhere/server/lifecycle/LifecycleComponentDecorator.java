@@ -26,12 +26,12 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class LifecycleComponentDecorator implements ILifecycleComponent {
+public class LifecycleComponentDecorator<T extends ILifecycleComponent> implements ILifecycleComponent {
 
     /** Delegate instance */
-    private ILifecycleComponent delegate;
+    private T delegate;
 
-    public LifecycleComponentDecorator(ILifecycleComponent delegate) {
+    public LifecycleComponentDecorator(T delegate) {
 	this.delegate = delegate;
     }
 
@@ -42,7 +42,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public String getComponentId() {
-	return delegate.getComponentId();
+	return getDelegate().getComponentId();
     }
 
     /*
@@ -53,7 +53,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public String getComponentName() {
-	return delegate.getComponentName();
+	return getDelegate().getComponentName();
     }
 
     /*
@@ -64,7 +64,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public LifecycleComponentType getComponentType() {
-	return delegate.getComponentType();
+	return getDelegate().getComponentType();
     }
 
     /*
@@ -75,7 +75,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public LifecycleStatus getLifecycleStatus() {
-	return delegate.getLifecycleStatus();
+	return getDelegate().getLifecycleStatus();
     }
 
     /*
@@ -86,7 +86,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public SiteWhereException getLifecycleError() {
-	return delegate.getLifecycleError();
+	return getDelegate().getLifecycleError();
     }
 
     /*
@@ -96,7 +96,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public Date getCreatedDate() {
-	return delegate.getCreatedDate();
+	return getDelegate().getCreatedDate();
     }
 
     /*
@@ -107,7 +107,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public Map<String, ILifecycleComponent> getLifecycleComponents() {
-	return delegate.getLifecycleComponents();
+	return getDelegate().getLifecycleComponents();
     }
 
     /*
@@ -119,7 +119,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleInitialize(ILifecycleProgressMonitor monitor) {
-	delegate.lifecycleInitialize(monitor);
+	getDelegate().lifecycleInitialize(monitor);
     }
 
     /*
@@ -129,7 +129,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public boolean canInitialize() throws SiteWhereException {
-	return delegate.canInitialize();
+	return getDelegate().canInitialize();
     }
 
     /*
@@ -140,7 +140,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	delegate.initialize(monitor);
+	getDelegate().initialize(monitor);
     }
 
     /*
@@ -152,7 +152,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
 	    boolean require) throws SiteWhereException {
-	delegate.initializeNestedComponent(component, monitor, require);
+	getDelegate().initializeNestedComponent(component, monitor, require);
     }
 
     /*
@@ -164,7 +164,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStart(ILifecycleProgressMonitor monitor) {
-	delegate.lifecycleStart(monitor);
+	getDelegate().lifecycleStart(monitor);
     }
 
     /*
@@ -174,7 +174,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public boolean canStart() throws SiteWhereException {
-	return delegate.canStart();
+	return getDelegate().canStart();
     }
 
     /*
@@ -185,7 +185,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	delegate.start(monitor);
+	getDelegate().start(monitor);
     }
 
     /*
@@ -196,7 +196,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void startNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor, boolean require)
 	    throws SiteWhereException {
-	delegate.startNestedComponent(component, monitor, require);
+	getDelegate().startNestedComponent(component, monitor, require);
     }
 
     /*
@@ -208,7 +208,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecyclePause(ILifecycleProgressMonitor monitor) {
-	delegate.lifecyclePause(monitor);
+	getDelegate().lifecyclePause(monitor);
     }
 
     /*
@@ -218,7 +218,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public boolean canPause() throws SiteWhereException {
-	return delegate.canPause();
+	return getDelegate().canPause();
     }
 
     /*
@@ -229,7 +229,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void pause(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	delegate.pause(monitor);
+	getDelegate().pause(monitor);
     }
 
     /*
@@ -241,7 +241,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor) {
-	delegate.lifecycleStop(monitor);
+	getDelegate().lifecycleStop(monitor);
     }
 
     /*
@@ -254,7 +254,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
-	delegate.lifecycleStop(monitor, constraints);
+	getDelegate().lifecycleStop(monitor, constraints);
     }
 
     /*
@@ -264,7 +264,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public boolean canStop() throws SiteWhereException {
-	return delegate.canStop();
+	return getDelegate().canStop();
     }
 
     /*
@@ -276,7 +276,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	delegate.stop(monitor);
+	getDelegate().stop(monitor);
     }
 
     /*
@@ -289,7 +289,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) throws SiteWhereException {
-	delegate.stop(monitor, constraints);
+	getDelegate().stop(monitor, constraints);
     }
 
     /*
@@ -301,7 +301,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
     @Override
     public void stopNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	delegate.stopNestedComponent(component, monitor);
+	getDelegate().stopNestedComponent(component, monitor);
     }
 
     /*
@@ -313,7 +313,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleTerminate(ILifecycleProgressMonitor monitor) {
-	delegate.lifecycleTerminate(monitor);
+	getDelegate().lifecycleTerminate(monitor);
     }
 
     /*
@@ -324,7 +324,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	delegate.terminate(monitor);
+	getDelegate().terminate(monitor);
     }
 
     /*
@@ -336,7 +336,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after) {
-	delegate.lifecycleStatusChanged(before, after);
+	getDelegate().lifecycleStatusChanged(before, after);
     }
 
     /*
@@ -348,7 +348,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type) throws SiteWhereException {
-	return delegate.findComponentsOfType(type);
+	return getDelegate().findComponentsOfType(type);
     }
 
     /*
@@ -358,7 +358,7 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public Logger getLogger() {
-	return delegate.getLogger();
+	return getDelegate().getLogger();
     }
 
     /*
@@ -368,6 +368,19 @@ public class LifecycleComponentDecorator implements ILifecycleComponent {
      */
     @Override
     public void logState() {
-	delegate.logState();
+	getDelegate().logState();
+    }
+
+    /**
+     * Access the delegate instance.
+     * 
+     * @return
+     */
+    public T getDelegate() {
+	return delegate;
+    }
+
+    public void setDelegate(T delegate) {
+	this.delegate = delegate;
     }
 }

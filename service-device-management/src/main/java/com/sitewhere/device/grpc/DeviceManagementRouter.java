@@ -16,6 +16,7 @@ import com.sitewhere.grpc.service.*;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
 
@@ -54,9 +55,9 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getDeviceManagementImpl();
 	    }
-	    throw new RuntimeException("Tenant engine not found.");
+	    throw new ServiceNotAvailableException("Tenant engine not found.");
 	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Error locating tenant engine.", e);
+	    throw new ServiceNotAvailableException("Error locating tenant engine.", e);
 	}
     }
 

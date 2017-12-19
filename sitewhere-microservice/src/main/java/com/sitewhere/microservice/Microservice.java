@@ -10,6 +10,10 @@ package com.sitewhere.microservice;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -104,7 +108,12 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Consumes Kafka instance topology updates and broadcasts them */
     private IInstanceTopologyUpdatesManager instanceTopologyUpdatesManager;
 
+    /** Lifecycle operations thread pool */
+    private ExecutorService microserviceOperationsService;
+
     public Microservice() {
+	this.microserviceOperationsService = Executors
+		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
 	this.instanceTopologyUpdatesManager = new InstanceTopologySnapshotsManager(this);
 	this.configurationModel = buildConfigurationModel();
@@ -131,14 +140,26 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Initialize Hazelcast manager.
 	initialize.addInitializeStep(this, getHazelcastManager(), true);
 
+	// Start Hazelcast manager.
+	initialize.addStartStep(this, getHazelcastManager(), true);
+
 	// Initialize microservice management GRPC server.
 	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
+
+	// Start microservice management GRPC server.
+	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
 	// Initialize Kafka consumer for instance topology updates.
 	initialize.addInitializeStep(this, getInstanceTopologyUpdatesManager(), true);
 
+	// Start Kafka consumer for instance topology updates.
+	initialize.addStartStep(this, getInstanceTopologyUpdatesManager(), true);
+
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
+
+	// Start Kafka producer for reporting state.
+	initialize.addStartStep(this, getStateUpdatesKafkaProducer(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -152,61 +173,12 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will start components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
-	// Start Hazelcast manager.
-	start.addStartStep(this, getHazelcastManager(), true);
-
-	// Start microservice management GRPC server.
-	start.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
-
-	// Start Kafka consumer for instance topology updates.
-	start.addStartStep(this, getInstanceTopologyUpdatesManager(), true);
-
-	// Start Kafka producer for reporting state.
-	start.addStartStep(this, getStateUpdatesKafkaProducer(), true);
-
-	// Execute startup steps.
-	start.execute(monitor);
-    }
-
-    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.IMicroservice#afterMicroserviceStarted()
      */
     @Override
     public void afterMicroserviceStarted() {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will stop components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
-
-	// Stop microservice management GRPC server.
-	start.addStopStep(this, getMicroserviceManagementGrpcServer());
-
-	// Stop Kafka consumer for instance topology updates.
-	start.addStopStep(this, getInstanceTopologyUpdatesManager());
-
-	// Stop Kafka producer for reporting state.
-	start.addStopStep(this, getStateUpdatesKafkaProducer());
-
-	// Execute shutdown steps.
-	start.execute(monitor);
     }
 
     /*
@@ -218,11 +190,29 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep terminate = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop microservice management GRPC server.
+	terminate.addStopStep(this, getMicroserviceManagementGrpcServer());
+
+	// Stop Kafka consumer for instance topology updates.
+	terminate.addStopStep(this, getInstanceTopologyUpdatesManager());
+
+	// Stop Kafka producer for reporting state.
+	terminate.addStopStep(this, getStateUpdatesKafkaProducer());
+
 	// Terminate Zk manager.
-	getZookeeperManager().lifecycleTerminate(monitor);
+	terminate.addStopStep(this, getZookeeperManager());
+
+	// Stop Hazelcast manager.
+	terminate.addStopStep(this, getHazelcastManager());
 
 	// Terminate Hazelcast manager.
-	getHazelcastManager().lifecycleTerminate(monitor);
+	terminate.addTerminateStep(this, getHazelcastManager());
+
+	// Execute shutdown steps.
+	terminate.execute(monitor);
     }
 
     /*
@@ -521,5 +511,30 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setVersion(IVersion version) {
 	this.version = version;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getMicroserviceOperationsService
+     * ()
+     */
+    @Override
+    public ExecutorService getMicroserviceOperationsService() {
+	return microserviceOperationsService;
+    }
+
+    public void setMicroserviceOperationsService(ExecutorService microserviceOperationsService) {
+	this.microserviceOperationsService = microserviceOperationsService;
+    }
+
+    /** Used for naming microservice operation threads */
+    private class MicroserviceOperationsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Microservice Operations " + counter.incrementAndGet());
+	}
     }
 }

@@ -29,14 +29,11 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class AssetManagementDecorator extends LifecycleComponentDecorator implements IAssetManagement {
-
-    /** Delegate */
-    private IAssetManagement delegate;
+public class AssetManagementDecorator extends LifecycleComponentDecorator<IAssetManagement>
+	implements IAssetManagement {
 
     public AssetManagementDecorator(IAssetManagement delegate) {
 	super(delegate);
-	this.delegate = delegate;
     }
 
     /*
@@ -46,7 +43,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	delegate.setTenantEngine(tenantEngine);
+	getDelegate().setTenantEngine(tenantEngine);
     }
 
     /*
@@ -55,7 +52,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IMicroserviceTenantEngine getTenantEngine() {
-	return delegate.getTenantEngine();
+	return getDelegate().getTenantEngine();
     }
 
     /*
@@ -66,7 +63,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
-	return delegate.createAssetCategory(request);
+	return getDelegate().createAssetCategory(request);
     }
 
     /*
@@ -77,7 +74,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException {
-	return delegate.getAssetCategory(categoryId);
+	return getDelegate().getAssetCategory(categoryId);
     }
 
     /*
@@ -89,7 +86,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateAssetCategory(categoryId, request);
+	return getDelegate().updateAssetCategory(categoryId, request);
     }
 
     /*
@@ -100,7 +97,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listAssetCategories(criteria);
+	return getDelegate().listAssetCategories(criteria);
     }
 
     /*
@@ -111,7 +108,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
-	return delegate.deleteAssetCategory(categoryId);
+	return getDelegate().deleteAssetCategory(categoryId);
     }
 
     /*
@@ -123,7 +120,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createPersonAsset(categoryId, request);
+	return getDelegate().createPersonAsset(categoryId, request);
     }
 
     /*
@@ -136,7 +133,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updatePersonAsset(categoryId, assetId, request);
+	return getDelegate().updatePersonAsset(categoryId, assetId, request);
     }
 
     /*
@@ -148,7 +145,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createHardwareAsset(categoryId, request);
+	return getDelegate().createHardwareAsset(categoryId, request);
     }
 
     /*
@@ -161,7 +158,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateHardwareAsset(categoryId, assetId, request);
+	return getDelegate().updateHardwareAsset(categoryId, assetId, request);
     }
 
     /*
@@ -173,7 +170,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createLocationAsset(categoryId, request);
+	return getDelegate().createLocationAsset(categoryId, request);
     }
 
     /*
@@ -186,7 +183,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
     @Override
     public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateLocationAsset(categoryId, assetId, request);
+	return getDelegate().updateLocationAsset(categoryId, assetId, request);
     }
 
     /*
@@ -197,7 +194,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException {
-	return delegate.getAsset(categoryId, assetId);
+	return getDelegate().getAsset(categoryId, assetId);
     }
 
     /*
@@ -208,7 +205,7 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
-	return delegate.deleteAsset(categoryId, assetId);
+	return getDelegate().deleteAsset(categoryId, assetId);
     }
 
     /*
@@ -219,6 +216,6 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator implem
      */
     @Override
     public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listAssets(categoryId, criteria);
+	return getDelegate().listAssets(categoryId, criteria);
     }
 }

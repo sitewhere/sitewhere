@@ -31,11 +31,11 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
-	// Wait for microservice to be configured.
-	waitForConfigurationReady();
-
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
+
+	// Wait for microservice to be configured.
+	waitForConfigurationReady();
     }
 
     /*
@@ -74,6 +74,80 @@ public abstract class GlobalMicroservice extends ConfigurableMicroservice implem
     @Override
     public byte[] getConfiguration() throws SiteWhereException {
 	return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + getConfigurationPath());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationAdded(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		if (isConfigurationPath(path)) {
+		    getLogger().info("Microservice configuration added.");
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to processing added configuration.", e);
+	    }
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationUpdated(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(String path, byte[] data) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		if (isConfigurationPath(path)) {
+		    getLogger().info("Microservice configuration updated.");
+		    restartConfiguration();
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to processing updated configuration.", e);
+	    }
+	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
+     * onConfigurationDeleted(java.lang.String)
+     */
+    @Override
+    public void onConfigurationDeleted(String path) {
+	if (isConfigurationCacheReady()) {
+	    try {
+		if (isConfigurationPath(path)) {
+		    getLogger().info("Microservice configuration deleted.");
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to processing deleted configuration.", e);
+	    }
+	}
+    }
+
+    /**
+     * Indicates whether the given path points to a configuration file.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    protected boolean isConfigurationPath(String path) throws SiteWhereException {
+	String localConfig = getInstanceConfigurationPath() + "/" + getConfigurationPath();
+	String instanceConfig = getInstanceManagementConfigurationPath();
+	if ((localConfig.equals(path)) || (instanceConfig.equals(path))) {
+	    return true;
+	}
+	return false;
     }
 
     /*

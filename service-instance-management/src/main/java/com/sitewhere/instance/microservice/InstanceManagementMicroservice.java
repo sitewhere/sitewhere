@@ -8,19 +8,17 @@
 package com.sitewhere.instance.microservice;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.grpc.client.user.UserManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
+import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
@@ -31,7 +29,6 @@ import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.MicroserviceEnvironment;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
 import com.sitewhere.microservice.state.InstanceTopologySnapshotsKafkaProducer;
@@ -66,11 +63,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
-    /** User management API channel */
-    private IUserManagementApiChannel userManagementApiChannel;
+    /** User management API demux */
+    private IUserManagementApiDemux userManagementApiDemux;
 
-    /** Tenant management API channel */
-    private ITenantManagementApiChannel tenantManagementApiChannel;
+    /** Tenant management API demux */
+    private ITenantManagementApiDemux tenantManagementApiDemux;
 
     /** State aggregator Kafka consumer */
     private IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer;
@@ -124,18 +121,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
-     * java.util.Map)
-     */
-    @Override
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
-    }
-
-    /*
      * @see com.sitewhere.microservice.Microservice#waitForInstanceInitialization()
      */
     @Override
@@ -186,11 +171,8 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiChannel = new UserManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_USER_MANAGEMENT);
-
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT);
+	this.userManagementApiDemux = new UserManagementApiDemux(this);
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(this);
     }
 
     /*
@@ -210,16 +192,16 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	start.addStartStep(this, getInstanceTemplateManager(), true);
 
 	// Initialize user management API channel.
-	start.addInitializeStep(this, getUserManagementApiChannel(), true);
+	start.addInitializeStep(this, getUserManagementApiDemux(), true);
 
 	// Start user mangement API channel.
-	start.addStartStep(this, getUserManagementApiChannel(), true);
+	start.addStartStep(this, getUserManagementApiDemux(), true);
 
 	// Initialize tenant management API channel.
-	start.addInitializeStep(this, getTenantManagementApiChannel(), true);
+	start.addInitializeStep(this, getTenantManagementApiDemux(), true);
 
 	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
+	start.addStartStep(this, getTenantManagementApiDemux(), true);
 
 	// Initialize state aggregator consumer.
 	start.addInitializeStep(this, getStateAggregatorKafkaConsumer(), true);
@@ -256,11 +238,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	// Stop state aggregator consumer.
 	stop.addStopStep(this, getStateAggregatorKafkaConsumer());
 
-	// Stop tenant management API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
+	// Stop tenant management API demux.
+	stop.addStopStep(this, getTenantManagementApiDemux());
 
-	// Stop user management API channel.
-	stop.addStopStep(this, getUserManagementApiChannel());
+	// Stop user management API demux.
+	stop.addStopStep(this, getUserManagementApiDemux());
 
 	// Stop instance template manager.
 	stop.addStopStep(this, getInstanceTemplateManager());
@@ -386,14 +368,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	}
 
 	// Wait for user management APIs to become available.
-	getUserManagementApiChannel().waitForApiAvailable();
+	getUserManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("User management API detected as available.");
 
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
-	    initializer.initialize(getUserManagementApiChannel());
+	    initializer.initialize(getUserManagementApiDemux().getApiChannel());
 	}
     }
 
@@ -412,14 +394,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	}
 
 	// Wait for tenant management APIs to become available.
-	getTenantManagementApiChannel().waitForApiAvailable();
+	getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Tenant management API detected as available.");
 
 	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
 	for (String script : scripts) {
 	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
-	    initializer.initialize(getTenantManagementApiChannel());
+	    initializer.initialize(getTenantManagementApiDemux().getApiChannel());
 	}
     }
 
@@ -464,33 +446,29 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getUserManagementApiChannel()
+     * getUserManagementApiDemux()
      */
     @Override
-    public IUserManagementApiChannel getUserManagementApiChannel() {
-	return userManagementApiChannel;
+    public IUserManagementApiDemux getUserManagementApiDemux() {
+	return userManagementApiDemux;
     }
 
-    public void setUserManagementApiChannel(IUserManagementApiChannel userManagementApiChannel) {
-	this.userManagementApiChannel = userManagementApiChannel;
+    public void setUserManagementApiDemux(IUserManagementApiDemux userManagementApiDemux) {
+	this.userManagementApiDemux = userManagementApiDemux;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantManagementApiChannel()
+     * getTenantManagementApiDemux()
      */
     @Override
-    public ITenantManagementApiChannel getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
+    public ITenantManagementApiDemux getTenantManagementApiDemux() {
+	return tenantManagementApiDemux;
     }
 
-    public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
+	this.tenantManagementApiDemux = tenantManagementApiDemux;
     }
 
     /*

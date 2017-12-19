@@ -71,7 +71,7 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize schedule management persistence.
 	init.addInitializeStep(this, getScheduleManagement(), true);

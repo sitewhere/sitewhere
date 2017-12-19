@@ -62,7 +62,7 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize batch management persistence.
 	init.addInitializeStep(this, getBatchManagement(), true);

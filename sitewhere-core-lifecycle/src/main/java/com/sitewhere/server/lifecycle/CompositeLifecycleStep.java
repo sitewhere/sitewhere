@@ -55,8 +55,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
      */
     @Override
     public int getOperationCount() {
@@ -66,8 +65,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
      * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -78,7 +76,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 		LOGGER.debug("Starting " + step.getName());
 		ActiveSpan span = monitor.getMicroservice().getTracer().activeSpan();
 		try {
-		    span.log("Starting step '" + step.getName() + "'.");
+		    TracerUtils.logToSpan(span, "Starting step '" + step.getName() + "'.");
 		    monitor.startProgress(step.getName());
 		    step.execute(monitor);
 		    monitor.finishProgress();
@@ -86,7 +84,8 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 		    TracerUtils.handleErrorInTracerSpan(span, e);
 		    throw e;
 		} catch (Throwable t) {
-		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifeycle step.", t);
+		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifecycle step.",
+			    t);
 		    TracerUtils.handleErrorInTracerSpan(span, e);
 		    throw e;
 		}
@@ -99,8 +98,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStep(com.
+     * @see com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStep(com.
      * sitewhere.spi.server.lifecycle.ILifecycleStep)
      */
     public void addStep(ILifecycleStep step) {
@@ -118,8 +116,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStartStep(
+     * @see com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStartStep(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent, boolean)
      */
@@ -129,8 +126,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStopStep(
+     * @see com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addStopStep(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent)
      */
@@ -140,10 +136,20 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#addTerminateStep(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent)
+     */
+    @Override
+    public void addTerminateStep(ILifecycleComponent owner, ILifecycleComponent component) {
+	addStep(new TerminateComponentLifecycleStep(owner, component));
+    }
+
+    /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#getSteps()
+     * @see com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep#getSteps()
      */
     public List<ILifecycleStep> getSteps() {
 	return steps;

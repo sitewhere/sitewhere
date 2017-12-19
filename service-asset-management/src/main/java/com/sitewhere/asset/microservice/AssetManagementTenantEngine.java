@@ -89,7 +89,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);

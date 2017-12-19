@@ -7,30 +7,28 @@
  */
 package com.sitewhere.spi.microservice;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
- * Indicates exception due to microservice lifeycle.
+ * Indicates that a service is temporarily or permanently unavailable.
  * 
  * @author Derek
  */
-public class MicroserviceNotAvailableException extends SiteWhereException {
+public class ServiceNotAvailableException extends RuntimeException {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1003297732383971503L;
 
-    public MicroserviceNotAvailableException() {
+    public ServiceNotAvailableException() {
     }
 
-    public MicroserviceNotAvailableException(String message, Throwable cause) {
+    public ServiceNotAvailableException(String message, Throwable cause) {
 	super(message, cause);
     }
 
-    public MicroserviceNotAvailableException(String message) {
+    public ServiceNotAvailableException(String message) {
 	super(message);
     }
 
-    public MicroserviceNotAvailableException(Throwable cause) {
+    public ServiceNotAvailableException(Throwable cause) {
 	super(cause);
     }
 }

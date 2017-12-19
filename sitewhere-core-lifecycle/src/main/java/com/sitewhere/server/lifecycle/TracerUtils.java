@@ -17,6 +17,18 @@ import io.opentracing.tag.Tags;
 public class TracerUtils {
 
     /**
+     * Log message to active span.
+     * 
+     * @param span
+     * @param message
+     */
+    public static void logToSpan(ActiveSpan span, String message) {
+	if (span != null) {
+	    span.log(message);
+	}
+    }
+
+    /**
      * Add tags and logs for error in span.
      * 
      * @param span

@@ -9,7 +9,6 @@ package com.sitewhere.tenant.microservice;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +33,7 @@ import com.sitewhere.tenant.configuration.TenantManagementModelProvider;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.kafka.TenantBootstrapModelConsumer;
 import com.sitewhere.tenant.kafka.TenantModelProducer;
+import com.sitewhere.tenant.persistence.TenantManagementAccessor;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
@@ -63,7 +63,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
-    /** Tenant management persistence API */
+    /** Accessor for tenant management implementation */
+    private TenantManagementAccessor tenantManagementAccessor = new TenantManagementAccessor();
+
+    /** Tenant management implementation */
     private ITenantManagement tenantManagement;
 
     /** Tenant template manager */
@@ -122,21 +125,25 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#
-     * initializeFromSpringContexts(org.springframework.context. ApplicationContext,
-     * java.util.Map)
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
+     * configurationInitialize(org.springframework.context.ApplicationContext,
+     * org.springframework.context.ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException {
-	this.tenantModelProducer = new TenantModelProducer(this);
-	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+    public void configurationInitialize(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.configurationInitialize(global, local, monitor);
+	this.tenantManagement = initializeTenantManagement(local);
 
-	ApplicationContext context = contexts.get(CONFIGURATION_PATH);
-	this.tenantManagement = initializeTenantManagement(context);
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
+	// Composite step for initializing microservice.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize configuration for " + getName());
+
+	// Initialize tenant management implementation.
+	init.addInitializeStep(this, getTenantManagement(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /**
@@ -158,6 +165,47 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
+     * configurationStart(org.springframework.context.ApplicationContext,
+     * org.springframework.context.ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void configurationStart(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.configurationStart(global, local, monitor);
+	getTenantManagementAccessor().setDelegate(getTenantManagement());
+
+	// Composite step for starting microservice.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start tenant mangement persistence.
+	start.addStartStep(this, getTenantManagement(), true);
+
+	// Execute initialization steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
+     * configurationStop(org.springframework.context.ApplicationContext,
+     * org.springframework.context.ApplicationContext,
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void configurationStop(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for stopping microservice.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
+
+	// Stop tenant management persistence.
+	stop.addStopStep(this, getTenantManagement());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
@@ -166,14 +214,12 @@ public class TenantManagementMicroservice extends GlobalMicroservice
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.tenantModelProducer = new TenantModelProducer(this);
+	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagementAccessor(), this);
+
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
-
-	// Initialize tenant management implementation.
-	init.addInitializeStep(this, getTenantManagement(), true);
 
 	// Initialize tenant template manager.
 	init.addInitializeStep(this, getTenantTemplateManager(), true);
@@ -202,12 +248,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
-
-	// Start tenant mangement persistence.
-	start.addStartStep(this, getTenantManagement(), true);
 
 	// Start tenant template manager.
 	start.addStartStep(this, getTenantTemplateManager(), true);
@@ -247,12 +287,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 
 	// Stop tenant template manager.
 	stop.addStopStep(this, getTenantTemplateManager());
-
-	// Stop tenant management persistence.
-	stop.addStopStep(this, getTenantManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getTenantManagementApplicationContext(), monitor));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -297,8 +331,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
      * getTenantManagement()
      */
@@ -366,7 +398,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 	return LOGGER;
     }
 
-    protected ApplicationContext getTenantManagementApplicationContext() {
-	return getGlobalContexts().get(CONFIGURATION_PATH);
+    public TenantManagementAccessor getTenantManagementAccessor() {
+	return tenantManagementAccessor;
+    }
+
+    public void setTenantManagementAccessor(TenantManagementAccessor tenantManagementAccessor) {
+	this.tenantManagementAccessor = tenantManagementAccessor;
     }
 }

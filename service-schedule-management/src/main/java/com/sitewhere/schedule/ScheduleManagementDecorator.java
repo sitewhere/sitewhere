@@ -24,14 +24,11 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class ScheduleManagementDecorator extends LifecycleComponentDecorator implements IScheduleManagement {
-
-    /** Delegate */
-    private IScheduleManagement delegate;
+public class ScheduleManagementDecorator extends LifecycleComponentDecorator<IScheduleManagement>
+	implements IScheduleManagement {
 
     public ScheduleManagementDecorator(IScheduleManagement delegate) {
 	super(delegate);
-	this.delegate = delegate;
     }
 
     /*
@@ -41,7 +38,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	delegate.setTenantEngine(tenantEngine);
+	getDelegate().setTenantEngine(tenantEngine);
     }
 
     /*
@@ -50,7 +47,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public IMicroserviceTenantEngine getTenantEngine() {
-	return delegate.getTenantEngine();
+	return getDelegate().getTenantEngine();
     }
 
     /*
@@ -61,7 +58,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
-	return delegate.createSchedule(request);
+	return getDelegate().createSchedule(request);
     }
 
     /*
@@ -73,7 +70,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException {
-	return delegate.updateSchedule(token, request);
+	return getDelegate().updateSchedule(token, request);
     }
 
     /*
@@ -85,7 +82,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISchedule getScheduleByToken(String token) throws SiteWhereException {
-	return delegate.getScheduleByToken(token);
+	return getDelegate().getScheduleByToken(token);
     }
 
     /*
@@ -96,7 +93,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listSchedules(criteria);
+	return getDelegate().listSchedules(criteria);
     }
 
     /*
@@ -108,7 +105,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteSchedule(token, force);
+	return getDelegate().deleteSchedule(token, force);
     }
 
     /*
@@ -119,7 +116,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
-	return delegate.createScheduledJob(request);
+	return getDelegate().createScheduledJob(request);
     }
 
     /*
@@ -133,7 +130,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
     @Override
     public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateScheduledJob(token, request);
+	return getDelegate().updateScheduledJob(token, request);
     }
 
     /*
@@ -144,7 +141,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException {
-	return delegate.getScheduledJobByToken(token);
+	return getDelegate().getScheduledJobByToken(token);
     }
 
     /*
@@ -155,7 +152,7 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listScheduledJobs(criteria);
+	return getDelegate().listScheduledJobs(criteria);
     }
 
     /*
@@ -167,6 +164,6 @@ public class ScheduleManagementDecorator extends LifecycleComponentDecorator imp
      */
     @Override
     public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteScheduledJob(token, force);
+	return getDelegate().deleteScheduledJob(token, force);
     }
 }

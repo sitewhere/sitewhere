@@ -69,7 +69,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);

@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.configuration;
 
-import java.util.Map;
-
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -114,31 +112,64 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException;
 
     /**
-     * Initializes microservice components based on Spring contexts that were
-     * loaded.
+     * Initialize configurable components.
      * 
      * @param global
-     * @param contexts
+     * @param local
+     * @param monitor
      * @throws SiteWhereException
      */
-    public void initializeFromSpringContexts(ApplicationContext global, Map<String, ApplicationContext> contexts)
-	    throws SiteWhereException;
+    public void configurationInitialize(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Get instance global context.
+     * Start configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationStart(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Stop configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationStop(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Terminate configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationTerminate(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Get global application context.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public ApplicationContext getInstanceGlobalContext() throws SiteWhereException;
+    public ApplicationContext getGlobalApplicationContext() throws SiteWhereException;
 
     /**
-     * Get global contexts indexed by path.
+     * Get local microservice application context.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public Map<String, ApplicationContext> getGlobalContexts() throws SiteWhereException;
+    public ApplicationContext getLocalApplicationContext() throws SiteWhereException;
 
     /**
      * Perform microservice initialization.
@@ -169,34 +200,45 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * {@link IDiscoverableTenantLifecycleComponent}.
      * 
      * @param context
-     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException;
+    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 
     /**
      * Start components from the given context marked as
      * {@link IDiscoverableTenantLifecycleComponent}.
      * 
      * @param context
-     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep startDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException;
+    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 
     /**
      * Stop components from the given context marked as
      * {@link IDiscoverableTenantLifecycleComponent}.
      * 
      * @param context
-     * @param monitor
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException;
+    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Terminate components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Restart the microservice configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void restartConfiguration() throws SiteWhereException;
 }

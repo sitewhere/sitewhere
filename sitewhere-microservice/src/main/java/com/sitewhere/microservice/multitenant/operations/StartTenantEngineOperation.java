@@ -26,7 +26,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  *
  * @param <T>
  */
-public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantOperation<T> {
+public class StartTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

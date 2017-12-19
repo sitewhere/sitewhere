@@ -124,7 +124,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	try {
 	    byte[] data = getModuleConfiguration();
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getVersion(),
-		    getMicroservice().getInstanceGlobalContext());
+		    getMicroservice().getGlobalApplicationContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load module configuration.", e);
@@ -153,6 +153,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Allow subclass to execute shutdown logic.
+	tenantStop(monitor);
     }
 
     /*
@@ -260,6 +262,20 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * onGlobalConfigurationUpdated()
+     */
+    @Override
+    public void onGlobalConfigurationUpdated() throws SiteWhereException {
+	getLogger().debug("Global configuration updated.");
+	try {
+	    getMicroservice().restartTenantEngine(getTenant().getId());
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to restart after global configuration update.", e);
 	}
     }
 

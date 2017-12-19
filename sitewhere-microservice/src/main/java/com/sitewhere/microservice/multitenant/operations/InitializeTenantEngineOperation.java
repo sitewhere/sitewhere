@@ -33,7 +33,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <T>
  */
 public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine>
-	extends CompletableTenantOperation<T> {
+	extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

@@ -108,6 +108,12 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getServer().shutdown();
+	try {
+	    getServer().awaitTermination();
+	    getLogger().info("GRPC server terminated successfully.");
+	} catch (InterruptedException e) {
+	    getLogger().error("Interrupted while waiting for GRPC server to terminate.", e);
+	}
     }
 
     /*

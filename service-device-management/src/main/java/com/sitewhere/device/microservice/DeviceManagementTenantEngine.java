@@ -79,7 +79,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext(), monitor));
+	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize device management persistence.
 	init.addInitializeStep(this, getDeviceManagement(), true);

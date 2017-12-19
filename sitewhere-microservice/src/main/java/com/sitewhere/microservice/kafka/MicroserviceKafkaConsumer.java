@@ -164,6 +164,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 		}
 	    } catch (WakeupException e) {
 		getLogger().info("Consumer thread received shutdown request.");
+		getConsumer().unsubscribe();
 	    } catch (Exception e) {
 		getLogger().error("Error in consumer processing.", e);
 	    } finally {

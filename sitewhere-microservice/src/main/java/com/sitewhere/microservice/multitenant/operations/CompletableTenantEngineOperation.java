@@ -20,12 +20,12 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  *
  * @param <T>
  */
-public abstract class CompletableTenantOperation<T extends IMicroserviceTenantEngine> implements Callable<T> {
+public abstract class CompletableTenantEngineOperation<T extends IMicroserviceTenantEngine> implements Callable<T> {
 
     /** Completable future that tracks progress */
     private CompletableFuture<T> completableFuture;
 
-    public CompletableTenantOperation(CompletableFuture<T> completableFuture) {
+    public CompletableTenantEngineOperation(CompletableFuture<T> completableFuture) {
 	this.completableFuture = completableFuture;
     }
 

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice;
 
+import java.util.concurrent.ExecutorService;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -202,4 +204,11 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @throws SiteWhereException
      */
     public void waitForInstanceInitialization() throws SiteWhereException;
+
+    /**
+     * Get executor service that handles long-running microservice operations.
+     * 
+     * @return
+     */
+    public ExecutorService getMicroserviceOperationsService();
 }

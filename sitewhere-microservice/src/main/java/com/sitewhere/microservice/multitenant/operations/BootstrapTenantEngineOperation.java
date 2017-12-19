@@ -34,7 +34,7 @@ import io.opentracing.Tracer;
  *
  * @param <T>
  */
-public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantOperation<T> {
+public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
