@@ -42,6 +42,6 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      */
     @Override
     public ITenantManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new CachedTenantManagementApiChannel(getMicroservice(), host);
+	return new CachedTenantManagementApiChannel(this, getMicroservice(), host);
     }
 }

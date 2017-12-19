@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,11 +36,14 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;
 
+    /** Parent demux */
+    private IApiDemux<?> demux;
+
     /** Microservice */
     private IMicroservice microservice;
 
     /** Hostname */
-    private String host;
+    private String hostname;
 
     /** GRPC Port */
     private int port;
@@ -47,13 +51,14 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(IMicroservice microservice, String host) {
-	this(microservice, host, microservice.getInstanceSettings().getGrpcPort());
+    public ApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname) {
+	this(demux, microservice, hostname, microservice.getInstanceSettings().getGrpcPort());
     }
 
-    public ApiChannel(IMicroservice microservice, String host, int port) {
+    public ApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname, int port) {
+	this.demux = demux;
 	this.microservice = microservice;
-	this.host = host;
+	this.hostname = hostname;
 	this.port = port;
     }
 
@@ -73,7 +78,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = (T) createGrpcChannel(microservice, host, port);
+	this.grpcChannel = (T) createGrpcChannel(getMicroservice(), getHostname(), getPort());
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -156,6 +161,42 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getHostname()
+     */
+    @Override
+    public String getHostname() {
+	return hostname;
+    }
+
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getPort()
+     */
+    @Override
+    public int getPort() {
+	return port;
+    }
+
+    public void setPort(int port) {
+	this.port = port;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getDemux()
+     */
+    @Override
+    public IApiDemux<?> getDemux() {
+	return demux;
+    }
+
+    public void setDemux(IApiDemux<?> demux) {
+	this.demux = demux;
     }
 
     /*

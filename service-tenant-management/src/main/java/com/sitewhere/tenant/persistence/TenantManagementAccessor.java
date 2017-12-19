@@ -7,7 +7,7 @@
  */
 package com.sitewhere.tenant.persistence;
 
-import com.sitewhere.spi.microservice.ServiceNotAvailableException;
+import com.sitewhere.spi.microservice.RuntimeServiceNotAvailableException;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.TenantManagementDecorator;
 
@@ -31,7 +31,7 @@ public class TenantManagementAccessor extends TenantManagementDecorator {
     public ITenantManagement getDelegate() {
 	ITenantManagement delegate = super.getDelegate();
 	if (delegate == null) {
-	    throw new ServiceNotAvailableException();
+	    throw new RuntimeServiceNotAvailableException();
 	}
 	return delegate;
     }

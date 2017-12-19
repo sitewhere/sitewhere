@@ -7,15 +7,17 @@
  */
 package com.sitewhere.spi.microservice;
 
+import com.sitewhere.spi.SiteWhereException;
+
 /**
- * Indicates that a service is temporarily or permanently unavailable.
+ * Exeception indicating a remote service has become unavailable.
  * 
  * @author Derek
  */
-public class ServiceNotAvailableException extends RuntimeException {
+public class ServiceNotAvailableException extends SiteWhereException {
 
     /** Serial version UID */
-    private static final long serialVersionUID = -1003297732383971503L;
+    private static final long serialVersionUID = 6410813964583998335L;
 
     public ServiceNotAvailableException() {
     }

@@ -41,6 +41,6 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
      */
     @Override
     public IBatchManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new BatchManagementApiChannel(getMicroservice(), host);
+	return new BatchManagementApiChannel(this, getMicroservice(), host);
     }
 }

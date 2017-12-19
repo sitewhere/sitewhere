@@ -315,6 +315,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	super.setLifecycleStatus(lifecycleStatus);
 	try {
 	    IMicroserviceState state = getCurrentState();
+	    getLogger().info("Sending state update for lifecycle status change (" + lifecycleStatus.name() + ").");
 	    getStateUpdatesKafkaProducer().send(state);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to report microservice state.", e);

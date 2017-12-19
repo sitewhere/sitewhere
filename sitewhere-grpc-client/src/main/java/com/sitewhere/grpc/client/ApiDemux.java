@@ -158,6 +158,16 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
+	detectServiceAdded(snapshot);
+	detectServiceRemoved(snapshot);
+    }
+
+    /**
+     * Detect whether a service was added/scaled.
+     * 
+     * @param snapshot
+     */
+    protected void detectServiceAdded(IInstanceTopologySnapshot snapshot) {
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
 	    IMicroserviceDetails microservice = entry.getMicroserviceDetails();
 	    if (getTargetIdentifier().equals(microservice.getIdentifier())) {
@@ -171,6 +181,34 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 			getLogger().error("Unable to initialize API channel for " + microservice.getHostname() + ".");
 		    }
 		}
+	    }
+	}
+    }
+
+    /**
+     * Detect whether a service was removed.
+     * 
+     * @param snapshot
+     */
+    protected void detectServiceRemoved(IInstanceTopologySnapshot snapshot) {
+	List<String> missing = new ArrayList<String>();
+	for (T channel : getApiChannels()) {
+	    IInstanceTopologyEntry match = null;
+	    for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
+		if (entry.getMicroserviceDetails().getHostname().equals(channel.getHostname())) {
+		    match = entry;
+		}
+	    }
+	    if (match == null) {
+		missing.add(channel.getHostname());
+	    }
+	}
+	for (String hostname : missing) {
+	    getLogger().info("Detected removal of remote microservice (" + hostname + "). Dropping API channel.");
+	    try {
+		removeApiChannel(hostname);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to remove API channel for " + hostname + ".");
 	    }
 	}
     }

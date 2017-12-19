@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
@@ -53,8 +54,8 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public TenantManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public TenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
     }
 
     /*

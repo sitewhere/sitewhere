@@ -43,6 +43,6 @@ public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManageme
      */
     @Override
     public IDeviceEventManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new DeviceEventManagementApiChannel(getMicroservice(), host);
+	return new DeviceEventManagementApiChannel(this, getMicroservice(), host);
     }
 }

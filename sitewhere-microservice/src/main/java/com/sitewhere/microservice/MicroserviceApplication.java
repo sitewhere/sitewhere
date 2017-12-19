@@ -175,7 +175,10 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 		// Terminate microservice.
 		LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Terminate " + service.getName()), service);
-		service.terminate(termMonitor);
+		service.lifecycleTerminate(termMonitor);
+		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw service.getLifecycleError();
+		}
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Exception on microservice shutdown.", e);
 		StringBuilder builder = new StringBuilder();

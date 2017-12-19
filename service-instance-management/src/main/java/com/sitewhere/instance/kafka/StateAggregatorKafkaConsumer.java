@@ -90,7 +90,12 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
      */
     @Override
     public void onMicroserviceStateUpdate(IMicroserviceState state) {
-	getOrCreateMicroservice(state);
+	if ((state.getLifecycleStatus() == LifecycleStatus.Terminating)
+		|| (state.getLifecycleStatus() == LifecycleStatus.Terminated)) {
+	    removeMicroservice(state);
+	} else {
+	    getOrCreateMicroservice(state);
+	}
     }
 
     /*
@@ -166,6 +171,26 @@ public class StateAggregatorKafkaConsumer extends MicroserviceStateUpdatesKafkaC
 	services.put(details.getHostname(), microservice);
 
 	return microservice;
+    }
+
+    /**
+     * Remove a microservice that has been terminated.
+     * 
+     * @param state
+     */
+    protected void removeMicroservice(IMicroserviceState state) {
+	IMicroserviceDetails microservice = state.getMicroserviceDetails();
+	getLogger().info("Detected termination of remote microservice (" + microservice.getIdentifier() + ":"
+		+ microservice.getHostname() + ").");
+	Map<String, IInstanceMicroservice> services = getTopology().get(microservice.getIdentifier());
+	if (services != null) {
+	    IInstanceMicroservice removed = services.remove(microservice.getHostname());
+	    if (removed != null) {
+		getLogger().info("Removed terminated microservice (" + microservice.getIdentifier() + ":"
+			+ microservice.getHostname() + ").");
+		sendTopologySnapshot();
+	    }
+	}
     }
 
     /**

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -22,8 +23,8 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant cache */
     private ICacheProvider<String, ITenant> tenantCache;
 
-    public CachedTenantManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public CachedTenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
 	this.tenantCache = new TenantManagementCacheProviders.TenantCache(microservice, false);
     }
 

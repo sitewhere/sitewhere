@@ -19,9 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.curator.framework.CuratorFramework;
 
 import com.google.common.collect.MapMaker;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.microservice.MicroserviceEnvironment;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.microservice.multitenant.operations.BootstrapTenantEngineOperation;
@@ -54,8 +53,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
 
-    /** Tenant management API channel */
-    private ITenantManagementApiChannel tenantManagementApiChannel;
+    /** Tenant management API demux */
+    private ITenantManagementApiDemux tenantManagementApiDemux;
 
     /** Map of tenant engines that have been initialized */
     private ConcurrentMap<String, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
@@ -91,7 +90,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize tenant management API channel.
-	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
+	init.addInitializeStep(this, getTenantManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -107,8 +106,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      * Create components that interact via GRPC.
      */
     private void createGrpcComponents() {
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(this,
-		MicroserviceEnvironment.HOST_TENANT_MANAGEMENT);
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(this);
     }
 
     /*
@@ -126,7 +124,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
+	start.addStartStep(this, getTenantManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -156,7 +154,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop tenant management API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
+	stop.addStopStep(this, getTenantManagementApiDemux());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -174,7 +172,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	if (tenantOperations != null) {
 	    tenantOperations.shutdown();
 	}
-	getTenantManagementApiChannel().terminate(monitor);
+	getTenantManagementApiDemux().terminate(monitor);
 
 	super.terminate(monitor);
     }
@@ -415,12 +413,12 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
-    public ITenantManagementApiChannel getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
+    public ITenantManagementApiDemux getTenantManagementApiDemux() {
+	return tenantManagementApiDemux;
     }
 
-    public void setTenantManagementApiChannel(ITenantManagementApiChannel tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
+	this.tenantManagementApiDemux = tenantManagementApiDemux;
     }
 
     public ConcurrentMap<String, T> getInitializedTenantEngines() {
@@ -474,7 +472,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	    while (true) {
 		try {
 		    // Wait for tenant API available.
-		    getTenantManagementApiChannel().waitForApiAvailable();
+		    getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 
 		    // Get next tenant id from the queue and look up the tenant.
 		    String tenantId = getTenantInitializationQueue().take();
@@ -485,7 +483,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		    }
 
 		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenantManagementApiChannel().getTenantById(tenantId);
+		    ITenant tenant = getTenantManagementApiDemux().getApiChannel().getTenantById(tenantId);
 		    if (tenant == null) {
 			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
 		    }

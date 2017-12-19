@@ -46,6 +46,6 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
      */
     @Override
     public IMicroserviceManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new MicroserviceManagementApiChannel(getMicroservice(), host);
+	return new MicroserviceManagementApiChannel(this, getMicroservice(), host);
     }
 }

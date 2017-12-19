@@ -7,7 +7,7 @@
  */
 package com.sitewhere.user.persistence;
 
-import com.sitewhere.spi.microservice.ServiceNotAvailableException;
+import com.sitewhere.spi.microservice.RuntimeServiceNotAvailableException;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.UserManagementDecorator;
 
@@ -31,7 +31,7 @@ public class UserManagementAccessor extends UserManagementDecorator {
     public IUserManagement getDelegate() {
 	IUserManagement delegate = super.getDelegate();
 	if (delegate == null) {
-	    throw new ServiceNotAvailableException();
+	    throw new RuntimeServiceNotAvailableException();
 	}
 	return delegate;
     }

@@ -42,6 +42,6 @@ public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiC
      */
     @Override
     public IScheduleManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new ScheduleManagementApiChannel(getMicroservice(), host);
+	return new ScheduleManagementApiChannel(this, getMicroservice(), host);
     }
 }

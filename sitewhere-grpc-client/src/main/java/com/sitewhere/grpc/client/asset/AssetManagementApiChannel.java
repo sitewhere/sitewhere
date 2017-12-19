@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.AssetModel.GAnyAsset;
 import com.sitewhere.grpc.model.AssetModel.GAssetModuleDescriptor;
@@ -87,8 +88,8 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public AssetManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public AssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
     }
 
     /*

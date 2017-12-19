@@ -15,6 +15,7 @@ import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 
 import io.grpc.MethodDescriptor;
 import io.grpc.StatusRuntimeException;
@@ -102,6 +103,9 @@ public class GrpcUtils {
 	    }
 	    case UNAUTHENTICATED: {
 		return new UnauthenticatedException("No credentials passed for authentication.", sre);
+	    }
+	    case UNAVAILABLE: {
+		return new ServiceNotAvailableException("The requested service is not available.", sre);
 	    }
 	    default: {
 	    }

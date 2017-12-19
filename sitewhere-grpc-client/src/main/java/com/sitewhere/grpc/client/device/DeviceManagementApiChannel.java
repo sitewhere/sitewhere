@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
@@ -63,8 +64,8 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public DeviceManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public DeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
     }
 
     /*

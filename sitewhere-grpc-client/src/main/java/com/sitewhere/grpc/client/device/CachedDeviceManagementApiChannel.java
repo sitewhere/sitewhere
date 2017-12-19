@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.device;
 
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
@@ -36,8 +37,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment cache */
     private ICacheProvider<String, IDeviceAssignment> deviceAssignmentCache;
 
-    public CachedDeviceManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
 	this.siteCache = new DeviceManagementCacheProviders.SiteCache(microservice, false);
 	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
 		false);

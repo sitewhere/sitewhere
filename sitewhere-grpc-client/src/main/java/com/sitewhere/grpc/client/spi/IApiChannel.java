@@ -22,6 +22,20 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineLifecycleComponent {
 
     /**
+     * Get target hostname .
+     * 
+     * @return
+     */
+    public String getHostname();
+
+    /**
+     * Get target port.
+     * 
+     * @return
+     */
+    public int getPort();
+
+    /**
      * Create underlying GRPC channel.
      * 
      * @param tracerProvider
@@ -55,6 +69,13 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @throws ApiNotAvailableException
      */
     public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay) throws ApiNotAvailableException;
+
+    /**
+     * Get parent demulitplexer.
+     * 
+     * @return
+     */
+    public IApiDemux<?> getDemux();
 
     /**
      * Get parent microservice.

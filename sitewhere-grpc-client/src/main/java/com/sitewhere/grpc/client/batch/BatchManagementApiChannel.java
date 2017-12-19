@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.BatchModelConverter;
@@ -57,8 +58,8 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public BatchManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host);
+    public BatchManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host);
     }
 
     /*

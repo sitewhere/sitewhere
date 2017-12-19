@@ -42,6 +42,6 @@ public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChann
      */
     @Override
     public IDeviceManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new CachedDeviceManagementApiChannel(getMicroservice(), host);
+	return new CachedDeviceManagementApiChannel(this, getMicroservice(), host);
     }
 }

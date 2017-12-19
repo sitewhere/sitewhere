@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
@@ -43,8 +44,8 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public MicroserviceManagementApiChannel(IMicroservice microservice, String host) {
-	super(microservice, host, microservice.getInstanceSettings().getManagementGrpcPort());
+    public MicroserviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
+	super(demux, microservice, host, microservice.getInstanceSettings().getManagementGrpcPort());
     }
 
     /*
