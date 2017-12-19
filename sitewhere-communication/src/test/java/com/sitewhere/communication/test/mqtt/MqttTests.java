@@ -44,7 +44,7 @@ public class MqttTests {
     public void setup() {
 	try {
 	    MQTT mqtt = new MQTT();
-	    mqtt.setHost("192.168.171.129", 1883);
+	    mqtt.setHost("192.168.171.128", 1883);
 	    connection = mqtt.futureConnection();
 	    Future<Void> future = connection.connect();
 	    future.await(3, TimeUnit.SECONDS);
@@ -71,7 +71,7 @@ public class MqttTests {
     @Test
     public void sendLocationOverMqtt() throws SiteWhereException {
 	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("6400fcad-b11b-490b-bd96-0b270be27ccf");
+	request.setHardwareId("37974cef-6481-4e26-b070-4390856a256c");
 	request.setType(Type.DeviceLocation);
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setEventDate(new Date());

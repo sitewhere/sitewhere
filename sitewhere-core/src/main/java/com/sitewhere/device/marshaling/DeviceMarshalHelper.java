@@ -81,6 +81,7 @@ public class DeviceMarshalHelper {
 	MarshaledDevice result = new MarshaledDevice();
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteToken(source.getSiteToken());
+	result.setAssignmentToken(source.getAssignmentToken());
 	result.setParentHardwareId(source.getParentHardwareId());
 	result.setComments(source.getComments());
 	MetadataProviderEntity.copy(source, result);
@@ -117,31 +118,25 @@ public class DeviceMarshalHelper {
 		}
 	    }
 	}
-	if (source.getAssignmentToken() != null) {
-	    if (includeAssignment) {
-		try {
-		    IDeviceAssignment assignment = getDeviceManagement()
-			    .getDeviceAssignmentByToken(source.getAssignmentToken());
-		    if (assignment == null) {
-			throw new SiteWhereException("Device contains an invalid assignment reference.");
-		    }
-		    result.setAssignment(getAssignmentHelper().convert(assignment, assetResolver));
-		} catch (SiteWhereException e) {
-		    LOGGER.warn("Device has token for non-existent assignment.");
+	if ((source.getAssignmentToken() != null) && (isIncludeAssignment())) {
+	    try {
+		IDeviceAssignment assignment = getDeviceManagement()
+			.getDeviceAssignmentByToken(source.getAssignmentToken());
+		if (assignment == null) {
+		    throw new SiteWhereException("Device contains an invalid assignment reference.");
 		}
-	    } else {
-		result.setAssignmentToken(source.getAssignmentToken());
+		result.setAssignment(getAssignmentHelper().convert(assignment, assetResolver));
+	    } catch (SiteWhereException e) {
+		LOGGER.warn("Device has token for non-existent assignment.");
 	    }
 	}
-	if (source.getSiteToken() != null) {
+	if ((source.getSiteToken() != null) && (isIncludeSite())) {
 	    if (includeSite) {
 		ISite site = getDeviceManagement().getSiteByToken(source.getSiteToken());
 		if (site == null) {
 		    throw new SiteWhereException("Device contains an invalid site reference.");
 		}
 		result.setSite(Site.copy(site));
-	    } else {
-		result.setSiteToken(source.getSiteToken());
 	    }
 	}
 	return result;

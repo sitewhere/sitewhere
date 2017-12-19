@@ -492,20 +492,18 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getDeviceByHardwareId(com.sitewhere.grpc.service.
-     * GGetDeviceByaHardwareIdRequest, io.grpc.stub.StreamObserver)
+     * GGetDeviceByHardwareIdRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceByHardwareId(GGetDeviceByaHardwareIdRequest request,
-	    StreamObserver<GGetDeviceByaHardwareIdResponse> responseObserver) {
+    public void getDeviceByHardwareId(GGetDeviceByHardwareIdRequest request,
+	    StreamObserver<GGetDeviceByHardwareIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID);
 	    IDevice apiResult = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
-	    GGetDeviceByaHardwareIdResponse.Builder response = GGetDeviceByaHardwareIdResponse.newBuilder();
+	    GGetDeviceByHardwareIdResponse.Builder response = GGetDeviceByHardwareIdResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setDevice(DeviceModelConverter.asGrpcDevice(apiResult));
 	    }

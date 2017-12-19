@@ -10,6 +10,7 @@ package com.sitewhere.microservice.hazelcast.server;
 import java.util.Map;
 
 import com.sitewhere.device.DeviceManagementDecorator;
+import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.device.DeviceManagementCacheProviders;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -64,7 +65,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	ISite result = super.createSite(request);
 	getSiteCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Added created site to cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -78,7 +79,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ISite result = super.getSiteByToken(token);
 	if ((result != null) && (getSiteCache().getCacheEntry(tenant, token) == null)) {
 	    getSiteCache().setCacheEntry(tenant, result.getToken(), result);
-	    getLogger().trace("Added site to cache.");
+	    CacheUtils.logCacheUpdated(result);
 	}
 	return result;
     }
@@ -93,7 +94,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	ISite result = super.updateSite(siteToken, request);
 	getSiteCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Updated site in cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -107,7 +108,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	ISite result = super.deleteSite(siteToken, force);
 	getSiteCache().removeCacheEntry(tenant, result.getToken());
-	getLogger().trace("Removed site from cache.");
+	CacheUtils.logCacheRemoved(siteToken);
 	return result;
     }
 
@@ -121,7 +122,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice result = super.createDevice(device);
 	getDeviceCache().setCacheEntry(tenant, result.getHardwareId(), result);
-	getLogger().trace("Added created device to cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -136,7 +137,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	IDevice result = super.getDeviceByHardwareId(hardwareId);
 	if ((result != null) && (getDeviceCache().getCacheEntry(tenant, hardwareId) == null)) {
 	    getDeviceCache().setCacheEntry(tenant, result.getHardwareId(), result);
-	    getLogger().trace("Added device to cache.");
+	    CacheUtils.logCacheUpdated(result);
 	}
 	return result;
     }
@@ -151,7 +152,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice result = super.updateDevice(hardwareId, request);
 	getDeviceCache().setCacheEntry(tenant, result.getHardwareId(), result);
-	getLogger().trace("Updated device in cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -165,7 +166,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice result = super.deleteDevice(hardwareId, force);
 	getDeviceCache().removeCacheEntry(tenant, result.getHardwareId());
-	getLogger().trace("Removed device from cache.");
+	CacheUtils.logCacheRemoved(hardwareId);
 	return result;
     }
 
@@ -179,7 +180,8 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.createDeviceAssignment(request);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Added created assignment to cache.");
+	getDeviceCache().removeCacheEntry(tenant, result.getDeviceHardwareId());
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -194,7 +196,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	IDeviceAssignment result = super.getDeviceAssignmentByToken(token);
 	if ((result != null) && (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	    getLogger().trace("Added assignment to cache.");
+	    CacheUtils.logCacheUpdated(result);
 	}
 	return result;
     }
@@ -210,7 +212,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.updateDeviceAssignmentMetadata(token, metadata);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Updated assignment in cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -225,7 +227,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.updateDeviceAssignmentStatus(token, status);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Updated assignment in cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -239,7 +241,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.deleteDeviceAssignment(token, force);
 	getDeviceCache().removeCacheEntry(tenant, result.getToken());
-	getLogger().trace("Removed assignment from cache.");
+	CacheUtils.logCacheRemoved(token);
 	return result;
     }
 
@@ -254,7 +256,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceSpecification result = super.createDeviceSpecification(request);
 	getDeviceSpecificationCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Added created specification to cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -269,7 +271,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	IDeviceSpecification result = super.getDeviceSpecificationByToken(token);
 	if ((result != null) && (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceSpecificationCache().setCacheEntry(tenant, result.getToken(), result);
-	    getLogger().trace("Added specification to cache.");
+	    CacheUtils.logCacheUpdated(result);
 	}
 	return result;
     }
@@ -286,7 +288,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceSpecification result = super.updateDeviceSpecification(token, request);
 	getDeviceSpecificationCache().setCacheEntry(tenant, result.getToken(), result);
-	getLogger().trace("Added updated specification to cache.");
+	CacheUtils.logCacheUpdated(result);
 	return result;
     }
 
@@ -300,7 +302,7 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceSpecification result = super.deleteDeviceSpecification(token, force);
 	getDeviceSpecificationCache().removeCacheEntry(tenant, result.getToken());
-	getLogger().trace("Removed specification from cache.");
+	CacheUtils.logCacheRemoved(token);
 	return result;
     }
 

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.device;
 
+import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -56,7 +57,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	ISite site = getSiteCache().getCacheEntry(tenant, token);
 	if (site != null) {
-	    getLogger().trace("Using cached information for site '" + token + "'.");
+	    CacheUtils.logCacheHit(site);
 	    return site;
 	} else {
 	    getLogger().trace("No cached information for site '" + token + "'.");
@@ -73,7 +74,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceSpecification specification = getDeviceSpecificationCache().getCacheEntry(tenant, token);
 	if (specification != null) {
-	    getLogger().trace("Using cached information for specification '" + token + "'.");
+	    CacheUtils.logCacheHit(specification);
 	    return specification;
 	} else {
 	    getLogger().trace("No cached information for specification '" + token + "'.");
@@ -91,7 +92,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice device = getDeviceCache().getCacheEntry(tenant, hardwareId);
 	if (device != null) {
-	    getLogger().trace("Using cached information for device '" + hardwareId + "'.");
+	    CacheUtils.logCacheHit(device);
 	    return device;
 	} else {
 	    getLogger().trace("No cached information for device '" + hardwareId + "'.");
@@ -108,7 +109,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment assignment = getDeviceAssignmentCache().getCacheEntry(tenant, token);
 	if (assignment != null) {
-	    getLogger().trace("Using cached information for assignment '" + token + "'.");
+	    CacheUtils.logCacheHit(assignment);
 	    return assignment;
 	} else {
 	    getLogger().trace("No cached information for assignment '" + token + "'.");

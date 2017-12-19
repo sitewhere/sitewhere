@@ -122,7 +122,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantEngin
 	ISearchResults<IAsset> matches = getAssetManagement().listAssets(category.getId(), SearchCriteria.ALL);
 	assets.clear();
 
-	LOGGER.info("Adding " + matches.getNumResults() + " assets from datastore.");
+	LOGGER.debug("Adding " + matches.getNumResults() + " assets from datastore.");
 	for (IAsset asset : matches.getResults()) {
 	    assets.put(asset.getId(), (T) asset);
 	}
@@ -131,8 +131,7 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantEngin
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
+     * @see com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
      * lifecycle.ILifecycleProgressMonitor)
      */
     public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -156,9 +155,8 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantEngin
 
     /**
      * Add an asset to the module. Note: This does not put the asset in the
-     * underlying datastore. This is used to reflect changes via the APIs so
-     * that the data is kept up-to-date without having to reload all of the
-     * assets.
+     * underlying datastore. This is used to reflect changes via the APIs so that
+     * the data is kept up-to-date without having to reload all of the assets.
      * 
      * @param id
      * @param asset
@@ -169,9 +167,8 @@ public abstract class DataStoreAssetModule<T extends IAsset> extends TenantEngin
 
     /**
      * Removes an asset from the module. This does not remove the asset from the
-     * underlying datastore. This is used to reflect changes via the APIs so
-     * that the data is kept up-to-date without having to reload all of the
-     * assets.
+     * underlying datastore. This is used to reflect changes via the APIs so that
+     * the data is kept up-to-date without having to reload all of the assets.
      * 
      * @param id
      */

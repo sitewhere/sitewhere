@@ -262,11 +262,11 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getDeviceByHardwareId(com.sitewhere.grpc.service.
-     * GGetDeviceByaHardwareIdRequest, io.grpc.stub.StreamObserver)
+     * GGetDeviceByHardwareIdRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceByHardwareId(GGetDeviceByaHardwareIdRequest request,
-	    StreamObserver<GGetDeviceByaHardwareIdResponse> responseObserver) {
+    public void getDeviceByHardwareId(GGetDeviceByHardwareIdRequest request,
+	    StreamObserver<GGetDeviceByHardwareIdResponse> responseObserver) {
 	getTenantImplementation().getDeviceByHardwareId(request, responseObserver);
     }
 

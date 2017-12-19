@@ -77,7 +77,7 @@ service DeviceManagement {
 	rpc CreateDevice (GCreateDeviceRequest) returns (GCreateDeviceResponse) {}
 	
 	// Get a device by unique hardware id.
-	rpc GetDeviceByHardwareId (GGetDeviceByaHardwareIdRequest) returns (GGetDeviceByaHardwareIdResponse) {}
+	rpc GetDeviceByHardwareId (GGetDeviceByHardwareIdRequest) returns (GGetDeviceByHardwareIdResponse) {}
 	
 	// Update an existing device.
 	rpc UpdateDevice (GUpdateDeviceRequest) returns (GUpdateDeviceResponse) {}
@@ -403,12 +403,12 @@ message GCreateDeviceResponse {
 }
 	
 // Request for getting a device by hardware id.
-message GGetDeviceByaHardwareIdRequest {
+message GGetDeviceByHardwareIdRequest {
 	string hardwareId = 1;
 }
 	
 // Response for getting a device by hardware id.
-message GGetDeviceByaHardwareIdResponse {
+message GGetDeviceByHardwareIdResponse {
 	com.sitewhere.grpc.model.GDevice device = 1;
 }
 	

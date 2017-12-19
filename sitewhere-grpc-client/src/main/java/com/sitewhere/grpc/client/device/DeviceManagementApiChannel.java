@@ -496,9 +496,9 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID);
-	    GGetDeviceByaHardwareIdRequest.Builder grequest = GGetDeviceByaHardwareIdRequest.newBuilder();
+	    GGetDeviceByHardwareIdRequest.Builder grequest = GGetDeviceByHardwareIdRequest.newBuilder();
 	    grequest.setHardwareId(hardwareId);
-	    GGetDeviceByaHardwareIdResponse gresponse = getGrpcChannel().getBlockingStub()
+	    GGetDeviceByHardwareIdResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceByHardwareId(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, response);
