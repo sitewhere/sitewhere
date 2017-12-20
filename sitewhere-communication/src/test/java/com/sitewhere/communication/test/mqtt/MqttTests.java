@@ -11,14 +11,15 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.FutureConnection;
+import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,147 +35,154 @@ import com.sitewhere.spi.SiteWhereException;
 
 public class MqttTests {
 
-    /** MQTT settings */
-    private MQTT mqtt;
+    /** Nunber of threads for multithreaded tests */
+    private static final int NUM_THREADS = 50;
 
-    /** MQTT connection */
-    private FutureConnection connection;
+    /** Nunber of calls performed per thread */
+    private static final int NUM_CALLS_PER_THREAD = 1000;
 
-    @Before
-    public void setup() {
-	try {
-	    MQTT mqtt = new MQTT();
-	    mqtt.setHost("192.168.171.128", 1883);
-	    connection = mqtt.futureConnection();
-	    Future<Void> future = connection.connect();
-	    future.await(3, TimeUnit.SECONDS);
-	    System.out.println("Connected to: " + mqtt.getHost());
-	} catch (URISyntaxException e) {
-	    throw new RuntimeException(e);
-	} catch (Exception e) {
-	    throw new RuntimeException(e);
-	}
-    }
-
-    @After
-    public void teardown() {
-	if (connection != null) {
-	    connection.disconnect();
-	}
-    }
-
-    /**
-     * Send a location event request via JSON/MQTT.
-     * 
-     * @throws SiteWhereException
-     */
     @Test
-    public void sendLocationOverMqtt() throws SiteWhereException {
-	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("37974cef-6481-4e26-b070-4390856a256c");
-	request.setType(Type.DeviceLocation);
-	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
-	location.setEventDate(new Date());
-	location.setLatitude(34.10469794977326);
-	location.setLongitude(-84.23966646194458);
-	location.setElevation(0.0);
-	Map<String, String> metadata = new HashMap<String, String>();
-	metadata.put("fromMQTT", "true");
-	location.setMetadata(metadata);
-	location.setUpdateState(true);
-	request.setRequest(location);
-	try {
-	    String payload = (new ObjectMapper()).writeValueAsString(request);
-	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
-	    System.out.println("Message sent successfully.");
-	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException(e);
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
+    public void runMqttTest() throws Exception {
+	ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+	CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
+
+	for (int i = 0; i < NUM_THREADS; i++) {
+	    completionService.submit(new MqttTester(NUM_CALLS_PER_THREAD));
+	}
+	for (int i = 0; i < NUM_THREADS; ++i) {
+	    completionService.take().get();
 	}
     }
 
-    /**
-     * Send device measurements request with non-numeric measurement values.
-     * 
-     * @throws SiteWhereException
-     */
-    @Test
-    public void sendNonStandardMeasurements() throws SiteWhereException {
-	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("123-TEST-4567890");
-	request.setType(Type.DeviceMeasurements);
-	DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
-	mxs.addOrReplaceMeasurement("normal", 1.234);
-	Map<String, String> metadata = new HashMap<String, String>();
-	metadata.put("fromMQTT", "true");
-	mxs.setMetadata(metadata);
-	mxs.setUpdateState(true);
-	request.setRequest(mxs);
-	try {
-	    ObjectMapper mapper = new ObjectMapper();
-	    JsonNode json = mapper.convertValue(request, JsonNode.class);
-	    ObjectNode mxsNode = (ObjectNode) json.get("request").get("measurements");
-	    mxsNode.put("stringTest", "value");
-	    mxsNode.put("booleanTest", true);
-	    String payload = mapper.writeValueAsString(json);
+    public class MqttTester implements Callable<Void> {
 
-	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
-	    System.out.println("Message sent successfully.");
-	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException(e);
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
+	/** Message count */
+	private int messageCount;
+
+	/** MQTT settings */
+	private MQTT mqtt;
+
+	/** MQTT connection */
+	private BlockingConnection connection;
+
+	/** Global object mapper instance */
+	private ObjectMapper MAPPER = new ObjectMapper();
+
+	public MqttTester(int messageCount) {
+	    this.messageCount = messageCount;
 	}
-    }
 
-    /**
-     * Send request for mapping a device as an element of a composite device.
-     * 
-     * @throws SiteWhereException
-     */
-    @Test
-    public void sendDeviceMappingCreateRequest() throws SiteWhereException {
-	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("19c5a02a-a9a9-4b39-ad4e-1066bb464141");
-	request.setType(Type.MapDevice);
-	DeviceMappingCreateRequest mapping = new DeviceMappingCreateRequest();
-	mapping.setCompositeDeviceHardwareId("072d6db9-5349-4162-bfbe-e4990a101f29");
-	mapping.setMappingPath("/default/pci/pci1");
-	request.setRequest(mapping);
-	try {
-	    String payload = (new ObjectMapper()).writeValueAsString(request);
-	    System.out.println("Payload:\n\n" + payload);
-	    Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-		    false);
-	    future.await(3, TimeUnit.SECONDS);
-	    System.out.println("Message sent successfully.");
-	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException(e);
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
+	@Override
+	public Void call() throws Exception {
+	    try {
+		this.mqtt = new MQTT();
+		mqtt.setHost("192.168.171.128", 1883);
+		this.connection = mqtt.blockingConnection();
+		connection.connect();
+		System.out.println("Connected to: " + mqtt.getHost());
+
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < messageCount; i++) {
+		    sendLocationOverMqtt();
+		}
+		System.out.println(
+			"Sent " + messageCount + " locations in " + (System.currentTimeMillis() - start) + "ms.");
+
+		connection.disconnect();
+		return null;
+	    } catch (URISyntaxException e) {
+		throw new RuntimeException(e);
+	    } catch (Exception e) {
+		throw new RuntimeException(e);
+	    }
 	}
-    }
 
-    public MQTT getMqtt() {
-	return mqtt;
-    }
+	/**
+	 * Send a location event request via JSON/MQTT.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendLocationOverMqtt() throws SiteWhereException {
+	    DeviceRequest request = new DeviceRequest();
+	    request.setHardwareId("53a8b4ba-e302-4133-8799-cc84d95d9539");
+	    request.setType(Type.DeviceLocation);
+	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
+	    location.setEventDate(new Date());
+	    location.setLatitude(34.10469794977326);
+	    location.setLongitude(-84.23966646194458);
+	    location.setElevation(0.0);
+	    Map<String, String> metadata = new HashMap<String, String>();
+	    metadata.put("fromMQTT", "true");
+	    location.setMetadata(metadata);
+	    location.setUpdateState(true);
+	    request.setRequest(location);
+	    try {
+		String payload = MAPPER.writeValueAsString(request);
+		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
 
-    public void setMqtt(MQTT mqtt) {
-	this.mqtt = mqtt;
-    }
+	/**
+	 * Send device measurements request with non-numeric measurement values.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendNonStandardMeasurements() throws SiteWhereException {
+	    DeviceRequest request = new DeviceRequest();
+	    request.setHardwareId("123-TEST-4567890");
+	    request.setType(Type.DeviceMeasurements);
+	    DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
+	    mxs.addOrReplaceMeasurement("normal", 1.234);
+	    Map<String, String> metadata = new HashMap<String, String>();
+	    metadata.put("fromMQTT", "true");
+	    mxs.setMetadata(metadata);
+	    mxs.setUpdateState(true);
+	    request.setRequest(mxs);
+	    try {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode json = mapper.convertValue(request, JsonNode.class);
+		ObjectNode mxsNode = (ObjectNode) json.get("request").get("measurements");
+		mxsNode.put("stringTest", "value");
+		mxsNode.put("booleanTest", true);
+		String payload = mapper.writeValueAsString(json);
 
-    public FutureConnection getConnection() {
-	return connection;
-    }
+		System.out.println("Payload:\n\n" + payload);
+		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
+		System.out.println("Message sent successfully.");
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
 
-    public void setConnection(FutureConnection connection) {
-	this.connection = connection;
+	/**
+	 * Send request for mapping a device as an element of a composite device.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendDeviceMappingCreateRequest() throws SiteWhereException {
+	    DeviceRequest request = new DeviceRequest();
+	    request.setHardwareId("19c5a02a-a9a9-4b39-ad4e-1066bb464141");
+	    request.setType(Type.MapDevice);
+	    DeviceMappingCreateRequest mapping = new DeviceMappingCreateRequest();
+	    mapping.setCompositeDeviceHardwareId("072d6db9-5349-4162-bfbe-e4990a101f29");
+	    mapping.setMappingPath("/default/pci/pci1");
+	    request.setRequest(mapping);
+	    try {
+		String payload = (new ObjectMapper()).writeValueAsString(request);
+		System.out.println("Payload:\n\n" + payload);
+		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
+		System.out.println("Message sent successfully.");
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
     }
 }

@@ -31,7 +31,6 @@ import org.apache.activemq.broker.TransportConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -196,8 +195,8 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
     }
 
     /**
-     * Reads messages from the ActiveMQ queue and puts the binary content on a
-     * queue for SiteWhere to use.
+     * Reads messages from the ActiveMQ queue and puts the binary content on a queue
+     * for SiteWhere to use.
      * 
      * @author Derek
      */
@@ -255,13 +254,12 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		    }
 		    if (message instanceof TextMessage) {
 			TextMessage textMessage = (TextMessage) message;
-			EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this,
-				textMessage.getText().getBytes(), null);
+			onEventPayloadReceived(textMessage.getText().getBytes(), null);
 		    } else if (message instanceof BytesMessage) {
 			BytesMessage bytesMessage = (BytesMessage) message;
 			byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 			bytesMessage.readBytes(buffer);
-			EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this, buffer, null);
+			onEventPayloadReceived(buffer, null);
 		    } else {
 			LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 		    }

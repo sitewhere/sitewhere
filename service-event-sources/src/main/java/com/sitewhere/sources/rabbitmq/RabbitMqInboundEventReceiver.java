@@ -8,10 +8,10 @@
 package com.sitewhere.sources.rabbitmq;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,9 +24,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.ShutdownSignalException;
 import com.rabbitmq.client.ShutdownListener;
-import com.sitewhere.sources.EventProcessingLogic;
+import com.rabbitmq.client.ShutdownSignalException;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -158,7 +157,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		@Override
 		public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
 			byte[] body) throws IOException {
-		    EventProcessingLogic.processRawPayload(RabbitMqInboundEventReceiver.this, body, null);
+		    onEventPayloadReceived(body, null);
 		}
 	    };
 

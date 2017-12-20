@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import com.hazelcast.core.IQueue;
 import com.sitewhere.communication.hazelcast.IHazelcastConfiguration;
 import com.sitewhere.sources.DecodedDeviceRequest;
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -90,7 +89,7 @@ public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRe
 	    while (true) {
 		try {
 		    DecodedDeviceRequest<?> payload = getEventQueue().take();
-		    EventProcessingLogic.processRawPayload(HazelcastQueueReceiver.this, payload, null);
+		    onEventPayloadReceived(payload, null);
 		    LOGGER.debug("Processed event from " + payload.getHardwareId() + " from Hazelcast event queue.");
 		} catch (InterruptedException e) {
 		    LOGGER.warn("Hazelcast queue processor interrupted.");

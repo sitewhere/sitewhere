@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -65,7 +64,7 @@ public class InboundEventReceiver<T> extends TenantEngineLifecycleComponent impl
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) {
 	getEventSource().onEncodedEventReceived(InboundEventReceiver.this, payload, metadata);
     }
 
@@ -83,8 +82,7 @@ public class InboundEventReceiver<T> extends TenantEngineLifecycleComponent impl
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * setEventSource(com.
-     * sitewhere.spi.device.communication.IInboundEventSource)
+     * setEventSource(com. sitewhere.spi.device.communication.IInboundEventSource)
      */
     public void setEventSource(IInboundEventSource<T> eventSource) {
 	this.eventSource = eventSource;

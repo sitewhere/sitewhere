@@ -16,9 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.PollingInboundEventReceiver;
-import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -76,8 +74,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
+     * @see com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -94,7 +91,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 
 	    // Process each payload individually.
 	    for (byte[] payload : payloads) {
-		EventProcessingLogic.processRawPayload(PollingRestInboundEventReceiver.this, payload, null);
+		onEventPayloadReceived(payload, null);
 	    }
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
@@ -110,7 +107,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) {
 	getEventSource().onEncodedEventReceived(this, payload, metadata);
     }
 

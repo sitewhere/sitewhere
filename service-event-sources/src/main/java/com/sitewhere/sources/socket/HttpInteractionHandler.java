@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
@@ -44,8 +43,7 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
+     * @see com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
      * process( java.net.Socket,
      * com.sitewhere.spi.device.communication.IInboundEventReceiver)
      */
@@ -66,7 +64,7 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 			out.write(data);
 		    }
 		    out.close();
-		    EventProcessingLogic.processRawPayload(receiver, out.toByteArray(), null);
+		    receiver.onEventPayloadReceived(out.toByteArray(), null);
 		}
 	    }
 	    HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 200, "OK");

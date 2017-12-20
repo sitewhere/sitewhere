@@ -149,36 +149,57 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * onEncodedEventReceived(
-     * com.sitewhere.spi.device.communication.IInboundEventReceiver,
-     * java.lang.Object, java.util.Map)
+     * @see
+     * com.sitewhere.sources.spi.IInboundEventSource#onEncodedEventReceived(com.
+     * sitewhere.sources.spi.IInboundEventReceiver, java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata)
-	    throws EventDecodeException {
+    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata) {
 	LOGGER.debug("Device event receiver picked up event.");
-	List<IDecodedDeviceRequest<?>> requests = decodePayload(encoded, metadata);
-	try {
-	    if (requests != null) {
-		for (IDecodedDeviceRequest<?> decoded : requests) {
-		    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
-			    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
-		    if (!isDuplicate) {
-			handleDecodedRequest(encoded, metadata, decoded);
-		    } else {
-			LOGGER.info("Event not processed due to duplicate detected.");
-		    }
+	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
+	if (requests != null) {
+	    for (IDecodedDeviceRequest<?> decoded : requests) {
+		if (shouldProcess(decoded)) {
+		    handleDecodedRequest(encoded, metadata, decoded);
 		}
 	    }
-	} catch (Throwable e) {
-	    try {
-		onEventDecodeFailed(encoded, metadata, e);
-	    } catch (SiteWhereException e1) {
-		LOGGER.error("Unable to report failed decode to event source manager.", e1);
+	}
+    }
+
+    /**
+     * Decode an event into zero or more requests.
+     * 
+     * @param encoded
+     * @param metadata
+     * @return
+     */
+    protected List<IDecodedDeviceRequest<?>> decodeEvent(T encoded, Map<String, Object> metadata) {
+	try {
+	    return decodePayload(encoded, metadata);
+	} catch (EventDecodeException e) {
+	    onEventDecodeFailed(encoded, metadata, e);
+	    return null;
+	}
+    }
+
+    /**
+     * Indicates if a decoded record should be processed. Returning false skips
+     * processing for the request.
+     * 
+     * @param decoded
+     * @return
+     */
+    protected boolean shouldProcess(IDecodedDeviceRequest<?> decoded) {
+	try {
+	    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
+		    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
+	    if (isDuplicate) {
+		LOGGER.info("Event not processed due to duplicate detected.");
 	    }
+	    return !isDuplicate;
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error determining whether request should be processed. Skipping.");
+	    return false;
 	}
     }
 
@@ -189,11 +210,13 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      * @param encoded
      * @param metadata
      * @param decoded
-     * @throws SiteWhereException
      */
-    protected void handleDecodedRequest(T encoded, Map<String, Object> metadata, IDecodedDeviceRequest<?> decoded)
-	    throws SiteWhereException {
-	getEventSourcesManager().handleDecodedEvent(getSourceId(), getRawPayload(encoded), metadata, decoded);
+    protected void handleDecodedRequest(T encoded, Map<String, Object> metadata, IDecodedDeviceRequest<?> decoded) {
+	try {
+	    getEventSourcesManager().handleDecodedEvent(getSourceId(), getRawPayload(encoded), metadata, decoded);
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to handle decoded event.", e);
+	}
     }
 
     /**
@@ -203,10 +226,13 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      * @param encoded
      * @param metadata
      * @param t
-     * @throws SiteWhereException
      */
-    protected void onEventDecodeFailed(T encoded, Map<String, Object> metadata, Throwable t) throws SiteWhereException {
-	getEventSourcesManager().handleFailedDecode(getSourceId(), getRawPayload(encoded), metadata, t);
+    protected void onEventDecodeFailed(T encoded, Map<String, Object> metadata, Throwable t) {
+	try {
+	    getEventSourcesManager().handleFailedDecode(getSourceId(), getRawPayload(encoded), metadata, t);
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to handle failed event decode.", e);
+	}
     }
 
     /**
@@ -225,8 +251,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
+     * @see com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
      */
     @Override
     public String getSourceId() {

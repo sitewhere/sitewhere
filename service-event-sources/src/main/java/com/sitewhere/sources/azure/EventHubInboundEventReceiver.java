@@ -36,7 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.qpid.amqp_1_0.client.Message;
 
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.azure.client.Constants;
 import com.sitewhere.sources.azure.client.EventData;
@@ -176,8 +175,7 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			// Map eventContext = new HashMap();
 			// eventContext.put("enqueueTime",
 			// data.getEnqueueTime());
-			EventProcessingLogic.processRawPayload(EventHubInboundEventReceiver.this, payload, null);
-
+			onEventPayloadReceived(payload, null);
 		    } catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(

@@ -23,8 +23,6 @@ import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
-import com.sitewhere.sources.EventProcessingLogic;
-import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
@@ -56,6 +54,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /** Used to execute MQTT subscribe in separate thread */
     private ExecutorService executor;
+
+    /** Count of received events */
+    private AtomicInteger eventCount = new AtomicInteger();
 
     public MqttInboundEventReceiver() {
 	super(LifecycleComponentType.InboundEventReceiver);
@@ -132,7 +133,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * onEventPayloadReceived (java.lang.Object, java.util.Map)
      */
     @Override
-    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) throws EventDecodeException {
+    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) {
+	eventCount.incrementAndGet();
 	getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
     }
 
@@ -152,7 +154,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		    Future<Message> future = connection.receive();
 		    Message message = future.await();
 		    message.ack();
-		    EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
+		    onEventPayloadReceived(message.getPayload(), null);
 		} catch (InterruptedException e) {
 		    break;
 		} catch (Throwable e) {
@@ -165,8 +167,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
+     * @see com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -201,8 +202,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * setEventSource(com
-     * .sitewhere.spi.device.communication.IInboundEventSource)
+     * setEventSource(com .sitewhere.spi.device.communication.IInboundEventSource)
      */
     public void setEventSource(IInboundEventSource<byte[]> eventSource) {
 	this.eventSource = eventSource;

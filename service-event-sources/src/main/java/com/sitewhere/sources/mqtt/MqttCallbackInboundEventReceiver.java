@@ -20,7 +20,6 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -126,14 +125,12 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 	    /*
 	     * (non-Javadoc)
 	     * 
-	     * @see
-	     * org.fusesource.mqtt.client.Listener#onPublish(org.fusesource.
-	     * hawtbuf .UTF8Buffer, org.fusesource.hawtbuf.Buffer,
-	     * java.lang.Runnable)
+	     * @see org.fusesource.mqtt.client.Listener#onPublish(org.fusesource. hawtbuf
+	     * .UTF8Buffer, org.fusesource.hawtbuf.Buffer, java.lang.Runnable)
 	     */
 	    public void onPublish(UTF8Buffer topic, Buffer payload, Runnable ack) {
 		ack.run();
-		EventProcessingLogic.processRawPayload(MqttCallbackInboundEventReceiver.this, payload.data, null);
+		onEventPayloadReceived(payload.data, null);
 	    }
 
 	    public void onFailure(Throwable value) {

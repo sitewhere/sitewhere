@@ -9,6 +9,7 @@ package com.sitewhere.sources;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,12 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    /** Count of decoded events */
+    private AtomicInteger decodedCount = new AtomicInteger();
+
+    /** Count of events that could not be decoded */
+    private AtomicInteger decodeFailedCount = new AtomicInteger();
 
     /** List of event sources */
     private List<IInboundEventSource<?>> eventSources;
@@ -200,14 +207,17 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     }
 
     /*
-     * @see
-     * com.sitewhere.sources.spi.IEventSourcesManager#handleDecodedEvent(java.
+     * @see com.sitewhere.sources.spi.IEventSourcesManager#handleDecodedEvent(java.
      * lang.String, byte[], java.util.Map,
      * com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
      */
     @Override
     public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
+	int count = decodedCount.incrementAndGet();
+	if ((count % 100) == 0) {
+	    getLogger().info("Total decoded events: " + count);
+	}
 	if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
 		// Build payload message.
@@ -227,13 +237,17 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     }
 
     /*
-     * @see
-     * com.sitewhere.sources.spi.IEventSourcesManager#handleFailedDecode(java.
+     * @see com.sitewhere.sources.spi.IEventSourcesManager#handleFailedDecode(java.
      * lang.String, byte[], java.util.Map, java.lang.Throwable)
      */
     @Override
     public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
 	    throws SiteWhereException {
+	int count = decodeFailedCount.incrementAndGet();
+	if ((count % 10) == 0) {
+	    getLogger().info("Total events unable to be decoded: " + count);
+	}
+	getLogger().warn("Event could not be decoded. Adding to failed decode topic.", t);
 	if (getFailedDecodeEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    getFailedDecodeEventsProducer().send(sourceId, encoded);
 	} else if (getLogger().isWarnEnabled()) {

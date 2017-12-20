@@ -64,14 +64,11 @@ public interface IInboundEventSource<T> extends ITenantEngineLifecycleComponent 
     public byte[] getRawPayload(T payload);
 
     /**
-     * Called by {@link IInboundEventReceiver} when an encoded event is
-     * received.
+     * Called by {@link IInboundEventReceiver} when an encoded event is received.
      * 
      * @param receiver
      * @param encodedEvent
      * @param metadata
-     * @throws EventDecodeException
      */
-    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent, Map<String, Object> metadata)
-	    throws EventDecodeException;
+    public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent, Map<String, Object> metadata);
 }

@@ -16,7 +16,6 @@ import javax.websocket.Session;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.sources.EventProcessingLogic;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 
 /**
@@ -62,7 +61,7 @@ public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String>
 		public void onMessage(String payload) {
 		    IInboundEventReceiver<String> receiver = (IInboundEventReceiver<String>) config.getUserProperties()
 			    .get(WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-		    EventProcessingLogic.processRawPayload(receiver, payload, null);
+		    receiver.onEventPayloadReceived(payload, null);
 		}
 	    });
 	}

@@ -9,7 +9,6 @@ package com.sitewhere.sources.spi;
 
 import java.util.Map;
 
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -31,9 +30,8 @@ public interface IInboundEventReceiver<T> extends ITenantEngineLifecycleComponen
      * 
      * @param payload
      * @param metadata
-     * @throws SiteWhereException
      */
-    public void onEventPayloadReceived(T payload, Map<String, Object> metadata) throws EventDecodeException;
+    public void onEventPayloadReceived(T payload, Map<String, Object> metadata);
 
     /**
      * Set the parent event source that will process events.

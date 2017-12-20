@@ -20,8 +20,6 @@ import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.server.MessageDeliverer;
 
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
-import com.sitewhere.sources.EventProcessingLogic;
-import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
@@ -36,6 +34,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class SiteWhereMessageDeliverer implements MessageDeliverer {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Indicates type of event (detected from URI) */
@@ -93,14 +92,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	    case POST: {
 		Map<String, Object> metadata = new HashMap<String, Object>();
 		metadata.put(META_EVENT_TYPE, Type.RegisterDevice.name());
-		try {
-		    EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
-			    exchange.getRequest().getPayload(), metadata);
-		    createAndSendResponse(ResponseCode.CONTENT, "Device created successfully.", exchange);
-		} catch (EventDecodeException e) {
-		    LOGGER.error("Unable to decode CoAP registration payload.", e);
-		    createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
-		}
+		getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
+		createAndSendResponse(ResponseCode.CONTENT, "Device created successfully.", exchange);
 		break;
 	    }
 	    default: {
@@ -162,14 +155,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
-	    try {
-		EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
-			exchange.getRequest().getPayload(), metadata);
-		createAndSendResponse(ResponseCode.CONTENT, "Device measurements created successfully.", exchange);
-	    } catch (EventDecodeException e) {
-		LOGGER.error("Unable to decode CoAP measurements payload.", e);
-		createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
-	    }
+	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
+	    createAndSendResponse(ResponseCode.CONTENT, "Device measurements created successfully.", exchange);
 	    break;
 	}
 	default: {
@@ -192,14 +179,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
-	    try {
-		EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
-			exchange.getRequest().getPayload(), metadata);
-		createAndSendResponse(ResponseCode.CONTENT, "Device alert created successfully.", exchange);
-	    } catch (EventDecodeException e) {
-		LOGGER.error("Unable to decode CoAP alert payload.", e);
-		createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
-	    }
+	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
+	    createAndSendResponse(ResponseCode.CONTENT, "Device alert created successfully.", exchange);
 	    break;
 	}
 	default: {
@@ -222,14 +203,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
-	    try {
-		EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
-			exchange.getRequest().getPayload(), metadata);
-		createAndSendResponse(ResponseCode.CONTENT, "Device location created successfully.", exchange);
-	    } catch (EventDecodeException e) {
-		LOGGER.error("Unable to decode CoAP location payload.", e);
-		createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
-	    }
+	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
+	    createAndSendResponse(ResponseCode.CONTENT, "Device location created successfully.", exchange);
 	    break;
 	}
 	default: {
@@ -252,14 +227,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	metadata.put(META_HARDWARE_ID, device.getHardwareId());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
-	    try {
-		EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
-			exchange.getRequest().getPayload(), metadata);
-		createAndSendResponse(ResponseCode.CONTENT, "Device acknowledgement created successfully.", exchange);
-	    } catch (EventDecodeException e) {
-		LOGGER.error("Unable to decode CoAP acknowledgement payload.", e);
-		createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
-	    }
+	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
+	    createAndSendResponse(ResponseCode.CONTENT, "Device acknowledgement created successfully.", exchange);
 	    break;
 	}
 	default: {
