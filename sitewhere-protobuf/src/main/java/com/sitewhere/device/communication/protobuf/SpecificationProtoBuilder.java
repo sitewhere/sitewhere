@@ -37,7 +37,7 @@ public class SpecificationProtoBuilder {
     public static String getProtoForSpecification(IDeviceSpecification specification,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	StringBuffer buffer = new StringBuffer();
-	List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(specification.getToken(), false);
+	List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(specification.getId(), false);
 	generateProto(specification, commands, buffer);
 	return buffer.toString();
     }

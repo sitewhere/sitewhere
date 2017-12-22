@@ -8,12 +8,11 @@
 package com.sitewhere.rest.model.device;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.ISite;
 
 /**
@@ -25,7 +24,10 @@ import com.sitewhere.spi.device.ISite;
 public class Site extends MetadataProviderEntity implements ISite, Serializable {
 
     /** Serialization version identifier */
-    private static final long serialVersionUID = 3080612757299957486L;
+    private static final long serialVersionUID = -566693689485715028L;
+
+    /** Unique site id */
+    private UUID id;
 
     /** Unique token */
     private String token;
@@ -42,19 +44,24 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     /** Map data */
     private SiteMapData map = new SiteMapData();
 
-    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+    /*
+     * @see com.sitewhere.spi.device.ISite#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
 
-    /** List of assignments for site */
-    private List<DeviceAssignment> deviceAssignments;
-
-    /** List of zones for site */
-    private List<Zone> zones;
+    public void setId(UUID id) {
+	this.id = id;
+    }
 
     /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.ISite#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -68,6 +75,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
      * 
      * @see com.sitewhere.spi.device.ISite#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -81,6 +89,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
      * 
      * @see com.sitewhere.spi.device.ISite#getDescription()
      */
+    @Override
     public String getDescription() {
 	return description;
     }
@@ -94,6 +103,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
      * 
      * @see com.sitewhere.spi.device.ISite#getImageUrl()
      */
+    @Override
     public String getImageUrl() {
 	return imageUrl;
     }
@@ -107,44 +117,12 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
      * 
      * @see com.sitewhere.spi.device.ISite#getMap()
      */
+    @Override
     public SiteMapData getMap() {
 	return map;
     }
 
     public void setMap(SiteMapData map) {
 	this.map = map;
-    }
-
-    public List<DeviceAssignment> getDeviceAssignments() {
-	return deviceAssignments;
-    }
-
-    public void setDeviceAssignments(List<DeviceAssignment> deviceAssignments) {
-	this.deviceAssignments = deviceAssignments;
-    }
-
-    public List<Zone> getZones() {
-	return zones;
-    }
-
-    public void setZones(List<Zone> zones) {
-	this.zones = zones;
-    }
-
-    /**
-     * Create a copy of an SPI object. Used by web services for marshaling.
-     * 
-     * @param input
-     * @return
-     */
-    public static Site copy(ISite input) throws SiteWhereException {
-	Site result = new Site();
-	result.setToken(input.getToken());
-	result.setName(input.getName());
-	result.setDescription(input.getDescription());
-	result.setImageUrl(input.getImageUrl());
-	result.setMap(SiteMapData.copy(input.getMap()));
-	MetadataProviderEntity.copy(input, result);
-	return result;
     }
 }

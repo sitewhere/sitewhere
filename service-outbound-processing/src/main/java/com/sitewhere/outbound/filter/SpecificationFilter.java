@@ -32,7 +32,7 @@ public class SpecificationFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if (getSpecificationToken().equals(context.getSpecificationToken())) {
+	if (getSpecificationToken().equals(context.getDeviceSpecificationId())) {
 	    return (getOperation() != FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);

@@ -80,9 +80,10 @@ public class DeviceMarshalHelper {
     public MarshaledDevice convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
 	MarshaledDevice result = new MarshaledDevice();
 	result.setHardwareId(source.getHardwareId());
-	result.setSiteToken(source.getSiteToken());
-	result.setAssignmentToken(source.getAssignmentToken());
-	result.setParentHardwareId(source.getParentHardwareId());
+	result.setSiteId(source.getSiteId());
+	result.setDeviceSpecificationId(source.getDeviceSpecificationId());
+	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
+	result.setParentDeviceId(source.getParentDeviceId());
 	result.setComments(source.getComments());
 	MetadataProviderEntity.copy(source, result);
 
@@ -97,16 +98,14 @@ public class DeviceMarshalHelper {
 	}
 
 	// Look up specification information.
-	if (source.getSpecificationToken() != null) {
-	    IDeviceSpecification spec = getDeviceManagement()
-		    .getDeviceSpecificationByToken(source.getSpecificationToken());
+	if (source.getDeviceSpecificationId() != null) {
+	    IDeviceSpecification spec = getDeviceManagement().getDeviceSpecification(source.getDeviceSpecificationId());
 	    if (spec == null) {
 		throw new SiteWhereException("Device references non-existent specification.");
 	    }
 	    if (includeSpecification) {
 		result.setSpecification(getSpecificationHelper().convert(spec, assetResolver));
 	    } else {
-		result.setSpecificationToken(source.getSpecificationToken());
 		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
 			.getAsset(spec.getAssetReference());
 		if (asset != null) {
@@ -118,10 +117,10 @@ public class DeviceMarshalHelper {
 		}
 	    }
 	}
-	if ((source.getAssignmentToken() != null) && (isIncludeAssignment())) {
+	if ((source.getDeviceAssignmentId() != null) && (isIncludeAssignment())) {
 	    try {
 		IDeviceAssignment assignment = getDeviceManagement()
-			.getDeviceAssignmentByToken(source.getAssignmentToken());
+			.getDeviceAssignment(source.getDeviceAssignmentId());
 		if (assignment == null) {
 		    throw new SiteWhereException("Device contains an invalid assignment reference.");
 		}
@@ -130,13 +129,13 @@ public class DeviceMarshalHelper {
 		LOGGER.warn("Device has token for non-existent assignment.");
 	    }
 	}
-	if ((source.getSiteToken() != null) && (isIncludeSite())) {
+	if ((source.getSiteId() != null) && (isIncludeSite())) {
 	    if (includeSite) {
-		ISite site = getDeviceManagement().getSiteByToken(source.getSiteToken());
+		ISite site = getDeviceManagement().getSite(source.getSiteId());
 		if (site == null) {
 		    throw new SiteWhereException("Device contains an invalid site reference.");
 		}
-		result.setSite(Site.copy(site));
+		result.setSite((Site) site);
 	    }
 	}
 	return result;

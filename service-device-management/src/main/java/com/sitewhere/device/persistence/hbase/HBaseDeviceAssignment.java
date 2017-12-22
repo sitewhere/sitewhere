@@ -73,11 +73,11 @@ public class HBaseDeviceAssignment {
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(device.getSiteToken());
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(device.getSiteId().toString());
 	if (siteId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
-	if (device.getAssignmentToken() != null) {
+	if (device.getDeviceAssignmentId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
 	byte[] baserow = HBaseSite.getAssignmentRowKey(siteId);
@@ -121,7 +121,7 @@ public class HBaseDeviceAssignment {
 	// Set the back reference from the device that indicates it is
 	// currently
 	// assigned.
-	HBaseDevice.setDeviceAssignment(context, request.getDeviceHardwareId(), uuid);
+	HBaseDevice.setDeviceAssignment(context, device, uuid);
 
 	return newAssignment;
     }
@@ -130,12 +130,13 @@ public class HBaseDeviceAssignment {
      * Get a device assignment based on its unique token.
      * 
      * @param context
-     * @param token
+     * @param assn
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment getDeviceAssignment(IHBaseContext context, String token) throws SiteWhereException {
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+    public static DeviceAssignment getDeviceAssignment(IHBaseContext context, IDeviceAssignment assn)
+	    throws SiteWhereException {
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	if (assnKey == null) {
 	    return null;
 	}
@@ -176,19 +177,19 @@ public class HBaseDeviceAssignment {
      * Update metadata associated with a device assignment.
      * 
      * @param context
-     * @param token
+     * @param assn
      * @param metadata
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment updateDeviceAssignmentMetadata(IHBaseContext context, String token,
+    public static DeviceAssignment updateDeviceAssignmentMetadata(IHBaseContext context, IDeviceAssignment assn,
 	    Map<String, String> metadata) throws SiteWhereException {
-	DeviceAssignment updated = getDeviceAssignment(context, token);
+	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.clearMetadata();
 	MetadataProvider.copy(metadata, updated);
 	DeviceManagementPersistence.setUpdatedEntityMetadata(updated);
 
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 	byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -210,17 +211,17 @@ public class HBaseDeviceAssignment {
      * Update state associated with device assignment.
      * 
      * @param context
-     * @param token
+     * @param assn
      * @param state
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment updateDeviceAssignmentState(IHBaseContext context, String token,
+    public static DeviceAssignment updateDeviceAssignmentState(IHBaseContext context, IDeviceAssignment assn,
 	    IDeviceAssignmentState state) throws SiteWhereException {
-	DeviceAssignment updated = getDeviceAssignment(context, token);
+	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	// updated.setState(DeviceAssignmentState.copy(state));
 
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] updatedState = context.getPayloadMarshaler().encodeDeviceAssignmentState(state);
 	byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -242,18 +243,18 @@ public class HBaseDeviceAssignment {
      * Update status for a given device assignment.
      * 
      * @param context
-     * @param token
+     * @param assn
      * @param status
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment updateDeviceAssignmentStatus(IHBaseContext context, String token,
+    public static DeviceAssignment updateDeviceAssignmentStatus(IHBaseContext context, IDeviceAssignment assn,
 	    DeviceAssignmentStatus status) throws SiteWhereException {
-	DeviceAssignment updated = getDeviceAssignment(context, token);
+	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.setStatus(status);
 	Persistence.setUpdatedEntityMetadata(updated);
 
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 	byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -276,21 +277,22 @@ public class HBaseDeviceAssignment {
      * End a device assignment.
      * 
      * @param context
-     * @param token
+     * @param assn
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment endDeviceAssignment(IHBaseContext context, String token) throws SiteWhereException {
-	DeviceAssignment updated = getDeviceAssignment(context, token);
+    public static DeviceAssignment endDeviceAssignment(IHBaseContext context, IDeviceAssignment assn)
+	    throws SiteWhereException {
+	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.setStatus(DeviceAssignmentStatus.Released);
 	updated.setReleasedDate(new Date());
 	DeviceManagementPersistence.setUpdatedEntityMetadata(updated);
 
 	// Remove assignment reference from device.
-	HBaseDevice.removeDeviceAssignment(context, updated.getDeviceHardwareId());
+	// HBaseDevice.removeDeviceAssignment(context, updated.getDeviceId());
 
 	// Update json and status qualifier.
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 	byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -311,37 +313,33 @@ public class HBaseDeviceAssignment {
     }
 
     /**
-     * Delete a device assignmant based on token. Depending on 'force' the
-     * record will be physically deleted or a marker qualifier will be added to
-     * mark it as deleted. Note: Physically deleting an assignment can leave
-     * orphaned references and should not be done in a production system!
+     * Delete a device assignmant based on token. Depending on 'force' the record
+     * will be physically deleted or a marker qualifier will be added to mark it as
+     * deleted. Note: Physically deleting an assignment can leave orphaned
+     * references and should not be done in a production system!
      * 
      * @param context
-     * @param token
+     * @param assn
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceAssignment deleteDeviceAssignment(IHBaseContext context, String token, boolean force)
+    public static IDeviceAssignment deleteDeviceAssignment(IHBaseContext context, IDeviceAssignment assn, boolean force)
 	    throws SiteWhereException {
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	if (assnKey == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
 	byte[] primary = getPrimaryRowkey(assnKey);
 
-	DeviceAssignment existing = getDeviceAssignment(context, token);
+	DeviceAssignment existing = getDeviceAssignment(context, assn);
 	existing.setDeleted(true);
-	try {
-	    HBaseDevice.removeDeviceAssignment(context, existing.getDeviceHardwareId());
-	} catch (SiteWhereSystemException e) {
-	    // Ignore missing reference to handle case where device was
-	    // deleted
-	    // underneath
-	    // assignment.
-	}
+	// try {
+	// HBaseDevice.removeDeviceAssignment(context, existing.getDeviceHardwareId());
+	// } catch (SiteWhereSystemException e) {
+	// }
 	if (force) {
-	    context.getDeviceIdManager().getAssignmentKeys().delete(token);
+	    context.getDeviceIdManager().getAssignmentKeys().delete(assn.getToken());
 	    Table sites = null;
 	    try {
 		Delete delete = new Delete(primary);
@@ -414,8 +412,8 @@ public class HBaseDeviceAssignment {
     }
 
     /**
-     * Truncate assignment id value to expected length. This will be a subset of
-     * the full 8-bit long value.
+     * Truncate assignment id value to expected length. This will be a subset of the
+     * full 8-bit long value.
      * 
      * @param value
      * @return

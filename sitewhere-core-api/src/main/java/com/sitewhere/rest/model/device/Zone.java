@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -30,11 +31,14 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     /** Serialization version identifier */
     private static final long serialVersionUID = -5108019932881896046L;
 
+    /** Unique device specification id */
+    private UUID id;
+
     /** Unique zone token */
     private String token;
 
-    /** Token for associated site */
-    private String siteToken;
+    /** Id for associated site */
+    private UUID siteId;
 
     /** Displayed name */
     private String name;
@@ -52,10 +56,23 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     private Double opacity;
 
     /*
+     * @see com.sitewhere.spi.device.IZone#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.IZone#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -65,16 +82,15 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getSiteToken()
+     * @see com.sitewhere.spi.device.IZone#getSiteId()
      */
-    public String getSiteToken() {
-	return siteToken;
+    @Override
+    public UUID getSiteId() {
+	return siteId;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setSiteId(UUID siteId) {
+	this.siteId = siteId;
     }
 
     /*
@@ -82,6 +98,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      * 
      * @see com.sitewhere.spi.device.IZone#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -95,6 +112,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      * 
      * @see com.sitewhere.spi.device.IZone#getCoordinates()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<ILocation> getCoordinates() {
 	return (List<ILocation>) (List<? extends ILocation>) coordinates;
@@ -109,6 +127,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      * 
      * @see com.sitewhere.spi.device.IZone#getBorderColor()
      */
+    @Override
     public String getBorderColor() {
 	return borderColor;
     }
@@ -122,6 +141,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      * 
      * @see com.sitewhere.spi.device.IZone#getFillColor()
      */
+    @Override
     public String getFillColor() {
 	return fillColor;
     }
@@ -135,6 +155,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      * 
      * @see com.sitewhere.spi.device.IZone#getOpacity()
      */
+    @Override
     public Double getOpacity() {
 	return opacity;
     }
@@ -152,7 +173,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     public static Zone copy(IZone input) throws SiteWhereException {
 	Zone result = new Zone();
 	result.setToken(input.getToken());
-	result.setSiteToken(input.getSiteToken());
+	result.setSiteId(input.getSiteId());
 	result.setName(input.getName());
 	result.setCreatedDate(input.getCreatedDate());
 	result.setBorderColor(input.getBorderColor());

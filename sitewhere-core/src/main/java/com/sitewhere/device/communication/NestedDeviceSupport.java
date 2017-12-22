@@ -34,13 +34,13 @@ public class NestedDeviceSupport {
 	NestedDeviceInformation nested = new NestedDeviceInformation();
 
 	// No parent set. Treat target device as gateway.
-	if (target.getParentHardwareId() == null) {
+	if (target.getParentDeviceId() == null) {
 	    nested.setGateway(target);
 	    return nested;
 	}
 
 	// Resolve parent and verify it exists.
-	IDevice parent = getDeviceManagement(tenant).getDeviceByHardwareId(target.getParentHardwareId());
+	IDevice parent = getDeviceManagement(tenant).getDevice(target.getParentDeviceId());
 	if (parent == null) {
 	    throw new SiteWhereException("Parent device reference points to device that does not exist.");
 	}

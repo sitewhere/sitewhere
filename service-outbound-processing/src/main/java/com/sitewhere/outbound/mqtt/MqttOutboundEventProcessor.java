@@ -230,18 +230,16 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
 	if (getMulticaster() != null) {
-	    IDeviceAssignment assignment = getDeviceManagement()
-		    .getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-	    IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
+	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
+	    IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 	    List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
 	    for (String route : routes) {
 		publish(event, route);
 	    }
 	} else {
 	    if (getRouteBuilder() != null) {
-		IDeviceAssignment assignment = getDeviceManagement()
-			.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-		IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
+		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
+		IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 		publish(event, getRouteBuilder().build(event, device, assignment));
 	    } else {
 		publish(event, getTopic());

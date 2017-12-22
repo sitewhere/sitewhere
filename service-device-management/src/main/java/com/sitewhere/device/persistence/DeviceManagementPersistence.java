@@ -43,10 +43,12 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -82,6 +84,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceSpecification deviceSpecificationCreateLogic(IDeviceSpecificationCreateRequest request,
 	    String token) throws SiteWhereException {
 	DeviceSpecification spec = new DeviceSpecification();
+	spec.setId(UUID.randomUUID());
 
 	// Unique token is required.
 	require(token);
@@ -155,14 +158,17 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for creating new device command and populating it from request.
      * 
+     * @param spec
      * @param request
      * @param token
+     * @param existing
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommand deviceCommandCreateLogic(String specificationToken, IDeviceCommandCreateRequest request,
+    public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec, IDeviceCommandCreateRequest request,
 	    String token, List<IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
+	command.setId(UUID.randomUUID());
 
 	// Token is required.
 	require(token);
@@ -172,7 +178,7 @@ public class DeviceManagementPersistence extends Persistence {
 	require(request.getName());
 	command.setName(request.getName());
 
-	command.setSpecificationToken(specificationToken);
+	command.setDeviceSpecificationId(spec.getId());
 	command.setNamespace(request.getNamespace());
 	command.setDescription(request.getDescription());
 	command.getParameters().addAll(request.getParameters());
@@ -259,6 +265,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceStatus deviceStatusCreateLogic(IDeviceSpecification spec, IDeviceStatusCreateRequest request,
 	    List<IDeviceStatus> existing) throws SiteWhereException {
 	DeviceStatus status = new DeviceStatus();
+	status.setId(UUID.randomUUID());
 
 	// Code is required.
 	require(request.getCode());
@@ -268,7 +275,7 @@ public class DeviceManagementPersistence extends Persistence {
 	require(request.getName());
 	status.setName(request.getName());
 
-	status.setSpecificationToken(spec.getToken());
+	status.setDeviceSpecificationId(spec.getId());
 	status.setBackgroundColor(request.getBackgroundColor());
 	status.setForegroundColor(request.getForegroundColor());
 	status.setBorderColor(request.getBorderColor());
@@ -339,8 +346,10 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static Device deviceCreateLogic(IDeviceCreateRequest request) throws SiteWhereException {
+    public static Device deviceCreateLogic(IDeviceCreateRequest request, ISite site, IDeviceSpecification spec)
+	    throws SiteWhereException {
 	Device device = new Device();
+	device.setId(UUID.randomUUID());
 
 	// Require hardware id and verify that it is valid.
 	require(request.getHardwareId());
@@ -349,13 +358,8 @@ public class DeviceManagementPersistence extends Persistence {
 	    throw new SiteWhereSystemException(ErrorCode.MalformedHardwareId, ErrorLevel.ERROR);
 	}
 	device.setHardwareId(request.getHardwareId());
-
-	require(request.getSiteToken());
-	device.setSiteToken(request.getSiteToken());
-
-	require(request.getSpecificationToken());
-	device.setSpecificationToken(request.getSpecificationToken());
-
+	device.setSiteId(site.getId());
+	device.setDeviceSpecificationId(spec.getId());
 	device.setComments(request.getComments());
 	device.setStatus(null);
 
@@ -371,22 +375,23 @@ public class DeviceManagementPersistence extends Persistence {
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceUpdateLogic(IDeviceCreateRequest request, Device target) throws SiteWhereException {
+    public static void deviceUpdateLogic(IDeviceCreateRequest request, ISite site, IDeviceSpecification spec,
+	    IDevice parent, Device target) throws SiteWhereException {
 	// Can not update the hardware id on a device.
 	if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR);
 	}
-	if (request.getSiteToken() != null) {
-	    target.setSiteToken(request.getSiteToken());
+	if (site != null) {
+	    target.setSiteId(site.getId());
 	}
-	if (request.getSpecificationToken() != null) {
-	    target.setSpecificationToken(request.getSpecificationToken());
+	if (spec != null) {
+	    target.setDeviceSpecificationId(spec.getId());
 	}
 	if (request.isRemoveParentHardwareId() == Boolean.TRUE) {
-	    target.setParentHardwareId(null);
+	    target.setParentDeviceId(null);
 	}
-	if (request.getParentHardwareId() != null) {
-	    target.setParentHardwareId(request.getParentHardwareId());
+	if (parent != null) {
+	    target.setParentDeviceId(parent.getId());
 	}
 	if (request.getDeviceElementMappings() != null) {
 	    List<DeviceElementMapping> mappings = new ArrayList<DeviceElementMapping>();
@@ -412,14 +417,13 @@ public class DeviceManagementPersistence extends Persistence {
      * Encapsulates logic for creating a new {@link IDeviceElementMapping}.
      * 
      * @param management
-     * @param hardwareId
+     * @param device
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static IDevice deviceElementMappingCreateLogic(IDeviceManagement management, String hardwareId,
+    public static IDevice deviceElementMappingCreateLogic(IDeviceManagement management, IDevice device,
 	    IDeviceElementMapping request) throws SiteWhereException {
-	IDevice device = management.getDeviceByHardwareId(hardwareId);
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
@@ -429,12 +433,12 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 
 	// Check whether target device is already parented to another device.
-	if (mapped.getParentHardwareId() != null) {
+	if (mapped.getParentDeviceId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceParentMappingExists, ErrorLevel.ERROR);
 	}
 
 	// Verify that requested path is valid on device specification.
-	IDeviceSpecification specification = management.getDeviceSpecificationByToken(device.getSpecificationToken());
+	IDeviceSpecification specification = management.getDeviceSpecification(device.getDeviceSpecificationId());
 	DeviceSpecificationUtils.getDeviceSlotByPath(specification, request.getDeviceElementSchemaPath());
 
 	// Verify that there is not an existing mapping for the path.
@@ -451,13 +455,13 @@ public class DeviceManagementPersistence extends Persistence {
 
 	// Add parent backreference for nested device.
 	DeviceCreateRequest nested = new DeviceCreateRequest();
-	nested.setParentHardwareId(hardwareId);
-	management.updateDevice(mapped.getHardwareId(), nested);
+	nested.setParentHardwareId(device.getHardwareId());
+	management.updateDevice(mapped.getId(), nested);
 
 	// Update device with new mapping.
 	DeviceCreateRequest update = new DeviceCreateRequest();
 	update.setDeviceElementMappings(newMappings);
-	IDevice updated = management.updateDevice(hardwareId, update);
+	IDevice updated = management.updateDevice(device.getId(), update);
 	return updated;
     }
 
@@ -465,14 +469,13 @@ public class DeviceManagementPersistence extends Persistence {
      * Encapsulates logic for deleting an {@link IDeviceElementMapping}.
      * 
      * @param management
-     * @param hardwareId
+     * @param device
      * @param path
      * @return
      * @throws SiteWhereException
      */
-    public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, String hardwareId, String path)
+    public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, IDevice device, String path)
 	    throws SiteWhereException {
-	IDevice device = management.getDeviceByHardwareId(hardwareId);
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
@@ -497,13 +500,13 @@ public class DeviceManagementPersistence extends Persistence {
 	if (mapped != null) {
 	    DeviceCreateRequest nested = new DeviceCreateRequest();
 	    nested.setRemoveParentHardwareId(true);
-	    management.updateDevice(mapped.getHardwareId(), nested);
+	    management.updateDevice(mapped.getId(), nested);
 	}
 
 	// Update device with new mappings.
 	DeviceCreateRequest update = new DeviceCreateRequest();
 	update.setDeviceElementMappings(newMappings);
-	IDevice updated = management.updateDevice(hardwareId, update);
+	IDevice updated = management.updateDevice(device.getId(), update);
 	return updated;
     }
 
@@ -516,6 +519,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static Site siteCreateLogic(ISiteCreateRequest request) throws SiteWhereException {
 	Site site = new Site();
+	site.setId(UUID.randomUUID());
 
 	if (request.getToken() != null) {
 	    site.setToken(request.getToken());
@@ -572,15 +576,10 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IDevice device)
 	    throws SiteWhereException {
 	DeviceAssignment newAssignment = new DeviceAssignment();
+	newAssignment.setId(UUID.randomUUID());
 	newAssignment.setToken(source.getToken());
-
-	// Copy site token from device.
-	newAssignment.setSiteToken(device.getSiteToken());
-
-	if (source.getDeviceHardwareId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
-	}
-	newAssignment.setDeviceHardwareId(source.getDeviceHardwareId());
+	newAssignment.setSiteId(device.getSiteId());
+	newAssignment.setDeviceId(device.getId());
 
 	requireNotNull(source.getAssignmentType());
 	newAssignment.setAssignmentType(source.getAssignmentType());
@@ -625,7 +624,8 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceStream deviceStreamCreateLogic(IDeviceAssignment assignment, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
 	DeviceStream stream = new DeviceStream();
-	stream.setAssignmentToken(assignment.getToken());
+	stream.setId(UUID.randomUUID());
+	stream.setAssignmentId(assignment.getId());
 
 	// Verify the stream id is specified and contains only valid characters.
 	require(request.getStreamId());
@@ -719,11 +719,11 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static Zone zoneCreateLogic(IZoneCreateRequest source, String siteToken, String uuid)
-	    throws SiteWhereException {
+    public static Zone zoneCreateLogic(IZoneCreateRequest source, ISite site, String uuid) throws SiteWhereException {
 	Zone zone = new Zone();
+	zone.setId(UUID.randomUUID());
 	zone.setToken(uuid);
-	zone.setSiteToken(siteToken);
+	zone.setSiteId(site.getId());
 	zone.setName(source.getName());
 	zone.setBorderColor(source.getBorderColor());
 	zone.setFillColor(source.getFillColor());
@@ -775,6 +775,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest source, String uuid)
 	    throws SiteWhereException {
 	DeviceGroup group = new DeviceGroup();
+	group.setId(UUID.randomUUID());
 	group.setToken(uuid);
 	group.setName(source.getName());
 	group.setDescription(source.getDescription());
@@ -815,18 +816,19 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating a new device group element.
      * 
      * @param source
-     * @param groupToken
+     * @param group
      * @param index
+     * @param elementId
      * @return
      * @throws SiteWhereException
      */
     public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest source,
-	    String groupToken, long index) throws SiteWhereException {
+	    IDeviceGroup group, long index, UUID elementId) throws SiteWhereException {
 	DeviceGroupElement element = new DeviceGroupElement();
-	element.setGroupToken(groupToken);
+	element.setGroupId(group.getId());
 	element.setIndex(index);
 	element.setType(source.getType());
-	element.setElementId(source.getElementId());
+	element.setElementId(elementId);
 	element.setRoles(source.getRoles());
 	return element;
     }

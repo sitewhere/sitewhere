@@ -217,8 +217,8 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcess
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
 	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
-	IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-	IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
+	IDeviceAssignment assignment = dm.getDeviceAssignment(event.getDeviceAssignmentId());
+	IDevice device = dm.getDevice(assignment.getDeviceId());
 	if (getMulticaster() != null) {
 	    List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
 	    for (String route : routes) {

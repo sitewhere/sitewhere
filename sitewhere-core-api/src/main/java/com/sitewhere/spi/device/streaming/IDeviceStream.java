@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.streaming;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -17,11 +19,18 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceStream extends IMetadataProviderEntity {
 
     /**
+     * Get unique command id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
      * Get assignment stream belongs to.
      * 
      * @return
      */
-    public String getAssignmentToken();
+    public UUID getAssignmentId();
 
     /**
      * Get unique identifier for stream within assignment.

@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -50,11 +52,10 @@ public class Zones extends RestControllerBase {
     @RequestMapping(value = "/{zoneToken}", method = RequestMethod.GET)
     @ApiOperation(value = "Get zone by token")
     @Secured({ SiteWhereRoles.REST })
-    public Zone getZone(
+    public IZone getZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone found = getDeviceManagement().getZone(zoneToken);
-	return Zone.copy(found);
+	return assertZone(zoneToken);
     }
 
     /**
@@ -67,11 +68,11 @@ public class Zones extends RestControllerBase {
     @RequestMapping(value = "/{zoneToken}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing zone")
     @Secured({ SiteWhereRoles.REST })
-    public Zone updateZone(
+    public IZone updateZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone zone = getDeviceManagement().updateZone(zoneToken, request);
-	return Zone.copy(zone);
+	IZone existing = assertZone(zoneToken);
+	return getDeviceManagement().updateZone(existing.getId(), request);
     }
 
     /**
@@ -84,12 +85,27 @@ public class Zones extends RestControllerBase {
     @RequestMapping(value = "/{zoneToken}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete zone by unique token")
     @Secured({ SiteWhereRoles.REST })
-    public Zone deleteZone(
+    public IZone deleteZone(
 	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone deleted = getDeviceManagement().deleteZone(zoneToken, force);
-	return Zone.copy(deleted);
+	IZone existing = assertZone(zoneToken);
+	return getDeviceManagement().deleteZone(existing.getId(), force);
+    }
+
+    /**
+     * Get zone associated with token or throw an exception if invalid.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IZone assertZone(String token) throws SiteWhereException {
+	IZone zone = getDeviceManagement().getZoneByToken(token);
+	if (zone == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
+	}
+	return zone;
     }
 
     private IDeviceManagement getDeviceManagement() {

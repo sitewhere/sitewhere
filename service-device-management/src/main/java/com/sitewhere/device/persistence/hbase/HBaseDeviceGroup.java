@@ -108,17 +108,17 @@ public class HBaseDeviceGroup {
      * Update device group information.
      * 
      * @param context
-     * @param token
+     * @param group
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceGroup updateDeviceGroup(IHBaseContext context, String token, IDeviceGroupCreateRequest request)
-	    throws SiteWhereException {
-	DeviceGroup updated = assertDeviceGroup(context, token);
+    public static IDeviceGroup updateDeviceGroup(IHBaseContext context, IDeviceGroup group,
+	    IDeviceGroupCreateRequest request) throws SiteWhereException {
+	DeviceGroup updated = assertDeviceGroup(context, group.getToken());
 	DeviceManagementPersistence.deviceGroupUpdateLogic(request, updated);
 	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, updated,
-		token, KEY_BUILDER);
+		group.getToken(), KEY_BUILDER);
     }
 
     /**
@@ -134,8 +134,7 @@ public class HBaseDeviceGroup {
     }
 
     /**
-     * Get paged {@link IDeviceGroup} results based on the given search
-     * criteria.
+     * Get paged {@link IDeviceGroup} results based on the given search criteria.
      * 
      * @param context
      * @param includeDeleted
@@ -219,19 +218,19 @@ public class HBaseDeviceGroup {
      * Delete an existing device group.
      * 
      * @param context
-     * @param token
+     * @param group
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceGroup deleteDeviceGroup(IHBaseContext context, String token, boolean force)
+    public static IDeviceGroup deleteDeviceGroup(IHBaseContext context, IDeviceGroup group, boolean force)
 	    throws SiteWhereException {
 	// If actually deleting group, delete all group elements.
 	if (force) {
-	    HBaseDeviceGroupElement.deleteElements(context, token);
+	    HBaseDeviceGroupElement.deleteElements(context, group.getToken());
 	}
-	return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
-		force, KEY_BUILDER, DeviceGroup.class);
+	return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+		group.getToken(), force, KEY_BUILDER, DeviceGroup.class);
     }
 
     /**
@@ -252,9 +251,8 @@ public class HBaseDeviceGroup {
     }
 
     /**
-     * Get the unique device identifier based on the long value associated with
-     * the device group UUID. This will be a subset of the full 8-bit long
-     * value.
+     * Get the unique device identifier based on the long value associated with the
+     * device group UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return

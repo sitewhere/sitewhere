@@ -15,9 +15,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.marshaling.MarshaledSite;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -73,13 +76,20 @@ public class SiteMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public Site convert(ISite source) throws SiteWhereException {
-	Site site = Site.copy(source);
+    public MarshaledSite convert(ISite source) throws SiteWhereException {
+	MarshaledSite site = new MarshaledSite();
+	site.setId(source.getId());
+	site.setToken(source.getToken());
+	site.setName(source.getName());
+	site.setDescription(source.getDescription());
+	site.setImageUrl(source.getImageUrl());
+	site.setMap(SiteMapData.copy(source.getMap()));
+	MetadataProviderEntity.copy(source, site);
 	if (isIncludeAssignements()) {
 	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
 	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement()
-		    .getDeviceAssignmentsForSite(site.getToken(), criteria);
+	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForSite(site.getId(),
+		    criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {
 		assignments.add(assignmentHelper.convert(match, getAssetResolver()));
@@ -87,7 +97,7 @@ public class SiteMarshalHelper {
 	    site.setDeviceAssignments(assignments);
 	}
 	if (isIncludeZones()) {
-	    ISearchResults<IZone> matches = getDeviceManagement().listZones(source.getToken(), SearchCriteria.ALL);
+	    ISearchResults<IZone> matches = getDeviceManagement().listZones(site.getId(), SearchCriteria.ALL);
 	    List<Zone> zones = new ArrayList<Zone>();
 	    List<IZone> reordered = matches.getResults();
 	    Collections.sort(reordered, new Comparator<IZone>() {

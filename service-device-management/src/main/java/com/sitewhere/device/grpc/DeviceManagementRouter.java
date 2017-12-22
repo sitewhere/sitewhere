@@ -76,6 +76,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     }
 
     /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceSpecification(com.sitewhere.grpc.service.
+     * GGetDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceSpecification(GGetDeviceSpecificationRequest request,
+	    StreamObserver<GGetDeviceSpecificationResponse> responseObserver) {
+	getTenantImplementation().getDeviceSpecification(request, responseObserver);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
@@ -137,6 +149,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
 	    StreamObserver<GCreateDeviceCommandResponse> responseObserver) {
 	getTenantImplementation().createDeviceCommand(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceCommand(com.sitewhere.grpc.service.GGetDeviceCommandRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceCommand(GGetDeviceCommandRequest request,
+	    StreamObserver<GGetDeviceCommandResponse> responseObserver) {
+	getTenantImplementation().getDeviceCommand(request, responseObserver);
     }
 
     /*
@@ -261,6 +285,17 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDevice(com.sitewhere.grpc.service.GGetDeviceRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDevice(GGetDeviceRequest request, StreamObserver<GGetDeviceResponse> responseObserver) {
+	getTenantImplementation().getDevice(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getDeviceByHardwareId(com.sitewhere.grpc.service.
      * GGetDeviceByHardwareIdRequest, io.grpc.stub.StreamObserver)
      */
@@ -337,6 +372,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     public void createDeviceGroup(GCreateDeviceGroupRequest request,
 	    StreamObserver<GCreateDeviceGroupResponse> responseObserver) {
 	getTenantImplementation().createDeviceGroup(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceGroup(com.sitewhere.grpc.service.GGetDeviceGroupRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceGroup(GGetDeviceGroupRequest request,
+	    StreamObserver<GGetDeviceGroupResponse> responseObserver) {
+	getTenantImplementation().getDeviceGroup(request, responseObserver);
     }
 
     /*
@@ -445,6 +492,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     public void createDeviceAssignment(GCreateDeviceAssignmentRequest request,
 	    StreamObserver<GCreateDeviceAssignmentResponse> responseObserver) {
 	getTenantImplementation().createDeviceAssignment(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAssignment(com.sitewhere.grpc.service.GGetDeviceAssignmentRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceAssignment(GGetDeviceAssignmentRequest request,
+	    StreamObserver<GGetDeviceAssignmentResponse> responseObserver) {
+	getTenantImplementation().getDeviceAssignment(request, responseObserver);
     }
 
     /*
@@ -605,6 +664,17 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getSite(com.sitewhere.grpc.service.GGetSiteRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getSite(GGetSiteRequest request, StreamObserver<GGetSiteResponse> responseObserver) {
+	getTenantImplementation().getSite(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getSiteByToken(com.sitewhere.grpc.service.GGetSiteByTokenRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -656,6 +726,17 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
 	getTenantImplementation().createZone(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getZone(com.sitewhere.grpc.service.GGetZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getZone(GGetZoneRequest request, StreamObserver<GGetZoneResponse> responseObserver) {
+	getTenantImplementation().getZone(request, responseObserver);
     }
 
     /*

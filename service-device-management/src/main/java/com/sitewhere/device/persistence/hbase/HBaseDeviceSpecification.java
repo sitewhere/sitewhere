@@ -137,12 +137,11 @@ public class HBaseDeviceSpecification {
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceSpecification updateDeviceSpecification(IHBaseContext context, String token,
+    public static IDeviceSpecification updateDeviceSpecification(IHBaseContext context, IDeviceSpecification spec,
 	    IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-	DeviceSpecification updated = assertDeviceSpecification(context, token);
-	DeviceManagementPersistence.deviceSpecificationUpdateLogic(request, updated);
-	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, updated,
-		token, KEY_BUILDER);
+	DeviceManagementPersistence.deviceSpecificationUpdateLogic(request, (DeviceSpecification) spec);
+	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, spec,
+		spec.getToken(), KEY_BUILDER);
     }
 
     /**
@@ -182,10 +181,10 @@ public class HBaseDeviceSpecification {
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceSpecification deleteDeviceSpecification(IHBaseContext context, String token, boolean force)
-	    throws SiteWhereException {
-	return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
-		force, KEY_BUILDER, DeviceSpecification.class);
+    public static IDeviceSpecification deleteDeviceSpecification(IHBaseContext context, IDeviceSpecification spec,
+	    boolean force) throws SiteWhereException {
+	return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+		spec.getToken(), force, KEY_BUILDER, DeviceSpecification.class);
     }
 
     /**
@@ -206,8 +205,8 @@ public class HBaseDeviceSpecification {
     }
 
     /**
-     * Get the unique device identifier based on the long value associated with
-     * the device UUID. This will be a subset of the full 8-bit long value.
+     * Get the unique device identifier based on the long value associated with the
+     * device UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return
@@ -220,8 +219,8 @@ public class HBaseDeviceSpecification {
     }
 
     /**
-     * Allocate the next command id and return the new value. (Each id is less
-     * than the last)
+     * Allocate the next command id and return the new value. (Each id is less than
+     * the last)
      * 
      * @param context
      * @param specId
@@ -259,8 +258,8 @@ public class HBaseDeviceSpecification {
     }
 
     /**
-     * Get the unique command identifier based on the long value associated with
-     * the command UUID. This will be a subset of the full 8-bit long value.
+     * Get the unique command identifier based on the long value associated with the
+     * command UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return

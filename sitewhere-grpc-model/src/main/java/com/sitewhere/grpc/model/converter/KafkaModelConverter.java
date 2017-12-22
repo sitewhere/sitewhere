@@ -85,7 +85,7 @@ public class KafkaModelConverter {
     public static PersistedEventPayload asApiPersisedEventPayload(GPersistedEventPayload grpc)
 	    throws SiteWhereException {
 	PersistedEventPayload api = new PersistedEventPayload();
-	api.setHardwareId(grpc.getHardwareId());
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setEvent(EventModelConverter.asApiGenericDeviceEvent(grpc.getEvent()));
 	return api;
     }
@@ -100,7 +100,7 @@ public class KafkaModelConverter {
     public static GPersistedEventPayload asGrpcPersistedEventPayload(IPersistedEventPayload api)
 	    throws SiteWhereException {
 	GPersistedEventPayload.Builder grpc = GPersistedEventPayload.newBuilder();
-	grpc.setHardwareId(api.getHardwareId());
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(api.getEvent()));
 	return grpc.build();
     }

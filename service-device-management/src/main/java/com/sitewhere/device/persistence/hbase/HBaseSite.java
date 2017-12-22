@@ -159,9 +159,9 @@ public class HBaseSite {
      * @return
      * @throws SiteWhereException
      */
-    public static Site updateSite(IHBaseContext context, String token, ISiteCreateRequest request)
+    public static Site updateSite(IHBaseContext context, Site site, ISiteCreateRequest request)
 	    throws SiteWhereException {
-	Site updated = getSiteByToken(context, token);
+	Site updated = getSiteByToken(context, site.getToken());
 	if (updated == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
@@ -170,7 +170,7 @@ public class HBaseSite {
 	// same way.
 	DeviceManagementPersistence.siteUpdateLogic(request, updated);
 
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 	byte[] rowkey = getPrimaryRowkey(siteId);
 	byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
 
@@ -208,17 +208,17 @@ public class HBaseSite {
      * List device assignments for a given site.
      * 
      * @param context
-     * @param siteToken
+     * @param site
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, String siteToken,
+    public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, ISite site,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 	    if (siteId == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	    }
@@ -505,14 +505,14 @@ public class HBaseSite {
      * List zones for a given site.
      * 
      * @param context
-     * @param siteToken
+     * @param site
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IZone> listZonesForSite(IHBaseContext context, String siteToken,
-	    ISearchCriteria criteria) throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+    public static SearchResults<IZone> listZonesForSite(IHBaseContext context, ISite site, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 	if (siteId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
@@ -587,22 +587,21 @@ public class HBaseSite {
      * Delete an existing site.
      * 
      * @param context
-     * @param token
+     * @param site
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public static Site deleteSite(IHBaseContext context, String token, boolean force) throws SiteWhereException {
-	Site existing = getSiteByToken(context, token);
-	if (existing == null) {
+    public static Site deleteSite(IHBaseContext context, Site site, boolean force) throws SiteWhereException {
+	if (site == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
-	existing.setDeleted(true);
+	site.setDeleted(true);
 
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 	byte[] rowkey = getPrimaryRowkey(siteId);
 	if (force) {
-	    context.getDeviceIdManager().getSiteKeys().delete(token);
+	    context.getDeviceIdManager().getSiteKeys().delete(site.getToken());
 	    Table sites = null;
 	    try {
 		Delete delete = new Delete(rowkey);
@@ -615,8 +614,8 @@ public class HBaseSite {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(existing);
-	    byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
+	    DeviceManagementPersistence.setUpdatedEntityMetadata(site);
+	    byte[] updated = context.getPayloadMarshaler().encodeSite(site);
 	    Table sites = null;
 	    try {
 		sites = getSitesTableInterface(context);
@@ -630,7 +629,7 @@ public class HBaseSite {
 		HBaseUtils.closeCleanly(sites);
 	    }
 	}
-	return existing;
+	return site;
     }
 
     /**

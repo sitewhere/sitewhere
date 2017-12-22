@@ -36,8 +36,8 @@ public class ProtobufMessageBuilder {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Create a protobuf message for an {@link IDeviceCommandExecution} targeted
-     * at the
+     * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at
+     * the
      * 
      * @param execution
      * @param nested
@@ -49,7 +49,7 @@ public class ProtobufMessageBuilder {
     public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 	    IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
 	IDeviceSpecification specification = getDeviceManagement(tenant)
-		.getDeviceSpecificationByToken(execution.getCommand().getSpecificationToken());
+		.getDeviceSpecification(execution.getCommand().getDeviceSpecificationId());
 	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification, tenant);
 	LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
 	Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
@@ -75,12 +75,14 @@ public class ProtobufMessageBuilder {
 		    execution.getInvocation().getId());
 
 	    if (nested.getNested() != null) {
-		LOGGER.debug("Targeting nested device with specification: " + nested.getNested().getSpecificationToken()
-			+ " at path " + nested.getPath());
+		IDeviceSpecification nestedSpec = getDeviceManagement(tenant)
+			.getDeviceSpecification(nested.getNested().getDeviceSpecificationId());
+		LOGGER.debug("Targeting nested device with specification: " + nestedSpec.getToken() + " at path "
+			+ nested.getPath());
 		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME),
 			nested.getPath());
 		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME),
-			nested.getNested().getSpecificationToken());
+			nestedSpec.getToken());
 	    }
 
 	    DynamicMessage hmessage = headBuilder.build();

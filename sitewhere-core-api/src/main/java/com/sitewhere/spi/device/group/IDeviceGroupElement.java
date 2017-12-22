@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.group;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface for an entry in an {@link IDeviceGroup}.
@@ -17,18 +18,18 @@ import java.util.List;
 public interface IDeviceGroupElement {
 
     /**
-     * Get token for parent group.
+     * Get id for parent group.
      * 
      * @return
      */
-    public String getGroupToken();
+    public UUID getGroupId();
 
     /**
      * Get index that corresponds to this entry.
      * 
      * @return
      */
-    public long getIndex();
+    public Long getIndex();
 
     /**
      * Get group element type.
@@ -42,7 +43,7 @@ public interface IDeviceGroupElement {
      * 
      * @return
      */
-    public String getElementId();
+    public UUID getElementId();
 
     /**
      * Get list of roles associated with element.

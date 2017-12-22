@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
@@ -209,18 +210,18 @@ public class SiteWhereSolrFactory {
     protected static void addFieldsFromEventDocument(SolrDocument document, DeviceEvent event)
 	    throws SiteWhereException {
 	String id = (String) document.get(ISolrFields.EVENT_ID);
-	String assignmentToken = (String) document.get(ISolrFields.ASSIGNMENT_TOKEN);
+	UUID assignmentId = (UUID) document.get(ISolrFields.ASSIGNMENT_TOKEN);
 	String assignmentTypeStr = (String) document.get(ISolrFields.ASSIGNMENT_TYPE);
 	String assetReference = (String) document.get(ISolrFields.ASSET_REFERENCE);
-	String siteToken = (String) document.get(ISolrFields.SITE_TOKEN);
+	UUID siteId = (UUID) document.get(ISolrFields.SITE_TOKEN);
 	Date eventDate = (Date) document.get(ISolrFields.EVENT_DATE);
 	Date receivedDate = (Date) document.get(ISolrFields.RECEIVED_DATE);
 
 	event.setId(id);
-	event.setDeviceAssignmentToken(assignmentToken);
+	event.setDeviceAssignmentId(assignmentId);
 	event.setAssignmentType(DeviceAssignmentType.valueOf(assignmentTypeStr));
 	event.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
-	event.setSiteToken(siteToken);
+	event.setSiteId(siteId);
 	event.setEventDate(eventDate);
 	event.setReceivedDate(receivedDate);
 
@@ -245,11 +246,11 @@ public class SiteWhereSolrFactory {
      */
     protected static void addFieldsForEvent(SolrInputDocument document, IDeviceEvent event) throws SiteWhereException {
 	document.addField(ISolrFields.EVENT_ID, event.getId());
-	document.addField(ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentToken());
+	document.addField(ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentId());
 	document.addField(ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
 	document.addField(ISolrFields.ASSET_REFERENCE,
 		new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
-	document.addField(ISolrFields.SITE_TOKEN, event.getSiteToken());
+	document.addField(ISolrFields.SITE_TOKEN, event.getSiteId());
 	document.addField(ISolrFields.EVENT_DATE, event.getEventDate());
 	document.addField(ISolrFields.RECEIVED_DATE, event.getReceivedDate());
 	addMetadata(document, event.getMetadata());

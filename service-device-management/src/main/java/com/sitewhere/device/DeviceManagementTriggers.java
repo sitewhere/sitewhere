@@ -8,6 +8,7 @@
 package com.sitewhere.device;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -56,15 +57,14 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.DeviceManagementDecorator#
-     * updateDeviceAssignmentMetadata(java.lang.String, java.util.Map)
+     * @see
+     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentMetadata
+     * (java.util.UUID, java.util.Map)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
 	    throws SiteWhereException {
-	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(token, metadata);
+	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(id, metadata);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Updated, null, null);
 	getDeviceEventManangement().addDeviceStateChange(updated, state);
@@ -72,15 +72,13 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#endDeviceAssignment(java.
-     * lang. String)
+     * com.sitewhere.device.DeviceManagementDecorator#endDeviceAssignment(java.util.
+     * UUID)
      */
     @Override
-    public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-	IDeviceAssignment updated = super.endDeviceAssignment(token);
+    public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
+	IDeviceAssignment updated = super.endDeviceAssignment(id);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Released, null, null);
 	getDeviceEventManangement().addDeviceStateChange(updated, state);

@@ -9,6 +9,7 @@ package com.sitewhere.spi.device.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -44,18 +45,18 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
     public DeviceEventType getEventType();
 
     /**
-     * Get token for site the event pertains to.
+     * Get id for site the event pertains to.
      * 
      * @return
      */
-    public String getSiteToken();
+    public UUID getSiteId();
 
     /**
      * Get the device assignment the event pertains to.
      * 
      * @return
      */
-    public String getDeviceAssignmentToken();
+    public UUID getDeviceAssignmentId();
 
     /**
      * Get assignment type.

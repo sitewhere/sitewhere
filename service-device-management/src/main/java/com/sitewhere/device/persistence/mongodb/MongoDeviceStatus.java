@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
@@ -21,11 +23,14 @@ import com.sitewhere.spi.device.IDeviceStatus;
  */
 public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 
+    /** Property for id */
+    public static final String PROP_ID = "id";
+
     /** Property for status code */
     public static final String PROP_CODE = "cd";
 
-    /** Property for specification token */
-    public static final String PROP_SPEC_TOKEN = "st";
+    /** Property for specification id */
+    public static final String PROP_SPEC_ID = "si";
 
     /** Property for command name */
     public static final String PROP_NAME = "nm";
@@ -69,8 +74,9 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      * @param target
      */
     public static void toDocument(IDeviceStatus source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_CODE, source.getCode());
-	target.append(PROP_SPEC_TOKEN, source.getSpecificationToken());
+	target.append(PROP_SPEC_ID, source.getDeviceSpecificationId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BACKGROUND_COLOR, source.getBackgroundColor());
 	target.append(PROP_FOREGROUND_COLOR, source.getForegroundColor());
@@ -87,16 +93,18 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      * @param target
      */
     public static void fromDocument(Document source, DeviceStatus target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String code = (String) source.get(PROP_CODE);
-	String specToken = (String) source.get(PROP_SPEC_TOKEN);
+	UUID specId = (UUID) source.get(PROP_SPEC_ID);
 	String name = (String) source.get(PROP_NAME);
 	String bgcolor = (String) source.get(PROP_BACKGROUND_COLOR);
 	String fgcolor = (String) source.get(PROP_FOREGROUND_COLOR);
 	String bdColor = (String) source.get(PROP_BORDER_COLOR);
 	String icon = (String) source.get(PROP_ICON);
 
+	target.setId(id);
 	target.setCode(code);
-	target.setSpecificationToken(specToken);
+	target.setDeviceSpecificationId(specId);
 	target.setName(name);
 	target.setBackgroundColor(bgcolor);
 	target.setForegroundColor(fgcolor);

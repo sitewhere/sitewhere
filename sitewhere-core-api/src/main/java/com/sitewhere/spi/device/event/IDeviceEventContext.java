@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.event;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 
@@ -21,25 +22,25 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 public interface IDeviceEventContext {
 
     /**
-     * Get the unique hardware id of the device.
+     * Get the unique id of the device.
      * 
      * @return
      */
-    public String getHardwareId();
+    public UUID getDeviceId();
 
     /**
-     * Get token for device specification.
+     * Get id for device specification.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public UUID getDeviceSpecificationId();
 
     /**
-     * If contained by a parent device, returns the parent hardware id.
+     * If contained by a parent device, returns the parent id.
      * 
      * @return
      */
-    public String getParentHardwareId();
+    public UUID getParentDeviceId();
 
     /**
      * Get most recent device status.

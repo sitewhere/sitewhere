@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
@@ -22,6 +24,9 @@ import com.sitewhere.spi.device.ISite;
  * @author dadams
  */
 public class MongoSite implements MongoConverter<ISite> {
+
+    /** Property for id */
+    public static final String PROP_ID = "id";
 
     /** Property for name */
     public static final String PROP_NAME = "nm";
@@ -71,6 +76,7 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param target
      */
     public static void toDocument(ISite source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
@@ -92,6 +98,7 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param target
      */
     public static void fromDocument(Document source, Site target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
@@ -106,6 +113,7 @@ public class MongoSite implements MongoConverter<ISite> {
 	    target.setMap(mapData);
 	}
 
+	target.setId(id);
 	target.setName(name);
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);

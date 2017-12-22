@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -32,6 +34,9 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
+
+    /** Property for id */
+    public static final String PROP_ID = "id";
 
     /** Property for unique token */
     public static final String PROP_TOKEN = "tk";
@@ -75,6 +80,7 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @param target
      */
     public static void toDocument(IDeviceSpecification source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
@@ -101,12 +107,14 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
      * @param target
      */
     public static void fromDocument(Document source, DeviceSpecification target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
 	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
+	target.setId(id);
 	target.setToken(token);
 	target.setName(name);
 	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));

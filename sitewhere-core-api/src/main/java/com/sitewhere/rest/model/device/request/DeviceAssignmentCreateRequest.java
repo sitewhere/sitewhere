@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentType;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -122,16 +121,16 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	/** Request being built */
 	private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
 
-	public Builder(IDeviceAssignment api) {
-	    request.setToken(api.getToken());
-	    request.setDeviceHardwareId(api.getDeviceHardwareId());
-	    request.setAssetReference(api.getAssetReference());
-	    request.setAssignmentType(api.getAssignmentType());
-	    if (api.getMetadata() != null) {
-		request.setMetadata(new HashMap<String, String>());
-		request.getMetadata().putAll(api.getMetadata());
-	    }
-	}
+	// public Builder(IDeviceAssignment api) {
+	// request.setToken(api.getToken());
+	// request.setDeviceHardwareId(api.getDeviceHardwareId());
+	// request.setAssetReference(api.getAssetReference());
+	// request.setAssignmentType(api.getAssignmentType());
+	// if (api.getMetadata() != null) {
+	// request.setMetadata(new HashMap<String, String>());
+	// request.getMetadata().putAll(api.getMetadata());
+	// }
+	// }
 
 	public Builder(String hardwareId, String moduleId, String assetId) {
 	    request.setDeviceHardwareId(hardwareId);

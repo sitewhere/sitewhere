@@ -41,7 +41,7 @@ message GInboundEventPayload {
 
 // Persisted event payload.
 message GPersistedEventPayload {
-	string hardwareId = 1;
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
 	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
 }
 

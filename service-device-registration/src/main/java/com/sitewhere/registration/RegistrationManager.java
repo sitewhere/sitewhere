@@ -34,7 +34,6 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Base logic for {@link IRegistrationManager} implementations.
@@ -69,14 +68,13 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 	LOGGER.debug("Handling device registration request.");
-	IDevice device = getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceByHardwareId(request.getHardwareId());
-	IDeviceSpecification specification = getDeviceManagement(getTenantEngine().getTenant())
+	IDevice device = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
+	IDeviceSpecification specification = getDeviceManagement()
 		.getDeviceSpecificationByToken(request.getSpecificationToken());
 
 	// If a site token is passed, verify it is valid.
 	if (request.getSiteToken() != null) {
-	    if (getDeviceManagement(getTenantEngine().getTenant()).getSiteByToken(request.getSiteToken()) == null) {
+	    if (getDeviceManagement().getSiteByToken(request.getSiteToken()) == null) {
 		LOGGER.warn("Ignoring device registration request because of invalid site token.");
 		return;
 	    }
@@ -109,8 +107,8 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	    deviceCreate.setSiteToken(siteToken);
 	    deviceCreate.setComments("Device created by on-demand registration.");
 	    deviceCreate.setMetadata(request.getMetadata());
-	    device = getDeviceManagement(getTenantEngine().getTenant()).createDevice(deviceCreate);
-	} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
+	    device = getDeviceManagement().createDevice(deviceCreate);
+	} else if (!device.getDeviceSpecificationId().equals(specification.getId())) {
 	    LOGGER.info("Found existing device registration, but specification does not match.");
 	    sendInvalidSpecification(request.getHardwareId());
 	    return;
@@ -118,17 +116,16 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	    LOGGER.info("Found existing device registration. Updating metadata.");
 	    DeviceCreateRequest deviceUpdate = new DeviceCreateRequest();
 	    deviceUpdate.setMetadata(request.getMetadata());
-	    device = getDeviceManagement(getTenantEngine().getTenant()).updateDevice(request.getHardwareId(),
-		    deviceUpdate);
+	    device = getDeviceManagement().updateDevice(device.getId(), deviceUpdate);
 	}
 
 	// Make sure device is assigned.
-	if (device.getAssignmentToken() == null) {
+	if (device.getDeviceAssignmentId() == null) {
 	    LOGGER.debug("Handling unassigned device for registration.");
 	    DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 	    assnCreate.setDeviceHardwareId(device.getHardwareId());
 	    assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
-	    getDeviceManagement(getTenantEngine().getTenant()).createDeviceAssignment(assnCreate);
+	    getDeviceManagement().createDeviceAssignment(assnCreate);
 	}
 	boolean isNewRegistration = (device != null);
 	sendRegistrationAck(request.getHardwareId(), isNewRegistration);
@@ -145,7 +142,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	RegistrationAckCommand command = new RegistrationAckCommand();
 	command.setReason((newRegistration) ? RegistrationSuccessReason.NewRegistration
 		: RegistrationSuccessReason.AlreadyRegistered);
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -159,7 +156,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.NewDevicesNotAllowed);
 	command.setErrorMessage("Registration manager does not allow new devices to be created.");
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -173,7 +170,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.InvalidSpecificationToken);
 	command.setErrorMessage("Specification token passed in registration was invalid.");
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -187,7 +184,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.SiteTokenRequired);
 	command.setErrorMessage("Automatic site assignment disabled. Site token required.");
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /*
@@ -204,13 +201,13 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	mapping.setDeviceElementSchemaPath(request.getMappingPath());
 	DeviceMappingAckCommand command = new DeviceMappingAckCommand();
 	try {
-	    getDeviceManagement(getTenantEngine().getTenant())
-		    .createDeviceElementMapping(request.getCompositeDeviceHardwareId(), mapping);
+	    IDevice existing = getDeviceManagement().getDeviceByHardwareId(hardwareId);
+	    getDeviceManagement().createDeviceElementMapping(existing.getId(), mapping);
 	    command.setResult(DeviceMappingResult.MappingCreated);
 	} catch (SiteWhereException e) {
 	    command.setResult(DeviceMappingResult.MappingFailedDueToExisting);
 	}
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /*
@@ -226,8 +223,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	    if (getAutoAssignSiteToken() == null) {
 		updateAutoAssignToFirstSite();
 	    } else {
-		ISite site = getDeviceManagement(getTenantEngine().getTenant())
-			.getSiteByToken(getAutoAssignSiteToken());
+		ISite site = getDeviceManagement().getSiteByToken(getAutoAssignSiteToken());
 		if (site == null) {
 		    throw new SiteWhereException("Registration manager auto assignment site token is invalid.");
 		}
@@ -251,8 +247,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
      * @throws SiteWhereException
      */
     protected void updateAutoAssignToFirstSite() throws SiteWhereException {
-	ISearchResults<ISite> sites = getDeviceManagement(getTenantEngine().getTenant())
-		.listSites(new SearchCriteria(1, 1));
+	ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
 	if (sites.getResults().isEmpty()) {
 	    LOGGER.warn("Registration manager configured for auto-assign site, but no sites were found.");
 	    setAutoAssignSiteToken(null);
@@ -285,11 +280,11 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
 	this.autoAssignSiteToken = autoAssignSiteToken;
     }
 
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+    private IDeviceManagement getDeviceManagement() {
 	return null;
     }
 
-    private IDeviceCommunication getDeviceCommunication(ITenant tenant) {
+    private IDeviceCommunication getDeviceCommunication() {
 	return null;
     }
 }

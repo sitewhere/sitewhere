@@ -98,7 +98,7 @@ public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
      */
     protected boolean sendDweet(IDeviceEvent event) throws SiteWhereException {
 	try {
-	    String url = API_BASE + event.getDeviceAssignmentToken();
+	    String url = API_BASE + event.getDeviceAssignmentId().toString();
 	    ResponseEntity<String> response = getClient().postForEntity(url, event, String.class);
 	    if (response.getStatusCode() == HttpStatus.OK) {
 		return true;

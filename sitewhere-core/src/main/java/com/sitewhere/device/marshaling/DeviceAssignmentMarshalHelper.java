@@ -94,14 +94,14 @@ public class DeviceAssignmentMarshalHelper {
 		}
 	    }
 	}
-	result.setSiteToken(source.getSiteToken());
+	result.setSiteId(source.getSiteId());
 	if (isIncludeSite()) {
-	    ISite site = getDeviceManagement().getSiteByToken(source.getSiteToken());
-	    result.setSite(Site.copy(site));
+	    ISite site = getDeviceManagement().getSite(source.getSiteId());
+	    result.setSite((Site) site);
 	}
-	result.setDeviceHardwareId(source.getDeviceHardwareId());
+	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
-	    IDevice device = getDeviceManagement().getDeviceByHardwareId(source.getDeviceHardwareId());
+	    IDevice device = getDeviceManagement().getDevice(source.getDeviceId());
 	    if (device != null) {
 		result.setDevice(getDeviceHelper().convert(device, assetResolver));
 	    } else {

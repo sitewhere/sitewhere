@@ -8,7 +8,6 @@
 package com.sitewhere.web.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,24 +61,24 @@ public class DeviceCommands extends RestControllerBase {
     @ApiOperation(value = "Update an existing device command")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getDeviceManagement().updateDeviceCommand(token, request);
+	    @RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
+	IDeviceCommand command = assertDeviceCommandByToken(token);
+	return getDeviceManagement().updateDeviceCommand(command.getId(), request);
     }
 
     /**
      * Get a device command by unique token.
      * 
-     * @param hardwareId
+     * @param token
      * @return
+     * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
     @ApiOperation(value = "Get device command by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand getDeviceCommandByToken(
-	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return assertDeviceCommandByToken(token, servletRequest);
+	    @ApiParam(value = "Token", required = true) @PathVariable String token) throws SiteWhereException {
+	return assertDeviceCommandByToken(token);
     }
 
     /**
@@ -96,7 +95,8 @@ public class DeviceCommands extends RestControllerBase {
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceManagement().deleteDeviceCommand(token, force);
+	IDeviceCommand command = assertDeviceCommandByToken(token);
+	return getDeviceManagement().deleteDeviceCommand(command.getId(), force);
     }
 
     /**
@@ -107,12 +107,10 @@ public class DeviceCommands extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceCommand assertDeviceCommandByToken(String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+    protected IDeviceCommand assertDeviceCommandByToken(String token) throws SiteWhereException {
 	IDeviceCommand result = getDeviceManagement().getDeviceCommandByToken(token);
 	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
 	return result;
     }

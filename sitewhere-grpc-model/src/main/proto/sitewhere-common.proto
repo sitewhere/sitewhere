@@ -25,6 +25,15 @@ message GOptionalString {
 	string value = 1;
 }
 
+// ###########
+// ### IDS ###
+// ###########
+
+message GUUID {
+	fixed64 msb = 1;
+	fixed64 lsb = 2;
+}
+
 // #############################
 // ### COMMON API STRUCTURES ###
 // #############################

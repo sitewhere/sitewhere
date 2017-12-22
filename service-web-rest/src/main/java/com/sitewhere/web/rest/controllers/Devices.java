@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +52,7 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -110,9 +112,9 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
 	    @ApiParam(value = "Include site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
-	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice result = assertDeviceByHardwareId(hardwareId, servletRequest);
+	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
+	    throws SiteWhereException {
+	IDevice result = assertDeviceByHardwareId(hardwareId);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeSpecification(includeSpecification);
 	helper.setIncludeAsset(includeAsset);
@@ -137,7 +139,8 @@ public class Devices extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice result = getDeviceManagement().updateDevice(hardwareId, request);
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
@@ -156,7 +159,8 @@ public class Devices extends RestControllerBase {
     public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice result = getDeviceManagement().deleteDevice(hardwareId, force);
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice result = getDeviceManagement().deleteDevice(existing.getId(), force);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
@@ -179,12 +183,8 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.INFO,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDeviceAssignment assignment = assertDeviceAssignment(existing.getDeviceAssignmentId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
@@ -211,7 +211,8 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceAssignment> history = getDeviceManagement().getDeviceAssignmentHistory(hardwareId,
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	ISearchResults<IDeviceAssignment> history = getDeviceManagement().getDeviceAssignmentHistory(existing.getId(),
 		criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
@@ -236,7 +237,8 @@ public class Devices extends RestControllerBase {
     public IDevice addDeviceElementMapping(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @RequestBody DeviceElementMapping request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice updated = getDeviceManagement().createDeviceElementMapping(hardwareId, request);
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
@@ -250,7 +252,8 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 	    @ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(hardwareId, path);
+	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
@@ -372,7 +375,8 @@ public class Devices extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize,
 		startDate, endDate);
-	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getDeviceManagement());
+	IDeviceGroup group = assertDeviceGroup(groupToken);
+	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(group, criteria, getDeviceManagement());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeSpecification(includeSpecification);
@@ -428,12 +432,12 @@ public class Devices extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEventBatchResponse addDeviceEventBatch(
 	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
-	    @RequestBody DeviceEventBatch batch, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice device = assertDeviceByHardwareId(hardwareId, servletRequest);
-	if (device.getAssignmentToken() == null) {
+	    @RequestBody DeviceEventBatch batch) throws SiteWhereException {
+	IDevice device = assertDeviceByHardwareId(hardwareId);
+	if (device.getDeviceAssignmentId() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
-	IDeviceAssignment assignment = assertDeviceAssignment(device.getAssignmentToken());
+	IDeviceAssignment assignment = assertDeviceAssignment(device.getDeviceAssignmentId());
 
 	// Set event dates if not set by client.
 	for (IDeviceLocationCreateRequest locReq : batch.getLocations()) {
@@ -459,36 +463,13 @@ public class Devices extends RestControllerBase {
      * Gets a device by unique hardware id and throws an exception if not found.
      * 
      * @param hardwareId
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    protected IDevice assertDeviceByHardwareId(String hardwareId, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+    protected IDevice assertDeviceByHardwareId(String hardwareId) throws SiteWhereException {
 	IDevice result = getDeviceManagement().getDeviceByHardwareId(hardwareId);
 	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
-	return result;
-    }
-
-    /**
-     * Gets a device by unique hardware id. Does not validate that the current user
-     * has access to the tenant. This should *only* be used by non-secure REST calls
-     * as it can be a security risk.
-     * 
-     * @param hardwareId
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDevice assertDeviceWithoutUserValidation(String hardwareId, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDevice result = getDeviceManagement().getDeviceByHardwareId(hardwareId);
-	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
 	return result;
     }
@@ -500,10 +481,25 @@ public class Devices extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
-	IDeviceAssignment result = getDeviceManagement().getDeviceAssignmentByToken(token);
+    protected IDeviceAssignment assertDeviceAssignment(UUID id) throws SiteWhereException {
+	IDeviceAssignment result = getDeviceManagement().getDeviceAssignment(id);
 	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
+	}
+	return result;
+    }
+
+    /**
+     * Gets a device group by token and throws an exception if not found.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceGroup assertDeviceGroup(String token) throws SiteWhereException {
+	IDeviceGroup result = getDeviceManagement().getDeviceGroupByToken(token);
+	if (result == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 	}
 	return result;
     }

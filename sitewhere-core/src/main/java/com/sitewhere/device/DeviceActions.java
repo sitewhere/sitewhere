@@ -64,15 +64,15 @@ public class DeviceActions implements IDeviceActions {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceActions#sendCommand(com.sitewhere.spi.
+     * @see com.sitewhere.spi.device.IDeviceActions#sendCommand(com.sitewhere.spi.
      * device.IDeviceAssignment, java.lang.String, java.util.Map)
      */
     @Override
     public void sendCommand(IDeviceAssignment assignment, String commandName, Map<String, String> parameters)
 	    throws SiteWhereException {
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
-	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getSpecificationToken(), false);
+	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getDeviceSpecificationId(),
+		false);
 	IDeviceCommand match = null;
 	for (IDeviceCommand command : commands) {
 	    if (command.getName().equals(commandName)) {

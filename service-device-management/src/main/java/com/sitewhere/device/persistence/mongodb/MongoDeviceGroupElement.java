@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.mongodb;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -23,20 +24,20 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  */
 public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 
-    /** Property for element group token */
-    public static final String PROP_GROUP_TOKEN = "groupToken";
+    /** Property for element group id */
+    public static final String PROP_GROUP_ID = "gi";
 
     /** Property for element type */
-    public static final String PROP_TYPE = "type";
+    public static final String PROP_TYPE = "tp";
 
     /** Property for element id */
-    public static final String PROP_ELEMENT_ID = "elementId";
+    public static final String PROP_ELEMENT_ID = "ei";
 
     /** Property for list of roles */
-    public static final String PROP_ROLES = "roles";
+    public static final String PROP_ROLES = "rl";
 
     /** Property for element index */
-    public static final String PROP_INDEX = "index";
+    public static final String PROP_INDEX = "ix";
 
     /*
      * (non-Javadoc)
@@ -65,7 +66,7 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
      * @param target
      */
     public static void toDocument(IDeviceGroupElement source, Document target) {
-	target.append(PROP_GROUP_TOKEN, source.getGroupToken());
+	target.append(PROP_GROUP_ID, source.getGroupId());
 	target.append(PROP_INDEX, source.getIndex());
 	target.append(PROP_TYPE, source.getType().name());
 	target.append(PROP_ELEMENT_ID, source.getElementId());
@@ -80,16 +81,16 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, DeviceGroupElement target) {
-	String group = (String) source.get(PROP_GROUP_TOKEN);
+	UUID groupId = (UUID) source.get(PROP_GROUP_ID);
 	Long index = (Long) source.get(PROP_INDEX);
 	String type = (String) source.get(PROP_TYPE);
-	String elementId = (String) source.get(PROP_ELEMENT_ID);
+	UUID elementId = (UUID) source.get(PROP_ELEMENT_ID);
 	List<String> roles = (List<String>) source.get(PROP_ROLES);
 
 	if (type == null) {
 	    throw new RuntimeException("Group element type not stored.");
 	}
-	target.setGroupToken(group);
+	target.setGroupId(groupId);
 	target.setType(GroupElementType.valueOf(type));
 	target.setElementId(elementId);
 	target.setRoles(roles);

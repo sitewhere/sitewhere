@@ -9,6 +9,7 @@ package com.sitewhere.event.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -143,10 +144,10 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	getMongoClient().getEventsCollection(getTenantEngine().getTenant()).createIndex(
 		new BasicDBObject(MongoDeviceEvent.PROP_ALTERNATE_ID, 1), new IndexOptions().unique(true).sparse(true));
 	getMongoClient().getEventsCollection(getTenantEngine().getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1)
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, 1)
 			.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
 	getMongoClient().getEventsCollection(getTenantEngine().getTenant())
-		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, 1)
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_SITE_ID, 1)
 			.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
     }
 
@@ -218,7 +219,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceEvent> listDeviceEvents(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken());
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
 		-1);
@@ -271,7 +272,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -290,7 +291,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -328,7 +329,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -347,7 +348,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -386,7 +387,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -405,7 +406,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public SearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -445,7 +446,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     @Override
     public IDeviceStreamData getDeviceStreamData(IDeviceAssignment assignment, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
-	Document dbData = getDeviceStreamDataDocument(assignment.getToken(), streamId, sequenceNumber);
+	Document dbData = getDeviceStreamDataDocument(assignment.getId(), streamId, sequenceNumber);
 	if (dbData == null) {
 	    return null;
 	}
@@ -463,7 +464,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceStreamData> listDeviceStreamData(IDeviceAssignment assignment, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name())
 		.append(MongoDeviceStreamData.PROP_STREAM_ID, streamId);
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
@@ -503,7 +504,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -522,7 +523,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -579,7 +580,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -598,7 +599,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -635,7 +636,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignment.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignment.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -654,7 +655,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	Document query = new Document(MongoDeviceEvent.PROP_SITE_TOKEN, site.getToken())
+	Document query = new Document(MongoDeviceEvent.PROP_SITE_ID, site.getId())
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -689,17 +690,17 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
      * Get the {@link Document} for an {@link IDeviceStreamData} chunk based on
      * assignment token, stream id, and sequence number.
      * 
-     * @param assignmentToken
+     * @param assignmentId
      * @param streamId
      * @param sequenceNumber
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceStreamDataDocument(String assignmentToken, String streamId, long sequenceNumber)
+    protected Document getDeviceStreamDataDocument(UUID assignmentId, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
 	try {
 	    MongoCollection<Document> events = getMongoClient().getEventsCollection(getTenantEngine().getTenant());
-	    Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken)
+	    Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignmentId)
 		    .append(MongoDeviceStreamData.PROP_STREAM_ID, streamId)
 		    .append(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
 	    return events.find(query).first();

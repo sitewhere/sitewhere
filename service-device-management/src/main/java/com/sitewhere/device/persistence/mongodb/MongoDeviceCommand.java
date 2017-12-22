@@ -9,6 +9,7 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -28,11 +29,14 @@ import com.sitewhere.spi.device.command.ParameterType;
  */
 public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 
+    /** Property for id */
+    public static final String PROP_ID = "id";
+
     /** Property for token */
     public static final String PROP_TOKEN = "tk";
 
-    /** Property for specification token */
-    public static final String PROP_SPEC_TOKEN = "st";
+    /** Property for specification id */
+    public static final String PROP_SPEC_ID = "si";
 
     /** Property for command namespace */
     public static final String PROP_NAMESPACE = "ns";
@@ -82,8 +86,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      * @param target
      */
     public static void toDocument(IDeviceCommand source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
-	target.append(PROP_SPEC_TOKEN, source.getSpecificationToken());
+	target.append(PROP_SPEC_ID, source.getDeviceSpecificationId());
 	target.append(PROP_NAMESPACE, source.getNamespace());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
@@ -111,14 +116,16 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, DeviceCommand target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
-	String specToken = (String) source.get(PROP_SPEC_TOKEN);
+	UUID specId = (UUID) source.get(PROP_SPEC_ID);
 	String namespace = (String) source.get(PROP_NAMESPACE);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
 
+	target.setId(id);
 	target.setToken(token);
-	target.setSpecificationToken(specToken);
+	target.setDeviceSpecificationId(specId);
 	target.setNamespace(namespace);
 	target.setName(name);
 	target.setDescription(desc);

@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.device;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,11 +32,14 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Serialization version identifier */
     private static final long serialVersionUID = 4053925804888464375L;
 
+    /** Unique device id */
+    private UUID id;
+
     /** Unique assignment token */
     private String token;
 
-    /** Device hardware id */
-    private String deviceHardwareId;
+    /** Device id */
+    private UUID deviceId;
 
     /** Type of associated asset */
     private DeviceAssignmentType assignmentType;
@@ -43,8 +47,8 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Asset reference */
     private IAssetReference assetReference;
 
-    /** Site token */
-    private String siteToken;
+    /** Id of site when assigned */
+    private UUID siteId;
 
     /** Assignment status */
     private DeviceAssignmentStatus status;
@@ -54,6 +58,18 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
     /** Assignment end date */
     private Date releasedDate;
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
 
     /*
      * (non-Javadoc)
@@ -70,17 +86,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceHardwareId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceId()
      */
     @Override
-    public String getDeviceHardwareId() {
-	return deviceHardwareId;
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setDeviceHardwareId(String deviceHardwareId) {
-	this.deviceHardwareId = deviceHardwareId;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
@@ -110,17 +124,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getSiteToken()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getSiteId()
      */
     @Override
-    public String getSiteToken() {
-	return siteToken;
+    public UUID getSiteId() {
+	return siteId;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setSiteId(UUID siteId) {
+	this.siteId = siteId;
     }
 
     /*

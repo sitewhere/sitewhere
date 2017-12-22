@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,13 +31,11 @@ import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implmentation of {@link IOutboundEventProcessor} that sends events to the
@@ -64,8 +63,8 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
     /** Account-specific key for using streaming APIs */
     private String streamingAccessKey;
 
-    /** Cache of assignment tokens to detailed assignment information */
-    private Map<String, DeviceAssignment> assignmentsByToken = new HashMap<String, DeviceAssignment>();
+    /** Cache of assignment ids to detailed assignment information */
+    private Map<UUID, DeviceAssignment> assignmentsById = new HashMap<UUID, DeviceAssignment>();
 
     /*
      * (non-Javadoc)
@@ -99,7 +98,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	    event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
 	    events.add(event);
 	}
-	DeviceAssignment assignment = assureBucket(measurements.getDeviceAssignmentToken());
+	DeviceAssignment assignment = assureBucket(measurements.getDeviceAssignmentId());
 	createEvents(assignment.getToken(), events);
     }
 
@@ -119,7 +118,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
 	events.add(event);
 
-	DeviceAssignment assignment = assureBucket(location.getDeviceAssignmentToken());
+	DeviceAssignment assignment = assureBucket(location.getDeviceAssignmentId());
 	createEvents(assignment.getToken(), events);
     }
 
@@ -139,7 +138,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 	event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
 	events.add(event);
 
-	DeviceAssignment assignment = assureBucket(alert.getDeviceAssignmentToken());
+	DeviceAssignment assignment = assureBucket(alert.getDeviceAssignmentId());
 	createEvents(assignment.getToken(), events);
     }
 
@@ -150,13 +149,12 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
      * @return
      * @throws SiteWhereException
      */
-    protected DeviceAssignment assureBucket(String assignmentToken) throws SiteWhereException {
-	DeviceAssignment cached = assignmentsByToken.get(assignmentToken);
+    protected DeviceAssignment assureBucket(UUID assignmentId) throws SiteWhereException {
+	DeviceAssignment cached = assignmentsById.get(assignmentId);
 	if (cached != null) {
 	    return cached;
 	}
-	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceAssignmentByToken(assignmentToken);
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(assignmentId);
 	if (assignment == null) {
 	    throw new SiteWhereException("Assignment not found.");
 	}
@@ -169,7 +167,7 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 
 	createBucket(converted.getToken(),
 		converted.getAssetName() + " (" + converted.getDevice().getAssetName() + ")");
-	assignmentsByToken.put(assignmentToken, converted);
+	assignmentsById.put(assignmentId, converted);
 	return converted;
     }
 
@@ -254,9 +252,5 @@ public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 
     public void setStreamingAccessKey(String streamingAccessKey) {
 	this.streamingAccessKey = streamingAccessKey;
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
     }
 }

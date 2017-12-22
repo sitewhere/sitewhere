@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.device.event;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -42,11 +43,11 @@ public abstract class DeviceEvent extends MetadataProvider
     /** Event type indicator */
     private DeviceEventType eventType;
 
-    /** Site token */
-    private String siteToken;
+    /** Site id */
+    private UUID siteId;
 
-    /** Device assignment token */
-    private String deviceAssignmentToken;
+    /** Device assignment id */
+    private UUID deviceAssignmentId;
 
     /** Device assignment type */
     private DeviceAssignmentType assignmentType;
@@ -107,31 +108,27 @@ public abstract class DeviceEvent extends MetadataProvider
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getSiteToken()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getSiteId()
      */
     @Override
-    public String getSiteToken() {
-	return siteToken;
+    public UUID getSiteId() {
+	return siteId;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setSiteId(UUID siteId) {
+	this.siteId = siteId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getDeviceAssignmentToken()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getDeviceAssignmentId()
      */
     @Override
-    public String getDeviceAssignmentToken() {
-	return deviceAssignmentToken;
+    public UUID getDeviceAssignmentId() {
+	return deviceAssignmentId;
     }
 
-    public void setDeviceAssignmentToken(String deviceAssignmentToken) {
-	this.deviceAssignmentToken = deviceAssignmentToken;
+    public void setDeviceAssignmentId(UUID deviceAssignmentId) {
+	this.deviceAssignmentId = deviceAssignmentId;
     }
 
     /*
@@ -212,8 +209,8 @@ public abstract class DeviceEvent extends MetadataProvider
     public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
 	target.setId(source.getId());
 	target.setAlternateId(source.getAlternateId());
-	target.setSiteToken(source.getSiteToken());
-	target.setDeviceAssignmentToken(source.getDeviceAssignmentToken());
+	target.setSiteId(source.getSiteId());
+	target.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	target.setAssignmentType(source.getAssignmentType());
 	target.setAssetReference(source.getAssetReference());
 	target.setReceivedDate(source.getReceivedDate());

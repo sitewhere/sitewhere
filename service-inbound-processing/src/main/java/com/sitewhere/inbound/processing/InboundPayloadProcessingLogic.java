@@ -69,12 +69,12 @@ public class InboundPayloadProcessingLogic {
 	}
 
 	// Verify that device is assigned.
-	if (device.getAssignmentToken() == null) {
+	if (device.getDeviceAssignmentId() == null) {
 	    handleUnassignedDevice(payload);
 	    return;
 	}
 
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 	if (assignment == null) {
 	    getLogger().info("Assignment information for " + payload.getHardwareId() + " is invalid.");
 	    handleUnassignedDevice(payload);
@@ -116,7 +116,7 @@ public class InboundPayloadProcessingLogic {
 		    (IDeviceStateChangeCreateRequest) request);
 	case StreamData: {
 	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;
-	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getToken(), sdreq.getStreamId());
+	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getId(), sdreq.getStreamId());
 	    if (stream != null) {
 		return getDeviceEventManagement().addDeviceStreamData(assignment, stream, sdreq);
 	    } else {

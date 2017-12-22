@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -21,14 +22,14 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
  */
 public class DeviceEventContext implements IDeviceEventContext {
 
-    /** Hardware id */
-    private String hardwareId;
+    /** Device id */
+    private UUID deviceId;
 
-    /** Device specification token */
-    private String specificationToken;
+    /** Device specification id */
+    private UUID deviceSpecificationId;
 
-    /** Parent device hardware id */
-    private String parentHardwareId;
+    /** Parent device id */
+    private UUID parentDeviceId;
 
     /** Device status */
     private String deviceStatus;
@@ -43,42 +44,46 @@ public class DeviceEventContext implements IDeviceEventContext {
     private Map<String, String> assignmentMetadata;
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventContext#getHardwareId()
+     * @see com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceId()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventContext#getSpecificationToken()
+     * com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceSpecificationId()
      */
-    public String getSpecificationToken() {
-	return specificationToken;
+    @Override
+    public UUID getDeviceSpecificationId() {
+	return deviceSpecificationId;
     }
 
-    public void setSpecificationToken(String specificationToken) {
-	this.specificationToken = specificationToken;
+    public void setDeviceSpecificationId(UUID deviceSpecificationId) {
+	this.deviceSpecificationId = deviceSpecificationId;
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventContext#getParentHardwareId()
+     * @see com.sitewhere.spi.device.event.IDeviceEventContext#getParentDeviceId()
      */
-    public String getParentHardwareId() {
-	return parentHardwareId;
+    @Override
+    public UUID getParentDeviceId() {
+	return parentDeviceId;
     }
 
-    public void setParentHardwareId(String parentHardwareId) {
-	this.parentHardwareId = parentHardwareId;
+    public void setParentDeviceId(UUID parentDeviceId) {
+	this.parentDeviceId = parentDeviceId;
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceStatus()
      */
+    @Override
     public String getDeviceStatus() {
 	return deviceStatus;
     }
@@ -90,6 +95,7 @@ public class DeviceEventContext implements IDeviceEventContext {
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceMetadata()
      */
+    @Override
     public Map<String, String> getDeviceMetadata() {
 	return deviceMetadata;
     }
@@ -101,6 +107,7 @@ public class DeviceEventContext implements IDeviceEventContext {
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventContext#getAssignmentStatus()
      */
+    @Override
     public DeviceAssignmentStatus getAssignmentStatus() {
 	return assignmentStatus;
     }
@@ -113,6 +120,7 @@ public class DeviceEventContext implements IDeviceEventContext {
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventContext#getAssignmentMetadata()
      */
+    @Override
     public Map<String, String> getAssignmentMetadata() {
 	return assignmentMetadata;
     }

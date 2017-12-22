@@ -169,7 +169,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(token, force);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(existing.getId(), force);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -189,7 +190,9 @@ public class Assignments extends RestControllerBase {
     public DeviceAssignment updateDeviceAssignmentMetadata(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody MetadataProvider metadata, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceAssignment result = getDeviceManagement().updateDeviceAssignmentMetadata(token, metadata.getMetadata());
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceAssignment result = getDeviceManagement().updateDeviceAssignmentMetadata(existing.getId(),
+		metadata.getMetadata());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -446,10 +449,24 @@ public class Assignments extends RestControllerBase {
     public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceStream result = getDeviceManagement().createDeviceStream(token, request);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceStream result = getDeviceManagement().createDeviceStream(existing.getId(), request);
 	return DeviceStream.copy(result);
     }
 
+    /**
+     * List device streams associated with an assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
     @RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
     @ApiOperation(value = "List data streams for device assignment")
     @Secured({ SiteWhereRoles.REST })
@@ -463,7 +480,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(token, criteria);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(existing.getId(), criteria);
 	List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
 	for (IDeviceStream stream : matches.getResults()) {
 	    converted.add(DeviceStream.copy(stream));
@@ -486,7 +504,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceStream result = getDeviceManagement().getDeviceStream(token, streamId);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceStream result = getDeviceManagement().getDeviceStream(existing.getId(), streamId);
 	if (result == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
 		    HttpServletResponse.SC_NOT_FOUND);
@@ -512,7 +531,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStream stream = assertDeviceStream(token, streamId);
+	IDeviceStream stream = assertDeviceStream(assignment.getId(), streamId);
 	try {
 	    ServletInputStream inData = servletRequest.getInputStream();
 	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
@@ -578,7 +597,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStream stream = assertDeviceStream(token, streamId);
+	IDeviceStream stream = assertDeviceStream(assignment.getId(), streamId);
 	svtResponse.setContentType(stream.getContentType());
 
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
@@ -797,7 +816,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
-	IDeviceAssignment updated = management.endDeviceAssignment(token);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceAssignment updated = management.endDeviceAssignment(existing.getId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -819,7 +839,9 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
-	IDeviceAssignment updated = management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	IDeviceAssignment updated = management.updateDeviceAssignmentStatus(existing.getId(),
+		DeviceAssignmentStatus.Missing);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -898,12 +920,13 @@ public class Assignments extends RestControllerBase {
     /**
      * Assert that a device stream exists and throw an exception if not.
      * 
+     * @param assignmentId
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceStream assertDeviceStream(String assignmentToken, String id) throws SiteWhereException {
-	IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentToken, id);
+    protected IDeviceStream assertDeviceStream(UUID assignmentId, String id) throws SiteWhereException {
+	IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentId, id);
 	if (stream == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
 	}

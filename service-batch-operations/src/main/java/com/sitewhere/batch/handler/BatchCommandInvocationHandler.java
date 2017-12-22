@@ -80,7 +80,7 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	}
 
 	// Find the current assignment information for the device.
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 	if (assignment == null) {
 	    getLogger().info("Device is not currently assigned. Skipping command invocation.");
 	    return ElementProcessingStatus.Failed;

@@ -144,9 +144,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
      */
     protected void processEvent(IDeviceEvent event) throws SiteWhereException {
 	// These should be cached, so no performance hit.
-	IDeviceAssignment assignment = getDeviceManagement()
-		.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
+	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 
 	// Create Groovy binding with handles to everything.
 	Binding binding = new Binding();

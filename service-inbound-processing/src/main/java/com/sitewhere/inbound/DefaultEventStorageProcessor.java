@@ -47,11 +47,9 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+     * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
      * onDeviceCommandResponseRequest(java.lang.String, java.lang.String,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public void onDeviceCommandResponseRequest(String hardwareId, String originator,
@@ -63,8 +61,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+     * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
      * onDeviceMeasurementsCreateRequest(java.lang.String, java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
      */
@@ -79,8 +76,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+     * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
      * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -95,8 +91,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+     * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
      * onDeviceAlertCreateRequest(java.lang.String, java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
      */
@@ -135,16 +130,16 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
-	if (device.getAssignmentToken() == null) {
+	if (device.getDeviceAssignmentId() == null) {
 	    // If no assignment exists, add an unassociated assignment.
 	    return createUnassociatedAssignmentFor(hardwareId);
 	}
-	return getDeviceManagement().getDeviceAssignmentByToken(device.getAssignmentToken());
+	return getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
     }
 
     /**
-     * Create an unassociated assignment for device with the given hardware id.
-     * This allows events to be written when a device does not have an existing
+     * Create an unassociated assignment for device with the given hardware id. This
+     * allows events to be written when a device does not have an existing
      * assignment.
      * 
      * @param hardwareId
@@ -161,8 +156,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 
     /**
      * If an originator was assocaited with the event, create a
-     * {@link IDeviceCommandResponse} that links back to the original
-     * invocation.
+     * {@link IDeviceCommandResponse} that links back to the original invocation.
      * 
      * @param originator
      * @param eventId

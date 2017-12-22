@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.device.asset;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
@@ -155,23 +156,19 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getSiteToken()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getSiteId()
      */
     @Override
-    public String getSiteToken() {
-	return getWrapped().getSiteToken();
+    public UUID getSiteId() {
+	return getWrapped().getSiteId();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getDeviceAssignmentToken()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getDeviceAssignmentId()
      */
     @Override
-    public String getDeviceAssignmentToken() {
-	return getWrapped().getDeviceAssignmentToken();
+    public UUID getDeviceAssignmentId() {
+	return getWrapped().getDeviceAssignmentId();
     }
 
     /*

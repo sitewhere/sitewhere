@@ -18,6 +18,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -59,7 +60,8 @@ public class BatchUtils {
 
 	Collection<IDevice> matches;
 	if (hasGroup) {
-	    matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, deviceManagement);
+	    IDeviceGroup group = deviceManagement.getDeviceGroupByToken(criteria.getGroupToken());
+	    matches = DeviceGroupUtils.getDevicesInGroup(group, deviceSearch, deviceManagement);
 	} else if (hasGroupsWithRole) {
 	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
 		    deviceManagement);

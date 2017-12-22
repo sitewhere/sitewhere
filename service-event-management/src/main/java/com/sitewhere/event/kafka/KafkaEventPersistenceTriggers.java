@@ -68,11 +68,11 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	long start = System.currentTimeMillis();
 	try {
 	    PersistedEventPayload api = new PersistedEventPayload();
-	    api.setHardwareId(assignment.getDeviceHardwareId());
+	    api.setDeviceId(assignment.getDeviceId());
 	    api.setEvent(event);
 	    GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
 
-	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getDeviceHardwareId(),
+	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getToken(),
 		    KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
 	    return event;
 	} finally {

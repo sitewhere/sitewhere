@@ -50,7 +50,7 @@ message GDeviceSpecificationSearchCriteria {
 
 // Results for device specification search.
 message GDeviceSpecificationSearchResults {
-	int64 count = 1;
+	uint64 count = 1;
 	repeated GDeviceSpecification specifications = 2;
 }
 
@@ -61,13 +61,14 @@ message GDeviceSpecificationReference {
 
 // Device specification.
 message GDeviceSpecification {
-	string token = 1;
-	string name = 2;
-	GAssetReference assetReference = 3;
-	GDeviceContainerPolicy containerPolicy = 4;
-	GDeviceElementSchema deviceElementSchema = 5;
-	map<string, string> metadata = 6;
-	GEntityInformation entityInformation = 7;
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	GAssetReference assetReference = 4;
+	GDeviceContainerPolicy containerPolicy = 5;
+	GDeviceElementSchema deviceElementSchema = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
 }
 
 // #######################
@@ -93,20 +94,21 @@ message GDeviceCommandCreateRequest {
 
 // Criteria for searching device commands.
 message GDeviceCommandSearchCriteria {
-	GOptionalString token = 1;
+	GUUID deviceSpecificationId = 1;
 	GOptionalBoolean includeDeleted = 2;
 }
 
 // Device command.
 message GDeviceCommand {
-	string token = 1;
-	string specificationToken = 2;
-	string namespace = 3;
-	string name = 4;
-	string description = 5;
-	repeated GCommandParameter parameters = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	GUUID id = 1;
+	string token = 2;
+	GUUID deviceSpecificationId = 3;
+	string namespace = 4;
+	string name = 5;
+	string description = 6;
+	repeated GCommandParameter parameters = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // #######################
@@ -131,14 +133,15 @@ message GDeviceStatusSearchCriteria {
 
 // Device status.
 message GDeviceStatus {
-	string code = 1;
-	string specificationToken = 2;
-	string name = 3;
-	string backgroundColor = 4;
-	string foregroundColor = 5;
-	string borderColor = 6;
-	string icon = 7;
-	map<string, string> metadata = 8;
+	GUUID id = 1;
+	string code = 2;
+	GUUID deviceSpecificationId = 3;
+	string name = 4;
+	string backgroundColor = 5;
+	string foregroundColor = 6;
+	string borderColor = 7;
+	string icon = 8;
+	map<string, string> metadata = 9;
 }
 
 // ###############
@@ -176,19 +179,20 @@ message GDeviceSearchCriteria {
 
 // Results for device search.
 message GDeviceSearchResults {
-	int64 count = 1;
+	uint64 count = 1;
 	repeated GDevice devices = 2;
 }
 
 // Device.
 message GDevice {
-	string hardwareId = 1;
-	string siteToken = 2;
-	string specificationToken = 3;
-	GOptionalString assignmentToken = 4;
-	GOptionalString parentHardwareId = 5;
-	repeated GDeviceElementMapping deviceElementMappings = 6;
-	GOptionalString comments = 7;
+	GUUID id = 1;
+	string hardwareId = 2;
+	GUUID siteId = 3;
+	GUUID deviceSpecificationId = 4;
+	GUUID deviceAssignmentId = 5;
+	GUUID parentDeviceId = 6;
+	repeated GDeviceElementMapping deviceElementMappings = 7;
+	GOptionalString comments = 8;
 	GOptionalString status = 9;
 	map<string, string> metadata = 10;
 	GEntityInformation entityInformation = 11;
@@ -221,7 +225,7 @@ message GDeviceGroupElementsSearchCriteria {
 
 // Results for device group elements search.
 message GDeviceGroupElementsSearchResults {
-	int64 count = 1;
+	uint64 count = 1;
 	repeated GDeviceGroupElement elements = 2;
 }
 
@@ -240,27 +244,28 @@ message GDeviceGroupsWithRoleSearchCriteria {
 
 // Results for device group search.
 message GDeviceGroupSearchResults {
-	int64 count = 1;
+	uint64 count = 1;
 	repeated GDeviceGroup deviceGroups = 2;
 }
 
 // Device group element.
 message GDeviceGroupElement {
-	string groupToken = 1;
-	int64 index = 2; 
+	GUUID groupId = 1;
+	uint64 index = 2; 
 	GDeviceGroupElementType type = 3;
-	string elementId = 4;
+	GUUID elementId = 4;
 	repeated string roles = 5;
 }
 
 // Device group.
 message GDeviceGroup {
-	string token = 1;
-	string name = 2;
-	string description = 3;
-	repeated string roles = 4;
-	map<string, string> metadata = 5;
-	GEntityInformation entityInformation = 6;
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	repeated string roles = 5;
+	map<string, string> metadata = 6;
+	GEntityInformation entityInformation = 7;
 }
 
 // ##########################
@@ -302,16 +307,17 @@ message GDeviceAssignmentHistoryCriteria {
 
 // Device assignment.
 message GDeviceAssignment {
-	string token = 1;
-	string deviceHardwareId = 2;
-	string siteToken = 3;
-	GDeviceAssignmentType assignmentType = 4;
-	GDeviceAssignmentStatus status = 5;
-	GAssetReference assetReference = 6;
-	google.protobuf.Timestamp activeDate = 7;
-	google.protobuf.Timestamp releasedDate = 8;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	GUUID id = 1;
+	string token = 2;
+	GUUID deviceId = 3;
+	GUUID siteId = 4;
+	GDeviceAssignmentType assignmentType = 5;
+	GDeviceAssignmentStatus status = 6;
+	GAssetReference assetReference = 7;
+	google.protobuf.Timestamp activeDate = 8;
+	google.protobuf.Timestamp releasedDate = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
 }
 
 // ######################
@@ -338,11 +344,12 @@ message GDeviceStreamSearchResults {
 
 // Device stream.
 message GDeviceStream {
-	string streamId = 1;
-	string contentType = 2;
-	string assignmentToken = 3;
-	map<string, string> metadata = 4;
-	GEntityInformation entityInformation = 5;
+	GUUID id = 1;
+	string streamId = 2;
+	string contentType = 3;
+	GUUID deviceAssignmentId = 4;
+	map<string, string> metadata = 5;
+	GEntityInformation entityInformation = 6;
 }
 
 // #############
@@ -378,13 +385,14 @@ message GSiteSearchResults {
 
 // Site.
 message GSite {
-	string token = 1;
-	string name = 2;
-	string description = 3;
-	string imageUrl = 4;
-	GSiteMapData mapData = 5;
-	map<string, string> metadata = 6;
-	GEntityInformation entityInformation = 7;
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	string imageUrl = 5;
+	GSiteMapData mapData = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
 }
 
 // #############
@@ -414,13 +422,14 @@ message GZoneSearchResults {
 
 // Zone.
 message GZone {
-	string token = 1;
-	string siteToken = 2;
-	string name = 3;
-	repeated GLocation coordinates = 4;
-	string borderColor = 5;
-	string fillColor = 6;
-	double opacity = 7;
-	map<string, string> metadata = 8;
-	GEntityInformation entityInformation = 9;
+	GUUID id = 1;
+	string token = 2;
+	GUUID siteId = 3;
+	string name = 4;
+	repeated GLocation coordinates = 5;
+	string borderColor = 6;
+	string fillColor = 7;
+	double opacity = 8;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
 }

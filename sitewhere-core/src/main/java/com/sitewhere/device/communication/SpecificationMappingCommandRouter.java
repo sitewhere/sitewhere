@@ -9,6 +9,7 @@ package com.sitewhere.device.communication;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +34,7 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Map of specification tokens to command destination ids */
-    private Map<String, String> mappings = new HashMap<String, String>();
+    private Map<UUID, String> mappings = new HashMap<UUID, String>();
 
     /** Default destination for unmapped specifications */
     private String defaultDestination = null;
@@ -88,13 +89,13 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
      */
     protected ICommandDestination<?, ?> getDestinationForDevice(IDeviceNestingContext nesting)
 	    throws SiteWhereException {
-	String specToken = nesting.getGateway().getSpecificationToken();
-	String destinationId = mappings.get(specToken);
+	UUID specId = nesting.getGateway().getDeviceSpecificationId();
+	String destinationId = mappings.get(specId);
 	if (destinationId == null) {
 	    if (getDefaultDestination() != null) {
 		destinationId = getDefaultDestination();
 	    } else {
-		throw new SiteWhereException("No command destination mapping for specification: " + specToken);
+		throw new SiteWhereException("No command destination mapping for specification: " + specId);
 	    }
 	}
 	ICommandDestination<?, ?> destination = getDestinations().get(destinationId);
@@ -104,11 +105,11 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	return destination;
     }
 
-    public Map<String, String> getMappings() {
+    public Map<UUID, String> getMappings() {
 	return mappings;
     }
 
-    public void setMappings(Map<String, String> mappings) {
+    public void setMappings(Map<UUID, String> mappings) {
 	this.mappings = mappings;
     }
 

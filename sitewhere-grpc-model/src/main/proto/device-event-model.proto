@@ -125,8 +125,8 @@ message GDeviceEvent {
 	string id = 1;
 	GOptionalString alternateId = 2;
 	GDeviceEventType eventType = 3;
-	string siteToken = 4;
-	string assignmentToken = 5;
+	GUUID siteId = 4;
+	GUUID deviceAssignmentId = 5;
 	GDeviceAssignmentType assignmentType = 6;
 	GAssetReference assetReference = 7;
 	google.protobuf.Timestamp eventDate = 8;
@@ -210,9 +210,9 @@ message GAnyDeviceEvent {
 
 // Context information for a device event.
 message GDeviceEventContext {
-	string hardwareId = 1;
-	string specificationToken = 2;
-	GOptionalString parentHardwareId = 3;
+	GUUID deviceId = 1;
+	GUUID deviceSpecificationId = 2;
+	GUUID parentDeviceId = 3;
 	GOptionalString deviceStatus = 4;
 	map<string, string> deviceMetadata = 5;
 	GDeviceAssignmentStatus assignmentStatus = 6;

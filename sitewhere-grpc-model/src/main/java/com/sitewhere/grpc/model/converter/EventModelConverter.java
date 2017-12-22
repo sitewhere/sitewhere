@@ -249,8 +249,8 @@ public class EventModelConverter {
 	api.setId(grpc.getId());
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
 	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
-	api.setSiteToken(grpc.getSiteToken());
-	api.setDeviceAssignmentToken(grpc.getAssignmentToken());
+	api.setSiteId(CommonModelConverter.asApiUuid(grpc.getSiteId()));
+	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setAssetReference(
 		grpc.hasAssetReference() ? AssetModelConverter.asApiAssetReference(grpc.getAssetReference()) : null);
@@ -273,8 +273,8 @@ public class EventModelConverter {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
 	grpc.setEventType(EventModelConverter.asGrpcDeviceEventType(api.getEventType()));
-	grpc.setSiteToken(api.getSiteToken());
-	grpc.setAssignmentToken(api.getDeviceAssignmentToken());
+	grpc.setSiteId(CommonModelConverter.asGrpcUuid(api.getSiteId()));
+	grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	if (api.getAssetReference() != null) {
 	    grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
@@ -1893,9 +1893,10 @@ public class EventModelConverter {
      */
     public static DeviceEventContext asApiDeviceEventContext(GDeviceEventContext grpc) throws SiteWhereException {
 	DeviceEventContext api = new DeviceEventContext();
-	api.setHardwareId(grpc.getHardwareId());
-	api.setSpecificationToken(grpc.getSpecificationToken());
-	api.setParentHardwareId(grpc.hasParentHardwareId() ? grpc.getParentHardwareId().getValue() : null);
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setDeviceSpecificationId(CommonModelConverter.asApiUuid(grpc.getDeviceSpecificationId()));
+	api.setParentDeviceId(
+		grpc.hasParentDeviceId() ? CommonModelConverter.asApiUuid(grpc.getParentDeviceId()) : null);
 	api.setDeviceStatus(grpc.hasDeviceStatus() ? grpc.getDeviceStatus().getValue() : null);
 	api.setDeviceMetadata(grpc.getDeviceMetadataMap());
 	api.setAssignmentStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getAssignmentStatus()));
@@ -1912,10 +1913,10 @@ public class EventModelConverter {
      */
     public static GDeviceEventContext asGrpcDeviceEventContext(IDeviceEventContext api) throws SiteWhereException {
 	GDeviceEventContext.Builder grpc = GDeviceEventContext.newBuilder();
-	grpc.setHardwareId(api.getHardwareId());
-	grpc.setSpecificationToken(api.getSpecificationToken());
-	if (api.getParentHardwareId() != null) {
-	    grpc.setParentHardwareId(GOptionalString.newBuilder().setValue(api.getParentHardwareId()));
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	grpc.setDeviceSpecificationId(CommonModelConverter.asGrpcUuid(api.getDeviceSpecificationId()));
+	if (api.getParentDeviceId() != null) {
+	    grpc.setParentDeviceId(CommonModelConverter.asGrpcUuid(api.getParentDeviceId()));
 	}
 	if (api.getDeviceStatus() != null) {
 	    grpc.setDeviceStatus(GOptionalString.newBuilder().setValue(api.getDeviceStatus()));

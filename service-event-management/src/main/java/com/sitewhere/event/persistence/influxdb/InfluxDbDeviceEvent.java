@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -450,8 +451,8 @@ public class InfluxDbDeviceEvent {
      */
     public static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
 	event.setId((String) values.get(EVENT_ID));
-	event.setDeviceAssignmentToken((String) values.get(EVENT_ASSIGNMENT));
-	event.setSiteToken(((String) values.get(EVENT_SITE)));
+	event.setDeviceAssignmentId(UUID.fromString((String) values.get(EVENT_ASSIGNMENT)));
+	event.setSiteId(UUID.fromString((String) values.get(EVENT_SITE)));
 	event.setAssetReference(
 		new DefaultAssetReferenceEncoder().decode(((String) values.get(EVENT_ASSET_REFERENCE))));
 
@@ -527,9 +528,9 @@ public class InfluxDbDeviceEvent {
 	builder.time(event.getEventDate().getTime(), precision);
 	builder.addField(EVENT_ID, event.getId());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
-	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
+	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());
 	builder.tag(ASSIGNMENT_TYPE, String.valueOf(event.getAssignmentType()));
-	builder.tag(EVENT_SITE, event.getSiteToken());
+	builder.tag(EVENT_SITE, event.getSiteId().toString());
 	if (event.getAssetReference() != null) {
 	    builder.tag(EVENT_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
 	}

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.kafka.payload;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -18,11 +20,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public interface IPersistedEventPayload {
 
     /**
-     * Get device hardware id.
+     * Get device id.
      * 
      * @return
      */
-    public String getHardwareId();
+    public UUID getDeviceId();
 
     /**
      * Get device event details.

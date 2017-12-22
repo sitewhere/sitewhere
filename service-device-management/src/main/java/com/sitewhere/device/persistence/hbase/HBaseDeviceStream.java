@@ -24,12 +24,12 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
@@ -57,24 +57,20 @@ public class HBaseDeviceStream {
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceStream createDeviceStream(IHBaseContext context, String assignmentToken,
+    public static IDeviceStream createDeviceStream(IHBaseContext context, IDeviceAssignment assn,
 	    IDeviceStreamCreateRequest request) throws SiteWhereException {
 	// Verify that the assignment token is valid.
-	DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-	}
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 
 	// Verify that the device stream does not exist.
-	DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assignmentToken, request.getStreamId());
+	DeviceStream stream = HBaseDeviceStream.getDeviceStream(context, assn, request.getStreamId());
 	if (stream != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
 	}
 
 	byte[] streamKey = getDeviceStreamKey(assnKey, request.getStreamId());
 
-	DeviceStream newStream = DeviceManagementPersistence.deviceStreamCreateLogic(assignment, request);
+	DeviceStream newStream = DeviceManagementPersistence.deviceStreamCreateLogic(assn, request);
 	byte[] payload = context.getPayloadMarshaler().encode(newStream);
 
 	Table sites = null;
@@ -96,14 +92,14 @@ public class HBaseDeviceStream {
      * Get a {@link DeviceStream} based on assignment and stream id.
      * 
      * @param context
-     * @param assignmentToken
+     * @param assn
      * @param streamId
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceStream getDeviceStream(IHBaseContext context, String assignmentToken, String streamId)
+    public static DeviceStream getDeviceStream(IHBaseContext context, IDeviceAssignment assn, String streamId)
 	    throws SiteWhereException {
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	if (assnKey == null) {
 	    return null;
 	}
@@ -139,9 +135,9 @@ public class HBaseDeviceStream {
      * @return
      * @throws SiteWhereException
      */
-    public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context, String assignmentToken,
+    public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context, IDeviceAssignment assn,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
+	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	if (assnKey == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}

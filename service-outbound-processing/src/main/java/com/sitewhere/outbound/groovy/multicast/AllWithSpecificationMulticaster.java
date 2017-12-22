@@ -99,13 +99,13 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLif
 	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
 	for (IDevice targetDevice : matches) {
 	    if (getScriptPath() != null) {
-		IDeviceAssignment targetAssignment = dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
+		IDeviceAssignment targetAssignment = dm.getDeviceAssignment(targetDevice.getDeviceAssignmentId());
 		Binding binding = new Binding();
 		binding.setVariable("logger", getLogger());
 		binding.setVariable("event", event);
 		binding.setVariable("device", device);
 		binding.setVariable("assignment", assignment);
-		if (device.getAssignmentToken() != null) {
+		if (device.getDeviceAssignmentId() != null) {
 		    binding.setVariable("targetAssignment", targetAssignment);
 		    binding.setVariable("targetDevice", targetDevice);
 		}

@@ -54,7 +54,7 @@ public class ProtobufSpecificationBuilder {
      */
     public static DescriptorProtos.DescriptorProto createSpecificationMessage(IDeviceSpecification specification,
 	    ITenant tenant) throws SiteWhereException {
-	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(specification.getToken(), false);
+	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(specification.getId(), false);
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 	builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
 	builder.addEnumType(createCommandsEnum(commands));

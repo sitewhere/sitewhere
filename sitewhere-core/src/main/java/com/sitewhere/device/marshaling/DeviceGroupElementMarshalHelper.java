@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceGroupElement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
@@ -57,9 +58,10 @@ public class DeviceGroupElementMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceGroupElement convert(IDeviceGroupElement source, IAssetResolver assets) throws SiteWhereException {
-	DeviceGroupElement result = new DeviceGroupElement();
-	result.setGroupToken(source.getGroupToken());
+    public MarshaledDeviceGroupElement convert(IDeviceGroupElement source, IAssetResolver assets)
+	    throws SiteWhereException {
+	MarshaledDeviceGroupElement result = new MarshaledDeviceGroupElement();
+	result.setGroupId(source.getGroupId());
 	result.setIndex(source.getIndex());
 	result.setType(source.getType());
 	result.setElementId(source.getElementId());
@@ -67,7 +69,7 @@ public class DeviceGroupElementMarshalHelper {
 	if (isIncludeDetails()) {
 	    switch (source.getType()) {
 	    case Device: {
-		IDevice device = deviceManagement.getDeviceByHardwareId(source.getElementId());
+		IDevice device = deviceManagement.getDevice(source.getElementId());
 		if (device != null) {
 		    Device inflated = deviceHelper.convert(device, assets);
 		    result.setDevice(inflated);

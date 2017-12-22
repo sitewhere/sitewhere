@@ -60,13 +60,13 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 
 	DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
 	ack.setStreamId(request.getStreamId());
-	IDeviceStream existing = getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceStream(assignment.getToken(), request.getStreamId());
+	IDeviceStream existing = getDeviceManagement(getTenantEngine().getTenant()).getDeviceStream(assignment.getId(),
+		request.getStreamId());
 	if (existing != null) {
 	    ack.setStatus(DeviceStreamStatus.DeviceStreamExists);
 	} else {
 	    try {
-		getDeviceManagement(getTenantEngine().getTenant()).createDeviceStream(assignment.getToken(), request);
+		getDeviceManagement(getTenantEngine().getTenant()).createDeviceStream(assignment.getId(), request);
 		ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Unable to create device stream.", e);
@@ -137,11 +137,10 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
-	if (device.getAssignmentToken() == null) {
+	if (device.getDeviceAssignmentId() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
-	return getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceAssignmentByToken(device.getAssignmentToken());
+	return getDeviceManagement(getTenantEngine().getTenant()).getDeviceAssignment(device.getDeviceAssignmentId());
     }
 
     private IDeviceManagement getDeviceManagement(ITenant tenant) {

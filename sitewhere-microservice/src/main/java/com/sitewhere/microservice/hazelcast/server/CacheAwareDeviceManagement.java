@@ -8,6 +8,7 @@
 package com.sitewhere.microservice.hazelcast.server;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.device.DeviceManagementDecorator;
 import com.sitewhere.grpc.client.cache.CacheUtils;
@@ -86,13 +87,13 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#updateSite(java.lang.String,
+     * com.sitewhere.device.DeviceManagementDecorator#updateSite(java.util.UUID,
      * com.sitewhere.spi.device.request.ISiteCreateRequest)
      */
     @Override
-    public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
+    public ISite updateSite(UUID id, ISiteCreateRequest request) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	ISite result = super.updateSite(siteToken, request);
+	ISite result = super.updateSite(id, request);
 	getSiteCache().setCacheEntry(tenant, result.getToken(), result);
 	CacheUtils.logCacheUpdated(result);
 	return result;
@@ -100,15 +101,15 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#deleteSite(java.lang.String,
+     * com.sitewhere.device.DeviceManagementDecorator#deleteSite(java.util.UUID,
      * boolean)
      */
     @Override
-    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
+    public ISite deleteSite(UUID id, boolean force) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	ISite result = super.deleteSite(siteToken, force);
+	ISite result = super.deleteSite(id, force);
 	getSiteCache().removeCacheEntry(tenant, result.getToken());
-	CacheUtils.logCacheRemoved(siteToken);
+	CacheUtils.logCacheRemoved(result.getToken());
 	return result;
     }
 
@@ -144,13 +145,13 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#updateDevice(java.lang.String,
+     * com.sitewhere.device.DeviceManagementDecorator#updateDevice(java.util.UUID,
      * com.sitewhere.spi.device.request.IDeviceCreateRequest)
      */
     @Override
-    public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
+    public IDevice updateDevice(UUID id, IDeviceCreateRequest request) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDevice result = super.updateDevice(hardwareId, request);
+	IDevice result = super.updateDevice(id, request);
 	getDeviceCache().setCacheEntry(tenant, result.getHardwareId(), result);
 	CacheUtils.logCacheUpdated(result);
 	return result;
@@ -158,15 +159,15 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#deleteDevice(java.lang.String,
+     * com.sitewhere.device.DeviceManagementDecorator#deleteDevice(java.util.UUID,
      * boolean)
      */
     @Override
-    public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
+    public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDevice result = super.deleteDevice(hardwareId, force);
+	IDevice result = super.deleteDevice(id, force);
 	getDeviceCache().removeCacheEntry(tenant, result.getHardwareId());
-	CacheUtils.logCacheRemoved(hardwareId);
+	CacheUtils.logCacheRemoved(result.getHardwareId());
 	return result;
     }
 
@@ -180,7 +181,8 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment result = super.createDeviceAssignment(request);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	getDeviceCache().removeCacheEntry(tenant, result.getDeviceHardwareId());
+	IDevice device = super.getDevice(result.getDeviceId());
+	getDeviceCache().removeCacheEntry(tenant, device.getHardwareId());
 	CacheUtils.logCacheUpdated(result);
 	return result;
     }
@@ -204,13 +206,13 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /*
      * @see
      * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentMetadata
-     * (java.lang.String, java.util.Map)
+     * (java.util.UUID, java.util.Map)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
 	    throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.updateDeviceAssignmentMetadata(token, metadata);
+	IDeviceAssignment result = super.updateDeviceAssignmentMetadata(id, metadata);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	CacheUtils.logCacheUpdated(result);
 	return result;
@@ -219,13 +221,13 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /*
      * @see
      * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentStatus(
-     * java.lang.String, com.sitewhere.spi.device.DeviceAssignmentStatus)
+     * java.util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
+    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
 	    throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.updateDeviceAssignmentStatus(token, status);
+	IDeviceAssignment result = super.updateDeviceAssignmentStatus(id, status);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	CacheUtils.logCacheUpdated(result);
 	return result;
@@ -234,14 +236,14 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /*
      * @see
      * com.sitewhere.device.DeviceManagementDecorator#deleteDeviceAssignment(java.
-     * lang.String, boolean)
+     * util.UUID, boolean)
      */
     @Override
-    public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
+    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.deleteDeviceAssignment(token, force);
+	IDeviceAssignment result = super.deleteDeviceAssignment(id, force);
 	getDeviceCache().removeCacheEntry(tenant, result.getToken());
-	CacheUtils.logCacheRemoved(token);
+	CacheUtils.logCacheRemoved(result.getToken());
 	return result;
     }
 
@@ -279,14 +281,14 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /*
      * @see
      * com.sitewhere.device.DeviceManagementDecorator#updateDeviceSpecification(java
-     * .lang.String,
+     * .util.UUID,
      * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
      */
     @Override
-    public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+    public IDeviceSpecification updateDeviceSpecification(UUID id, IDeviceSpecificationCreateRequest request)
 	    throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceSpecification result = super.updateDeviceSpecification(token, request);
+	IDeviceSpecification result = super.updateDeviceSpecification(id, request);
 	getDeviceSpecificationCache().setCacheEntry(tenant, result.getToken(), result);
 	CacheUtils.logCacheUpdated(result);
 	return result;
@@ -295,14 +297,14 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /*
      * @see
      * com.sitewhere.device.DeviceManagementDecorator#deleteDeviceSpecification(java
-     * .lang.String, boolean)
+     * .util.UUID, boolean)
      */
     @Override
-    public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
+    public IDeviceSpecification deleteDeviceSpecification(UUID id, boolean force) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceSpecification result = super.deleteDeviceSpecification(token, force);
+	IDeviceSpecification result = super.deleteDeviceSpecification(id, force);
 	getDeviceSpecificationCache().removeCacheEntry(tenant, result.getToken());
-	CacheUtils.logCacheRemoved(token);
+	CacheUtils.logCacheRemoved(result.getToken());
 	return result;
     }
 

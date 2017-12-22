@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
@@ -22,8 +24,8 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  */
 public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 
-    /** Property for parent assignment token */
-    public static final String PROP_ASSIGNMENT_TOKEN = "at";
+    /** Property for parent assignment id */
+    public static final String PROP_ASSIGNMENT_ID = "ai";
 
     /** Property for stream id */
     public static final String PROP_STREAM_ID = "st";
@@ -58,7 +60,7 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
      * @param target
      */
     public static void toDocument(IDeviceStream source, Document target) {
-	target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
+	target.append(PROP_ASSIGNMENT_ID, source.getAssignmentId());
 	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_CONTENT_TYPE, source.getContentType());
 
@@ -73,11 +75,11 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
      * @param target
      */
     public static void fromDocument(Document source, DeviceStream target) {
-	String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
+	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
 	String streamId = (String) source.get(PROP_STREAM_ID);
 	String contentType = (String) source.get(PROP_CONTENT_TYPE);
 
-	target.setAssignmentToken(assignmentToken);
+	target.setAssignmentId(assignmentId);
 	target.setStreamId(streamId);
 	target.setContentType(contentType);
 

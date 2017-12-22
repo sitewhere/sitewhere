@@ -53,14 +53,13 @@ public class OutboundPayloadEnrichmentLogic {
      */
     public void process(GPersistedEventPayload payload) throws SiteWhereException {
 	IDeviceEvent event = EventModelConverter.asApiGenericDeviceEvent(payload.getEvent());
-	IDeviceAssignment assignment = getDeviceManagement()
-		.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
 	if (assignment == null) {
 	    // TODO: Is there a separate topic for these events?
 	    throw new SiteWhereException("Event references non-existent device assignment.");
 	}
 
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(assignment.getDeviceHardwareId());
+	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 	if (device == null) {
 	    // TODO: Is there a separate topic for these events?
 	    throw new SiteWhereException("Event references assignment for non-existent device.");
@@ -68,9 +67,9 @@ public class OutboundPayloadEnrichmentLogic {
 
 	// Build event context.
 	DeviceEventContext context = new DeviceEventContext();
-	context.setHardwareId(device.getHardwareId());
-	context.setSpecificationToken(device.getSpecificationToken());
-	context.setParentHardwareId(device.getParentHardwareId());
+	context.setDeviceId(device.getId());
+	context.setDeviceSpecificationId(device.getDeviceSpecificationId());
+	context.setParentDeviceId(device.getParentDeviceId());
 	context.setDeviceStatus(device.getStatus());
 	context.setDeviceMetadata(device.getMetadata());
 	context.setAssignmentStatus(assignment.getStatus());

@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.mongodb;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -26,6 +27,9 @@ import com.sitewhere.spi.device.IDeviceAssignment;
  * @author dadams
  */
 public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> {
+
+    /** Property for id */
+    public static final String PROP_ID = "id";
 
     /** Property for active date */
     public static final String PROP_ACTIVE_DATE = "ad";
@@ -46,10 +50,10 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
     public static final String PROP_TOKEN = "tk";
 
     /** Property for device hardware id */
-    public static final String PROP_DEVICE_HARDWARE_ID = "hw";
+    public static final String PROP_DEVICE_ID = "di";
 
     /** Property for site token */
-    public static final String PROP_SITE_TOKEN = "si";
+    public static final String PROP_SITE_ID = "si";
 
     /*
      * (non-Javadoc)
@@ -76,6 +80,11 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * @param target
      */
     public static void toDocument(IDeviceAssignment source, Document target) {
+	target.append(PROP_ID, source.getId());
+	target.append(PROP_TOKEN, source.getToken());
+	target.append(PROP_DEVICE_ID, source.getDeviceId());
+	target.append(PROP_SITE_ID, source.getSiteId());
+
 	if (source.getActiveDate() != null) {
 	    target.append(PROP_ACTIVE_DATE, source.getActiveDate());
 	}
@@ -89,9 +98,6 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	if (source.getStatus() != null) {
 	    target.append(PROP_STATUS, source.getStatus().name());
 	}
-	target.append(PROP_TOKEN, source.getToken());
-	target.append(PROP_DEVICE_HARDWARE_ID, source.getDeviceHardwareId());
-	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -104,15 +110,20 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * @param target
      */
     public static void fromDocument(Document source, DeviceAssignment target) {
+	UUID id = (UUID) source.get(PROP_ID);
+	String token = (String) source.get(PROP_TOKEN);
+	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
+	UUID siteId = (UUID) source.get(PROP_SITE_ID);
+	String status = (String) source.get(PROP_STATUS);
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
 	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
 	String assignmentType = (String) source.get(PROP_ASSIGNMENT_TYPE);
 	Date releasedDate = (Date) source.get(PROP_RELEASED_DATE);
-	String status = (String) source.get(PROP_STATUS);
-	String token = (String) source.get(PROP_TOKEN);
-	String deviceHardwareId = (String) source.get(PROP_DEVICE_HARDWARE_ID);
-	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 
+	target.setId(id);
+	target.setToken(token);
+	target.setDeviceId(deviceId);
+	target.setSiteId(siteId);
 	if (activeDate != null) {
 	    target.setActiveDate(activeDate);
 	}
@@ -126,9 +137,6 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	if (status != null) {
 	    target.setStatus(DeviceAssignmentStatus.valueOf(status));
 	}
-	target.setToken(token);
-	target.setDeviceHardwareId(deviceHardwareId);
-	target.setSiteToken(siteToken);
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

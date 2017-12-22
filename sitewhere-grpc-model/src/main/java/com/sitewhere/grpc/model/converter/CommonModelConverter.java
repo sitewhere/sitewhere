@@ -10,6 +10,7 @@ package com.sitewhere.grpc.model.converter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
@@ -18,6 +19,7 @@ import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
 import com.sitewhere.grpc.model.CommonModel.GLocation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
+import com.sitewhere.grpc.model.CommonModel.GUUID;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -238,5 +240,30 @@ public class CommonModelConverter {
 	    api.setUpdatedDate(grpc.hasUpdatedDate() ? CommonModelConverter.asDate(grpc.getUpdatedDate()) : null);
 	    api.setDeleted(grpc.getDeleted());
 	}
+    }
+
+    /**
+     * Convert UUID from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static UUID asApiUuid(GUUID grpc) throws SiteWhereException {
+	return new UUID(grpc.getMsb(), grpc.getLsb());
+    }
+
+    /**
+     * Convert UUID from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GUUID asGrpcUuid(UUID api) throws SiteWhereException {
+	GUUID.Builder grpc = GUUID.newBuilder();
+	grpc.setMsb(api.getMostSignificantBits());
+	grpc.setLsb(api.getLeastSignificantBits());
+	return grpc.build();
     }
 }

@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.mongodb;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -25,6 +26,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author dadams
  */
 public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
+
+    /** Property for id */
+    public static final String PROP_ID = "id";
 
     /** Property for unique token */
     public static final String PROP_TOKEN = "tk";
@@ -68,6 +72,7 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      * @param target
      */
     public static void toDocument(IDeviceGroup source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
@@ -84,11 +89,13 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, DeviceGroup target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
 	List<String> roles = (List<String>) source.get(PROP_ROLES);
 
+	target.setId(id);
 	target.setToken(token);
 	target.setName(name);
 	target.setDescription(desc);
@@ -126,13 +133,13 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
      * 
      * @param mongo
      * @param tenant
-     * @param token
+     * @param groupId
      * @return
      * @throws SiteWhereException
      */
-    public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, String token)
+    public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, UUID groupId)
 	    throws SiteWhereException {
-	Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceGroup.PROP_ID, groupId);
 	Document update = new Document(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 	Document increment = new Document("$inc", update);
 	Document updated = mongo.getDeviceGroupsCollection(tenant).findOneAndUpdate(query, increment);

@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.command;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
@@ -19,6 +20,13 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceCommand extends IMetadataProviderEntity {
 
     /**
+     * Get unique command id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
      * Get the unique command token.
      * 
      * @return
@@ -26,11 +34,11 @@ public interface IDeviceCommand extends IMetadataProviderEntity {
     public String getToken();
 
     /**
-     * Get token for the parent specification.
+     * Get unique id of parent device specification.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public UUID getDeviceSpecificationId();
 
     /**
      * Optional namespace for distinguishing commands.

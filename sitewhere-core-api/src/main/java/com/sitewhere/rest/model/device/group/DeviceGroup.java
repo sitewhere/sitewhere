@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device.group;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
@@ -25,6 +26,9 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
     /** Serialization version identifier */
     private static final long serialVersionUID = -4993194128786517276L;
 
+    /** Unique device id */
+    private UUID id;
+
     /** Unique token */
     private String token;
 
@@ -36,6 +40,18 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
 
     /** List of roles */
     private List<String> roles = new ArrayList<String>();
+
+    /*
+     * @see com.sitewhere.spi.device.group.IDeviceGroup#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
 
     /*
      * (non-Javadoc)
@@ -94,6 +110,7 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
 
     public static DeviceGroup copy(IDeviceGroup input) throws SiteWhereException {
 	DeviceGroup result = new DeviceGroup();
+	result.setId(input.getId());
 	result.setToken(input.getToken());
 	result.setName(input.getName());
 	result.setDescription(input.getDescription());

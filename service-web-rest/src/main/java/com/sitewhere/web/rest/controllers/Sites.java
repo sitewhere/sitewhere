@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.SiteMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
@@ -93,10 +91,9 @@ public class Sites extends RestControllerBase {
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Create new site")
     @Secured({ SiteWhereRoles.REST })
-    public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
+    public ISite createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	ISite site = getDeviceManagement().createSite(input);
-	return Site.copy(site);
+	return getDeviceManagement().createSite(input);
     }
 
     /**
@@ -109,15 +106,10 @@ public class Sites extends RestControllerBase {
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
     @ApiOperation(value = "Get site by unique token")
     @Secured({ SiteWhereRoles.REST })
-    public Site getSiteByToken(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = getDeviceManagement().getSiteByToken(siteToken);
-	if (site == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
-	return Site.copy(site);
+    public ISite getSiteByToken(
+	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
+	    throws SiteWhereException {
+	return assertSite(siteToken);
     }
 
     /**
@@ -130,11 +122,11 @@ public class Sites extends RestControllerBase {
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update existing site")
     @Secured({ SiteWhereRoles.REST })
-    public Site updateSite(
+    public ISite updateSite(
 	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 	    @RequestBody SiteCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = getDeviceManagement().updateSite(siteToken, request);
-	return Site.copy(site);
+	ISite existing = assertSite(siteToken);
+	return getDeviceManagement().updateSite(existing.getId(), request);
     }
 
     /**
@@ -148,12 +140,12 @@ public class Sites extends RestControllerBase {
     @RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete site by unique token")
     @Secured({ SiteWhereRoles.REST })
-    public Site deleteSiteByToken(
+    public ISite deleteSite(
 	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = getDeviceManagement().deleteSite(siteToken, force);
-	return Site.copy(site);
+	ISite existing = assertSite(siteToken);
+	return getDeviceManagement().deleteSite(existing.getId(), force);
     }
 
     /**
@@ -392,7 +384,8 @@ public class Sites extends RestControllerBase {
 	if (decodedStatus != null) {
 	    criteria.setStatus(decodedStatus);
 	}
-	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForSite(siteToken,
+	ISite existing = assertSite(siteToken);
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForSite(existing.getId(),
 		criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
@@ -482,7 +475,8 @@ public class Sites extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IZone zone = getDeviceManagement().createZone(siteToken, request);
+	ISite existing = assertSite(siteToken);
+	IZone zone = getDeviceManagement().createZone(existing.getId(), request);
 	return Zone.copy(zone);
     }
 
@@ -501,7 +495,8 @@ public class Sites extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return getDeviceManagement().listZones(siteToken, criteria);
+	ISite existing = assertSite(siteToken);
+	return getDeviceManagement().listZones(existing.getId(), criteria);
     }
 
     /**

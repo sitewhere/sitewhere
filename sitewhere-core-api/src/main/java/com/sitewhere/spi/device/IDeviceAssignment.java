@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -21,25 +22,32 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceAssignment extends IMetadataProviderEntity {
 
     /**
-     * Get token that uniquely identifies the assignment.
+     * Get unique device assignment id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get token that acts as an alias for assignment id.
      * 
      * @return
      */
     public String getToken();
 
     /**
-     * Get hardware id for assigned device.
+     * Get unique id for assigned device.
      * 
      * @return
      */
-    public String getDeviceHardwareId();
+    public UUID getDeviceId();
 
     /**
-     * Get token for assigned site.
+     * Get unique id for site assigned to device when assignment was created.
      * 
      * @return
      */
-    public String getSiteToken();
+    public UUID getSiteId();
 
     /**
      * Get the referenced asset type.

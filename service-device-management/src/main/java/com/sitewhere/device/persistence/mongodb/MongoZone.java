@@ -9,6 +9,7 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -27,11 +28,14 @@ import com.sitewhere.spi.device.IZone;
  */
 public class MongoZone implements MongoConverter<IZone> {
 
+    /** Property for id */
+    public static final String PROP_ID = "id";
+
     /** Property for unique token */
     public static final String PROP_TOKEN = "tk";
 
-    /** Property for site token */
-    public static final String PROP_SITE_TOKEN = "si";
+    /** Property for site id */
+    public static final String PROP_SITE_ID = "si";
 
     /** Property for name */
     public static final String PROP_NAME = "nm";
@@ -84,8 +88,9 @@ public class MongoZone implements MongoConverter<IZone> {
      * @param target
      */
     public static void toDocument(IZone source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
-	target.append(PROP_SITE_TOKEN, source.getSiteToken());
+	target.append(PROP_SITE_ID, source.getSiteId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BORDER_COLOR, source.getBorderColor());
 	target.append(PROP_FILL_COLOR, source.getFillColor());
@@ -117,15 +122,17 @@ public class MongoZone implements MongoConverter<IZone> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Zone target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
-	String siteToken = (String) source.get(PROP_SITE_TOKEN);
+	UUID siteId = (UUID) source.get(PROP_SITE_ID);
 	String name = (String) source.get(PROP_NAME);
 	String borderColor = (String) source.get(PROP_BORDER_COLOR);
 	String fillColor = (String) source.get(PROP_FILL_COLOR);
 	Double opacity = (Double) source.get(PROP_OPACITY);
 
+	target.setId(id);
 	target.setToken(token);
-	target.setSiteToken(siteToken);
+	target.setSiteId(siteId);
 	target.setName(name);
 	target.setBorderColor(borderColor);
 	target.setFillColor(fillColor);

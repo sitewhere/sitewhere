@@ -9,6 +9,7 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -26,17 +27,20 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  */
 public class MongoDevice implements MongoConverter<IDevice> {
 
+    /** Property for id */
+    public static final String PROP_ID = "id";
+
     /** Property for hardware id */
     public static final String PROP_HARDWARE_ID = "hw";
 
-    /** Property for specification token */
-    public static final String PROP_SITE_TOKEN = "si";
+    /** Property for specification id */
+    public static final String PROP_SITE_ID = "si";
 
-    /** Property for specification token */
-    public static final String PROP_SPECIFICATION_TOKEN = "st";
+    /** Property for specification id */
+    public static final String PROP_SPECIFICATION_ID = "sp";
 
-    /** Property for parent hardware id (if nested) */
-    public static final String PROP_PARENT_HARDWARE_ID = "ph";
+    /** Property for parent device id (if nested) */
+    public static final String PROP_PARENT_DEVICE_ID = "pd";
 
     /** Property for device element mappings */
     public static final String PROP_DEVICE_ELEMENT_MAPPINGS = "em";
@@ -45,7 +49,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static final String PROP_COMMENTS = "cm";
 
     /** Property for current assignment */
-    public static final String PROP_ASSIGNMENT_TOKEN = "at";
+    public static final String PROP_ASSIGNMENT_ID = "an";
 
     /*
      * (non-Javadoc)
@@ -72,12 +76,13 @@ public class MongoDevice implements MongoConverter<IDevice> {
      * @param target
      */
     public static void toDocument(IDevice source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_HARDWARE_ID, source.getHardwareId());
-	target.append(PROP_SITE_TOKEN, source.getSiteToken());
-	target.append(PROP_SPECIFICATION_TOKEN, source.getSpecificationToken());
-	target.append(PROP_PARENT_HARDWARE_ID, source.getParentHardwareId());
+	target.append(PROP_SITE_ID, source.getSiteId());
+	target.append(PROP_SPECIFICATION_ID, source.getDeviceSpecificationId());
+	target.append(PROP_PARENT_DEVICE_ID, source.getParentDeviceId());
 	target.append(PROP_COMMENTS, source.getComments());
-	target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
+	target.append(PROP_ASSIGNMENT_ID, source.getDeviceAssignmentId());
 
 	// Save nested list of mappings.
 	List<Document> mappings = new ArrayList<Document>();
@@ -98,19 +103,21 @@ public class MongoDevice implements MongoConverter<IDevice> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Device target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
-	String siteToken = (String) source.get(PROP_SITE_TOKEN);
-	String specificationToken = (String) source.get(PROP_SPECIFICATION_TOKEN);
-	String parentHardwareId = (String) source.get(PROP_PARENT_HARDWARE_ID);
+	UUID siteId = (UUID) source.get(PROP_SITE_ID);
+	UUID specificationId = (UUID) source.get(PROP_SPECIFICATION_ID);
+	UUID parentDeviceId = (UUID) source.get(PROP_PARENT_DEVICE_ID);
 	String comments = (String) source.get(PROP_COMMENTS);
-	String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
+	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
 
+	target.setId(id);
 	target.setHardwareId(hardwareId);
-	target.setSiteToken(siteToken);
-	target.setSpecificationToken(specificationToken);
-	target.setParentHardwareId(parentHardwareId);
+	target.setSiteId(siteId);
+	target.setDeviceSpecificationId(specificationId);
+	target.setParentDeviceId(parentDeviceId);
 	target.setComments(comments);
-	target.setAssignmentToken(assignmentToken);
+	target.setDeviceAssignmentId(assignmentId);
 
 	List<Document> mappings = (List<Document>) source.get(PROP_DEVICE_ELEMENT_MAPPINGS);
 	if (mappings != null) {

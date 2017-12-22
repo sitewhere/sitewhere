@@ -49,7 +49,7 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	LOGGER.debug("Resolving target for invocation.");
 	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceAssignmentByToken(invocation.getDeviceAssignmentToken());
+		.getDeviceAssignment(invocation.getDeviceAssignmentId());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);
 	return results;

@@ -95,7 +95,7 @@ public class CommandHtmlHelper {
 	html += " with specification <a href=\"" + relativePath + "/specifications/" + specification.getToken()
 		+ ".html\">" + specification.getName() + "</a>";
 	if (!StringUtils.isEmpty(criteria.getGroupToken())) {
-	    IDeviceGroup group = devices.getDeviceGroup(criteria.getGroupToken());
+	    IDeviceGroup group = devices.getDeviceGroupByToken(criteria.getGroupToken());
 	    if (group == null) {
 		throw new SiteWhereException("Invalid group reference: " + criteria.getGroupToken());
 	    }

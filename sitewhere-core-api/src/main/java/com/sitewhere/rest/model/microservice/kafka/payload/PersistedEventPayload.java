@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.microservice.kafka.payload;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
 
@@ -17,23 +19,23 @@ import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
  */
 public class PersistedEventPayload implements IPersistedEventPayload {
 
-    /** Hardware id */
-    private String hardwareId;
+    /** Device id */
+    private UUID deviceId;
 
     /** Device event */
     private IDeviceEvent event;
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload#
-     * getHardwareId()
+     * getDeviceId()
      */
     @Override
-    public String getHardwareId() {
-	return hardwareId;
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*

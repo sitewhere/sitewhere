@@ -87,7 +87,7 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 		    : ZoneContainment.Outside;
 	    if (test.getCondition() == containment) {
 		IDeviceAssignment assignment = getDeviceManagement()
-			.getDeviceAssignmentByToken(location.getDeviceAssignmentToken());
+			.getDeviceAssignment(location.getDeviceAssignmentId());
 		DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 		alert.setType(test.getAlertType());
 		alert.setLevel(test.getAlertLevel());
@@ -111,7 +111,7 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 	if (poly != null) {
 	    return poly;
 	}
-	IZone zone = getDeviceManagement().getZone(token);
+	IZone zone = getDeviceManagement().getZoneByToken(token);
 	if (zone != null) {
 	    poly = GeoUtils.createPolygonForZone(zone);
 	    zoneMap.put(token, poly);

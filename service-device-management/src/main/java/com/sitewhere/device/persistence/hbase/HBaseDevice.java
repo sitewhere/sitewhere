@@ -30,7 +30,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.Device;
-import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -75,16 +74,21 @@ public class HBaseDevice {
      * @throws SiteWhereException
      */
     public static IDevice createDevice(IHBaseContext context, IDeviceCreateRequest request) throws SiteWhereException {
-	Long existing = context.getDeviceIdManager().getDeviceKeys().getValue(request.getHardwareId());
-	if (existing != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId, ErrorLevel.ERROR);
-	}
-	Long value = context.getDeviceIdManager().getDeviceKeys().getNextCounterValue();
-	Long inverse = Long.MAX_VALUE - value;
-	context.getDeviceIdManager().getDeviceKeys().create(request.getHardwareId(), inverse);
-
-	Device device = DeviceManagementPersistence.deviceCreateLogic(request);
-	return putDevicePayload(context, device);
+	// Long existing =
+	// context.getDeviceIdManager().getDeviceKeys().getValue(request.getHardwareId());
+	// if (existing != null) {
+	// throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId,
+	// ErrorLevel.ERROR);
+	// }
+	// Long value =
+	// context.getDeviceIdManager().getDeviceKeys().getNextCounterValue();
+	// Long inverse = Long.MAX_VALUE - value;
+	// context.getDeviceIdManager().getDeviceKeys().create(request.getHardwareId(),
+	// inverse);
+	//
+	// Device device = DeviceManagementPersistence.deviceCreateLogic(request);
+	// return putDevicePayload(context, device);
+	return null;
     }
 
     /**
@@ -96,13 +100,13 @@ public class HBaseDevice {
      * @return
      * @throws SiteWhereException
      */
-    public static IDevice updateDevice(IHBaseContext context, String hardwareId, IDeviceCreateRequest request)
+    public static IDevice updateDevice(IHBaseContext context, IDevice device, IDeviceCreateRequest request)
 	    throws SiteWhereException {
-	Device updated = getDeviceByHardwareId(context, hardwareId);
+	Device updated = getDeviceByHardwareId(context, device.getHardwareId());
 	if (updated == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
-	DeviceManagementPersistence.deviceUpdateLogic(request, updated);
+	// DeviceManagementPersistence.deviceUpdateLogic(request, updated);
 	return putDevicePayload(context, updated);
     }
 
@@ -161,14 +165,14 @@ public class HBaseDevice {
 
 		    // Filter by specification.
 		    if (criteria.getSpecificationToken() != null) {
-			if (!criteria.getSpecificationToken().equals(device.getSpecificationToken())) {
+			if (!criteria.getSpecificationToken().equals(device.getDeviceSpecificationId())) {
 			    continue;
 			}
 		    }
 
 		    // Filter by site.
 		    if (criteria.getSiteToken() != null) {
-			if (!criteria.getSiteToken().equals(device.getSiteToken())) {
+			if (!criteria.getSiteToken().equals(device.getSiteId())) {
 			    continue;
 			}
 		    }
@@ -208,7 +212,7 @@ public class HBaseDevice {
 	    devices = getDeviceTableInterface(context);
 	    Put put = new Put(primary);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-	    put.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteId().toString()));
 	    devices.put(put);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to put device data.", e);
@@ -258,29 +262,28 @@ public class HBaseDevice {
     }
 
     /**
-     * Delete a device based on hardware id. Depending on 'force' the record
-     * will be physically deleted or a marker qualifier will be added to mark it
-     * as deleted. Note: Physically deleting a device can leave orphaned
-     * references and should not be done in a production system!
+     * Delete a device based on hardware id. Depending on 'force' the record will be
+     * physically deleted or a marker qualifier will be added to mark it as deleted.
+     * Note: Physically deleting a device can leave orphaned references and should
+     * not be done in a production system!
      * 
      * @param context
-     * @param hardwareId
+     * @param device
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public static IDevice deleteDevice(IHBaseContext context, String hardwareId, boolean force)
-	    throws SiteWhereException {
-	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
+    public static IDevice deleteDevice(IHBaseContext context, IDevice device, boolean force) throws SiteWhereException {
+	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(device.getHardwareId());
 	if (deviceId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
 
-	Device existing = getDeviceByHardwareId(context, hardwareId);
+	Device existing = getDeviceByHardwareId(context, device.getHardwareId());
 	existing.setDeleted(true);
 	byte[] primary = getDeviceRowKey(deviceId);
 	if (force) {
-	    context.getDeviceIdManager().getDeviceKeys().delete(hardwareId);
+	    context.getDeviceIdManager().getDeviceKeys().delete(device.getHardwareId());
 	    Table devices = null;
 	    try {
 		Delete delete = new Delete(primary);
@@ -318,12 +321,12 @@ public class HBaseDevice {
      * Get the current device assignment id if assigned or null if not assigned.
      * 
      * @param context
-     * @param hardwareId
+     * @param device
      * @return
      * @throws SiteWhereException
      */
-    public static String getCurrentAssignmentId(IHBaseContext context, String hardwareId) throws SiteWhereException {
-	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
+    public static String getCurrentAssignmentId(IHBaseContext context, IDevice device) throws SiteWhereException {
+	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(device.getHardwareId());
 	if (deviceId == null) {
 	    return null;
 	}
@@ -354,23 +357,23 @@ public class HBaseDevice {
      * Set the current device assignment for a device.
      * 
      * @param context
-     * @param hardwareId
+     * @param device
      * @param assignmentToken
      * @throws SiteWhereException
      */
-    public static void setDeviceAssignment(IHBaseContext context, String hardwareId, String assignmentToken)
+    public static void setDeviceAssignment(IHBaseContext context, IDevice device, String assignmentToken)
 	    throws SiteWhereException {
-	String existing = getCurrentAssignmentId(context, hardwareId);
+	String existing = getCurrentAssignmentId(context, device);
 	if (existing != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
 
 	// Load object to update assignment token.
-	Device updated = getDeviceByHardwareId(context, hardwareId);
-	updated.setAssignmentToken(assignmentToken);
+	Device updated = getDeviceByHardwareId(context, device.getHardwareId());
+	// updated.setAssignmentToken(assignmentToken);
 	byte[] payload = context.getPayloadMarshaler().encodeDevice(updated);
 
-	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
+	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(device.getHardwareId());
 	if (deviceId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
@@ -407,7 +410,7 @@ public class HBaseDevice {
 	byte[] primary = getDeviceRowKey(deviceId);
 
 	Device updated = getDeviceByHardwareId(context, hardwareId);
-	updated.setAssignmentToken(null);
+	updated.setDeviceAssignmentId(null);
 	byte[] payload = context.getPayloadMarshaler().encodeDevice(updated);
 
 	Table devices = null;
@@ -432,14 +435,14 @@ public class HBaseDevice {
      * Get the assignment history for a device.
      * 
      * @param context
-     * @param hardwareId
+     * @param device
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context, String hardwareId,
+    public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context, IDevice device,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
+	Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(device.getHardwareId());
 	if (deviceId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
@@ -460,10 +463,11 @@ public class HBaseDevice {
 		}
 	    }
 	    List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
-	    for (String token : pager.getResults()) {
-		DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(context, token);
-		results.add(assn);
-	    }
+	    // for (String token : pager.getResults()) {
+	    // DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(context,
+	    // token);
+	    // results.add(assn);
+	    // }
 	    return new SearchResults<IDeviceAssignment>(results, pager.getTotal());
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to load current device assignment history.", e);
@@ -473,8 +477,8 @@ public class HBaseDevice {
     }
 
     /**
-     * Get the unique device identifier based on the long value associated with
-     * the device UUID. This will be a subset of the full 8-bit long value.
+     * Get the unique device identifier based on the long value associated with the
+     * device UUID. This will be a subset of the full 8-bit long value.
      * 
      * @param value
      * @return

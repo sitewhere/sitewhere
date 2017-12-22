@@ -25,6 +25,7 @@ import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -49,9 +50,9 @@ public class HBaseZone {
      * @return
      * @throws SiteWhereException
      */
-    public static IZone createZone(IHBaseContext context, String siteToken, IZoneCreateRequest request)
+    public static IZone createZone(IHBaseContext context, ISite site, IZoneCreateRequest request)
 	    throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 	if (siteId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
@@ -63,7 +64,7 @@ public class HBaseZone {
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, siteToken, uuid);
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site, uuid);
 
 	byte[] payload = context.getPayloadMarshaler().encodeZone(zone);
 
@@ -86,19 +87,19 @@ public class HBaseZone {
      * Update an existing zone.
      * 
      * @param context
-     * @param token
+     * @param zone
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static Zone updateZone(IHBaseContext context, String token, IZoneCreateRequest request)
+    public static Zone updateZone(IHBaseContext context, IZone zone, IZoneCreateRequest request)
 	    throws SiteWhereException {
-	Zone updated = getZone(context, token);
+	Zone updated = getZone(context, zone.getToken());
 
 	// Common update logic so that backend implemetations act the same way.
 	DeviceManagementPersistence.zoneUpdateLogic(request, updated);
 
-	byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
+	byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(zone.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeZone(updated);
 
 	Table sites = null;
@@ -159,15 +160,15 @@ public class HBaseZone {
      * @return
      * @throws SiteWhereException
      */
-    public static Zone deleteZone(IHBaseContext context, String token, boolean force) throws SiteWhereException {
-	byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
+    public static Zone deleteZone(IHBaseContext context, IZone zone, boolean force) throws SiteWhereException {
+	byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(zone.getToken());
 	if (zoneId == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 	}
-	Zone existing = getZone(context, token);
+	Zone existing = getZone(context, zone.getToken());
 	existing.setDeleted(true);
 	if (force) {
-	    context.getDeviceIdManager().getZoneKeys().delete(token);
+	    context.getDeviceIdManager().getZoneKeys().delete(zone.getToken());
 	    Table sites = null;
 	    try {
 		Delete delete = new Delete(zoneId);
@@ -214,8 +215,8 @@ public class HBaseZone {
     }
 
     /**
-     * Truncate zone id value to expected length. This will be a subset of the
-     * full 8-bit long value.
+     * Truncate zone id value to expected length. This will be a subset of the full
+     * 8-bit long value.
      * 
      * @param value
      * @return

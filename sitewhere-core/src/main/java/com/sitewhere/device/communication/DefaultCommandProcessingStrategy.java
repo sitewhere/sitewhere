@@ -68,8 +68,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	    IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
 	    List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
 	    for (IDeviceAssignment assignment : assignments) {
-		IDevice device = getDeviceManagement(getTenantEngine().getTenant())
-			.getDeviceByHardwareId(assignment.getDeviceHardwareId());
+		IDevice device = getDeviceManagement(getTenantEngine().getTenant()).getDevice(assignment.getDeviceId());
 		if (device == null) {
 		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
@@ -99,7 +98,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	if (device == null) {
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}
-	IDeviceAssignment assignment = management.getDeviceAssignmentByToken(device.getAssignmentToken());
+	IDeviceAssignment assignment = management.getDeviceAssignment(device.getDeviceAssignmentId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 		getTenantEngine().getTenant());
 	communication.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);

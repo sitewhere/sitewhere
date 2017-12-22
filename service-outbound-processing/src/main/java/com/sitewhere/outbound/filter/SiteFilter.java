@@ -7,6 +7,8 @@
  */
 package com.sitewhere.outbound.filter;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -18,8 +20,8 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
  */
 public class SiteFilter extends DeviceEventFilter {
 
-    /** Site token to allow */
-    private String siteToken;
+    /** Site id to allow */
+    private UUID siteId;
 
     /** Operation filter performs */
     private FilterOperation operation = FilterOperation.Include;
@@ -32,18 +34,18 @@ public class SiteFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if (getSiteToken().equals(event.getSiteToken())) {
+	if (getSiteId().equals(event.getSiteId())) {
 	    return (getOperation() != FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);
     }
 
-    public String getSiteToken() {
-	return siteToken;
+    public UUID getSiteId() {
+	return siteId;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setSiteId(UUID siteId) {
+	this.siteId = siteId;
     }
 
     public FilterOperation getOperation() {

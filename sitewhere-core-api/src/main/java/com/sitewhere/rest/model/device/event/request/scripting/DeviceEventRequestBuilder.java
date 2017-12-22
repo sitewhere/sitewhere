@@ -58,8 +58,8 @@ public class DeviceEventRequestBuilder {
 	    if (targetAssignment == null) {
 		throw new SiteWhereException("Target assignment not found: " + target);
 	    }
-	    IDevice targetDevice = deviceManagement.getDeviceByHardwareId(targetAssignment.getDeviceHardwareId());
-	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getSpecificationToken(),
+	    IDevice targetDevice = deviceManagement.getDevice(targetAssignment.getDeviceId());
+	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getDeviceSpecificationId(),
 		    false);
 	    IDeviceCommand match = null;
 	    for (IDeviceCommand command : commands) {
@@ -82,7 +82,7 @@ public class DeviceEventRequestBuilder {
 
     public AssignmentScope forSameAssignmentAs(IDeviceEvent event) throws SiteWhereException {
 	return new AssignmentScope(getEventManagement(),
-		getDeviceManagement().getDeviceAssignmentByToken(event.getDeviceAssignmentToken()));
+		getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId()));
     }
 
     public AssignmentScope forAssignment(String assignmentToken) throws SiteWhereException {
