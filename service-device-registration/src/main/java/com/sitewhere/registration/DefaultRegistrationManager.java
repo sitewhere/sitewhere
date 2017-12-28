@@ -40,7 +40,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class RegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
+public class DefaultRegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -54,7 +54,7 @@ public class RegistrationManager extends TenantEngineLifecycleComponent implemen
     /** Token used if autoAssignSite is enabled */
     private String autoAssignSiteToken = null;
 
-    public RegistrationManager() {
+    public DefaultRegistrationManager() {
 	super(LifecycleComponentType.RegistrationManager);
     }
 

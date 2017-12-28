@@ -7,12 +7,21 @@
  */
 package com.sitewhere.registration.spring;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+
+import com.sitewhere.configuration.parser.IDeviceRegistrationParser.Elements;
+import com.sitewhere.registration.DefaultRegistrationManager;
+import com.sitewhere.spi.microservice.spring.DeviceRegistrationBeans;
 
 /**
  * Parses elements related to device registration.
@@ -34,6 +43,66 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown device registration element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case RegistrationManager: {
+		parseRegistrationManager(child, context);
+		break;
+	    }
+	    case DefaultRegistrationManager: {
+		parseDefaultRegistrationManager(child, context);
+		break;
+	    }
+	    }
+	}
 	return null;
+    }
+
+    /**
+     * Parse information for the default registration manager.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseDefaultRegistrationManager(Element element, ParserContext context) {
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(DefaultRegistrationManager.class);
+
+	Attr allowNewDevices = element.getAttributeNode("allowNewDevices");
+	if (allowNewDevices != null) {
+	    manager.addPropertyValue("allowNewDevices", allowNewDevices.getValue());
+	}
+
+	Attr autoAssignSite = element.getAttributeNode("autoAssignSite");
+	if (autoAssignSite != null) {
+	    manager.addPropertyValue("autoAssignSite", autoAssignSite.getValue());
+	}
+
+	Attr autoAssignToken = element.getAttributeNode("autoAssignToken");
+	if (autoAssignToken != null) {
+	    manager.addPropertyValue("autoAssignToken", autoAssignToken.getValue());
+	}
+
+	context.getRegistry().registerBeanDefinition(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER,
+		manager.getBeanDefinition());
+    }
+
+    /**
+     * Parse a registration manager reference.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseRegistrationManager(Element element, ParserContext context) {
+	Attr ref = element.getAttributeNode("ref");
+	if (ref == null) {
+	    throw new RuntimeException("Registration manager reference does not have ref defined.");
+	}
+
+	context.getRegistry().registerAlias(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER, ref.getValue());
     }
 }

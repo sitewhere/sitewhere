@@ -20,7 +20,91 @@
 
 	<!-- Contains information about device registration -->
 	<xsd:complexType name="deviceRegistrationType">
-		<xsd:sequence>
-		</xsd:sequence>
+		<xsd:all>
+			<xsd:element ref="abstract-registration-manager" />
+		</xsd:all>
 	</xsd:complexType>
+
+	<!-- Used as a placeholder for registration manager elements to allow substitutionGroups -->
+	<xsd:element name="abstract-registration-manager" abstract="true"
+		type="abstractRegistrationManagerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for registration manager elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common registration manager element information -->
+	<xsd:complexType name="abstractRegistrationManagerType" />
+
+	<!-- Registration manager reference -->
+	<xsd:element name="registration-manager" type="registrationManagerReferenceType"
+		substitutionGroup="abstract-registration-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Allows a custom registration manager to be
+				installed.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="registrationManagerReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractRegistrationManagerType">
+				<xsd:attribute name="ref" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Identifies bean that implements registration
+							manager.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Default registration manager implementation -->
+	<xsd:element name="default-registration-manager" type="defaultRegistrationManagerType"
+		substitutionGroup="abstract-registration-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Installs the default registration manager
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultRegistrationManagerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractRegistrationManagerType">
+				<xsd:attribute name="allowNewDevices" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether new devices should be allowed
+							to register. If
+							set
+							to false, devices not already in the system
+							will be rejected.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="autoAssignSite" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether the site should automatically
+							be chosen if not
+							passed with registration request.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="autoAssignToken" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Token for site used in auto assignment. If not
+							set and
+							'autoAssignSite' is set to true, the first site will be
+							used.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 </xsd:schema>

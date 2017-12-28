@@ -7,6 +7,7 @@
  */
 package com.sitewhere.registration.spi.microservice;
 
+import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IDeviceRegistrationTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get Kafka consumer for unregistered device events.
+     * 
+     * @return
+     */
+    public IUnregisteredEventsConsumer getUnregisteredEventsConsumer();
 }

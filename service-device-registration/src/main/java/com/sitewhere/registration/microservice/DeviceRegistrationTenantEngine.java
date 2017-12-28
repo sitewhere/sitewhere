@@ -11,11 +11,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
+import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -31,6 +35,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
+    /** Kafka consumer for unregistered device events */
+    private IUnregisteredEventsConsumer unregisteredEventsConsumer;
+
     public DeviceRegistrationTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
     }
@@ -42,6 +49,7 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.unregisteredEventsConsumer = new UnregisteredEventsConsumer(this);
     }
 
     /*
@@ -50,6 +58,14 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start unregistered events consumer.
+	start.addStartStep(this, getUnregisteredEventsConsumer(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -67,6 +83,28 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop unregistered events consumer.
+	start.addStopStep(this, getUnregisteredEventsConsumer());
+
+	// Execute shutdown steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine#
+     * getUnregisteredEventsConsumer()
+     */
+    @Override
+    public IUnregisteredEventsConsumer getUnregisteredEventsConsumer() {
+	return unregisteredEventsConsumer;
+    }
+
+    public void setUnregisteredEventsConsumer(IUnregisteredEventsConsumer unregisteredEventsConsumer) {
+	this.unregisteredEventsConsumer = unregisteredEventsConsumer;
     }
 
     /*

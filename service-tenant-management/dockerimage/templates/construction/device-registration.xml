@@ -13,6 +13,11 @@
 	<context:property-placeholder />
 
 	<!-- Device Registration -->
-	<dr:device-registration></dr:device-registration>
+	<dr:device-registration>
+
+		<!-- Configure the default registration manager -->
+		<dr:default-registration-manager />
+
+	</dr:device-registration>
 
 </beans>

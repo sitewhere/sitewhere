@@ -81,7 +81,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
      * @return
      */
     protected ElementNode createDefaultRegistrationManagerElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Registration Manager",
+	ElementNode.Builder builder = new ElementNode.Builder("Default Registration Manager",
 		IDeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
 		DeviceRegistrationRoleKeys.DeviceRegistrationManager, this);
 
