@@ -55,6 +55,7 @@ public class DeviceSpecificationMarshalHelper {
 	    throws SiteWhereException {
 	MarshaledDeviceSpecification spec = new MarshaledDeviceSpecification();
 	MetadataProviderEntity.copy(source, spec);
+	spec.setId(source.getId());
 	spec.setToken(source.getToken());
 	spec.setName(source.getName());
 	spec.setAssetReference(source.getAssetReference());

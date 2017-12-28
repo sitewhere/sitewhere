@@ -8,6 +8,7 @@
 package com.sitewhere.device.grpc;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
@@ -347,8 +348,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
-	    List<IDeviceCommand> apiResult = getDeviceManagement()
-		    .listDeviceCommands(CommonModelConverter.asApiUuid(request.getSpecificationId()), includeDeleted);
+
+	    UUID specificationId = CommonModelConverter.asApiUuid(request.getCriteria().getDeviceSpecificationId());
+	    List<IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(specificationId, includeDeleted);
 	    GListDeviceCommandsResponse.Builder response = GListDeviceCommandsResponse.newBuilder();
 	    for (IDeviceCommand api : apiResult) {
 		response.addCommands(DeviceModelConverter.asGrpcDeviceCommand(api));
@@ -480,8 +482,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES);
-	    List<IDeviceStatus> apiResult = getDeviceManagement()
-		    .listDeviceStatuses(CommonModelConverter.asApiUuid(request.getSpecificationId()));
+	    List<IDeviceStatus> apiResult = getDeviceManagement().listDeviceStatuses(
+		    CommonModelConverter.asApiUuid(request.getCriteria().getDeviceSpecificationId()));
 	    GListDeviceStatusesResponse.Builder response = GListDeviceStatusesResponse.newBuilder();
 	    for (IDeviceStatus api : apiResult) {
 		response.addStatus(DeviceModelConverter.asGrpcDeviceStatus(api));

@@ -128,7 +128,8 @@ message GDeviceStatusCreateRequest {
 
 // Criteria for searching device statuses.
 message GDeviceStatusSearchCriteria {
-	GOptionalString code = 1;
+	GUUID deviceSpecificationId = 1;
+	GOptionalString code = 2;
 }
 
 // Device status.

@@ -346,7 +346,6 @@ message GUpdateDeviceCommandResponse {
 	
 // Request for listing device commands that meet criteria.
 message GListDeviceCommandsRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
 	com.sitewhere.grpc.model.GDeviceCommandSearchCriteria criteria = 2;
 }
 	
@@ -406,7 +405,6 @@ message GUpdateDeviceStatusResponse {
 	
 // Request for listing device statuses that meet criteria.
 message GListDeviceStatusesRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
 	com.sitewhere.grpc.model.GDeviceStatusSearchCriteria criteria = 2;
 }
 	

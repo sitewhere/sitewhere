@@ -79,6 +79,7 @@ public class DeviceMarshalHelper {
      */
     public MarshaledDevice convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
 	MarshaledDevice result = new MarshaledDevice();
+	result.setId(source.getId());
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteId(source.getSiteId());
 	result.setDeviceSpecificationId(source.getDeviceSpecificationId());

@@ -721,12 +721,17 @@ public class DeviceModelConverter {
     /**
      * Convert device status search critreia from API to GRPC.
      * 
+     * @param specificationId
      * @param code
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceStatusSearchCriteria asApiDeviceStatusSearchCriteria(String code) throws SiteWhereException {
+    public static GDeviceStatusSearchCriteria asApiDeviceStatusSearchCriteria(UUID specificationId, String code)
+	    throws SiteWhereException {
 	GDeviceStatusSearchCriteria.Builder gcriteria = GDeviceStatusSearchCriteria.newBuilder();
+	if (specificationId != null) {
+	    gcriteria.setDeviceSpecificationId(CommonModelConverter.asGrpcUuid(specificationId));
+	}
 	if (code != null) {
 	    gcriteria.setCode(GOptionalString.newBuilder().setValue(code).build());
 	}

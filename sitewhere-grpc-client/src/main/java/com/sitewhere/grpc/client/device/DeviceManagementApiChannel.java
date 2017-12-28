@@ -461,8 +461,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	try {
 	    GrpcUtils.logClientMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES);
 	    GListDeviceStatusesRequest.Builder grequest = GListDeviceStatusesRequest.newBuilder();
-	    grequest.setSpecificationId(CommonModelConverter.asGrpcUuid(specificationId));
-	    grequest.setCriteria(DeviceModelConverter.asApiDeviceStatusSearchCriteria(null));
+	    grequest.setCriteria(DeviceModelConverter.asApiDeviceStatusSearchCriteria(specificationId, null));
 	    GListDeviceStatusesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listDeviceStatuses(grequest.build());
 	    List<IDeviceStatus> results = DeviceModelConverter
