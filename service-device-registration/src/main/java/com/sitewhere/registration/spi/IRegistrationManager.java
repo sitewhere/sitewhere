@@ -7,9 +7,12 @@
  */
 package com.sitewhere.registration.spi;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -20,29 +23,27 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
 
     /**
-     * Indicates whether the registration manager allows new devices to be
-     * created as a byproduct of the registration process.
+     * Indicates whether the registration manager allows new devices to be created
+     * as a byproduct of the registration process.
      * 
      * @return
      */
     public boolean isAllowNewDevices();
 
     /**
-     * Indicates whether all new regsitrations can be automatically assigned to
-     * a given site. If not, the site token must be passed as part of the
-     * registration payload.
+     * Get id of device specification that will be used if no device specification
+     * is provided in request.
      * 
      * @return
      */
-    public boolean isAutoAssignSite();
+    public UUID getAutoAssignSpecificationId();
 
     /**
-     * Gets the token used for automatic site assignment. This only applies when
-     * 'auto assign site' is set to true.
+     * Get id of site that will be used if no site is provided in request.
      * 
      * @return
      */
-    public String getAutoAssignSiteToken();
+    public UUID getAutoAssignSiteId();
 
     /**
      * Handle registration of a new device.
@@ -51,6 +52,14 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException;
+
+    /**
+     * Handle event addressed to unknown device.
+     * 
+     * @param payload
+     * @throws SiteWhereException
+     */
+    public void handleUnregisteredDeviceEvent(IInboundEventPayload payload) throws SiteWhereException;
 
     /**
      * Handle mapping of a device to a path on a composite device.

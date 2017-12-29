@@ -7,17 +7,19 @@
  */
 package com.sitewhere.registration;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.registration.spi.IRegistrationManager;
+import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.command.DeviceMappingAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
-import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -31,7 +33,7 @@ import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -48,11 +50,17 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Indicates if new devices can register with the system */
     private boolean allowNewDevices = true;
 
-    /** Indicates if devices can be auto-assigned if no site token is passed */
-    private boolean autoAssignSite = true;
+    /** Id of device specification that will be auto-assigned */
+    private UUID autoAssignSpecificationId = null;
 
-    /** Token used if autoAssignSite is enabled */
-    private String autoAssignSiteToken = null;
+    /** Device specification used for automatic assignment */
+    private IDeviceSpecification autoAssignSpecification;
+
+    /** Id of site that will be auto-assigned */
+    private UUID autoAssignSiteId = null;
+
+    /** Site used for automatic assignment */
+    private ISite autoAssignSite;
 
     public DefaultRegistrationManager() {
 	super(LifecycleComponentType.RegistrationManager);
@@ -69,46 +77,24 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 	LOGGER.debug("Handling device registration request.");
 	IDevice device = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
-	IDeviceSpecification specification = getDeviceManagement()
-		.getDeviceSpecificationByToken(request.getSpecificationToken());
+	IDeviceSpecification deviceSpecification = getDeviceSpecificationFor(request);
+	ISite deviceSite = getSiteFor(request);
 
-	// If a site token is passed, verify it is valid.
-	if (request.getSiteToken() != null) {
-	    if (getDeviceManagement().getSiteByToken(request.getSiteToken()) == null) {
-		LOGGER.warn("Ignoring device registration request because of invalid site token.");
-		return;
-	    }
-	}
 	// Create device if it does not already exist.
 	if (device == null) {
 	    if (!isAllowNewDevices()) {
 		LOGGER.warn("Ignoring device registration request since new devices are not allowed.");
 		return;
 	    }
-	    if (specification == null) {
-		sendInvalidSpecification(request.getHardwareId());
-		return;
-	    }
-	    if ((!isAutoAssignSite()) && (request.getSiteToken() == null)) {
-		sendSiteTokenRequired(request.getHardwareId());
-		return;
-	    }
-	    if (isAutoAssignSite() && (getAutoAssignSiteToken() == null)) {
-		updateAutoAssignToFirstSite();
-		if (getAutoAssignSiteToken() == null) {
-		    throw new SiteWhereException("Unable to register device. No sites are configured.");
-		}
-	    }
-	    String siteToken = (request.getSiteToken() != null) ? request.getSiteToken() : getAutoAssignSiteToken();
 	    LOGGER.debug("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 	    deviceCreate.setHardwareId(request.getHardwareId());
-	    deviceCreate.setSpecificationToken(request.getSpecificationToken());
-	    deviceCreate.setSiteToken(siteToken);
+	    deviceCreate.setSpecificationToken(deviceSpecification.getToken());
+	    deviceCreate.setSiteToken(deviceSite.getToken());
 	    deviceCreate.setComments("Device created by on-demand registration.");
 	    deviceCreate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().createDevice(deviceCreate);
-	} else if (!device.getDeviceSpecificationId().equals(specification.getId())) {
+	} else if (!device.getDeviceSpecificationId().equals(deviceSpecification.getId())) {
 	    LOGGER.info("Found existing device registration, but specification does not match.");
 	    sendInvalidSpecification(request.getHardwareId());
 	    return;
@@ -129,6 +115,62 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	}
 	boolean isNewRegistration = (device != null);
 	sendRegistrationAck(request.getHardwareId(), isNewRegistration);
+    }
+
+    /*
+     * @see com.sitewhere.registration.spi.IRegistrationManager#
+     * handleUnregisteredDeviceEvent(com.sitewhere.spi.microservice.kafka.payload.
+     * IInboundEventPayload)
+     */
+    @Override
+    public void handleUnregisteredDeviceEvent(IInboundEventPayload payload) throws SiteWhereException {
+	getLogger().info("Would be handling unregistered device event for " + payload.getHardwareId());
+    }
+
+    /**
+     * Get device specificatoin that should be used for the given request.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IDeviceSpecification getDeviceSpecificationFor(IDeviceRegistrationRequest request)
+	    throws SiteWhereException {
+	IDeviceSpecification deviceSpec = getAutoAssignSpecification();
+	if (request.getSpecificationToken() != null) {
+	    IDeviceSpecification override = getDeviceManagement()
+		    .getDeviceSpecificationByToken(request.getSpecificationToken());
+	    if (override == null) {
+		throw new SiteWhereException("Registration request specified invalid device specification token.");
+	    }
+	    deviceSpec = override;
+	}
+	if (deviceSpec == null) {
+	    throw new SiteWhereException("Device specification not passed and no default provided.");
+	}
+	return deviceSpec;
+    }
+
+    /**
+     * Get site that should be used for the given request.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ISite getSiteFor(IDeviceRegistrationRequest request) throws SiteWhereException {
+	ISite deviceSite = getAutoAssignSite();
+	if (request.getSiteToken() != null) {
+	    ISite override = getDeviceManagement().getSiteByToken(request.getSiteToken());
+	    if (override == null) {
+		throw new SiteWhereException("Registration request specified invalid site token.");
+	    }
+	    deviceSite = override;
+	}
+	if (deviceSite == null) {
+	    throw new SiteWhereException("Site not passed and no default provided.");
+	}
+	return deviceSite;
     }
 
     /**
@@ -219,15 +261,19 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (isAutoAssignSite()) {
-	    if (getAutoAssignSiteToken() == null) {
-		updateAutoAssignToFirstSite();
-	    } else {
-		ISite site = getDeviceManagement().getSiteByToken(getAutoAssignSiteToken());
-		if (site == null) {
-		    throw new SiteWhereException("Registration manager auto assignment site token is invalid.");
-		}
+	if (getAutoAssignSpecificationId() != null) {
+	    IDeviceSpecification spec = getDeviceManagement().getDeviceSpecification(getAutoAssignSpecificationId());
+	    if (spec == null) {
+		throw new SiteWhereException("Registration manager auto assignment device specification is invalid.");
 	    }
+	    this.autoAssignSpecification = spec;
+	}
+	if (getAutoAssignSiteId() != null) {
+	    ISite site = getDeviceManagement().getSite(getAutoAssignSiteId());
+	    if (site == null) {
+		throw new SiteWhereException("Registration manager auto assignment site is invalid.");
+	    }
+	    this.autoAssignSite = site;
 	}
     }
 
@@ -241,21 +287,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	return LOGGER;
     }
 
-    /**
-     * Update token for auto-assigned site to first site in list.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void updateAutoAssignToFirstSite() throws SiteWhereException {
-	ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
-	if (sites.getResults().isEmpty()) {
-	    LOGGER.warn("Registration manager configured for auto-assign site, but no sites were found.");
-	    setAutoAssignSiteToken(null);
-	} else {
-	    setAutoAssignSiteToken(sites.getResults().get(0).getToken());
-	}
-    }
-
     public boolean isAllowNewDevices() {
 	return allowNewDevices;
     }
@@ -264,27 +295,44 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	this.allowNewDevices = allowNewDevices;
     }
 
-    public boolean isAutoAssignSite() {
+    public UUID getAutoAssignSpecificationId() {
+	return autoAssignSpecificationId;
+    }
+
+    public void setAutoAssignSpecificationId(UUID autoAssignSpecificationId) {
+	this.autoAssignSpecificationId = autoAssignSpecificationId;
+    }
+
+    public IDeviceSpecification getAutoAssignSpecification() {
+	return autoAssignSpecification;
+    }
+
+    public void setAutoAssignSpecification(IDeviceSpecification autoAssignSpecification) {
+	this.autoAssignSpecification = autoAssignSpecification;
+    }
+
+    public UUID getAutoAssignSiteId() {
+	return autoAssignSiteId;
+    }
+
+    public void setAutoAssignSiteId(UUID autoAssignSiteId) {
+	this.autoAssignSiteId = autoAssignSiteId;
+    }
+
+    public ISite getAutoAssignSite() {
 	return autoAssignSite;
     }
 
-    public void setAutoAssignSite(boolean autoAssignSite) {
+    public void setAutoAssignSite(ISite autoAssignSite) {
 	this.autoAssignSite = autoAssignSite;
     }
 
-    public String getAutoAssignSiteToken() {
-	return autoAssignSiteToken;
-    }
-
-    public void setAutoAssignSiteToken(String autoAssignSiteToken) {
-	this.autoAssignSiteToken = autoAssignSiteToken;
-    }
-
     private IDeviceManagement getDeviceManagement() {
-	return null;
+	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
     private IDeviceCommunication getDeviceCommunication() {
-	return null;
+	throw new RuntimeException("No accessor for device communication API defined.");
     }
 }

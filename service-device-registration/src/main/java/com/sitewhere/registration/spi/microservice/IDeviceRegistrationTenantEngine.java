@@ -7,6 +7,7 @@
  */
 package com.sitewhere.registration.spi.microservice;
 
+import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
@@ -24,4 +25,11 @@ public interface IDeviceRegistrationTenantEngine extends IMicroserviceTenantEngi
      * @return
      */
     public IUnregisteredEventsConsumer getUnregisteredEventsConsumer();
+
+    /**
+     * Get registration manager implementation.
+     * 
+     * @return
+     */
+    public IRegistrationManager getRegistrationManager();
 }

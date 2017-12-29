@@ -10,11 +10,10 @@ package com.sitewhere.registration.kafka;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +27,7 @@ import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.registration.microservice.DeviceRegistrationTenantEngine;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
+import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -51,13 +51,7 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
     private static String GROUP_ID_SUFFIX = "unregistered-event-consumers";
 
     /** Number of threads processing unregistered events */
-    private static final int CONCURRENT_EVENT_PROCESSING_THREADS = 5;
-
-    /** Maximum size of queue for unregistered events */
-    private static final int MAX_QUEUED_EVENTS = 100;
-
-    /** Deque of events for unregistered devices */
-    private BlockingDeque<byte[]> unregisteredEventsQueue = new LinkedBlockingDeque<>(MAX_QUEUED_EVENTS);
+    private static final int CONCURRENT_EVENT_PROCESSING_THREADS = 10;
 
     /** Executor */
     private ExecutorService executor;
@@ -107,9 +101,6 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
 	super.start(monitor);
 	executor = Executors.newFixedThreadPool(CONCURRENT_EVENT_PROCESSING_THREADS,
 		new UnregisteredEventProcessorThreadFactory());
-	for (int i = 0; i < CONCURRENT_EVENT_PROCESSING_THREADS; i++) {
-	    executor.execute(new UnregisteredDeviceEventProcessor(getTenantEngine()));
-	}
     }
 
     /*
@@ -123,6 +114,11 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
 	super.stop(monitor);
 	if (executor != null) {
 	    executor.shutdown();
+	    try {
+		executor.awaitTermination(10, TimeUnit.SECONDS);
+	    } catch (InterruptedException e) {
+		getLogger().warn("Executor did not terminate within allotted time.");
+	    }
 	}
     }
 
@@ -133,11 +129,7 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	try {
-	    getUnregisteredEventsQueue().put(message);
-	} catch (InterruptedException e) {
-	    getLogger().warn("Interrupted while waiting to process unregistered device event.");
-	}
+	executor.execute(new UnregisteredDeviceEventProcessor(getTenantEngine(), message));
     }
 
     /*
@@ -148,14 +140,6 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
 	return LOGGER;
     }
 
-    public BlockingDeque<byte[]> getUnregisteredEventsQueue() {
-	return unregisteredEventsQueue;
-    }
-
-    public void setUnregisteredEventsQueue(BlockingDeque<byte[]> unregisteredEventsQueue) {
-	this.unregisteredEventsQueue = unregisteredEventsQueue;
-    }
-
     /**
      * Processor that unmarshals a decoded event for an unregistered device and
      * hands it off to the registration manager.
@@ -164,8 +148,12 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
      */
     protected class UnregisteredDeviceEventProcessor extends SystemUserRunnable {
 
-	public UnregisteredDeviceEventProcessor(IMicroserviceTenantEngine tenantEngine) {
+	/** Encoded payload */
+	private byte[] encoded;
+
+	public UnregisteredDeviceEventProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
 	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
+	    this.encoded = encoded;
 	}
 
 	/*
@@ -174,22 +162,21 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    while (true) {
-		try {
-		    byte[] payload = getUnregisteredEventsQueue().take();
-		    GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(payload);
-		    if (getLogger().isInfoEnabled()) {
-			InboundEventPayload eventPayload = KafkaModelConverter.asApiInboundEventPayload(grpc);
-			getLogger().info("Received event for unregistered device:\n\n"
-				+ MarshalUtils.marshalJsonAsPrettyString(eventPayload));
-		    }
-		} catch (SiteWhereException e) {
-		    getLogger().error("Unable to parse unregistered device event payload.", e);
-		} catch (InterruptedException e) {
-		    getLogger().error("Interrupted while parsing unregistered device event payload.", e);
-		} catch (Throwable e) {
-		    getLogger().error("Unhandled exception parsing unregistered device event payload.", e);
+	    try {
+		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
+		InboundEventPayload eventPayload = KafkaModelConverter.asApiInboundEventPayload(grpc);
+		if (getLogger().isDebugEnabled()) {
+		    getLogger().debug("Received event for unregistered device:\n\n"
+			    + MarshalUtils.marshalJsonAsPrettyString(eventPayload));
 		}
+
+		// Pass payload to registration manager.
+		((IDeviceRegistrationTenantEngine) getTenantEngine()).getRegistrationManager()
+			.handleUnregisteredDeviceEvent(eventPayload);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to parse unregistered device event payload.", e);
+	    } catch (Throwable e) {
+		getLogger().error("Unhandled exception parsing unregistered device event payload.", e);
 	    }
 	}
     }

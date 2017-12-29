@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
@@ -121,6 +122,11 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	super.stop(monitor);
 	if (executor != null) {
 	    executor.shutdown();
+	    try {
+		executor.awaitTermination(10, TimeUnit.SECONDS);
+	    } catch (InterruptedException e) {
+		getLogger().warn("Executor did not terminate within allotted time.");
+	    }
 	}
     }
 
