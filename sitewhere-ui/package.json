@@ -16,7 +16,7 @@
     "leaflet": "^1.2.0",
     "leaflet-draw": "^0.4.13",
     "lodash": "^4.17.4",
-    "mqtt": "^2.14.0",
+    "mqtt": "^2.15.0",
     "resolve-url-loader": "^2.2.0",
     "vee-validate": "^2.0.0-rc.21",
     "vue": "^2.5.3",
