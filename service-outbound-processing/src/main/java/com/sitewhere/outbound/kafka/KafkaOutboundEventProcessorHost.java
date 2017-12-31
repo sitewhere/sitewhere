@@ -10,11 +10,10 @@ package com.sitewhere.outbound.kafka;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +39,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
@@ -53,17 +51,11 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Number of payloads buffered before consumer threads are blocked */
-    private static final int BUFFER_SIZE = 100;
-
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
     /** Get wrapped outbound event processor implementation */
     private IOutboundEventProcessor outboundEventProcessor;
-
-    /** Queue of payloads pulled from Kafka but not yet processed */
-    private BlockingQueue<byte[]> payloadsQueue = new ArrayBlockingQueue<>(BUFFER_SIZE);
 
     /** Executor */
     private ExecutorService executor;
@@ -128,9 +120,6 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
 	startNestedComponent(getOutboundEventProcessor(), monitor, true);
 	executor = Executors.newFixedThreadPool(getOutboundEventProcessor().getNumProcessingThreads(),
 		new OutboundEventProcessingThreadFactory());
-	for (int i = 0; i < getOutboundEventProcessor().getNumProcessingThreads(); i++) {
-	    executor.execute(new OutboundEventPayloadProcessor(getMicroservice(), getTenantEngine().getTenant()));
-	}
     }
 
     /*
@@ -144,6 +133,11 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
 	super.stop(monitor);
 	if (executor != null) {
 	    executor.shutdown();
+	    try {
+		executor.awaitTermination(10, TimeUnit.SECONDS);
+	    } catch (InterruptedException e) {
+		getLogger().error("Event processor host did not terminate within timout period.");
+	    }
 	}
 	stopNestedComponent(getOutboundEventProcessor(), monitor);
     }
@@ -155,11 +149,7 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public void received(String key, byte[] message) throws SiteWhereException {
-	try {
-	    getPayloadsQueue().put(message);
-	} catch (InterruptedException e) {
-	    getLogger().warn("Outbound event processor interrupted.");
-	}
+	executor.execute(new OutboundEventPayloadProcessor(message));
     }
 
     /*
@@ -178,14 +168,6 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
 	this.outboundEventProcessor = outboundEventProcessor;
     }
 
-    public BlockingQueue<byte[]> getPayloadsQueue() {
-	return payloadsQueue;
-    }
-
-    public void setPayloadsQueue(BlockingQueue<byte[]> payloadsQueue) {
-	this.payloadsQueue = payloadsQueue;
-    }
-
     /**
      * Processor that unmarshals an enriched event and forwards it to outbound
      * processor implementation.
@@ -194,8 +176,12 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
      */
     protected class OutboundEventPayloadProcessor extends SystemUserRunnable {
 
-	public OutboundEventPayloadProcessor(IMicroservice microservice, ITenant tenant) {
-	    super(microservice, tenant);
+	/** Encoded event payload */
+	private byte[] encoded;
+
+	public OutboundEventPayloadProcessor(byte[] encoded) {
+	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
+	    this.encoded = encoded;
 	}
 
 	/*
@@ -203,24 +189,18 @@ public class KafkaOutboundEventProcessorHost extends MicroserviceKafkaConsumer {
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    while (true) {
-		try {
-		    byte[] encoded = getPayloadsQueue().take();
-		    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
-		    EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
-		    if (getLogger().isDebugEnabled()) {
-			getLogger().debug("Received enriched event payload:\n\n"
-				+ MarshalUtils.marshalJsonAsPrettyString(payload));
-		    }
-		    routePayload(payload);
-		} catch (SiteWhereException e) {
-		    getLogger().error("Unable to process outbound event payload.", e);
-		} catch (InterruptedException e) {
-		    getLogger().error("Outbound processor thread interrupted.", e);
-		    return;
-		} catch (Throwable e) {
-		    getLogger().error("Unhandled exception processing event payload.", e);
+	    try {
+		GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
+		EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		if (getLogger().isDebugEnabled()) {
+		    getLogger().debug(
+			    "Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 		}
+		routePayload(payload);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to process outbound event payload.", e);
+	    } catch (Throwable e) {
+		getLogger().error("Unhandled exception processing event payload.", e);
 	    }
 	}
 

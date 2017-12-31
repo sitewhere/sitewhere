@@ -50,7 +50,6 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
 
 	// Outbound processing chain.
 	addElement(createOutboundProcessorElement());
-	addElement(createCommandDeliveryEventProcessorElement());
 	addElement(createHazelcastEventProcessorElement());
 	addElement(createSolrEventProcessorElement());
 	addElement(createAzureEventHubEventProcessorElement());
@@ -113,26 +112,6 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
 	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
 		"Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs")
 		.build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a command delivery event processor.
-     * 
-     * @return
-     */
-    protected ElementNode createCommandDeliveryEventProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Command Delivery Processor",
-		IOutboundProcessingParser.Elements.CommandDeliveryEventProcessor.getLocalName(), "bolt",
-		OutboundProcessingRoleKeys.CommandDeliveryEventProcessor, this);
-	builder.description("Hands off outbound device command events to the device communication subsystem. "
-		+ "If this event processor is not configured, no commands will be sent to devices.");
-	builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
-	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
-		AttributeType.Integer).description(
-			"Sets the number of threads used to process provisioning commands. Increase for situations "
-				+ "where the load of device commands is high.")
-			.defaultValue("5").build()));
 	return builder.build();
     }
 

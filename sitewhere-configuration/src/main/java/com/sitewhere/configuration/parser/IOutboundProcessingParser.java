@@ -54,14 +54,6 @@ public interface IOutboundProcessingParser {
 	/** Sends outbound events to dweet.io */
 	DweetIoEventProcessor("dweet-io-event-processor"),
 
-	/** DEPRECATED: Use 'command-delivery-event-processor' */
-	ProvisioningEventProcessor("provisioning-event-processor"),
-
-	/**
-	 * Outbound event processor that delivers commands via communication subsystem
-	 */
-	CommandDeliveryEventProcessor("command-delivery-event-processor"),
-
 	/** Outbound event processor that delegates to a Groovy script */
 	GroovyEventProcessor("groovy-event-processor");
 

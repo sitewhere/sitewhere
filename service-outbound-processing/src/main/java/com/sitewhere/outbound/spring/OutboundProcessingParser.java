@@ -28,7 +28,6 @@ import com.sitewhere.configuration.parser.IOutboundProcessingParser.RouteBuilder
 import com.sitewhere.outbound.OutboundProcessorsManager;
 import com.sitewhere.outbound.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.outbound.azure.EventHubOutboundEventProcessor;
-import com.sitewhere.outbound.command.DeviceCommandEventProcessor;
 import com.sitewhere.outbound.dweetio.DweetIoEventProcessor;
 import com.sitewhere.outbound.filter.FilterOperation;
 import com.sitewhere.outbound.filter.SiteFilter;
@@ -115,14 +114,6 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
 	    }
 	    case DweetIoEventProcessor: {
 		processors.add(parseDweetIoEventProcessor(child, context));
-		break;
-	    }
-	    case ProvisioningEventProcessor: {
-		processors.add(parseCommandDeliveryEventProcessor(child, context));
-		break;
-	    }
-	    case CommandDeliveryEventProcessor: {
-		processors.add(parseCommandDeliveryEventProcessor(child, context));
 		break;
 	    }
 	    case GroovyEventProcessor: {
@@ -517,31 +508,6 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
 
 	// Parse common outbound processor attributes.
 	parseCommonOutboundProcessorAttributes(element, processor);
-
-	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
-
-	return processor.getBeanDefinition();
-    }
-
-    /**
-     * Parse configuration for event processor that routes commands to communication
-     * subsystem.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseCommandDeliveryEventProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DeviceCommandEventProcessor.class);
-
-	// Parse common outbound processor attributes.
-	parseCommonOutboundProcessorAttributes(element, processor);
-
-	Attr numThreads = element.getAttributeNode("numThreads");
-	if (numThreads != null) {
-	    processor.addPropertyValue("numThreads", Integer.parseInt(numThreads.getValue()));
-	}
 
 	// Parse nested filters.
 	processor.addPropertyValue("filters", parseFilters(element, context));
