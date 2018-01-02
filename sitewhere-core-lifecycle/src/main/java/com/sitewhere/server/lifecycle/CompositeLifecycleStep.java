@@ -112,7 +112,11 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addInitializeStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
-	addStep(new InitializeComponentLifecycleStep(owner, component, require));
+	if (component != null) {
+	    addStep(new InitializeComponentLifecycleStep(owner, component, require));
+	} else {
+	    owner.getLogger().warn("Skipping 'initialize' step for null component.");
+	}
     }
 
     /*
@@ -122,7 +126,11 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addStartStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
-	addStep(new StartComponentLifecycleStep(owner, component, require));
+	if (component != null) {
+	    addStep(new StartComponentLifecycleStep(owner, component, require));
+	} else {
+	    owner.getLogger().warn("Skipping 'start' step for null component.");
+	}
     }
 
     /*
@@ -132,7 +140,11 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addStopStep(ILifecycleComponent owner, ILifecycleComponent component) {
-	addStep(new StopComponentLifecycleStep(owner, component));
+	if (component != null) {
+	    addStep(new StopComponentLifecycleStep(owner, component));
+	} else {
+	    owner.getLogger().warn("Skipping 'stop' step for null component.");
+	}
     }
 
     /*

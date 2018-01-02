@@ -142,4 +142,37 @@ public interface IInstanceManagementParser {
 	    this.localName = localName;
 	}
     }
+
+    public static enum SolrElements {
+
+	/** Default Solr configuration */
+	DefaultSolrConfiguration("default-solr-configuration"),
+
+	/** Alternate Solr configuration */
+	AlternateSolrConfiguration("alternate-solr-configuration");
+
+	/** Event code */
+	private String localName;
+
+	private SolrElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static SolrElements getByLocalName(String localName) {
+	    for (SolrElements value : SolrElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

@@ -37,11 +37,16 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
     /** MongoDB persistence configurations. */
     MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
 	    "MongoDB Persistence Configuration", true, false, false,
-	    new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfiguration })),
+	    new IRoleKey[] { InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
+		    InstanceManagementRoleKeys.AltMongoDBConfiguration })),
 
-    /** MongoDB datastore configuration. */
-    MongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfiguration,
-	    "MongoDB Configuration", false, false, false)),
+    /** MongoDB default datastore configuration. */
+    DefaultMongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
+	    "Default MongoDB Configuration", false, false, false)),
+
+    /** MongoDB alternate datastore configuration. */
+    AltMongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.AltMongoDBConfiguration,
+	    "Alternate MongoDB Configuration", true, true, true)),
 
     /** Connector configurations. */
     ConnectorConfigurations(
@@ -55,11 +60,16 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 
     /** Solr connector configurations. */
     SolrConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfigurations, "Solr Configuration",
-	    true, false, false, new IRoleKey[] { InstanceManagementRoleKeys.SolrConfiguration })),
+	    true, false, false, new IRoleKey[] { InstanceManagementRoleKeys.DefaultSolrConfiguration,
+		    InstanceManagementRoleKeys.AltSolrConfiguration })),
 
-    /** Solr connector configuration. */
-    SolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfiguration, "Solr Configuration", false,
-	    false, false));
+    /** Solr connector default configuration. */
+    DefaultSolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultSolrConfiguration,
+	    "Default Solr Configuration", false, false, false)),
+
+    /** Solr connector alternate configuration. */
+    AltSolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.AltSolrConfiguration,
+	    "Alternate Solr Configuration", true, true, true));
 
     private ConfigurationRole role;
 

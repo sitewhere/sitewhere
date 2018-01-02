@@ -7,7 +7,7 @@
  */
 package com.sitewhere.outbound.configuration;
 
-import com.sitewhere.configuration.CommonCommunicationModel;
+import com.sitewhere.configuration.CommonConnectorModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IOutboundProcessingParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -181,7 +181,7 @@ public class OutboundProcessingModelProvider extends ConfigurationModelProvider 
 	builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
 		+ "field determines where events are delivered.");
-	CommonCommunicationModel.addMqttConnectivityAttributes(builder);
+	CommonConnectorModel.addMqttConnectivityAttributes(builder);
 	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String)
 		.description("MQTT topic used if no route builder is specified.").build()));
 	return builder.build();

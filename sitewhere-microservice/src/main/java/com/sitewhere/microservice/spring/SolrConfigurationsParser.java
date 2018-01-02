@@ -15,7 +15,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.parser.IInstanceManagementParser.MongoDbElements;
+import com.sitewhere.configuration.parser.IInstanceManagementParser.SolrElements;
 
 /**
  * Parses data for global Solr configurations that may be used by tenants.
@@ -28,15 +28,15 @@ public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
-	    MongoDbElements type = MongoDbElements.getByLocalName(child.getLocalName());
+	    SolrElements type = SolrElements.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		throw new RuntimeException("Unknown Solr configuration element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultMongoConfiguration: {
+	    case DefaultSolrConfiguration: {
 		break;
 	    }
-	    case AlternateMongoConfiguration: {
+	    case AlternateSolrConfiguration: {
 		break;
 	    }
 	    }

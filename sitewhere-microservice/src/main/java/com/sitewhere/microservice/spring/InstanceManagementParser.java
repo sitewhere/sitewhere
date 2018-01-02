@@ -47,7 +47,7 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 		break;
 	    }
 	    case ConnectorConfigurations: {
-		parseConnectorConfigurations(element, context);
+		parseConnectorConfigurations(child, context);
 		break;
 	    }
 	    }
@@ -62,8 +62,8 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parsePersistenceConfigurations(Element element, ParserContext context) {
-	List<Element> dsChildren = DomUtils.getChildElements(element);
-	for (Element child : dsChildren) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
 	    PersistenceConfigurationsElements type = PersistenceConfigurationsElements
 		    .getByLocalName(child.getLocalName());
 	    if (type == null) {
@@ -71,7 +71,7 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case MongoConfigurations: {
-		(new MongoConfigurationsParser()).parse(element, context);
+		(new MongoConfigurationsParser()).parse(child, context);
 		break;
 	    }
 	    }

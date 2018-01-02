@@ -7,7 +7,7 @@
  */
 package com.sitewhere.destinations.configuration;
 
-import com.sitewhere.configuration.CommonCommunicationModel;
+import com.sitewhere.configuration.CommonConnectorModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.ICommandDestinationsParser;
 import com.sitewhere.configuration.old.ICommandRoutingParser;
@@ -205,7 +205,7 @@ public class CommandDestinationsModelProvider extends ConfigurationModelProvider
 		CommandDestinationsRoleKeys.MqttParameterExtractor);
 
 	// Add common MQTT connectivity attributes.
-	CommonCommunicationModel.addMqttConnectivityAttributes(builder);
+	CommonConnectorModel.addMqttConnectivityAttributes(builder);
 
 	return builder.build();
     }

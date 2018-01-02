@@ -12,11 +12,11 @@ import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 
 /**
- * Common shared communication model characteristics.
+ * Common shared connector model information.
  * 
  * @author Derek
  */
-public class CommonCommunicationModel {
+public class CommonConnectorModel {
 
     /**
      * Adds common MQTT connectivity attributes.
@@ -45,5 +45,16 @@ public class CommonCommunicationModel {
 		.description("Fully-qualified path to keystore for secured connections.").build()));
 	builder.attribute((new AttributeNode.Builder("Keystore password", "keyStorePassword", AttributeType.String)
 		.description("Password used to authenticate with keystore.").build()));
+    }
+
+    /**
+     * Adds common Solr connectivity attributes.
+     * 
+     * @param builder
+     */
+    public static void adSolrConnectivityAttributes(ElementNode.Builder builder) {
+	builder.attributeGroup("instance", "Solr Instance Information");
+	builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl", AttributeType.String)
+		.description("URL used by Solr client to access server.").group("instance").build()));
     }
 }

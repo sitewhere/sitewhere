@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns="http://sitewhere.io/schema/sitewhere/microservice/event-management"
-	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/event-management"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
 
 	<xsd:element name="event-management" type="eventManagementType">
 		<xsd:annotation>
@@ -20,7 +21,7 @@
 
 	<xsd:complexType name="eventManagementType">
 		<xsd:all>
-			<xsd:element ref="sw:abstract-datastore">
+			<xsd:element ref="ds:abstract-datastore">
 				<xsd:annotation>
 					<xsd:documentation>
 						Datastore used for persistence.

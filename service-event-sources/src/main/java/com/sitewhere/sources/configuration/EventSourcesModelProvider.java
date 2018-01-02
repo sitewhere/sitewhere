@@ -7,7 +7,7 @@
  */
 package com.sitewhere.sources.configuration;
 
-import com.sitewhere.configuration.CommonCommunicationModel;
+import com.sitewhere.configuration.CommonConnectorModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IEventSourcesParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -129,7 +129,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
 	// Add common MQTT connectivity attributes.
-	CommonCommunicationModel.addMqttConnectivityAttributes(builder);
+	CommonConnectorModel.addMqttConnectivityAttributes(builder);
 	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String)
 		.description("MQTT topic event source uses for inbound messages.").build()));
 
