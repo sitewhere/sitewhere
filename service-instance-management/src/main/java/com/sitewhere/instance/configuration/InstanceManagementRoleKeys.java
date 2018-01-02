@@ -23,11 +23,20 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** MongoDB persistence configurations */
     MongoDBConfigurations("mongo_confs"),
 
-    /** Default MongoDB configuration */
-    DefaultMongoDBConfiguration("def_mongo_conf"),
+    /** MongoDB configuration element */
+    MongoDBConfiguration("mongo_conf"),
 
-    /** Alternate MongoDB configuration */
-    AlternateMongoDBConfiguration("alt_mongo_conf");
+    /** Connector configurations */
+    ConnectorConfigurations("connector_confs"),
+
+    /** Connector configuration element */
+    ConnectorConfigurationsElement("conn_conf_elm"),
+
+    /**Apache Solr connector configurations */
+    SolrConfigurations("solr_confs"),
+
+    /** MongoDB configuration element */
+    SolrConfiguration("solr_conf");
 
     private String id;
 

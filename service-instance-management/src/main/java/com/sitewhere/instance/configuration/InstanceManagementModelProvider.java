@@ -48,6 +48,8 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     @Override
     public void initializeElements() {
 	addElement(createInstanceManagementElement());
+
+	// Persistence configurations.
 	addElement(createPersistenceConfigurationsElement());
 	addElement(createMongoDBPersistenceConfigurationsElement());
 	addElement(createDefaultMongoConfigurationElement());
@@ -56,8 +58,10 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	// addElement(createMongoInfluxDbTenantDatastoreElement());
 	// addElement(createHBaseTenantDatastoreElement());
 
-	// TODO: Add global Solr configuration.
-	addElement(createSolrConfigurationElement());
+	// Connector configurations.
+	addElement(createConnectorConfigurationsElement());
+	addElement(createSolrConnectorConfigurationsElement());
+	addElement(createDefaultSolrConfigurationElement());
     }
 
     /*
@@ -123,7 +127,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createDefaultMongoConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Default MongoDB Configuration",
 		IInstanceManagementParser.MongoDbElements.DefaultMongoConfiguration.getLocalName(), "database",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
+		InstanceManagementRoleKeys.MongoDBConfiguration, this);
 
 	builder.description("Default configuration for MongoDB data persistence.");
 	CommonDatastoreModel.addMongoDbAttributes(builder);
@@ -139,7 +143,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createAlternateMongoConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Alternate MongoDB Configuration",
 		IInstanceManagementParser.MongoDbElements.AlternateMongoConfiguration.getLocalName(), "database",
-		InstanceManagementRoleKeys.AlternateMongoDBConfiguration, this);
+		InstanceManagementRoleKeys.MongoDBConfiguration, this);
 
 	builder.description("Alternate configuration for MongoDB data persistence.");
 
@@ -233,16 +237,46 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     // }
 
     /**
+     * Create connector configurations element.
+     * 
+     * @return
+     */
+    protected ElementNode createConnectorConfigurationsElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Connector Configurations",
+		IInstanceManagementParser.TopLevelElements.ConnectorConfigurations.getLocalName(), "database",
+		InstanceManagementRoleKeys.ConnectorConfigurations, this);
+
+	builder.description("Provides global connector configurations that can be reused in tenants.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create Solr connector configurations element.
+     * 
+     * @return
+     */
+    protected ElementNode createSolrConnectorConfigurationsElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Solr Connector Configurations",
+		IInstanceManagementParser.ConnectorConfigurationsElements.SolrConfigurations.getLocalName(), "database",
+		InstanceManagementRoleKeys.SolrConfigurations, this);
+
+	builder.description("Provides Solr configurations that can be reused in tenants.");
+
+	return builder.build();
+    }
+
+    /**
      * Create element overriding Solr configuration.
      * 
      * @return
      */
-    protected ElementNode createSolrConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Override Solr Configuration",
+    protected ElementNode createDefaultSolrConfigurationElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Default Solr Configuration",
 		IGlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs",
-		InstanceManagementRoleKeys.DefaultMongoDBConfiguration, this);
+		InstanceManagementRoleKeys.SolrConfiguration, this);
 
-	builder.description("Overrides global Solr settings for a tenant.");
+	builder.description("Provides default Solr configuration for tenants.");
 	builder.attributeGroup("instance", "Solr Instance Information");
 	builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl", AttributeType.String)
 		.description("URL used by Solr client to access server.").group("instance").build()));

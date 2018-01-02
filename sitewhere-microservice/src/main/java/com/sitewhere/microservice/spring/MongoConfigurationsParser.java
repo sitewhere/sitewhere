@@ -22,11 +22,11 @@ import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
 
 /**
- * Parses configuration data for global MongoDB configuration.
+ * Parses data for global MongoDB configurations that may be used by tenants.
  * 
  * @author Derek
  */
-public class MongoConfigurationParser extends AbstractBeanDefinitionParser {
+public class MongoConfigurationsParser extends AbstractBeanDefinitionParser {
 
     /*
      * (non-Javadoc)
@@ -37,8 +37,8 @@ public class MongoConfigurationParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	List<Element> dsChildren = DomUtils.getChildElements(element);
-	for (Element child : dsChildren) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
 	    MongoDbElements type = MongoDbElements.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		throw new RuntimeException("Unknown MongoDB configuration element: " + child.getLocalName());

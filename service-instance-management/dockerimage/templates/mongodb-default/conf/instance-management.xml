@@ -28,6 +28,10 @@
 
 		</im:persistence-configurations>
 
+		<!-- Global connector configurations -->
+		<im:connector-configurations>
+		</im:connector-configurations>
+
 	</im:instance-management>
 
 </beans>

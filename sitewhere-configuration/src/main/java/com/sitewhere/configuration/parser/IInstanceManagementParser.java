@@ -20,7 +20,10 @@ public interface IInstanceManagementParser {
     public static enum TopLevelElements {
 
 	/** Persistence configurations */
-	PersistenceConfigurations("persistence-configurations");
+	PersistenceConfigurations("persistence-configurations"),
+
+	/** Connector configurations */
+	ConnectorConfigurations("connector-configurations");
 
 	/** Event code */
 	private String localName;
@@ -94,6 +97,36 @@ public interface IInstanceManagementParser {
 
 	public static MongoDbElements getByLocalName(String localName) {
 	    for (MongoDbElements value : MongoDbElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum ConnectorConfigurationsElements {
+
+	/** Solr configuration elements */
+	SolrConfigurations("solr-configurations");
+
+	/** Event code */
+	private String localName;
+
+	private ConnectorConfigurationsElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static ConnectorConfigurationsElements getByLocalName(String localName) {
+	    for (ConnectorConfigurationsElements value : ConnectorConfigurationsElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

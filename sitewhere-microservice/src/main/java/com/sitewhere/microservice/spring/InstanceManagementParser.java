@@ -15,6 +15,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.parser.IInstanceManagementParser.ConnectorConfigurationsElements;
 import com.sitewhere.configuration.parser.IInstanceManagementParser.PersistenceConfigurationsElements;
 import com.sitewhere.configuration.parser.IInstanceManagementParser.TopLevelElements;
 
@@ -45,14 +46,17 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 		parsePersistenceConfigurations(child, context);
 		break;
 	    }
+	    case ConnectorConfigurations: {
+		parseConnectorConfigurations(element, context);
+		break;
+	    }
 	    }
 	}
 	return null;
     }
 
     /**
-     * Parse a MongoDB datasource configuration and create beans needed to realize
-     * it.
+     * Parse persistence configurations section.
      * 
      * @param element
      * @param context
@@ -67,7 +71,7 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case MongoConfigurations: {
-		parseMongoConfigurations(child, context);
+		(new MongoConfigurationsParser()).parse(element, context);
 		break;
 	    }
 	    }
@@ -75,13 +79,23 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse a MongoDB datasource configuration and create beans needed to realize
-     * it.
+     * Parse connector configurations section.
      * 
      * @param element
      * @param context
      */
-    protected void parseMongoConfigurations(Element element, ParserContext context) {
-	(new MongoConfigurationParser()).parse(element, context);
+    protected void parseConnectorConfigurations(Element element, ParserContext context) {
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    ConnectorConfigurationsElements type = ConnectorConfigurationsElements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown connector configurations element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case SolrConfigurations: {
+		break;
+	    }
+	    }
+	}
     }
 }

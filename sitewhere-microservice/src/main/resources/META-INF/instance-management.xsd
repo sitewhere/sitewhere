@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns="http://sitewhere.io/schema/sitewhere/microservice/instance-management"
-	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+	xmlns:cn="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/instance-management"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
 
 	<xsd:element name="instance-management" type="instanceManagementType">
 		<xsd:annotation>
@@ -26,6 +31,14 @@
 					<xsd:documentation>
 						Captures reusable configuration information that
 						can be used by tenants to access common datastores.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="connector-configurations" type="connectorConfigurationsType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Captures reusable configuration information that
+						can be used by tenants to connect to external systems.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -100,7 +113,7 @@
 
 	<!-- Default MongoDB datastore configuration -->
 	<xsd:complexType name="defaultMongoDatastoreConfigurationType">
-		<xsd:attributeGroup ref="sw:mongo-attributes" />
+		<xsd:attributeGroup ref="ds:mongo-attributes" />
 	</xsd:complexType>
 
 	<!-- Alternate MongoDB datastore configuration -->
@@ -112,6 +125,87 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attributeGroup ref="sw:mongo-attributes" />
+		<xsd:attributeGroup ref="ds:mongo-attributes" />
+	</xsd:complexType>
+
+	<!-- Connector configurations -->
+	<xsd:complexType name="connectorConfigurationsType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-connector-configuration"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provides global oubound connector configuration.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for connector configurations to allow substitutionGroups -->
+	<xsd:element name="abstract-connector-configuration"
+		abstract="true" type="abstractConnectorConfigurationType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound connector configuration
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common connector configuration information -->
+	<xsd:complexType name="abstractConnectorConfigurationType">
+	</xsd:complexType>
+
+	<!-- Configuration data for Solr services -->
+	<xsd:element name="solr-configurations" type="solrConfigurationType"
+		substitutionGroup="abstract-connector-configuration">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Apache Solr.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="solrConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractConnectorConfigurationType">
+				<xsd:sequence>
+					<xsd:element name="default-solr-configuration" type="defaultSolrConfigurationType"
+						minOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>
+								Default configuration settings for Apache Solr
+								connectors.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="alternate-solr-configuration" type="alternateSolrConfigurationType"
+						minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Alternate configuration settings for Apache
+								Solr connectors.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Default configuration for Solr connector -->
+	<xsd:complexType name="defaultSolrConfigurationType">
+		<xsd:attributeGroup ref="cn:solr-attributes" />
+	</xsd:complexType>
+
+	<!-- Alternate configuration for Solr connector -->
+	<xsd:complexType name="alternateSolrConfigurationType">
+		<xsd:attribute name="id" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for Solr configuration.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="cn:solr-attributes" />
 	</xsd:complexType>
 </xsd:schema>
