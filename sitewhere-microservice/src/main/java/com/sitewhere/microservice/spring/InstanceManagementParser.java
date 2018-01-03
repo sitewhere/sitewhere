@@ -93,6 +93,7 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case SolrConfigurations: {
+		(new SolrConfigurationsParser()).parse(child, context);
 		break;
 	    }
 	    }
