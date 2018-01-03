@@ -48,8 +48,8 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path to instance management configuration file */
     private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";
 
-    /** Relative path to configuration data for tenants */
-    private static final String INSTANCE_TENANTS_CONFIGURATION_PATH = "/tenants";
+    /** Relative path for tenant-specific data */
+    private static final String INSTANCE_TENANTS_SUBPATH = "/tenants";
 
     /** Relative path to tenant bootstrapped indicator data */
     private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
@@ -134,7 +134,7 @@ public abstract class ConfigurableMicroservice extends Microservice
      */
     @Override
     public String getInstanceTenantsConfigurationPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_TENANTS_CONFIGURATION_PATH;
+	return getInstanceConfigurationPath() + INSTANCE_TENANTS_SUBPATH;
     }
 
     /*
@@ -146,6 +146,24 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException {
 	return getInstanceTenantsConfigurationPath() + "/" + tenantId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceTenantsStatePath()
+     */
+    @Override
+    public String getInstanceTenantsStatePath() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_TENANTS_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceTenantStatePath(java.lang.String)
+     */
+    @Override
+    public String getInstanceTenantStatePath(String tenantId) throws SiteWhereException {
+	return getInstanceTenantsStatePath() + "/" + tenantId;
     }
 
     /*

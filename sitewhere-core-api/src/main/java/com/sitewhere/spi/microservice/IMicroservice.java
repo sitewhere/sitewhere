@@ -176,6 +176,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
     public String getInstanceConfigurationPath();
 
     /**
+     * Get Zookeeper path for instance state.
+     * 
+     * @return
+     */
+    public String getInstanceStatePath();
+
+    /**
      * Get path for marker used to indicate instance is bootstrapped.
      * 
      * @return

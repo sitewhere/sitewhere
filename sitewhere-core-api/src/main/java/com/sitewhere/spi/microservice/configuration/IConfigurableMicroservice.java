@@ -102,6 +102,23 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException;
 
     /**
+     * Subpath of instance state that contains tenant state data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantsStatePath() throws SiteWhereException;
+
+    /**
+     * Get path for tenant state.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantStatePath(String tenantId) throws SiteWhereException;
+
+    /**
      * Get path to Zk node that indicates a tenant has been bootstrapped with
      * template data.
      * 

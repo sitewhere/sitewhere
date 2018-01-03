@@ -292,7 +292,15 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists()
+		    // Verify that instance state path exists.
+		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
+		    if (existing == null) {
+			LOGGER.info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
+			getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
+		    }
+
+		    // Check for existing instance bootstrap marker.
+		    existing = getZookeeperManager().getCurator().checkExists()
 			    .forPath(getInstanceBootstrappedMarker());
 		    if (existing == null) {
 			LOGGER.info("Bootstrap marker node '" + getInstanceBootstrappedMarker()

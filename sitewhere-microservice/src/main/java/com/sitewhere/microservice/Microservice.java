@@ -62,6 +62,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Instance configuration folder name */
     private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
 
+    /** Instance state folder name */
+    private static final String INSTANCE_STATE_FOLDER = "/state";
+
     /** Relative path to instance bootstrap marker */
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
 
@@ -358,12 +361,20 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getInstanceStatePath()
+     */
+    @Override
+    public String getInstanceStatePath() {
+	return getInstanceZkPath() + INSTANCE_STATE_FOLDER;
+    }
+
+    /*
      * @see com.sitewhere.microservice.spi.IMicroservice#
      * getInstanceBootstrappedMarker()
      */
     @Override
     public String getInstanceBootstrappedMarker() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_BOOTSTRAP_MARKER;
+	return getInstanceStatePath() + INSTANCE_BOOTSTRAP_MARKER;
     }
 
     /*

@@ -34,14 +34,14 @@ import com.sitewhere.spi.tenant.ITenant;
 public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComponent
 	implements IMicroserviceTenantEngine {
 
-    /** Suffix appended to module identifier for lock path */
-    public static final String MODULE_LOCK_SUFFIX = ".lock";
+    /** Name for lock path */
+    public static final String MODULE_LOCK_NAME = "lock";
 
     /** Suffix appended to module identifier to locate module configuration */
     public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
 
-    /** Suffix appended to module identifier to indicate data is bootstrapped */
-    public static final String MODULE_BOOTSTRAPPED_SUFFIX = ".boot";
+    /** Name for tenant bootstrapped indicator */
+    public static final String MODULE_BOOTSTRAPPED_NAME = "bootstrapped";
 
     /** Tenant template path (relative to configuration root) */
     public static final String TENANT_TEMPLATE_PATH = "/template.json";
@@ -309,6 +309,16 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getTenantStatePath()
+     */
+    @Override
+    public String getTenantStatePath() throws SiteWhereException {
+	return getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/"
+		+ getMicroservice().getIdentifier();
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
@@ -316,8 +326,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getModuleLockPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
-		+ MicroserviceTenantEngine.MODULE_LOCK_SUFFIX;
+	return getTenantStatePath() + "/" + MicroserviceTenantEngine.MODULE_LOCK_NAME;
     }
 
     /*
@@ -348,8 +357,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getModuleBootstrappedPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getMicroservice().getIdentifier()
-		+ MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_SUFFIX;
+	return getTenantStatePath() + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
     }
 
     /*

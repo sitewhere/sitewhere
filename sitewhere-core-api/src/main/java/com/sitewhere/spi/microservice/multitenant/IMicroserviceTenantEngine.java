@@ -70,6 +70,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public String getTenantConfigurationPath() throws SiteWhereException;
 
     /**
+     * Get Zk path for tenant runtime state.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getTenantStatePath() throws SiteWhereException;
+
+    /**
      * Get Spring context that provides beans for module.
      * 
      * @return
