@@ -23,6 +23,7 @@ import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
+import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.outbound.FilteredOutboundEventProcessor;
 import com.sitewhere.outbound.spi.IOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
@@ -56,7 +57,10 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
     private static final int COMMIT_INTERVAL = 60 * 1000;
 
     /** Injected Solr configuration */
-    private SiteWhereSolrConfiguration solr;
+    private SolrConfiguration solrConfiguration;
+
+    /** Connection to Solr instance */
+    private SolrConnection solrConnection;
 
     /** Bounded queue that holds documents to be processed */
     private BlockingQueue<SolrInputDocument> queue = new ArrayBlockingQueue<SolrInputDocument>(BUFFER_SIZE);
@@ -77,12 +81,16 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	// Required for filters.
 	super.start(monitor);
 
-	if (getSolr() == null) {
-	    throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
+	if (getSolrConfiguration() == null) {
+	    throw new SiteWhereException("No Solr configuration provided.");
 	}
 	try {
+	    // Create and start Solr connection.
+	    this.solrConnection = new SolrConnection(getSolrConfiguration());
+	    getSolrConnection().start(monitor);
+
 	    LOGGER.info("Attempting to ping Solr server to verify availability...");
-	    SolrPingResponse response = getSolr().getSolrClient().ping();
+	    SolrPingResponse response = getSolrConnection().getSolrClient().ping();
 	    int pingTime = response.getQTime();
 	    LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
@@ -90,7 +98,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	} catch (IOException e) {
 	    throw new SiteWhereException("Exception in ping. Verify that Solr server is available.", e);
 	}
-	LOGGER.info("Solr event processor indexing events to server at: " + getSolr().getSolrServerUrl());
+	LOGGER.info("Solr event processor indexing events to server at: " + getSolrConfiguration().getSolrServerUrl());
 	executor.execute(new SolrDocumentQueueProcessor());
     }
 
@@ -182,7 +190,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 		}
 		if (!batch.isEmpty()) {
 		    try {
-			UpdateResponse response = getSolr().getSolrClient().add(batch, COMMIT_INTERVAL);
+			UpdateResponse response = getSolrConnection().getSolrClient().add(batch, COMMIT_INTERVAL);
 			if (response.getStatus() != 0) {
 			    LOGGER.warn("Bad response code indexing documents: " + response.getStatus());
 			}
@@ -199,11 +207,19 @@ public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
 	}
     }
 
-    public SiteWhereSolrConfiguration getSolr() {
-	return solr;
+    public SolrConfiguration getSolrConfiguration() {
+	return solrConfiguration;
     }
 
-    public void setSolr(SiteWhereSolrConfiguration solr) {
-	this.solr = solr;
+    public void setSolrConfiguration(SolrConfiguration solrConfiguration) {
+	this.solrConfiguration = solrConfiguration;
+    }
+
+    public SolrConnection getSolrConnection() {
+	return solrConnection;
+    }
+
+    public void setSolrConnection(SolrConnection solrConnection) {
+	this.solrConnection = solrConnection;
     }
 }

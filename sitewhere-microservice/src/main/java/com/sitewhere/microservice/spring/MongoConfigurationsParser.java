@@ -17,9 +17,9 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.configuration.parser.IInstanceManagementParser.MongoDbElements;
-import com.sitewhere.mongodb.MongoConfiguration;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses data for global MongoDB configurations that may be used by tenants.
@@ -66,7 +66,7 @@ public class MongoConfigurationsParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoConfiguration(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
 	parseMongoAttributes(element, context, configuration);
-	context.getRegistry().registerBeanDefinition(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT,
+	context.getRegistry().registerBeanDefinition(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT,
 		configuration.getBeanDefinition());
     }
 
@@ -86,7 +86,7 @@ public class MongoConfigurationsParser extends AbstractBeanDefinitionParser {
 	}
 
 	// Register bean using id as part of name.
-	String beanName = InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
+	String beanName = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
 	context.getRegistry().registerBeanDefinition(beanName, configuration.getBeanDefinition());
     }
 

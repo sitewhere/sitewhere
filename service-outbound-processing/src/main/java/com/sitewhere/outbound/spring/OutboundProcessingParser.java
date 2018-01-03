@@ -42,7 +42,6 @@ import com.sitewhere.outbound.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.outbound.initialstate.InitialStateEventProcessor;
 import com.sitewhere.outbound.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.outbound.rabbitmq.RabbitMqOutboundEventProcessor;
-import com.sitewhere.outbound.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.outbound.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.geospatial.ZoneContainment;
@@ -378,7 +377,8 @@ public class OutboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseSolrEventProcessor(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SolrDeviceEventProcessor.class);
-	processor.addPropertyReference("solr", SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN);
+	// processor.addPropertyReference("solr",
+	// SolrConnection.SOLR_CONFIGURATION_BEAN);
 
 	// Parse common outbound processor attributes.
 	parseCommonOutboundProcessorAttributes(element, processor);

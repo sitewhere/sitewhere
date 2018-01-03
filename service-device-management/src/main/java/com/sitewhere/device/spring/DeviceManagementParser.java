@@ -20,7 +20,7 @@ import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
 import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
 import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses configuration data for the SiteWhere device management microservice.
@@ -63,7 +63,7 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());

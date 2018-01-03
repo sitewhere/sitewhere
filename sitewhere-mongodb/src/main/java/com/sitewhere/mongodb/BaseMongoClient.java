@@ -22,6 +22,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;

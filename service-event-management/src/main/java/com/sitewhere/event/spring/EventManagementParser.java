@@ -20,7 +20,7 @@ import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
 import com.sitewhere.event.persistence.mongodb.DeviceEventManagementMongoClient;
 import com.sitewhere.event.persistence.mongodb.MongoDeviceEventManagement;
 import com.sitewhere.spi.microservice.spring.EventManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses configuration data for the SiteWhere event management microservice.
@@ -63,7 +63,7 @@ public class EventManagementParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceEventManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());

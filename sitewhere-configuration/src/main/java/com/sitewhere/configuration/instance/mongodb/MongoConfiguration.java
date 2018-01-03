@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.mongodb;
+package com.sitewhere.configuration.instance.mongodb;
 
 /**
  * Common configuration settings for a MongoDB client.

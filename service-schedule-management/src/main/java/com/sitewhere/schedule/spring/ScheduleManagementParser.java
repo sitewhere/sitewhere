@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.configuration.parser.IScheduleManagementParser.Elements;
 import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
 import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
 
 /**
@@ -69,7 +69,7 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());

@@ -31,7 +31,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.outbound.solr.SiteWhereSolrConfiguration;
+import com.sitewhere.outbound.solr.SolrConnection;
 import com.sitewhere.outbound.solr.SiteWhereSolrFactory;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -70,7 +70,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     private static ObjectMapper MAPPER = new ObjectMapper();
 
     /** Solr configuration */
-    private SiteWhereSolrConfiguration solr;
+    private SolrConnection solr;
 
     public SolrSearchProvider() {
 	super(LifecycleComponentType.SearchProvider);
@@ -235,11 +235,11 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	this.name = name;
     }
 
-    public SiteWhereSolrConfiguration getSolr() {
+    public SolrConnection getSolr() {
 	return solr;
     }
 
-    public void setSolr(SiteWhereSolrConfiguration solr) {
+    public void setSolr(SolrConnection solr) {
 	this.solr = solr;
     }
 }

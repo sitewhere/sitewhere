@@ -10,12 +10,16 @@ package com.sitewhere.microservice.spring;
 import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.configuration.parser.IInstanceManagementParser.SolrElements;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses data for global Solr configurations that may be used by tenants.
@@ -24,6 +28,11 @@ import com.sitewhere.configuration.parser.IInstanceManagementParser.SolrElements
  */
 public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
 
+    /*
+     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+     * parseInternal(org.w3c.dom.Element,
+     * org.springframework.beans.factory.xml.ParserContext)
+     */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
@@ -34,6 +43,7 @@ public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case DefaultSolrConfiguration: {
+		parseDefaultSolrConfiguration(child, context);
 		break;
 	    }
 	    case AlternateSolrConfiguration: {
@@ -42,5 +52,32 @@ public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
 	    }
 	}
 	return null;
+    }
+
+    /**
+     * Parse the default Solr configuration element.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseDefaultSolrConfiguration(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(SolrConfiguration.class);
+	parseSolrAttributes(element, context, configuration);
+	context.getRegistry().registerBeanDefinition(InstanceManagementBeans.BEAN_SOLR_CONFIGURATION_DEFAULT,
+		configuration.getBeanDefinition());
+    }
+
+    /**
+     * Common parser logic for Solr attributes.
+     * 
+     * @param element
+     * @param context
+     * @param client
+     */
+    public static void parseSolrAttributes(Element element, ParserContext context, BeanDefinitionBuilder config) {
+	Attr solrServerUrl = element.getAttributeNode("solrServerUrl");
+	if (solrServerUrl != null) {
+	    config.addPropertyValue("solrServerUrl", solrServerUrl.getValue());
+	}
     }
 }

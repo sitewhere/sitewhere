@@ -17,7 +17,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.configuration.parser.ITenantManagementParser.Elements;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.tenant.persistence.mongodb.MongoTenantManagement;
 import com.sitewhere.tenant.persistence.mongodb.TenantManagementMongoClient;
@@ -63,7 +63,7 @@ public class TenantManagementParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(TenantManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(TenantManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());

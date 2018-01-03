@@ -5,6 +5,9 @@ apply plugin: 'nebula.provided-base'
 dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
+	
+	// Spring Web support.
+    compile group: 'org.springframework', name: 'spring-web'
     
     // Amazon SQS dependencies.
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'

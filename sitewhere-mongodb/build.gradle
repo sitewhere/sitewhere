@@ -1,8 +1,7 @@
 description = 'SiteWhere MongoDB Implementation'
 
 dependencies {
-    compile project(':sitewhere-client')
-    compile project(':sitewhere-core')
+    compile project(':sitewhere-configuration')
     
     compile group: 'org.mongodb', name: 'mongo-java-driver'
 }

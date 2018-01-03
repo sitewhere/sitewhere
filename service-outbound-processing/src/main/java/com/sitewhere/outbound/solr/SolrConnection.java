@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
+import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
@@ -19,30 +20,24 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Class for base Solr client configuration settings.
+ * Creates client connection to an Apache Solr instance.
  * 
  * @author Derek
  */
-public class SiteWhereSolrConfiguration extends TenantEngineLifecycleComponent
-	implements IDiscoverableTenantLifecycleComponent {
+public class SolrConnection extends TenantEngineLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Bean name where global Solr configuration is expected */
-    public static final String SOLR_CONFIGURATION_BEAN = "swSolrConfiguration";
-
-    /** Default URL for contacting Solr server */
-    private static final String DEFAULT_SOLR_URL = "http://localhost:8983/solr";
-
-    /** URL used to interact with Solr server */
-    private String solrServerUrl = DEFAULT_SOLR_URL;
+    /** Solr configuration */
+    private SolrConfiguration solrConfiguration;
 
     /** Solr client instance */
     private SolrClient solrClient;
 
-    public SiteWhereSolrConfiguration() {
+    public SolrConnection(SolrConfiguration solrConfiguration) {
 	super(LifecycleComponentType.Other);
+	this.solrConfiguration = solrConfiguration;
     }
 
     /*
@@ -66,8 +61,8 @@ public class SiteWhereSolrConfiguration extends TenantEngineLifecycleComponent
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	LOGGER.info("Solr initializing with URL: " + getSolrServerUrl());
-	setSolrClient(new HttpSolrClient.Builder(getSolrServerUrl()).build());
+	LOGGER.info("Solr initializing with URL: " + getSolrConfiguration().getSolrServerUrl());
+	setSolrClient(new HttpSolrClient.Builder(getSolrConfiguration().getSolrServerUrl()).build());
     }
 
     /*
@@ -80,12 +75,12 @@ public class SiteWhereSolrConfiguration extends TenantEngineLifecycleComponent
 	return LOGGER;
     }
 
-    public String getSolrServerUrl() {
-	return solrServerUrl;
+    public SolrConfiguration getSolrConfiguration() {
+	return solrConfiguration;
     }
 
-    public void setSolrServerUrl(String solrServerUrl) {
-	this.solrServerUrl = solrServerUrl;
+    public void setSolrConfiguration(SolrConfiguration solrConfiguration) {
+	this.solrConfiguration = solrConfiguration;
     }
 
     public SolrClient getSolrClient() {

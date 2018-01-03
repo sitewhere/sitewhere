@@ -20,7 +20,7 @@ import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
 import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
 import com.sitewhere.configuration.parser.IAssetManagementParser.Elements;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses configuration data for the SiteWhere asset management section.
@@ -67,7 +67,7 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());

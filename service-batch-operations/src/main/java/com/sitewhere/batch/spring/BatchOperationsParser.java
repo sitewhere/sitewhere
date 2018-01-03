@@ -22,7 +22,7 @@ import com.sitewhere.batch.persistence.mongodb.BatchManagementMongoClient;
 import com.sitewhere.batch.persistence.mongodb.MongoBatchManagement;
 import com.sitewhere.configuration.parser.IBatchOperationsParser.Elements;
 import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceGlobalBeans;
+import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses elements related to batch operations.
@@ -75,7 +75,7 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
     protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
 	// Build MongoDB client using default global configuration.
 	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceGlobalBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
 
 	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
 		client.getBeanDefinition());
