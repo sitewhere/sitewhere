@@ -16,8 +16,10 @@
 	<op:outbound-connectors>
 
 		<!-- Send events via MQTT -->
+		<!--  
 		<op:mqtt-connector connectorId="mqtt1"
 			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" topic="SiteWhere/output" />
+		-->
 
 	</op:outbound-connectors>
 
