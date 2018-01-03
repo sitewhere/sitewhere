@@ -47,8 +47,8 @@ public interface IMicroserviceIdentifiers {
     /** Label generation microservice */
     public static final String LABEL_GENERATION = "label-generation";
 
-    /** Outbound processing microservice */
-    public static final String OUTBOUND_PROCESSING = "outbound-processing";
+    /** Outbound connectors microservice */
+    public static final String OUTBOUND_CONNECTORS = "outbound-connectors";
 
     /** Presence management microservice */
     public static final String PRESENCE_MANAGEMENT = "presence-management";

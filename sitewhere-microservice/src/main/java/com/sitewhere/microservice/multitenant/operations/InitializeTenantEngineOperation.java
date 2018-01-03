@@ -61,9 +61,10 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
      */
     @Override
     public T call() throws Exception {
+	T created = null;
 	try {
 	    LOGGER.info("Creating tenant engine for '" + getTenant().getName() + "'...");
-	    T created = getMicroservice().createTenantEngine(getTenant());
+	    created = getMicroservice().createTenantEngine(getTenant());
 	    created.setTenantEngine(created); // Required for nested components.
 
 	    // Configuration files must be present before initialization.
@@ -80,14 +81,20 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 		throw created.getLifecycleError();
 	    }
 
-	    // Mark tenant engine as initialized.
+	    // Mark tenant engine as initialized and remove failed engine if present.
 	    getMicroservice().getInitializedTenantEngines().put(getTenant().getId(), created);
+	    getMicroservice().getFailedTenantEngines().remove(getTenant().getId());
 
 	    LOGGER.info("Tenant engine for '" + getTenant().getName() + "' initialized in "
 		    + (System.currentTimeMillis() - start) + "ms.");
 	    getCompletableFuture().complete(created);
 	    return created;
 	} catch (Throwable t) {
+	    // Keep map of failed tenant engines.
+	    if (created != null) {
+		getMicroservice().getFailedTenantEngines().put(getTenant().getId(), created);
+	    }
+
 	    LOGGER.error("Unable to initialize tenant engine for '" + getTenant().getName() + "'.", t);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;

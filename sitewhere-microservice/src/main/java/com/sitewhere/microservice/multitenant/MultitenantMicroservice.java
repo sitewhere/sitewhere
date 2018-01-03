@@ -59,6 +59,9 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     /** Map of tenant engines that have been initialized */
     private ConcurrentMap<String, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
+    /** Map of tenant engines that failed to initialize */
+    private ConcurrentMap<String, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+
     /** Map of tenant engines in the process of initializing */
     private ConcurrentMap<String, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
@@ -194,7 +197,11 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     @Override
     public T getTenantEngineByTenantId(String id) throws SiteWhereException {
-	return getInitializedTenantEngines().get(id);
+	T engine = getInitializedTenantEngines().get(id);
+	if (engine == null) {
+	    engine = getFailedTenantEngines().get(id);
+	}
+	return engine;
     }
 
     /**
@@ -262,22 +269,31 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     @Override
     public void removeTenantEngine(String tenantId) throws SiteWhereException {
-	IMicroserviceTenantEngine engine = getTenantEngineByTenantId(tenantId);
-	getInitializedTenantEngines().remove(tenantId);
+	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(tenantId);
+	if (engine != null) {
+	    // Remove initialized engine if one exists.
+	    getInitializedTenantEngines().remove(tenantId);
 
-	ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Shut down tenant engine."), this);
+	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Shut down tenant engine."), this);
 
-	// Stop tenant engine.
-	engine.lifecycleStop(monitor);
-	if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-	    getLogger().error("Error while stopping tenant engine.", engine.getLifecycleError());
-	}
+	    // Stop tenant engine.
+	    engine.lifecycleStop(monitor);
+	    if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		getLogger().error("Error while stopping tenant engine.", engine.getLifecycleError());
+	    }
 
-	// Terminate tenant engine.
-	engine.lifecycleTerminate(monitor);
-	if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-	    getLogger().error("Error while terminating tenant engine.", engine.getLifecycleError());
+	    // Terminate tenant engine.
+	    engine.lifecycleTerminate(monitor);
+	    if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		getLogger().error("Error while terminating tenant engine.", engine.getLifecycleError());
+	    }
+	} else {
+	    // Remove failed engine if one exists.
+	    engine = getFailedTenantEngines().get(tenantId);
+	    if (engine != null) {
+		getFailedTenantEngines().remove(tenantId);
+	    }
 	}
     }
 
@@ -435,6 +451,14 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     public void setInitializingTenantEngines(ConcurrentMap<String, ITenant> initializingTenantEngines) {
 	this.initializingTenantEngines = initializingTenantEngines;
+    }
+
+    public ConcurrentMap<String, T> getFailedTenantEngines() {
+	return failedTenantEngines;
+    }
+
+    public void setFailedTenantEngines(ConcurrentMap<String, T> failedTenantEngines) {
+	this.failedTenantEngines = failedTenantEngines;
     }
 
     public BlockingDeque<String> getTenantInitializationQueue() {

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="sitewhere" version="2.3">
+
+	<fields>
+		<field name="eventId" type="string" indexed="true" stored="true"
+			required="true" multiValued="false" />
+		<field name="eventType" type="string" indexed="true" stored="true"
+			required="true" multiValued="false" />
+		<field name="assignmentToken" type="string" indexed="true"
+			stored="true" required="true" multiValued="false" />
+		<field name="assignmentType" type="string" indexed="true"
+			stored="true" required="true" multiValued="false" />
+		<field name="assetId" type="string" indexed="true" stored="true"
+			required="false" multiValued="false" />
+		<field name="siteToken" type="string" indexed="true" stored="true"
+			required="true" multiValued="false" />
+		<field name="eventDate" type="date" indexed="true" stored="true"
+			required="true" multiValued="false" />
+		<field name="receivedDate" type="date" indexed="true" stored="true"
+			required="true" multiValued="false" />
+		<field name="location" type="location_rpt" indexed="true"
+			stored="true" multiValued="true" />
+		<field name="elevation" type="double" indexed="true" stored="true"
+			multiValued="false" />
+		<field name="alertType" type="string" indexed="true" stored="true"
+			multiValued="false" />
+		<field name="alertMessage" type="string" indexed="true" stored="true"
+			multiValued="false" />
+		<field name="alertLevel" type="string" indexed="true" stored="true"
+			multiValued="false" />
+		<field name="alertSource" type="string" indexed="true" stored="true"
+			multiValued="false" />
+		<dynamicField name="mx.*" type="double" indexed="true"
+			stored="true" />
+		<dynamicField name="meta.*" type="string" indexed="true"
+			stored="true" />
+		<field name="_version_" type="long" indexed="true" stored="true" />
+	</fields>
+
+	<uniqueKey>eventId</uniqueKey>
+
+	<types>
+		<fieldType name="string" class="solr.StrField"
+			sortMissingLast="true" />
+		<fieldType name="boolean" class="solr.BoolField"
+			sortMissingLast="true" />
+		<fieldType name="int" class="solr.TrieIntField"
+			precisionStep="0" positionIncrementGap="0" />
+		<fieldType name="float" class="solr.TrieFloatField"
+			precisionStep="0" positionIncrementGap="0" />
+		<fieldType name="long" class="solr.TrieLongField"
+			precisionStep="0" positionIncrementGap="0" />
+		<fieldType name="double" class="solr.TrieDoubleField"
+			precisionStep="0" positionIncrementGap="0" />
+		<fieldType name="tint" class="solr.TrieIntField"
+			precisionStep="8" positionIncrementGap="0" />
+		<fieldType name="tfloat" class="solr.TrieFloatField"
+			precisionStep="8" positionIncrementGap="0" />
+		<fieldType name="tlong" class="solr.TrieLongField"
+			precisionStep="8" positionIncrementGap="0" />
+		<fieldType name="tdouble" class="solr.TrieDoubleField"
+			precisionStep="8" positionIncrementGap="0" />
+		<fieldType name="date" class="solr.TrieDateField"
+			precisionStep="0" positionIncrementGap="0" />
+		<fieldType name="tdate" class="solr.TrieDateField"
+			precisionStep="6" positionIncrementGap="0" />
+		<fieldtype name="binary" class="solr.BinaryField" />
+		<fieldType name="pint" class="solr.TrieIntField" />
+		<fieldType name="plong" class="solr.TrieLongField" />
+		<fieldType name="pfloat" class="solr.TrieFloatField" />
+		<fieldType name="pdouble" class="solr.TrieDoubleField" />
+		<fieldType name="pdate" class="solr.TrieDateField"
+			sortMissingLast="true" />
+		<fieldType name="random" class="solr.RandomSortField"
+			indexed="true" />
+
+		<fieldType name="text_ws" class="solr.TextField"
+			positionIncrementGap="100">
+			<analyzer>
+				<tokenizer class="solr.WhitespaceTokenizerFactory" />
+			</analyzer>
+		</fieldType>
+
+		<!-- since fields of this type are by default not stored or indexed, any 
+			data added to them will be ignored outright. -->
+		<fieldtype name="ignored" stored="false" indexed="false"
+			multiValued="true" class="solr.StrField" />
+
+		<fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+			spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+			autoIndex="true" validationRule="repairBuffer0" distErrPct="0.025"
+			maxDistErr="0.001" distanceUnits="kilometers" />
+
+		<fieldType name="point" class="solr.PointType" dimension="2"
+			subFieldSuffix="_d" />
+
+		<fieldType name="location" class="solr.LatLonType"
+			subFieldSuffix="_coordinate" />
+
+		<fieldType name="currency" class="solr.CurrencyField"
+			precisionStep="8" defaultCurrency="USD" currencyConfig="currency.xml" />
+
+	</types>
+
+</schema>
