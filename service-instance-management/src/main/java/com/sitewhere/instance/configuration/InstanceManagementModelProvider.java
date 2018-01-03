@@ -154,7 +154,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	builder.description("Alternate configuration for MongoDB data persistence.");
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonDatastoreModel.addMongoDbAttributes(builder);
 
 	return builder.build();
@@ -250,7 +250,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createConnectorConfigurationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.ConnectorConfigurations.getRole().getName(),
-		IInstanceManagementParser.TopLevelElements.ConnectorConfigurations.getLocalName(), "database",
+		IInstanceManagementParser.TopLevelElements.ConnectorConfigurations.getLocalName(), "plug",
 		InstanceManagementRoleKeys.ConnectorConfigurations, this);
 
 	builder.description("Provides global connector configurations that can be reused in tenants.");
@@ -266,8 +266,8 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createSolrConnectorConfigurationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.SolrConfigurations.getRole().getName(),
-		IInstanceManagementParser.ConnectorConfigurationsElements.SolrConfigurations.getLocalName(), "database",
-		InstanceManagementRoleKeys.SolrConfigurations, this);
+		IInstanceManagementParser.ConnectorConfigurationsElements.SolrConfigurations.getLocalName(),
+		"search-plus", InstanceManagementRoleKeys.SolrConfigurations, this);
 
 	builder.description("Provides Solr configurations that can be reused in tenants.");
 
@@ -282,7 +282,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createDefaultSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.DefaultSolrConfiguration.getRole().getName(),
-		IInstanceManagementParser.SolrElements.DefaultSolrConfiguration.getLocalName(), "cogs",
+		IInstanceManagementParser.SolrElements.DefaultSolrConfiguration.getLocalName(), "search-plus",
 		InstanceManagementRoleKeys.DefaultSolrConfiguration, this);
 
 	builder.description("Provides default Solr configuration for tenants.");
@@ -299,12 +299,12 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     protected ElementNode createAlternateSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.AltSolrConfiguration.getRole().getName(),
-		IInstanceManagementParser.SolrElements.AlternateSolrConfiguration.getLocalName(), "cogs",
+		IInstanceManagementParser.SolrElements.AlternateSolrConfiguration.getLocalName(), "search-plus",
 		InstanceManagementRoleKeys.AltSolrConfiguration, this);
 
 	builder.description("Provides alternate Solr configuration for tenants.");
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonConnectorModel.adSolrConnectivityAttributes(builder);
 
 	return builder.build();

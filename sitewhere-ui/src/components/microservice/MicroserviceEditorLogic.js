@@ -159,8 +159,8 @@ export var wizard = {
     // Create new config element based on selected model.
     var childModel = wizard.findModelNodeByName(model, name)
     var childConfig = {
-      'name': childModel.localName,
       'id': generateUniqueId(),
+      'name': childModel.localName,
       'attributes': attributes
     }
     if (childModel.namespace) {
@@ -173,7 +173,7 @@ export var wizard = {
     config.children.push(childConfig)
     fixChildOrder(model, config)
     context.content = buildContent(context)
-    return this.pushRelativeContext(name)
+    return this.pushRelativeContext(childConfig.id, childConfig.name)
   },
 
   /** Delete the given element */
@@ -257,7 +257,7 @@ export var wizard = {
  */
 function hashConfigNodeAttributesByName (config) {
   let configByName = {}
-  if (config.attributes) {
+  if (config && config.attributes) {
     for (var i = 0; i < config.attributes.length; i++) {
       configByName[config.attributes[i].name] =
         config.attributes[i].value

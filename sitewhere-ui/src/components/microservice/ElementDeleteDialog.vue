@@ -2,6 +2,10 @@
   <span>
     <delete-dialog ref="dialog" title="Delete Configuration Element" width="400"
       :error="error" @delete="onDeleteConfirmed">
+      <v-card-text v-if="!element.optional" class="pb-0 mb-0">
+        <v-icon fa class="red--text text--darken-3 mr-1 mb-1">warning</v-icon>
+        <span class="title text--darken-5">Deleting Required Element!</span>
+      </v-card-text>
       <v-card-text>
         {{ query }}
       </v-card-text>
@@ -27,9 +31,9 @@ export default {
 
   computed: {
     query: function () {
-      if (this.element.required) {
+      if (!this.element.optional) {
         return 'Are you sure you want to delete \'' + this.element.name +
-          '\'? It is a required by the parent component.'
+          '\'? It is required by the parent component.'
       } else {
         return 'Are you sure you want to delete \'' + this.element.name + '\'?'
       }

@@ -26,14 +26,9 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 	    new IRoleKey[0], true)),
 
     /** Persistence configurations. */
-    PersistenceConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations,
-	    "Persistence Configurations", false, false, false,
-	    new IRoleKey[] { InstanceManagementRoleKeys.PersistenceConfigurationsElement })),
-
-    /** Persistence configurations element. */
-    PersistenceConfigurationsElement(ConfigurationRole.build(
-	    InstanceManagementRoleKeys.PersistenceConfigurationsElement, "Persistence Configuration", true, true, true,
-	    new IRoleKey[0], new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations })),
+    PersistenceConfigurations(
+	    ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations, "Persistence Configurations",
+		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations })),
 
     /** MongoDB persistence configurations. */
     MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
@@ -52,17 +47,13 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
     /** Connector configurations. */
     ConnectorConfigurations(
 	    ConfigurationRole.build(InstanceManagementRoleKeys.ConnectorConfigurations, "Connector Configurations",
-		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.ConnectorConfigurationsElement })),
-
-    /** Connector configurations element. */
-    ConnectorConfigurationsElement(ConfigurationRole.build(InstanceManagementRoleKeys.ConnectorConfigurationsElement,
-	    "Connector Configuration", true, true, true, new IRoleKey[0],
-	    new IRoleKey[] { InstanceManagementRoleKeys.SolrConfigurations })),
+		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.SolrConfigurations })),
 
     /** Solr connector configurations. */
-    SolrConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfigurations, "Solr Configuration",
-	    true, false, false, new IRoleKey[] { InstanceManagementRoleKeys.DefaultSolrConfiguration,
-		    InstanceManagementRoleKeys.AltSolrConfiguration })),
+    SolrConfigurations(
+	    ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfigurations, "Solr Connector Configuration", true,
+		    false, false, new IRoleKey[] { InstanceManagementRoleKeys.DefaultSolrConfiguration,
+			    InstanceManagementRoleKeys.AltSolrConfiguration })),
 
     /** Solr connector default configuration. */
     DefaultSolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultSolrConfiguration,
