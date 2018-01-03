@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
-import com.sitewhere.connectors.spi.IFilteredOutboundEventProcessor;
+import com.sitewhere.connectors.spi.IFilteredOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -28,8 +28,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class FilteredOutboundEventProcessor extends OutboundConnector
-	implements IFilteredOutboundEventProcessor {
+public abstract class FilteredOutboundConnector extends OutboundConnector implements IFilteredOutboundConnector {
 
     /** List of filters in order they should be applied */
     private List<IDeviceEventFilter> filters = new ArrayList<IDeviceEventFilter>();
@@ -64,8 +63,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
 
     /*
      * @see
-     * com.sitewhere.outbound.OutboundEventProcessor#onMeasurements(com.sitewhere.
-     * spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.OutboundConnector#onMeasurements(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
@@ -77,7 +76,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
      * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
@@ -87,8 +86,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see
-     * com.sitewhere.outbound.OutboundEventProcessor#onLocation(com.sitewhere.spi.
+     * @see com.sitewhere.connectors.OutboundConnector#onLocation(com.sitewhere.spi.
      * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
@@ -100,8 +98,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#
-     * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * @see
+     * com.sitewhere.connectors.spi.IFilteredOutboundConnector#onLocationNotFiltered
+     * (com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
@@ -109,9 +108,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.OutboundEventProcessor#onAlert(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceAlert)
+     * @see
+     * com.sitewhere.connectors.OutboundConnector#onAlert(com.sitewhere.spi.device.
+     * event.IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
     public final void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
@@ -122,8 +121,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
 
     /*
      * @see
-     * com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#onAlertNotFiltered
-     * (com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.spi.IFilteredOutboundConnector#onAlertNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
@@ -132,8 +131,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
 
     /*
      * @see
-     * com.sitewhere.outbound.OutboundEventProcessor#onStateChange(com.sitewhere.spi
-     * .device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.OutboundConnector#onStateChange(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceStateChange)
      */
     @Override
@@ -144,7 +143,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
      * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceStateChange)
      */
@@ -154,8 +153,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.OutboundEventProcessor#onCommandInvocation(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
+     * @see
+     * com.sitewhere.connectors.OutboundConnector#onCommandInvocation(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
@@ -167,7 +167,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
      * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
      * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
@@ -178,8 +178,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
 
     /*
      * @see
-     * com.sitewhere.outbound.OutboundEventProcessor#onCommandResponse(com.sitewhere
-     * .spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.OutboundConnector#onCommandResponse(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
@@ -191,7 +191,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * @see com.sitewhere.outbound.spi.IFilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
      * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
      * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
@@ -218,12 +218,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundConnector
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
-     * getFilters ()
+     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#getFilters()
      */
+    @Override
     public List<IDeviceEventFilter> getFilters() {
 	return filters;
     }

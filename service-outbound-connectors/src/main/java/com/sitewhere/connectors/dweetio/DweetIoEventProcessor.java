@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
+public class DweetIoEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

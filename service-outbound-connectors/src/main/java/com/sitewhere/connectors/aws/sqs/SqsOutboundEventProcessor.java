@@ -18,7 +18,7 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class SqsOutboundEventProcessor extends FilteredOutboundEventProcessor {
+public class SqsOutboundEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
 import com.sitewhere.communication.hazelcast.IHazelcastConfiguration;
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
+public class HazelcastEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

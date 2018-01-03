@@ -16,7 +16,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
@@ -36,7 +36,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @author Derek
  */
-public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
+public class ZoneTestEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

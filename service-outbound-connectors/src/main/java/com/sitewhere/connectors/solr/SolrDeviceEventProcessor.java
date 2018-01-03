@@ -24,7 +24,7 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
 import com.sitewhere.configuration.instance.solr.SolrConfiguration;
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class SolrDeviceEventProcessor extends FilteredOutboundEventProcessor {
+public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

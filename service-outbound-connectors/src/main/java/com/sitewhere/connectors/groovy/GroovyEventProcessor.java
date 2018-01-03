@@ -10,7 +10,7 @@ package com.sitewhere.connectors.groovy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
@@ -37,7 +37,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
+public class GroovyEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

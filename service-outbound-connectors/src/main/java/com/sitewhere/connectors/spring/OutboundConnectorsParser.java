@@ -40,7 +40,7 @@ import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulti
 import com.sitewhere.connectors.groovy.routing.GroovyRouteBuilder;
 import com.sitewhere.connectors.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.connectors.initialstate.InitialStateEventProcessor;
-import com.sitewhere.connectors.mqtt.MqttOutboundEventProcessor;
+import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
 import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundEventProcessor;
 import com.sitewhere.connectors.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -252,7 +252,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseMqttConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);

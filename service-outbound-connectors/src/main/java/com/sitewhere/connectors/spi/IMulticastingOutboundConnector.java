@@ -15,7 +15,7 @@ import com.sitewhere.connectors.spi.routing.IRouteBuilder;
  * 
  * @author Derek
  */
-public interface IMulticastingOutboundEventProcessor<T> extends IOutboundConnector {
+public interface IMulticastingOutboundConnector<T> extends IOutboundConnector {
 
     /**
      * Get the configured multcaster implementation.

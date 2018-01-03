@@ -17,8 +17,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
-import com.sitewhere.connectors.spi.IMulticastingOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
+import com.sitewhere.connectors.spi.IMulticastingOutboundConnector;
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
 import com.sitewhere.spi.SiteWhereException;
@@ -37,13 +37,13 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Extension of {@link FilteredOutboundEventProcessor} that sends messages to
+ * Extension of {@link FilteredOutboundConnector} that sends messages to
  * RabbitMQ via AMQP.
  * 
  * @author Derek
  */
-public class RabbitMqOutboundEventProcessor extends FilteredOutboundEventProcessor
-	implements IMulticastingOutboundEventProcessor<String> {
+public class RabbitMqOutboundEventProcessor extends FilteredOutboundConnector
+	implements IMulticastingOutboundConnector<String> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

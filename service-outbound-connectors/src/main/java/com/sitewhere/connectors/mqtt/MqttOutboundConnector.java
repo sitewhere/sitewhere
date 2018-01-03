@@ -22,8 +22,8 @@ import org.fusesource.mqtt.client.QoS;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.mqtt.IMqttComponent;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
-import com.sitewhere.connectors.FilteredOutboundEventProcessor;
-import com.sitewhere.connectors.spi.IMulticastingOutboundEventProcessor;
+import com.sitewhere.connectors.FilteredOutboundConnector;
+import com.sitewhere.connectors.spi.IMulticastingOutboundConnector;
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,12 +39,12 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Outbound event processor that sends events to an MQTT topic.
+ * Outbound connector that sends events to an MQTT topic.
  * 
  * @author Derek
  */
-public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
-	implements IMulticastingOutboundEventProcessor<String>, IMqttComponent {
+public class MqttOutboundConnector extends FilteredOutboundConnector
+	implements IMulticastingOutboundConnector<String>, IMqttComponent {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -94,11 +94,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     private IRouteBuilder<String> routeBuilder;
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -135,11 +133,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -168,8 +164,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementsNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
@@ -180,8 +177,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.FilteredOutboundConnector#onLocationNotFiltered(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
@@ -191,7 +188,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * com.sitewhere.connectors.FilteredOutboundConnector#onAlertNotFiltered(com.
      * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */
@@ -201,7 +198,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.FilteredOutboundConnector#
      * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
      * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
@@ -212,7 +209,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
+     * @see com.sitewhere.connectors.FilteredOutboundConnector#
      * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
      * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
@@ -255,7 +252,6 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
      */
     protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
 	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
-	LOGGER.info("Publishing event " + event.getId() + " to route: " + topic);
     }
 
     /*
@@ -269,10 +265,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.
-     * IMulticastingOutboundEventProcessor# getMulticaster()
+     * @see
+     * com.sitewhere.connectors.spi.IMulticastingOutboundConnector#getMulticaster()
      */
     @Override
     public IDeviceEventMulticaster<String> getMulticaster() {
@@ -284,10 +278,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.processor.
-     * IMulticastingOutboundEventProcessor# getRouteBuilder()
+     * @see
+     * com.sitewhere.connectors.spi.IMulticastingOutboundConnector#getRouteBuilder()
      */
     @Override
     public IRouteBuilder<String> getRouteBuilder() {
@@ -299,9 +291,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getProtocol()
      */
     @Override
     public String getProtocol() {
@@ -313,9 +303,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getHostname()
      */
     @Override
     public String getHostname() {
@@ -327,9 +315,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPort()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getPort()
      */
     @Override
     public String getPort() {
@@ -341,9 +327,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getUsername()
      */
     @Override
     public String getUsername() {
@@ -355,9 +339,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getPassword()
      */
     @Override
     public String getPassword() {
@@ -369,10 +351,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath( )
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getTrustStorePath()
      */
     @Override
     public String getTrustStorePath() {
@@ -384,11 +363,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
-     * getTrustStorePassword()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getTrustStorePassword()
      */
+    @Override
     public String getTrustStorePassword() {
 	return trustStorePassword;
     }
@@ -398,10 +375,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getKeyStorePath()
      */
+    @Override
     public String getKeyStorePath() {
 	return keyStorePath;
     }
@@ -411,11 +387,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#
-     * getKeyStorePassword()
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getKeyStorePassword()
      */
+    @Override
     public String getKeyStorePassword() {
 	return keyStorePassword;
     }

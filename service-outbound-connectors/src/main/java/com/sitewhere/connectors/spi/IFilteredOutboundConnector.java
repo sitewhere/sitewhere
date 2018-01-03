@@ -19,11 +19,11 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
- * Adds concept of filtering to outbound event processors.
+ * Adds concept of filtering to outbound connectors.
  * 
  * @author Derek
  */
-public interface IFilteredOutboundEventProcessor extends IOutboundConnector {
+public interface IFilteredOutboundConnector extends IOutboundConnector {
 
     /**
      * Get the list of configured filters.
