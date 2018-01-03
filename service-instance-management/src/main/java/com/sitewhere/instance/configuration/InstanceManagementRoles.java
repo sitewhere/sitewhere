@@ -21,7 +21,8 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 
     /** Root instance management role. */
     InstanceManagement(ConfigurationRole.build(InstanceManagementRoleKeys.InstanceManagement, "Instance Management",
-	    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.PersistenceConfigurations },
+	    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.PersistenceConfigurations,
+		    InstanceManagementRoleKeys.ConnectorConfigurations },
 	    new IRoleKey[0], true)),
 
     /** Persistence configurations. */
