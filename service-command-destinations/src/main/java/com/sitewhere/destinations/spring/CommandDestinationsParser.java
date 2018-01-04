@@ -10,9 +10,13 @@ package com.sitewhere.destinations.spring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
+
+import com.sitewhere.destinations.CommandDestinationsManager;
+import com.sitewhere.spi.microservice.spring.CommandDestinationsBeans;
 
 /**
  * Parses elements related to command destinations.
@@ -34,6 +38,9 @@ public class CommandDestinationsParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(CommandDestinationsManager.class);
+	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_DESTINATION_MANAGER,
+		manager.getBeanDefinition());
 	return null;
     }
 }

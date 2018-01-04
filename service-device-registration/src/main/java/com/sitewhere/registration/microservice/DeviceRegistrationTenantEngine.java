@@ -96,16 +96,16 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop unregistered events consumer.
-	start.addStopStep(this, getUnregisteredEventsConsumer());
+	stop.addStopStep(this, getUnregisteredEventsConsumer());
 
 	// Stop registration manager.
-	start.addStopStep(this, getRegistrationManager());
+	stop.addStopStep(this, getRegistrationManager());
 
 	// Execute shutdown steps.
-	start.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*

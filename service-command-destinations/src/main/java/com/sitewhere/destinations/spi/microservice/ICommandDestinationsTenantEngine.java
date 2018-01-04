@@ -7,6 +7,8 @@
  */
 package com.sitewhere.destinations.spi.microservice;
 
+import com.sitewhere.destinations.spi.ICommandDestinationsManager;
+import com.sitewhere.destinations.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +18,18 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface ICommandDestinationsTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get manager that executes command destination logic.
+     * 
+     * @return
+     */
+    public ICommandDestinationsManager getCommandDestinationsManager();
+
+    /**
+     * Get Kafka consumer for command invocations.
+     * 
+     * @return
+     */
+    public IEnrichedCommandInvocationsConsumer getEnrichedCommandInvocationsConsumer();
 }
