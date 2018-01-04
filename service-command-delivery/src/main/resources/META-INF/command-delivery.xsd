@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/command-delivery"
+	xmlns:cn="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/command-delivery"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
+
+	<xsd:element name="command-delivery" type="commandDeliveryType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere command delivery microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Contains information about command delivery -->
+	<xsd:complexType name="commandDeliveryType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-command-router" />
+			<xsd:element ref="abstract-command-destination"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for command routers to allow substitutionGroups -->
+	<xsd:element name="abstract-command-router" abstract="true"
+		type="abstractCommandRouterType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for command router elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common command router information -->
+	<xsd:complexType name="abstractCommandRouterType" />
+
+	<!-- Reference to an command router defined as a Spring bean -->
+	<xsd:element name="command-router" type="commandRouterReferenceType"
+		substitutionGroup="abstract-command-router">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command router
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandRouterReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandRouterType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Router that chooses destination based on device specification -->
+	<xsd:element name="specification-mapping-router" type="specificationMappingRouterType"
+		substitutionGroup="abstract-command-router">
+		<xsd:annotation>
+			<xsd:documentation>
+				Router that routes commands based on device
+				specification.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="specificationMappingRouterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandRouterType">
+				<xsd:sequence>
+					<xsd:element name="mapping"
+						type="specificationMappingRouterMappingType" minOccurs="0"
+						maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Mapping of a specification token to a
+								destination id.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="defaultDestination" type="xsd:token"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Allows a default destination to be set for
+							specifications that do
+							not have a specific mapping.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="specificationMappingRouterMappingType">
+		<xsd:attribute name="specification" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="destination" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+
+	<!-- Router that uses Groovy script to choose command destination -->
+	<xsd:element name="groovy-command-router" type="groovyCommandRouterType"
+		substitutionGroup="abstract-command-router">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command router
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyCommandRouterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandRouterType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic
+							needed to choose destination for a command.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for command destinations to allow substitutionGroups -->
+	<xsd:element name="abstract-command-destination" abstract="true"
+		type="abstractCommandDestinationType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for command router elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common command destination information -->
+	<xsd:complexType name="abstractCommandDestinationType">
+		<xsd:attribute name="destinationId" type="xsd:token"
+			use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique identifier for command destination.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Reference to a command destination defined as a Spring bean -->
+	<xsd:element name="command-destination" type="commandDestinationReferenceType"
+		substitutionGroup="abstract-command-destination">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command destination
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandDestinationReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandDestinationType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for command encoders to allow substitutionGroups -->
+	<xsd:element name="abstract-command-encoder" abstract="true"
+		type="abstractCommandEncoderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for command encoder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common command encoder information -->
+	<xsd:complexType name="abstractCommandEncoderType" />
+
+	<!-- Reference to a command encoder defined as a Spring bean -->
+	<xsd:element name="command-encoder" type="commandEncoderReferenceType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>References a command encoder defined in an
+				external bean
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandEncoderReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using standard SiteWhere Google Protocol Buffer naming 
+		convention -->
+	<xsd:element name="protobuf-command-encoder" type="swProtobufCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes commands based on
+				standard SiteWhere
+				Google Protocol Buffer naming convention.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swProtobufCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using protbuf for system commands and Java serialization 
+		for custom commands -->
+	<xsd:element name="java-protobuf-hybrid-encoder" type="swJavaProtobufHybridEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes system commands using
+				protocol buffers but encodes custom commands using serialized Java
+				objects. This allows Java clients to use the commands directly
+				rather than having to recompile stubs based on a proto.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJavaProtobufHybridEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using JSON serialization -->
+	<xsd:element name="json-command-encoder" type="swJsonCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes both system and
+				custom commands as JSON for simplified client use.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJsonCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using a Groovy script -->
+	<xsd:element name="groovy-command-encoder" type="swGroovyCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that hands off system and custom
+				commands to a Groovy script which applies logic to encode the
+				payload to a byte array.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic
+							needed to encode system and custom commands.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Encodes commands using a Groovy script returning a String -->
+	<xsd:element name="groovy-string-command-encoder" type="swGroovyStringCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that hands off system and custom
+				commands to a Groovy script which applies logic to encode the
+				payload to a String.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyStringCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic
+							needed to encode system and custom commands.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Command destination that delivers to an MQTT topic -->
+	<xsd:element name="mqtt-command-destination" type="mqttCommandDestinationType"
+		substitutionGroup="abstract-command-destination">
+		<xsd:annotation>
+			<xsd:documentation>
+				Command destination that routes commands to an
+				MQTT topic.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mqttCommandDestinationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandDestinationType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-command-encoder" />
+					<xsd:choice minOccurs="0">
+						<xsd:element name="parameter-extractor"
+							type="commandDeliveryParameterExtractorReferenceType">
+							<xsd:annotation>
+								<xsd:documentation>
+									References a custom command delivery
+									parameter extractor implementation that extracts MQTT delivery
+									information from the device.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="hardware-id-topic-extractor"
+							type="hardwareIdMqttParameterExtractorType">
+							<xsd:annotation>
+								<xsd:documentation>
+									Substitutes device hardware id into
+									expressions to determine the outbound topics to which MQTT
+									messages will be sent.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="cn:mqtt-broker-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- MQTT parameter extractor that substitutes device hardware id into expressions -->
+	<xsd:complexType name="hardwareIdMqttParameterExtractorType">
+		<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command destination that uses CoAP for delivery -->
+	<xsd:element name="coap-command-destination" type="coapCommandDestinationType"
+		substitutionGroup="abstract-command-destination">
+		<xsd:annotation>
+			<xsd:documentation>
+				Command destination that routes commands via CoAP.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="coapCommandDestinationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandDestinationType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-command-encoder" />
+					<xsd:choice minOccurs="0">
+						<xsd:element name="parameter-extractor"
+							type="commandDeliveryParameterExtractorReferenceType">
+							<xsd:annotation>
+								<xsd:documentation>
+									References a custom command delivery
+									parameter extractor implementation that extracts CoAP delivery
+									information from the device.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="metadata-coap-parameter-extractor"
+							type="metadataCoapParameterExtractorType">
+							<xsd:annotation>
+								<xsd:documentation>
+									Extracts CoAP connection information from
+									device metadata.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- CoAP parameter extractor that pulls connection information from device 
+		metadata -->
+	<xsd:complexType name="metadataCoapParameterExtractorType">
+		<xsd:attribute name="hostnameMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds hostname for CoAP
+					client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="portMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds port for CoAP client
+					connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="urlMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds URL for CoAP client
+					connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Groovy script that extracts SMS parameters -->
+	<xsd:complexType name="swGroovySmsParameterExtractorType">
+		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Path to a Groovy script that executes logic
+					needed to extract SMS parameters from the current assignment.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command destination that uses Twilio for delivery -->
+	<xsd:element name="twilio-command-destination" type="twilioCommandDestinationType"
+		substitutionGroup="abstract-command-destination">
+		<xsd:annotation>
+			<xsd:documentation>
+				Command destination that routes commands via
+				Twilio APIs.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="twilioCommandDestinationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandDestinationType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-command-encoder" />
+					<xsd:choice minOccurs="0">
+						<xsd:element name="parameter-extractor"
+							type="commandDeliveryParameterExtractorReferenceType">
+							<xsd:annotation>
+								<xsd:documentation>
+									References a custom command delivery
+									parameter extractor implementation that extracts CoAP delivery
+									information from the device.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="groovy-sms-parameter-extractor"
+							type="swGroovySmsParameterExtractorType">
+							<xsd:annotation>
+								<xsd:documentation>
+									Extracts SMS parameter information using a
+									Groovy script.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:sequence>
+				<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandExecutionEncoderReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandDeliveryParameterExtractorReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandDeliveryProviderReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+</xsd:schema>

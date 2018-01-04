@@ -14,6 +14,9 @@ package com.sitewhere.configuration.parser;
  */
 public interface IBatchOperationsParser {
 
+    // Root element name.
+    public static final String ROOT = "batch-operations";
+
     public static enum Elements {
 
 	/** Default MongoDB datastore */

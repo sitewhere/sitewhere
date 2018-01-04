@@ -8,7 +8,6 @@
 package com.sitewhere.batch.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.old.IDeviceCommunicationParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -67,9 +66,8 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createBatchOperationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management",
-		IDeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "list-ol",
-		BatchOperationsRoleKeys.BatchOperations, this);
+	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management", IBatchOperationsParser.ROOT,
+		"list-ol", BatchOperationsRoleKeys.BatchOperations, this);
 
 	builder.description("Manage processing of batch operations including persistence and throttling.");
 	return builder.build();

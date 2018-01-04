@@ -19,7 +19,7 @@
           <span>{{ assignment.assetName }}</span>
         </header-field>
         <header-field label="Device">
-          <span>{{ assignment.device.assetName }}</span>
+          <span>{{ assignment.device.specification.assetName }}</span>
         </header-field>
         <header-field label="Created">
           <span>{{ formatDate(assignment.createdDate) }}</span>

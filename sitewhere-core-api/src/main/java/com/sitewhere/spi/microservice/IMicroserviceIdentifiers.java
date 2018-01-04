@@ -20,8 +20,8 @@ public interface IMicroserviceIdentifiers {
     /** Batch operations microservice */
     public static final String BATCH_OPERATIONS = "batch-operations";
 
-    /** Command destinations microservice */
-    public static final String COMMAND_DESTINATIONS = "command-destinations";
+    /** Command delivery microservice */
+    public static final String COMMAND_DELIVERY = "command-delivery";
 
     /** Device management microservice */
     public static final String DEVICE_MANAGEMENT = "device-management";

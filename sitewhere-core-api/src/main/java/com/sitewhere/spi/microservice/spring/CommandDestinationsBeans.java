@@ -14,6 +14,6 @@ package com.sitewhere.spi.microservice.spring;
  */
 public class CommandDestinationsBeans {
 
-    /** Bean id for command destination manager configuration */
-    public static final String BEAN_COMMAND_DESTINATION_MANAGER = "commandDestinationManager";
+    /** Bean id for command destinations manager configuration */
+    public static final String BEAN_COMMAND_DESTINATIONS_MANAGER = "commandDestinationsManager";
 }

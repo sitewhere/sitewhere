@@ -1,0 +1,1 @@
+http\://sitewhere.io/schema/sitewhere/microservice/command-delivery=com.sitewhere.commands.spring.CommandDeliveryNamespaceHandler
