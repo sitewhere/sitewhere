@@ -23,6 +23,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -82,8 +83,13 @@ public class OutboundPayloadEnrichmentLogic {
 
 	// Send enriched payload to topic.
 	GEnrichedEventPayload grpc = KafkaModelConverter.asGrpcEnrichedEventPayload(enriched);
-	getTenantEngine().getEnrichedEventsProducer().send(device.getHardwareId(),
-		KafkaModelMarshaler.buildEnrichedEventPayloadMessage(grpc));
+	byte[] message = KafkaModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
+	getTenantEngine().getEnrichedEventsProducer().send(device.getHardwareId(), message);
+
+	// Send enriched command invocations to topic.
+	if (event.getEventType() == DeviceEventType.CommandInvocation) {
+	    getTenantEngine().getEnrichedCommandInvocationsProducer().send(device.getHardwareId(), message);
+	}
     }
 
     /**
