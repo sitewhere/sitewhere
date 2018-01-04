@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.device;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,14 +29,26 @@ public class DeviceManagementCacheProviders {
     /** Cache id for site cache */
     public static final String ID_SITE_CACHE = "si";
 
+    /** Cache id for site by id cache */
+    public static final String ID_SITE_ID_CACHE = "sii";
+
     /** Cache id for device specification cache */
     public static final String ID_SPECIFICATION_CACHE = "sp";
+
+    /** Cache id for device specification by id cache */
+    public static final String ID_SPECIFICATION_ID_CACHE = "spi";
 
     /** Cache id for device cache */
     public static final String ID_DEVICE_CACHE = "dv";
 
+    /** Cache id for device by id cache */
+    public static final String ID_DEVICE_ID_CACHE = "dvi";
+
     /** Cache id for device assignment cache */
     public static final String ID_ASSIGNMENT_CACHE = "as";
+
+    /** Cache id for device assignment by id cache */
+    public static final String ID_ASSIGNMENT_ID_CACHE = "asi";
 
     /**
      * Cache for sites.
@@ -48,6 +62,29 @@ public class DeviceManagementCacheProviders {
 
 	public SiteCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_SITE_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
+     * Cache for sites by id.
+     * 
+     * @author Derek
+     */
+    public static class SiteByIdCache extends CacheProvider<UUID, ISite> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public SiteByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_SITE_ID_CACHE, createOnStartup);
 	}
 
 	/*
@@ -83,6 +120,29 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
+     * Cache for device specifications by id.
+     * 
+     * @author Derek
+     */
+    public static class DeviceSpecificationByIdCache extends CacheProvider<UUID, IDeviceSpecification> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public DeviceSpecificationByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_SPECIFICATION_ID_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
      * Cache for devices.
      * 
      * @author Derek
@@ -106,6 +166,29 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
+     * Cache for devices by id.
+     * 
+     * @author Derek
+     */
+    public static class DeviceByIdCache extends CacheProvider<UUID, IDevice> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public DeviceByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_DEVICE_ID_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
      * Cache for device assignments.
      * 
      * @author Derek
@@ -117,6 +200,29 @@ public class DeviceManagementCacheProviders {
 
 	public DeviceAssignmentCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_ASSIGNMENT_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
+     * Cache for device assignments by id.
+     * 
+     * @author Derek
+     */
+    public static class DeviceAssignmentByIdCache extends CacheProvider<UUID, IDeviceAssignment> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public DeviceAssignmentByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_ASSIGNMENT_ID_CACHE, createOnStartup);
 	}
 
 	/*
