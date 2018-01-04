@@ -152,6 +152,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeSite(true);
+	helper.setIncludeSpecification(true);
 	return helper.convert(assignment, getAssetResolver());
     }
 

@@ -33,6 +33,12 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
+/**
+ * Consumes command invocations from a well-known Kafka topic and makes them
+ * available to the command destinations manager.
+ * 
+ * @author Derek
+ */
 public class EnrichedCommandInvocationsConsumer extends MicroserviceKafkaConsumer
 	implements IEnrichedCommandInvocationsConsumer {
 

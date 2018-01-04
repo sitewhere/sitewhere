@@ -42,7 +42,7 @@
       </v-tabs>
       <invocation-create-dialog v-if="active === 'invocations'"
         :token="assignment.token" @invocationAdded="onInvocationAdded"
-        :specificationToken="assignment.device.specificationToken"/>
+        :specificationToken="assignment.device.specification.token"/>
     </v-app>
   </div>
 </template>

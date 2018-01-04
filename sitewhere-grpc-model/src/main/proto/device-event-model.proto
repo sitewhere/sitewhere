@@ -70,7 +70,7 @@ message GDeviceCommandInvocationCreateRequest {
 	GDeviceCommandInitiator initiator = 1;
 	string initiatorId = 2;
 	GDeviceCommandTarget target = 3;
-	string targetId = 4;
+	GOptionalString targetId = 4;
 	string commandToken = 5;
 	map<string, string> parameterValues = 6;
 	GDeviceCommandStatus status = 7;
@@ -170,7 +170,7 @@ message GDeviceCommandInvocation {
 	GDeviceCommandInitiator initiator = 1;
 	string initiatorId = 2;
 	GDeviceCommandTarget target = 3;
-	string targetId = 4;
+	GOptionalString targetId = 4;
 	string commandToken = 5;
 	map<string, string> parameterValues = 6;
 	GDeviceCommandStatus status = 7;
