@@ -51,7 +51,7 @@ public class User extends MetadataProviderEntity implements IUser, Serializable 
     private AccountStatus status;
 
     /** List of granted authorities */
-    private List<String> authorities = new ArrayList<String>();
+    private List<String> authorities = new ArrayList<>();
 
     /*
      * (non-Javadoc)

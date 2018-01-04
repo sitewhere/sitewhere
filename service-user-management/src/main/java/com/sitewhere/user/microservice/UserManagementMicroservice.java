@@ -13,6 +13,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.hazelcast.server.CacheAwareUserManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
@@ -23,6 +24,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.configuration.UserManagementModelProvider;
 import com.sitewhere.user.grpc.UserManagementGrpcServer;
+import com.sitewhere.user.kafka.UserManagementKafkaTriggers;
 import com.sitewhere.user.persistence.UserManagementAccessor;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -129,9 +131,10 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     protected IUserManagement initializeUserManagement(ApplicationContext context) throws SiteWhereException {
 	try {
 	    IUserManagement bean = (IUserManagement) context.getBean(UserManagementBeans.BEAN_USER_MANAGEMENT);
-	    return bean;
+	    IUserManagement cached = new CacheAwareUserManagement(bean, this);
+	    return new UserManagementKafkaTriggers(cached);
 	} catch (NoSuchBeanDefinitionException e) {
-	    throw new SiteWhereException("Tenant management bean not found.", e);
+	    throw new SiteWhereException("User management bean not found.", e);
 	}
     }
 

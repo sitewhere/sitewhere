@@ -5,12 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.tenant;
+package com.sitewhere.tenant.kafka;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.tenant.TenantManagementDecorator;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
 /**

@@ -41,6 +41,6 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel> 
      */
     @Override
     public IUserManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new UserManagementApiChannel(this, getMicroservice(), host);
+	return new CachedUserManagementApiChannel(this, getMicroservice(), host);
     }
 }
