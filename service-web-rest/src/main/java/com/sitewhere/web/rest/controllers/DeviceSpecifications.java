@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.device.communication.protobuf.SpecificationProtoBuilder;
+import com.sitewhere.communication.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;

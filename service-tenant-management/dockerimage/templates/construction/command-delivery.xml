@@ -21,6 +21,7 @@
 		<cd:mqtt-command-destination
 			destinationId="default" hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}">
 			<cd:json-command-encoder />
+			<cd:hardware-id-topic-extractor />
 		</cd:mqtt-command-destination>
 
 	</cd:command-delivery>

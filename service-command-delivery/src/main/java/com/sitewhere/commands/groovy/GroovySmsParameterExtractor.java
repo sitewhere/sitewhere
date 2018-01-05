@@ -7,7 +7,7 @@
  */
 package com.sitewhere.commands.groovy;
 
-import com.sitewhere.device.communication.sms.SmsParameters;
+import com.sitewhere.commands.destination.sms.SmsParameters;
 
 /**
  * Command extractor that expects an {@link SmsParameters} object to be returned

@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import com.sitewhere.commands.spi.CommandEncodeException;
+import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -19,8 +21,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.device.communication.CommandEncodeException;
-import com.sitewhere.spi.device.communication.ICommandExecutionEncoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;

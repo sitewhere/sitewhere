@@ -18,8 +18,7 @@ configurations {
 }
 
 dependencies {
-	compile project(':sitewhere-core')
-	compile project(':sitewhere-protobuf')
+	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
 	
 	compile ('org.springframework.boot:spring-boot-starter-web')

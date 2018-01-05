@@ -12,7 +12,25 @@ dependencies {
     
     // Hazelcast dependencies.
     compile group: 'com.hazelcast', name: 'hazelcast'
+	
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
 }
+
 test {
     exclude '**/*'
+}
+
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+protobuf {
+
+	// Configure the protoc executable
+	protoc {
+	
+		// Download from repositories.
+		artifact = "com.google.protobuf:protoc:3.3.0"
+	}
+	
+	generatedFilesBaseDir = "$projectDir/src/generated"
 }

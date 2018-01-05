@@ -14,7 +14,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequ
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
@@ -30,14 +29,9 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     /** Device event management */
     private IDeviceEventManagement deviceEventManangement;
 
-    /** Device communication */
-    private IDeviceCommunication deviceCommunication;
-
-    public DeviceManagementTriggers(IDeviceManagement delegate, IDeviceEventManagement deviceEventManangement,
-	    IDeviceCommunication deviceCommunication) {
+    public DeviceManagementTriggers(IDeviceManagement delegate, IDeviceEventManagement deviceEventManangement) {
 	super(delegate);
 	this.deviceEventManangement = deviceEventManangement;
-	this.deviceCommunication = deviceCommunication;
     }
 
     /*
@@ -91,13 +85,5 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
     public void setDeviceEventManangement(IDeviceEventManagement deviceEventManangement) {
 	this.deviceEventManangement = deviceEventManangement;
-    }
-
-    public IDeviceCommunication getDeviceCommunication() {
-	return deviceCommunication;
-    }
-
-    public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
-	this.deviceCommunication = deviceCommunication;
     }
 }

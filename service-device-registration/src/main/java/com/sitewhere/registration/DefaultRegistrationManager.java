@@ -30,7 +30,6 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
-import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
@@ -184,7 +183,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	RegistrationAckCommand command = new RegistrationAckCommand();
 	command.setReason((newRegistration) ? RegistrationSuccessReason.NewRegistration
 		: RegistrationSuccessReason.AlreadyRegistered);
-	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -198,7 +197,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.NewDevicesNotAllowed);
 	command.setErrorMessage("Registration manager does not allow new devices to be created.");
-	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -212,7 +211,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.InvalidSpecificationToken);
 	command.setErrorMessage("Specification token passed in registration was invalid.");
-	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /**
@@ -226,7 +225,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.SiteTokenRequired);
 	command.setErrorMessage("Automatic site assignment disabled. Site token required.");
-	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /*
@@ -249,7 +248,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	} catch (SiteWhereException e) {
 	    command.setResult(DeviceMappingResult.MappingFailedDueToExisting);
 	}
-	getDeviceCommunication().deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
     /*
@@ -330,9 +329,5 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     private IDeviceManagement getDeviceManagement() {
 	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
 		.getApiChannel();
-    }
-
-    private IDeviceCommunication getDeviceCommunication() {
-	throw new RuntimeException("No accessor for device communication API defined.");
     }
 }

@@ -2,7 +2,6 @@ description = 'SiteWhere Command Delivery Microservice'
 
 dependencies {
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-protobuf')
 	compile project(':sitewhere-microservice')
 	
 	// Twilio dependencies.

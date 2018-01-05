@@ -10,8 +10,8 @@ package com.sitewhere.sources.decoder.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.util.Set;
 
-import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model;
-import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere;
+import com.sitewhere.communication.protobuf.proto.Sitewhere.Model;
+import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventEncoder;
 import com.sitewhere.spi.SiteWhereException;

@@ -130,46 +130,6 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for command destinations to allow substitutionGroups -->
-	<xsd:element name="abstract-command-destination" abstract="true"
-		type="abstractCommandDestinationType">
-		<xsd:annotation>
-			<xsd:documentation>
-				A placeholder for command router elements.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-
-	<!-- Common command destination information -->
-	<xsd:complexType name="abstractCommandDestinationType">
-		<xsd:attribute name="destinationId" type="xsd:token"
-			use="required">
-			<xsd:annotation>
-				<xsd:documentation>
-					Unique identifier for command destination.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-	<!-- Reference to a command destination defined as a Spring bean -->
-	<xsd:element name="command-destination" type="commandDestinationReferenceType"
-		substitutionGroup="abstract-command-destination">
-		<xsd:annotation>
-			<xsd:documentation>
-				Reference to a custom command destination
-				implementation.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="commandDestinationReferenceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractCommandDestinationType">
-				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- Used as a placeholder for command encoders to allow substitutionGroups -->
 	<xsd:element name="abstract-command-encoder" abstract="true"
 		type="abstractCommandEncoderType">
@@ -305,6 +265,138 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for parameter extractors to allow substitutionGroups -->
+	<xsd:element name="abstract-parameter-extractor" abstract="true"
+		type="abstractParameterExtractorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for parameter extractor elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common parameter extractor information -->
+	<xsd:complexType name="abstractParameterExtractorType">
+	</xsd:complexType>
+
+	<!-- Reference to a parameter extractor defined as a Spring bean -->
+	<xsd:element name="parameter-extractor" type="parameterExtractorReferenceType"
+		substitutionGroup="abstract-parameter-extractor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command destination
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="parameterExtractorReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractParameterExtractorType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Parameter extractor that supplies topic for MQTT command destination -->
+	<xsd:element name="hardware-id-topic-extractor" type="hardwareIdTopicExtractorType"
+		substitutionGroup="abstract-parameter-extractor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command destination
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hardwareIdTopicExtractorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractParameterExtractorType">
+				<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- CoAP parameter extractor that pulls connection info from device metadata -->
+	<xsd:element name="metadata-coap-parameter-extractor" type="coapParameterExtractorType"
+		substitutionGroup="abstract-parameter-extractor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Parameter extractor that pulls connection
+				information from device metadata.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="coapParameterExtractorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractParameterExtractorType">
+				<xsd:attribute name="hostnameMetadataField" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Metadata field that holds hostname for CoAP
+							client connection.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="portMetadataField" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Metadata field that holds port for CoAP client
+							connection.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="urlMetadataField" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Metadata field that holds URL for CoAP client
+							connection.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for command destinations to allow substitutionGroups -->
+	<xsd:element name="abstract-command-destination" abstract="true"
+		type="abstractCommandDestinationType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for command router elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common command destination information -->
+	<xsd:complexType name="abstractCommandDestinationType">
+		<xsd:attribute name="destinationId" type="xsd:token"
+			use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique identifier for command destination.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Reference to a command destination defined as a Spring bean -->
+	<xsd:element name="command-destination" type="commandDestinationReferenceType"
+		substitutionGroup="abstract-command-destination">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reference to a custom command destination
+				implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandDestinationReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandDestinationType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Command destination that delivers to an MQTT topic -->
 	<xsd:element name="mqtt-command-destination" type="mqttCommandDestinationType"
 		substitutionGroup="abstract-command-destination">
@@ -320,38 +412,11 @@
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
 					<xsd:element ref="abstract-command-encoder" />
-					<xsd:choice minOccurs="0">
-						<xsd:element name="parameter-extractor"
-							type="commandDeliveryParameterExtractorReferenceType">
-							<xsd:annotation>
-								<xsd:documentation>
-									References a custom command delivery
-									parameter extractor implementation that extracts MQTT delivery
-									information from the device.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-						<xsd:element name="hardware-id-topic-extractor"
-							type="hardwareIdMqttParameterExtractorType">
-							<xsd:annotation>
-								<xsd:documentation>
-									Substitutes device hardware id into
-									expressions to determine the outbound topics to which MQTT
-									messages will be sent.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:choice>
+					<xsd:element ref="abstract-parameter-extractor" />
 				</xsd:sequence>
 				<xsd:attributeGroup ref="cn:mqtt-broker-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>
-
-	<!-- MQTT parameter extractor that substitutes device hardware id into expressions -->
-	<xsd:complexType name="hardwareIdMqttParameterExtractorType">
-		<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Command destination that uses CoAP for delivery -->
@@ -368,59 +433,10 @@
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
 					<xsd:element ref="abstract-command-encoder" />
-					<xsd:choice minOccurs="0">
-						<xsd:element name="parameter-extractor"
-							type="commandDeliveryParameterExtractorReferenceType">
-							<xsd:annotation>
-								<xsd:documentation>
-									References a custom command delivery
-									parameter extractor implementation that extracts CoAP delivery
-									information from the device.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-						<xsd:element name="metadata-coap-parameter-extractor"
-							type="metadataCoapParameterExtractorType">
-							<xsd:annotation>
-								<xsd:documentation>
-									Extracts CoAP connection information from
-									device metadata.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:choice>
+					<xsd:element ref="abstract-parameter-extractor" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>
-
-	<!-- CoAP parameter extractor that pulls connection information from device 
-		metadata -->
-	<xsd:complexType name="metadataCoapParameterExtractorType">
-		<xsd:attribute name="hostnameMetadataField" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					Metadata field that holds hostname for CoAP
-					client connection.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="portMetadataField" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					Metadata field that holds port for CoAP client
-					connection.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="urlMetadataField" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					Metadata field that holds URL for CoAP client
-					connection.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Groovy script that extracts SMS parameters -->
@@ -450,27 +466,7 @@
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
 					<xsd:element ref="abstract-command-encoder" />
-					<xsd:choice minOccurs="0">
-						<xsd:element name="parameter-extractor"
-							type="commandDeliveryParameterExtractorReferenceType">
-							<xsd:annotation>
-								<xsd:documentation>
-									References a custom command delivery
-									parameter extractor implementation that extracts CoAP delivery
-									information from the device.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-						<xsd:element name="groovy-sms-parameter-extractor"
-							type="swGroovySmsParameterExtractorType">
-							<xsd:annotation>
-								<xsd:documentation>
-									Extracts SMS parameter information using a
-									Groovy script.
-								</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:choice>
+					<xsd:element ref="abstract-parameter-extractor" />
 				</xsd:sequence>
 				<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
 				<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
@@ -480,10 +476,6 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="commandExecutionEncoderReferenceType">
-		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:complexType name="commandDeliveryParameterExtractorReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 

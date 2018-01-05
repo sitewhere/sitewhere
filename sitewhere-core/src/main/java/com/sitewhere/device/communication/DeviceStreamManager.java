@@ -19,7 +19,6 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.DeviceStreamStatus;
-import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
@@ -73,7 +72,8 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 		ack.setStatus(DeviceStreamStatus.DeviceStreamFailed);
 	    }
 	}
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, ack);
+	// getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId,
+	// ack);
     }
 
     /*
@@ -112,7 +112,8 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 	} else {
 	    command.setData(new byte[0]);
 	}
-	getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId, command);
+	// getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId,
+	// command);
     }
 
     /*
@@ -148,10 +149,6 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     }
 
     private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
-	return null;
-    }
-
-    private IDeviceCommunication getDeviceCommunication(ITenant tenant) {
 	return null;
     }
 }
