@@ -9,7 +9,9 @@ package com.sitewhere.rules.configuration;
 
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IRuleProcessingParser;
+import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
+import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -44,6 +46,10 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
     @Override
     public void initializeElements() {
 	addElement(createRuleProcessingElement());
+
+	// Zone test elements.
+	addElement(createZoneTestProcessorElement());
+	addElement(createZoneTestElement());
     }
 
     /*
@@ -68,6 +74,46 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Applies rules to the stream of device events.");
 
+	return builder.build();
+    }
+
+    /**
+     * Create a zone test connector.
+     * 
+     * @return
+     */
+    protected ElementNode createZoneTestProcessorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Zone Test Processor",
+		IRuleProcessingParser.Elements.ZoneTestProcessor.getLocalName(), "map-pin",
+		RuleProcessingRoleKeys.ZoneTestProcessor, this);
+	builder.description("Allows alerts to be generated if location events are inside "
+		+ "or outside of a zone based on criteria.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create a zone test connector element.
+     * 
+     * @return
+     */
+    protected ElementNode createZoneTestElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
+		RuleProcessingRoleKeys.ZoneTestElement, this);
+	builder.description("Describes zone test criteria and alert to be generated in case of a match.");
+
+	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String)
+		.description("Unique token for zone locations are to be tested against.").build()));
+	builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String)
+		.description("Condition under which alert should be generated.").choice("inside").choice("outside")
+		.build()));
+	builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String)
+		.description("Identifier that indicates alert type.").build()));
+	builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String)
+		.description("Level value of alert.").choice("info").choice("warning").choice("error")
+		.choice("critical").build()));
+	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String)
+		.description("Message shown for alert.").build()));
 	return builder.build();
     }
 }

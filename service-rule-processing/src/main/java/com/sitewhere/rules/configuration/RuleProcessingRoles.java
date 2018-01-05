@@ -21,7 +21,14 @@ public enum RuleProcessingRoles implements IConfigurationRoleProvider {
 
     /** Root presence management role. */
     RuleProcessing(ConfigurationRole.build(RuleProcessingRoleKeys.RuleProcessing, "Rule Processing", false, false,
-	    false, new IRoleKey[0], new IRoleKey[0], true));
+	    false, new IRoleKey[0], new IRoleKey[0], true)),
+
+    /** Zone test event processor. */
+    ZoneTestProcessor(ConfigurationRole.build(RuleProcessingRoleKeys.ZoneTestProcessor, "Zone Test Processor", true,
+	    true, true, new IRoleKey[] { RuleProcessingRoleKeys.ZoneTestElement })),
+
+    /** Zone test. */
+    ZoneTest(ConfigurationRole.build(RuleProcessingRoleKeys.ZoneTestElement, "Zone Test", true, true, true));
 
     private ConfigurationRole role;
 

@@ -16,4 +16,39 @@ public interface IRuleProcessingParser {
 
     // Root element name.
     public static final String ROOT = "rule-processing";
+
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** Tests location values against zones */
+	ZoneTestProcessor("zone-test-processor");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

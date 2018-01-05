@@ -27,9 +27,6 @@ public interface IOutboundConnectorsParser {
 	/** Reference to custom inbound connector */
 	OutboundConnector("outbound-connector"),
 
-	/** Tests location values against zones */
-	ZoneTestEventProcessor("zone-test-event-processor"),
-
 	/** Sends outbound events to an MQTT topic */
 	MqttConnector("mqtt-connector"),
 

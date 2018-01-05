@@ -17,12 +17,6 @@ public enum OutboundConnectorsRoleKeys implements IRoleKey {
     /** Outbound connector */
     OutboundConnector("out_conn"),
 
-    /** Zone test event processor */
-    ZoneTestEventProcessor("zon_tst_prc"),
-
-    /** Zone test event processor element */
-    ZoneTestElement("zon_tst_elm"),
-
     /** Groovy route builder */
     GroovyRouteBuilder("grvy_rte_bld"),
 

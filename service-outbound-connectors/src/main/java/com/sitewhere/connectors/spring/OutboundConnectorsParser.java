@@ -32,8 +32,6 @@ import com.sitewhere.connectors.dweetio.DweetIoEventProcessor;
 import com.sitewhere.connectors.filter.FilterOperation;
 import com.sitewhere.connectors.filter.SiteFilter;
 import com.sitewhere.connectors.filter.SpecificationFilter;
-import com.sitewhere.connectors.geospatial.ZoneTest;
-import com.sitewhere.connectors.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.connectors.groovy.GroovyEventProcessor;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
@@ -43,8 +41,6 @@ import com.sitewhere.connectors.initialstate.InitialStateEventProcessor;
 import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
 import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundEventProcessor;
 import com.sitewhere.connectors.solr.SolrDeviceEventProcessor;
-import com.sitewhere.spi.device.event.AlertLevel;
-import com.sitewhere.spi.geospatial.ZoneContainment;
 import com.sitewhere.spi.microservice.spring.OutboundConnectorsBeans;
 
 /**
@@ -77,10 +73,6 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	    switch (type) {
 	    case OutboundConnector: {
 		connectors.add(parseOutboundConnector(child, context));
-		break;
-	    }
-	    case ZoneTestEventProcessor: {
-		connectors.add(parseZoneTestEventProcessor(child, context));
 		break;
 	    }
 	    case MqttConnector: {
@@ -164,84 +156,6 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	    return new RuntimeBeanReference(ref.getValue());
 	}
 	throw new RuntimeException("Outbound connector does not have ref defined.");
-    }
-
-    /**
-     * Parse configuration for event processor that tests location events against
-     * zone boundaries for firing alert conditions.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseZoneTestEventProcessor(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(ZoneTestEventProcessor.class);
-
-	// Parse common outbound processor attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
-
-	List<Element> children = DomUtils.getChildElementsByTagName(element, "zone-test");
-	List<Object> tests = new ManagedList<Object>();
-	for (Element testElm : children) {
-	    ZoneTest test = new ZoneTest();
-
-	    Attr zoneToken = testElm.getAttributeNode("zoneToken");
-	    if (zoneToken == null) {
-		throw new RuntimeException("Zone test missing 'zoneToken' attribute.");
-	    }
-	    test.setZoneToken(zoneToken.getValue());
-
-	    Attr condition = testElm.getAttributeNode("condition");
-	    if (condition == null) {
-		throw new RuntimeException("Zone test missing 'condition' attribute.");
-	    }
-	    ZoneContainment containment = (condition.getValue().equalsIgnoreCase("inside") ? ZoneContainment.Inside
-		    : ZoneContainment.Outside);
-	    test.setCondition(containment);
-
-	    Attr alertType = testElm.getAttributeNode("alertType");
-	    if (alertType == null) {
-		throw new RuntimeException("Zone test missing 'alertType' attribute.");
-	    }
-	    test.setAlertType(alertType.getValue());
-
-	    Attr alertMessage = testElm.getAttributeNode("alertMessage");
-	    if (alertMessage == null) {
-		throw new RuntimeException("Zone test missing 'alertMessage' attribute.");
-	    }
-	    test.setAlertMessage(alertMessage.getValue());
-
-	    Attr alertLevel = testElm.getAttributeNode("alertLevel");
-	    AlertLevel level = AlertLevel.Error;
-	    if (alertLevel != null) {
-		level = convertAlertLevel(alertLevel.getValue());
-	    }
-	    test.setAlertLevel(level);
-
-	    tests.add(test);
-	}
-	processor.addPropertyValue("zoneTests", tests);
-
-	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
-
-	return processor.getBeanDefinition();
-    }
-
-    protected AlertLevel convertAlertLevel(String input) {
-	if (input.equalsIgnoreCase("info")) {
-	    return AlertLevel.Info;
-	}
-	if (input.equalsIgnoreCase("warning")) {
-	    return AlertLevel.Warning;
-	}
-	if (input.equalsIgnoreCase("error")) {
-	    return AlertLevel.Error;
-	}
-	if (input.equalsIgnoreCase("critical")) {
-	    return AlertLevel.Critical;
-	}
-	throw new RuntimeException("Invalid alert level value: " + input);
     }
 
     /**

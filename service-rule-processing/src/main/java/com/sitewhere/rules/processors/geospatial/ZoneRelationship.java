@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.geospatial;
+package com.sitewhere.rules.processors.geospatial;
 
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;

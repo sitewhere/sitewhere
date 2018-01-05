@@ -12,7 +12,13 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 public enum RuleProcessingRoleKeys implements IRoleKey {
 
     /** Rule processing */
-    RuleProcessing("rule_prc");
+    RuleProcessing("rule_prc"),
+
+    /** Zone test processor */
+    ZoneTestProcessor("zon_tst_prc"),
+
+    /** Zone test processor element */
+    ZoneTestElement("zon_tst_elm");
 
     private String id;
 

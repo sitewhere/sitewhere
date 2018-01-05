@@ -58,10 +58,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	addElement(createDweetConnectorElement());
 	addElement(createGroovyConnectorElement());
 
-	// Zone test elements.
-	addElement(createZoneTestElement());
-	addElement(createZoneTestConnectorElement());
-
 	// MQTT connector elements.
 	addElement(createGroovyRouteBuilderElement());
 	addElement(createMqttConnectorElement());
@@ -115,48 +111,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
 		"Name of Spring bean that will be referenced as an outbound connector. The bean should implement the expected SiteWhere outbound connector APIs")
 		.build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a zone test connector element.
-     * 
-     * @return
-     */
-    protected ElementNode createZoneTestElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
-		OutboundConnectorsRoleKeys.ZoneTestElement, this);
-	builder.description("Describes zone test criteria and alert to be generated in case of a match.");
-
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String)
-		.description("Unique token for zone locations are to be tested against.").build()));
-	builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String)
-		.description("Condition under which alert should be generated.").choice("inside").choice("outside")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String)
-		.description("Identifier that indicates alert type.").build()));
-	builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String)
-		.description("Level value of alert.").choice("info").choice("warning").choice("error")
-		.choice("critical").build()));
-	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String)
-		.description("Message shown for alert.").build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a zone test connector.
-     * 
-     * @return
-     */
-    protected ElementNode createZoneTestConnectorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Zone Test Processor",
-		IOutboundConnectorsParser.Elements.ZoneTestEventProcessor.getLocalName(), "map-pin",
-		OutboundConnectorsRoleKeys.ZoneTestEventProcessor, this);
-	builder.description("Allows alerts to be generated if location events are inside "
-		+ "or outside of a zone based on criteria.");
-
-	addCommonConnectorAttributes(builder);
 	return builder.build();
     }
 

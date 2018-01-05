@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.geospatial;
+package com.sitewhere.rules.processors.geospatial;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,27 +16,25 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.connectors.FilteredOutboundConnector;
-import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geospatial.ZoneContainment;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Implementation of {@link IOutboundConnector} that performs a series of
- * tests for whether a location is inside or outside of zones, firing alerts if
- * the criteria is met.
+ * Implementation of {@link IRuleProcessor} that performs a series of tests for
+ * whether a location is inside or outside of zones, firing alerts if the
+ * criteria is met.
  * 
  * @author Derek
  */
-public class ZoneTestEventProcessor extends FilteredOutboundConnector {
+public class ZoneTestRuleProcessor extends RuleProcessor {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -50,21 +48,6 @@ public class ZoneTestEventProcessor extends FilteredOutboundConnector {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Required for filters.
-	super.start(monitor);
-
-	LOGGER.info("Starting zone test processor with " + zoneTests.size() + " tests.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
@@ -73,13 +56,12 @@ public class ZoneTestEventProcessor extends FilteredOutboundConnector {
     }
 
     /*
-     * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * @see com.sitewhere.rules.processors.geospatial.RuleProcessor#onLocation(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	for (ZoneTest test : zoneTests) {
 	    Polygon poly = getZonePolygon(test.getZoneToken());
 	    ZoneContainment containment = (poly.contains(GeoUtils.createPointForLocation(location)))
@@ -117,7 +99,7 @@ public class ZoneTestEventProcessor extends FilteredOutboundConnector {
 	    zoneMap.put(token, poly);
 	    return poly;
 	}
-	throw new SiteWhereException("Invalid zone token in " + ZoneTestEventProcessor.class.getName() + ": " + token);
+	throw new SiteWhereException("Invalid zone token in " + ZoneTestRuleProcessor.class.getName() + ": " + token);
     }
 
     public List<ZoneTest> getZoneTests() {

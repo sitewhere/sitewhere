@@ -43,10 +43,8 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
 
     /** Outbound connector. */
     OutboundConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundConnector, "Outbound Connector", true,
-	    true, true, new IRoleKey[0],
-	    new IRoleKey[] { OutboundConnectorsRoleKeys.FilteredConnector,
-		    OutboundConnectorsRoleKeys.ZoneTestEventProcessor, OutboundConnectorsRoleKeys.MqttConnector,
-		    OutboundConnectorsRoleKeys.RabbitMqConnector })),
+	    true, true, new IRoleKey[0], new IRoleKey[] { OutboundConnectorsRoleKeys.FilteredConnector,
+		    OutboundConnectorsRoleKeys.MqttConnector, OutboundConnectorsRoleKeys.RabbitMqConnector })),
 
     /** Filtered connector. */
     FilteredConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.FilteredConnector, "Filtered Connector", true,
@@ -59,14 +57,6 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
     /** Processor filters. */
     OutboundFilters(
 	    ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundFilters, "Outbound Filter", true, true, true)),
-
-    /** Zone test event processor. */
-    ZoneTestEventProcessor(ConfigurationRole.build(OutboundConnectorsRoleKeys.ZoneTestEventProcessor,
-	    "Zone Test Event Processor", true, true, true,
-	    new IRoleKey[] { OutboundConnectorsRoleKeys.ZoneTestElement, OutboundConnectorsRoleKeys.OutboundFilters })),
-
-    /** Zone test. */
-    ZoneTest(ConfigurationRole.build(OutboundConnectorsRoleKeys.ZoneTestElement, "Zone Test", true, true, true)),
 
     /** MQTT event processor. */
     MqttEventProcessor(ConfigurationRole.build(OutboundConnectorsRoleKeys.MqttConnector, "MQTT Connector", true, true,
