@@ -21,6 +21,83 @@
 	<!-- Contains information about rule processing -->
 	<xsd:complexType name="ruleProcessingType">
 		<xsd:sequence>
+			<xsd:element ref="abstract-rule-processor" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for rule processor elements to allow substitutionGroups -->
+	<xsd:element name="abstract-rule-processor" abstract="true"
+		type="abstractRuleProcessorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for rule processor elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common rule processor element information -->
+	<xsd:complexType name="abstractRuleProcessorType">
+	</xsd:complexType>
+
+	<!-- Zone test rule processor -->
+	<xsd:element name="zone-test-rule-processor" type="zoneTestRuleProcessorType"
+		substitutionGroup="abstract-rule-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				For each location event, applies a series of tests
+				to determine whether the location meets a condition of being inside
+				or outside of a given zone. If the condition is met, an alert is
+				fired.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="zoneTestRuleProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractRuleProcessorType">
+				<xsd:sequence>
+					<xsd:element name="zone-test" type="zoneTestType"
+						maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Tests a location for inclusion/exclusion from
+								a zone and fires
+								an alert if the condition is met.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- List of containment test types -->
+	<xsd:simpleType name="zoneContainmentType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="inside" />
+			<xsd:enumeration value="outside" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- List of alert levels -->
+	<xsd:simpleType name="alertLevelType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="info" />
+			<xsd:enumeration value="warning" />
+			<xsd:enumeration value="error" />
+			<xsd:enumeration value="critical" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Information used to test zone containment -->
+	<xsd:complexType name="zoneTestType">
+		<xsd:attribute name="zoneToken" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="condition" type="zoneContainmentType"
+			use="required" />
+		<xsd:attribute name="alertType" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="alertLevel" type="alertLevelType"
+			use="optional" />
+		<xsd:attribute name="alertMessage" type="xsd:string"
+			use="required"></xsd:attribute>
 	</xsd:complexType>
 </xsd:schema>

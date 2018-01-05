@@ -13,6 +13,8 @@
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />
 
-	<rp:rule-processing></rp:rule-processing>
+	<!-- Rule processing -->
+	<rp:rule-processing>
+	</rp:rule-processing>
 
 </beans>
