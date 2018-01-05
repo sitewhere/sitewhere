@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.search.configuration;
+package com.sitewhere.media.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
@@ -17,22 +17,15 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
  * 
  * @author Derek
  */
-public enum EventSearchRoles implements IConfigurationRoleProvider {
+public enum StreamingMediaRoles implements IConfigurationRoleProvider {
 
-    /** Root event search role. */
-    EventSearch(ConfigurationRole.build(EventSearchRoleKeys.EventSearch, "Event Search", false, false, false,
-	    new IRoleKey[] { EventSearchRoleKeys.SearchProviders }, new IRoleKey[0], true)),
-
-    /** Search providers. */
-    SearchProviders(ConfigurationRole.build(EventSearchRoleKeys.SearchProviders, "Search Providers", true, false, false,
-	    new IRoleKey[] { EventSearchRoleKeys.SearchProvider })),
-
-    /** Search provider. */
-    SearchProvider(ConfigurationRole.build(EventSearchRoleKeys.SearchProvider, "Search Provider", true, true, true));
+    /** Root streaming media role. */
+    StreamingMedia(ConfigurationRole.build(StreamingMediaRoleKeys.StreamingMedia, "Streaming Media", false, false,
+	    false, new IRoleKey[0], new IRoleKey[0], true));
 
     private ConfigurationRole role;
 
-    private EventSearchRoles(ConfigurationRole role) {
+    private StreamingMediaRoles(ConfigurationRole role) {
 	this.role = role;
     }
 

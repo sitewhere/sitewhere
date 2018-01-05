@@ -59,6 +59,9 @@ public interface IMicroserviceIdentifiers {
     /** Schedule management microservice */
     public static final String SCHEDULE_MANAGEMENT = "schedule-management";
 
+    /** Streaming media microservice */
+    public static final String STREAMING_MEDIA = "streaming-media";
+
     /** Tenant management microservice */
     public static final String TENANT_MANAGEMENT = "tenant-management";
 
