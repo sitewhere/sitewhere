@@ -34,3 +34,9 @@ protobuf {
 	
 	generatedFilesBaseDir = "$projectDir/src/generated"
 }
+
+apply plugin: 'eclipse'
+eclipse.classpath.file.whenMerged {
+	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/resources', null)    
+	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)    
+}
