@@ -258,6 +258,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     public void restartTenantEngine(String tenantId) throws SiteWhereException {
 	// Shut down and remove existing tenant engine.
 	removeTenantEngine(tenantId);
+	getLogger().info("Tenant engine shut down successfully. Queueing for restart...");
 
 	// Add to queue for restart.
 	getTenantInitializationQueue().offer(tenantId);
@@ -503,6 +504,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
 		    // Verify that multiple threads don't start duplicate engines.
 		    if (getInitializingTenantEngines().get(tenantId) != null) {
+			getLogger().info("Skipping initialization for existing tenant engine '" + tenantId + "'.");
 			continue;
 		    }
 
@@ -525,6 +527,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 				    getLogger().error("Unable to bootstrap tenant engine.", t);
 				    return null;
 				});
+		    } else {
+			getLogger().info("Tenant engine already exists for '" + tenantId + "'.");
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception processing tenant engine.", e);

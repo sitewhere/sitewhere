@@ -77,7 +77,7 @@
 			<xsd:extension base="abstractRuleProcessorType">
 				<xsd:sequence>
 					<xsd:element name="zone-test" type="zoneTestType"
-						maxOccurs="unbounded">
+						minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
 								Tests a location for inclusion/exclusion from
