@@ -2,36 +2,12 @@
   <span>
     <v-card v-if="currentContext" class="elevation-1">
       <v-card-text>
-        <div>
-          <v-breadcrumbs divider="/">
-            <v-breadcrumbs-item v-for="context in wizardContexts"
-              :key="context.model.localName"
-              @click.native="onPopToContext(context.model.localName)">
-              {{ context.model.name }}
-            </v-breadcrumbs-item>
-          </v-breadcrumbs>
-        </div>
-        <!-- Banner -->
-        <v-card class="mb-3">
-          <v-toolbar flat dark class="primary">
-            <v-icon dark fa class="fa-lg">{{currentContext.model.icon}}</v-icon>
-            <v-toolbar-title class="white--text">{{currentContext.model.name}}</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon class="ml-0" v-if="wizardContexts.length > 1"
-              @click.native="onPopContext">
-              <v-icon fa class="fa-lg">arrow-up</v-icon>
-            </v-btn>
-            <v-btn icon class="ml-0" v-if="currentContext.model.attributes"
-              @click.native="onConfigureCurrent">
-              <v-icon fa class="fa-lg">gear</v-icon>
-            </v-btn>
-            <v-btn icon class="ml-0" v-if="currentContext.model.role.optional"
-              @click.native="onDeleteCurrent">
-              <v-icon fa class="fa-lg">times</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text v-html="currentContext.model.description"></v-card-text>
-        </v-card>
+        <!-- Banner shown above microservice content -->
+        <microservice-banner :currentContext="currentContext"
+          :wizardContexts="wizardContexts" @popContext="onPopContext"
+          @configureCurrent="onConfigureCurrent"
+          @deleteCurrent="onDeleteCurrent">
+        </microservice-banner>
         <!-- Attributes -->
         <div
           v-if="currentContext.groups && currentContext.groups.length">
@@ -97,6 +73,7 @@
 <script>
 import Utils from '../common/Utils'
 import FloatingActionButton from '../common/FloatingActionButton'
+import MicroserviceBanner from './MicroserviceBanner'
 import ElementPlaceholder from './ElementPlaceholder'
 import AttributeField from './AttributeField'
 import ElementDeleteDialog from './ElementDeleteDialog'
@@ -118,6 +95,7 @@ export default {
 
   components: {
     FloatingActionButton,
+    MicroserviceBanner,
     ElementPlaceholder,
     AttributeField,
     ElementDeleteDialog,
