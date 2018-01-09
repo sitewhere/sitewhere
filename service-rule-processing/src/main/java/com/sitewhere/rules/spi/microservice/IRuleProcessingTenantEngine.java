@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rules.spi.microservice;
 
+import com.sitewhere.rules.spi.IRuleProcessorsManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IRuleProcessingTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get manager for rule processors.
+     * 
+     * @return
+     */
+    public IRuleProcessorsManager getRuleProcessorsManager();
 }

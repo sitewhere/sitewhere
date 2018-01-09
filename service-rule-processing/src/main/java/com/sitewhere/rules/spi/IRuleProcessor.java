@@ -7,12 +7,13 @@
  */
 package com.sitewhere.rules.spi;
 
-import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -24,6 +25,20 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * @author Derek
  */
 public interface IRuleProcessor extends ITenantEngineLifecycleComponent {
+
+    /**
+     * Get unique id for processor.
+     * 
+     * @return
+     */
+    public String getProcessorId();
+
+    /**
+     * Get number of threads used for processing events.
+     * 
+     * @return
+     */
+    public int getNumProcessingThreads();
 
     /**
      * Responds to a measurements event.
@@ -82,14 +97,16 @@ public interface IRuleProcessor extends ITenantEngineLifecycleComponent {
     public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException;
 
     /**
-     * Get reference to tenant engine that owns the processor.
+     * Get device management API.
+     * 
+     * @return
      */
-    public IRuleProcessingTenantEngine getTenantEngine();
+    public IDeviceManagement getDeviceManagement();
 
     /**
-     * Set reference to tenant engine that owns the processor.
+     * Get device event management API.
      * 
-     * @param tenantEngine
+     * @return
      */
-    public void setTenantEngine(IRuleProcessingTenantEngine tenantEngine);
+    public IDeviceEventManagement getDeviceEventManagement();
 }

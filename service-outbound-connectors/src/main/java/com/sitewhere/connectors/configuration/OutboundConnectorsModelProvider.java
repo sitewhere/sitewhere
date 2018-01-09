@@ -311,8 +311,13 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      * @param builder
      */
     public static void addCommonConnectorAttributes(ElementNode.Builder builder) {
+	builder.attributeGroup("common", "Outbound Connector Attributes");
 	builder.attribute((new AttributeNode.Builder("Connector id", "connectorId", AttributeType.String)
-		.description("Unique id used for referencing this connector.").makeIndex().makeRequired().build()));
+		.description("Unique id used for referencing this connector.").group("common").makeIndex()
+		.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numProcessingThreads",
+		AttributeType.Integer).description("Number of threads used to load inbound events into connector.")
+			.group("common").makeRequired().build()));
     }
 
     /**

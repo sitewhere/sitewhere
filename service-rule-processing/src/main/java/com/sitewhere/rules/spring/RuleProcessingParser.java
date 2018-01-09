@@ -79,6 +79,17 @@ public class RuleProcessingParser extends AbstractBeanDefinitionParser {
      * @param builder
      */
     protected void parseCommonRuleProcessorAttributes(Element element, BeanDefinitionBuilder builder) {
+	// Handle processor id.
+	Attr processorId = element.getAttributeNode("processorId");
+	if (processorId != null) {
+	    builder.addPropertyValue("processorId", processorId.getValue());
+	}
+
+	// Handle number of processing threads.
+	Attr numProcessingThreads = element.getAttributeNode("numProcessingThreads");
+	if (numProcessingThreads != null) {
+	    builder.addPropertyValue("numProcessingThreads", numProcessingThreads.getValue());
+	}
     }
 
     /**

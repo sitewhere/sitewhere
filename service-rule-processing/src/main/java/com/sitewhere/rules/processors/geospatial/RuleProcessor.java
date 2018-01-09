@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.rules.spi.IRuleProcessor;
-import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
+import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -35,8 +35,14 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Owning tenant engine */
-    private IRuleProcessingTenantEngine tenantEngine;
+    /** Default number of threads used for processing */
+    private static final int DEFAULT_NUM_PROCESSING_THREADS = 2;
+
+    /** Unqiue processor id */
+    private String processorId;
+
+    /** Number of threads used for processing events */
+    private int numProcessingThreads = DEFAULT_NUM_PROCESSING_THREADS;
 
     /*
      * @see com.sitewhere.rules.spi.IRuleProcessor#onMeasurements(com.sitewhere.spi.
@@ -99,23 +105,27 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
     }
 
     /*
-     * @see
-     * com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent#getTenantEngine
-     * ()
+     * @see com.sitewhere.rules.spi.IRuleProcessor#getProcessorId()
      */
     @Override
-    public IRuleProcessingTenantEngine getTenantEngine() {
-	return tenantEngine;
+    public String getProcessorId() {
+	return processorId;
+    }
+
+    public void setProcessorId(String processorId) {
+	this.processorId = processorId;
     }
 
     /*
-     * @see
-     * com.sitewhere.rules.spi.IRuleProcessor#setTenantEngine(com.sitewhere.rules.
-     * spi.microservice.IRuleProcessingTenantEngine)
+     * @see com.sitewhere.rules.spi.IRuleProcessor#getNumProcessingThreads()
      */
     @Override
-    public void setTenantEngine(IRuleProcessingTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
+    public int getNumProcessingThreads() {
+	return numProcessingThreads;
+    }
+
+    public void setNumProcessingThreads(int numProcessingThreads) {
+	this.numProcessingThreads = numProcessingThreads;
     }
 
     /*
@@ -126,21 +136,21 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
 	return LOGGER;
     }
 
-    /**
-     * Get reference to device management implementation.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.rules.spi.IRuleProcessor#getDeviceManagement()
      */
+    @Override
     public IDeviceManagement getDeviceManagement() {
-	return null;
+	return ((IRuleProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
-    /**
-     * Get reference to event management implementation.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.rules.spi.IRuleProcessor#getDeviceEventManagement()
      */
+    @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return ((IRuleProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 }

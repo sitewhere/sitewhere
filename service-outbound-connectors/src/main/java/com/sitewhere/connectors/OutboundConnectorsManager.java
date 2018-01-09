@@ -35,7 +35,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     /** List of connectors */
     private List<IOutboundConnector> outboundConnectors;
 
-    /** List of host wrappers for outbound processors */
+    /** List of host wrappers for outbound connectors */
     private List<KafkaOutboundConnectorHost> connectorHosts = new ArrayList<KafkaOutboundConnectorHost>();
 
     /*
@@ -47,11 +47,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getConnectorHosts().clear();
 	for (IOutboundConnector processor : getOutboundConnectors()) {
-	    // Hook processor to microservice API channels.
-	    processor.setDeviceManagement(getMicroservice().getDeviceManagementApiDemux().getApiChannel());
-	    processor.setDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
-
-	    // Create host for managing outbound processor.
+	    // Create host for managing outbound connector.
 	    KafkaOutboundConnectorHost host = new KafkaOutboundConnectorHost(getTenantEngine().getMicroservice(),
 		    getTenantEngine(), processor);
 	    initializeNestedComponent(host, monitor, true);

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.kafka;
+package com.sitewhere.rules.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +20,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
+import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -42,11 +42,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
- * the messages to a wrapped outbound connector.
+ * the messages to a wrapped rule processor.
  * 
  * @author Derek
  */
-public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
+public class KafkaRuleProcessorHost extends MicroserviceKafkaConsumer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -54,16 +54,16 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
-    /** Get wrapped outbound connector implementation */
-    private IOutboundConnector outboundConnector;
+    /** Get wrapped rule processor implementation */
+    private IRuleProcessor ruleProcessor;
 
     /** Executor */
     private ExecutorService executor;
 
-    public KafkaOutboundConnectorHost(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine,
-	    IOutboundConnector outboundConnector) {
+    public KafkaRuleProcessorHost(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine,
+	    IRuleProcessor ruleProcessor) {
 	super(microservice, tenantEngine);
-	this.outboundConnector = outboundConnector;
+	this.ruleProcessor = ruleProcessor;
     }
 
     /*
@@ -81,8 +81,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + "connector."
-		+ getOutboundConnector().getConnectorId();
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant())
+		+ "rule-processor." + getRuleProcessor().getProcessorId();
     }
 
     /*
@@ -105,7 +105,7 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-	initializeNestedComponent(getOutboundConnector(), monitor, true);
+	initializeNestedComponent(getRuleProcessor(), monitor, true);
     }
 
     /*
@@ -117,8 +117,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	startNestedComponent(getOutboundConnector(), monitor, true);
-	executor = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
+	startNestedComponent(getRuleProcessor(), monitor, true);
+	executor = Executors.newFixedThreadPool(getRuleProcessor().getNumProcessingThreads(),
 		new EventPayloadProcessorThreadFactory());
     }
 
@@ -136,10 +136,10 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	    try {
 		executor.awaitTermination(10, TimeUnit.SECONDS);
 	    } catch (InterruptedException e) {
-		getLogger().error("Outbound connector host did not terminate within timout period.");
+		getLogger().error("Rule processor host did not terminate within timout period.");
 	    }
 	}
-	stopNestedComponent(getOutboundConnector(), monitor);
+	stopNestedComponent(getRuleProcessor(), monitor);
     }
 
     /*
@@ -160,17 +160,17 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	return LOGGER;
     }
 
-    public IOutboundConnector getOutboundConnector() {
-	return outboundConnector;
+    public IRuleProcessor getRuleProcessor() {
+	return ruleProcessor;
     }
 
-    public void setOutboundConnector(IOutboundConnector outboundConnector) {
-	this.outboundConnector = outboundConnector;
+    public void setRuleProcessor(IRuleProcessor ruleProcessor) {
+	this.ruleProcessor = ruleProcessor;
     }
 
     /**
-     * Processor that unmarshals an enriched event and forwards it to outbound
-     * connector implementation.
+     * Processor that unmarshals an enriched event and forwards it to a rule
+     * processor implementation.
      * 
      * @author Derek
      */
@@ -198,9 +198,9 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 		}
 		routePayload(payload);
 	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to process outbound connector event payload.", e);
+		getLogger().error("Unable to process rule processor event payload.", e);
 	    } catch (Throwable e) {
-		getLogger().error("Unhandled exception processing connector event payload.", e);
+		getLogger().error("Unhandled exception processing rule processor event payload.", e);
 	    }
 	}
 
@@ -215,27 +215,27 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	    IDeviceEvent event = payload.getEvent();
 	    switch (event.getEventType()) {
 	    case Alert: {
-		getOutboundConnector().onAlert(context, (IDeviceAlert) event);
+		getRuleProcessor().onAlert(context, (IDeviceAlert) event);
 		break;
 	    }
 	    case CommandInvocation: {
-		getOutboundConnector().onCommandInvocation(context, (IDeviceCommandInvocation) event);
+		getRuleProcessor().onCommandInvocation(context, (IDeviceCommandInvocation) event);
 		break;
 	    }
 	    case CommandResponse: {
-		getOutboundConnector().onCommandResponse(context, (IDeviceCommandResponse) event);
+		getRuleProcessor().onCommandResponse(context, (IDeviceCommandResponse) event);
 		break;
 	    }
 	    case Location: {
-		getOutboundConnector().onLocation(context, (IDeviceLocation) event);
+		getRuleProcessor().onLocation(context, (IDeviceLocation) event);
 		break;
 	    }
 	    case Measurements: {
-		getOutboundConnector().onMeasurements(context, (IDeviceMeasurements) event);
+		getRuleProcessor().onMeasurements(context, (IDeviceMeasurements) event);
 		break;
 	    }
 	    case StateChange: {
-		getOutboundConnector().onStateChange(context, (IDeviceStateChange) event);
+		getRuleProcessor().onStateChange(context, (IDeviceStateChange) event);
 		break;
 	    }
 	    default: {
@@ -245,15 +245,15 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	}
     }
 
-    /** Used for naming outbound event processing threads */
+    /** Used for naming event payload processing threads */
     private class EventPayloadProcessorThreadFactory implements ThreadFactory {
 
 	/** Counts threads */
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Outbound Connector '" + getOutboundConnector().getConnectorId() + "' "
-		    + counter.incrementAndGet());
+	    return new Thread(r,
+		    "Rule Processor '" + getRuleProcessor().getProcessorId() + "' " + counter.incrementAndGet());
 	}
     }
 }

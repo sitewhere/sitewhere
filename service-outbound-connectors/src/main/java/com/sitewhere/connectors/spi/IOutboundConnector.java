@@ -104,23 +104,9 @@ public interface IOutboundConnector extends ITenantEngineLifecycleComponent {
     public IDeviceManagement getDeviceManagement();
 
     /**
-     * Set device management API.
-     * 
-     * @param deviceManagement
-     */
-    public void setDeviceManagement(IDeviceManagement deviceManagement);
-
-    /**
      * Get device event management API.
      * 
      * @return
      */
     public IDeviceEventManagement getDeviceEventManagement();
-
-    /**
-     * Set device event management API.
-     * 
-     * @param eventManagement
-     */
-    public void setDeviceEventManagement(IDeviceEventManagement eventManagement);
 }

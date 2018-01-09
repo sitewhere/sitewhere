@@ -7,14 +7,19 @@
  */
 package com.sitewhere.rules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.rules.kafka.KafkaRuleProcessorHost;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
+import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Manages the list of rule processors configured for a tenant.
@@ -29,6 +34,62 @@ public class RuleProcessorsManager extends TenantEngineLifecycleComponent implem
     /** List of rule processors */
     private List<IRuleProcessor> ruleProcessors;
 
+    /** List of host wrappers for rule processors */
+    private List<KafkaRuleProcessorHost> ruleProcessorHosts = new ArrayList<KafkaRuleProcessorHost>();
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getRuleProcessorHosts().clear();
+	for (IRuleProcessor processor : getRuleProcessors()) {
+	    // Create host for managing rule processor.
+	    KafkaRuleProcessorHost host = new KafkaRuleProcessorHost(getTenantEngine().getMicroservice(),
+		    getTenantEngine(), processor);
+	    initializeNestedComponent(host, monitor, true);
+	    getRuleProcessorHosts().add(host);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	for (KafkaRuleProcessorHost host : getRuleProcessorHosts()) {
+	    startNestedComponent(host, monitor, true);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	for (KafkaRuleProcessorHost host : getRuleProcessorHosts()) {
+	    stopNestedComponent(host, monitor);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.rules.spi.IRuleProcessorsManager#getRuleProcessors()
+     */
+    @Override
+    public List<IRuleProcessor> getRuleProcessors() {
+	return ruleProcessors;
+    }
+
+    public void setRuleProcessors(List<IRuleProcessor> ruleProcessors) {
+	this.ruleProcessors = ruleProcessors;
+    }
+
     /*
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
@@ -37,11 +98,15 @@ public class RuleProcessorsManager extends TenantEngineLifecycleComponent implem
 	return LOGGER;
     }
 
-    public List<IRuleProcessor> getRuleProcessors() {
-	return ruleProcessors;
+    public List<KafkaRuleProcessorHost> getRuleProcessorHosts() {
+	return ruleProcessorHosts;
     }
 
-    public void setRuleProcessors(List<IRuleProcessor> ruleProcessors) {
-	this.ruleProcessors = ruleProcessors;
+    public void setRuleProcessorHosts(List<KafkaRuleProcessorHost> ruleProcessorHosts) {
+	this.ruleProcessorHosts = ruleProcessorHosts;
+    }
+
+    protected IRuleProcessingMicroservice getMicroservice() {
+	return (IRuleProcessingMicroservice) getTenantEngine().getMicroservice();
     }
 }

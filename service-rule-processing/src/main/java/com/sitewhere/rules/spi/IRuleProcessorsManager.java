@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rules.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -15,4 +17,11 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * @author Derek
  */
 public interface IRuleProcessorsManager extends ITenantEngineLifecycleComponent {
+
+    /**
+     * Get list of rule processors.
+     * 
+     * @return
+     */
+    public List<IRuleProcessor> getRuleProcessors();
 }

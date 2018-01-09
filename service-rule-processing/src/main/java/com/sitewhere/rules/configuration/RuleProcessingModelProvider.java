@@ -72,28 +72,30 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 	ElementNode.Builder builder = new ElementNode.Builder("Rule Processing", IRuleProcessingParser.ROOT, "gear",
 		RuleProcessingRoleKeys.RuleProcessing, this);
 
-	builder.description("Applies rules to the stream of device events.");
+	builder.description("Adds processors that apply rules to the stream of device events.");
 
 	return builder.build();
     }
 
     /**
-     * Create a zone test connector.
+     * Create a zone test processor.
      * 
      * @return
      */
     protected ElementNode createZoneTestProcessorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Zone Test Processor",
+	ElementNode.Builder builder = new ElementNode.Builder(RuleProcessingRoles.ZoneTestProcessor.getRole().getName(),
 		IRuleProcessingParser.Elements.ZoneTestProcessor.getLocalName(), "map-pin",
 		RuleProcessingRoleKeys.ZoneTestProcessor, this);
 	builder.description("Allows alerts to be generated if location events are inside "
 		+ "or outside of a zone based on criteria.");
 
+	addCommonRuleProcessorAttributes(builder);
+
 	return builder.build();
     }
 
     /**
-     * Create a zone test connector element.
+     * Create a zone test processor element.
      * 
      * @return
      */
@@ -115,5 +117,21 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String)
 		.description("Message shown for alert.").build()));
 	return builder.build();
+    }
+
+    /**
+     * Add common rule processor attributes.
+     * 
+     * @param builder
+     */
+    public static void addCommonRuleProcessorAttributes(ElementNode.Builder builder) {
+	builder.attributeGroup("common", "Rule Processor Attributes");
+	builder.attribute((new AttributeNode.Builder("Processor id", "processorId", AttributeType.String)
+		.description("Unique id used for referencing this processor.").group("common").makeIndex()
+		.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numProcessingThreads",
+		AttributeType.Integer)
+			.description("Number of processing threads used to pull events from Kafka into rule processor.")
+			.group("common").makeRequired().build()));
     }
 }

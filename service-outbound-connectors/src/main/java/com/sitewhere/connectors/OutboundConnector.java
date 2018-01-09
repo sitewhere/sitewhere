@@ -8,6 +8,7 @@
 package com.sitewhere.connectors;
 
 import com.sitewhere.connectors.spi.IOutboundConnector;
+import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -36,12 +37,6 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
 
     /** Number of threads used for processing events */
     private int numProcessingThreads = DEFAULT_NUM_PROCESSING_THREADS;
-
-    /** Handle to device management implementation */
-    private IDeviceManagement deviceManagement;
-
-    /** Handle to device event management implementation */
-    private IDeviceEventManagement deviceEventManagement;
 
     public OutboundConnector() {
 	super(LifecycleComponentType.OutboundConnector);
@@ -138,16 +133,8 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceManagement getDeviceManagement() {
-	return deviceManagement;
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IOutboundConnector#setDeviceManagement(com.
-     * sitewhere.spi.device.IDeviceManagement)
-     */
-    @Override
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
     /*
@@ -156,16 +143,7 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return deviceEventManagement;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#setDeviceEventManagement(com.
-     * sitewhere.spi.device.event.IDeviceEventManagement)
-     */
-    @Override
-    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
-	this.deviceEventManagement = deviceEventManagement;
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel();
     }
 }
